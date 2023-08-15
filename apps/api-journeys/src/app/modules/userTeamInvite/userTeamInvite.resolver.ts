@@ -1,19 +1,21 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
-import { UseGuards } from '@nestjs/common'
 import { subject } from '@casl/ability'
-import { CaslAccessible, CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { UserTeamInvite, Prisma } from '.prisma/api-journeys-client'
+import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { CurrentUser } from '@core/nest/decorators/CurrentUser'
+
+import { Prisma, UserTeamInvite } from '.prisma/api-journeys-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
-import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+
 import {
   UserTeamInviteCreateInput,
   UserTeamRole
 } from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('userTeamInvite')
 export class UserTeamInviteResolver {

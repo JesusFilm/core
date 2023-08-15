@@ -1,10 +1,12 @@
-import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   defaultTemplate,
   descriptiveTemplate
 } from '../TemplateLibrary/TemplateListData'
+
 import { TemplateCard } from '.'
 
 const TemplateCardStory = {

@@ -1,15 +1,17 @@
-import { ReactElement } from 'react'
-import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
-import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
-import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
 import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
+import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
+import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { TypographyBlockUpdateAlign } from '../../../../../../../../__generated__/TypographyBlockUpdateAlign'
-import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
-import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
+import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
+import { TypographyBlockUpdateAlign } from '../../../../../../../../__generated__/TypographyBlockUpdateAlign'
+import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
   mutation TypographyBlockUpdateAlign(

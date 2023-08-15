@@ -1,9 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
-
 import { videos } from '../Videos/__generated__/testData'
+
 import { ShareDialog } from './ShareDialog'
 
 const onClose = jest.fn()
@@ -47,12 +48,14 @@ const video: VideoContentFields = {
 
 describe('ShareDialog', () => {
   jest.resetModules()
+
   beforeEach(() => {
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_WATCH_URL: 'http://localhost:4300'
     }
   })
+
   afterEach(() => {
     process.env = originalEnv
   })
@@ -94,12 +97,14 @@ describe('ShareDialog', () => {
 
   describe('development', () => {
     jest.resetModules()
+
     beforeEach(() => {
       process.env = {
         ...originalEnv,
         NEXT_PUBLIC_WATCH_URL: 'http://localhost:4300'
       }
     })
+
     afterEach(() => {
       process.env = originalEnv
     })
@@ -153,12 +158,14 @@ describe('ShareDialog', () => {
 
   describe('production', () => {
     jest.resetModules()
+
     beforeEach(() => {
       process.env = {
         ...originalEnv,
         NEXT_PUBLIC_WATCH_URL: undefined
       }
     })
+
     afterEach(() => {
       process.env = originalEnv
     })

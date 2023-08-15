@@ -1,12 +1,14 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
-import { journeysAdminConfig } from '../../../libs/storybook'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { TeamSelect } from '.'
 
 const TeamSelectStory = {
@@ -29,8 +31,18 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   result: {
     data: {
       teams: [
-        { id: 'teamId', title: 'Jesus Film Project', __typename: 'Team' },
-        { id: 'teamId1', title: "Brian's Team", __typename: 'Team' }
+        {
+          id: 'teamId',
+          title: 'Jesus Film Project',
+          __typename: 'Team',
+          userTeams: []
+        },
+        {
+          id: 'teamId1',
+          title: "Brian's Team",
+          __typename: 'Team',
+          userTeams: []
+        }
       ],
       getJourneyProfile: {
         __typename: 'JourneyProfile',

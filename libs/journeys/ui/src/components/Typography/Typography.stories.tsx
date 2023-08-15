@@ -1,16 +1,17 @@
+import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
 
 import {
   ThemeMode,
   ThemeName,
-  TypographyVariant,
+  TypographyAlign,
   TypographyColor,
-  TypographyAlign
+  TypographyVariant
 } from '../../../__generated__/globalTypes'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
+
 import { Typography } from './Typography'
 
 const TypographyDemo = {

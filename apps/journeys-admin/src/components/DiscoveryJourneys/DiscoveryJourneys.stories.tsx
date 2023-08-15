@@ -1,8 +1,10 @@
 import { Meta, Story } from '@storybook/react'
-import { journeysAdminConfig } from '../../libs/storybook'
+
 import { cache } from '../../libs/apolloClient/cache'
-import { DiscoveryJourneys } from './DiscoveryJourneys'
+import { journeysAdminConfig } from '../../libs/storybook'
+
 import { getDiscoveryJourneysMock } from './data'
+import { DiscoveryJourneys } from './DiscoveryJourneys'
 
 const DiscoveryJourneysStory = {
   ...journeysAdminConfig,

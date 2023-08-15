@@ -1,17 +1,18 @@
-import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
-import Skeleton from '@mui/material/Skeleton'
 import TranslateIcon from '@mui/icons-material/Translate'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AccessAvatars } from '../../../AccessAvatars'
-import { StatusChip } from '../StatusChip'
+
 import {
   GetAdminJourneys_journeys as Journey,
   GetAdminJourneys_journeys_userJourneys as UserJourney
 } from '../../../../../__generated__/GetAdminJourneys'
-import { JourneyCardVariant } from '../journeyCardVariant'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+import { AccessAvatars } from '../../../AccessAvatars'
+import { JourneyCardVariant } from '../journeyCardVariant'
+import { StatusChip } from '../StatusChip'
 
 interface Props {
   journey?: Journey

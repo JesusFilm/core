@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
   ImageBlockCreateInput,
   ImageBlockUpdateInput
 } from '../../../__generated__/graphql'
-import { BlockService } from '../block.service'
-import { PrismaService } from '../../../lib/prisma.service'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
+
 import { ImageBlockResolver } from './image.resolver'
 
 jest.mock('./transformInput', () => {
@@ -21,6 +24,7 @@ jest.mock('./transformInput', () => {
     }))
   }
 })
+
 describe('ImageBlockResolver', () => {
   let resolver: ImageBlockResolver,
     service: BlockService,
@@ -73,6 +77,7 @@ describe('ImageBlockResolver', () => {
       update: jest.fn((input) => input)
     })
   }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
@@ -134,6 +139,7 @@ describe('ImageBlockResolver', () => {
         blockCreateInput.parentBlockId
       )
     })
+
     it('creates an ImageBlock without parent block', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
@@ -167,6 +173,7 @@ describe('ImageBlockResolver', () => {
         }
       })
     })
+
     it('creates a cover ImageBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       prismaService.block.findUnique.mockResolvedValueOnce(parentBlock)
@@ -201,12 +208,14 @@ describe('ImageBlockResolver', () => {
         }
       })
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
         resolver.imageBlockCreate(ability, blockCreateInput)
       ).rejects.toThrow('user is not allowed to create block')
     })
+
     it('throws error if no parentBlockId for cover block', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
@@ -217,6 +226,7 @@ describe('ImageBlockResolver', () => {
         })
       ).rejects.toThrow('parent block id is required for cover blocks')
     })
+
     it('throws error if no parent block found for cover block', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
@@ -226,6 +236,7 @@ describe('ImageBlockResolver', () => {
         })
       ).rejects.toThrow('parent block not found')
     })
+
     it('removes old cover block', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce({
         ...parentBlock,
@@ -254,12 +265,14 @@ describe('ImageBlockResolver', () => {
         blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
       })
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.imageBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

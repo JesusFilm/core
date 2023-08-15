@@ -1,21 +1,23 @@
-import { ReactElement, useState, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { useSnackbar } from 'notistack'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
-import {
-  RESTORE_TRASHED_JOURNEYS,
-  DELETE_TRASHED_JOURNEYS
-} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
-import { TemplateCard } from '../../TemplateCard'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
+import {
+  DELETE_TRASHED_JOURNEYS,
+  RESTORE_TRASHED_JOURNEYS
+} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
+import { TemplateCard } from '../../TemplateCard'
 
 export function TrashedTemplates({
   sortOrder,

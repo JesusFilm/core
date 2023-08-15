@@ -1,14 +1,14 @@
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
-  JourneyStatus,
   ButtonColor,
   ButtonSize,
   ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant,
-  ThemeName,
+  JourneyStatus,
   ThemeMode,
+  ThemeName,
+  TypographyVariant,
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 

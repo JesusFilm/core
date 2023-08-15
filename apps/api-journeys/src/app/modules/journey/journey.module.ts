@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common'
+
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
-import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
 import { ChatButtonResolver } from '../chatButton/chatButton.resolver'
-import { AppCaslFactory } from '../../lib/casl/caslFactory'
+
 import { JourneyResolver } from './journey.resolver'
 
 @Module({

@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
-import { getTheme, ThemeName, ThemeMode } from '../../libs/themes'
+
+import { ThemeMode, ThemeName, getTheme } from '../../libs/themes'
+
 import { ThemeProvider } from '.'
 
 describe('ThemeProvider', () => {
@@ -89,7 +91,7 @@ describe('ThemeProvider', () => {
         Hello from ThemeProvider
       </ThemeProvider>
     )
-    expect(baseElement.parentElement?.innerHTML).toEqual(
+    expect(baseElement.parentElement?.innerHTML).toBe(
       '<head></head><body><div>Hello from ThemeProvider</div></body>'
     )
   })

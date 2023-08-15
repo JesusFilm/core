@@ -1,6 +1,8 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
+
 import { GetJourneyVisitors_visitors_edges as VisitorEdge } from '../../../__generated__/GetJourneyVisitors'
+
 import { JourneyVisitorsList } from '.'
 
 describe('JourneyVisitorsList', () => {
@@ -60,6 +62,7 @@ describe('JourneyVisitorsList', () => {
       }
     }
   ]
+
   it('should show visitors', () => {
     const { getByLabelText } = render(
       <JourneyVisitorsList
@@ -84,7 +87,7 @@ describe('JourneyVisitorsList', () => {
         hasNextPage
       />
     )
-    expect(getByText('Showing 3 visitors out of 5'))
+    expect(getByText('Showing 3 visitors out of 5')).toBeInTheDocument()
   })
 
   it('should load more', () => {

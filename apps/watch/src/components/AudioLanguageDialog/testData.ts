@@ -1,4 +1,5 @@
 import { videos } from '../Videos/__generated__/testData'
+
 import { GET_LANGUAGES_SLUG } from './AudioLanguageDialog'
 
 export const getLanguagesSlugMock = {

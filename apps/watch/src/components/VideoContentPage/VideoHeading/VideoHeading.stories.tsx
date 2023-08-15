@@ -1,13 +1,16 @@
-import { ComponentProps, ReactElement } from 'react'
-import { Story, Meta } from '@storybook/react'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps, ReactElement } from 'react'
+
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import Typography from '@mui/material/Typography'
+
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/__generated__/testData'
-import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+
 import { VideoHeading } from '.'
 
 const VideoHeadingStory = {

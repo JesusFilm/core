@@ -2,19 +2,21 @@
 
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+
 import { Prisma } from '.prisma/api-journeys-client'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import {
+  ButtonAction,
   ButtonClickEvent,
   ButtonClickEventCreateInput,
-  ChatOpenEventCreateInput,
   ChatOpenEvent,
-  MessagePlatform,
-  ButtonAction
+  ChatOpenEventCreateInput,
+  MessagePlatform
 } from '../../../__generated__/graphql'
-import { EventService } from '../event.service'
 import { PrismaService } from '../../../lib/prisma.service'
+import { EventService } from '../event.service'
 
 @Resolver('ButtonClickEvent')
 export class ButtonClickEventResolver {

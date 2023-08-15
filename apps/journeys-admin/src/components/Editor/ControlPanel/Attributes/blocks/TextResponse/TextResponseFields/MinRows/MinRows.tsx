@@ -1,12 +1,14 @@
+import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import { useMutation, gql } from '@apollo/client'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
-import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
-import { TextResponseMinRowsUpdate } from '../../../../../../../../../__generated__/TextResponseMinRowsUpdate'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { TextResponseMinRowsUpdate } from '../../../../../../../../../__generated__/TextResponseMinRowsUpdate'
+import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
 
 export const TEXT_RESPONSE_MIN_ROWS_UPDATE = gql`
   mutation TextResponseMinRowsUpdate(

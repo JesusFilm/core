@@ -1,20 +1,24 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
+  JourneyStatus,
   ThemeMode,
-  ThemeName,
-  JourneyStatus
+  ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { steps } from '../data'
+
 import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction'
+
 import { NavigateToJourneyAction } from '.'
 
 const NavigateToJourneyActionStory = {
@@ -84,7 +88,7 @@ export const NavigateToJourney: Story = () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock }}>
               <NavigateToJourneyAction />
             </EditorProvider>

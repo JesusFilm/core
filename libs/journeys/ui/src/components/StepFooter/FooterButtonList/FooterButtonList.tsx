@@ -1,7 +1,8 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
-import { ShareButton } from './ShareButton'
+
 import { ReactionButton } from './ReactionButton'
+import { ShareButton } from './ShareButton'
 
 export function FooterButtonList(): ReactElement {
   return (

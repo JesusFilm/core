@@ -1,33 +1,37 @@
-import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
+import VideocamRounded from '@mui/icons-material/VideocamRounded'
+import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
 import {
+  CSSProperties,
   ReactElement,
   useEffect,
-  useRef,
-  useState,
   useMemo,
-  CSSProperties
+  useRef,
+  useState
 } from 'react'
+import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
+
 import { NextImage } from '@core/shared/ui/NextImage'
-import Box from '@mui/material/Box'
-import { useTheme, styled, ThemeProvider } from '@mui/material/styles'
-import Paper from '@mui/material/Paper'
-import VideocamRounded from '@mui/icons-material/VideocamRounded'
+
 import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../libs/block'
-import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
+import { useEditor } from '../../libs/EditorProvider'
 import { ImageFields } from '../Image/__generated__/ImageFields'
+import { VideoEvents } from '../VideoEvents'
 import { VideoTrigger } from '../VideoTrigger'
+import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFields'
+
+import { VideoFields } from './__generated__/VideoFields'
+import { VideoControls } from './VideoControls'
+
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
-import { VideoEvents } from '../VideoEvents'
-import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFields'
-import { VideoControls } from './VideoControls'
-import { VideoFields } from './__generated__/VideoFields'
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
@@ -382,6 +386,7 @@ export function Video({
           alt="video image"
           layout="fill"
           objectFit={videoFit}
+          unoptimized
           style={{
             transform:
               objectFit === VideoBlockObjectFit.zoomed

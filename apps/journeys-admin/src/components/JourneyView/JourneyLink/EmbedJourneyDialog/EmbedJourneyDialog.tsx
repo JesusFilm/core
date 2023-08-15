@@ -1,19 +1,21 @@
-import { ReactElement } from 'react'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Box from '@mui/material/Box'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import { Theme } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { EmbedCardPreview } from './EmbedCardPreview'
 
 interface EmbedJourneyDialogProps {

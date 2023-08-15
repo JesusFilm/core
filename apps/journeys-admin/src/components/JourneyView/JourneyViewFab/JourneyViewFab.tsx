@@ -1,12 +1,14 @@
-import { ReactElement, useState } from 'react'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Fab from '@mui/material/Fab'
-import TagManager from 'react-gtm-module'
-import EditIcon from '@mui/icons-material/Edit'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
+import EditIcon from '@mui/icons-material/Edit'
+import Fab from '@mui/material/Fab'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import { ReactElement, useState } from 'react'
+import TagManager from 'react-gtm-module'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 

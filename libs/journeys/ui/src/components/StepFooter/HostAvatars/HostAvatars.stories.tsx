@@ -1,15 +1,18 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import Stack from '@mui/material/Stack'
-import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
+
 import { HostAvatars } from './HostAvatars'
 
 const HostAvatarsDemo = {
@@ -67,28 +70,31 @@ const journey: Journey = {
 
 const Template: Story<
   ComponentProps<typeof HostAvatars> & {
-    admin: boolean
+    variant: 'default' | 'admin' | 'embed'
     journey: Journey
     size: string
     editableStepFooter: boolean
   }
-> = ({ admin, journey, size, editableStepFooter }) => (
+> = ({ variant = 'default', journey, size, editableStepFooter }) => (
   <FlagsProvider flags={{ editableStepFooter }}>
-    <JourneyProvider value={{ admin, journey }}>
+    <JourneyProvider value={{ variant, journey }}>
       <Stack direction="row">
-        <HostAvatars hasPlaceholder={admin} size={size} />
+        <HostAvatars hasPlaceholder={variant === 'admin'} size={size} />
       </Stack>
     </JourneyProvider>
   </FlagsProvider>
 )
 
 export const Default = Template.bind({})
-Default.args = { admin: false, journey, editableStepFooter: true }
+Default.args = {
+  journey,
+  editableStepFooter: true
+}
 
 export const Empty = Template.bind({})
 Empty.args = {
   editableStepFooter: true,
-  admin: true,
+  variant: 'admin',
   journey: { ...journey, host: { ...hostData, src1: null } }
 }
 

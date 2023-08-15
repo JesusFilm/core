@@ -1,16 +1,17 @@
-import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
-import useSWRInfinite from 'swr/infinite'
-import reduce from 'lodash/reduce'
 import Typography from '@mui/material/Typography'
+import reduce from 'lodash/reduce'
 import fetch from 'node-fetch'
+import { ReactElement, useState } from 'react'
+import useSWRInfinite from 'swr/infinite'
+
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
-import { VideoSearch } from '../VideoSearch'
 import { VideoList } from '../VideoList'
 import { VideoListProps } from '../VideoList/VideoList'
+import { VideoSearch } from '../VideoSearch'
 
 interface VideoFromYouTubeProps {
   onSelect: (block: VideoBlockUpdateInput) => void

@@ -1,16 +1,18 @@
-import { ReactElement } from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
+
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
+import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { handleAction } from '../../libs/action'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+
 import { SignUpFields } from './__generated__/SignUpFields'
+import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -163,7 +165,7 @@ describe('SignUp', () => {
     })
   })
 
-  it('should redirect when form submit suceeds', async () => {
+  it('should redirect when form submit succeeds', async () => {
     const mocks = [
       {
         request: {
@@ -204,7 +206,7 @@ describe('SignUp', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(handleAction).toBeCalledWith(
+      expect(handleAction).toHaveBeenCalledWith(
         {
           push: expect.any(Function)
         },
@@ -291,7 +293,7 @@ describe('SignUp', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(result).toBeCalled()
+      expect(result).toHaveBeenCalled()
     })
   })
 

@@ -1,19 +1,21 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
-import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
-import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
 import {
   ThemeMode,
   ThemeName,
   TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
+import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
+import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { Canvas } from '../../Canvas'
 
@@ -130,7 +132,7 @@ const Template: Story = ({ ...args }) => {
               iso3: 'eng'
             }
           } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EditorProvider

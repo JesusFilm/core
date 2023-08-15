@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Block, Action, Journey } from '.prisma/api-journeys-client'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Action, Block, Journey } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { PrismaService } from '../../../lib/prisma.service'
+
 import { EmailActionInput, UserTeamRole } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+
 import { EmailActionResolver } from './emailAction.resolver'
 
 describe('EmailActionResolver', () => {
@@ -64,6 +67,7 @@ describe('EmailActionResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('blockUpdateEmailAction', () => {
     it('updates email action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -80,6 +84,7 @@ describe('EmailActionResolver', () => {
         }
       })
     })
+
     it('throws an error if typename is wrong', async () => {
       const wrongBlock = {
         ...blockWithUserTeam,
@@ -90,24 +95,25 @@ describe('EmailActionResolver', () => {
         resolver.blockUpdateEmailAction(ability, wrongBlock.id, input)
       ).rejects.toThrow('This block does not support email actions')
     })
+
     it('throws an error if input is not an email address', async () => {
       const wrongInput = {
         ...input,
         email: 'example.com'
       }
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      await resolver
-        .blockUpdateEmailAction(ability, block.id, wrongInput)
-        .catch((error) => {
-          expect(error.message).toEqual('must be a valid email')
-        })
+      await expect(
+        resolver.blockUpdateEmailAction(ability, block.id, wrongInput)
+      ).rejects.toThrow('must be a valid email')
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.blockUpdateEmailAction(ability, block.id, input)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

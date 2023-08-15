@@ -1,8 +1,10 @@
-import { Story, Meta } from '@storybook/react'
-import { ComponentProps } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import { simpleComponentConfig } from '../../../../libs/simpleComponentConfig'
+
 import { ReactionButton } from './ReactionButton'
 
 const ReactionButtonDemo = {

@@ -1,20 +1,23 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
+  JourneyStatus,
   ThemeMode,
-  ThemeName,
-  JourneyStatus
+  ThemeName
 } from '../../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { Drawer } from '../../../Drawer'
-import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAction'
+
 import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
+import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAction'
 
 const ActionStory = {
   ...journeysAdminConfig,
@@ -91,7 +94,7 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             ...args,

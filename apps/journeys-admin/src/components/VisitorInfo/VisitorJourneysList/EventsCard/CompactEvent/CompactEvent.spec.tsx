@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
+
 import { CompactEvent } from '.'
 
 describe('CompactEvent', () => {

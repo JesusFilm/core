@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
@@ -9,8 +10,9 @@ import {
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
-import { Video } from './Video'
+
 import { VideoOptions } from './Options/VideoOptions'
+import { Video } from './Video'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')

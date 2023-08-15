@@ -1,23 +1,25 @@
-import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
-import Player from 'video.js/dist/types/player'
-import Container from '@mui/material/Container'
-import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import Slider from '@mui/material/Slider'
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
-import PauseRounded from '@mui/icons-material/PauseRounded'
-import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
-import CircularProgress from '@mui/material/CircularProgress'
-import fscreen from 'fscreen'
-import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
+import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
+import PauseRounded from '@mui/icons-material/PauseRounded'
+import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import VolumeDownOutlined from '@mui/icons-material/VolumeDownOutlined'
 import VolumeMuteOutlined from '@mui/icons-material/VolumeMuteOutlined'
 import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
+import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import Container from '@mui/material/Container'
+import Fade from '@mui/material/Fade'
+import IconButton from '@mui/material/IconButton'
+import Slider from '@mui/material/Slider'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import fscreen from 'fscreen'
+import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
+import Player from 'video.js/dist/types/player'
+
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+
 import { useBlocks } from '../../../libs/block'
 
 interface VideoControlProps {
@@ -131,7 +133,7 @@ export function VideoControls({
           })
         )
       }
-      setProgress(Math.round(player.currentTime()))
+      setProgress(player.currentTime())
     }
     player.on('timeupdate', handleVideoTimeChange)
     return () => {
@@ -389,7 +391,7 @@ export function VideoControls({
               <Slider
                 aria-label="desktop-progress-control"
                 min={startAt}
-                max={endAt}
+                max={endAt - 0.25}
                 value={progress}
                 valueLabelFormat={displayTime}
                 valueLabelDisplay="auto"
@@ -496,7 +498,7 @@ export function VideoControls({
             <Slider
               aria-label="mobile-progress-control"
               min={startAt}
-              max={endAt}
+              max={endAt - 0.25}
               value={progress}
               valueLabelFormat={displayTime}
               valueLabelDisplay="auto"

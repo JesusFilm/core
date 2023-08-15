@@ -1,13 +1,14 @@
-import { ReactElement } from 'react'
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { AuthUser } from 'next-firebase-auth'
 import compact from 'lodash/compact'
+import { AuthUser } from 'next-firebase-auth'
+import { ReactElement } from 'react'
+
 import { GetMe_me as User } from '../../../../../__generated__/GetMe'
 import { MenuItem } from '../../../MenuItem'
 

@@ -1,14 +1,16 @@
-import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
-import {
-  useEditor,
-  ActiveJourneyEditContent
-} from '@core/journeys/ui/EditorProvider'
 import { Theme } from '@mui/system/createTheme'
+import { ReactElement, useState } from 'react'
+
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+
+import { ActionsTable } from '../ActionsTable'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
-import { Drawer, DRAWER_WIDTH } from '../Drawer'
-import { ActionsTable } from '../ActionsTable'
+import { DRAWER_WIDTH, Drawer } from '../Drawer'
 import { SocialPreview } from '../SocialPreview/SocialPreview'
 
 function bgColor(

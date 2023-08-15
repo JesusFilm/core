@@ -1,14 +1,15 @@
-import { ReactElement } from 'react'
-import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import MuiTypography from '@mui/material/Typography'
-import { NewVideoButton } from './NewVideoButton'
-import { NewTypographyButton } from './NewTypographyButton'
+import { ReactElement } from 'react'
+
+import { NewButtonButton } from './NewButtonButton'
 import { NewImageButton } from './NewImageButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
 import { NewSignUpButton } from './NewSignUpButton'
-import { NewButtonButton } from './NewButtonButton'
 import { NewTextResponseButton } from './NewTextResponseButton'
+import { NewTypographyButton } from './NewTypographyButton'
+import { NewVideoButton } from './NewVideoButton'
 
 export function BlocksTab(): ReactElement {
   return (

@@ -1,10 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { v4 as uuidv4 } from 'uuid'
+
+import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
+
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../__generated__/GetJourney'
 import { basic } from '../../libs/testData/storyData'
+
 import { EmbeddedPreview } from './EmbeddedPreview'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

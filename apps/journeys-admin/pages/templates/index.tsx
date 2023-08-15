@@ -1,12 +1,13 @@
-import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
   AuthAction,
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'

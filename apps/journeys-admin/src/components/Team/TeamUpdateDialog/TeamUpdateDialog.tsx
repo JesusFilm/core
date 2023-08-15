@@ -1,11 +1,13 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloError } from '@apollo/client'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
-import { Dialog } from '@core/shared/ui/Dialog'
+import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
-import { Formik, Form, FormikValues, FormikHelpers } from 'formik'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
 import { useTeam } from '../TeamProvider'
 

@@ -1,8 +1,8 @@
-import { ReactElement } from 'react'
-import TextField from '@mui/material/TextField'
-import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
-import { Formik, Form } from 'formik'
+import InputAdornment from '@mui/material/InputAdornment'
+import TextField from '@mui/material/TextField'
+import { Form, Formik } from 'formik'
+import { ReactElement } from 'react'
 
 interface UnsplashSearchProps {
   handleSubmit: (value?: string | null) => void

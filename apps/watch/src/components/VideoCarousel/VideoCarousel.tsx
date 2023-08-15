@@ -1,10 +1,12 @@
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import { ComponentProps, ReactElement, useRef } from 'react'
-import SwiperCore, { Navigation, A11y, Virtual, SwiperOptions } from 'swiper'
+import SwiperCore, { A11y, Navigation, SwiperOptions, Virtual } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoCard } from '../VideoCard'
+
 import { NavButton } from './NavButton'
 
 SwiperCore.use([Navigation, A11y, Virtual])

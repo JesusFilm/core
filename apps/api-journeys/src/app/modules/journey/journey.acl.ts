@@ -1,8 +1,9 @@
 import {
-  UserTeamRole,
+  JourneyStatus,
   UserJourneyRole,
-  JourneyStatus
+  UserTeamRole
 } from '.prisma/api-journeys-client'
+
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const journeyAcl: AppAclFn = ({

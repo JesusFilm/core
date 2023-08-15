@@ -1,7 +1,9 @@
+import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
+
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
+
 import { RadioOption } from '.'
 
 const Demo = {

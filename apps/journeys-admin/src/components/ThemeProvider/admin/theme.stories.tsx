@@ -1,13 +1,14 @@
-import { ReactElement } from 'react'
-import { Story, Meta } from '@storybook/react'
+import Box from '@mui/material/Box'
 import {
-  useTheme,
   PaletteColor,
   PaletteOptions,
-  SimplePaletteColorOptions
+  SimplePaletteColorOptions,
+  useTheme
 } from '@mui/material/styles'
-import Box from '@mui/material/Box'
 import Typography, { TypographyProps } from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { ReactElement } from 'react'
+
 import { simpleComponentConfig } from '../../../libs/storybook'
 
 const AdminThemeDemo = {

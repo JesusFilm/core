@@ -1,14 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { VideoBlockSource } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+
 import {
-  VideoStartEventResolver,
-  VideoPlayEventResolver,
-  VideoPauseEventResolver,
-  VideoCompleteEventResolver,
   VideoCollapseEventResolver,
+  VideoCompleteEventResolver,
   VideoExpandEventResolver,
-  VideoProgressEventResolver
+  VideoPauseEventResolver,
+  VideoPlayEventResolver,
+  VideoProgressEventResolver,
+  VideoStartEventResolver
 } from './video.resolver'
 
 describe('VideoResolver', () => {

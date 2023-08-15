@@ -1,22 +1,24 @@
-import { ReactElement } from 'react'
-import TextField from '@mui/material/TextField'
 import { gql, useMutation } from '@apollo/client'
-import { Form, Formik, FormikHelpers } from 'formik'
-import { ObjectSchema, object, string } from 'yup'
-import { useTranslation } from 'react-i18next'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import { Form, Formik, FormikHelpers } from 'formik'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+import { ObjectSchema, object, string } from 'yup'
+
 import AlertCircle from '@core/shared/ui/icons/AlertCircle'
-import { useTeam } from '../TeamProvider'
-import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
+
 import {
   UserTeamInviteCreateInput,
   UserTeamRole
 } from '../../../../__generated__/globalTypes'
+import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
+import { useTeam } from '../TeamProvider'
 
 export const USER_TEAM_INVITE_CREATE = gql`
   mutation UserTeamInviteCreate(

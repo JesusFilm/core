@@ -1,12 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { AuthUser } from 'next-firebase-auth'
+import { NextRouter, useRouter } from 'next/router'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { Role } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
+
 import { NavigationDrawer } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

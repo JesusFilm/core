@@ -1,16 +1,17 @@
 import {
-  createContext,
   Dispatch,
   ReactElement,
   ReactNode,
-  useEffect,
+  createContext,
   useContext,
+  useEffect,
   useReducer,
   useRef
 } from 'react'
-import { searchBlocks } from '../searchBlocks'
+
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
+import { searchBlocks } from '../searchBlocks'
 
 export enum ActiveTab {
   Journey = 0,

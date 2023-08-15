@@ -5,6 +5,7 @@ import {
   createAbilityFactory,
   createAccessibleByFactory
 } from '@casl/prisma/runtime'
+
 import type { Prisma, PrismaClient } from '.prisma/api-journeys-client'
 
 type ModelName = Prisma.ModelName

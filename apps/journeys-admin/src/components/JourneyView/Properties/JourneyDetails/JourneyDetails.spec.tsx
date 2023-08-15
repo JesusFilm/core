@@ -1,8 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
+
 import { JourneyDetails } from './JourneyDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -30,7 +33,8 @@ describe('journeyDetails', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <JourneyDetails journeyType="Journey" />

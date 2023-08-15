@@ -1,5 +1,6 @@
 import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Redirect } from 'next'
+
 import { GetJourneyProfileAndTeams } from '../../../__generated__/GetJourneyProfileAndTeams'
 
 export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`

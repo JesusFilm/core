@@ -1,24 +1,27 @@
-import { ReactElement } from 'react'
 import { useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor, ActiveFab } from '@core/journeys/ui/EditorProvider'
+import { ReactElement } from 'react'
+
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
-import { TypographyFields } from '../../../../../__generated__/TypographyFields'
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
-import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
 import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'
+import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { TextResponseFields } from '../../../../../__generated__/TextResponseFields'
+import { TypographyFields } from '../../../../../__generated__/TypographyFields'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
-import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { BLOCK_DELETE } from '../../EditToolbar/DeleteBlock/DeleteBlock'
 import getSelected from '../../EditToolbar/DeleteBlock/utils/getSelected'
-import { TypographyEdit } from './TypographyEdit'
+
 import { ButtonEdit } from './ButtonEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
 import { RadioQuestionEdit } from './RadioQuestionEdit'
 import { SignUpEdit } from './SignUpEdit'
 import { TextResponseEdit } from './TextResponseEdit'
+import { TypographyEdit } from './TypographyEdit'
 
 interface InlineEditWrapperProps
   extends WrapperProps<

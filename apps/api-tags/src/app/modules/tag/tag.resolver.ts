@@ -1,14 +1,16 @@
-import {
-  Resolver,
-  Query,
-  ResolveReference,
-  ResolveField,
-  Parent
-} from '@nestjs/graphql'
 import { Inject } from '@nestjs/common'
+import {
+  Parent,
+  Query,
+  ResolveField,
+  ResolveReference,
+  Resolver
+} from '@nestjs/graphql'
+
 import { Tag } from '.prisma/api-tags-client'
-import { PrismaService } from '../../lib/prisma.service'
+
 import { Translation } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Tag')
 export class TagResolver {

@@ -1,15 +1,15 @@
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement } from 'react'
-import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
-import IconButton from '@mui/material/IconButton'
 
-import { HeroOverlay } from '../../HeroOverlay'
-import { useVideo } from '../../../libs/videoContext'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
+import { useVideo } from '../../../libs/videoContext'
+import { HeroOverlay } from '../../HeroOverlay'
 
 interface Props {
   openDialog: () => void

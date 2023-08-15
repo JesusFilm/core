@@ -1,11 +1,12 @@
+import { TypographyVariant } from '../../../../../__generated__/globalTypes'
+import { TreeBlock } from '../../../../libs/block'
 import {
+  ButtonFields_action_LinkAction as LinkAction,
   ButtonFields_action_NavigateAction as NavigateAction,
   ButtonFields_action_NavigateToBlockAction as NavigateToBlockAction,
-  ButtonFields_action_NavigateToJourneyAction as NavigateToJourneyAction,
-  ButtonFields_action_LinkAction as LinkAction
+  ButtonFields_action_NavigateToJourneyAction as NavigateToJourneyAction
 } from '../../__generated__/ButtonFields'
-import { TreeBlock } from '../../../../libs/block'
-import { TypographyVariant } from '../../../../../__generated__/globalTypes'
+
 import { getActionLabel } from './getActionLabel'
 
 describe('getActionLabel', () => {
@@ -52,7 +53,7 @@ describe('getActionLabel', () => {
     const t = (str: string): string => str
 
     const result = getActionLabel(action, treeBlocks, t)
-    expect(result).toEqual('Step Heading')
+    expect(result).toBe('Step Heading')
   })
 
   it('should return Unknown Step for NavigateToBlockAction if stepId is invalid', () => {
@@ -76,7 +77,7 @@ describe('getActionLabel', () => {
     const t = (str: string): string => str
 
     const result = getActionLabel(action, treeBlocks, t)
-    expect(result).toEqual('Unknown Step')
+    expect(result).toBe('Unknown Step')
   })
 
   it('should return journey slug for NavigateToJourneyAction', () => {
@@ -108,7 +109,7 @@ describe('getActionLabel', () => {
     }
 
     const result = getActionLabel(action)
-    expect(result).toEqual('Unknown Journey')
+    expect(result).toBe('Unknown Journey')
   })
 
   it('should return url for LinkAction', () => {

@@ -1,8 +1,10 @@
-import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { ReactElement, useState } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { SignUp } from '@core/journeys/ui/SignUp'
+
 import { SignUpBlockUpdateContent } from '../../../../../../__generated__/SignUpBlockUpdateContent'
 import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
 import { InlineEditInput } from '../InlineEditInput'

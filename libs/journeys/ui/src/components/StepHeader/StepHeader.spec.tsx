@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
+
 import { StepHeader } from './StepHeader'
 
 describe('StepHeader', () => {
@@ -23,15 +24,6 @@ describe('StepHeader', () => {
     )
   })
 
-  it('should have the privacy policy link', () => {
-    const { getByRole } = render(<StepHeader />)
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute(
-      'href',
-      'https://www.cru.org/us/en/about/privacy.html'
-    )
-  })
-
   it('should have the journey creator privacy policy', () => {
     const { getByText, getByRole } = render(<StepHeader />)
     fireEvent.click(getByRole('button'))
@@ -41,5 +33,16 @@ describe('StepHeader', () => {
         'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should have the correct line height for journey creator privacy policy', () => {
+    const { getByText, getByRole } = render(<StepHeader />)
+    fireEvent.click(getByRole('button'))
+
+    expect(
+      getByText(
+        'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".'
+      )
+    ).toHaveStyle({ 'line-height': 1.2, display: 'block' })
   })
 })

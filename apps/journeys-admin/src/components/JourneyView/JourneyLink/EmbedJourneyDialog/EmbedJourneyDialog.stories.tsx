@@ -1,9 +1,12 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+import { useState } from 'react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { publishedJourney } from '../../data'
+
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
 const EmbedJourneyDialogStory = {
@@ -24,7 +27,7 @@ const Template: Story = ({ ...args }) => {
       <JourneyProvider
         value={{
           journey: args.journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EmbedJourneyDialog
