@@ -63,7 +63,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-journeys"],
       "options": {
-        "jestConfig": "apps/api-journeys/jest.config.js",
+        "jestConfig": "apps/api-journeys/jest.config.ts",
         "passWithNoTests": true,
         "fileReplacements": [
           {

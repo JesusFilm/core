@@ -58,7 +58,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-languages"],
       "options": {
-        "jestConfig": "apps/api-languages/jest.config.js",
+        "jestConfig": "apps/api-languages/jest.config.ts",
         "passWithNoTests": true
       }
     },

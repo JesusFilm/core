@@ -63,7 +63,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-media"],
       "options": {
-        "jestConfig": "apps/api-media/jest.config.js",
+        "jestConfig": "apps/api-media/jest.config.ts",
         "passWithNoTests": true
       }
     },

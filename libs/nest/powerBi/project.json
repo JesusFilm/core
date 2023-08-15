@@ -14,7 +14,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/nest/powerBi"],
       "options": {
-        "jestConfig": "libs/nest/powerBi/jest.config.js",
+        "jestConfig": "libs/nest/powerBi/jest.config.ts",
         "passWithNoTests": true
       }
     },

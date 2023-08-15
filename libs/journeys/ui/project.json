@@ -22,7 +22,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/journeys/ui"],
       "options": {
-        "jestConfig": "libs/journeys/ui/jest.config.js",
+        "jestConfig": "libs/journeys/ui/jest.config.ts",
         "passWithNoTests": true
       }
     },

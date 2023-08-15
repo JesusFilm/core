@@ -1,6 +1,6 @@
 module.exports = {
-  displayName: 'api-tags',
-  preset: '../../jest.preset.js',
+  displayName: 'api-videos',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json'
@@ -11,7 +11,8 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/api-tags',
+  coverageDirectory: '../../coverage/apps/api-videos',
   collectCoverage: true,
-  coverageReporters: ['cobertura']
+  coverageReporters: ['cobertura'],
+  preset: '../../jest.preset.ts'
 }

@@ -63,7 +63,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-tags"],
       "options": {
-        "jestConfig": "apps/api-tags/jest.config.js",
+        "jestConfig": "apps/api-tags/jest.config.ts",
         "passWithNoTests": true
       }
     },

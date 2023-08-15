@@ -14,7 +14,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/nest/gqlAuthGuard"],
       "options": {
-        "jestConfig": "libs/nest/gqlAuthGuard/jest.config.js",
+        "jestConfig": "libs/nest/gqlAuthGuard/jest.config.ts",
         "passWithNoTests": true
       }
     },

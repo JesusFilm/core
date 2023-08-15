@@ -69,7 +69,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-videos"],
       "options": {
-        "jestConfig": "apps/api-videos/jest.config.js",
+        "jestConfig": "apps/api-videos/jest.config.ts",
         "passWithNoTests": true
       }
     },

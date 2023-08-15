@@ -14,7 +14,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/nest/decorators"],
       "options": {
-        "jestConfig": "libs/nest/decorators/jest.config.js",
+        "jestConfig": "libs/nest/decorators/jest.config.ts",
         "passWithNoTests": true
       }
     },

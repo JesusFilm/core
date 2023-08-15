@@ -13,7 +13,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/nest/health"],
       "options": {
-        "jestConfig": "libs/nest/health/jest.config.js",
+        "jestConfig": "libs/nest/health/jest.config.ts",
         "passWithNoTests": true
       }
     }

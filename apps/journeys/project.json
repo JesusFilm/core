@@ -77,8 +77,13 @@
         "production": {
           "buildTarget": "journeys:_build:production",
           "dev": false
+        },
+        "development": {
+          "buildTarget": "journeys:build:development",
+          "dev": true
         }
-      }
+      },
+      "defaultConfiguration": "development"
     },
     "serve-all": {
       "executor": "@nrwl/workspace:run-commands",
@@ -104,7 +109,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/journeys"],
       "options": {
-        "jestConfig": "apps/journeys/jest.config.js",
+        "jestConfig": "apps/journeys/jest.config.ts",
         "passWithNoTests": true
       }
     },
