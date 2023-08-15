@@ -4,13 +4,14 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-misused-promises": "off"
+      }
     },
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
-        "project": ["libs/shared/ui/tsconfig.*?.json"],
-        "@typescript-eslint/no-misused-promises": "off"
+        "project": ["libs/shared/ui/tsconfig.*?.json"]    
       },
       "rules": {}
     },
