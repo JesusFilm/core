@@ -32,7 +32,7 @@
   "private": true,
   "dependencies": {
     "@algolia/client-search": "^4.14.3",
-    "@apollo/client": "^3.8.1",
+    "@apollo/client": "3.7.3",
     "@apollo/federation": "^0.38.1",
     "@apollo/subgraph": "^2.2.3",
     "@casl/ability": "^6.5.0",
