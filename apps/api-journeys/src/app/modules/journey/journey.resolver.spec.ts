@@ -1387,7 +1387,7 @@ describe('JourneyResolver', () => {
   })
 
   describe('journeysRestore', () => {
-    it('resores a published Journey', async () => {
+    it('restores a Journey', async () => {
       prismaService.journey.findMany.mockResolvedValueOnce([journey])
       await resolver.journeysRestore(accessibleJourneys, ['journeyId'])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
