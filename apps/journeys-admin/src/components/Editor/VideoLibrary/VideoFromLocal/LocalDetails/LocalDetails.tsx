@@ -35,7 +35,7 @@ export const GET_VIDEO = gql`
         primary
         value
       }
-      variant {
+      variant(languageId: $languageId) {
         id
         duration
         hls
