@@ -88,7 +88,7 @@ describe('CreateTemplateMenuItem', () => {
             variant: 'admin'
           }}
         >
-          <CreateTemplateMenuItem isVisible />
+          <CreateTemplateMenuItem />
         </JourneyProvider>
       </MockedProvider>
     )

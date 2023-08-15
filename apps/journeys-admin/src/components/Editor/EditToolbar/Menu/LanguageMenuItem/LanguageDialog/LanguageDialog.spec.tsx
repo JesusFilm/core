@@ -99,30 +99,7 @@ describe('JourneyView/Menu/LanguageDialog', () => {
   })
 
   it('should update journey language on submit', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          id: defaultJourney.id,
-          __typename: 'Journey',
-          language: {
-            id: '496',
-            __typename: 'Language',
-            name: [
-              {
-                value: 'Français',
-                primary: true,
-                __typename: 'Translation'
-              },
-              {
-                value: 'French',
-                primary: false,
-                __typename: 'Translation'
-              }
-            ]
-          }
-        }
-      }
-    }))
+    const result = jest.fn(() => ({}))
 
     const { getByRole } = render(
       <MockedProvider

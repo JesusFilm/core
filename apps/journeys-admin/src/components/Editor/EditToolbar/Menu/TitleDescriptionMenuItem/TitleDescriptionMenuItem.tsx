@@ -5,14 +5,10 @@ import { TitleDescriptionDialog } from '../../../../JourneyView/TitleDescription
 import { MenuItem } from '../../../../MenuItem'
 
 interface Props {
-  isVisible?: boolean
   onClose?: () => void
 }
 
-export function TitleDescriptionMenuItem({
-  isVisible,
-  onClose
-}: Props): ReactElement {
+export function TitleDescriptionMenuItem({ onClose }: Props): ReactElement {
   const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
     useState(false)
 
@@ -27,13 +23,11 @@ export function TitleDescriptionMenuItem({
 
   return (
     <>
-      {isVisible === true && (
-        <MenuItem
-          label="Description"
-          icon={<EditIcon />}
-          onClick={handleUpdateTitleDescription}
-        />
-      )}
+      <MenuItem
+        label="Description"
+        icon={<EditIcon />}
+        onClick={handleUpdateTitleDescription}
+      />
       <TitleDescriptionDialog
         open={showTitleDescriptionDialog}
         onClose={handleClose}

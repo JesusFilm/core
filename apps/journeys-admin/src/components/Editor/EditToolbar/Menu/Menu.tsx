@@ -167,34 +167,26 @@ export function Menu(): ReactElement {
         ) : (
           <BlockMenu />
         )}
-
-        {journey != null && (
+        {journey?.template === true && isPublisher && (
+          <TitleDescriptionMenuItem onClose={handleCloseMenu} />
+        )}
+        {journey?.template !== true && (
           <>
-            <TitleDescriptionMenuItem
-              isVisible={journey.template === true && isPublisher}
-              onClose={handleCloseMenu}
-            />
-            <TitleMenuItem
-              isVisible={journey.template !== true}
-              onClose={handleCloseMenu}
-            />
-            <DescriptionMenuItem
-              isVisible={journey.template !== true}
-              onClose={handleCloseMenu}
-            />
-            <LanguageMenuItem
-              isVisible={journey.template !== true || isPublisher}
-              onClose={handleCloseMenu}
-            />
-            <ReportMenuItem journey={journey} />
-            <CreateTemplateMenuItem
-              isVisible={journey.template !== true && isPublisher === true}
-            />
-            <CopyMenuItem
-              journey={journey}
-              isVisible={journey.template !== true}
-              onClose={handleCloseMenu}
-            />
+            <TitleMenuItem onClose={handleCloseMenu} />
+            <DescriptionMenuItem onClose={handleCloseMenu} />
+          </>
+        )}
+        {(journey?.template !== true || isPublisher) && (
+          <LanguageMenuItem onClose={handleCloseMenu} />
+        )}
+        {journey != null && <ReportMenuItem journey={journey} />}
+        {journey?.template !== true && isPublisher === true && (
+          <CreateTemplateMenuItem />
+        )}
+        {journey != null && journey?.template !== true && (
+          <>
+            <Divider />
+            <CopyMenuItem journey={journey} onClose={handleCloseMenu} />
           </>
         )}
       </MuiMenu>

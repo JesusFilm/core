@@ -1,5 +1,4 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import Divider from '@mui/material/Divider'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -8,15 +7,10 @@ import { MenuItem } from '../../../../MenuItem'
 
 interface Props {
   journey: Journey
-  isVisible?: boolean
   onClose?: () => void
 }
 
-export function CopyMenuItem({
-  isVisible,
-  journey,
-  onClose
-}: Props): ReactElement {
+export function CopyMenuItem({ journey, onClose }: Props): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   const handleCopyLink = async (): Promise<void> => {
@@ -35,17 +29,10 @@ export function CopyMenuItem({
   }
 
   return (
-    <>
-      {isVisible === true && (
-        <>
-          <Divider />
-          <MenuItem
-            label="Copy Link"
-            icon={<ContentCopyIcon />}
-            onClick={handleCopyLink}
-          />
-        </>
-      )}
-    </>
+    <MenuItem
+      label="Copy Link"
+      icon={<ContentCopyIcon />}
+      onClick={handleCopyLink}
+    />
   )
 }

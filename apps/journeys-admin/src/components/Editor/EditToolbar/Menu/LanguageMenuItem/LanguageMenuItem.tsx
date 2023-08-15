@@ -16,11 +16,10 @@ const DynamicLanguageDialog = dynamic<{
 )
 
 interface Props {
-  isVisible?: boolean
   onClose?: () => void
 }
 
-export function LanguageMenuItem({ isVisible, onClose }: Props): ReactElement {
+export function LanguageMenuItem({ onClose }: Props): ReactElement {
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
 
   const handleUpdateLanguage = (): void => {
@@ -34,13 +33,11 @@ export function LanguageMenuItem({ isVisible, onClose }: Props): ReactElement {
 
   return (
     <>
-      {isVisible === true && (
-        <MenuItem
-          label="Language"
-          icon={<TranslateIcon />}
-          onClick={handleUpdateLanguage}
-        />
-      )}
+      <MenuItem
+        label="Language"
+        icon={<TranslateIcon />}
+        onClick={handleUpdateLanguage}
+      />
       {showLanguageDialog && (
         <DynamicLanguageDialog
           open={showLanguageDialog}
