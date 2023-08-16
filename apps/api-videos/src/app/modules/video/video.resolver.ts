@@ -221,9 +221,7 @@ export class VideoResolver {
     }
 
     languageId = languageId ?? journeysLanguageIdForBlock ?? '529'
-    const key: string = `video-variant-${video.id as string}-${
-      languageId as string
-    }`
+    const key = `video-variant-${video.id as string}-${languageId}`
     const cache = await this.cacheManager.get<VideoVariant>(key)
     if (cache != null) return cache
 
