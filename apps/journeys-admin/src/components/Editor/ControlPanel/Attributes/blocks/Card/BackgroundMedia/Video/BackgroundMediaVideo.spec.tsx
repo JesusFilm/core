@@ -185,7 +185,7 @@ describe('BackgroundMediaVideo', () => {
         videoBlockCreate: video
       }
     }))
-    const getVideoResult = jest.fn().mockReturnValue(getVideosMock.result)
+    const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
     const { getByRole, getByText } = render(
       <MockedProvider
         cache={cache}
