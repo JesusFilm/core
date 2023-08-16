@@ -1,6 +1,5 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject } from '@nestjs/common'
-import { Cache } from 'cache-manager'
 import {
   Args,
   Parent,
@@ -9,6 +8,7 @@ import {
   ResolveReference,
   Resolver
 } from '@nestjs/graphql'
+import { Cache } from 'cache-manager'
 
 import { Language } from '.prisma/api-languages-client'
 import { TranslationField } from '@core/nest/decorators/TranslationField'
