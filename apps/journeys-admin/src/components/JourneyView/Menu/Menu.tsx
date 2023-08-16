@@ -1,6 +1,5 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
-import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import CheckRounded from '@mui/icons-material/CheckRounded'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DescriptionIcon from '@mui/icons-material/Description'
@@ -22,12 +21,7 @@ import { ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { GetRole } from '../../../../__generated__/GetRole'
-import {
-  JourneyStatus,
-  Role,
-  UserJourneyRole
-} from '../../../../__generated__/globalTypes'
-import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
+import { Role } from '../../../../__generated__/globalTypes'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../MenuItem'
 import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
@@ -48,15 +42,6 @@ const DynamicLanguageDialog = dynamic<{
     ).then((mod) => mod.LanguageDialog)
 )
 
-export const JOURNEY_PUBLISH = gql`
-  mutation JourneyPublish($id: ID!) {
-    journeyPublish(id: $id) {
-      id
-      status
-    }
-  }
-`
-
 export const GET_ROLE = gql`
   query GetRole {
     getUserRole {
@@ -70,15 +55,11 @@ export const GET_ROLE = gql`
 export function Menu(): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
-  const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
-  const isOwner =
-    journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.id === data?.getUserRole?.userId
-    )?.role === UserJourneyRole.owner
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
     useState(false)
@@ -97,30 +78,7 @@ export function Menu(): ReactElement {
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
   }
-  const handlePublish = async (): Promise<void> => {
-    if (journey == null) return
 
-    await journeyPublish({
-      variables: { id: journey.id },
-      optimisticResponse: {
-        journeyPublish: {
-          id: journey.id,
-          __typename: 'Journey',
-          status: JourneyStatus.published
-        }
-      }
-    })
-    setAnchorEl(null)
-    journey.template === true
-      ? enqueueSnackbar('Template Published', {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      : enqueueSnackbar('Journey Published', {
-          variant: 'success',
-          preventDuplicate: true
-        })
-  }
   const handleTemplate = async (teamId: string | undefined): Promise<void> => {
     if (journey == null || teamId == null) return
 
@@ -237,17 +195,6 @@ export function Menu(): ReactElement {
                 onClick={handleCloseMenu}
               />
             </NextLink>
-            {(journey.template !== true || isPublisher) && (
-              <MenuItem
-                label="Publish"
-                icon={<BeenHereRoundedIcon />}
-                disabled={
-                  journey.status === JourneyStatus.published ||
-                  (journey.template !== true && !isOwner)
-                }
-                onClick={handlePublish}
-              />
-            )}
             {journey.template === true && (
               <MenuItem
                 label="Use Template"
