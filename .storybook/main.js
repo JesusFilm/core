@@ -40,24 +40,26 @@ module.exports = {
     './static',
     { from: '../apps/watch/public/fonts', to: '/watch/fonts' }
   ],
+
   stories: allStories,
+
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
     'storybook-addon-apollo-client'
   ],
+
   features: {
     interactionsDebugger: true
   },
-  core: {
-    builder: 'webpack5'
-  },
+
   resolve: {
     fallback: {
       util: require.resolve('util/')
     }
   },
+
   webpackFinal: async (config) => {
     const tsPaths = new TsconfigPathsPlugin({
       configFile: './tsconfig.base.json'
@@ -78,5 +80,14 @@ module.exports = {
     }
 
     return config
+  },
+
+  framework: {
+    name: '@storybook/nextjs',
+    options: {}
+  },
+
+  docs: {
+    autodocs: true
   }
 }
