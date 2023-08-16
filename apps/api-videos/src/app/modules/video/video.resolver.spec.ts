@@ -238,25 +238,20 @@ describe('VideoResolver', () => {
   })
 
   describe('children', () => {
-    beforeEach(() => {
-      prismaService.video.findMany.mockResolvedValueOnce([video, video])
-    })
-
     it('returns videos by childIds without languageId', async () => {
-      prismaService.video.findUnique.mockResolvedImplementation(() => ({
+      const children = jest.fn().mockReturnValueOnce([video, video])
+      prismaService.video.findUnique.mockReturnValueOnce({
         ...video,
-        children: jest.fn().mockReturnValue([video, video])
-      }))
+        children
+      } as any)
       expect(await resolver.children(video)).toEqual([video, video])
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
         where: { id: '20615' }
       })
-      expect(
-        prismaService.video.findUnique({ where: { id: '20615' } }).children
-      ).toHaveBeenCalledWith()
+      expect(children).toHaveBeenCalledWith()
       // ensure cache is used
       expect(await resolver.children(video)).toEqual([video, video])
-      expect(prismaService.video.findMany).toHaveBeenCalledTimes(1)
+      expect(children).toHaveBeenCalledTimes(1)
     })
   })
 

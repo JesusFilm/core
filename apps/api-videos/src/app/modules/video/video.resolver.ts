@@ -86,11 +86,12 @@ export class VideoResolver {
     })
   }
 
-  @ResolveField()
-  async children(@Parent() video): Promise<Video[] | null> {
-    const key = `video-children-${video.id as string}`
+  async children(@Parent() video: Video): Promise<Video[]> {
+    const key = `video-children-${video.id}`
     const cache = await this.cacheManager.get<Video[]>(key)
-    if (cache != null) return cache
+    if (cache != null) {
+      return cache
+    }
 
     const result =
       (await this.prismaService.video
@@ -99,8 +100,8 @@ export class VideoResolver {
         })
         .children()) ?? []
 
-    const sorted = video.childIds.map((id) =>
-      result.find((video) => video.id === id)
+    const sorted = compact(
+      video.childIds.map((id) => result.find((video) => video.id === id))
     )
 
     await this.cacheManager.set(key, sorted, 86400000)
