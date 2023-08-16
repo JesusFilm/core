@@ -181,6 +181,12 @@ export class VideoResolver {
       ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
       : ''
 
+    const journeysLanguageIdForBlock = (
+      info.variableValues as {
+        representations: Array<{ primaryLanguageId: string }>
+      }
+    ).representations?.[0].primaryLanguageId
+
     return info.variableValues.idType !== IdType.databaseId &&
       !isEmpty(variableValueId) &&
       !isEmpty(requestedLanguage)
@@ -193,7 +199,7 @@ export class VideoResolver {
           where: {
             languageId_videoId: {
               videoId: video.id,
-              languageId: languageId ?? '529'
+              languageId: languageId ?? journeysLanguageIdForBlock ?? '529'
             }
           }
         })

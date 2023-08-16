@@ -564,7 +564,7 @@ describe('JourneyResolver', () => {
           id: 'journeyId',
           languageId: '529',
           slug: 'untitled-journey',
-          status: 'published',
+          status: JourneyStatus.published,
           publishedAt: new Date(),
           team: {
             connect: {
@@ -607,7 +607,7 @@ describe('JourneyResolver', () => {
           id: 'myJourneyId',
           languageId: '529',
           slug: 'special-journey-myJourneyId',
-          status: 'published',
+          status: JourneyStatus.published,
           publishedAt: new Date(),
           team: {
             connect: {
@@ -1387,7 +1387,7 @@ describe('JourneyResolver', () => {
   })
 
   describe('journeysRestore', () => {
-    it('resores a published Journey', async () => {
+    it('restores a Journey', async () => {
       prismaService.journey.findMany.mockResolvedValueOnce([journey])
       await resolver.journeysRestore(accessibleJourneys, ['journeyId'])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
