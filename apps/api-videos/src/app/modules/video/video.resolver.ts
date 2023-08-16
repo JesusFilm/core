@@ -88,7 +88,7 @@ export class VideoResolver {
 
   @ResolveField()
   async children(@Parent() video): Promise<Video[] | null> {
-    const key = `video-children-${video.id}`
+    const key = `video-children-${video.id as string}`
     const cache = await this.cacheManager.get<Video[]>(key)
     if (cache != null) return cache
 
@@ -221,7 +221,9 @@ export class VideoResolver {
     }
 
     languageId = languageId ?? journeysLanguageIdForBlock ?? '529'
-    const key = `video-variant-${video.id}-${languageId}`
+    const key: string = `video-variant-${video.id as string}-${
+      languageId as string
+    }`
     const cache = await this.cacheManager.get<VideoVariant>(key)
     if (cache != null) return cache
 
