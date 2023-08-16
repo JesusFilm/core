@@ -92,9 +92,13 @@ export class VideoResolver {
     const cache = await this.cacheManager.get<Video[]>(key)
     if (cache != null) return cache
 
-    const result = await this.prismaService.video.findMany({
-      where: { id: { in: video.childIds } }
-    })
+    const result =
+      (await this.prismaService.video
+        .findUnique({
+          where: { id: video.id }
+        })
+        .children()) ?? []
+
     const sorted = video.childIds.map((id) =>
       result.find((video) => video.id === id)
     )
