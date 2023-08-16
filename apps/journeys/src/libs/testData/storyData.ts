@@ -1,4 +1,5 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   ButtonColor,
   ButtonSize,

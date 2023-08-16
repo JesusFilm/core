@@ -1,6 +1,7 @@
 import { ApolloCache } from '@apollo/client'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import reject from 'lodash/reject'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { GetJourney_journey_blocks as Block } from '../../../__generated__/GetJourney'
 

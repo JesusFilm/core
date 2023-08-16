@@ -1,11 +1,11 @@
 import {
-  GetAdminJourneys_journeys_userJourneys as UserJourney,
-  GetAdminJourneys_journeys as Journey
+  GetAdminJourneys_journeys as Journey,
+  GetAdminJourneys_journeys_userJourneys as UserJourney
 } from '../../../../../__generated__/GetAdminJourneys'
 import {
-  ThemeName,
-  ThemeMode,
   JourneyStatus,
+  ThemeMode,
+  ThemeName,
   UserJourneyRole
 } from '../../../../../__generated__/globalTypes'
 

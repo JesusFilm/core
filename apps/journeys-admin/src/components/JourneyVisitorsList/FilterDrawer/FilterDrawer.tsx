@@ -1,16 +1,16 @@
-import Divider from '@mui/material/Divider'
-import Typography from '@mui/material/Typography'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
-import Stack from '@mui/material/Stack'
-
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
+import Divider from '@mui/material/Divider'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormGroup from '@mui/material/FormGroup'
 import IconButton from '@mui/material/IconButton'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import { ClearAllButton } from './ClearAllButton'
 
 interface Props {

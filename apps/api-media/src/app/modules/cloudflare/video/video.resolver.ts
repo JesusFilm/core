@@ -1,9 +1,11 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+
 import { CloudflareVideo } from '.prisma/api-media-client'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import { PrismaService } from '../../../lib/prisma.service'
+
 import { VideoService } from './video.service'
 
 @Resolver('Video')

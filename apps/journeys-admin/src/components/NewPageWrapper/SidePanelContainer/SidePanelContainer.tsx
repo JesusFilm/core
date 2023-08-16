@@ -1,5 +1,5 @@
-import { ReactElement, ReactNode, useMemo } from 'react'
 import Stack from '@mui/material/Stack'
+import { ReactElement, ReactNode, useMemo } from 'react'
 
 interface SidePanelContainerProps {
   children: ReactNode

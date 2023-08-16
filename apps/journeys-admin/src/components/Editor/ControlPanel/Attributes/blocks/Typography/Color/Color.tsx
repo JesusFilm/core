@@ -1,13 +1,15 @@
-import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
-import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
-import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateColor } from '../../../../../../../../__generated__/TypographyBlockUpdateColor'
+import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
+import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
   mutation TypographyBlockUpdateColor(

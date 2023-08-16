@@ -1,13 +1,16 @@
 import { ReactElement, useEffect } from 'react'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
-import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
+
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
+import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
+
 import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
-import { HostSidePanel } from './HostSidePanel'
+
 import { Chat } from './Chat'
+import { HostSidePanel } from './HostSidePanel'
 
 export function Footer(): ReactElement {
   const { dispatch } = useEditor()

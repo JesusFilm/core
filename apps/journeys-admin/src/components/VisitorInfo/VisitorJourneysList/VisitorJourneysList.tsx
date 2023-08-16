@@ -1,8 +1,10 @@
-import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import TimelineSeparator from '@mui/lab/TimelineSeparator'
 import TimelineConnector from '@mui/lab/TimelineConnector'
+import TimelineSeparator from '@mui/lab/TimelineSeparator'
+import { ReactElement } from 'react'
+
 import { GetVisitorEvents } from '../../../../__generated__/GetVisitorEvents'
+
 import { EventsCard } from './EventsCard'
 import { transformToJourney } from './utils/transformToJourney'
 

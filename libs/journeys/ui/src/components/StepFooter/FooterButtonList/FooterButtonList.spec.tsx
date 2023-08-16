@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { FooterButtonList } from './FooterButtonList'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

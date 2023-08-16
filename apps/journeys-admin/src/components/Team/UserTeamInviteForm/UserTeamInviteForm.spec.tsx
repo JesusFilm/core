@@ -1,17 +1,20 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { InMemoryCache } from '@apollo/client'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
+import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
-import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
-import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
+
 import { USER_TEAM_INVITE_CREATE } from './UserTeamInviteForm'
+
 import { UserTeamInviteForm } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -43,7 +46,14 @@ describe('UserTeamInviteForm', () => {
     },
     result: {
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: []
+          }
+        ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
           lastActiveTeamId: 'teamId'
@@ -107,7 +117,8 @@ describe('UserTeamInviteForm', () => {
       }
     }
   }
-  it('it should validate when fields are empty', async () => {
+
+  it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(
       <MockedProvider>
         <TeamProvider>
@@ -228,7 +239,7 @@ describe('UserTeamInviteForm', () => {
     })
   })
 
-  it('should create a user team invite on click ', async () => {
+  it('should create a user team invite on click', async () => {
     const cache = new InMemoryCache()
     const { getByRole } = render(
       <MockedProvider

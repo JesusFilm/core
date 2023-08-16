@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
-import { Visitor, JourneyVisitor, Prisma } from '.prisma/api-journeys-client'
+
+import { JourneyVisitor, Prisma, Visitor } from '.prisma/api-journeys-client'
+
 import { PageInfo } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 

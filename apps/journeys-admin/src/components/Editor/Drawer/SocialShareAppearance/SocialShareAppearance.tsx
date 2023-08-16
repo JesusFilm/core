@@ -1,9 +1,10 @@
-import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
+import { DescriptionEdit } from './DescriptionEdit/DescriptionEdit'
 import { ImageEdit } from './ImageEdit/ImageEdit'
 import { TitleEdit } from './TitleEdit/TitleEdit'
-import { DescriptionEdit } from './DescriptionEdit/DescriptionEdit'
 
 export function SocialShareAppearance(): ReactElement {
   return (

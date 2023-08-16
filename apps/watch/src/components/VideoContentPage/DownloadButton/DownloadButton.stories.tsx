@@ -1,6 +1,8 @@
 import { ComponentMeta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
+
 import { watchConfig } from '../../../libs/storybook'
+
 import { DownloadButton } from '.'
 
 const DownloadButtonStory: ComponentMeta<typeof DownloadButton> = {

@@ -1,10 +1,11 @@
-import { ReactElement } from 'react'
-import Stack from '@mui/material/Stack'
-import { useTranslation } from 'react-i18next'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import { format, parseISO } from 'date-fns'
 import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { format, parseISO } from 'date-fns'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../../../../__generated__/GetJourneyVisitors'
 
 interface Props {

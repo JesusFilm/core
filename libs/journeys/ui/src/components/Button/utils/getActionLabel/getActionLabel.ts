@@ -1,7 +1,8 @@
 import { TOptions } from 'i18next'
-import { ButtonFields_action } from '../../__generated__/ButtonFields'
+
 import { TreeBlock } from '../../../../libs/block'
 import { getStepHeading } from '../../../../libs/getStepHeading'
+import { ButtonFields_action } from '../../__generated__/ButtonFields'
 
 export function getActionLabel(
   action: ButtonFields_action | null,

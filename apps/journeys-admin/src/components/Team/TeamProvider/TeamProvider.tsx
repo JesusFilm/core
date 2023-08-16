@@ -1,11 +1,12 @@
-import { useQuery, gql, QueryResult, OperationVariables } from '@apollo/client'
+import { OperationVariables, QueryResult, gql, useQuery } from '@apollo/client'
 import {
-  createContext,
   ReactElement,
   ReactNode,
+  createContext,
   useContext,
   useState
 } from 'react'
+
 import {
   GetLastActiveTeamIdAndTeams,
   GetLastActiveTeamIdAndTeams_teams as Team
@@ -37,6 +38,15 @@ export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
     teams {
       id
       title
+      userTeams {
+        id
+        user {
+          id
+          firstName
+          lastName
+          imageUrl
+        }
+      }
     }
   }
 `
@@ -65,7 +75,6 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   }
   const activeTeam =
     query.data?.teams.find((team) => team.id === activeTeamId) ?? null
-
   return (
     <TeamContext.Provider value={{ query, activeTeam, setActiveTeam }}>
       {children}

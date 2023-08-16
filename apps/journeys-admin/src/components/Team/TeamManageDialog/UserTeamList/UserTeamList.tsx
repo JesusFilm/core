@@ -1,16 +1,18 @@
-import { ReactElement, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import List from '@mui/material/List'
-import sortBy from 'lodash/sortBy'
 import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
-import Skeleton from '@mui/material/Skeleton'
 import ListItemText from '@mui/material/ListItemText'
+import Skeleton from '@mui/material/Skeleton'
+import sortBy from 'lodash/sortBy'
+import { ReactElement, useMemo } from 'react'
+
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
+
 import { UserTeamListItem } from './UserTeamListItem'
 
 interface UserTeamListProps {

@@ -1,11 +1,13 @@
-import { Meta, Story } from '@storybook/react'
-import Box from '@mui/material/Box'
-import { ComponentProps } from 'react'
-import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
+import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
+import { ComponentProps } from 'react'
+
 import { simpleComponentConfig } from '../../libs/storybook'
+
 import { ContainedIconButton } from '.'
 
 const ContainedIconButtonDemo = {

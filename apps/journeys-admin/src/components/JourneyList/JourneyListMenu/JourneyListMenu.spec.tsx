@@ -1,5 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+
 import { JourneyListMenu } from '.'
 
 jest.mock('next/router', () => ({

@@ -1,12 +1,14 @@
-import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
 import {
   defaultTemplate,
-  oldTemplate,
-  descriptiveTemplate
+  descriptiveTemplate,
+  oldTemplate
 } from '../TemplateLibrary/TemplateListData'
-import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
+
 import { TemplateCard } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

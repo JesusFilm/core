@@ -1,11 +1,13 @@
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { ThemeProvider } from '../../../ThemeProvider'
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import { TeamProvider } from '../../../Team/TeamProvider'
+import { ThemeProvider } from '../../../ThemeProvider'
+
 import { JourneyCardMenu, JourneyCardMenuProps } from './JourneyCardMenu'
 
 const JoruneyCardMenuDemo = {

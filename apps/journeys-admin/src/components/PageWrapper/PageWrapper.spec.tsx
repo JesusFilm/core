@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render } from '@testing-library/react'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { PageWrapper } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -14,6 +16,7 @@ describe('PageWrapper', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
     )
+
     it('should show title', () => {
       const { getByText } = render(
         <MockedProvider>

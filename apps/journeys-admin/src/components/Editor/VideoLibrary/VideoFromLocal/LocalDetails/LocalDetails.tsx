@@ -1,24 +1,27 @@
-import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
-import { ReactElement, useEffect, useRef, useState } from 'react'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/system/Box'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
+import { gql, useLazyQuery } from '@apollo/client'
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 import Check from '@mui/icons-material/Check'
+import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
-import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
-import { gql, useLazyQuery } from '@apollo/client'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/system/Box'
+import { ReactElement, useEffect, useRef, useState } from 'react'
+import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
+
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
-import { VideoLanguage } from '../../VideoLanguage'
-import 'video.js/dist/video-js.css'
-import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import { VideoDescription } from '../../VideoDescription'
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
+import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+import { VideoLanguage } from '../../VideoLanguage'
+
+import 'video.js/dist/video-js.css'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID!) {
@@ -34,7 +37,7 @@ export const GET_VIDEO = gql`
         primary
         value
       }
-      variant {
+      variant(languageId: $languageId) {
         id
         duration
         hls

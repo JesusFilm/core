@@ -1,9 +1,11 @@
-import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import { ReactElement, useState } from 'react'
+
+import { JourneyListEvent, JourneyListProps } from '../JourneyList/JourneyList'
 import { SortOrder } from '../JourneyList/JourneySort'
 import { StatusTabPanel } from '../StatusTabPanel'
-import { JourneyListEvent, JourneyListProps } from '../JourneyList/JourneyList'
+
 import { ActiveTemplates } from './ActiveTemplates'
 import { ArchivedTemplates } from './ArchivedTemplates'
 import { TrashedTemplates } from './TrashedTemplates'

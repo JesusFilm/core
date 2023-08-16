@@ -1,25 +1,27 @@
-import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import { gql, useQuery } from '@apollo/client'
-import { useTranslation } from 'react-i18next'
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { PageWrapper } from '../../src/components/PageWrapper'
-import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+
 import { GetPublisher } from '../../__generated__/GetPublisher'
-import { JourneyView } from '../../src/components/JourneyView'
+import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { Role } from '../../__generated__/globalTypes'
-import { PublisherInvite } from '../../src/components/PublisherInvite'
+import { JourneyView } from '../../src/components/JourneyView'
 import { Menu } from '../../src/components/JourneyView/Menu'
-import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
+import { PageWrapper } from '../../src/components/PageWrapper'
+import { PublisherInvite } from '../../src/components/PublisherInvite'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
 export const GET_PUBLISHER_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -63,7 +65,7 @@ function TemplateDetailsAdmin(): ReactElement {
           <JourneyProvider
             value={{
               journey: data?.publisherTemplate ?? undefined,
-              admin: true
+              variant: 'admin'
             }}
           >
             <PageWrapper

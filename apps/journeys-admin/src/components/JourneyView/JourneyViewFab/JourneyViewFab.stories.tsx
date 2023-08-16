@@ -1,11 +1,13 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { defaultJourney } from '../data'
 import { TeamProvider } from '../../Team/TeamProvider'
+import { defaultJourney } from '../data'
+
 import { JourneyViewFab } from './JourneyViewFab'
 
 const JourneyViewFabStory = {
@@ -16,19 +18,13 @@ const JourneyViewFabStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <FlagsProvider>
-      <TeamProvider>
-        <SnackbarProvider>
-          {/* TODO: remove when teams is released */}
-          <FlagsProvider flags={{ teams: true }}>
-            <JourneyProvider value={{ journey: args.journey }}>
-              <JourneyViewFab isPublisher={args.isPublisher} />
-            </JourneyProvider>
-            {/* TODO: remove when teams is released */}
-          </FlagsProvider>
-        </SnackbarProvider>
-      </TeamProvider>
-    </FlagsProvider>
+    <TeamProvider>
+      <SnackbarProvider>
+        <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+          <JourneyViewFab isPublisher={args.isPublisher} />
+        </JourneyProvider>
+      </SnackbarProvider>
+    </TeamProvider>
   </MockedProvider>
 )
 

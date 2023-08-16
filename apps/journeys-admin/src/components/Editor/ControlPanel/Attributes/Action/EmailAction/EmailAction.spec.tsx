@@ -1,11 +1,15 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor, fireEvent } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { InMemoryCache } from '@apollo/client'
-import { steps } from '../data'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import { steps } from '../data'
+
 import { EMAIL_ACTION_UPDATE } from './EmailAction'
+
 import { EmailAction } from '.'
 
 describe('EmailAction', () => {
@@ -65,7 +69,7 @@ describe('EmailAction', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

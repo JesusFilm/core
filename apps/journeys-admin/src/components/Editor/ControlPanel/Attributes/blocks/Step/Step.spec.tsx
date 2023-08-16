@@ -1,14 +1,17 @@
+import { render } from '@testing-library/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
+  ActiveJourneyEditContent,
   ActiveTab,
-  useEditor,
   EditorProvider,
   EditorState,
-  ActiveJourneyEditContent
+  useEditor
 } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { render } from '@testing-library/react'
+
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
+
 import { Step } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -48,6 +51,7 @@ describe('Step', () => {
       dispatch
     })
   })
+
   it('shows default messages', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step1.id',

@@ -1,7 +1,7 @@
-import { ReactElement } from 'react'
-import Button from '@mui/material/Button'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import { ReactElement } from 'react'
 
 export interface ShareButtonProps {
   variant: 'button' | 'icon'

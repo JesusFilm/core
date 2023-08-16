@@ -1,10 +1,22 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from './CustomUrl'
+
 import { CustomUrl } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 describe('CustomUrl', () => {
   let originalEnv
+
   beforeEach(() => {
     originalEnv = process.env
     process.env = {
@@ -17,7 +29,7 @@ describe('CustomUrl', () => {
     process.env = originalEnv
   })
 
-  it('should check if the mutation gets called', async () => {
+  it('should submit on blur', async () => {
     const result = jest.fn(() => ({
       data: {
         createCloudflareUploadByUrl: {
@@ -46,7 +58,7 @@ describe('CustomUrl', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    expect(getByText('Paste URL of image...'))
+    expect(getByText('Paste URL of image...')).toBeInTheDocument()
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }

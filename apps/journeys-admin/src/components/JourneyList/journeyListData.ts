@@ -5,9 +5,9 @@ import {
   GetAdminJourneys_journeys_userJourneys as User
 } from '../../../__generated__/GetAdminJourneys'
 import {
-  ThemeName,
-  ThemeMode,
   JourneyStatus,
+  ThemeMode,
+  ThemeName,
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 

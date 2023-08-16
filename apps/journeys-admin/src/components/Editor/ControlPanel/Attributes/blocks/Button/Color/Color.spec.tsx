@@ -1,10 +1,18 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+import {
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../../__generated__/GetJourney'
 import { ButtonColor } from '../../../../../../../../__generated__/globalTypes'
+
 import { BUTTON_BLOCK_UPDATE } from './Color'
+
 import { Color } from '.'
 
 describe('Button color selector', () => {
@@ -35,6 +43,7 @@ describe('Button color selector', () => {
     expect(getByRole('button', { name: 'Secondary' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Error' })).toBeInTheDocument()
   })
+
   it('should change the color property', async () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
@@ -68,7 +77,7 @@ describe('Button color selector', () => {
               query: BUTTON_BLOCK_UPDATE,
               variables: {
                 id: 'id',
-                journeyId: undefined,
+                journeyId: 'journeyId',
                 input: {
                   color: ButtonColor.secondary
                 }
@@ -78,13 +87,20 @@ describe('Button color selector', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Color />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Color />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Primary' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Secondary' }))
-    await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

@@ -1,9 +1,12 @@
+import { fireEvent, render } from '@testing-library/react'
+
 import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { render, fireEvent } from '@testing-library/react'
+
 import { Fab } from '.'
 
 describe('Fab', () => {
   const onClick = jest.fn()
+
   describe('Add Fab', () => {
     it('should render the add fab', () => {
       const { getByRole } = render(

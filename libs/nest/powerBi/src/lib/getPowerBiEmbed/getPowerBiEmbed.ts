@@ -1,6 +1,7 @@
 import fetch, { FetchError } from 'node-fetch'
-import { getPowerBiAccessToken } from '../getPowerBiAccessToken'
+
 import { PowerBiConfig, defaultPowerBiConfig } from '../config'
+import { getPowerBiAccessToken } from '../getPowerBiAccessToken'
 
 export interface PowerBiEmbed {
   /**

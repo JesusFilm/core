@@ -1,13 +1,14 @@
-import { ReactElement } from 'react'
-import { useSnackbar } from 'notistack'
-import { Dialog } from '@core/shared/ui/Dialog'
-import LinkAngled from '@core/shared/ui/icons/LinkAngled'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material/styles'
 import IconButton, { IconButtonProps } from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { Dialog } from '@core/shared/ui/Dialog'
 import FacebookLogo from '@core/shared/ui/icons/FacebookLogo'
+import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import TwitterLogo from '@core/shared/ui/icons/TwitterLogo'
 
 const StyledIconButton = styled(IconButton)<

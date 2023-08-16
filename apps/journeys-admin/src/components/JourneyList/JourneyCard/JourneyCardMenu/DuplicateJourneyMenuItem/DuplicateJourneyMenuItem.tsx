@@ -1,10 +1,10 @@
-import { ReactElement } from 'react'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useSnackbar } from 'notistack'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { MenuItem } from '../../../../MenuItem'
+import { ReactElement } from 'react'
+
 import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
-// TODO: remove when teams is released
+import { MenuItem } from '../../../../MenuItem'
 import { useTeam } from '../../../../Team/TeamProvider'
 
 interface DuplicateJourneyMenuItemProps {
@@ -16,19 +16,15 @@ export function DuplicateJourneyMenuItem({
   id,
   handleCloseMenu
 }: DuplicateJourneyMenuItemProps): ReactElement {
-  const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { activeTeam } = useTeam()
 
-  // TODO: remove when teams is released
-  const { teams } = useFlags()
-
   const handleDuplicateJourney = async (): Promise<void> => {
-    // TODO: add activeteam.id not null check when teams is released
-    if (id == null) return
+    if (id == null || activeTeam?.id == null) return
 
     const data = await journeyDuplicate({
-      variables: { id, teamId: activeTeam?.id }
+      variables: { id, teamId: activeTeam.id }
     })
     if (data != null) {
       handleCloseMenu()
@@ -41,9 +37,19 @@ export function DuplicateJourneyMenuItem({
 
   return (
     <MenuItem
-      disabled={activeTeam?.id == null && teams}
+      disabled={activeTeam?.id == null}
       label="Duplicate"
-      icon={<ContentCopyRounded color="secondary" />}
+      icon={
+        loading ? (
+          <CircularProgress
+            size={24}
+            color="inherit"
+            data-testid="journey-duplicate-loader"
+          />
+        ) : (
+          <ContentCopyRounded color="secondary" />
+        )
+      }
       onClick={handleDuplicateJourney}
     />
   )

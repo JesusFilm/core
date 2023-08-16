@@ -5,6 +5,7 @@ import {
   useContext,
   useState
 } from 'react'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../__generated__/GetJourney'
 
 interface Context {

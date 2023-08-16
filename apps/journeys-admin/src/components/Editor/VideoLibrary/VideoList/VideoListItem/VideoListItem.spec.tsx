@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
+
 import { videos } from '../data'
+
 import { VideoListItem } from './VideoListItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

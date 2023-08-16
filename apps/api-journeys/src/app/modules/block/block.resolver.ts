@@ -1,12 +1,15 @@
-import { Args, ResolveField, Resolver, Mutation } from '@nestjs/graphql'
-import { UseGuards } from '@nestjs/common'
-import { Block } from '.prisma/api-journeys-client'
-import { GraphQLError } from 'graphql'
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { subject } from '@casl/ability'
-import { PrismaService } from '../../lib/prisma.service'
-import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
+
+import { Block } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { BlockService } from './block.service'
 
 @Resolver('Block')

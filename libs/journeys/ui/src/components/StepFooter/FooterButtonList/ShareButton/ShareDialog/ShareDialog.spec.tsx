@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
+
 import { ShareDialog } from './ShareDialog'
 
 jest.mock('react-i18next', () => ({

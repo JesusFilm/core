@@ -1,11 +1,11 @@
-import { ReactElement } from 'react'
-import NextLink from 'next/link'
-import Tooltip from '@mui/material/Tooltip'
+import Badge from '@mui/material/Badge'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import Badge from '@mui/material/Badge'
+import Tooltip from '@mui/material/Tooltip'
 import flowRight from 'lodash/flowRight'
+import NextLink from 'next/link'
+import { ReactElement } from 'react'
 
 export interface NavigationListItemProps {
   icon: ReactElement

@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
+
 import { EventVariant } from '../../utils'
+
 import { GenericEvent } from '.'
 
 describe('GenericEvent', () => {

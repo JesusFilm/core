@@ -1,9 +1,9 @@
-import { ReactElement } from 'react'
-import CircularProgress from '@mui/material/CircularProgress'
-import ImageIcon from '@mui/icons-material/Image'
-import SvgIcon from '@mui/material/SvgIcon'
 import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined'
+import ImageIcon from '@mui/icons-material/Image'
 import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import SvgIcon from '@mui/material/SvgIcon'
+import { ReactElement } from 'react'
 
 interface ImageBlockThumbnailProps {
   selectedBlock?: { src: string | null; alt: string } | null

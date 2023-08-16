@@ -1,10 +1,13 @@
-import { Story, Meta } from '@storybook/react'
-import { ComponentProps } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { journeysAdminConfig } from '../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
+import { journeysAdminConfig } from '../../libs/storybook'
+
 import { GET_VISITORS } from './VisitorsList'
+
 import { VisitorsList } from '.'
 
 const VisitorsListStory = {

@@ -1,10 +1,12 @@
-import { Story, Meta } from '@storybook/react'
-import { ComponentProps } from 'react'
+import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { waitFor } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { ComponentProps } from 'react'
+
 import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+
 import { ChatOption } from '.'
 
 const ChatOptionStory = {

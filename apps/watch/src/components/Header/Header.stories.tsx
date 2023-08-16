@@ -1,7 +1,9 @@
+import Box from '@mui/material/Box'
 import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import Box from '@mui/material/Box'
+
 import { watchConfig } from '../../libs/storybook'
+
 import { Header } from './Header'
 
 const HeaderStory = {

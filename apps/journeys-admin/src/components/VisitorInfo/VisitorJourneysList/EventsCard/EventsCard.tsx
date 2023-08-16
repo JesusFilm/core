@@ -1,16 +1,18 @@
-import { ReactElement, useState } from 'react'
-import { parseISO, intlFormat } from 'date-fns'
-import Card from '@mui/material/Card'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
-import Collapse from '@mui/material/Collapse'
-import Stack from '@mui/material/Stack'
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded'
-import { transformEvents, JourneyWithEvents, EventVariant } from '../utils'
-import { TimelineEvent } from './TimelineEvent'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import Collapse from '@mui/material/Collapse'
+import Divider from '@mui/material/Divider'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { intlFormat, parseISO } from 'date-fns'
+import { ReactElement, useState } from 'react'
+
+import { EventVariant, JourneyWithEvents, transformEvents } from '../utils'
+
 import { CompactEvent } from './CompactEvent'
 import { GenericEvent } from './GenericEvent'
+import { TimelineEvent } from './TimelineEvent'
 
 interface Props {
   journey: JourneyWithEvents

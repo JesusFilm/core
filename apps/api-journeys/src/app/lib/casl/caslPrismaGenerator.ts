@@ -1,21 +1,23 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { Prisma } from '.prisma/api-journeys-client'
-import keys from 'lodash/keys'
+
 import chalk from 'chalk'
+import keys from 'lodash/keys'
+import sortBy from 'lodash/sortBy'
+
+import { Prisma } from '.prisma/api-journeys-client'
 
 // this script is run automatically on `nx generate-prisma api-journeys`
 
-const imports = keys(Prisma.ModelName)
-  .map((value) => `  ${value}`)
-  .join(', \n')
-const subjects = keys(Prisma.ModelName)
-  .map((value) => `  ${value}: ${value}`)
-  .join(', \n')
+const models = sortBy(keys(Prisma.ModelName))
+
+const imports = models.map((value) => `  ${value}`).join(', \n')
+const subjects = models.map((value) => `  ${value}: ${value}`).join(', \n')
 
 const contents = `// This file is generated automatically.
 // Do not edit it manually.
 import { Subjects } from '@casl/prisma'
+
 import {
 ${imports}
 } from '.prisma/api-journeys-client'

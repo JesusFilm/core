@@ -1,9 +1,12 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { defaultJourney } from '../../../data'
+
 import { Language } from './Language'
 
 describe('Language', () => {
@@ -31,7 +34,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -61,7 +65,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -91,7 +96,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -126,7 +132,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -161,7 +168,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -199,7 +207,7 @@ describe('Language', () => {
                   ]
                 }
               },
-              admin: true
+              variant: 'admin'
             }}
           >
             <Language isPublisher />

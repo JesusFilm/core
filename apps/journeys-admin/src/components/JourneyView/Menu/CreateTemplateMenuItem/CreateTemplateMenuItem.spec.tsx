@@ -1,13 +1,16 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { JOURNEY_DUPLICATE } from '../../../../libs/useJourneyDuplicateMutation'
+
 import {
+  CREATE_TEMPLATE,
   CreateTemplateMenuItem,
-  REMOVE_USER_JOURNEY,
-  CREATE_TEMPLATE
+  REMOVE_USER_JOURNEY
 } from './CreateTemplateMenuItem'
 
 jest.mock('next/router', () => ({
@@ -82,7 +85,7 @@ describe('CreateTemplateMenuItem', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CreateTemplateMenuItem />

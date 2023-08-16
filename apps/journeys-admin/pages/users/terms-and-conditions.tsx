@@ -1,16 +1,16 @@
-import { ReactElement } from 'react'
 import {
+  AuthAction,
   withAuthUser,
-  withAuthUserTokenSSR,
-  AuthAction
+  withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
-import { TermsAndConditions } from '../../src/components/TermsAndConditions'
-import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
 import { ACCEPT_ALL_INVITES } from '..'
+import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
+import { TermsAndConditions } from '../../src/components/TermsAndConditions'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function TermsAndConditionsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

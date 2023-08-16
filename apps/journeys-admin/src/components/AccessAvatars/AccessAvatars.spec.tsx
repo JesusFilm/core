@@ -1,8 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { ThemeProvider } from '../ThemeProvider'
+
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { ThemeProvider } from '../ThemeProvider'
+
 import {
   userJourney1,
   userJourney2,
@@ -11,6 +13,7 @@ import {
   userJourney5,
   userJourney6
 } from './data'
+
 import { AccessAvatars } from '.'
 
 describe('AccessAvatars', () => {

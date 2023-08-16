@@ -1,15 +1,19 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { IconName } from '../../../../../../__generated__/globalTypes'
-import { IconFields } from '../../../../../../__generated__/IconFields'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey as Journey
 } from '../../../../../../__generated__/GetJourney'
+import { IconName } from '../../../../../../__generated__/globalTypes'
+import { IconFields } from '../../../../../../__generated__/IconFields'
+
 import { ICON_BLOCK_NAME_UPDATE } from './Icon'
+
 import { Icon } from '.'
 
 describe('Icon', () => {
@@ -50,7 +54,7 @@ describe('Icon', () => {
     expect(getByText('Color')).toBeInTheDocument()
   })
 
-  it('hides toggle options if there is no icon ', () => {
+  it('hides toggle options if there is no icon', () => {
     const testIcon = {
       ...icon,
       iconName: null
@@ -116,7 +120,7 @@ describe('Icon', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
@@ -166,7 +170,7 @@ describe('Icon', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>
@@ -215,7 +219,7 @@ describe('Icon', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

@@ -1,7 +1,10 @@
-import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { Drawer } from '.'
 
 const DrawerStory = {
