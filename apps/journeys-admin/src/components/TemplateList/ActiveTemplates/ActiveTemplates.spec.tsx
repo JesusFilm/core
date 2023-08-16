@@ -102,11 +102,11 @@ describe('ActiveTemplates', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1DraftEnglish'
+        'a lower case titleJanuary 1English'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'An Old Template HeadingNovember 19, 2020 - Template created before the current year should also show the year in the datePublishedEnglish'
+      'An Old Template HeadingNovember 19, 2020 - Template created before the current year should also show the year in the dateEnglish'
     )
   })
 
