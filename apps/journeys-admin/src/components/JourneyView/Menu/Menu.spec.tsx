@@ -97,6 +97,53 @@ describe('JourneyView/Menu', () => {
     expect(getByRole('menuitem', { name: 'Use Template' })).toBeInTheDocument()
   })
 
+  it('should render menu items for a Publisher', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userRoleId',
+                    userId: '1',
+                    roles: [Role.publisher]
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <TeamProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...defaultJourney,
+                  template: true
+                },
+                variant: 'admin'
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Publish' })).toBeInTheDocument()
+    )
+    expect(getByRole('menuitem', { name: 'Use Template' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Edit Cards' })).toBeInTheDocument()
+  })
+
   it('should preview if journey is published', () => {
     const { getByRole } = render(
       <SnackbarProvider>
