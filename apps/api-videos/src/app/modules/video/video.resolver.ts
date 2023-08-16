@@ -22,6 +22,8 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { VideoService } from './video.service'
 
+const ONE_DAY_MS = 86400000
+
 @Resolver('Video')
 export class VideoResolver {
   constructor(
@@ -105,7 +107,7 @@ export class VideoResolver {
       video.childIds.map((id) => result.find((video) => video.id === id))
     )
 
-    await this.cacheManager.set(key, sorted, 86400000)
+    await this.cacheManager.set(key, sorted, ONE_DAY_MS)
     return sorted
   }
 
@@ -222,7 +224,7 @@ export class VideoResolver {
         }
       })
 
-      await this.cacheManager.set(key, results, 86400000)
+      await this.cacheManager.set(key, results, ONE_DAY_MS)
       return results
     }
 
@@ -239,7 +241,7 @@ export class VideoResolver {
         }
       }
     })
-    await this.cacheManager.set(key, results, 86400000)
+    await this.cacheManager.set(key, results, ONE_DAY_MS)
     return results
   }
 
