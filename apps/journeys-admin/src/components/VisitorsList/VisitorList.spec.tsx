@@ -256,7 +256,9 @@ describe('VisitorList', () => {
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(getByText('Poll question: selected option')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('Poll question: selected option')).toBeInTheDocument()
+    )
     expect(getByText('user response')).toBeInTheDocument()
   })
 })

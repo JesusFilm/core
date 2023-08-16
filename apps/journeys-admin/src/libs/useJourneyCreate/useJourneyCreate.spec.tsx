@@ -1,7 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { waitFor } from '@testing-library/react'
-import { act, renderHook } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CREATE_JOURNEY, useJourneyCreate } from './useJourneyCreate'
