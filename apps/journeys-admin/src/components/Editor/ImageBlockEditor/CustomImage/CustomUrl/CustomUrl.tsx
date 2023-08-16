@@ -106,7 +106,7 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
                 }}
                 helperText={
                   formik.errors.src != null
-                    ? formik.errors.src
+                    ? (formik.errors.src as string)
                     : 'Make sure image address is permanent'
                 }
                 error={
