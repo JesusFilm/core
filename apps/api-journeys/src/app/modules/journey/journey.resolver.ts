@@ -758,9 +758,15 @@ export class JourneyResolver {
   }
 
   @ResolveField()
-  async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
+  async userJourneys(
+    @CaslAccessible('UserJourneys')
+    accessibleUserJourneys: Prisma.UserJourneyWhereInput,
+    @Parent() journey: Journey
+  ): Promise<UserJourney[]> {
     return await this.prismaService.userJourney.findMany({
-      where: { journeyId: journey.id }
+      where: {
+        AND: [accessibleUserJourneys, { journeyId: journey.id }]
+      }
     })
   }
 
