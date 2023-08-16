@@ -77,6 +77,11 @@ describe('Dialog', () => {
       fireEvent.click(getByRole('button', { name: 'Accept' }))
       expect(input.dialogAction?.onSubmit).toHaveBeenCalled()
     })
+
+    it('should show loading spinner if dialog is in submitting state', () => {
+      const { getByTestId } = render(<Dialog {...input} loading />)
+      expect(getByTestId('dialog-loading-icon')).toBeInTheDocument()
+    })
   })
 
   describe('dialogActionChildren', () => {
