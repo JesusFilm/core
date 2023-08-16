@@ -58,6 +58,112 @@ describe('EditToolbar Menu', () => {
     )
   })
 
+  it('should render menu items', () => {
+    const selectedBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'stepId',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                slug: 'my-journey'
+              } as unknown as Journey
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock }}>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(
+      getByRole('menuitem', { name: 'Duplicate Card' })
+    ).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+    expect(
+      getByRole('menuitem', { name: 'Journey Settings' })
+    ).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
+  })
+
+  it('should render menu items for publishers', async () => {
+    const selectedBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'stepId',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: '1',
+                    userId: 'userId',
+                    roles: [Role.publisher]
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                slug: 'my-journey',
+                template: true
+              } as unknown as Journey
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock }}>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(
+      getByRole('menuitem', { name: 'Duplicate Card' })
+    ).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+    expect(
+      getByRole('menuitem', { name: 'Publisher Settings' })
+    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
+    })
+    expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+  })
+
   describe('desktop', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
@@ -219,112 +325,6 @@ describe('EditToolbar Menu', () => {
         getByRole('menuitem', { name: 'Publisher Settings' })
       ).toHaveAttribute('href', '/publisher/journeyId')
     })
-  })
-
-  it('should render menu items', () => {
-    const selectedBlock: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'stepId',
-      parentBlockId: 'journeyId',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journeyId',
-                slug: 'my-journey'
-              } as unknown as Journey
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock }}>
-              <Menu />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Duplicate Card' })
-    ).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Journey Settings' })
-    ).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
-  })
-
-  it('should render menu items for publishers', async () => {
-    const selectedBlock: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'stepId',
-      parentBlockId: 'journeyId',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_ROLE
-              },
-              result: {
-                data: {
-                  getUserRole: {
-                    id: '1',
-                    userId: 'userId',
-                    roles: [Role.publisher]
-                  }
-                }
-              }
-            }
-          ]}
-        >
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journeyId',
-                slug: 'my-journey',
-                template: true
-              } as unknown as Journey
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock }}>
-              <Menu />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Duplicate Card' })
-    ).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Publisher Settings' })
-    ).toBeInTheDocument()
-    await waitFor(() => {
-      expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
-    })
-    expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
   })
 
   describe('mobile', () => {

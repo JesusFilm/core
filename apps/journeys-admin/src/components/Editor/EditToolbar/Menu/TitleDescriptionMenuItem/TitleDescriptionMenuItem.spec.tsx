@@ -5,43 +5,16 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { defaultJourney } from '../../../../JourneyView/data'
-import { TITLE_DESCRIPTION_UPDATE } from '../../../../JourneyView/TitleDescription/TitleDescriptionDialog/TitleDescriptionDialog'
 import { TeamProvider } from '../../../../Team/TeamProvider'
 
 import { TitleDescriptionMenuItem } from './TitleDescriptionMenuItem'
 
 describe('TitleDescriptionMenuItem', () => {
-  it('should handle edit journey title and description if user is publisher', async () => {
-    const updatedJourney = {
-      title: 'New Title',
-      description: 'New Description'
-    }
-
+  it('should open edit journey title and description dialog', async () => {
     const onClose = jest.fn()
-    const { getByRole, getAllByRole } = render(
+    const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: TITLE_DESCRIPTION_UPDATE,
-                variables: {
-                  id: defaultJourney.id,
-                  input: updatedJourney
-                }
-              },
-              result: {
-                data: {
-                  journeyUpdate: {
-                    id: defaultJourney.id,
-                    __typename: 'Journey',
-                    ...updatedJourney
-                  }
-                }
-              }
-            }
-          ]}
-        >
+        <MockedProvider>
           <TeamProvider>
             <JourneyProvider
               value={{
@@ -57,13 +30,7 @@ describe('TitleDescriptionMenuItem', () => {
     )
     fireEvent.click(getByRole('menuitem', { name: 'Description' }))
     expect(getByRole('dialog')).toBeInTheDocument()
-    fireEvent.change(getAllByRole('textbox')[0], {
-      target: { value: 'New Title' }
-    })
-    fireEvent.change(getAllByRole('textbox')[1], {
-      target: { value: 'New Description' }
-    })
-    fireEvent.click(getByRole('button', { name: 'Save' }))
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() => expect(onClose).toHaveBeenCalled())
   })
 })

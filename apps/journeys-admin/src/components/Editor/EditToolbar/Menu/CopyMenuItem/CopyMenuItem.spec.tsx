@@ -18,7 +18,7 @@ Object.assign(navigator, {
 describe('CopyMenuItem', () => {
   const originalEnv = process.env
 
-  it('should handle copy url in development', async () => {
+  it('should copy url in development', async () => {
     const onClose = jest.fn()
     jest.resetModules()
     process.env = {
@@ -56,7 +56,7 @@ describe('CopyMenuItem', () => {
     process.env = originalEnv
   })
 
-  it('should handle copy url in production', async () => {
+  it('should copy url in production', async () => {
     const onClose = jest.fn()
     jest.resetModules()
     process.env = {

@@ -7,40 +7,14 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '../../../../JourneyView/data'
 import { ThemeProvider } from '../../../../ThemeProvider'
 
-import { JOURNEY_TITLE_UPDATE } from './TitleDialog'
 import { TitleMenuItem } from './TitleMenuItem'
 
 describe('TitleMenuItem', () => {
-  it('should handle edit title', async () => {
-    const updatedJourney = {
-      title: 'New Journey'
-    }
-
+  it('should open edit title dialog', async () => {
     const onClose = jest.fn()
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: JOURNEY_TITLE_UPDATE,
-                variables: {
-                  id: defaultJourney.id,
-                  input: updatedJourney
-                }
-              },
-              result: {
-                data: {
-                  journeyUpdate: {
-                    id: defaultJourney.id,
-                    __typename: 'Journey',
-                    ...updatedJourney
-                  }
-                }
-              }
-            }
-          ]}
-        >
+        <MockedProvider>
           <JourneyProvider
             value={{
               journey: defaultJourney,
@@ -56,10 +30,7 @@ describe('TitleMenuItem', () => {
     )
     fireEvent.click(getByRole('menuitem', { name: 'Title' }))
     expect(getByRole('dialog')).toBeInTheDocument()
-    fireEvent.change(getByRole('textbox'), {
-      target: { value: 'New Journey' }
-    })
-    fireEvent.click(getByRole('button', { name: 'Save' }))
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() => expect(onClose).toHaveBeenCalled())
   })
 })

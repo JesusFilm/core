@@ -10,7 +10,7 @@ import { TeamProvider } from '../../../../Team/TeamProvider'
 import { ReportMenuItem } from './ReportMenuItem'
 
 describe('ReportMenuItem', () => {
-  it('should handle reports', async () => {
+  it('should link to journey reports page', async () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
