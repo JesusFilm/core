@@ -74,15 +74,12 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
       ) : (
         <>
           {journey != null ? (
-            <>
-              {/* <StatusChip status={journey.status} /> */}
-              <Stack direction="row" alignItems="center" spacing={1.5}>
-                <TranslateIcon sx={{ fontSize: 13 }} />
-                <Typography variant="caption">
-                  {journey.language.name.find(({ primary }) => primary)?.value}
-                </Typography>
-              </Stack>
-            </>
+            <Stack direction="row" alignItems="center" spacing={1.5}>
+              <TranslateIcon sx={{ fontSize: 13 }} />
+              <Typography variant="caption">
+                {journey.language.name.find(({ primary }) => primary)?.value}
+              </Typography>
+            </Stack>
           ) : (
             <>
               <Skeleton variant="text" width={40} />

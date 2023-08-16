@@ -56,7 +56,7 @@ describe('JourneyView/Menu', () => {
     expect(menu).toHaveAttribute('aria-expanded', 'true')
   })
 
-  it('should preview if journey', () => {
+  it('should preview journey', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
