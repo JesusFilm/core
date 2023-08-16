@@ -44,7 +44,7 @@ export const GET_VIDEO = gql`
       }
       variantLanguages {
         id
-        name(languageId: $languageId, primary: true) {
+        name {
           value
           primary
         }
@@ -229,6 +229,11 @@ export function LocalDetails({
           onClick={() => setOpenLanguage(true)}
           avatar={<ArrowDropDown />}
           disabled={loading}
+          sx={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
         />
         <Button
           variant="contained"
