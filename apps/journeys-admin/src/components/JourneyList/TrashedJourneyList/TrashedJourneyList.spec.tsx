@@ -163,11 +163,11 @@ describe('TrashedJourneyList', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1, 2023DraftEnglish'
+        'a lower case titleJanuary 1, 2023English'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the datePublishedEnglish'
+      'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the dateEnglish'
     )
   })
 
