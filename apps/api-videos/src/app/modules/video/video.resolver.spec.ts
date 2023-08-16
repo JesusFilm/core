@@ -3,7 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Video, VideoTitle, VideoVariant } from '.prisma/api-videos-client'
+import {
+  Prisma,
+  Video,
+  VideoTitle,
+  VideoVariant
+} from '.prisma/api-videos-client'
 
 import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -243,7 +248,7 @@ describe('VideoResolver', () => {
       prismaService.video.findUnique.mockReturnValueOnce({
         ...video,
         children
-      } as any)
+      } as unknown as Prisma.Prisma__VideoClient<Video>)
       expect(await resolver.children(video)).toEqual([video, video])
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
         where: { id: '20615' }
