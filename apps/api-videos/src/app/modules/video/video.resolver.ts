@@ -86,8 +86,9 @@ export class VideoResolver {
     })
   }
 
+  @ResolveField()
   async children(@Parent() video: Video): Promise<Video[]> {
-    const key = `video-children-${video.id}`
+    const key = `video-children-${video.id as string}`
     const cache = await this.cacheManager.get<Video[]>(key)
     if (cache != null) {
       return cache
