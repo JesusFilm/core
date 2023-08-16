@@ -185,6 +185,9 @@ export function CardPreview({
 
   return (
     <>
+      <Box height="500px">
+        Test
+      </Box>
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext
