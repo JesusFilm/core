@@ -49,7 +49,7 @@ describe('TitleDescriptionMenuItem', () => {
                 variant: 'admin'
               }}
             >
-              <TitleDescriptionMenuItem />
+              <TitleDescriptionMenuItem onClose={onClose} />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>

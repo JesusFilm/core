@@ -47,6 +47,56 @@ describe('JourneyView/Menu', () => {
     expect(menu).toHaveAttribute('aria-expanded', 'true')
   })
 
+  it('should render menu items', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <TeamProvider>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Publish' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Edit Cards' })).toBeInTheDocument()
+  })
+
+  it('should render menu items for a template', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <TeamProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...defaultJourney,
+                  template: true
+                },
+                variant: 'admin'
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Use Template' })).toBeInTheDocument()
+  })
+
   it('should preview if journey is published', () => {
     const { getByRole } = render(
       <SnackbarProvider>
