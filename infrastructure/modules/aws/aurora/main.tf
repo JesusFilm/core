@@ -5,21 +5,22 @@ resource "random_password" "password" {
 }
 
 resource "aws_rds_cluster" "default" {
-  apply_immediately           = true
-  cluster_identifier          = "${var.name}-${var.env}"
-  engine                      = "aurora-postgresql"
-  engine_mode                 = "provisioned"
-  engine_version              = "13.9"
-  availability_zones          = data.aws_availability_zones.current.names.*
-  db_subnet_group_name        = var.subnet_group_name
-  database_name               = var.env
-  master_username             = "root"
-  master_password             = random_password.password.result
-  backup_retention_period     = 5
-  preferred_backup_window     = "07:00-09:00"
-  vpc_security_group_ids      = [var.vpc_security_group_id]
-  allow_major_version_upgrade = true
-  final_snapshot_identifier   = "${var.name}-${var.env}-final-snapshot"
+  apply_immediately               = true
+  cluster_identifier              = "${var.name}-${var.env}"
+  engine                          = "aurora-postgresql"
+  engine_mode                     = "provisioned"
+  engine_version                  = "13.9"
+  availability_zones              = data.aws_availability_zones.current.names.*
+  db_subnet_group_name            = var.subnet_group_name
+  database_name                   = var.env
+  master_username                 = "root"
+  master_password                 = random_password.password.result
+  backup_retention_period         = 5
+  preferred_backup_window         = "07:00-09:00"
+  vpc_security_group_ids          = [var.vpc_security_group_id]
+  allow_major_version_upgrade     = true
+  final_snapshot_identifier       = "${var.name}-${var.env}-final-snapshot"
+  db_cluster_parameter_group_name = "aurora-postgresql13-cluster-replication"
   serverlessv2_scaling_configuration {
     max_capacity = 16
     min_capacity = 0.5
