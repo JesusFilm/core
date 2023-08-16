@@ -1,3 +1,7 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
+import { Inject } from '@nestjs/common'
+import { Cache } from 'cache-manager'
+
 import {
   Args,
   Parent,
@@ -13,19 +17,32 @@ import { TranslationField } from '@core/nest/decorators/TranslationField'
 import { LanguageIdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
+const ONE_DAY_MS = 86400000
+
 @Resolver('Language')
 export class LanguageResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Query()
   async languages(
     @Args('offset') offset: number,
     @Args('limit') limit: number
   ): Promise<Language[]> {
-    return await this.prismaService.language.findMany({
+    const key = `languages-${offset}-${limit}`
+    const cache = await this.cacheManager.get<Language[]>(key)
+    if (cache != null) return cache
+
+    const result = await this.prismaService.language.findMany({
       skip: offset,
       take: limit
     })
+
+    await this.cacheManager.set(key, result, ONE_DAY_MS)
+
+    return result
   }
 
   @Query()
@@ -33,9 +50,30 @@ export class LanguageResolver {
     @Args('id') id: string,
     @Args('idType') idType = LanguageIdType.databaseId
   ): Promise<Language | null> {
-    return idType === LanguageIdType.databaseId
-      ? await this.prismaService.language.findUnique({ where: { id } })
-      : await this.prismaService.language.findFirst({ where: { bcp47: id } })
+    if (idType === LanguageIdType.databaseId) {
+      const key = `language-id-${id}`
+      const cache = await this.cacheManager.get<Language>(key)
+      if (cache != null) return cache
+
+      const result = await this.prismaService.language.findUnique({
+        where: { id }
+      })
+
+      if (result != null) await this.cacheManager.set(key, result, ONE_DAY_MS)
+
+      return result
+    }
+    const key = `language-bcp47-${id}`
+    const cache = await this.cacheManager.get<Language>(key)
+    if (cache != null) return cache
+
+    const result = await this.prismaService.language.findFirst({
+      where: { bcp47: id }
+    })
+
+    if (result != null) await this.cacheManager.set(key, result, ONE_DAY_MS)
+
+    return result
   }
 
   @ResolveField()
@@ -51,8 +89,15 @@ export class LanguageResolver {
     __typename: 'Language'
     id: string
   }): Promise<Language | null> {
-    return await this.prismaService.language.findUnique({
+    const key = `language-id-${reference.id}`
+    const cache = await this.cacheManager.get<Language>(key)
+    if (cache != null) return cache
+
+    const result = await this.prismaService.language.findUnique({
       where: { id: reference.id }
     })
+
+    if (result != null) await this.cacheManager.set(key, result, ONE_DAY_MS)
+    return result
   }
 }
