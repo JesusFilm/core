@@ -254,7 +254,7 @@ export function ContainedCover({
               sx={{
                 // This should match width of journey card content in admin
                 width: { sm: '312px' },
-                maxHeight: { xs: '55vh', sm: '100%' },
+                maxHeight: { xs: '55vh', sm: '65%', md: '100%' },
                 mb: { xs: 28, sm: 10 }
               }}
             >
