@@ -87,9 +87,7 @@ export function LocalDetails({
     variables: { id, languageId }
   })
 
-  const handleChange = async (
-    selectedLanguage: LanguageOption
-  ): Promise<void> => {
+  const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
   }
 
