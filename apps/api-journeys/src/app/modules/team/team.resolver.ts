@@ -95,16 +95,14 @@ export class TeamResolver {
 
   @ResolveField()
   async userTeams(
-    @Parent() team: Team & { userTeams?: UserTeam[] }
+    @CaslAccessible('UserTeams')
+    accessibleUserTeams: Prisma.UserTeamWhereInput,
+    @Parent() team: Team
   ): Promise<UserTeam[]> {
-    if (team.userTeams != null) return team.userTeams
-
-    return (
-      (await this.prismaService.team
-        .findUnique({
-          where: { id: team.id }
-        })
-        .userTeams()) ?? []
-    )
+    return await this.prismaService.userTeam.findMany({
+      where: {
+        AND: [accessibleUserTeams, { teamId: team.id }]
+      }
+    })
   }
 }
