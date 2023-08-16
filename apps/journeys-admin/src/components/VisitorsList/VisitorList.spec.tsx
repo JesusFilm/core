@@ -236,9 +236,9 @@ describe('VisitorList', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    const headers = getAllByRole('columnheader')
 
-    expect(headers).toHaveLength(5)
+    await waitFor(() => expect(getAllByRole('columnheader')).toHaveLength(5))
+    const headers = getAllByRole('columnheader')
     expect(headers[0]).toHaveAttribute('aria-label', 'Last Active')
     expect(headers[1]).toHaveAttribute('aria-label', 'Chat Started')
     expect(headers[2]).toHaveAttribute('aria-label', 'Action')
