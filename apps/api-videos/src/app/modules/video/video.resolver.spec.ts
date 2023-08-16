@@ -1,3 +1,4 @@
+import { CacheModule } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
@@ -57,6 +58,7 @@ describe('VideoResolver', () => {
       })
     }
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CacheModule.register()],
       providers: [
         VideoResolver,
         videoService,
@@ -244,6 +246,9 @@ describe('VideoResolver', () => {
       expect(prismaService.video.findMany).toHaveBeenCalledWith({
         where: { id: { in: ['20615', '20615'] } }
       })
+      // ensure cache is used
+      expect(await resolver.children(video)).toEqual([video, video])
+      expect(prismaService.video.findMany).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -297,6 +302,11 @@ describe('VideoResolver', () => {
           }
         }
       })
+      // ensure cache
+      expect(await resolver.variant(info, video, '529')).toEqual(
+        videoVariant[0]
+      )
+      expect(prismaService.videoVariant.findUnique).toHaveBeenCalledTimes(1)
     })
 
     it('returns variant for journeys', async () => {
