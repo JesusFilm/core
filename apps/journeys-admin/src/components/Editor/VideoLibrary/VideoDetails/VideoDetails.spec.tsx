@@ -168,7 +168,7 @@ describe('VideoDetails', () => {
         />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'English' }))
+    fireEvent.click(getByRole('button', { name: 'Other Languages' }))
     expect(getByText('Available Languages')).toBeInTheDocument()
   })
 

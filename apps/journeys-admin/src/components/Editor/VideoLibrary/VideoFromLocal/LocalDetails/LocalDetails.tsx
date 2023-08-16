@@ -64,18 +64,15 @@ export function LocalDetails({
 
   const videoBlock = selectedBlock as VideoBlock
 
-  const defaultLanguage = {
+  const [openLanguage, setOpenLanguage] = useState(false)
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>({
     id: '529',
     localName: undefined,
     nativeName: 'English'
-  }
-
-  const [openLanguage, setOpenLanguage] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] =
-    useState<LanguageOption>(defaultLanguage)
+  })
 
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
-    variables: { id, languageId: videoBlock?.videoVariantLanguageId ?? '529' }
+    variables: { id, languageId: '529' }
   })
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
@@ -102,45 +99,7 @@ export function LocalDetails({
   const videoDescription =
     data?.video?.description?.find(({ primary }) => primary)?.value ?? ''
 
-  function getVideoVariantLanguage(
-    id: string,
-    data: GetVideo | undefined
-  ): LanguageOption | undefined {
-    const videoVariant = data?.video?.variantLanguages.find(
-      (variant) => variant.id === id
-    )
-
-    if (videoVariant != null) {
-      const localName = videoVariant.name?.find(
-        ({ primary }) => !primary
-      )?.value
-
-      const nativeName = videoVariant.name?.find(
-        ({ primary }) => primary
-      )?.value
-
-      return { id, localName, nativeName }
-    }
-  }
-
   useEffect(() => {
-    const videoBlockLanguageId = videoBlock?.videoVariantLanguageId
-    let newSelectedLanguage: LanguageOption | undefined = defaultLanguage
-
-    if (
-      data != null &&
-      videoBlockLanguageId != null &&
-      videoBlock?.videoId === id &&
-      videoBlockLanguageId !== selectedLanguage?.id
-    ) {
-      const videoVariantLanguage = getVideoVariantLanguage(
-        videoBlockLanguageId,
-        data
-      )
-      newSelectedLanguage = videoVariantLanguage ?? defaultLanguage
-    }
-    setSelectedLanguage(newSelectedLanguage)
-
     if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
         fluid: true,
@@ -151,8 +110,6 @@ export function LocalDetails({
         setPlaying(true)
       })
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   useEffect(() => {
@@ -232,7 +189,7 @@ export function LocalDetails({
         sx={{ justifyContent: 'space-between' }}
       >
         <Chip
-          label={selectedLanguage?.localName ?? selectedLanguage?.nativeName}
+          label="Other Languages"
           onClick={() => setOpenLanguage(true)}
           avatar={<ArrowDropDown />}
           disabled={loading}
