@@ -224,7 +224,8 @@ export class JourneyResolver {
               languageId: input.languageId,
               id,
               slug,
-              status: JourneyStatus.draft,
+              status: JourneyStatus.published,
+              publishedAt: new Date(),
               team: { connect: { id: teamId } },
               userJourneys: {
                 create: {
@@ -408,7 +409,8 @@ export class JourneyResolver {
                 id: duplicateJourneyId,
                 slug,
                 title: duplicateTitle,
-                status: JourneyStatus.draft,
+                status: JourneyStatus.published,
+                publishedAt: new Date(),
                 template: false,
                 team: { connect: { id: teamId } },
                 userJourneys: {
@@ -667,10 +669,8 @@ export class JourneyResolver {
         this.prismaService.journey.update({
           where: { id: journey.id },
           data: {
-            status:
-              journey.publishedAt == null
-                ? JourneyStatus.draft
-                : JourneyStatus.published
+            status: JourneyStatus.published,
+            publishedAt: new Date()
           }
         })
       )

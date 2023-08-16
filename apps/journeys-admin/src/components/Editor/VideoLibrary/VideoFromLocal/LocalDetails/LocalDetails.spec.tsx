@@ -1,6 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 
 import { GET_VIDEO, LocalDetails } from './LocalDetails'
@@ -91,8 +95,88 @@ describe('LocalDetails', () => {
         <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Other Languages' }))
+    fireEvent.click(getByRole('button', { name: 'English' }))
     expect(getByText('Available Languages')).toBeInTheDocument()
+  })
+
+  it('should render variant language', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        video: {
+          id: '2_Acts7302-0-0',
+          primaryLanguageId: '529',
+          image:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+          title: [
+            {
+              primary: true,
+              value: 'Jesus Taken Up Into Heaven'
+            }
+          ],
+          description: [
+            {
+              primary: true,
+              value: 'Jesus promises the Holy Spirit.'
+            }
+          ],
+          variant: {
+            id: 'variantA',
+            duration: 144,
+            hls: 'https://arc.gt/opsgn'
+          },
+          variantLanguages: [
+            {
+              __typename: 'Language',
+              id: '525',
+              name: [
+                {
+                  value: 'Algerian',
+                  primary: true,
+                  __typename: 'Translation'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_VIDEO,
+              variables: {
+                id: '2_Acts7302-0-0',
+                languageId: '525'
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              id: 'videoId',
+              videoId: '2_Acts7302-0-0',
+              source: VideoBlockSource.internal,
+              duration: 144,
+              startAt: 0,
+              endAt: 0,
+              videoVariantLanguageId: '525'
+            } as unknown as TreeBlock<VideoBlock>
+          }}
+        >
+          <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Algerian' })).toBeInTheDocument()
+    )
+    expect(result).toHaveBeenCalled()
   })
 
   it('should call onSelect on select click', async () => {
