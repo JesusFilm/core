@@ -231,7 +231,9 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('tab', { name: 'Blocks' }))
+    await waitFor(() => {
+      fireEvent.click(getByRole('tab', { name: 'Blocks' }))
+    })
     await waitFor(() =>
       expect(queryByRole('button', { name: 'Add' })).not.toBeInTheDocument()
     )
