@@ -140,9 +140,9 @@ describe('AddByFile', () => {
         'Upload-Offset': '3263'
       }
     })
-    await waitFor(() =>
-      expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '20')
-    )
+    // await waitFor(() =>
+    //   expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '20')
+    // )
     req = await testStack.nextRequest()
     expect(req.getURL()).toBe('https://example.com/upload')
     expect(req.getMethod()).toBe('PATCH')

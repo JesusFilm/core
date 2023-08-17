@@ -17,10 +17,9 @@ describe('Header', () => {
 
   it('should open navigation panel on menu icon click', async () => {
     const { getByText, getByRole, queryByText } = render(<Header />)
-
     fireEvent.click(getByRole('button', { name: 'open header menu' }))
-    fireEvent.click(getByText('About'))
-    await waitFor(() => expect(queryByText('About')).not.toBeInTheDocument())
+    const button = getByText('About')
+    expect(button.getAttribute('href')).toBe('https://www.jesusfilm.org/about/')
   })
 
   it('should show fixed app bar', async () => {
@@ -30,8 +29,8 @@ describe('Header', () => {
     expect(getAllByRole('button', { name: 'open header menu' })).toHaveLength(2)
 
     fireEvent.click(getAllByRole('button', { name: 'open header menu' })[1])
-    fireEvent.click(getByText('About'))
-    await waitFor(() => expect(queryByText('About')).not.toBeInTheDocument())
+    const button = getByText('About')
+    expect(button.getAttribute('href')).toBe('https://www.jesusfilm.org/about/')
   })
 
   it('should hide absolute app bar', () => {
