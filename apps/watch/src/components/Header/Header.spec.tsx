@@ -1,5 +1,5 @@
 import useScrollTrigger from '@mui/material/useScrollTrigger'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 
 import { Header } from './Header'
 
@@ -16,7 +16,7 @@ describe('Header', () => {
   })
 
   it('should open navigation panel on menu icon click', async () => {
-    const { getByText, getByRole, queryByText } = render(<Header />)
+    const { getByText, getByRole } = render(<Header />)
     fireEvent.click(getByRole('button', { name: 'open header menu' }))
     const button = getByText('About')
     expect(button.getAttribute('href')).toBe('https://www.jesusfilm.org/about/')
@@ -24,7 +24,7 @@ describe('Header', () => {
 
   it('should show fixed app bar', async () => {
     useScrollTriggerMock.mockReturnValue(true)
-    const { getAllByRole, getByText, queryByText } = render(<Header />)
+    const { getAllByRole, getByText } = render(<Header />)
 
     expect(getAllByRole('button', { name: 'open header menu' })).toHaveLength(2)
 
