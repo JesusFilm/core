@@ -1593,7 +1593,7 @@ describe('JourneyResolver', () => {
         openedAt: null
       }
       prismaService.userJourney.findMany.mockResolvedValueOnce([userJourney])
-      expect(await prismaService.userJourneys(ability, journey)).toEqual([
+      expect(await resolver.userJourneys(ability, journey)).toEqual([
         userJourney
       ])
       expect(prismaService.userJourney.findMany).toHaveBeenCalledWith({

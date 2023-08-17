@@ -149,6 +149,11 @@ describe('TeamResolver', () => {
     } as unknown as Team
 
     it('returns userTeams of parent', async () => {
+      const userTeams = jest.fn().mockResolvedValue(team.userTeams)
+      prismaService.team.findUnique.mockReturnValue({
+        ...team,
+        userTeams
+      } as unknown as Prisma.Prisma__TeamClient<Team>)
       expect(await resolver.userTeams(ability, team)).toEqual(team.userTeams)
     })
 
