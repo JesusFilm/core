@@ -185,7 +185,6 @@ jobs:
         with:
           targets: codecov
   visual-test:
-    if: false
     runs-on: ubuntu-latest
     services:
       postgres:
