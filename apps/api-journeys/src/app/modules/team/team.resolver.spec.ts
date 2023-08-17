@@ -139,7 +139,18 @@ describe('TeamResolver', () => {
       userTeams: [
         {
           userId: 'userId',
-          role: UserTeamRole.manager
+          role: UserTeamRole.manager,
+          teamId: 'teamId',
+          team: {
+            id: 'teamId',
+            userTeams: [
+              {
+                id: 'userTeamId',
+                userId: 'userId',
+                role: UserTeamRole.manager
+              }
+            ]
+          }
         }
       ]
     } as unknown as Team & { userTeams: UserTeam[] }

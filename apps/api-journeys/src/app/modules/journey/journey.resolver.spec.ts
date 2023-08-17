@@ -1592,6 +1592,7 @@ describe('JourneyResolver', () => {
         role: 'owner',
         openedAt: null
       }
+      const userJourneys = jest.fn().mockResolvedValueOnce(userJourney)
       prismaService.userJourney.findMany.mockResolvedValueOnce([userJourney])
       expect(await resolver.userJourneys(ability, journey)).toEqual([
         userJourney
