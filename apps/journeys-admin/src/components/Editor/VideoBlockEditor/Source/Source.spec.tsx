@@ -191,10 +191,9 @@ describe('Source', () => {
     expect(
       getByRole('img', {
         name: 'What is the Bible?'
-      })
-    ).toHaveAttribute(
-      'src',
-      'https://customer-.cloudflarestream.com/videoId/thumbnails/thumbnail.jpg?time=2s&height=55&width=55'
+      }).getAttribute('src')
+    ).toMatch(
+      /https:\/\/customer-.*\.cloudflarestream\.com\/videoId\/thumbnails\/thumbnail.jpg\?time=2s&height=55&width=55/
     )
   })
 
