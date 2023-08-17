@@ -363,7 +363,7 @@ export function Video({
               fontSize: 100,
               zIndex: 1,
               outline:
-                selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+                selectedBlock?.id === blockId ? '2px solid #C52D3A' : 'none',
               outlineOffset: '-3px'
             }}
             elevation={0}

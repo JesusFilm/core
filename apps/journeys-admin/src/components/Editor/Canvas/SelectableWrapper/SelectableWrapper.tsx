@@ -117,7 +117,7 @@ export function SelectableWrapper({
           '& > *': { mb: '0px' }
         },
         borderRadius: block.__typename === 'RadioOptionBlock' ? '8px' : '4px',
-        outline: selectedBlock?.id === block.id ? '3px solid #C52D3A' : 'none',
+        outline: selectedBlock?.id === block.id ? '2px solid #C52D3A' : 'none',
         outlineOffset: '5px',
         zIndex: selectedBlock?.id === block.id ? 1 : 0,
         ...videoOutlineStyles
