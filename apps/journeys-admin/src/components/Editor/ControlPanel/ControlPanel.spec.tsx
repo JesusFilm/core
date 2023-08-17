@@ -231,11 +231,11 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    await waitFor(() => {
-      fireEvent.click(getByRole('tab', { name: 'Blocks' }))
-    })
-    await waitFor(() =>
-      expect(queryByRole('button', { name: 'Add' })).not.toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Blocks' }))
+    await waitFor(
+      () =>
+        expect(queryByRole('button', { name: 'Add' })).not.toBeInTheDocument(),
+      { timeout: 2000 }
     )
   })
 
