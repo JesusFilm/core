@@ -64,7 +64,7 @@ describe('AddByFile', () => {
   it('should complete a file upload and call onChange', async () => {
     const testStack = new TestHttpStack()
     const onChange = jest.fn()
-    const { getByTestId, getByText, getByRole } = render(
+    const { getByTestId, getByText } = render(
       <MockedProvider
         mocks={[
           {
