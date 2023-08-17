@@ -148,11 +148,12 @@ export function AccessDialog({
       fullscreen={!smUp}
     >
       <Stack spacing={4}>
-        {data?.journey?.team?.id !== 'jfp-team' && (
-          <Stack direction="row" alignItems="center" sx={{ mb: -4 }}>
-            <Typography variant="subtitle1">{t('Team Members')}</Typography>
-          </Stack>
-        )}
+        {data?.journey?.team?.userTeams != null &&
+          data?.journey?.team?.userTeams.length > 0 && (
+            <Stack direction="row" alignItems="center" sx={{ mb: -4 }}>
+              <Typography variant="subtitle1">{t('Team Members')}</Typography>
+            </Stack>
+          )}
         <UserTeamList
           data={data?.journey?.team ?? undefined}
           currentUserTeam={data?.journey?.team as unknown as UserTeam}
