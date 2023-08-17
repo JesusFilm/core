@@ -9,6 +9,7 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import filter from 'lodash/filter'
 import isEmpty from 'lodash/isEmpty'
 import omit from 'lodash/omit'
 import slugify from 'slugify'
@@ -759,15 +760,26 @@ export class JourneyResolver {
 
   @ResolveField()
   async userJourneys(
-    @CaslAccessible('UserJourneys')
-    accessibleUserJourneys: Prisma.UserJourneyWhereInput,
+    @CaslAbility() ability: AppAbility,
     @Parent() journey: Journey
   ): Promise<UserJourney[]> {
-    return await this.prismaService.userJourney.findMany({
-      where: {
-        AND: [accessibleUserJourneys, { journeyId: journey.id }]
-      }
-    })
+    const userJourneys = await this.prismaService.journey
+      .findUnique({
+        where: { id: journey.id }
+      })
+      .userJourneys({
+        include: {
+          journey: {
+            include: {
+              userJourneys: true,
+              team: { include: { userTeams: true } }
+            }
+          }
+        }
+      })
+    return filter(userJourneys, (userJourney) =>
+      ability.can(Action.Read, subject('UserJourney', userJourney))
+    )
   }
 
   @ResolveField('language')
