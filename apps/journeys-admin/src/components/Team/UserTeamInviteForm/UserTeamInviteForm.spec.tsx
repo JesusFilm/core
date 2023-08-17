@@ -239,6 +239,7 @@ describe('UserTeamInviteForm', () => {
     })
   })
 
+  // test fails locally, but functions as expected in the browser with the same steps
   it.skip('should create a user team invite on click', async () => {
     const cache = new InMemoryCache()
     const { getByRole } = render(
