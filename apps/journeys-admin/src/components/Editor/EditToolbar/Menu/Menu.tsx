@@ -83,6 +83,7 @@ export function Menu(): ReactElement {
             onClick={handleOpenSocial}
           />
         )}
+        <Divider />
       </>
     )
   }
