@@ -154,4 +154,10 @@ RTL.parameters = {
   rtl: true
 }
 
+// export const DarkTheme = Template.bind({})
+// DarkTheme.args = {
+//   journey: { ...defaultJourney, themeMode: ThemeMode.dark },
+//   blocks: basic
+// }
+
 export default Demo as Meta

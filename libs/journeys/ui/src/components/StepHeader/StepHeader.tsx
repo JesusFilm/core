@@ -40,7 +40,7 @@ export function StepHeader({ sx }: Props): ReactElement {
         mt: { xs: 1, lg: 0 },
         zIndex: 1,
         top: 0,
-        alignItems: 'flex-end',
+        alignItems: 'flex-start',
         width: { xs: '100%', lg: 'auto' },
         ...sx
       }}
@@ -53,7 +53,7 @@ export function StepHeader({ sx }: Props): ReactElement {
         sx={{ mx: 2, mt: 1 }}
         onClick={handleClick}
       >
-        <InfoOutlinedIcon sx={{ color: 'white' }} />
+        <InfoOutlinedIcon />
       </IconButton>
       <Menu
         id="basic-menu"

@@ -21,8 +21,11 @@ import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 // Used to resolve dynamic viewport height on Safari
-
-import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../__generated__/GetJourney'
+import {
+  ThemeMode,
+  VisitorUpdateInput
+} from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
@@ -40,7 +43,9 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
   }
 `
 
-const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
+const StyledSwiperContainer = styled(Swiper)<{
+  cardBlock: CardBlock
+}>(({ theme, cardBlock }) => ({
   background: theme.palette.grey[900],
   height: 'inherit',
   '.swiper-pagination': {
@@ -49,7 +54,10 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
     width: '84px !important'
   },
   '.swiper-pagination-bullet': {
-    background: theme.palette.common.white,
+    background:
+      cardBlock?.themeMode === ThemeMode.dark
+        ? theme.palette.grey[100]
+        : theme.palette.grey[800],
     opacity: '60%'
   },
   '.swiper-pagination-bullet-active': {
@@ -91,6 +99,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
     JOURNEY_VISITOR_UPDATE
   )
+
+  const cardBlock = blockHistory[0]?.children[0] as CardBlock
+  // console.log(cardBlock.themeMode)
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
@@ -192,6 +203,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             centeredSlides
             centeredSlidesBounds
             resizeObserver
+            cardBlock={cardBlock}
             onSwiper={(swiper) => setSwiper(swiper)}
             allowTouchMove={false}
             onSlideChange={() => setShowHeaderFooter(true)}
