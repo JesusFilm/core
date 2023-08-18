@@ -9,9 +9,9 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import {
-  GetJourneyWithUserJourneysAndUserTeams,
-  GetJourneyWithUserJourneysAndUserTeams_journey_userJourneys as UserJourney
-} from '../../../__generated__/GetJourneyWithUserJourneysAndUserTeams'
+  GetJourneyWithPermissions,
+  GetJourneyWithPermissions_journey_userJourneys as UserJourney
+} from '../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites } from '../../../__generated__/GetUserInvites'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
@@ -21,8 +21,8 @@ import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
 
-export const GET_JOURNEY_WITH_USER_JOURNEYS_AND_USER_TEAMS = gql`
-  query GetJourneyWithUserJourneysAndUserTeams($id: ID!) {
+export const GET_JOURNEY_WITH_PERMISSIONS = gql`
+  query GetJourneyWithPermissions($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       id
       team {
@@ -79,12 +79,9 @@ export function AccessDialog({
 }: AccessDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [, { loading, data, refetch }] =
-    useLazyQuery<GetJourneyWithUserJourneysAndUserTeams>(
-      GET_JOURNEY_WITH_USER_JOURNEYS_AND_USER_TEAMS,
-      {
-        variables: { id: journeyId }
-      }
-    )
+    useLazyQuery<GetJourneyWithPermissions>(GET_JOURNEY_WITH_PERMISSIONS, {
+      variables: { id: journeyId }
+    })
 
   const [, { data: userInviteData, refetch: refetchInvites }] =
     useLazyQuery<GetUserInvites>(GET_USER_INVITES, {

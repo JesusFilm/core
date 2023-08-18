@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import {
   AccessDialog,
-  GET_JOURNEY_WITH_USER_JOURNEYS_AND_USER_TEAMS,
+  GET_JOURNEY_WITH_PERMISSIONS,
   GET_USER_INVITES
 } from './AccessDialog'
 
@@ -38,7 +38,7 @@ jest.mock('react-i18next', () => ({
 const mocks = [
   {
     request: {
-      query: GET_JOURNEY_WITH_USER_JOURNEYS_AND_USER_TEAMS,
+      query: GET_JOURNEY_WITH_PERMISSIONS,
       variables: {
         id: 'journeyId'
       }
