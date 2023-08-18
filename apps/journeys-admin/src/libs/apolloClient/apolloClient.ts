@@ -4,23 +4,9 @@ import {
   createHttpLink
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
-import jwt from 'jsonwebtoken'
-import { AuthUser } from 'next-firebase-auth'
 import { useMemo } from 'react'
 
 import { cache } from './cache'
-
-export function isTokenExpired(token: string): boolean {
-  try {
-    const decodedToken = jwt.decode(token) as { exp: number }
-    const tokenExpiresAt = decodedToken.exp
-    const now = Math.floor(Date.now() / 1000)
-    return now > tokenExpiresAt
-  } catch (error) {
-    console.error(error)
-    return true
-  }
-}
 
 export function createApolloClient(
   token: string
@@ -35,24 +21,10 @@ export function createApolloClient(
     // Just send along the authorization headers.
     // The **correct** headers will be supplied by the `getServerSideProps` invocation of the query
 
-    let refreshToken
-    // Check if we are in SSR mode and load the AuthUser module
-    if (isSsrMode) {
-      const { verifyIdToken } = await import(
-        /* webpackChunkName: "next-firebase-auth" */
-        'next-firebase-auth'
-      )
-      const authUser: AuthUser = await verifyIdToken(token)
-      const newToken = await authUser.getIdToken(true)
-      if (newToken != null) {
-        refreshToken = newToken
-      }
-    }
-
     return {
       headers: {
         ...(!isSsrMode ? headers : []),
-        Authorization: isTokenExpired(token) ? refreshToken : token
+        Authorization: token ?? ''
       }
     }
   })

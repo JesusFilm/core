@@ -1,4 +1,5 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+import { decode } from 'jsonwebtoken'
 import { Redirect } from 'next'
 import { AuthUser } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
@@ -42,8 +43,13 @@ export async function initAndAuthApp({
       i18nConfig
     ),
     getLaunchDarklyClient(ldUser),
-    AuthUser.getIdToken()
+    AuthUser.getIdToken(true)
   ])
+
+  const decodedToken = decode(token ?? '') as { exp: number }
+  const tokenExpiresAt = decodedToken.exp
+  const now = Math.floor(Date.now() / 1000)
+  console.log('expired?', now > tokenExpiresAt)
 
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
