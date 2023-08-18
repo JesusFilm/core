@@ -1,6 +1,7 @@
 import { ExecutionContext } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
-import { credential, initializeApp } from 'firebase-admin'
+import { auth, credential } from 'firebase-admin'
+import { initializeApp } from 'firebase-admin/app'
 import get from 'lodash/get'
 
 export interface User {
@@ -28,7 +29,7 @@ export async function contextToUserId(
   const ctx = GqlExecutionContext.create(context).getContext()
   const token = get(ctx.headers, 'authorization')
   if (token == null || token === '') return null
-  const { uid } = await firebaseClient.auth().verifyIdToken(token)
+  const { uid } = await auth(firebaseClient).verifyIdToken(token)
   return uid
 }
 
@@ -38,9 +39,9 @@ export async function contextToUser(
   const userId = await contextToUserId(context)
 
   if (userId != null) {
-    const { displayName, email, photoURL } = await firebaseClient
-      .auth()
-      .getUser(userId)
+    const { displayName, email, photoURL } = await auth(firebaseClient).getUser(
+      userId
+    )
 
     const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
     const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''

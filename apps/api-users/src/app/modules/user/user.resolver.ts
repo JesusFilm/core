@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Query, ResolveReference, Resolver } from '@nestjs/graphql'
+import { auth } from 'firebase-admin'
 
 import { User } from '.prisma/api-users-client'
 import { firebaseClient } from '@core/nest/common/firebaseClient'
@@ -27,7 +28,7 @@ export class UserResolver {
       displayName,
       email,
       photoURL: imageUrl
-    } = await firebaseClient.auth().getUser(userId)
+    } = await auth(firebaseClient).getUser(userId)
 
     const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
     const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''

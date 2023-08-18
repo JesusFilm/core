@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Determine version of Nx installed
-NX_VERSION=$(node -e "console.log(require('./package.json').devDependencies['@nrwl/workspace'])")
+NX_VERSION=$(node -e "console.log(require('./package.json').devDependencies['@nx/workspace'])")
 TS_VERSION=$(node -e "console.log(require('./package.json').devDependencies['typescript'])")
 
-# Install @nrwl/workspace in order to run the affected command
-npm install --no-package-lock --no-save @nrwl/workspace@$NX_VERSION typescript@$TS_VERSION --prefer-offline
+# Install @nx/workspace in order to run the affected command
+npm install --no-package-lock --no-save @nx/workspace@$NX_VERSION typescript@$TS_VERSION --prefer-offline
 
 # Run the affected command, comparing latest commit to the one before that
 AFFECTED=$(npx nx affected:apps --plain --base HEAD~1 --head HEAD)

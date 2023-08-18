@@ -1,16 +1,18 @@
 {
+  "name": "docs-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/docs-e2e/src",
   "projectType": "application",
   "targets": {
     "e2e": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": ["playwright test"],
         "cwd": "apps/docs-e2e"
       }
     },
     "debug": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"
@@ -19,14 +21,14 @@
       }
     },
     "show-report": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": ["playwright show-report"],
         "cwd": "apps/docs-e2e"
       }
     },
     "type-check": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "npx tsc -b apps/docs-e2e/tsconfig.json"
       }

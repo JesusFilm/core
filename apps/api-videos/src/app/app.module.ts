@@ -7,7 +7,7 @@ import {
 import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
-import responseCachePlugin from 'apollo-server-plugin-response-cache'
+import responseCachePlugin from '@apollo/server-plugin-response-cache'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 

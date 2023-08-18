@@ -1,15 +1,17 @@
 {
+  "name": "api-gateway",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-gateway/src",
   "projectType": "application",
   "targets": {
     "serve": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "./apps/api-gateway/router --supergraph apps/api-gateway/schema.graphql --config apps/api-gateway/router.yaml --dev"
       }
     },
     "serve-all": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
@@ -22,7 +24,7 @@
       }
     },
     "generate-graphql": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
@@ -32,7 +34,7 @@
       }
     },
     "update-router-schema": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           {

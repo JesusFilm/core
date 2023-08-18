@@ -76,7 +76,7 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
 
 describe('TrashedJourneyList', () => {
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
     jest.setSystemTime(new Date('2021-12-11'))
   })
 

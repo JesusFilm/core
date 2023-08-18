@@ -1,4 +1,5 @@
-import { CacheModule } from '@nestjs/common'
+import {} from '@nestjs/common'
+import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
