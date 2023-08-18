@@ -1627,6 +1627,16 @@ describe('JourneyResolver', () => {
 
       expect(await resolver.userJourneys(ability, journey)).toEqual(userJourney)
     })
+
+    it('returns empty user Journeys array when null', async () => {
+      const userJourneys = jest.fn().mockResolvedValue(null)
+      prismaService.journey.findUnique.mockReturnValue({
+        ...journey,
+        userJourneys
+      } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+
+      expect(await resolver.userJourneys(ability, journey)).toEqual([])
+    })
   })
 
   describe('language', () => {

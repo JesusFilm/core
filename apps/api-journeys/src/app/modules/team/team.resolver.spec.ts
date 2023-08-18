@@ -179,7 +179,7 @@ describe('TeamResolver', () => {
       ).resolves.toEqual(team.userTeams)
     })
 
-    it('returns empty array when null', async () => {
+    it('returns empty userTeams array when null', async () => {
       const userTeams = jest.fn().mockResolvedValue(null)
       prismaService.team.findUnique.mockReturnValue({
         ...team,
