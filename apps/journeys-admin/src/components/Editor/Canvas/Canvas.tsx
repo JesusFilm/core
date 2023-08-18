@@ -34,6 +34,7 @@ import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 
 import 'swiper/swiper.min.css'
+import { JourneyMap } from '../../JourneyMap'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
@@ -120,6 +121,15 @@ export function Canvas(): ReactElement {
         })
       }}
     >
+      <Box height="500px" width="100%" bgcolor="#eed" sx={{
+        overflowX:'scroll',
+        // position:'absolute',
+        zIndex:9999
+      }} >
+        test
+        {steps?.length > 1 && <JourneyMap steps={steps} width={800} height={400}/>}
+        best
+      </Box>
       <Swiper
         slidesPerView="auto"
         spaceBetween={spaceBetween}
