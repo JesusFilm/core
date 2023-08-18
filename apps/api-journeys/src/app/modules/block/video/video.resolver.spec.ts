@@ -586,7 +586,7 @@ describe('VideoBlockResolver', () => {
           duration: 100,
           endAt: 100,
           image:
-            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s',
+            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s&height=768',
           title: 'video.mp4'
         })
         expect(mockFetch).toHaveBeenCalledWith(
@@ -634,7 +634,7 @@ describe('VideoBlockResolver', () => {
           duration: 100,
           endAt: 100,
           image:
-            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s',
+            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s&height=768',
           title: 'ea95132c15732412d22c1476fa83f27a'
         })
       })

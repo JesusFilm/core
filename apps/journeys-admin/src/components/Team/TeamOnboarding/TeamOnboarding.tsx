@@ -29,7 +29,7 @@ export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'
 
 export function TeamOnboarding(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
   const router = useRouter()
   const { activeTeam } = useTeam()
   const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
@@ -96,7 +96,6 @@ export function TeamOnboarding(): ReactElement {
                     onClick={async () =>
                       await router?.push('/?onboarding=true')
                     }
-                    disabled={loading}
                   >
                     {(data?.userTeamInvites ?? []).length > 0
                       ? t('Continue')
