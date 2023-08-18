@@ -777,6 +777,7 @@ export class JourneyResolver {
           }
         }
       })
+    console.log(userJourneys)
     return filter(userJourneys, (userJourney) =>
       ability.can(Action.Read, subject('UserJourney', userJourney))
     )
