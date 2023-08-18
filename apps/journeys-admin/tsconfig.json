@@ -5,10 +5,7 @@
     "jsxImportSource": "@emotion/react",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "types": [
-      "node",
-      "jest"
-    ],
+    "types": ["node", "jest"],
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -24,8 +21,5 @@
     "next-env.d.ts",
     "../../libs/journeys/ui/src/ImageBlockProvider/ImageBlockProvider.tsx"
   ],
-  "exclude": [
-    "node_modules",
-    "jest.config.ts"
-  ]
+  "exclude": ["node_modules", "jest.config.ts"]
 }
