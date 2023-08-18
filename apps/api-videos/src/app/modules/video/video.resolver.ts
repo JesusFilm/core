@@ -1,3 +1,5 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
+import { Inject } from '@nestjs/common'
 import {
   Args,
   Info,
@@ -7,6 +9,7 @@ import {
   ResolveReference,
   Resolver
 } from '@nestjs/graphql'
+import { Cache } from 'cache-manager'
 import { FieldNode, GraphQLError, GraphQLResolveInfo, Kind } from 'graphql'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
@@ -19,9 +22,12 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { VideoService } from './video.service'
 
+const ONE_DAY_MS = 86400000
+
 @Resolver('Video')
 export class VideoResolver {
   constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly videoService: VideoService,
     private readonly prismaService: PrismaService
   ) {}
@@ -83,11 +89,26 @@ export class VideoResolver {
   }
 
   @ResolveField()
-  async children(@Parent() video): Promise<Video[] | null> {
-    const result = await this.prismaService.video.findMany({
-      where: { id: { in: video.childIds } }
-    })
-    return video.childIds.map((id) => result.find((video) => video.id === id))
+  async children(@Parent() video: Video): Promise<Video[]> {
+    const key = `video-children-${video.id}`
+    const cache = await this.cacheManager.get<Video[]>(key)
+    if (cache != null) {
+      return cache
+    }
+
+    const result =
+      (await this.prismaService.video
+        .findUnique({
+          where: { id: video.id }
+        })
+        .children()) ?? []
+
+    const sorted = compact(
+      video.childIds.map((id) => result.find((video) => video.id === id))
+    )
+
+    await this.cacheManager.set(key, sorted, ONE_DAY_MS)
+    return sorted
   }
 
   @ResolveField()
@@ -187,22 +208,41 @@ export class VideoResolver {
       }
     ).representations?.[0].primaryLanguageId
 
-    return info.variableValues.idType !== IdType.databaseId &&
+    if (
+      info.variableValues.idType !== IdType.databaseId &&
       !isEmpty(variableValueId) &&
       !isEmpty(requestedLanguage)
-      ? await this.prismaService.videoVariant.findUnique({
-          where: {
-            slug: `${video.slug as string}/${requestedLanguage}`
-          }
-        })
-      : await this.prismaService.videoVariant.findUnique({
-          where: {
-            languageId_videoId: {
-              videoId: video.id,
-              languageId: languageId ?? journeysLanguageIdForBlock ?? '529'
-            }
-          }
-        })
+    ) {
+      const slug = `${video.slug as string}/${requestedLanguage}`
+      const key = `video-variant-slug-${slug}`
+      const cache = await this.cacheManager.get<VideoVariant>(key)
+      if (cache != null) return cache
+
+      const results = await this.prismaService.videoVariant.findUnique({
+        where: {
+          slug
+        }
+      })
+
+      await this.cacheManager.set(key, results, ONE_DAY_MS)
+      return results
+    }
+
+    languageId = languageId ?? journeysLanguageIdForBlock ?? '529'
+    const key = `video-variant-${video.id as string}-${languageId}`
+    const cache = await this.cacheManager.get<VideoVariant>(key)
+    if (cache != null) return cache
+
+    const results = await this.prismaService.videoVariant.findUnique({
+      where: {
+        languageId_videoId: {
+          videoId: video.id,
+          languageId
+        }
+      }
+    })
+    await this.cacheManager.set(key, results, ONE_DAY_MS)
+    return results
   }
 
   @ResolveField('variantLanguages')

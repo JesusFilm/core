@@ -215,7 +215,7 @@ export function Canvas(): ReactElement {
                             sx={{
                               outline:
                                 selectedComponent === 'Footer'
-                                  ? '3px solid #C52D3A'
+                                  ? '2px solid #C52D3A'
                                   : 'none',
                               outlineOffset: -4,
                               borderRadius: 5,

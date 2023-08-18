@@ -1,5 +1,4 @@
 import { ApolloQueryResult } from '@apollo/client'
-import EditIcon from '@mui/icons-material/Edit'
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
@@ -23,7 +22,6 @@ import {
 } from '../../../__generated__/GetAdminJourneys'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
-import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
 
 export interface TemplateCardProps {
   journey?: AdminJourney | Journey
@@ -163,19 +161,6 @@ export function TemplateCard({
               width: '100%'
             }}
           >
-            {isPublisher === true && (
-              <Box sx={{ pr: 3, display: 'flex' }}>
-                {journey != null ? (
-                  <StatusChip status={journey.status} />
-                ) : (
-                  <Stack direction="row" alignItems="center" spacing={1.5}>
-                    <EditIcon sx={{ fontSize: '14px' }} />
-                    <Skeleton variant="text" width={50} height={20} />
-                  </Stack>
-                )}
-              </Box>
-            )}
-
             {journey != null ? (
               <>
                 <TranslateRoundedIcon sx={{ fontSize: 13, pl: 0 }} />
