@@ -6,10 +6,7 @@ import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
 
-import {
-  GET_JOURNEY_WITH_USER_JOURNEYS_AND_USER_TEAMS,
-  GET_USER_INVITES
-} from './AccessDialog'
+import { GET_JOURNEY_WITH_PERMISSIONS, GET_USER_INVITES } from './AccessDialog'
 
 import { AccessDialog } from '.'
 
@@ -26,7 +23,7 @@ export const Default: Story = () => {
       mocks={[
         {
           request: {
-            query: GET_JOURNEY_WITH_USER_JOURNEYS_AND_USER_TEAMS,
+            query: GET_JOURNEY_WITH_PERMISSIONS,
             variables: {
               id: 'journeyId'
             }
