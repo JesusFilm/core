@@ -6,6 +6,7 @@ import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { MouseEvent, ReactElement, useState } from 'react'
@@ -13,14 +14,19 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '../../libs/JourneyProvider'
 
-export function StepHeader(): ReactElement {
-  const { journey, admin } = useJourney()
+interface Props {
+  sx?: SxProps
+}
+
+export function StepHeader({ sx }: Props): ReactElement {
+  const { journey, variant } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
-    if (!admin) setAnchorEl(event.currentTarget)
+    if (variant === 'default' || variant === 'embed')
+      setAnchorEl(event.currentTarget)
   }
   const handleClose = (): void => {
     setAnchorEl(null)
@@ -30,12 +36,13 @@ export function StepHeader(): ReactElement {
     <Stack
       data-testid="stepHeader"
       sx={{
-        width: { xs: '100%', lg: 'unset' },
-        mt: { xs: 1, lg: 0 },
         position: { xs: 'absolute', lg: 'relative' },
+        mt: { xs: 1, lg: 0 },
         zIndex: 1,
         top: 0,
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        width: { xs: '100%', lg: 'auto' },
+        ...sx
       }}
     >
       <IconButton
@@ -88,22 +95,11 @@ export function StepHeader(): ReactElement {
             <MuiMenuItem>{t('Terms & Conditions')}</MuiMenuItem>
           </Link>
         </NextLink>
-        <NextLink href="https://www.cru.org/us/en/about/privacy.html" passHref>
-          <Link
-            variant="body2"
-            underline="none"
-            target="_blank"
-            rel="noopener"
-            sx={{ px: 0 }}
-            onClick={handleClose}
-          >
-            <MuiMenuItem>{t('Privacy Policy')}</MuiMenuItem>
-          </Link>
-        </NextLink>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
           <Typography
             color={(theme) => theme.palette.action.disabled}
             variant="caption"
+            sx={{ display: 'block', lineHeight: 1.2 }}
           >
             {t(
               'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".',

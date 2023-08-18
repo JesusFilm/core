@@ -28,7 +28,12 @@ const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <FlagsProvider>
       <TeamProvider>
-        <JourneyProvider value={{ journey: args.journey }}>
+        <JourneyProvider
+          value={{
+            journey: args.journey,
+            variant: 'admin'
+          }}
+        >
           <PageWrapper
             title="Journey Details"
             showDrawer
@@ -58,7 +63,12 @@ const JourneyTemplate: Story = ({ ...args }) => (
     <FlagsProvider>
       <MockedProvider mocks={args.mocks}>
         <TeamProvider>
-          <JourneyProvider value={{ journey: args.journey }}>
+          <JourneyProvider
+            value={{
+              journey: args.journey,
+              variant: 'admin'
+            }}
+          >
             <PageWrapper
               title="Journey Template"
               showDrawer

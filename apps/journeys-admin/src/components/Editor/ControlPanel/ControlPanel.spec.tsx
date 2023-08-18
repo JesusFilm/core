@@ -144,7 +144,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -181,7 +181,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider
@@ -222,7 +222,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -253,7 +253,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -316,7 +316,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -413,7 +413,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -572,7 +572,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -641,7 +641,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -713,7 +713,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -827,7 +827,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -865,7 +865,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -937,7 +937,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1] }}>
@@ -977,7 +977,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step4] }}>
@@ -1009,7 +1009,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step4] }}>
@@ -1064,7 +1064,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={state}>
@@ -1114,7 +1114,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={state}>

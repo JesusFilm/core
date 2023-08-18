@@ -100,7 +100,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <Canvas />
@@ -133,7 +133,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <Canvas />
@@ -187,7 +187,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <Canvas />
@@ -227,7 +227,7 @@ describe('Canvas', () => {
     })
 
     expect(getByTestId('stepFooter')).toHaveStyle({
-      outline: '3px solid #C52D3A'
+      outline: '2px solid #C52D3A'
     })
 
     expect(getByTestId('step-step0.id')).toHaveStyle({

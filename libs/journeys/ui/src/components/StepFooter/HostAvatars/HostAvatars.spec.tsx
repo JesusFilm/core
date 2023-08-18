@@ -113,7 +113,9 @@ describe('HostAvatars', () => {
             editableStepFooter: true
           }}
         >
-          <JourneyProvider value={{ admin: true, journey: { ...journey } }}>
+          <JourneyProvider
+            value={{ journey: { ...journey }, variant: 'admin' }}
+          >
             <HostAvatars hasPlaceholder />
           </JourneyProvider>
         </FlagsProvider>
@@ -133,8 +135,8 @@ describe('HostAvatars', () => {
         <FlagsProvider flags={{ editableStepFooter: true }}>
           <JourneyProvider
             value={{
-              admin: true,
-              journey: { ...journey, host: oneAvatarHost }
+              journey: { ...journey, host: oneAvatarHost },
+              variant: 'admin'
             }}
           >
             <HostAvatars hasPlaceholder />

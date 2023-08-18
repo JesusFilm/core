@@ -54,7 +54,8 @@ const Template: Story<ComponentProps<typeof EmbeddedPreview>> = ({
                 }
               ]
             }
-          } as unknown as Journey
+          } as unknown as Journey,
+          variant: 'embed'
         }}
       >
         <EmbeddedPreview {...args} />

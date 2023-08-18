@@ -137,6 +137,7 @@ import UserProfile3 from './UserProfile3'
 import UserProfileAdd from './UserProfileAdd'
 import UserProfileCircle from './UserProfileCircle'
 import UsersProfiles2 from './UsersProfiles2'
+import UsersProfiles3 from './UsersProfiles3'
 import Viber from './Viber'
 import Vk from './Vk'
 import Web from './Web'
@@ -284,6 +285,7 @@ type IconNames =
   | 'UserProfileAdd'
   | 'UserProfileCircle'
   | 'UsersProfiles2'
+  | 'UsersProfiles3'
   | 'Viber'
   | 'Vk'
   | 'Web'
@@ -435,6 +437,7 @@ const iconComponents: IconComponents = {
   UserProfileAdd,
   UserProfileCircle,
   UsersProfiles2,
+  UsersProfiles3,
   Viber,
   Vk,
   Web,

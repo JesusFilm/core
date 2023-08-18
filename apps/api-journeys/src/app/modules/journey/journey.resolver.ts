@@ -9,6 +9,7 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import filter from 'lodash/filter'
 import isEmpty from 'lodash/isEmpty'
 import omit from 'lodash/omit'
 import slugify from 'slugify'
@@ -224,7 +225,8 @@ export class JourneyResolver {
               languageId: input.languageId,
               id,
               slug,
-              status: JourneyStatus.draft,
+              status: JourneyStatus.published,
+              publishedAt: new Date(),
               team: { connect: { id: teamId } },
               userJourneys: {
                 create: {
@@ -324,32 +326,7 @@ export class JourneyResolver {
       })
 
     const duplicateJourneyId = uuidv4()
-    const existingDuplicateJourneys = await this.prismaService.journey.findMany(
-      {
-        where: {
-          title: {
-            contains: journey.title
-          }
-        }
-      }
-    )
-    const duplicates = this.getJourneyDuplicateNumbers(
-      existingDuplicateJourneys,
-      journey.title
-    )
-    const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle = `${journey.title}${
-      duplicateNumber === 0
-        ? ''
-        : duplicateNumber === 1
-        ? ' copy'
-        : ` copy ${duplicateNumber}`
-    }`.trimEnd()
 
-    let slug = slugify(duplicateTitle, {
-      lower: true,
-      strict: true
-    })
     const originalBlocks = await this.prismaService.block.findMany({
       where: { journeyId: journey.id, typename: 'StepBlock' },
       orderBy: { parentOrder: 'asc' },
@@ -385,6 +362,37 @@ export class JourneyResolver {
       }
     }
 
+    const existingActiveDuplicateJourneys =
+      await this.prismaService.journey.findMany({
+        where: {
+          title: {
+            contains: journey.title
+          },
+          archivedAt: null,
+          trashedAt: null,
+          deletedAt: null,
+          template: false,
+          team: { id: teamId }
+        }
+      })
+    const duplicates = this.getJourneyDuplicateNumbers(
+      existingActiveDuplicateJourneys,
+      journey.title
+    )
+    const duplicateNumber = this.getFirstMissingNumber(duplicates)
+    const duplicateTitle = `${journey.title}${
+      duplicateNumber === 0
+        ? ''
+        : duplicateNumber === 1
+        ? ' copy'
+        : ` copy ${duplicateNumber}`
+    }`.trimEnd()
+
+    let slug = slugify(duplicateTitle, {
+      lower: true,
+      strict: true
+    })
+
     let retry = true
     while (retry) {
       try {
@@ -402,7 +410,8 @@ export class JourneyResolver {
                 id: duplicateJourneyId,
                 slug,
                 title: duplicateTitle,
-                status: JourneyStatus.draft,
+                status: JourneyStatus.published,
+                publishedAt: new Date(),
                 template: false,
                 team: { connect: { id: teamId } },
                 userJourneys: {
@@ -661,10 +670,8 @@ export class JourneyResolver {
         this.prismaService.journey.update({
           where: { id: journey.id },
           data: {
-            status:
-              journey.publishedAt == null
-                ? JourneyStatus.draft
-                : JourneyStatus.published
+            status: JourneyStatus.published,
+            publishedAt: new Date()
           }
         })
       )
@@ -752,10 +759,27 @@ export class JourneyResolver {
   }
 
   @ResolveField()
-  async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
-    return await this.prismaService.userJourney.findMany({
-      where: { journeyId: journey.id }
-    })
+  async userJourneys(
+    @CaslAbility() ability: AppAbility,
+    @Parent() journey: Journey
+  ): Promise<UserJourney[]> {
+    const userJourneys = await this.prismaService.journey
+      .findUnique({
+        where: { id: journey.id }
+      })
+      .userJourneys({
+        include: {
+          journey: {
+            include: {
+              userJourneys: true,
+              team: { include: { userTeams: true } }
+            }
+          }
+        }
+      })
+    return filter(userJourneys, (userJourney) =>
+      ability.can(Action.Read, subject('UserJourney', userJourney))
+    )
   }
 
   @ResolveField('language')

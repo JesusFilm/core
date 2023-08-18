@@ -171,7 +171,7 @@ describe('VideoDetails', () => {
         />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Other Languages' }))
+    fireEvent.click(getByRole('button', { name: 'English' }))
     expect(getByText('Available Languages')).toBeInTheDocument()
   })
 
@@ -251,7 +251,7 @@ describe('VideoDetails', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider

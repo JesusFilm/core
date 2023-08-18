@@ -48,7 +48,9 @@ describe('JourneyViewFab', () => {
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{ journey: defaultJourney, variant: 'admin' }}
+            >
               <JourneyViewFab />
             </JourneyProvider>
           </TeamProvider>
@@ -69,7 +71,7 @@ describe('JourneyViewFab', () => {
             <JourneyProvider
               value={{
                 journey: { ...defaultJourney, template: true },
-                admin: true
+                variant: 'admin'
               }}
             >
               <JourneyViewFab isPublisher />

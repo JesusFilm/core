@@ -38,10 +38,6 @@ data "aws_ssm_parameter" "doppler_api_media_prod_token" {
   name = "/terraform/prd/DOPPLER_API_MEDIA_PROD_TOKEN"
 }
 
-data "aws_ssm_parameter" "doppler_arango_bigquery_etl_prod_token" {
-  name = "/terraform/prd/DOPPLER_ARANGODB_BIGQUERY_ETL_PROD_TOKEN"
-}
-
 data "aws_ssm_parameter" "cloudflared_prod_token" {
   name = "/terraform/prd/CLOUDFLARED_PROD_TOKEN"
 }

@@ -131,7 +131,10 @@ describe('EmailInviteForm', () => {
 
     const { getByRole } = render(
       <JourneyProvider
-        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        value={{
+          journey: { id: 'journeyId' } as unknown as Journey,
+          variant: 'admin'
+        }}
       >
         <SnackbarProvider>
           <MockedProvider

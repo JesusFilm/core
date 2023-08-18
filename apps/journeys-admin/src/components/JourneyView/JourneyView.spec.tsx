@@ -69,7 +69,7 @@ describe('JourneyView', () => {
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
-            <JourneyProvider value={{ journey, admin: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
               <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </TeamProvider>
@@ -87,7 +87,7 @@ describe('JourneyView', () => {
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
-            <JourneyProvider value={{ journey, admin: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
               <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </TeamProvider>

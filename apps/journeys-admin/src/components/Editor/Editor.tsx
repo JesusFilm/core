@@ -42,7 +42,7 @@ export function Editor({
   // }, [journey, setValue])
 
   return (
-    <JourneyProvider value={{ journey, admin: true }}>
+    <JourneyProvider value={{ journey, variant: 'admin' }}>
       <SocialProvider>
         <EditorProvider
           initialState={{

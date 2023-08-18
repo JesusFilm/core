@@ -165,7 +165,7 @@ describe('SignUp', () => {
     })
   })
 
-  it('should redirect when form submit suceeds', async () => {
+  it('should redirect when form submit succeeds', async () => {
     const mocks = [
       {
         request: {

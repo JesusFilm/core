@@ -82,13 +82,16 @@ const rtlLanguage = {
 } as unknown as Language
 
 const Template: Story<
-  ComponentProps<typeof StepFooter> & { journey: Journey; admin: boolean }
-> = ({ journey, admin = false }) => {
+  ComponentProps<typeof StepFooter> & {
+    journey: Journey
+    variant: 'default' | 'admin' | 'embed'
+  }
+> = ({ journey, variant = 'default' }) => {
   return (
     <MockedProvider>
       <SnackbarProvider>
         <FlagsProvider flags={{ editableStepFooter: true }}>
-          <JourneyProvider value={{ journey, admin }}>
+          <JourneyProvider value={{ journey, variant }}>
             <Stack
               sx={{
                 position: 'relative',
@@ -112,7 +115,7 @@ Default.args = { journey }
 export const Admin = Template.bind({})
 Admin.args = {
   ...Default.args,
-  admin: true
+  variant: 'admin'
 }
 
 export const WithHost = Template.bind({})
@@ -205,14 +208,17 @@ Long.args = {
 }
 
 const TemplateRTL: Story<
-  ComponentProps<typeof StepFooter> & { journeys: Journey[]; admin: boolean[] }
-> = ({ journeys, admin }) => {
+  ComponentProps<typeof StepFooter> & {
+    journeys: Journey[]
+    variants: Array<'default' | 'admin' | 'embed'>
+  }
+> = ({ journeys, variants }) => {
   return (
     <MockedProvider>
       <SnackbarProvider>
         <FlagsProvider flags={{ editableStepFooter: true }}>
           {journeys.map((journey, i) => (
-            <JourneyProvider key={i} value={{ journey, admin: admin[i] }}>
+            <JourneyProvider key={i} value={{ journey, variant: variants[i] }}>
               <Stack
                 sx={{
                   position: 'relative',
@@ -241,7 +247,15 @@ RTL.args = {
     { ...(WithAdminAvatar.args.journey as Journey), language: rtlLanguage },
     { ...(Long.args.journey as Journey), language: rtlLanguage }
   ],
-  admin: [true, false, false, false, false, true, false]
+  variants: [
+    'admin',
+    'default',
+    'default',
+    'default',
+    'default',
+    'admin',
+    'default'
+  ]
 }
 RTL.parameters = { rtl: true }
 

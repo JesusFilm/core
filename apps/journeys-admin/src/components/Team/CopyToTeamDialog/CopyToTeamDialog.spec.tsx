@@ -24,7 +24,14 @@ describe('DuplicateJourneys', () => {
   it('should call submit action on dialog submit', async () => {
     const result = jest.fn(() => ({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Name',
+            __typename: 'Team',
+            userTeams: []
+          }
+        ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
           lastActiveTeamId: 'teamId'
@@ -47,7 +54,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TeamProvider>
@@ -81,7 +88,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TeamProvider>
@@ -128,7 +135,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TeamProvider>
