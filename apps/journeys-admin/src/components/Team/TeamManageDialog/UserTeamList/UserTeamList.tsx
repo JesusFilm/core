@@ -7,7 +7,7 @@ import Skeleton from '@mui/material/Skeleton'
 import sortBy from 'lodash/sortBy'
 import { ReactElement, useMemo } from 'react'
 
-import { GetJourneyWithUserJourneysAndUserTeams_journey_team } from '../../../../../__generated__/GetJourneyWithUserJourneysAndUserTeams'
+import { GetJourneyWithPermissions_journey_team as JourneyTeam } from '../../../../../__generated__/GetJourneyWithPermissions'
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
@@ -17,10 +17,7 @@ import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 import { UserTeamListItem } from './UserTeamListItem'
 
 interface UserTeamListProps {
-  data:
-    | GetUserTeamsAndInvites
-    | undefined
-    | GetJourneyWithUserJourneysAndUserTeams_journey_team
+  data: GetUserTeamsAndInvites | undefined | JourneyTeam
   currentUserTeam: UserTeam | undefined
   loading: boolean
   variant?: 'readonly' | 'default'
