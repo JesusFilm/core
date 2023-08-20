@@ -46,11 +46,6 @@ export async function initAndAuthApp({
     AuthUser.getIdToken(true)
   ])
 
-  const decodedToken = decode(token ?? '') as { exp: number }
-  const tokenExpiresAt = decodedToken.exp
-  const now = Math.floor(Date.now() / 1000)
-  console.log('expired?', now > tokenExpiresAt)
-
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
