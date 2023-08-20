@@ -91,7 +91,7 @@ Unique components only used in one other component / page. Similarly they are cr
 
   > See [RadioOptionAttribute](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-attributes-radiooption--filled) (instance of [Attribute](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-attributes-attribute--default))
 
-[Visual tests](../04-storybook/index.md/#when-to-write-stories) differ based on component type.
+[Visual tests](../04-storybook/index.md#when-to-write-stories) differ based on component type.
 <br/>
 
 ## FAQs

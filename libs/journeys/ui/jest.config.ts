@@ -1,6 +1,6 @@
-module.exports = {
+export default {
   displayName: 'journeys-ui',
-  preset: '../../../jest.preset.js',
+
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nrwl/react/plugins/jest',
     '^.+\\.[tj]sx?$': 'babel-jest'
@@ -9,5 +9,6 @@ module.exports = {
   coverageDirectory: '../../../coverage/libs/journeys/ui',
   setupFilesAfterEnv: ['<rootDir>setupTests.ts'],
   collectCoverage: true,
-  coverageReporters: ['cobertura']
+  coverageReporters: ['cobertura'],
+  preset: '../../../jest.preset.js'
 }

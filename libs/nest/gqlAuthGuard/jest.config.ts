@@ -1,6 +1,6 @@
-module.exports = {
-  displayName: 'nest-common',
-  preset: '../../../jest.preset.js',
+export default {
+  displayName: 'nest/gqlAuthGuard',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json'
@@ -10,7 +10,8 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../coverage/libs/nest/common',
+  coverageDirectory: '../../../coverage/libs/nest/gqlAuthGuard',
   collectCoverage: true,
-  coverageReporters: ['cobertura']
+  coverageReporters: ['cobertura'],
+  preset: '../../../jest.preset.js'
 }

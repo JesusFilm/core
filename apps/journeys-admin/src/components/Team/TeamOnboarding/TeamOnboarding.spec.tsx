@@ -169,10 +169,12 @@ describe('TeamOnboarding', () => {
     await waitFor(() =>
       expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
     )
-    expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
-      { __ref: 'Team:teamId' },
-      { __ref: 'Team:teamId1' }
-    ])
+    await waitFor(() =>
+      expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
+        { __ref: 'Team:teamId' },
+        { __ref: 'Team:teamId1' }
+      ])
+    )
     expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
   })
 

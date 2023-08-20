@@ -9,6 +9,7 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import filter from 'lodash/filter'
 import isEmpty from 'lodash/isEmpty'
 import omit from 'lodash/omit'
 import slugify from 'slugify'
@@ -224,7 +225,8 @@ export class JourneyResolver {
               languageId: input.languageId,
               id,
               slug,
-              status: JourneyStatus.draft,
+              status: JourneyStatus.published,
+              publishedAt: new Date(),
               team: { connect: { id: teamId } },
               userJourneys: {
                 create: {
@@ -408,7 +410,8 @@ export class JourneyResolver {
                 id: duplicateJourneyId,
                 slug,
                 title: duplicateTitle,
-                status: JourneyStatus.draft,
+                status: JourneyStatus.published,
+                publishedAt: new Date(),
                 template: false,
                 team: { connect: { id: teamId } },
                 userJourneys: {
@@ -667,10 +670,8 @@ export class JourneyResolver {
         this.prismaService.journey.update({
           where: { id: journey.id },
           data: {
-            status:
-              journey.publishedAt == null
-                ? JourneyStatus.draft
-                : JourneyStatus.published
+            status: JourneyStatus.published,
+            publishedAt: new Date()
           }
         })
       )
@@ -758,10 +759,27 @@ export class JourneyResolver {
   }
 
   @ResolveField()
-  async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
-    return await this.prismaService.userJourney.findMany({
-      where: { journeyId: journey.id }
-    })
+  async userJourneys(
+    @CaslAbility() ability: AppAbility,
+    @Parent() journey: Journey
+  ): Promise<UserJourney[]> {
+    const userJourneys = await this.prismaService.journey
+      .findUnique({
+        where: { id: journey.id }
+      })
+      .userJourneys({
+        include: {
+          journey: {
+            include: {
+              userJourneys: true,
+              team: { include: { userTeams: true } }
+            }
+          }
+        }
+      })
+    return filter(userJourneys, (userJourney) =>
+      ability.can(Action.Read, subject('UserJourney', userJourney))
+    )
   }
 
   @ResolveField('language')

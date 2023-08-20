@@ -1,17 +1,17 @@
-module.exports = {
-  displayName: 'nest/powerBi',
-  preset: '../../../jest.preset.js',
+export default {
+  displayName: 'nest-decorators',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json'
     }
   },
-  testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]sx?$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../coverage/libs/nest/powerBi',
+  coverageDirectory: '../../../coverage/libs/nest/decorators',
   collectCoverage: true,
-  coverageReporters: ['cobertura']
+  coverageReporters: ['cobertura'],
+  preset: '../../../jest.preset.js'
 }

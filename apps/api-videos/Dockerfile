@@ -12,7 +12,7 @@ WORKDIR /app
 COPY ./dist/apps/api-videos .
 
 # dependencies that nestjs needs
-RUN npm install --production --silent
+RUN npm install --production --silent --force
 
 WORKDIR /prisma
 COPY ./apps/api-videos/db .
@@ -20,5 +20,5 @@ RUN npx prisma@^4.15.0 generate
 
 WORKDIR /app
 
-RUN npm install tslib @nestjs/mapped-types pino-pretty@9.1.1 prisma@^4.15.0 @prisma/client@^4.15.0
+RUN npm install tslib @nestjs/mapped-types pino-pretty@9.1.1 prisma@^4.15.0 @prisma/client@^4.15.0 --force
 CMD npx prisma@^4.15.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js
