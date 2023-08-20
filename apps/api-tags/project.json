@@ -1,5 +1,4 @@
 {
-  "root": "apps/api-tags",
   "sourceRoot": "apps/api-tags/src",
   "projectType": "application",
   "targets": {
@@ -49,7 +48,7 @@
     "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx ts-node tools/scripts/generate-typings.ts api-tags"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-tags"
       }
     },
     "lint": {
@@ -63,7 +62,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-tags"],
       "options": {
-        "jestConfig": "apps/api-tags/jest.config.js",
+        "jestConfig": "apps/api-tags/jest.config.ts",
         "passWithNoTests": true
       }
     },
@@ -121,7 +120,7 @@
     "prisma-seed": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": ["npx ts-node apps/api-tags/db/seed.ts"]
+        "commands": ["npm run ts-node apps/api-tags/db/seed.ts"]
       }
     },
     "prisma-studio": {

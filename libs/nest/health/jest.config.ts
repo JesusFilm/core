@@ -1,6 +1,6 @@
-module.exports = {
-  displayName: 'api-users',
-  preset: '../../jest.preset.js',
+export default {
+  displayName: 'nest-health',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json'
@@ -11,7 +11,6 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/api-users',
-  collectCoverage: true,
-  coverageReporters: ['cobertura']
+  coverageDirectory: '../../../coverage/libs/nest/health',
+  preset: '../../../jest.preset.js'
 }

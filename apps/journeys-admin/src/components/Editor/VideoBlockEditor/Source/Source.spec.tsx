@@ -82,17 +82,16 @@ const getVideoMock = {
 describe('Source', () => {
   it('calls onChange when video selected', async () => {
     const onChange = jest.fn()
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
     const { getByRole, getByText } = render(
-      <MockedProvider mocks={[getVideosMock, getVideoMock]}>
+      <MockedProvider mocks={[getVideosMock, { ...getVideoMock, result }]}>
         <Source selectedBlock={null} onChange={onChange} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
@@ -192,10 +191,9 @@ describe('Source', () => {
     expect(
       getByRole('img', {
         name: 'What is the Bible?'
-      })
-    ).toHaveAttribute(
-      'src',
-      'https://customer-.cloudflarestream.com/videoId/thumbnails/thumbnail.jpg?time=2s&height=55&width=55'
+      }).getAttribute('src')
+    ).toMatch(
+      /https:\/\/customer-.*\.cloudflarestream\.com\/videoId\/thumbnails\/thumbnail.jpg\?time=2s&height=55&width=55/
     )
   })
 
