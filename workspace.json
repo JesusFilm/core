@@ -9,6 +9,7 @@
     "api-users": "apps/api-users",
     "api-videos": "apps/api-videos",
     "docs": "apps/docs",
+    "docs-e2e": "apps/docs-e2e",
     "journeys": "apps/journeys",
     "journeys-admin": "apps/journeys-admin",
     "journeys-admin-e2e": "apps/journeys-admin-e2e",
@@ -29,7 +30,6 @@
     "shared-storybook": "libs/shared/storybook",
     "shared-ui": "libs/shared/ui",
     "watch": "apps/watch",
-    "watch-e2e": "apps/watch-e2e",
-    "docs-e2e": "apps/docs-e2e"
+    "watch-e2e": "apps/watch-e2e"
   }
 }

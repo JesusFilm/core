@@ -1,16 +1,18 @@
-module.exports = {
-  displayName: 'nest/gqlAuthGuard',
-  preset: '../../../jest.preset.js',
+export default {
+  displayName: 'nest/powerBi',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json'
     }
   },
+  testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]sx?$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../coverage/libs/nest/gqlAuthGuard',
+  coverageDirectory: '../../../coverage/libs/nest/powerBi',
   collectCoverage: true,
-  coverageReporters: ['cobertura']
+  coverageReporters: ['cobertura'],
+  preset: '../../../jest.preset.js'
 }

@@ -1,5 +1,4 @@
 {
-  "root": "libs/shared/ui",
   "sourceRoot": "libs/shared/ui/src",
   "projectType": "library",
   "targets": {
@@ -20,7 +19,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/shared/ui"],
       "options": {
-        "jestConfig": "libs/shared/ui/jest.config.js",
+        "jestConfig": "libs/shared/ui/jest.config.ts",
         "passWithNoTests": true
       }
     },

@@ -1,5 +1,4 @@
 {
-  "root": "apps/docs",
   "projectType": "application",
   "sourceRoot": "apps/docs/src",
   "targets": {

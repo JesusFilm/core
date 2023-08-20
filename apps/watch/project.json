@@ -1,5 +1,4 @@
 {
-  "root": "apps/watch",
   "sourceRoot": "apps/watch",
   "projectType": "application",
   "implicitDependencies": ["locales"],
@@ -74,8 +73,13 @@
         "production": {
           "buildTarget": "watch:_build:production",
           "dev": false
+        },
+        "development": {
+          "buildTarget": "watch:_build:development",
+          "dev": true
         }
-      }
+      },
+      "defaultConfiguration": "development"
     },
     "serve-all": {
       "executor": "@nrwl/workspace:run-commands",
@@ -107,7 +111,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/watch"],
       "options": {
-        "jestConfig": "apps/watch/jest.config.js",
+        "jestConfig": "apps/watch/jest.config.ts",
         "passWithNoTests": true
       }
     },
