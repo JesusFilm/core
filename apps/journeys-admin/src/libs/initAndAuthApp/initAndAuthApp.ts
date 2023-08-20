@@ -1,5 +1,4 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
-import { decode } from 'jsonwebtoken'
 import { Redirect } from 'next'
 import { AuthUser } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
