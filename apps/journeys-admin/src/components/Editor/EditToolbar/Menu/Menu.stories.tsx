@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { expect } from '@storybook/jest'
 import { Meta, Story } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -82,8 +83,13 @@ DeleteCardDialog.args = {
     children: []
   }
 }
-DeleteCardDialog.play = () => {
+DeleteCardDialog.play = async () => {
   userEvent.click(screen.getByRole('button'))
+  await waitFor(() => {
+    expect(
+      screen.getByRole('menuitem', { name: 'Delete Card' })
+    ).toBeInTheDocument()
+  })
   userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
 }
 
