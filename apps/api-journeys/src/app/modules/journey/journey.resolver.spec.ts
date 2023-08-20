@@ -564,7 +564,8 @@ describe('JourneyResolver', () => {
           id: 'journeyId',
           languageId: '529',
           slug: 'untitled-journey',
-          status: 'draft',
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
           team: {
             connect: {
               id: 'teamId'
@@ -606,7 +607,8 @@ describe('JourneyResolver', () => {
           id: 'myJourneyId',
           languageId: '529',
           slug: 'special-journey-myJourneyId',
-          status: 'draft',
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
           team: {
             connect: {
               id: 'teamId'
@@ -845,7 +847,8 @@ describe('JourneyResolver', () => {
             'createdAt'
           ]),
           id: 'duplicateJourneyId',
-          status: JourneyStatus.draft,
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
           slug: `${journey.title}-copy`,
           title: `${journey.title} copy`,
           template: false,
@@ -892,7 +895,8 @@ describe('JourneyResolver', () => {
           'createdAt'
         ]),
         id: 'duplicateJourneyId',
-        status: JourneyStatus.draft,
+        status: JourneyStatus.published,
+        publishedAt: new Date(),
         slug: journey.title,
         title: journey.title,
         template: false,
@@ -990,7 +994,8 @@ describe('JourneyResolver', () => {
             'createdAt'
           ]),
           id: 'duplicateJourneyId',
-          status: JourneyStatus.draft,
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
           slug: `${journey.title}-copy-2`,
           title: `${journey.title} copy 2`,
           template: false,
@@ -1382,7 +1387,7 @@ describe('JourneyResolver', () => {
   })
 
   describe('journeysRestore', () => {
-    it('resores a published Journey', async () => {
+    it('restores a Journey', async () => {
       prismaService.journey.findMany.mockResolvedValueOnce([journey])
       await resolver.journeysRestore(accessibleJourneys, ['journeyId'])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
@@ -1392,23 +1397,7 @@ describe('JourneyResolver', () => {
       })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { status: JourneyStatus.published }
-      })
-    })
-
-    it('restores an draft Journey', async () => {
-      prismaService.journey.findMany.mockResolvedValueOnce([
-        { ...journey, publishedAt: null }
-      ])
-      await resolver.journeysRestore(accessibleJourneys, ['journeyId'])
-      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
-        where: {
-          AND: [accessibleJourneys, { id: { in: ['journeyId'] } }]
-        }
-      })
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        where: { id: 'journeyId' },
-        data: { status: JourneyStatus.draft }
+        data: { status: JourneyStatus.published, publishedAt: new Date() }
       })
     })
   })
@@ -1595,19 +1584,58 @@ describe('JourneyResolver', () => {
 
   describe('userJourneys', () => {
     it('returns userJourneys related to current journey', async () => {
-      const userJourney: UserJourney = {
-        id: 'userJourneyId',
-        userId: 'userId',
-        journeyId: 'journeyId',
-        updatedAt: new Date(),
-        role: 'owner',
-        openedAt: null
-      }
-      prismaService.userJourney.findMany.mockResolvedValueOnce([userJourney])
-      expect(await resolver.userJourneys(journey)).toEqual([userJourney])
-      expect(prismaService.userJourney.findMany).toHaveBeenCalledWith({
-        where: { journeyId: journey.id }
-      })
+      const userJourney = [
+        {
+          id: 'userJourneyId',
+          userId: 'userId',
+          journeyId: 'journeyId',
+          updatedAt: new Date(),
+          role: 'owner',
+          openedAt: null,
+          journey: {
+            id: 'journeyId',
+            teamId: 'teamId',
+            userJourneys: [
+              {
+                id: 'userJourneyId',
+                userId: 'userId',
+                journeyId: 'journeyId',
+                updatedAt: new Date(),
+                role: 'owner',
+                openedAt: null
+              }
+            ],
+            team: {
+              id: 'teamId',
+              userTeams: [
+                {
+                  userId: 'userId',
+                  role: UserTeamRole.manager,
+                  teamId: 'teamId'
+                }
+              ]
+            }
+          }
+        }
+      ] as unknown as UserJourney
+
+      const userJourneys = jest.fn().mockResolvedValue(userJourney)
+      prismaService.journey.findUnique.mockReturnValue({
+        ...journey,
+        userJourneys
+      } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+
+      expect(await resolver.userJourneys(ability, journey)).toEqual(userJourney)
+    })
+
+    it('returns empty user Journeys array when null', async () => {
+      const userJourneys = jest.fn().mockResolvedValue(null)
+      prismaService.journey.findUnique.mockReturnValue({
+        ...journey,
+        userJourneys
+      } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+
+      expect(await resolver.userJourneys(ability, journey)).toEqual([])
     })
   })
 
