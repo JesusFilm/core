@@ -73,8 +73,15 @@ export function VideoCard({
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
   return (
-    <NextLink href={href} passHref>
+    <NextLink
+      href={href}
+      passHref
+      style={{
+        textDecoration: 'none'
+      }}
+    >
       <Link
+        component="span"
         display="block"
         underline="none"
         color="inherit"
@@ -121,6 +128,7 @@ export function VideoCard({
                 />
               ) : (
                 <Box
+                  component="span"
                   sx={{
                     aspectRatio: '16 / 9'
                   }}

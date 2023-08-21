@@ -75,8 +75,15 @@ export function OnboardingPanelContent({
       <SidePanelContainer border={false}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="subtitle1">{t('Use Template')}</Typography>
-          <NextLink href="/templates" passHref>
+          <NextLink
+            href="/templates"
+            passHref
+            style={{
+              textDecoration: 'none'
+            }}
+          >
             <Link
+              component="span"
               underline="none"
               variant="subtitle2"
               sx={{ display: 'flex', alignItems: 'center' }}

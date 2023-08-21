@@ -77,6 +77,7 @@ export function VideoHeading({
                   passHref
                 >
                   <Link
+                    component="span"
                     variant="overline1"
                     color="primary"
                     sx={{ textDecoration: 'none' }}

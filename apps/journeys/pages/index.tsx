@@ -81,7 +81,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                       </Box>
                       <NextLink href={`/${slug}`} passHref>
                         <Box
-                          component="a"
+                          component="span"
                           sx={{
                             display: 'block',
                             width: '100%',
@@ -103,12 +103,16 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
               <NextLink
                 href="https://www.cru.org/us/en/about/terms-of-use.html"
                 passHref
+                target="_blank"
+                rel="noopener"
+                style={{
+                  textDecoration: 'none'
+                }}
               >
                 <Link
-                  variant="body2"
+                  component="span"
                   underline="none"
-                  target="_blank"
-                  rel="noopener"
+                  variant="body2"
                   sx={{ p: 0 }}
                 >
                   {t('Terms & Conditions')}
@@ -117,12 +121,16 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
               <NextLink
                 href="https://www.cru.org/us/en/about/privacy.html"
                 passHref
+                target="_blank"
+                rel="noopener"
+                style={{
+                  textDecoration: 'none'
+                }}
               >
                 <Link
-                  variant="body2"
+                  component="span"
                   underline="none"
-                  target="_blank"
-                  rel="noopener"
+                  variant="body2"
                   sx={{ p: 0 }}
                 >
                   {t('Privacy Policy')}
