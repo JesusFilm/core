@@ -1,7 +1,7 @@
 import ButtonBase from '@mui/material/ButtonBase'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import { ReactElement, useState } from 'react'
 
 import { ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos as UnsplashCollectionPhotos } from '../../../../../../__generated__/ListUnsplashCollectionPhotos'

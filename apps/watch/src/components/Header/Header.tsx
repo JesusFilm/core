@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import Toolbar from '@mui/material/Toolbar'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import NextLink from 'next/link'
 import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
 

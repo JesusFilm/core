@@ -6,7 +6,7 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
-import { user as AuthUser } from 'next-firebase-auth'
+import { User as AuthUser } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
 import { GetMe_me as User } from '../../../../../__generated__/GetMe'

@@ -6,7 +6,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 

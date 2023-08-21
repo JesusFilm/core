@@ -1,6 +1,6 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { user as AuthUser } from 'next-firebase-auth'
+import { User as AuthUser } from 'next-firebase-auth'
 import { ReactElement, useMemo } from 'react'
 
 import {

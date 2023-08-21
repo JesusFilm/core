@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import { useRouter } from 'next/router'
-import { user as AuthUser } from 'next-firebase-auth'
+import { User as AuthUser } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'

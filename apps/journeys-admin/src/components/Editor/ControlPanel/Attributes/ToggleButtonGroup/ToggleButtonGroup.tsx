@@ -4,7 +4,7 @@ import MuiToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-interface ToggleButtonGroupProps<T = unknown> {
+interface ToggleButtonGroupProps<T> {
   label?: string
   value: T
   options: Array<{

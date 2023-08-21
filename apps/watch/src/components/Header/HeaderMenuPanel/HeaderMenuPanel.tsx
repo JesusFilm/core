@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
