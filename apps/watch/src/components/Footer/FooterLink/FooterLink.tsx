@@ -11,8 +11,8 @@ interface FooterLinkProps {
   variant?: ValueOf<Pick<LinkProps, 'variant'>>
   underline?: ValueOf<Pick<LinkProps, 'underline'>>
   src?: string
-  width?: string
-  height?: string
+  width?: number
+  height?: number
   target?: HTMLAttributeAnchorTarget
   noFollow?: boolean
 }
