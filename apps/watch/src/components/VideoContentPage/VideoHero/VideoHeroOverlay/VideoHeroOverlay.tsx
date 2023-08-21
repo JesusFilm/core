@@ -5,7 +5,7 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { ReactElement, useState } from 'react'
 
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
@@ -44,8 +44,11 @@ export function VideoHeroOverlay({
         <Image
           src={image}
           alt={imageAlt[0].value}
-          layout="fill"
-          objectFit="cover"
+          fill
+          sizes="100vw"
+          style={{
+            objectFit: 'cover'
+          }}
         />
       )}
       <HeroOverlay />

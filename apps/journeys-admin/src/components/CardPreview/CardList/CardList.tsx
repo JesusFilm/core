@@ -5,7 +5,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import Divider from '@mui/material/Divider'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { ReactElement } from 'react'
 import {
   Draggable,
@@ -175,8 +175,12 @@ export function CardList({
                 alt={primaryImageBlock?.src}
                 width={72}
                 height={72}
-                objectFit="cover"
-                style={{ borderRadius: '4px' }}
+                style={{
+                  borderRadius: '4px',
+                  maxWidth: '100%',
+                  height: 'auto',
+                  objectFit: 'cover'
+                }}
               />
             )
           }

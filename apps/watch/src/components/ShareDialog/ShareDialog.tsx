@@ -8,7 +8,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ComponentProps, ReactElement, SyntheticEvent, useState } from 'react'
@@ -119,8 +119,12 @@ export function ShareDialog({
                 alt={title[0].value}
                 width={240}
                 height={115}
-                objectFit="cover"
-                style={{ borderRadius: theme.spacing(2) }}
+                style={{
+                  borderRadius: theme.spacing(2),
+                  maxWidth: '100%',
+                  height: 'auto',
+                  objectFit: 'cover'
+                }}
               />
             </Box>
           )}

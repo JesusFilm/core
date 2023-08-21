@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
@@ -48,7 +48,6 @@ export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
                 src={taskbarIcon}
                 width={32}
                 height={32}
-                layout="fixed"
                 alt="Next Steps"
               />
             </Stack>

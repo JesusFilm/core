@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { ReactElement, useEffect } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -65,7 +65,16 @@ export function ActionsBanner(): ReactElement {
         }
       }}
     >
-      <Image src={goal} alt="goal" height={504} width={464} />
+      <Image
+        src={goal}
+        alt="goal"
+        height={504}
+        width={464}
+        style={{
+          maxWidth: '100%',
+          height: 'auto'
+        }}
+      />
       <Stack gap={3}>
         <Stack
           direction="row"

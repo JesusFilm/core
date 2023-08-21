@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -27,9 +27,12 @@ export function VideosHero(): ReactElement {
       >
         <Image
           src={background}
-          layout="fill"
-          objectFit="cover"
           alt="hero background"
+          fill
+          sizes="100vw"
+          style={{
+            objectFit: 'cover'
+          }}
         />
         <Container maxWidth="xxl" sx={{ pb: { xs: 10, md: 15 }, zIndex: 1 }}>
           <Typography

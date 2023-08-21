@@ -8,10 +8,10 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { GetStaticProps } from 'next'
+import Image from 'next/image'
+import NextLink from 'next/link'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import Image from "next/legacy/image"
-import NextLink from 'next/link'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -41,7 +41,16 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
       <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
         <Container maxWidth="xxl">
           <Stack spacing={8} py={8}>
-            <Image src={logo} alt="Next Steps" height={68} width={152} />
+            <Image
+              src={logo}
+              alt="Next Steps"
+              height={68}
+              width={152}
+              style={{
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
             <Box>
               <Grid container spacing={{ xs: 2, sm: 4 }}>
                 {journeys.map(({ id, slug }, index) => (

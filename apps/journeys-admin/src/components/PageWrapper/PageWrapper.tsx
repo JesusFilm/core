@@ -7,9 +7,9 @@ import { Theme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { user as AuthUser } from 'next-firebase-auth'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import Link from 'next/link'
+import { user as AuthUser } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 
 import taskbarIcon from '../../../public/taskbar-icon.svg'
@@ -83,13 +83,7 @@ export function PageWrapper({
             >
               <MenuIcon sx={{ color: 'background.paper' }} />
             </IconButton>
-            <Image
-              src={taskbarIcon}
-              width={32}
-              height={32}
-              layout="fixed"
-              alt="Next Steps"
-            />
+            <Image src={taskbarIcon} width={32} height={32} alt="Next Steps" />
           </Toolbar>
         ) : (
           <></>

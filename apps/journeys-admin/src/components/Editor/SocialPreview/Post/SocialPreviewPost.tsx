@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
@@ -107,9 +107,11 @@ export function SocialPreviewPost({
                   alt={primaryImageBlock.alt}
                   width={224}
                   height={120}
-                  objectFit="cover"
                   style={{
-                    borderRadius: '4px'
+                    borderRadius: '4px',
+                    maxWidth: '100%',
+                    height: 'auto',
+                    objectFit: 'cover'
                   }}
                 />
               )}

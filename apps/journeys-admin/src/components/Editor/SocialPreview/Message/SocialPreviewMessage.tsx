@@ -3,7 +3,7 @@ import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
@@ -112,10 +112,14 @@ export function SocialPreviewMessage({
                       <Image
                         src={primaryImageBlock.src}
                         alt={primaryImageBlock.alt}
-                        objectFit="cover"
                         width="60"
                         height="60"
-                        style={{ borderRadius: '4px' }}
+                        style={{
+                          borderRadius: '4px',
+                          maxWidth: '100%',
+                          height: 'auto',
+                          objectFit: 'cover'
+                        }}
                       />
                     )
                   )}

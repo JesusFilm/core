@@ -17,7 +17,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import compact from 'lodash/compact'
-import Image from "next/legacy/image"
+import Image from "next/image"
 import { NextRouter } from 'next/router'
 import { user as AuthUser } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
@@ -222,25 +222,13 @@ export function NavigationDrawer({
       <StyledList>
         <ListItem>
           <ListItemIcon>
-            <Image
-              src={taskbarIcon}
-              width={32}
-              height={32}
-              layout="fixed"
-              alt="Next Steps Logo"
-            />
+            <Image src={taskbarIcon} width={32} height={32} alt="Next Steps Logo" />
           </ListItemIcon>
           <Box sx={{ display: 'flex' }}>
-            <Image
-              src={nextstepsTitle}
-              width={106}
-              height={24}
-              layout="fixed"
-              alt="Next Steps Title"
-            />
+            <Image src={nextstepsTitle} width={106} height={24} alt="Next Steps Title" />
           </Box>
         </ListItem>
       </StyledList>
     </StyledNavigationDrawer>
-  )
+  );
 }

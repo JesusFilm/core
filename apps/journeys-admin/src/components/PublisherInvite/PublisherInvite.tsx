@@ -5,7 +5,7 @@ import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import Link from 'next/link'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -28,7 +28,16 @@ export function PublisherInvite(): ReactElement {
       >
         <Link href="/" passHref>
           <a>
-            <Image src={logo} alt="Next Steps" height={68} width={152} />
+            <Image
+              src={logo}
+              alt="Next Steps"
+              height={68}
+              width={152}
+              style={{
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
           </a>
         </Link>
       </Box>

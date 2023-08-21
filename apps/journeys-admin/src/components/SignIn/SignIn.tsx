@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   getAuth
 } from 'firebase/auth'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'
@@ -60,7 +60,16 @@ export function SignIn(): ReactElement {
             pt: 30
           }}
         >
-          <Image src={logo} alt="Next Steps" height={68} width={152} />
+          <Image
+            src={logo}
+            alt="Next Steps"
+            height={68}
+            width={152}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
           <Typography variant="h5" sx={{ mt: 20, mb: 3 }}>
             Sign In
           </Typography>

@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import { HeroOverlay } from '../../HeroOverlay'
@@ -21,10 +21,13 @@ export function HomeHero(): ReactElement {
       <Image
         src={JesusHeader}
         alt="Jesus Film Project"
-        layout="fill"
-        objectFit="cover"
         placeholder="blur"
         priority
+        fill
+        sizes="100vw"
+        style={{
+          objectFit: 'cover'
+        }}
       />
       <HeroOverlay
         sx={{

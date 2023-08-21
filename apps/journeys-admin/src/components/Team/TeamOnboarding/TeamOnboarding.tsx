@@ -12,7 +12,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import { Form } from 'formik'
-import Image from "next/legacy/image"
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -44,7 +44,16 @@ export function TeamOnboarding(): ReactElement {
     >
       <Stack alignItems="center" sx={{ maxWidth: { xs: 311, md: 397 } }}>
         <Box sx={{ mb: 10, flexShrink: 0 }}>
-          <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
+          <Image
+            src={taskbarIcon}
+            alt="Next Steps"
+            height={43}
+            width={43}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
         </Box>
         {activeTeam != null ? (
           <TeamManageWrapper>
