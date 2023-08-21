@@ -3,17 +3,12 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/watch",
   "projectType": "application",
-  "implicitDependencies": [
-    "locales"
-  ],
+  "implicitDependencies": ["locales"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "cp -r libs/locales apps/watch/public",
-          "nx _build watch"
-        ],
+        "commands": ["cp -r libs/locales apps/watch/public", "nx _build watch"],
         "parallel": false
       },
       "configurations": {
@@ -27,9 +22,7 @@
     },
     "_build": {
       "executor": "@nx/next:build",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/watch"
       },
@@ -54,7 +47,7 @@
             "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
             "npx vercel build --prod",
             "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch/.vercel-url",
-            "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch/.next/static --service=watch --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/watch/.vercel-url)/_next/static/"
+            "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch/.next/static --service=watch --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://www.jesusfilm.org/watch/_next/static/"
           ]
         }
       }
@@ -117,9 +110,7 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/apps/watch"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/watch"],
       "options": {
         "jestConfig": "apps/watch/jest.config.ts",
         "passWithNoTests": true
@@ -128,13 +119,9 @@
     "lint": {
       "executor": "@nx/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "apps/watch/**/*.{ts,tsx,js,jsx}"
-        ]
+        "lintFilePatterns": ["apps/watch/**/*.{ts,tsx,js,jsx}"]
       },
-      "outputs": [
-        "{options.outputFile}"
-      ]
+      "outputs": ["{options.outputFile}"]
     },
     "type-check": {
       "executor": "nx:run-commands",

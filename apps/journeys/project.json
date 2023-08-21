@@ -3,9 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/journeys",
   "projectType": "application",
-  "implicitDependencies": [
-    "locales"
-  ],
+  "implicitDependencies": ["locales"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
@@ -27,9 +25,7 @@
     },
     "_build": {
       "executor": "@nx/next:build",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/journeys"
       },
@@ -54,7 +50,7 @@
             "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
             "npx vercel build --prod",
             "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys/.vercel-url",
-            "npx @datadog/datadog-ci sourcemaps upload dist/apps/journeys/.next/static --service=journeys --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/journeys/.vercel-url)/_next/static/"
+            "npx @datadog/datadog-ci sourcemaps upload dist/apps/journeys/.next/static --service=journeys --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://your.nextstep.is/_next/static/"
           ]
         }
       }
@@ -111,9 +107,7 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/apps/journeys"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/journeys"],
       "options": {
         "jestConfig": "apps/journeys/jest.config.ts",
         "passWithNoTests": true
@@ -122,13 +116,9 @@
     "lint": {
       "executor": "@nx/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "apps/journeys/**/*.{ts,tsx,js,jsx}"
-        ]
+        "lintFilePatterns": ["apps/journeys/**/*.{ts,tsx,js,jsx}"]
       },
-      "outputs": [
-        "{options.outputFile}"
-      ]
+      "outputs": ["{options.outputFile}"]
     },
     "type-check": {
       "executor": "nx:run-commands",
