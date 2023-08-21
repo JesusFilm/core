@@ -232,6 +232,7 @@
     "msw-storybook-addon": "^1.8.0",
     "next-compose-plugins": "^2.2.1",
     "next-images": "^1.8.1",
+    "next-router-mock": "^0.9.9",
     "nx": "16.7.2",
     "nx-cloud": "16.4.0-beta.1",
     "pino-pretty": "^9.1.1",
