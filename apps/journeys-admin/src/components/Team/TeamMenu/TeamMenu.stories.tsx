@@ -76,7 +76,7 @@ Default.parameters = {
   }
 }
 Default.play = async () => {
-  userEvent.click(screen.getByRole('button'))
+  await userEvent.click(screen.getByRole('button'))
 }
 
 export const EmptyTeams = Template.bind({})
@@ -86,7 +86,7 @@ EmptyTeams.parameters = {
   }
 }
 EmptyTeams.play = async () => {
-  userEvent.click(screen.getByRole('button'))
+  await userEvent.click(screen.getByRole('button'))
 }
 
 export default TeamMenuStory as Meta

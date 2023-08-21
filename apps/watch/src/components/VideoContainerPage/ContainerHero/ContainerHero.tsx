@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Image from "next/legacy/image"
+import Image from 'next/legacy/image'
 import { ReactElement } from 'react'
 
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'

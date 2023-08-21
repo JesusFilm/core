@@ -202,7 +202,7 @@ export function Menu(): ReactElement {
                 onClick={() => setDuplicateTeamDialogOpen(true)}
               />
             )}
-            {journey.template === true && isPublisher && (
+            {journey.template === true && isPublisher === true && (
               <MenuItem
                 label="Description"
                 icon={<EditIcon />}
@@ -223,7 +223,7 @@ export function Menu(): ReactElement {
                 />
               </>
             )}
-            {(journey.template !== true || isPublisher) && (
+            {(journey.template !== true || isPublisher === true) && (
               <MenuItem
                 label="Language"
                 icon={<TranslateIcon />}
@@ -238,7 +238,7 @@ export function Menu(): ReactElement {
             {journey.template !== true && isPublisher === true && (
               <CreateTemplateMenuItem />
             )}
-            {(journey.template !== true || isPublisher) && (
+            {(journey.template !== true || isPublisher === true) && (
               <>
                 <Divider />
                 <NextLink href={editLink != null ? editLink : ''} passHref>

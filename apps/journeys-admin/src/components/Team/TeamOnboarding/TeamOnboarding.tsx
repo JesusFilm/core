@@ -12,7 +12,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import { Form } from 'formik'
-import Image from "next/legacy/image"
+import Image from 'next/legacy/image'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'

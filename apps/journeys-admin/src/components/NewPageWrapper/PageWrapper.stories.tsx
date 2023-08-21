@@ -34,7 +34,7 @@ const SidePanelContainers = (): ReactElement => (
     {[0, 1, 2, 3, 4, 5].map((index) =>
       index === 3 ? (
         <>
-          <SidePanelContainer border={false}>
+          <SidePanelContainer border={false} key={index}>
             <Typography sx={{ backgroundColor: 'background.default' }}>
               Side Panel Content with no border SidePanelContainer
             </Typography>
@@ -44,7 +44,7 @@ const SidePanelContainers = (): ReactElement => (
           </ListItemButton>
         </>
       ) : (
-        <SidePanelContainer>
+        <SidePanelContainer key={index}>
           <Typography
             sx={{ backgroundColor: 'background.default' }}
             variant="body2"

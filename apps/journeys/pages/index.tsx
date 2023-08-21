@@ -8,10 +8,10 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { GetStaticProps } from 'next'
+import Image from 'next/legacy/image'
+import NextLink from 'next/link'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import Image from "next/legacy/image"
-import NextLink from 'next/link'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 

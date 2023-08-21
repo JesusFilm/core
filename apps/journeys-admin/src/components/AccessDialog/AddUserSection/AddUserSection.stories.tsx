@@ -29,11 +29,13 @@ export const Email = Template.bind({})
 
 export const Link = Template.bind({})
 Link.play = async () => {
-  userEvent.click(screen.getByRole('button', { name: 'Email' }))
-  await waitFor(() => {
-    expect(screen.getByRole('menuitem', { name: 'Link' })).toBeInTheDocument()
+  await userEvent.click(screen.getByRole('button', { name: 'Email' }))
+  await waitFor(async () => {
+    await expect(
+      screen.getByRole('menuitem', { name: 'Link' })
+    ).toBeInTheDocument()
   })
-  userEvent.click(screen.getByRole('menuitem', { name: 'Link' }))
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Link' }))
 }
 
 export default AddUsersSectionStory as Meta

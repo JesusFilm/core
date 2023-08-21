@@ -56,7 +56,7 @@ export function NavigationListItem({
 }
 
 const withLink = (link: string | undefined) =>
-  (function component(baseComponent: ReactElement) {
+  function component(baseComponent: ReactElement) {
     if (link != null) {
       return (
         <NextLink href={link} passHref>
@@ -66,10 +66,10 @@ const withLink = (link: string | undefined) =>
     } else {
       return baseComponent
     }
-  })
+  }
 
 const withTooltip = (tooltip: string | undefined) =>
-  (function component(baseComponent: ReactElement) {
+  function component(baseComponent: ReactElement) {
     if (tooltip != null) {
       return (
         <Tooltip title={tooltip} placement="right" arrow>
@@ -79,4 +79,4 @@ const withTooltip = (tooltip: string | undefined) =>
     } else {
       return baseComponent
     }
-  })
+  }

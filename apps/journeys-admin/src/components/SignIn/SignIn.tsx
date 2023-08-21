@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   getAuth
 } from 'firebase/auth'
-import Image from "next/legacy/image"
+import Image from 'next/legacy/image'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'

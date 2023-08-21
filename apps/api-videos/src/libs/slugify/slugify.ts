@@ -23,7 +23,7 @@ function convertToSlug(name: string): string {
     .replace(/ -/g, '-')
     .replace(/- /g, '-')
     .replace(/[^\p{L}\p{N}-]+/gu, '-')
-    .toLowerCase();
+    .toLowerCase()
 }
 
 export function slugify(

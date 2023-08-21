@@ -1,5 +1,5 @@
 import { Meta, Story } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { screen, userEvent } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '../../../../libs/storybook'
@@ -26,9 +26,7 @@ Open.args = {
   journey
 }
 Open.play = async () => {
-  await waitFor(() => {
-    userEvent.click(screen.getByRole('button', { name: '8 more events' }))
-  })
+  await userEvent.click(screen.getByRole('button', { name: '8 more events' }))
 }
 
 export const Empty = Template.bind({})

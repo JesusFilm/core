@@ -83,10 +83,10 @@ Error.args = {
     }
   ]
 }
-Error.play = () => {
-  userEvent.type(screen.getByRole('textbox'), ' error')
+Error.play = async () => {
+  await userEvent.type(screen.getByRole('textbox'), ' error')
   const button = screen.getByRole('button', { name: 'Save' })
-  userEvent.click(button)
+  await userEvent.click(button)
 }
 
 export default SlugDialogStory as Meta

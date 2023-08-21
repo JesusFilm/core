@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { waitFor } from '@testing-library/react'
 import { ComponentProps } from 'react'
 
 import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
@@ -53,9 +52,7 @@ Complete.args = {
 }
 Complete.play = async () => {
   const button = screen.getByRole('button', { name: 'Complete Option' })
-  await waitFor(() => {
-    userEvent.click(button)
-  })
+  await userEvent.click(button)
 }
 
 export const Icons = Template.bind({})
@@ -74,13 +71,9 @@ Icons.args = {
 }
 Icons.play = async () => {
   const accordion = screen.getByRole('button', { name: 'Icons' })
-  await waitFor(() => {
-    userEvent.click(accordion)
-  })
+  await userEvent.click(accordion)
   const select = screen.getByText('TikTok')
-  await waitFor(() => {
-    userEvent.click(select)
-  })
+  await userEvent.click(select)
 }
 
 export const Disabled = Template.bind({})

@@ -46,7 +46,7 @@ interface VideoControlProps {
 
 function isMobile(): boolean {
   const userAgent = navigator.userAgent
-  return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent);
+  return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
 }
 
 function evtToDataLayer(

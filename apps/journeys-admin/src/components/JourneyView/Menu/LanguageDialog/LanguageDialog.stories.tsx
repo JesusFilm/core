@@ -132,9 +132,9 @@ const Template: Story = () => {
 
 export const Default = Template.bind({})
 export const Error = Template.bind({})
-Error.play = () => {
+Error.play = async () => {
   const button = screen.getByRole('button', { name: 'Save' })
-  userEvent.click(button)
+  await userEvent.click(button)
 }
 
 export default LanguageDialogStory as Meta

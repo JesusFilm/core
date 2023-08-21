@@ -92,9 +92,9 @@ const Template: Story = ({ ...args }) => (
 
 export const Draft = Template.bind({})
 Draft.args = { journey: defaultJourney, forceOpen: true, mocks: journeyMocks }
-Draft.play = () => {
+Draft.play = async () => {
   const button = screen.getByRole('button')
-  userEvent.click(button)
+  await userEvent.click(button)
 }
 
 export const TemplateMenu = Template.bind({})
@@ -105,9 +105,9 @@ TemplateMenu.args = {
     template: true
   }
 }
-TemplateMenu.play = () => {
+TemplateMenu.play = async () => {
   const button = screen.getByRole('button')
-  userEvent.click(button)
+  await userEvent.click(button)
 }
 
 export const Loading = Template.bind({})

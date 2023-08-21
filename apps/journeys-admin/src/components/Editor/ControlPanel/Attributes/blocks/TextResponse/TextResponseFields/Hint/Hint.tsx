@@ -80,7 +80,7 @@ export function Hint(): ReactElement {
                 onChange={handleChange}
                 onBlur={(e) => {
                   handleBlur(e)
-                  errors.textResponseHint == null && handleSubmit(e)
+                  if (errors.textResponseHint == null) void handleSubmit(e)
                 }}
               />
             </Form>

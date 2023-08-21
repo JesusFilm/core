@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Meta, Story } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { screen, userEvent } from '@storybook/testing-library'
 
 import { journeysAdminConfig } from '../../../../libs/storybook'
 
@@ -36,13 +36,11 @@ States.args = {
   states: ['Default', 'Populated', 'Error']
 }
 States.play = async () => {
-  await waitFor(() => {
-    const inputs = screen.getAllByRole('textbox')
-    const submits = screen.getAllByRole('button')
-    userEvent.type(inputs[1], 'test@email.com')
-    userEvent.type(inputs[2], 'not-an-email')
-    userEvent.click(submits[2])
-  })
+  const inputs = screen.getAllByRole('textbox')
+  const submits = screen.getAllByRole('button')
+  await userEvent.type(inputs[1], 'test@email.com')
+  await userEvent.type(inputs[2], 'not-an-email')
+  await userEvent.click(submits[2])
 }
 
 export default EmailInviteFormStory as Meta

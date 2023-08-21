@@ -34,7 +34,7 @@ interface VideoControlProps {
 
 function isIOS(): boolean {
   const userAgent = navigator.userAgent
-  return /iPad|iPhone|Macintosh|iPod/.test(userAgent);
+  return /iPad|iPhone|Macintosh|iPod/.test(userAgent)
 }
 
 export function VideoControls({

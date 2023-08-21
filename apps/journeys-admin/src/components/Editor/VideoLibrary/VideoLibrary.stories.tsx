@@ -139,8 +139,11 @@ export const Default = Template.bind({})
 export const WithSearch = Template.bind({})
 WithSearch.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
-  await waitFor(() =>
-    expect(canvas.getByRole('textbox', { name: 'Search' })).toBeInTheDocument()
+  await waitFor(
+    async () =>
+      await expect(
+        canvas.getByRole('textbox', { name: 'Search' })
+      ).toBeInTheDocument()
   )
   await userEvent.type(
     canvas.getByRole('textbox', { name: 'Search' }),
@@ -184,8 +187,11 @@ export const Empty: Story = ({ onSelect }) => {
 }
 Empty.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
-  await waitFor(() =>
-    expect(canvas.getByRole('textbox', { name: 'Search' })).toBeInTheDocument()
+  await waitFor(
+    async () =>
+      await expect(
+        canvas.getByRole('textbox', { name: 'Search' })
+      ).toBeInTheDocument()
   )
   await userEvent.type(
     canvas.getByRole('textbox', { name: 'Search' }),

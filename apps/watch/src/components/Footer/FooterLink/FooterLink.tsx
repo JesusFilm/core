@@ -1,6 +1,6 @@
 import MuiLink, { LinkProps } from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
-import Image from "next/legacy/image"
+import Image from 'next/legacy/image'
 import { HTMLAttributeAnchorTarget, ReactElement } from 'react'
 
 type ValueOf<T> = T[keyof T]

@@ -104,7 +104,7 @@ export function DescriptionEdit(): ReactElement {
                 onKeyUp={handleKeyUp}
                 onBlur={(e) => {
                   handleBlur(e)
-                  errors.seoDescription == null && handleSubmit(e)
+                  if (errors.seoDescription == null) void handleSubmit(e)
                 }}
                 sx={{
                   pb: 6

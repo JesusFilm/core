@@ -37,7 +37,7 @@ Draft.args = {
 }
 Draft.play = async () => {
   const menuButton = screen.getByRole('button')
-  userEvent.click(menuButton)
+  await userEvent.click(menuButton)
   await waitFor(async () => {
     await userEvent.hover(screen.getByRole('menu'))
   })
@@ -52,7 +52,7 @@ Published.args = {
 }
 Published.play = async () => {
   const menuButton = screen.getByRole('button')
-  userEvent.click(menuButton)
+  await userEvent.click(menuButton)
   await waitFor(async () => {
     await userEvent.hover(screen.getByRole('menu'))
   })
@@ -63,9 +63,9 @@ Archived.args = {
   status: JourneyStatus.archived,
   slug: 'archived-journey'
 }
-Archived.play = () => {
+Archived.play = async () => {
   const menuButton = screen.getByTestId('MoreVertIcon')
-  userEvent.click(menuButton)
+  await userEvent.click(menuButton)
 }
 
 export const Trashed = StoryTemplate.bind({})
@@ -73,9 +73,9 @@ Trashed.args = {
   status: JourneyStatus.trashed,
   slug: 'trashed-journey'
 }
-Trashed.play = () => {
+Trashed.play = async () => {
   const menuButton = screen.getByTestId('MoreVertIcon')
-  userEvent.click(menuButton)
+  await userEvent.click(menuButton)
 }
 
 export const Template = StoryTemplate.bind({})
@@ -86,9 +86,9 @@ Template.args = {
   journeyId: 'template-id',
   template: true
 }
-Template.play = () => {
+Template.play = async () => {
   const menuButton = screen.getByTestId('MoreVertIcon')
-  userEvent.click(menuButton)
+  await userEvent.click(menuButton)
 }
 
 export default JoruneyCardMenuDemo as Meta

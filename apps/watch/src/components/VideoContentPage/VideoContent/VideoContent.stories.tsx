@@ -28,8 +28,8 @@ export const Discussion = Template.bind({})
 Discussion.args = {
   video: { ...videos[0] }
 }
-Discussion.play = () => {
-  userEvent.click(screen.getByTestId('discussion'))
+Discussion.play = async () => {
+  await userEvent.click(screen.getByTestId('discussion'))
 }
 
 export default VideoContentStory as Meta

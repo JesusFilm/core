@@ -84,11 +84,11 @@ Default.parameters = {
   }
 }
 Default.play = async () => {
-  await waitFor(() =>
-    expect(screen.getByRole('textbox')).toHaveValue('My Team')
+  await waitFor(
+    async () => await expect(screen.getByRole('textbox')).toHaveValue('My Team')
   )
-  userEvent.clear(screen.getByRole('textbox'))
-  userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+  await userEvent.clear(screen.getByRole('textbox'))
+  await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
 }
 
 export default TeamUpdateDialogStory as Meta

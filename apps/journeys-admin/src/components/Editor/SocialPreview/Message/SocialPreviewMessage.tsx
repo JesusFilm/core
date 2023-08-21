@@ -3,7 +3,7 @@ import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
-import Image from "next/legacy/image"
+import Image from 'next/legacy/image'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'

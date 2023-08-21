@@ -14,7 +14,7 @@ import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
-import Image from "next/legacy/image"
+import Image from 'next/legacy/image'
 import { ComponentProps, ReactElement, useEffect, useState } from 'react'
 import useDownloader from 'react-use-downloader'
 
