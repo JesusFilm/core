@@ -1,6 +1,6 @@
 {
   "extends": [
-    "plugin:@nrwl/nx/react-typescript",
+    "plugin:@nx/react-typescript",
     "../../.eslintrc.json",
     "next",
     "next/core-web-vitals"
@@ -22,7 +22,12 @@
         "project": ["apps/journeys-admin/tsconfig.*?.json"]
       },
       "rules": {
-        "no-void": ["error", { "allowAsStatement": true }],
+        "no-void": [
+          "error",
+          {
+            "allowAsStatement": true
+          }
+        ],
         "@typescript-eslint/no-misused-promises": "off"
       }
     },
