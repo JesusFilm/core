@@ -41,7 +41,7 @@ export function ActionInformation(): ReactElement {
       </Typography>
       <GoalDescription
         label="Start a Conversation"
-        description="If the goal is to go any chat platform"
+        description="If the goal is to go to any chat platform"
         icon={<QuestionAnswerOutlined />}
       />
       <GoalDescription
