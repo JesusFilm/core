@@ -27,18 +27,16 @@ export function PublisherInvite(): ReactElement {
         }}
       >
         <Link href="/" passHref>
-          <a>
-            <Image
-              src={logo}
-              alt="Next Steps"
-              height={68}
-              width={152}
-              style={{
-                maxWidth: '100%',
-                height: 'auto'
-              }}
-            />
-          </a>
+          <Image
+            src={logo}
+            alt="Next Steps"
+            height={68}
+            width={152}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
         </Link>
       </Box>
       <Card
