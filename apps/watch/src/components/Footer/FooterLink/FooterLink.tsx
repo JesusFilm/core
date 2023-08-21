@@ -44,6 +44,10 @@ export function FooterLink({
           width={width ?? 32}
           height={height ?? 32}
           alt={label}
+          style={{
+            maxWidth: '100%',
+            height: 'auto'
+          }}
         />
       )}
     </MuiLink>

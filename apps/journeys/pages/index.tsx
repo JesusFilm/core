@@ -41,7 +41,16 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
       <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
         <Container maxWidth="xxl">
           <Stack spacing={8} py={8}>
-            <Image src={logo} alt="Next Steps" height={68} width={152} />
+            <Image
+              src={logo}
+              alt="Next Steps"
+              height={68}
+              width={152}
+              style={{
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
             <Box>
               <Grid container spacing={{ xs: 2, sm: 4 }}>
                 {journeys.map(({ id, slug }, index) => (

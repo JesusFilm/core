@@ -60,7 +60,16 @@ export function SignIn(): ReactElement {
             pt: 30
           }}
         >
-          <Image src={logo} alt="Next Steps" height={68} width={152} />
+          <Image
+            src={logo}
+            alt="Next Steps"
+            height={68}
+            width={152}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
           <Typography variant="h5" sx={{ mt: 20, mb: 3 }}>
             Sign In
           </Typography>

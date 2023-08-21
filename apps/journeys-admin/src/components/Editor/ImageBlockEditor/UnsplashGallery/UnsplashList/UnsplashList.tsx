@@ -73,7 +73,9 @@ export function UnsplashList({
               width={item.width}
               height={item.height}
               style={{
-                borderRadius: 8
+                borderRadius: 8,
+                maxWidth: '100%',
+                height: 'auto'
               }}
             />
           </ButtonBase>

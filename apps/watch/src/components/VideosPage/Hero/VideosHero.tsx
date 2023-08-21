@@ -27,9 +27,12 @@ export function VideosHero(): ReactElement {
       >
         <Image
           src={background}
-          layout="fill"
-          objectFit="cover"
           alt="hero background"
+          fill
+          sizes="100vw"
+          style={{
+            objectFit: 'cover'
+          }}
         />
         <Container maxWidth="xxl" sx={{ pb: { xs: 10, md: 15 }, zIndex: 1 }}>
           <Typography

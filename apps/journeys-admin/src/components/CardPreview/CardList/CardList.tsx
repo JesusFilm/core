@@ -175,8 +175,12 @@ export function CardList({
                 alt={primaryImageBlock?.src}
                 width={72}
                 height={72}
-                objectFit="cover"
-                style={{ borderRadius: '4px' }}
+                style={{
+                  borderRadius: '4px',
+                  maxWidth: '100%',
+                  height: 'auto',
+                  objectFit: 'cover'
+                }}
               />
             )
           }

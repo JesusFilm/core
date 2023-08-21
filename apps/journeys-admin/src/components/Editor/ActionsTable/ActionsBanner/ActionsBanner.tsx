@@ -65,7 +65,16 @@ export function ActionsBanner(): ReactElement {
         }
       }}
     >
-      <Image src={goal} alt="goal" height={504} width={464} />
+      <Image
+        src={goal}
+        alt="goal"
+        height={504}
+        width={464}
+        style={{
+          maxWidth: '100%',
+          height: 'auto'
+        }}
+      />
       <Stack gap={3}>
         <Stack
           direction="row"

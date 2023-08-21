@@ -107,9 +107,11 @@ export function SocialPreviewPost({
                   alt={primaryImageBlock.alt}
                   width={224}
                   height={120}
-                  objectFit="cover"
                   style={{
-                    borderRadius: '4px'
+                    borderRadius: '4px',
+                    maxWidth: '100%',
+                    height: 'auto',
+                    objectFit: 'cover'
                   }}
                 />
               )}

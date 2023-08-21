@@ -112,10 +112,14 @@ export function SocialPreviewMessage({
                       <Image
                         src={primaryImageBlock.src}
                         alt={primaryImageBlock.alt}
-                        objectFit="cover"
                         width="60"
                         height="60"
-                        style={{ borderRadius: '4px' }}
+                        style={{
+                          borderRadius: '4px',
+                          maxWidth: '100%',
+                          height: 'auto',
+                          objectFit: 'cover'
+                        }}
                       />
                     )
                   )}

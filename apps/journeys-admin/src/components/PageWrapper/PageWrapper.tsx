@@ -83,13 +83,7 @@ export function PageWrapper({
             >
               <MenuIcon sx={{ color: 'background.paper' }} />
             </IconButton>
-            <Image
-              src={taskbarIcon}
-              width={32}
-              height={32}
-              layout="fixed"
-              alt="Next Steps"
-            />
+            <Image src={taskbarIcon} width={32} height={32} alt="Next Steps" />
           </Toolbar>
         ) : (
           <></>

@@ -214,7 +214,6 @@ export function NavigationDrawer({
               src={taskbarIcon}
               width={32}
               height={32}
-              layout="fixed"
               alt="Next Steps Logo"
             />
           </ListItemIcon>
@@ -223,7 +222,6 @@ export function NavigationDrawer({
               src={nextstepsTitle}
               width={106}
               height={24}
-              layout="fixed"
               alt="Next Steps Title"
             />
           </Box>

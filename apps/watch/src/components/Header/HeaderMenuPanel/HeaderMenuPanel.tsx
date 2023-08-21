@@ -62,7 +62,11 @@ export function HeaderMenuPanel({
                 width="160"
                 height="40"
                 alt="Watch Logo"
-                style={{ cursor: 'pointer' }}
+                style={{
+                  cursor: 'pointer',
+                  maxWidth: '100%',
+                  height: 'auto'
+                }}
               />
             </a>
           </NextLink>

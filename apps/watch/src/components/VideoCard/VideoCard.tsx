@@ -111,10 +111,13 @@ export function VideoCard({
               {video?.image != null ? (
                 <Image
                   src={video.image}
-                  layout="fill"
-                  objectFit="cover"
-                  objectPosition="left top"
                   alt={video.title[0].value}
+                  fill
+                  sizes="100vw"
+                  style={{
+                    objectFit: 'cover',
+                    objectPosition: 'left top'
+                  }}
                 />
               ) : (
                 <Box
