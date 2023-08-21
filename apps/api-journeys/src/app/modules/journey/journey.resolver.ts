@@ -760,9 +760,10 @@ export class JourneyResolver {
 
   @ResolveField()
   async userJourneys(
-    @CaslAbility() ability: AppAbility,
-    @Parent() journey: Journey
+    @Parent() journey: Journey,
+    @CaslAbility({ optional: true }) ability?: AppAbility
   ): Promise<UserJourney[]> {
+    if (ability == null) return []
     const userJourneys = await this.prismaService.journey
       .findUnique({
         where: { id: journey.id }
