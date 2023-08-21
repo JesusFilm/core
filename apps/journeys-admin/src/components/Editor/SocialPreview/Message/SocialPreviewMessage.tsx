@@ -111,7 +111,7 @@ export function SocialPreviewMessage({
                     primaryImageBlock?.src != null && (
                       <Image
                         src={primaryImageBlock.src}
-                        alt={primaryImageBlock.alt}
+                        alt={primaryImageBlock.alt ?? ''}
                         width="60"
                         height="60"
                         style={{

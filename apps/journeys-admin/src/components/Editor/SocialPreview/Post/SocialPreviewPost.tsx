@@ -104,7 +104,7 @@ export function SocialPreviewPost({
               ) : (
                 <Image
                   src={primaryImageBlock.src}
-                  alt={primaryImageBlock.alt}
+                  alt={primaryImageBlock.alt ?? ''}
                   width={224}
                   height={120}
                   style={{
