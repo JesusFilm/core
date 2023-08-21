@@ -1,5 +1,4 @@
 {
-  "root": "apps/journeys-admin",
   "sourceRoot": "apps/journeys-admin",
   "projectType": "application",
   "implicitDependencies": ["locales"],
@@ -77,8 +76,13 @@
         "production": {
           "buildTarget": "journeys-admin:build:production",
           "dev": false
+        },
+        "development": {
+          "buildTarget": "journeys-admin:_build:development",
+          "dev": true
         }
-      }
+      },
+      "defaultConfiguration": "development"
     },
     "serve-all": {
       "executor": "@nrwl/workspace:run-commands",
@@ -104,7 +108,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/journeys-admin"],
       "options": {
-        "jestConfig": "apps/journeys-admin/jest.config.js",
+        "jestConfig": "apps/journeys-admin/jest.config.ts",
         "passWithNoTests": true
       }
     },

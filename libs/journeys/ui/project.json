@@ -1,5 +1,4 @@
 {
-  "root": "libs/journeys/ui",
   "sourceRoot": "libs/journeys/ui/src",
   "projectType": "library",
   "tags": [],
@@ -22,7 +21,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/journeys/ui"],
       "options": {
-        "jestConfig": "libs/journeys/ui/jest.config.js",
+        "jestConfig": "libs/journeys/ui/jest.config.ts",
         "passWithNoTests": true
       }
     },

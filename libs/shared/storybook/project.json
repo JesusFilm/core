@@ -1,5 +1,4 @@
 {
-  "root": "libs/shared/storybook",
   "sourceRoot": "libs/shared/storybook/src",
   "projectType": "library",
   "targets": {

@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { expect } from '@storybook/jest'
 import { Meta, Story } from '@storybook/react'
-import { userEvent, waitFor, within } from '@storybook/testing-library'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -172,16 +172,15 @@ SelectHost.args = {
   ...Default.args,
   journey: { ...journey, host: null }
 }
-SelectHost.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement)
+SelectHost.play = async () => {
   await waitFor(() => {
     expect(
-      canvas.getByRole('button', { name: 'Select a Host' })
+      screen.getByRole('button', { name: 'Select a Host' })
     ).not.toBeDisabled()
   })
-  userEvent.click(canvas.getByRole('button', { name: 'Select a Host' }))
+  userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
   await waitFor(() => {
-    expect(canvas.getAllByText('Authors')).toHaveLength(2)
+    expect(screen.getAllByText('Authors')).toHaveLength(2)
   })
 }
 
@@ -190,18 +189,21 @@ CreateHost.args = {
   ...Default.args,
   journey: { ...journey, host: null }
 }
-CreateHost.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement)
+CreateHost.play = async () => {
   await waitFor(() => {
     expect(
-      canvas.getByRole('button', { name: 'Select a Host' })
+      screen.getByRole('button', { name: 'Select a Host' })
     ).not.toBeDisabled()
   })
-  userEvent.click(canvas.getByRole('button', { name: 'Select a Host' }))
-  expect(canvas.getByRole('button', { name: 'Create New' })).toBeInTheDocument()
-  userEvent.click(canvas.getByRole('button', { name: 'Create New' }))
+  userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
   await waitFor(() => {
-    expect(canvas.getAllByText('Create Author')).toHaveLength(2)
+    expect(
+      screen.getByRole('button', { name: 'Create New' })
+    ).toBeInTheDocument()
+  })
+  userEvent.click(screen.getByRole('button', { name: 'Create New' }))
+  await waitFor(() => {
+    expect(screen.getAllByText('Create Author')).toHaveLength(2)
   })
 }
 
@@ -210,18 +212,19 @@ Info.args = {
   ...Default.args,
   journey: { ...journey, host: null }
 }
-Info.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement)
+Info.play = async () => {
   await waitFor(() => {
     expect(
-      canvas.getByRole('button', { name: 'Select a Host' })
+      screen.getByRole('button', { name: 'Select a Host' })
     ).not.toBeDisabled()
   })
-  userEvent.click(canvas.getByRole('button', { name: 'Select a Host' }))
-  expect(canvas.getAllByTestId('info')[0]).toBeInTheDocument()
-  userEvent.click(canvas.getAllByTestId('info')[0])
+  userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
   await waitFor(() => {
-    expect(canvas.getByText('Information')).toBeInTheDocument()
+    expect(screen.getAllByTestId('info')[0]).toBeInTheDocument()
+  })
+  userEvent.click(screen.getAllByTestId('info')[0])
+  await waitFor(() => {
+    expect(screen.getByText('Information')).toBeInTheDocument()
   })
 }
 

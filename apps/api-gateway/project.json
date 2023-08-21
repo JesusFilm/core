@@ -1,5 +1,4 @@
 {
-  "root": "apps/api-gateway",
   "sourceRoot": "apps/api-gateway/src",
   "projectType": "application",
   "targets": {

@@ -97,7 +97,7 @@ export function DescriptionEdit(): ReactElement {
                 }
                 helperText={
                   errors.seoDescription != null
-                    ? errors.seoDescription
+                    ? (errors.seoDescription as string)
                     : 'Recommended length: up to 18 words'
                 }
                 onChange={handleChange}
