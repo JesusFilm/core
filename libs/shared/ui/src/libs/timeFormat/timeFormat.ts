@@ -7,7 +7,7 @@ export const secondsToTimeFormat = (
   const date = new Date(seconds * 1000)
   return options?.trimZeroes === true
     ? date.toISOString().substring(11, 19).replace(/^00:/, '').replace(/^0/, '')
-    : date.toISOString().substring(11, 19)
+    : date.toISOString().substring(11, 19);
 }
 
 export const secondsToMinutes = (seconds: number): number => {

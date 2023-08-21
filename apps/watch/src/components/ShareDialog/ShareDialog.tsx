@@ -8,7 +8,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ComponentProps, ReactElement, SyntheticEvent, useState } from 'react'

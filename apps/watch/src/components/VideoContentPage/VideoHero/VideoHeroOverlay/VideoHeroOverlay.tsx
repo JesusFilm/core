@@ -5,7 +5,7 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import { ReactElement, useState } from 'react'
 
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'

@@ -296,7 +296,7 @@ export class JourneyResolver {
         // If no duplicate number found, it's a unique journey. Return 0
         return numbers != null ? parseInt(numbers[0]) : 0
       }
-    })
+    });
   }
 
   @Mutation()

@@ -17,7 +17,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import compact from 'lodash/compact'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import { NextRouter } from 'next/router'
 import { user as AuthUser } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'

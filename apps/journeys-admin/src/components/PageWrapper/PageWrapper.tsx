@@ -8,7 +8,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { user as AuthUser } from 'next-firebase-auth'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import Link from 'next/link'
 import { ReactElement, ReactNode, useState } from 'react'
 

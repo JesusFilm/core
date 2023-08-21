@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import { ReactElement } from 'react'
 
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'

@@ -5,7 +5,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import Divider from '@mui/material/Divider'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import { ReactElement } from 'react'
 import {
   Draggable,

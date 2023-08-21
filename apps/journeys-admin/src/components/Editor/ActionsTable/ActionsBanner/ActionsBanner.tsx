@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import { ReactElement, useEffect } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
