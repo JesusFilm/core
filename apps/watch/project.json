@@ -1,5 +1,4 @@
 {
-  "root": "apps/watch",
   "sourceRoot": "apps/watch",
   "projectType": "application",
   "implicitDependencies": ["locales"],
@@ -47,7 +46,7 @@
             "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
             "npx vercel build --prod",
             "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch/.vercel-url",
-            "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch/.next/static --service=watch --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/watch/.vercel-url)/_next/static/"
+            "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch/.next/static --service=watch --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://www.jesusfilm.org/watch/_next/static/"
           ]
         }
       }
@@ -74,8 +73,13 @@
         "production": {
           "buildTarget": "watch:_build:production",
           "dev": false
+        },
+        "development": {
+          "buildTarget": "watch:_build:development",
+          "dev": true
         }
-      }
+      },
+      "defaultConfiguration": "development"
     },
     "serve-all": {
       "executor": "@nrwl/workspace:run-commands",
@@ -107,7 +111,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/watch"],
       "options": {
-        "jestConfig": "apps/watch/jest.config.js",
+        "jestConfig": "apps/watch/jest.config.ts",
         "passWithNoTests": true
       }
     },
