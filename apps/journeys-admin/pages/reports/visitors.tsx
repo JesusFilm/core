@@ -1,8 +1,8 @@
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -15,7 +15,7 @@ import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function ReportsVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const AuthUser = useUser()
 
   return (
     <>
@@ -28,9 +28,9 @@ function ReportsVisitorsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
+})(async ({ user: AuthUser, locale }) => {
   const { flags, redirect, translations } = await initAndAuthApp({
     AuthUser,
     locale
@@ -46,6 +46,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(ReportsVisitorsPage)

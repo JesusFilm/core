@@ -3,12 +3,17 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/watch",
   "projectType": "application",
-  "implicitDependencies": ["locales"],
+  "implicitDependencies": [
+    "locales"
+  ],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["cp -r libs/locales apps/watch/public", "nx _build watch"],
+        "commands": [
+          "cp -r libs/locales apps/watch/public",
+          "nx _build watch"
+        ],
         "parallel": false
       },
       "configurations": {
@@ -22,7 +27,9 @@
     },
     "_build": {
       "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/watch"
       },
@@ -110,7 +117,9 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/watch"],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/watch"
+      ],
       "options": {
         "jestConfig": "apps/watch/jest.config.ts",
         "passWithNoTests": true
@@ -119,9 +128,13 @@
     "lint": {
       "executor": "@nx/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/watch/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": [
+          "apps/watch/**/*.{ts,tsx,js,jsx}"
+        ]
       },
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     },
     "type-check": {
       "executor": "nx:run-commands",

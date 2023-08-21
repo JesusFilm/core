@@ -2,13 +2,14 @@ const withNx = require('@nx/next/plugins/with-nx')
 const withPlugins = require('next-compose-plugins')
 const withImages = require('next-images')
 
-const { i18n } = require('./next-i18next.config')
+const { i18n, localePath } = require('./next-i18next.config')
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
   i18n,
+  localePath,
   images: {
     domains: [
       'images.unsplash.com',
@@ -37,6 +38,7 @@ const nextConfig = {
   eslint: {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
-  }
+  },
+  transpilePackages: ['journeys-ui']
 }
 module.exports = withPlugins([[withImages], [withNx]], nextConfig)

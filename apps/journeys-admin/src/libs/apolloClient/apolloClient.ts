@@ -5,7 +5,7 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import jwt from 'jsonwebtoken'
-import { AuthUser } from 'next-firebase-auth'
+import { user as AuthUser } from 'next-firebase-auth'
 import { useMemo } from 'react'
 
 import { cache } from './cache'

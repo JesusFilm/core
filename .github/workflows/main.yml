@@ -31,7 +31,7 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
@@ -92,7 +92,7 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
@@ -153,7 +153,7 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
@@ -207,7 +207,7 @@ jobs:
         run: ./tools/scripts/check-git-diff.sh
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
