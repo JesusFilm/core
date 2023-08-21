@@ -2,6 +2,8 @@ import { ApolloProvider } from '@apollo/client'
 import { datadogRum } from '@datadog/browser-rum'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import { decode } from 'jsonwebtoken'
+import { AuthAction, useAuthUser, withAuthUser } from 'next-firebase-auth'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { AppProps as NextJsAppProps } from 'next/app'
@@ -34,17 +36,37 @@ type JourneysAdminAppProps = NextJsAppProps<{
   emotionCache?: EmotionCache
 }
 
+function isTokenExpired(token: string): boolean {
+  try {
+    const decodedToken = decode(token) as { exp: number }
+    const tokenExpiresAt = decodedToken.exp
+    const now = Math.floor(Date.now() / 1000)
+    return now > tokenExpiresAt
+  } catch (error) {
+    console.error(error)
+    return true
+  }
+}
+
 function JourneysAdminApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const AuthUser = useAuthUser()
   const token =
     (pageProps.AuthUserSerialized != null
       ? (JSON.parse(pageProps.AuthUserSerialized)._token as string | null)
       : '') ?? ''
-  const apolloClient = useApollo(token)
+
+  async function getToken(): Promise<string> {
+    return (await AuthUser.getIdToken(true)) ?? ''
+  }
+
+  const refreshedToken = isTokenExpired(token) ? getToken() : token
+
+  const apolloClient = useApollo(refreshedToken)
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_GTM_ID != null)
@@ -108,4 +130,6 @@ function JourneysAdminApp({
   )
 }
 
-export default appWithTranslation(JourneysAdminApp, i18nConfig)
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
+})(appWithTranslation(JourneysAdminApp, i18nConfig))
