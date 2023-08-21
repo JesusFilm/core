@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { waitFor } from '@testing-library/react'
 import { ComponentProps } from 'react'
 
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
@@ -29,12 +28,10 @@ Open.play = async () => {
   const telegram = screen.getByRole('button', { name: 'Telegram' })
   const custom = screen.getByRole('button', { name: 'Custom' })
 
-  await waitFor(() => {
-    userEvent.click(facebook)
-    userEvent.click(whatsApp)
-    userEvent.click(telegram)
-    userEvent.click(custom)
-  })
+  await userEvent.click(facebook)
+  await userEvent.click(whatsApp)
+  await userEvent.click(telegram)
+  await userEvent.click(custom)
 }
 
 export default ChatStory as Meta

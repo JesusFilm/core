@@ -49,9 +49,8 @@ Block.args = {
     children: []
   }
 }
-Block.play = () => {
-  const menuButton = screen.getByRole('button')
-  userEvent.click(menuButton)
+Block.play = async () => {
+  await userEvent.click(screen.getByRole('button'))
 }
 
 export const Card = Template.bind({})
@@ -66,9 +65,8 @@ Card.args = {
     children: []
   }
 }
-Card.play = () => {
-  const menuButton = screen.getByRole('button')
-  userEvent.click(menuButton)
+Card.play = async () => {
+  await userEvent.click(screen.getByRole('button'))
 }
 
 export const DeleteCardDialog = Template.bind({})
@@ -84,13 +82,13 @@ DeleteCardDialog.args = {
   }
 }
 DeleteCardDialog.play = async () => {
-  userEvent.click(screen.getByRole('button'))
-  await waitFor(() => {
-    expect(
+  await userEvent.click(screen.getByRole('button'))
+  await waitFor(async () => {
+    await expect(
       screen.getByRole('menuitem', { name: 'Delete Card' })
     ).toBeInTheDocument()
   })
-  userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
 }
 
 export default MenuStory as Meta

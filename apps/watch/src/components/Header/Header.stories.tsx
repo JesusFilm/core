@@ -28,9 +28,8 @@ const Template: Story = () => (
 export const Default = Template.bind({})
 
 export const OpenPanel = Template.bind({})
-OpenPanel.play = () => {
-  const menuButton = screen.getAllByTestId('MenuIcon')[0]
-  userEvent.click(menuButton)
+OpenPanel.play = async () => {
+  await userEvent.click(screen.getAllByTestId('MenuIcon')[0])
 }
 
 export default HeaderStory as Meta

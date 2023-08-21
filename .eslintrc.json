@@ -3,7 +3,10 @@
   "ignorePatterns": ["**/*"],
   "plugins": ["@nx", "import"],
   "settings": {
-    "import/internal-regex": "^(@core|.prisma)"
+    "import/internal-regex": "^(@core|.prisma)",
+    "next": {
+      "rootDir": "apps/*"
+    }
   },
   "rules": {
     "import/no-absolute-path": "error",

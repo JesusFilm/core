@@ -81,9 +81,9 @@ const Template: Story = ({ onChange }) => {
 }
 
 export const Default = Template.bind({})
-Default.play = () => {
+Default.play = async () => {
   const button = screen.getAllByRole('button', { name: 'Open' })[0]
-  userEvent.click(button)
+  await userEvent.click(button)
 }
 
 export default LanguageAutocompleteStory as Meta

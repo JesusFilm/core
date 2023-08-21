@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useAuthUser,
@@ -6,7 +7,6 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 

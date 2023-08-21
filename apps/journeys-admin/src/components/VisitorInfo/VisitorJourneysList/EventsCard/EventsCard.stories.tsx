@@ -1,3 +1,4 @@
+import { expect } from '@storybook/jest'
 import { Meta, Story } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
@@ -26,9 +27,12 @@ Open.args = {
   journey
 }
 Open.play = async () => {
-  await waitFor(() => {
-    userEvent.click(screen.getByRole('button', { name: '8 more events' }))
+  await waitFor(async () => {
+    await expect(
+      screen.getByRole('button', { name: '8 more events' })
+    ).toBeInTheDocument()
   })
+  await userEvent.click(screen.getByRole('button', { name: '8 more events' }))
 }
 
 export const Empty = Template.bind({})

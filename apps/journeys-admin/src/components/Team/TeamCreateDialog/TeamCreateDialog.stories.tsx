@@ -60,7 +60,7 @@ Default.parameters = {
   }
 }
 Default.play = async () => {
-  userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+  await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
 }
 
 export default TeamCreateDialogStory as Meta

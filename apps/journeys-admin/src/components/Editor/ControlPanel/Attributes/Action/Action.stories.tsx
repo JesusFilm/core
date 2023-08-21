@@ -115,9 +115,8 @@ Default.args = {
   steps,
   selectedStep: steps[1]
 }
-Default.play = () => {
-  const dropDown = screen.getByRole('button', { name: 'None' })
-  userEvent.click(dropDown)
+Default.play = async () => {
+  await userEvent.click(screen.getByRole('button', { name: 'None' }))
 }
 
 export const DisabledNextStep = Template.bind({})
@@ -125,9 +124,8 @@ DisabledNextStep.args = {
   steps,
   selectedStep: steps[4]
 }
-DisabledNextStep.play = () => {
-  const dropDown = screen.getByRole('button', { name: 'None' })
-  userEvent.click(dropDown)
+DisabledNextStep.play = async () => {
+  await userEvent.click(screen.getByRole('button', { name: 'None' }))
 }
 
 export const LinkAction = Template.bind({})

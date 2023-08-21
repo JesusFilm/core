@@ -1,6 +1,7 @@
 import EditRounded from '@mui/icons-material/EditRounded'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
+import { expect } from '@storybook/jest'
 import { Meta, Story } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import noop from 'lodash/noop'
@@ -79,9 +80,12 @@ const Template: Story<ComponentProps<typeof TextFieldForm>> = () => (
 
 export const States = Template.bind({})
 States.play = async () => {
-  await waitFor(() => {
-    userEvent.type(screen.getByRole('textbox', { name: 'Error' }), 'a')
+  await waitFor(async () => {
+    await expect(
+      screen.getByRole('textbox', { name: 'Error' })
+    ).toBeInTheDocument()
   })
+  await userEvent.type(screen.getByRole('textbox', { name: 'Error' }), 'a')
 }
 
 export default TextFieldFormStory as Meta

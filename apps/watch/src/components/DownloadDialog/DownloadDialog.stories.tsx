@@ -43,8 +43,8 @@ export const AcceptedTerms = Template.bind({})
 AcceptedTerms.args = {
   ...Default.args
 }
-AcceptedTerms.play = () => {
-  userEvent.click(screen.getByRole('checkbox'))
+AcceptedTerms.play = async () => {
+  await userEvent.click(screen.getByRole('checkbox'))
 }
 
 export default DownloadDialogStory as Meta

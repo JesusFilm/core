@@ -124,10 +124,10 @@ SubmitError.args = {
   ...Default.args,
   minRows: 1
 }
-SubmitError.play = () => {
+SubmitError.play = async () => {
   const submit = screen.getAllByRole('button')[0]
-  userEvent.type(screen.getAllByRole('textbox')[0], 'Answer')
-  userEvent.click(submit)
+  await userEvent.type(screen.getAllByRole('textbox')[0], 'Answer')
+  await userEvent.click(submit)
 }
 
 const LoadingTemplate: Story<ComponentProps<typeof TextResponse>> = ({
@@ -146,15 +146,15 @@ const LoadingTemplate: Story<ComponentProps<typeof TextResponse>> = ({
 
 export const Loading = LoadingTemplate.bind({})
 Loading.args = { ...Default.args }
-Loading.play = () => {
+Loading.play = async () => {
   const submitButtons = screen.getAllByRole('button')
   const textFields = screen.getAllByRole('textbox')
-  textFields.forEach((field) => {
-    userEvent.type(field, 'Answer')
-  })
-  submitButtons.forEach((button) => {
-    userEvent.click(button)
-  })
+  await Promise.all(textFields.map(async (field) => {
+    await userEvent.type(field, 'Answer')
+  }))
+  await Promise.all(submitButtons.map(async (button) => {
+    await userEvent.click(button)
+  }))
 }
 Loading.parameters = { chromatic: { disableSnapshot: true } }
 

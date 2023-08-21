@@ -123,8 +123,8 @@ Loading.args = { journey: null }
 
 export const NoImageDialog = Template.bind({})
 NoImageDialog.args = { journey }
-NoImageDialog.play = () => {
-  userEvent.click(screen.getByRole('button', { name: 'Change' }))
+NoImageDialog.play = async () => {
+  await userEvent.click(screen.getByRole('button', { name: 'Change' }))
 }
 
 export const ImageDialog = Template.bind({})
@@ -137,8 +137,8 @@ ImageDialog.args = {
     seoDescription: 'Social description'
   }
 }
-ImageDialog.play = () => {
-  userEvent.click(screen.getByRole('button', { name: 'Change' }))
+ImageDialog.play = async () => {
+  await userEvent.click(screen.getByRole('button', { name: 'Change' }))
 }
 
 export default SocialShareAppearanceStory as Meta

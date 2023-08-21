@@ -75,8 +75,8 @@ ShareLink.args = {
   ...Basic.args,
   video
 }
-ShareLink.play = () => {
-  userEvent.click(screen.getByRole('button', { name: 'Copy Link' }))
+ShareLink.play = async () => {
+  await userEvent.click(screen.getByRole('button', { name: 'Copy Link' }))
 }
 
 export const EmbedCode = Template.bind({})
@@ -84,13 +84,14 @@ EmbedCode.args = {
   ...ShareLink.args
 }
 EmbedCode.play = async () => {
-  userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))
-  await waitFor(() =>
-    expect(
-      screen.getByRole('button', { name: 'Copy Code' })
-    ).toBeInTheDocument()
+  await userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))
+  await waitFor(
+    async () =>
+      await expect(
+        screen.getByRole('button', { name: 'Copy Code' })
+      ).toBeInTheDocument()
   )
-  userEvent.click(screen.getByRole('button', { name: 'Copy Code' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Copy Code' }))
 }
 
 export default ShareDialogStory as Meta

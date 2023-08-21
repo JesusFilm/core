@@ -61,7 +61,7 @@ export function Language({ isPublisher }: LanguageProps): ReactElement {
               {localLanguage ?? nativeLanguage}
               {localLanguage != null &&
                 localLanguage !== nativeLanguage &&
-                nativeLanguage && <span>&nbsp;({nativeLanguage})</span>}
+                nativeLanguage != null && <span>&nbsp;({nativeLanguage})</span>}
             </span>
           </Typography>
         ) : (

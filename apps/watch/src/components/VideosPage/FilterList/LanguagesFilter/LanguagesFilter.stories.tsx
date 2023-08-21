@@ -57,9 +57,8 @@ const Template: Story = () => {
 }
 
 export const Default = Template.bind({})
-Default.play = () => {
-  const button = screen.getAllByRole('button', { name: 'Open' })[0]
-  userEvent.click(button)
+Default.play = async () => {
+  await userEvent.click(screen.getAllByRole('button', { name: 'Open' })[0])
 }
 
 export default LanguagesFilterStory as Meta

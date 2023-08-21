@@ -119,7 +119,7 @@ export function VideoFromYouTube({
 
   const loading = Boolean(
     (data == null && error == null) ||
-      (size > 0 && data && typeof data[size - 1] === 'undefined')
+      (size > 0 && (data != null) && typeof data[size - 1] === 'undefined')
   )
 
   const videos = reduce(

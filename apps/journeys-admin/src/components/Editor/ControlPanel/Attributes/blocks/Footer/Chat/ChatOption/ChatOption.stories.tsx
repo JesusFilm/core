@@ -53,8 +53,8 @@ Complete.args = {
 }
 Complete.play = async () => {
   const button = screen.getByRole('button', { name: 'Complete Option' })
-  await waitFor(() => {
-    userEvent.click(button)
+  await waitFor(async () => {
+    await userEvent.click(button)
   })
 }
 
@@ -74,12 +74,12 @@ Icons.args = {
 }
 Icons.play = async () => {
   const accordion = screen.getByRole('button', { name: 'Icons' })
-  await waitFor(() => {
-    userEvent.click(accordion)
+  await waitFor(async () => {
+    await userEvent.click(accordion)
   })
   const select = screen.getByText('TikTok')
-  await waitFor(() => {
-    userEvent.click(select)
+  await waitFor(async () => {
+    await userEvent.click(select)
   })
 }
 

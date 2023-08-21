@@ -122,13 +122,13 @@ Complete.args = {
 
 export const SubmitError = Template.bind({})
 SubmitError.args = { ...Default.args }
-SubmitError.play = () => {
+SubmitError.play = async () => {
   const submit = screen.getAllByRole('button')[0]
   const fields = screen.getAllByRole('textbox')
 
-  userEvent.type(fields[0], 'Name')
-  userEvent.type(fields[1], 'name@domain.com')
-  userEvent.click(submit)
+  await userEvent.type(fields[0], 'Name')
+  await userEvent.type(fields[1], 'name@domain.com')
+  await userEvent.click(submit)
 }
 
 const LoadingTemplate: Story<ComponentProps<typeof SignUp>> = ({
@@ -147,17 +147,19 @@ const LoadingTemplate: Story<ComponentProps<typeof SignUp>> = ({
 
 export const Loading = LoadingTemplate.bind({})
 Loading.args = { ...Default.args }
-Loading.play = () => {
+Loading.play = async () => {
   const submitButtons = screen.getAllByRole('button')
   const fields = screen.getAllByRole('textbox')
 
-  userEvent.type(fields[0], 'Name')
-  userEvent.type(fields[1], 'name@domain.com')
-  userEvent.type(fields[2], 'Name')
-  userEvent.type(fields[3], 'name@domain.com')
-  submitButtons.forEach((button) => {
-    userEvent.click(button)
-  })
+  await userEvent.type(fields[0], 'Name')
+  await userEvent.type(fields[1], 'name@domain.com')
+  await userEvent.type(fields[2], 'Name')
+  await userEvent.type(fields[3], 'name@domain.com')
+  await Promise.all(
+    submitButtons.map(async (button) => {
+      await userEvent.click(button)
+    })
+  )
 }
 Loading.parameters = {
   chromatic: { disableSnapshot: true }

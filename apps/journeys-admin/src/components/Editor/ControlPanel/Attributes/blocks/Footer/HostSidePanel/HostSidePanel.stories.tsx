@@ -173,14 +173,14 @@ SelectHost.args = {
   journey: { ...journey, host: null }
 }
 SelectHost.play = async () => {
-  await waitFor(() => {
-    expect(
+  await waitFor(async () => {
+    await expect(
       screen.getByRole('button', { name: 'Select a Host' })
     ).not.toBeDisabled()
   })
-  userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
-  await waitFor(() => {
-    expect(screen.getAllByText('Authors')).toHaveLength(2)
+  await userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
+  await waitFor(async () => {
+    await expect(screen.getAllByText('Authors')).toHaveLength(2)
   })
 }
 
@@ -190,20 +190,20 @@ CreateHost.args = {
   journey: { ...journey, host: null }
 }
 CreateHost.play = async () => {
-  await waitFor(() => {
-    expect(
+  await waitFor(async () => {
+    await expect(
       screen.getByRole('button', { name: 'Select a Host' })
     ).not.toBeDisabled()
   })
-  userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
-  await waitFor(() => {
-    expect(
+  await userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
+  await waitFor(async () => {
+    await expect(
       screen.getByRole('button', { name: 'Create New' })
     ).toBeInTheDocument()
   })
-  userEvent.click(screen.getByRole('button', { name: 'Create New' }))
-  await waitFor(() => {
-    expect(screen.getAllByText('Create Author')).toHaveLength(2)
+  await userEvent.click(screen.getByRole('button', { name: 'Create New' }))
+  await waitFor(async () => {
+    await expect(screen.getAllByText('Create Author')).toHaveLength(2)
   })
 }
 
@@ -213,18 +213,18 @@ Info.args = {
   journey: { ...journey, host: null }
 }
 Info.play = async () => {
-  await waitFor(() => {
-    expect(
+  await waitFor(async () => {
+    await expect(
       screen.getByRole('button', { name: 'Select a Host' })
     ).not.toBeDisabled()
   })
-  userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
-  await waitFor(() => {
-    expect(screen.getAllByTestId('info')[0]).toBeInTheDocument()
+  await userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
+  await waitFor(async () => {
+    await expect(screen.getAllByTestId('info')[0]).toBeInTheDocument()
   })
-  userEvent.click(screen.getAllByTestId('info')[0])
-  await waitFor(() => {
-    expect(screen.getByText('Information')).toBeInTheDocument()
+  await userEvent.click(screen.getAllByTestId('info')[0])
+  await waitFor(async () => {
+    await expect(screen.getByText('Information')).toBeInTheDocument()
   })
 }
 
