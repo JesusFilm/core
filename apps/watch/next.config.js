@@ -3,6 +3,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 })
 const withNx = require('@nx/next/plugins/with-nx')
+const withPlugins = require('next-compose-plugins')
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
@@ -34,6 +35,7 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
+  transpilePackages: ['shared-ui'],
   async redirects() {
     return [
       {
@@ -56,10 +58,4 @@ const nextConfig = {
     ]
   }
 }
-module.exports = (_phase, { defaultConfig }) => {
-  const plugins = [withBundleAnalyzer, withNx]
-  return plugins.reduce((acc, plugin) => plugin(acc), {
-    ...defaultConfig,
-    ...nextConfig
-  })
-}
+module.exports = withPlugins([[withBundleAnalyzer], [withNx]], nextConfig)
