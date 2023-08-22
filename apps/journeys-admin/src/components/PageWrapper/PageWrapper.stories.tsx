@@ -6,7 +6,7 @@ import noop from 'lodash/noop'
 
 import { Role } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { GET_USER_ROLE } from '../JourneyView/JourneyView'
+import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
 import { GET_ME } from '../NewPageWrapper/NavigationDrawer'
 
 import { PageWrapperProps } from './PageWrapper'

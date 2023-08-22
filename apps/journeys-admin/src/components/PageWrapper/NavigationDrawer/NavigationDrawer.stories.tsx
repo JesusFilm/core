@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 
 import { NavigationDrawer } from '.'

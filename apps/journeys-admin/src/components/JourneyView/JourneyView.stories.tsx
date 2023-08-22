@@ -7,11 +7,12 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { Role } from '../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
+import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
 import { PageWrapper } from '../PageWrapper'
 import { TeamProvider } from '../Team/TeamProvider'
 
 import { publishedJourney } from './data'
-import { GET_USER_ROLE, JourneyView } from './JourneyView'
+import { JourneyView } from './JourneyView'
 import { Menu } from './Menu'
 
 const JourneyViewStory = {
