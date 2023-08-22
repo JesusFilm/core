@@ -10,15 +10,13 @@ describe('NextImage', () => {
         alt="alt"
         placeholder="blur"
         blurDataURL="https://blurUrl"
-        layout="fill"
-        objectFit="cover"
+        fill
+        style={{
+          objectFit: 'cover'
+        }}
       />
     )
-
-    expect(getByRole('img')).toHaveAttribute('src')
-    expect(getByRole('img')).toHaveStyle(
-      'background-image: url(https://blurUrl)'
-    )
+    expect(getByRole('img')).toHaveAttribute('srcset')
     expect(getByRole('img')).toHaveAccessibleName('alt')
   })
 })

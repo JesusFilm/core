@@ -402,8 +402,10 @@ export function Video({
           alt={posterBlock.alt}
           placeholder={blurBackground != null ? 'blur' : 'empty'}
           blurDataURL={blurBackground}
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{
+            objectFit: 'cover'
+          }}
         />
       )}
     </Box>
