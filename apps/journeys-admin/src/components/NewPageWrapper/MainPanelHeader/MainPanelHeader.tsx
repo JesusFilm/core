@@ -31,8 +31,8 @@ export function MainPanelHeader({
       <AppBar
         color="default"
         sx={{
-          position: { xs: 'fixed', sm: 'sticky' },
-          top: { xs: toolbar.height, sm: 0 }
+          position: { xs: 'fixed', md: 'sticky' },
+          top: { xs: toolbar.height, md: 0 }
         }}
       >
         <Toolbar variant={toolbar.variant}>
@@ -78,7 +78,7 @@ export function MainPanelHeader({
         </Toolbar>
       </AppBar>
       {/* Reserves space beneath MainHeader on mobile - allows us to export MainPanel */}
-      <Toolbar variant={toolbar.variant} sx={{ display: { sm: 'none' } }} />
+      <Toolbar variant={toolbar.variant} sx={{ display: { md: 'none' } }} />
     </>
   )
 }
