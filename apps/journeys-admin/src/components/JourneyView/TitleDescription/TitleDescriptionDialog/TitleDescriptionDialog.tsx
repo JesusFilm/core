@@ -117,6 +117,7 @@ export function TitleDescriptionDialog({
                   name="title"
                   hiddenLabel
                   fullWidth
+                  onKeyDown={(e) => e.stopPropagation()}
                   value={values.title}
                   variant="filled"
                   onChange={handleChange}
@@ -130,6 +131,7 @@ export function TitleDescriptionDialog({
                   name="description"
                   hiddenLabel
                   fullWidth
+                  onKeyDown={(e) => e.stopPropagation()}
                   value={values.description}
                   multiline
                   variant="filled"

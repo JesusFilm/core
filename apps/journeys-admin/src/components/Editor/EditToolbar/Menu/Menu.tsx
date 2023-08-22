@@ -1,13 +1,10 @@
 import { gql, useQuery } from '@apollo/client'
 import MoreVert from '@mui/icons-material/MoreVert'
 import SettingsIcon from '@mui/icons-material/Settings'
-import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
 
@@ -40,12 +37,10 @@ export const GET_ROLE = gql`
 
 export function Menu(): ReactElement {
   const {
-    state: { selectedBlock },
-    dispatch
+    state: { selectedBlock }
   } = useEditor()
 
   const { journey } = useJourney()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const { data } = useQuery<GetRole>(GET_ROLE)
 
@@ -76,13 +71,6 @@ export function Menu(): ReactElement {
           disabled={selectedBlock?.__typename === 'VideoBlock'}
         />
         <DeleteBlock variant="list-item" />
-        {!smUp && (
-          <MenuItem
-            label="Social Settings"
-            icon={<ShareRoundedIcon />}
-            onClick={handleOpenSocial}
-          />
-        )}
         <Divider />
       </>
     )
@@ -110,13 +98,6 @@ export function Menu(): ReactElement {
         </NextLink>
         <DuplicateBlock variant="list-item" />
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
-        {!smUp && (
-          <MenuItem
-            label="Social Settings"
-            icon={<ShareRoundedIcon />}
-            onClick={handleOpenSocial}
-          />
-        )}
         <Divider />
         <NextLink href={settingsLink != null ? settingsLink : ''} passHref>
           <MenuItem
@@ -130,14 +111,6 @@ export function Menu(): ReactElement {
         </NextLink>
       </>
     )
-  }
-
-  function handleOpenSocial(): void {
-    dispatch({
-      type: 'SetDrawerMobileOpenAction',
-      mobileOpen: true
-    })
-    handleCloseMenu()
   }
 
   return (
@@ -184,7 +157,7 @@ export function Menu(): ReactElement {
         {journey?.template !== true && isPublisher && (
           <CreateTemplateMenuItem />
         )}
-        {journey != null && journey?.template !== true && (
+        {journey != null && (journey?.template !== true || isPublisher) && (
           <>
             <Divider />
             <CopyMenuItem journey={journey} onClose={handleCloseMenu} />

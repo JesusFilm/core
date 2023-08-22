@@ -102,6 +102,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
                   value={values.title}
                   variant="filled"
                   error={Boolean(errors.title)}
+                  onKeyDown={(e) => e.stopPropagation()}
                   onChange={handleChange}
                   helperText={errors.title as string}
                 />
