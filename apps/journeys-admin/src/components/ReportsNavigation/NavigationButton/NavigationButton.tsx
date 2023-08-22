@@ -17,6 +17,7 @@ export function NavigationButton({
   return (
     <NextLink href={link} passHref>
       <Button
+        component="span"
         aria-selected={selected}
         variant={selected ? 'contained' : 'outlined'}
         sx={{

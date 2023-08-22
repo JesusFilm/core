@@ -31,16 +31,16 @@ export function DatePreview(): ReactElement {
       </Typography>
       <NextLink
         href={journey != null ? `/api/preview?slug=${journey.slug}` : ''}
+        target="_blank"
+        rel="noopener"
         passHref
       >
         <Button
+          component="span"
           startIcon={<VisibilityIcon />}
           variant="outlined"
           size="small"
           color="secondary"
-          target="_blank"
-          rel="noopener"
-          component="a"
           disabled={journey == null}
           style={{ borderRadius: 8 }}
         >

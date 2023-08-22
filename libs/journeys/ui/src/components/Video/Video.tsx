@@ -384,10 +384,10 @@ export function Video({
         <NextImage
           src={videoImage}
           alt="video image"
-          layout="fill"
-          objectFit={videoFit}
+          fill
           unoptimized
           style={{
+            objectFit: videoFit,
             transform:
               objectFit === VideoBlockObjectFit.zoomed
                 ? 'scale(1.33)'

@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Query, ResolveReference, Resolver } from '@nestjs/graphql'
-import { auth } from 'firebase-admin'
+import { getAuth } from 'firebase-admin/auth'
 
 import { User } from '.prisma/api-users-client'
 import { firebaseClient } from '@core/nest/common/firebaseClient'
@@ -16,6 +16,7 @@ export class UserResolver {
   @Query()
   @UseGuards(GqlAuthGuard)
   async me(@CurrentUserId() userId: string): Promise<User> {
+    const auth = getAuth(firebaseClient)
     const existingUser = await this.prismaService.user.findUnique({
       where: {
         userId
@@ -28,7 +29,7 @@ export class UserResolver {
       displayName,
       email,
       photoURL: imageUrl
-    } = await auth(firebaseClient).getUser(userId)
+    } = await auth.getUser(userId)
 
     const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
     const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''

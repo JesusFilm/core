@@ -51,8 +51,10 @@ export function ExpandedCover({
           alt={imageBlock.alt}
           placeholder="blur"
           blurDataURL={backgroundBlur}
-          layout="fill"
-          objectFit="cover"
+          fill
+          sx={{
+            objectFit: 'cover'
+          }}
         />
       )}
       <Stack

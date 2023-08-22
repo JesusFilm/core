@@ -112,6 +112,7 @@ export function OnboardingPanelContent({
       <SidePanelContainer border={false}>
         <NextLink href="/templates" passHref>
           <Button
+            component="span"
             variant="outlined"
             startIcon={<DashboardRounded />}
             sx={{ width: 'max-content', alignSelf: 'center' }}
