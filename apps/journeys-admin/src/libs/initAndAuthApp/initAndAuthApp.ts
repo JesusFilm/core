@@ -1,4 +1,5 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+import jwt from 'jsonwebtoken'
 import { Redirect } from 'next'
 import { AuthUser } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
@@ -9,6 +10,18 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
+
+export function isTokenExpired(token: string): boolean {
+  try {
+    const decodedToken = jwt.decode(token) as { exp: number }
+    const tokenExpiresAt = decodedToken.exp
+    const now = Math.floor(Date.now() / 1000)
+    return now > tokenExpiresAt
+  } catch (error) {
+    console.error(error)
+    return true
+  }
+}
 
 interface props {
   AuthUser: AuthUser
@@ -49,7 +62,13 @@ export async function initAndAuthApp({
     [key: string]: boolean | undefined
   }
 
-  const apolloClient = createApolloClient(token != null ? token : '')
+  let newToken = token
+
+  if (token != null && isTokenExpired(token)) {
+    newToken = await AuthUser.getIdToken(true)
+  }
+
+  const apolloClient = createApolloClient(newToken != null ? newToken : '')
   const redirect = await checkConditionalRedirect(apolloClient, flags)
 
   return { apolloClient, flags, redirect, translations }
