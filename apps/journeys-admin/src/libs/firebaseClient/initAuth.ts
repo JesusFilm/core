@@ -37,12 +37,6 @@ export function initAuth(): void {
         process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview',
       signed: true
     },
-    onVerifyTokenError: (err) => {
-      console.error(err)
-    },
-    onTokenRefreshError: (err) => {
-      console.error(err)
-    },
     authPageURL: ({ ctx }) => {
       const isServerSide = typeof window === 'undefined'
       const origin = isServerSide

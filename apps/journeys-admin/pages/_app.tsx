@@ -2,12 +2,13 @@ import { ApolloProvider } from '@apollo/client'
 import { datadogRum } from '@datadog/browser-rum'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import { AuthAction, useAuthUser, withAuthUser } from 'next-firebase-auth'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 
@@ -40,11 +41,35 @@ function JourneysAdminApp({
   emotionCache = clientSideEmotionCache
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const token =
+  const AuthUser = useAuthUser()
+  const currentToken =
     (pageProps.AuthUserSerialized != null
       ? (JSON.parse(pageProps.AuthUserSerialized)._token as string | null)
       : '') ?? ''
-  const apolloClient = useApollo(token)
+
+  const tokenRef = useRef(currentToken)
+
+  useEffect(() => {
+    // gets a new firebase token
+    const getToken = async (): Promise<void> => {
+      const newToken = await AuthUser.getIdToken()
+      if (newToken != null) {
+        console.log('Old token: ', tokenRef.current)
+        console.log('New token:', newToken)
+        tokenRef.current = newToken
+      }
+    }
+
+    // Run the check every 55 mins
+    const intervalId = setInterval(getToken, 55 * 60 * 1000)
+
+    // Clear the interval when the component unmounts
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [AuthUser])
+
+  const apolloClient = useApollo(tokenRef.current)
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_GTM_ID != null)
@@ -108,4 +133,6 @@ function JourneysAdminApp({
   )
 }
 
-export default appWithTranslation(JourneysAdminApp, i18nConfig)
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
+})(appWithTranslation(JourneysAdminApp, i18nConfig))
