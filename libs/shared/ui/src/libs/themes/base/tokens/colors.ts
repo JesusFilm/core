@@ -54,8 +54,10 @@ export const baseColorsLight = (): Required<
       MuiButton: {
         styleOverrides: {
           containedPrimary: {
-            '&:hover': {
-              backgroundColor: palette[700]
+            '@media (hover: hover)': {
+              '&:hover': {
+                backgroundColor: palette[700]
+              }
             }
           }
         }
@@ -72,9 +74,11 @@ export const baseColorsLight = (): Required<
       MuiIconButton: {
         styleOverrides: {
           root: {
-            ':hover': {
-              color: primary.main,
-              backgroundColor: `rgba(0, 0, 0 ,0)`
+            '@media (hover: hover)': {
+              ':hover': {
+                color: primary.main,
+                backgroundColor: `rgba(0, 0, 0 ,0)`
+              }
             },
             ':disabled': {
               color: palette[300]
@@ -134,8 +138,10 @@ export const baseColorsDark = (): Required<
       MuiButton: {
         styleOverrides: {
           containedPrimary: {
-            '&:hover': {
-              backgroundColor: palette[300]
+            '@media (hover: hover)': {
+              '&:hover': {
+                backgroundColor: palette[300]
+              }
             }
           }
         }
@@ -152,9 +158,11 @@ export const baseColorsDark = (): Required<
       MuiIconButton: {
         styleOverrides: {
           root: {
-            ':hover': {
-              color: primary.main,
-              backgroundColor: `rgba(0, 0, 0 ,0)`
+            '@media (hover: hover)': {
+              ':hover': {
+                color: primary.main,
+                backgroundColor: `rgba(0, 0, 0 ,0)`
+              }
             },
             ':disabled': {
               color: palette[700]

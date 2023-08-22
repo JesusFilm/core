@@ -103,7 +103,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
                   variant="filled"
                   error={Boolean(errors.title)}
                   onChange={handleChange}
-                  helperText={errors.title}
+                  helperText={errors.title as string}
                 />
               </Form>
             </Dialog>

@@ -1584,19 +1584,62 @@ describe('JourneyResolver', () => {
 
   describe('userJourneys', () => {
     it('returns userJourneys related to current journey', async () => {
-      const userJourney: UserJourney = {
-        id: 'userJourneyId',
-        userId: 'userId',
-        journeyId: 'journeyId',
-        updatedAt: new Date(),
-        role: 'owner',
-        openedAt: null
-      }
-      prismaService.userJourney.findMany.mockResolvedValueOnce([userJourney])
-      expect(await resolver.userJourneys(journey)).toEqual([userJourney])
-      expect(prismaService.userJourney.findMany).toHaveBeenCalledWith({
-        where: { journeyId: journey.id }
-      })
+      const userJourney = [
+        {
+          id: 'userJourneyId',
+          userId: 'userId',
+          journeyId: 'journeyId',
+          updatedAt: new Date(),
+          role: 'owner',
+          openedAt: null,
+          journey: {
+            id: 'journeyId',
+            teamId: 'teamId',
+            userJourneys: [
+              {
+                id: 'userJourneyId',
+                userId: 'userId',
+                journeyId: 'journeyId',
+                updatedAt: new Date(),
+                role: 'owner',
+                openedAt: null
+              }
+            ],
+            team: {
+              id: 'teamId',
+              userTeams: [
+                {
+                  userId: 'userId',
+                  role: UserTeamRole.manager,
+                  teamId: 'teamId'
+                }
+              ]
+            }
+          }
+        }
+      ] as unknown as UserJourney
+
+      const userJourneys = jest.fn().mockResolvedValue(userJourney)
+      prismaService.journey.findUnique.mockReturnValue({
+        ...journey,
+        userJourneys
+      } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+
+      expect(await resolver.userJourneys(journey, ability)).toEqual(userJourney)
+    })
+
+    it('returns empty user Journeys array when null', async () => {
+      const userJourneys = jest.fn().mockResolvedValue(null)
+      prismaService.journey.findUnique.mockReturnValue({
+        ...journey,
+        userJourneys
+      } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+
+      expect(await resolver.userJourneys(journey, ability)).toEqual([])
+    })
+
+    it('returns empty user journeys array when ability is undefined', async () => {
+      expect(await resolver.userJourneys(journey, undefined)).toEqual([])
     })
   })
 

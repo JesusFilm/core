@@ -1,6 +1,6 @@
-module.exports = {
+export default {
   displayName: 'shared-ui',
-  preset: '../../../jest.preset.js',
+
   transform: {
     '^.+\\.[tj]sx?$': 'babel-jest'
   },
@@ -8,5 +8,6 @@ module.exports = {
   coverageDirectory: '../../../coverage/libs/shared/ui',
   setupFilesAfterEnv: ['<rootDir>setupTests.ts'],
   collectCoverage: true,
-  coverageReporters: ['cobertura']
+  coverageReporters: ['cobertura'],
+  preset: '../../../jest.preset.js'
 }
