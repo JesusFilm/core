@@ -1,7 +1,7 @@
-/* eslint-disable */
-export default {
-  displayName: 'nest/powerBi',
+import type { Config } from 'jest'
 
+const config: Config = {
+  displayName: 'nest/powerBi',
   globals: {},
   testEnvironment: 'node',
   transform: {
@@ -18,3 +18,5 @@ export default {
   coverageReporters: ['cobertura'],
   preset: '../../../jest.preset.js'
 }
+
+export default config

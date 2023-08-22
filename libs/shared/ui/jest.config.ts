@@ -1,8 +1,9 @@
-/* eslint-disable */
-export default {
-  displayName: 'shared-ui',
+import type { Config } from 'jest'
 
+const config: Config = {
+  displayName: 'shared-ui',
   transform: {
+    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
     '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }]
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
@@ -12,3 +13,5 @@ export default {
   coverageReporters: ['cobertura'],
   preset: '../../../jest.preset.js'
 }
+
+export default config

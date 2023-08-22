@@ -5,11 +5,9 @@ import { useState } from 'react'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
+import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
 
-import {
-  GET_JOURNEY_WITH_USER_JOURNEYS,
-  GET_USER_INVITES
-} from './AccessDialog'
+import { GET_JOURNEY_WITH_USER_JOURNEYS } from './AccessDialog'
 
 import { AccessDialog } from '.'
 

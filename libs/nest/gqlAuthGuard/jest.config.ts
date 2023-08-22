@@ -1,7 +1,7 @@
-/* eslint-disable */
-export default {
-  displayName: 'nest/gqlAuthGuard',
+import type { Config } from 'jest'
 
+const config: Config = {
+  displayName: 'nest/gqlAuthGuard',
   globals: {},
   transform: {
     '^.+\\.[tj]sx?$': [
@@ -17,3 +17,5 @@ export default {
   coverageReporters: ['cobertura'],
   preset: '../../../jest.preset.js'
 }
+
+export default config

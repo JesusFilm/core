@@ -1,12 +1,11 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded'
 import { ReactElement } from 'react'
 
-import { GetUserInvites } from '../../../../../../__generated__/GetUserInvites'
 import { UserInviteRemove } from '../../../../../../__generated__/UserInviteRemove'
 import { UserJourneyRemove } from '../../../../../../__generated__/UserJourneyRemove'
+import { useUserInvitesLazyQuery } from '../../../../../libs/useUserInvitesLazyQuery'
 import { MenuItem } from '../../../../MenuItem'
-import { GET_USER_INVITES } from '../../../AccessDialog'
 
 interface RemoveUserProps {
   id: string
@@ -81,9 +80,7 @@ export function RemoveUser({
     })
   }
 
-  const [loadUserInvites] = useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
-    variables: { journeyId }
-  })
+  const [loadUserInvites] = useUserInvitesLazyQuery({ journeyId })
 
   const handleClick = async (): Promise<void> => {
     if (email == null) {

@@ -6,8 +6,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
-import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
+import { Attribute } from '../../Attribute'
 
 import { Chat } from './Chat'
 import { HostSidePanel } from './HostSidePanel'

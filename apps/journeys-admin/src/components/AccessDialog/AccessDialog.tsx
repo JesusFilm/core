@@ -10,9 +10,9 @@ import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithUserJourneys'
-import { GetUserInvites } from '../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUser } from '../../libs/useCurrentUser'
+import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
@@ -36,18 +36,6 @@ export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   }
 `
 
-export const GET_USER_INVITES = gql`
-  query GetUserInvites($journeyId: ID!) {
-    userInvites(journeyId: $journeyId) {
-      id
-      journeyId
-      email
-      acceptedAt
-      removedAt
-    }
-  }
-`
-
 interface AccessDialogProps {
   journeyId: string
   open?: boolean
@@ -65,9 +53,7 @@ export function AccessDialog({
     })
 
   const [, { data: userInviteData, refetch: refetchInvites }] =
-    useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
-      variables: { journeyId }
-    })
+    useUserInvitesLazyQuery({ journeyId })
 
   const { loadUser, data: authUser } = useCurrentUser()
 

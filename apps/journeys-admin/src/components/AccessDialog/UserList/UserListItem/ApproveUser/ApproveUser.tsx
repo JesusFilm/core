@@ -1,13 +1,12 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import { ReactElement } from 'react'
 
-import { GetUserInvites } from '../../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
 import { UserInviteRemove } from '../../../../../../__generated__/UserInviteRemove'
 import { UserJourneyApprove } from '../../../../../../__generated__/UserJourneyApprove'
+import { useUserInvitesLazyQuery } from '../../../../../libs/useUserInvitesLazyQuery'
 import { MenuItem } from '../../../../MenuItem'
-import { GET_USER_INVITES } from '../../../AccessDialog'
 import { USER_INVITE_REMOVE } from '../RemoveUser/RemoveUser'
 
 interface ApproveUserProps {
@@ -58,9 +57,7 @@ export function ApproveUser({
     })
   }
 
-  const [loadUserInvites] = useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
-    variables: { journeyId }
-  })
+  const [loadUserInvites] = useUserInvitesLazyQuery({ journeyId })
 
   const handleClick = async (): Promise<void> => {
     const result = await loadUserInvites()

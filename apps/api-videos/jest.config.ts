@@ -1,7 +1,7 @@
-/* eslint-disable */
-export default {
-  displayName: 'api-videos',
+import type { Config } from 'jest'
 
+const config: Config = {
+  displayName: 'api-videos',
   globals: {},
   testEnvironment: 'node',
   transform: {
@@ -18,3 +18,5 @@ export default {
   coverageReporters: ['cobertura'],
   preset: '../../jest.preset.js'
 }
+
+export default config

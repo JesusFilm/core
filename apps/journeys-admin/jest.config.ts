@@ -1,7 +1,7 @@
-/* eslint-disable */
-export default {
-  displayName: 'journeys-admin',
+import type { Config } from 'jest'
 
+const config: Config = {
+  displayName: 'journeys-admin',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
     '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/next/babel'] }]
@@ -13,3 +13,5 @@ export default {
   coverageReporters: ['cobertura'],
   preset: '../../jest.preset.js'
 }
+
+export default config

@@ -1,7 +1,7 @@
-/* eslint-disable */
-export default {
-  displayName: 'watch',
+import type { Config } from 'jest'
 
+const config: Config = {
+  displayName: 'watch',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
     '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/next/babel'] }]
@@ -13,3 +13,5 @@ export default {
   coverageReporters: ['cobertura'],
   preset: '../../jest.preset.js'
 }
+
+export default config

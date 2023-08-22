@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -10,19 +9,18 @@ import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { GetUserRole } from '../../__generated__/GetUserRole'
 import { Role } from '../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useUserRoleQuery } from '../../src/libs/useUserRoleQuery'
 
 function TemplateIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useUser()
   const router = useRouter()
 
-  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const { data } = useUserRoleQuery()
   useEffect(() => {
     if (
       data != null &&
