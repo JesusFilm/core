@@ -115,16 +115,16 @@ export function CardList({
       id={selectedId}
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
-      sx={{
-        width:'200px',
-        height:'100%',
-        position: 'absolute',
-        zIndex:99,
-        scrollbarWidth: 'none',
-        '&::-webkit-scrollbar': {
-          display: 'none'
-        }
-      }}
+      // sx={{
+      //   width:'200px',
+      //   height:'100%',
+      //   position: 'absolute',
+      //   zIndex:99,
+      //   scrollbarWidth: 'none',
+      //   '&::-webkit-scrollbar': {
+      //     display: 'none'
+      //   }
+      // }}
     >
       {showNavigation === true && (
         <NavigationCard

@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client'
+import { GlobalStyles } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
@@ -55,7 +56,7 @@ function JourneyEditPage(): ReactElement {
         selectedStepId={router.query.stepId as string | undefined}
         view={router.query.view as ActiveJourneyEditContent | undefined}
       >
-        <PageWrapper
+        <PageWrapper 
           title={
             <Stack py="20px">
               <Typography variant='h6'>{data?.journey?.title ?? t('Edit Journey')}</Typography>

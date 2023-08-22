@@ -1,4 +1,6 @@
+
 import Box from '@mui/material/Box'
+import GlobalStyles from '@mui/material/GlobalStyles'
 import { Theme } from '@mui/system/createTheme'
 import { ReactElement, useState } from 'react'
 
@@ -80,23 +82,24 @@ JourneyEdit(): ReactElement {
 
   return (
     <>
+      <GlobalStyles styles={{ body: { overflow:'hidden' } }} />
       <Box
         sx={{
           display: 'flex',
-          height: 'calc(100vh - 48px)',
+          height: 'calc(100vh - 87px)',
           flexDirection: 'column',
           // marginRight: { sm: `${DRAWER_WIDTH}px` }
         }}
       >
-        <ContextEditActions />
-        <CardPreview
+       
+        {/* <CardPreview
           selected={selectedStep}
           onSelect={handleSelectStepPreview}
           steps={steps}
           showAddButton
           showNavigationCards
           isDraggable
-        />
+        /> */}
         <Box
           data-testid="journey-edit-content"
           sx={{
@@ -125,7 +128,7 @@ JourneyEdit(): ReactElement {
             }
           </Box>
         </Box>
-        <Drawer />
+        {/* <Drawer /> */}
         {/* <ControlPanel /> */}
       </Box>
     </>

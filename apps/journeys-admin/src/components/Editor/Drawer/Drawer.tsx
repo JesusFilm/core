@@ -86,15 +86,16 @@ export function Drawer(): ReactElement {
       elevation={0}
       sx={{
         display: { xs: 'none', sm: 'block' },
-        position: 'fixed',
-        top: '140px',
+        position: 'absolute',
+        top: '40px',
         right: '40px',
-        height: '100%',
+        bottom: '0',
         width: '328px',
         borderLeft: 1,
         borderColor: 'divider',
         borderRadius: 0,
-        overflow: 'hidden',
+        overflowY: 'auto',
+        overflowX: 'hidden',
         zIndex:999,
       }}
     >

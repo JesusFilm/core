@@ -84,8 +84,8 @@ export function ContextEditActions(): ReactElement {
   return (
     <Stack spacing={4} direction="column" alignItems="center" sx={{
       position:'absolute',
-      left: '400px',
-      top: '200px',
+      left: '300px',
+      bottom: '200px',
       zIndex: 99
     }}>
       <DuplicateBlock

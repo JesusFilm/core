@@ -161,7 +161,7 @@ export function BackgroundColor(): ReactElement {
 
   return (
     <>
-      <Stack sx={{ p: 6, py: 4 }} spacing={3} direction="row">
+      {/* <Stack sx={{ p: 6, py: 4 }} spacing={3} direction="row">
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
         <TextField
           data-testid="bgColorTextField"
@@ -181,8 +181,8 @@ export function BackgroundColor(): ReactElement {
             )
           }}
         />
-      </Stack>
-      <Box
+      </Stack> */}
+      {/* <Box
         sx={{
           [cardTheme.breakpoints.up('sm')]: {
             display: 'none'
@@ -206,18 +206,18 @@ export function BackgroundColor(): ReactElement {
         <TabPanel name="background-color" value={tabValue} index={1}>
           {hexColorPicker}
         </TabPanel>
-      </Box>
+      </Box> */}
       <Box sx={{ [cardTheme.breakpoints.down('sm')]: { display: 'none' } }}>
-        <Divider />
-        <Box sx={{ px: 6, pt: 4 }}>
+        {/* <Divider /> */}
+        {/* <Box sx={{ px: 6, pt: 4 }}>
           <Typography variant="subtitle2">Palette</Typography>
-        </Box>
+        </Box> */}
         {palettePicker}
-        <Divider />
-        <Box sx={{ px: 6, py: 4 }}>
+        {/* <Divider /> */}
+        {/* <Box sx={{ px: 6, py: 4 }}>
           <Typography variant="subtitle2">Custom</Typography>
         </Box>
-        {hexColorPicker}
+        {hexColorPicker} */}
       </Box>
     </>
   )

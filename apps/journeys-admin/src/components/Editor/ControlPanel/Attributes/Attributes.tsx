@@ -60,7 +60,7 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
         )
         return (
           <>
-            <Step {...selected} />
+            {/* <Step {...selected} /> */}
             <Divider orientation="vertical" variant="middle" flexItem />
             {block != null && (
               <AttributesContent selected={block} step={step} />
@@ -157,17 +157,17 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
   return (
     <>
       <Stack
-        direction="row"
-        spacing={4}
+        direction="column"
+        spacing={0}
         sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
+          // overflowX: 'auto',
+          // py: 5,
+          // px: 6
         }}
       >
         <AttributesContent selected={selected} step={step} />
       </Stack>
-      <Box
+      {/* <Box
         sx={{
           py: 4.25,
           borderTop: (theme) => `1px solid ${theme.palette.divider}`
@@ -176,7 +176,7 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
         <MuiTypography align="center">
           {t('Editing {{block}} Properties', { block: blockLabel })}
         </MuiTypography>
-      </Box>
+      </Box> */}
     </>
   )
 }

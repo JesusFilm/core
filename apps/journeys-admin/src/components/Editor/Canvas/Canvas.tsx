@@ -12,6 +12,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   ActiveFab,
+  ActiveJourneyEditContent,
   ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
@@ -26,7 +27,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { FramePortal } from '../../FramePortal'
 import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
-import { DRAWER_WIDTH } from '../Drawer'
+import { DRAWER_WIDTH, Drawer } from '../Drawer'
 
 import { CardWrapper } from './CardWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -35,6 +36,12 @@ import { VideoWrapper } from './VideoWrapper'
 
 import 'swiper/swiper.min.css'
 import { JourneyMap } from '../../JourneyMap'
+import { OnSelectProps } from '../../CardPreview'
+import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
+
+import { Divider } from '@mui/material'
+
+import { ContextEditActions } from '../ContextEditActions'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
@@ -48,6 +55,7 @@ export function Canvas(): ReactElement {
     state: { steps, selectedStep, selectedBlock, selectedComponent },
     dispatch
   } = useEditor()
+  
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
@@ -78,6 +86,30 @@ export function Canvas(): ReactElement {
     window.addEventListener('resize', setSpaceBetweenOnResize)
     return () => window.removeEventListener('resize', setSpaceBetweenOnResize)
   }, [smUp])
+
+  const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
+    console.log('handleSelectStepPreview', {step, view})
+    if (step != null) {
+      dispatch({ type: 'SetSelectedStepAction', step })
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    } else if (view === ActiveJourneyEditContent.Action) {
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.Action
+      })
+    } else if (view === ActiveJourneyEditContent.SocialPreview) {
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.SocialPreview
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Social Share Preview',
+        mobileOpen: false,
+        children: <SocialShareAppearance />
+      })
+    }
+  }
 
   return (
     <Box
@@ -121,16 +153,22 @@ export function Canvas(): ReactElement {
         })
       }}
     >
-      <Box height="500px" width="100%" bgcolor="#eed" sx={{
-        overflowX:'scroll',
+      <Box height="400px" width="100%" bgcolor="#e4e4e4" sx={{
+        // overflowX:'scroll',
         // position:'absolute',
-        zIndex:9999
+        zIndex:9999,
       }} >
-        test
-        {steps?.length > 1 && <JourneyMap steps={steps} width={800} height={400}/>}
-        best
+        {steps?.length > 1 && <JourneyMap selected={selectedStep} showNavigationCards onSelect={handleSelectStepPreview} steps={steps} width={800} height={400}/>}
       </Box>
-      <Swiper
+      <Box sx={{
+        py:'100px',
+        position:'relative'
+      }}>
+        <ContextEditActions />
+        <Box sx={{
+          width:'calc(100% - 300px)'
+        }}>
+          <Swiper
         slidesPerView="auto"
         spaceBetween={spaceBetween}
         centeredSlides
@@ -145,7 +183,7 @@ export function Canvas(): ReactElement {
           })
         }}
       >
-        {steps != null ? (
+            {steps != null ? (
           steps.map((step) => {
             const theme = getStepTheme(step, journey)
             return (
@@ -289,7 +327,10 @@ export function Canvas(): ReactElement {
             </SwiperSlide>
           </>
         )}
-      </Swiper>
+          </Swiper>
+        </Box>
+        <Drawer />
+      </Box>
     </Box>
   )
 }

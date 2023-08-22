@@ -17,7 +17,7 @@ export function PaletteColorPicker({
   onChange
 }: PaletteColorPickerProps): ReactElement {
   return (
-    <ScrollableSelect onChange={onChange} id={selectedColor}>
+    <ScrollableSelect onChange={onChange} id={selectedColor} sx={{width: '100%', overflowX:'scroll'}}>
       {colors.map((color) => {
         return (
           <Swatch

@@ -41,12 +41,12 @@ export function ScrollableSelect({
 
   return (
     <Stack
-      direction="column"
+      direction="row"
       data-testid="horizontal-select"
       spacing={1}
       sx={{
-        overflowY: 'auto',
-        overflowX: 'hidden',
+        overflowY: 'hidden',
+        overflowX: 'auto',
         py: 5,
         px: 6,
         ...sx

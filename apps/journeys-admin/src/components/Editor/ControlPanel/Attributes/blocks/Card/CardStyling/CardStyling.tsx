@@ -78,7 +78,7 @@ export function CardStyling(): ReactElement {
 
   return (
     <>
-      <Box sx={{ px: 6, py: 4 }}>
+      {/* <Box sx={{ px: 6, py: 4 }}>
         <Stack spacing={4} direction="row">
           <Box
             sx={{
@@ -104,7 +104,7 @@ export function CardStyling(): ReactElement {
           </Stack>
         </Stack>
       </Box>
-      <Divider />
+      <Divider /> */}
       <Box>
         <ScrollableSelect
           onChange={handleChange}
@@ -115,10 +115,12 @@ export function CardStyling(): ReactElement {
             sx={{ display: 'flex' }}
             data-testid="Light"
           >
-            <Image src={cardStyleLight} alt="Light" width={89} height={134} />
+            <Image src={cardStyleLight} alt="Light" width={68}
+              height={105} />
           </Box>
           <Box id={ThemeMode.dark} sx={{ display: 'flex' }} data-testid="Dark">
-            <Image src={cardStyleDark} alt="Dark" width={89} height={134} />
+            <Image src={cardStyleDark} alt="Dark" width={68}
+              height={105} />
           </Box>
         </ScrollableSelect>
       </Box>

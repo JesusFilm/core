@@ -50,7 +50,9 @@ export function Editor({
             selectedStep,
             drawerTitle: 'Properties',
             drawerChildren: (
-              <Properties journeyType="Journey" isPublisher={false} />
+              <>
+                {/* <Properties journeyType="Journey" isPublisher={false} /> */}
+              </>
             ),
             journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
           }}

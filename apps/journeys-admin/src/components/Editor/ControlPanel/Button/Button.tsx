@@ -22,6 +22,7 @@ export function Button({
   value,
   description,
   selected,
+  extra,
   onClick
 }: ButtonProps): ReactElement {
   const handleClick = (): void => {
@@ -31,7 +32,7 @@ export function Button({
   return (
     <Box
       sx={{
-        maxWidth: 150
+        // maxWidth: 150
       }}
       onMouseDown={(e) => e.preventDefault()}
     >
@@ -40,7 +41,9 @@ export function Button({
         sx={{
           borderBottomRightRadius: 0,
           borderBottomLeftRadius: 0,
-          borderBottom: 0
+          borderBottom: 0,
+          borderRight:0,
+          borderLeft:0
         }}
       >
         <CardActionArea onClick={handleClick} sx={{ minHeight: 60 }}>
@@ -56,10 +59,11 @@ export function Button({
                 <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
               </Box>
             </Stack>
+            {extra}
           </CardContent>
         </CardActionArea>
       </MuiCard>
-      <Divider
+      {/* <Divider
         color="primary"
         sx={{
           transition: '0.2s border-color ease-out',
@@ -69,8 +73,8 @@ export function Button({
               ? theme.palette.primary.main
               : theme.palette.divider
         }}
-      />
-      <Box sx={{ height: 24 }}>
+      /> */}
+      {/* <Box sx={{ height: 24 }}>
         {description != null && (
           <Typography
             variant="caption"
@@ -83,7 +87,7 @@ export function Button({
             {description}
           </Typography>
         )}
-      </Box>
+      </Box> */}
     </Box>
   )
 }

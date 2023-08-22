@@ -69,7 +69,7 @@ export function CardLayout(): ReactElement {
   }
   return (
     <>
-      <Box sx={{ px: 6, py: 4 }}>
+      {/* <Box sx={{ px: 6, py: 4 }}>
         <Stack spacing={3} direction="row">
           <Box
             sx={{
@@ -91,7 +91,7 @@ export function CardLayout(): ReactElement {
           </Stack>
         </Stack>
       </Box>
-      <Divider />
+      <Divider /> */}
       <Box>
         <ScrollableSelect
           onChange={async (val) => await handleLayoutChange(val === 'true')}
@@ -101,8 +101,8 @@ export function CardLayout(): ReactElement {
             <Image
               src={cardLayoutExpanded}
               alt="Expanded"
-              width={89}
-              height={137}
+              width={68}
+              height={105}
             />
           </Box>
           <Box
@@ -114,8 +114,8 @@ export function CardLayout(): ReactElement {
             <Image
               src={cardLayoutContained}
               alt="Contained"
-              width={89}
-              height={137}
+              width={68}
+              height={105}
             />
           </Box>
         </ScrollableSelect>
