@@ -202,14 +202,14 @@ describe('LocalDetails', () => {
   it('should keep startAt and endAt values if already exist on select click', async () => {
     const onSelect = jest.fn()
     const { getByRole } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider>
         <EditorProvider
           initialState={{
             selectedBlock: {
               id: 'videoId',
               videoId: '2_Acts7302-0-0',
               source: VideoBlockSource.internal,
-              duration: 144,
+              duration: 0,
               startAt: 5,
               endAt: 41,
               videoVariantLanguageId: '529'
@@ -226,7 +226,7 @@ describe('LocalDetails', () => {
     fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({
-        duration: 144,
+        duration: 0,
         endAt: 41,
         startAt: 5,
         source: VideoBlockSource.internal,
