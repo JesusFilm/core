@@ -54,8 +54,6 @@ function JourneysAdminApp({
     const getToken = async (): Promise<void> => {
       const newToken = await AuthUser.getIdToken(true)
       if (newToken != null) {
-        console.log('Old token: ', tokenRef.current)
-        console.log('New token:', newToken)
         tokenRef.current = newToken
       }
     }
