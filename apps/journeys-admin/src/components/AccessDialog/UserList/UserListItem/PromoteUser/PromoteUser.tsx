@@ -42,7 +42,7 @@ export function PromoteUser({ id, onClick }: PromoteUserProps): ReactElement {
 
   return (
     <MenuItem
-      label={t('Make an Owner')}
+      label={t('Promote')}
       icon={<AlertCircleIcon sx={{ color: 'secondary.light' }} />}
       onClick={handleClick}
     />
