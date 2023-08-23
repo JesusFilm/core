@@ -40,27 +40,27 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-    {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' }
-    },
+    // {
+    //   name: 'Google Chrome',
+    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' }
+    // },
 
-    /* Test against mobile viewports. */
-    // By default it's using chromium channel, changed it to chrome so it can play the video
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'], channel: 'chrome' }
-    }
+    // /* Test against mobile viewports. */
+    // // By default it's using chromium channel, changed it to chrome so it can play the video
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 5'], channel: 'chrome' }
+    // }
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },
     // },
 
     /* Others. */
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
 
     // {
     //   name: 'webkit',
