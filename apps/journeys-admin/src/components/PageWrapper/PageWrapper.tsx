@@ -8,7 +8,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Image from 'next/image'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { User as AuthUser } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 
@@ -90,7 +90,7 @@ export function PageWrapper({
         )}
         <Toolbar>
           {backHref != null && (
-            <Link href={backHref} passHref>
+            <NextLink href={backHref} passHref legacyBehavior>
               <IconButton
                 edge="start"
                 size="small"
@@ -99,7 +99,7 @@ export function PageWrapper({
               >
                 <ChevronLeftRounded />
               </IconButton>
-            </Link>
+            </NextLink>
           )}
           <Typography
             variant="subtitle1"

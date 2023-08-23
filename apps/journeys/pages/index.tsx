@@ -103,12 +103,12 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
               <NextLink
                 href="https://www.cru.org/us/en/about/terms-of-use.html"
                 passHref
+                legacyBehavior
                 target="_blank"
                 rel="noopener"
                 style={{
                   textDecoration: 'none'
                 }}
-                legacyBehavior
               >
                 <Link
                   component="span"
@@ -122,12 +122,12 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
               <NextLink
                 href="https://www.cru.org/us/en/about/privacy.html"
                 passHref
+                legacyBehavior
                 target="_blank"
                 rel="noopener"
                 style={{
                   textDecoration: 'none'
                 }}
-                legacyBehavior
               >
                 <Link
                   component="span"

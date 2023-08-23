@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { JourneysReportType } from '../../../__generated__/globalTypes'
@@ -23,7 +23,7 @@ export function MultipleSummaryReport(): ReactElement {
           <Typography variant="subtitle1" sx={{ pt: 1 }}>
             Reports
           </Typography>
-          <Link href="/reports" passHref>
+          <NextLink href="/reports" passHref legacyBehavior>
             <Button
               size="small"
               variant="text"
@@ -31,7 +31,7 @@ export function MultipleSummaryReport(): ReactElement {
             >
               See all
             </Button>
-          </Link>
+          </NextLink>
         </Stack>
         <Box sx={{ height: '160px', pb: 8 }}>
           <MemoizedDynamicReport
