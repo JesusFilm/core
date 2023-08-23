@@ -187,7 +187,11 @@ export function Menu(): ReactElement {
               'aria-labelledby': 'journey-actions'
             }}
           >
-            <NextLink href={`/api/preview?slug=${journey.slug}`} passHref>
+            <NextLink
+              href={`/api/preview?slug=${journey.slug}`}
+              passHref
+              legacyBehavior
+            >
               <MenuItem
                 label="Preview"
                 icon={<VisibilityIcon />}
@@ -231,7 +235,11 @@ export function Menu(): ReactElement {
               />
             )}
             {journey.template !== true && (
-              <NextLink href={`/journeys/${journey.id}/reports`} passHref>
+              <NextLink
+                href={`/journeys/${journey.id}/reports`}
+                passHref
+                legacyBehavior
+              >
                 <MenuItem label="Report" icon={<AssessmentRoundedIcon />} />
               </NextLink>
             )}
@@ -241,7 +249,11 @@ export function Menu(): ReactElement {
             {(journey.template !== true || isPublisher === true) && (
               <>
                 <Divider />
-                <NextLink href={editLink != null ? editLink : ''} passHref>
+                <NextLink
+                  href={editLink != null ? editLink : ''}
+                  passHref
+                  legacyBehavior
+                >
                   <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
                 </NextLink>
               </>

@@ -78,6 +78,7 @@ export function OnboardingPanelContent({
           <NextLink
             href="/templates"
             passHref
+            legacyBehavior
             style={{
               textDecoration: 'none'
             }}
@@ -110,7 +111,7 @@ export function OnboardingPanelContent({
           )
       )}
       <SidePanelContainer border={false}>
-        <NextLink href="/templates" passHref>
+        <NextLink href="/templates" passHref legacyBehavior>
           <Button
             component="span"
             variant="outlined"

@@ -55,7 +55,7 @@ export function HeaderMenuPanel({
           justifyContent="space-between"
           p={8}
         >
-          <NextLink href="/" passHref>
+          <NextLink href="/" passHref legacyBehavior>
             <Image
               src={logo}
               width="160"

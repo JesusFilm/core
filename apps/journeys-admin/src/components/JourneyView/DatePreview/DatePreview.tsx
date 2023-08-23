@@ -34,6 +34,7 @@ export function DatePreview(): ReactElement {
         target="_blank"
         rel="noopener"
         passHref
+        legacyBehavior
       >
         <Button
           component="span"

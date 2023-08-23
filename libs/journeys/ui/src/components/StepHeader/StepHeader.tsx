@@ -71,6 +71,7 @@ export function StepHeader({ sx }: Props): ReactElement {
             journey?.slug ?? ''
           }) because ...`}
           passHref
+          legacyBehavior
         >
           <MuiMenuItem onClick={handleClose}>
             <Typography color="text.primary" variant="body2">
@@ -82,6 +83,7 @@ export function StepHeader({ sx }: Props): ReactElement {
         <NextLink
           href="https://www.cru.org/us/en/about/terms-of-use.html"
           passHref
+          legacyBehavior
           rel="noopener"
           target="_blank"
           style={{

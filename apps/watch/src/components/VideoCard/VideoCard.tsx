@@ -76,6 +76,7 @@ export function VideoCard({
     <NextLink
       href={href}
       passHref
+      legacyBehavior
       style={{
         textDecoration: 'none'
       }}

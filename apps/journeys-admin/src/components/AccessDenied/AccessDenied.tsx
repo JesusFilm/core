@@ -108,7 +108,7 @@ export function AccessDenied({
           </List>
           <Stack direction="row" justifyContent="space-between" sx={{ mt: 7 }}>
             <Box display={{ xs: 'none', sm: 'flex' }}>
-              <NextLink href="/" passHref>
+              <NextLink href="/" passHref legacyBehavior>
                 <Button
                   component="span"
                   sx={{ color: 'primary.main' }}
@@ -120,7 +120,7 @@ export function AccessDenied({
               </NextLink>
             </Box>
             <Box display={{ xs: 'flex', sm: 'none' }}>
-              <NextLink href="/" passHref>
+              <NextLink href="/" passHref legacyBehavior>
                 <Button
                   component="span"
                   sx={{ color: 'primary.main' }}
@@ -134,6 +134,7 @@ export function AccessDenied({
             <NextLink
               href="mailto:support@nextstep.is?subject=Need%20help%20with%20requesting%20editing%20access%20to%20the%20journey"
               passHref
+              legacyBehavior
             >
               <Button
                 component="span"

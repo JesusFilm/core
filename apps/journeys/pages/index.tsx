@@ -79,7 +79,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                           />
                         </Fade>
                       </Box>
-                      <NextLink href={`/${slug}`} passHref>
+                      <NextLink href={`/${slug}`} passHref legacyBehavior>
                         <Box
                           component="span"
                           sx={{
@@ -108,6 +108,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                 style={{
                   textDecoration: 'none'
                 }}
+                legacyBehavior
               >
                 <Link
                   component="span"
@@ -126,6 +127,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                 style={{
                   textDecoration: 'none'
                 }}
+                legacyBehavior
               >
                 <Link
                   component="span"

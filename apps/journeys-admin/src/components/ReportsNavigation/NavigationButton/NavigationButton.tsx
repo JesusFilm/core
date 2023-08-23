@@ -15,7 +15,7 @@ export function NavigationButton({
   link
 }: Props): ReactElement {
   return (
-    <NextLink href={link} passHref>
+    <NextLink href={link} passHref legacyBehavior>
       <Button
         component="span"
         aria-selected={selected}

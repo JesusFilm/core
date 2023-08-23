@@ -36,7 +36,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
       >
         <Container maxWidth="xxl" disableGutters>
           <Toolbar sx={{ justifyContent: 'space-between' }}>
-            <NextLink href="/" passHref>
+            <NextLink href="/" passHref legacyBehavior>
               <Image
                 src={logo}
                 width="160"
