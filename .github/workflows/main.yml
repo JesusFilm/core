@@ -240,3 +240,4 @@ jobs:
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
           untraced: '@(package*.json|.storybook/**)'
           traceChanged: 'expanded'
+          dryRun: 'true'
