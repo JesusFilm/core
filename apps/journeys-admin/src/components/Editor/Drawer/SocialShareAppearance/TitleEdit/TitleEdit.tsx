@@ -94,7 +94,7 @@ export function TitleEdit(): ReactElement {
                 error={touched.seoTitle === true && Boolean(errors.seoTitle)}
                 helperText={
                   errors.seoTitle != null
-                    ? errors.seoTitle
+                    ? (errors.seoTitle as string)
                     : 'Recommended length: 5 words'
                 }
                 onChange={handleChange}

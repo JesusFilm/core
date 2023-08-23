@@ -185,12 +185,13 @@ describe('BackgroundMediaVideo', () => {
         videoBlockCreate: video
       }
     }))
+    const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
     const { getByRole, getByText } = render(
       <MockedProvider
         cache={cache}
         mocks={[
           getVideosMock,
-          getVideoMock,
+          { ...getVideoMock, result: getVideoResult },
           {
             request: {
               query: CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
@@ -229,9 +230,7 @@ describe('BackgroundMediaVideo', () => {
     fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
-    )
+    await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
@@ -264,13 +263,13 @@ describe('BackgroundMediaVideo', () => {
         videoBlockCreate: video
       }
     }))
+    const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
     const { getByRole, getByText } = render(
       <MockedProvider
         cache={cache}
         mocks={[
           getVideosMock,
-          getVideoMock,
-
+          { ...getVideoMock, result: getVideoResult },
           {
             request: {
               query: CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
@@ -309,10 +308,8 @@ describe('BackgroundMediaVideo', () => {
     fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
-    )
-    fireEvent.click(getByRole('button', { name: 'Select' }))
+    await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Select', exact: true }))
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:cardId' },
@@ -346,12 +343,13 @@ describe('BackgroundMediaVideo', () => {
           videoBlockUpdate: video
         }
       }))
+      const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
       const { getByRole, getByText } = render(
         <MockedProvider
           cache={cache}
           mocks={[
             getVideosMock,
-            getVideoMock,
+            { ...getVideoMock, result: getVideoResult },
             {
               request: {
                 query: CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE,
@@ -389,9 +387,7 @@ describe('BackgroundMediaVideo', () => {
       fireEvent.click(getByRole('button', { name: 'Select Video' }))
       await waitFor(() => expect(getByText('Brand_Video')).toBeInTheDocument())
       fireEvent.click(getByText('Brand Video'))
-      await waitFor(() =>
-        expect(getByRole('button', { name: 'Select' })).toBeEnabled()
-      )
+      await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
       fireEvent.click(getByRole('button', { name: 'Select' }))
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([

@@ -15,61 +15,59 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('LocalDetails', () => {
-  const mocks = [
-    {
-      request: {
-        query: GET_VIDEO,
-        variables: {
+  const getVideoMock = {
+    request: {
+      query: GET_VIDEO,
+      variables: {
+        id: '2_Acts7302-0-0',
+        languageId: '529'
+      }
+    },
+    result: {
+      data: {
+        video: {
           id: '2_Acts7302-0-0',
-          languageId: '529'
-        }
-      },
-      result: {
-        data: {
-          video: {
-            id: '2_Acts7302-0-0',
-            primaryLanguageId: '529',
-            image:
-              'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
-            title: [
-              {
-                primary: true,
-                value: 'Jesus Taken Up Into Heaven'
-              }
-            ],
-            description: [
-              {
-                primary: true,
-                value: 'Jesus promises the Holy Spirit.'
-              }
-            ],
-            variant: {
-              id: 'variantA',
-              duration: 144,
-              hls: 'https://arc.gt/opsgn'
-            },
-            variantLanguages: [
-              {
-                __typename: 'Language',
-                id: '529',
-                name: [
-                  {
-                    value: 'English',
-                    primary: true,
-                    __typename: 'Translation'
-                  }
-                ]
-              }
-            ]
-          }
+          primaryLanguageId: '529',
+          image:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+          title: [
+            {
+              primary: true,
+              value: 'Jesus Taken Up Into Heaven'
+            }
+          ],
+          description: [
+            {
+              primary: true,
+              value: 'Jesus promises the Holy Spirit.'
+            }
+          ],
+          variant: {
+            id: 'variantA',
+            duration: 144,
+            hls: 'https://arc.gt/opsgn'
+          },
+          variantLanguages: [
+            {
+              __typename: 'Language',
+              id: '529',
+              name: [
+                {
+                  value: 'English',
+                  primary: true,
+                  __typename: 'Translation'
+                }
+              ]
+            }
+          ]
         }
       }
     }
-  ]
+  }
 
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[getVideoMock]}>
         <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
       </MockedProvider>
     )
@@ -183,14 +181,13 @@ describe('LocalDetails', () => {
 
   it('should call onSelect on select click', async () => {
     const onSelect = jest.fn()
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
     const { getByRole } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
         <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({
       duration: 144,

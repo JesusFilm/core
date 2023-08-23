@@ -1,7 +1,14 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  RefObject,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
@@ -64,7 +71,7 @@ export function ContainedCover({
   const [contentHeight, setContentHeight] = useState(0)
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const contentRef = useRef()
+  const contentRef = useRef() as RefObject<HTMLDivElement>
 
   const posterImage =
     videoBlock?.source !== VideoBlockSource.youTube
@@ -82,9 +89,9 @@ export function ContainedCover({
         videoBlock?.image
 
   useEffect(() => {
-    if (contentRef.current != null) {
+    if (contentRef?.current != null) {
       setContentHeight(
-        (contentRef.current as unknown as HTMLDivElement).clientHeight ?? 0
+        (contentRef?.current as unknown as HTMLDivElement).clientHeight ?? 0
       )
     }
   }, [contentRef])

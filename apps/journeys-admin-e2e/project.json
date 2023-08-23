@@ -1,5 +1,4 @@
 {
-  "root": "apps/journeys-admin-e2e",
   "sourceRoot": "apps/journeys-admin-e2e/src",
   "projectType": "application",
   "targets": {

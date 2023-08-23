@@ -1,5 +1,4 @@
 {
-  "root": "apps/api-videos",
   "sourceRoot": "apps/api-videos/src",
   "projectType": "application",
   "targets": {
@@ -42,7 +41,7 @@
     "seed": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx ts-node apps/api-videos/db/seed.ts"
+        "command": "npm run ts-node apps/api-videos/db/seed.ts"
       }
     },
     "serve": {
@@ -55,7 +54,7 @@
     "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx ts-node tools/scripts/generate-typings.ts api-videos"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-videos"
       }
     },
     "lint": {
@@ -69,7 +68,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-videos"],
       "options": {
-        "jestConfig": "apps/api-videos/jest.config.js",
+        "jestConfig": "apps/api-videos/jest.config.ts",
         "passWithNoTests": true
       }
     },
@@ -126,7 +125,7 @@
     "prisma-seed": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": ["npx ts-node apps/api-videos/db/seed.ts"]
+        "commands": ["npm run ts-node apps/api-videos/db/seed.ts"]
       }
     },
     "prisma-studio": {
