@@ -1,6 +1,8 @@
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
-import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 
 import { GetUserInvites } from '../../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
@@ -32,6 +34,7 @@ export function ApproveUser({
   onClick,
   journeyId
 }: ApproveUserProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [userJourneyApprove] = useMutation<UserJourneyApprove>(
     USER_JOURNEY_APPROVE,
     { variables: { id } }
@@ -86,8 +89,8 @@ export function ApproveUser({
 
   return (
     <MenuItem
-      label="Approve"
-      icon={<BeenhereRoundedIcon />}
+      label={t('Approve')}
+      icon={<CheckContainedIcon sx={{ color: 'secondary.light' }} />}
       onClick={handleClick}
     />
   )
