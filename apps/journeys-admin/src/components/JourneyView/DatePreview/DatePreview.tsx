@@ -31,8 +31,6 @@ export function DatePreview(): ReactElement {
       </Typography>
       <NextLink
         href={journey != null ? `/api/preview?slug=${journey.slug}` : ''}
-        target="_blank"
-        rel="noopener"
         passHref
         legacyBehavior
       >
@@ -41,6 +39,9 @@ export function DatePreview(): ReactElement {
           variant="outlined"
           size="small"
           color="secondary"
+          target="_blank"
+          rel="noopener"
+          component="a"
           disabled={journey == null}
           style={{ borderRadius: 8 }}
         >

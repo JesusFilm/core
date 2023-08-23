@@ -73,14 +73,7 @@ export function VideoCard({
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
   return (
-    <NextLink
-      href={href}
-      passHref
-      legacyBehavior
-      style={{
-        textDecoration: 'none'
-      }}
-    >
+    <NextLink href={href} passHref legacyBehavior>
       <Link
         display="block"
         underline="none"

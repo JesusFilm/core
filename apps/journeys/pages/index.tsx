@@ -103,13 +103,14 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                 href="https://www.cru.org/us/en/about/terms-of-use.html"
                 passHref
                 legacyBehavior
-                target="_blank"
-                rel="noopener"
-                style={{
-                  textDecoration: 'none'
-                }}
               >
-                <Link underline="none" variant="body2" sx={{ p: 0 }}>
+                <Link
+                  underline="none"
+                  variant="body2"
+                  sx={{ p: 0 }}
+                  target="_blank"
+                  rel="noopener"
+                >
                   {t('Terms & Conditions')}
                 </Link>
               </NextLink>
@@ -117,13 +118,14 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                 href="https://www.cru.org/us/en/about/privacy.html"
                 passHref
                 legacyBehavior
-                target="_blank"
-                rel="noopener"
-                style={{
-                  textDecoration: 'none'
-                }}
               >
-                <Link underline="none" variant="body2" sx={{ p: 0 }}>
+                <Link
+                  underline="none"
+                  variant="body2"
+                  sx={{ p: 0 }}
+                  target="_blank"
+                  rel="noopener"
+                >
                   {t('Privacy Policy')}
                 </Link>
               </NextLink>

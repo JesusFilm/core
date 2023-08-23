@@ -75,14 +75,7 @@ export function OnboardingPanelContent({
       <SidePanelContainer border={false}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="subtitle1">{t('Use Template')}</Typography>
-          <NextLink
-            href="/templates"
-            passHref
-            legacyBehavior
-            style={{
-              textDecoration: 'none'
-            }}
-          >
+          <NextLink href="/templates" passHref legacyBehavior>
             <Link
               underline="none"
               variant="subtitle2"

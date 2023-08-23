@@ -2,6 +2,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
@@ -84,15 +85,17 @@ export function StepHeader({ sx }: Props): ReactElement {
           href="https://www.cru.org/us/en/about/terms-of-use.html"
           passHref
           legacyBehavior
-          rel="noopener"
-          target="_blank"
-          style={{
-            textDecoration: 'none'
-          }}
         >
-          <Typography variant="body2" sx={{ px: 0 }} onClick={handleClose}>
+          <Link
+            variant="body2"
+            underline="none"
+            rel="noopener"
+            target="_blank"
+            sx={{ px: 0 }}
+            onClick={handleClose}
+          >
             <MuiMenuItem>{t('Terms & Conditions')}</MuiMenuItem>
-          </Typography>
+          </Link>
         </NextLink>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
           <Typography
