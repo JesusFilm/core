@@ -135,7 +135,9 @@ describe('UserListItem', () => {
       fireEvent.click(getByRole('button', { name: 'Editor' }))
 
       expect(getAllByRole('menuitem')).toHaveLength(2)
-      expect(getByRole('menuitem', { name: 'Promote' })).toBeInTheDocument()
+      expect(
+        getByRole('menuitem', { name: 'Make an Owner' })
+      ).toBeInTheDocument()
       expect(getByRole('menuitem', { name: 'Remove' })).toBeInTheDocument()
     })
 
@@ -307,7 +309,7 @@ describe('UserListItem', () => {
       fireEvent.click(getByRole('button', { name: 'Editor' }))
       expect(getByRole('menu')).toBeInTheDocument()
 
-      fireEvent.click(getByRole('menuitem', { name: 'Promote' }))
+      fireEvent.click(getByRole('menuitem', { name: 'Make an Owner' }))
 
       await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
