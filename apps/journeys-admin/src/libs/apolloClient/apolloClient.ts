@@ -39,5 +39,6 @@ export function createApolloClient(
 }
 
 export function useApollo(token: string): ApolloClient<NormalizedCacheObject> {
+  console.log('useApollo', token)
   return useMemo(() => createApolloClient(token), [token])
 }
