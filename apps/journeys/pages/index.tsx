@@ -81,7 +81,6 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                       </Box>
                       <NextLink href={`/${slug}`} passHref legacyBehavior>
                         <Box
-                          component="span"
                           sx={{
                             display: 'block',
                             width: '100%',
@@ -110,12 +109,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                   textDecoration: 'none'
                 }}
               >
-                <Link
-                  component="span"
-                  underline="none"
-                  variant="body2"
-                  sx={{ p: 0 }}
-                >
+                <Link underline="none" variant="body2" sx={{ p: 0 }}>
                   {t('Terms & Conditions')}
                 </Link>
               </NextLink>
@@ -129,12 +123,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                   textDecoration: 'none'
                 }}
               >
-                <Link
-                  component="span"
-                  underline="none"
-                  variant="body2"
-                  sx={{ p: 0 }}
-                >
+                <Link underline="none" variant="body2" sx={{ p: 0 }}>
                   {t('Privacy Policy')}
                 </Link>
               </NextLink>

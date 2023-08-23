@@ -142,7 +142,7 @@ export function TemplateCard({
                   </Typography>
                 </>
               ) : (
-                <Box component="span" sx={{ height: '44px' }}>
+                <Box sx={{ height: '44px' }}>
                   <Skeleton variant="text" width={120} />
                   <Skeleton variant="text" width={150} />
                 </Box>

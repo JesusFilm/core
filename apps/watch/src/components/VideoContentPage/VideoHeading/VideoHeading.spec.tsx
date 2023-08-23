@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
@@ -30,7 +30,7 @@ describe('VideoHeading', () => {
     )
   })
 
-  it('should display link and button to container page', () => {
+  it('should display link and button to container page', async () => {
     const { getByRole } = render(
       <VideoProvider
         value={{
@@ -43,10 +43,13 @@ describe('VideoHeading', () => {
         <VideoHeading onShareClick={jest.fn()} onDownloadClick={jest.fn()} />
       </VideoProvider>
     )
-    expect(getByRole('link', { name: 'LUMO' })).toHaveAttribute(
-      'href',
-      `/lumo/english`
+    await waitFor(() =>
+      expect(getByRole('link', { name: 'LUMO' })).toHaveAttribute(
+        'href',
+        `/lumo/english`
+      )
     )
+
     expect(getByRole('link', { name: 'See All' })).toHaveAttribute(
       'href',
       `/lumo/english`

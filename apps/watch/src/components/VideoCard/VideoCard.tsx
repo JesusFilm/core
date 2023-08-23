@@ -82,7 +82,6 @@ export function VideoCard({
       }}
     >
       <Link
-        component="span"
         display="block"
         underline="none"
         color="inherit"

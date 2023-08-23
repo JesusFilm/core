@@ -37,7 +37,6 @@ export function DatePreview(): ReactElement {
         legacyBehavior
       >
         <Button
-          component="span"
           startIcon={<VisibilityIcon />}
           variant="outlined"
           size="small"

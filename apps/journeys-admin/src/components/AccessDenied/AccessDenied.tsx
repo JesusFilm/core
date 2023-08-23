@@ -110,7 +110,6 @@ export function AccessDenied({
             <Box display={{ xs: 'none', sm: 'flex' }}>
               <NextLink href="/" passHref legacyBehavior>
                 <Button
-                  component="span"
                   sx={{ color: 'primary.main' }}
                   startIcon={<ChevronLeftRoundedIcon />}
                   size="small"
@@ -122,7 +121,6 @@ export function AccessDenied({
             <Box display={{ xs: 'flex', sm: 'none' }}>
               <NextLink href="/" passHref legacyBehavior>
                 <Button
-                  component="span"
                   sx={{ color: 'primary.main' }}
                   startIcon={<ChevronLeftRoundedIcon />}
                   size="small"
@@ -137,7 +135,6 @@ export function AccessDenied({
               legacyBehavior
             >
               <Button
-                component="span"
                 sx={{
                   color: 'secondary.main',
                   borderColor: 'secondary.main',
