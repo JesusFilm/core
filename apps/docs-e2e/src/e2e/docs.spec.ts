@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test'
-
+/* 
+This is just a sample test
+Test that 'docs' part of the URL
+*/
 test('sample docs e2e test', async ({ page }) => {
   await page.goto('/')
 

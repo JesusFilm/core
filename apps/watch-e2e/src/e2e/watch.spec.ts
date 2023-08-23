@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test'
-
+/* 
+This is just a sample test
+Test that 'watch' part of the URL
+*/
 test('sample watch e2e test', async ({ page }) => {
   await page.goto('/')
 
