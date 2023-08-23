@@ -1,4 +1,8 @@
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  withAuthUser,
+  withAuthUserTokenSSR
+} from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -17,7 +21,7 @@ function SignInPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
+export const getServerSideProps = withAuthUserTokenSSR({
   whenAuthed: AuthAction.REDIRECT_TO_APP
 })(async ({ locale }) => {
   return {
@@ -31,6 +35,6 @@ export const getServerSideProps = withUserTokenSSR({
   }
 })
 
-export default withUser({
+export default withAuthUser({
   whenAuthed: AuthAction.REDIRECT_TO_APP
 })(SignInPage)

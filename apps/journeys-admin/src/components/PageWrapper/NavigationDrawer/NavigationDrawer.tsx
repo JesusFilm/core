@@ -19,7 +19,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import compact from 'lodash/compact'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { User as AuthUser } from 'next-firebase-auth'
+import { AuthUser } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 

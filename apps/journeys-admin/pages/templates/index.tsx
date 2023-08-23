@@ -1,8 +1,8 @@
 import {
   AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -14,7 +14,7 @@ import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useUser()
+  const AuthUser = useAuthUser()
 
   return (
     <>
@@ -26,9 +26,9 @@ function LibraryIndex(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
+export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user: AuthUser, locale }) => {
+})(async ({ AuthUser, locale }) => {
   if (AuthUser == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
@@ -47,6 +47,6 @@ export const getServerSideProps = withUserTokenSSR({
   }
 })
 
-export default withUser({
+export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(LibraryIndex)

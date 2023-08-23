@@ -2,9 +2,9 @@ import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -30,7 +30,7 @@ import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const AuthUser = useUser()
+  const AuthUser = useAuthUser()
   const { data } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
@@ -65,9 +65,9 @@ function JourneyEditPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
+export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user: AuthUser, locale, query }) => {
+})(async ({ AuthUser, locale, query }) => {
   if (AuthUser == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
@@ -123,6 +123,6 @@ export const getServerSideProps = withUserTokenSSR({
   }
 })
 
-export default withUser({
+export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(JourneyEditPage)

@@ -4,9 +4,9 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
@@ -79,7 +79,7 @@ export const GET_JOURNEY_VISITORS_COUNT = gql`
 
 function JourneyVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useUser()
+  const AuthUser = useAuthUser()
   const router = useRouter()
   const journeyId = router.query.journeyId as string
 
@@ -235,9 +235,9 @@ function JourneyVisitorsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
+export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user: AuthUser, locale, query }) => {
+})(async ({ AuthUser, locale, query }) => {
   if (AuthUser == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
@@ -281,6 +281,6 @@ export const getServerSideProps = withUserTokenSSR({
   }
 })
 
-export default withUser({
+export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(JourneyVisitorsPage)

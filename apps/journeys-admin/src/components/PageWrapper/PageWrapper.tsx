@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { User as AuthUser } from 'next-firebase-auth'
+import { AuthUser } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 
 import taskbarIcon from '../../../public/taskbar-icon.svg'

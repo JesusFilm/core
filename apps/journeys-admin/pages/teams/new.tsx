@@ -1,4 +1,8 @@
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  withAuthUser,
+  withAuthUserTokenSSR
+} from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -23,9 +27,9 @@ function TeamsNewPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
+export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user: AuthUser, locale }) => {
+})(async ({ AuthUser, locale }) => {
   if (AuthUser == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
@@ -63,6 +67,6 @@ export const getServerSideProps = withUserTokenSSR({
   }
 })
 
-export default withUser({
+export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(TeamsNewPage)

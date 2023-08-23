@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User as AuthUser } from 'next-firebase-auth'
+import { AuthUser } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
