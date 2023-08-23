@@ -15,6 +15,15 @@ import { TEXT_RESPONSE_LABEL_UPDATE } from './Label'
 
 import { Label } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 const block: TreeBlock<TextResponseBlock> = {
   __typename: 'TextResponseBlock',
   id: 'textResponse0.id',
