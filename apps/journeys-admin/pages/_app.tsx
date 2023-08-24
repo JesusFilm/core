@@ -131,6 +131,4 @@ function JourneysAdminApp({
   )
 }
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(appWithTranslation(JourneysAdminApp, i18nConfig))
+export default withAuthUser()(appWithTranslation(JourneysAdminApp, i18nConfig))
