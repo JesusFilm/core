@@ -27,7 +27,7 @@ const storiesForProject = {
   // Add new UI projects here and in allStories
 }
 
-const allStories = [
+const stories = [
   ...storiesForProject['journeys'],
   ...storiesForProject['journeys-admin'],
   ...storiesForProject['journeys-ui'],
@@ -40,7 +40,7 @@ module.exports = {
     './static',
     { from: '../apps/watch/public/fonts', to: '/watch/fonts' }
   ],
-
+  stories,
   addons: [
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
