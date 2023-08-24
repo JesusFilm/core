@@ -4,6 +4,15 @@ import { SnackbarProvider } from 'notistack'
 
 import { AddUserSection } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('AddUserSection', () => {
   it('opens email invite form on click', async () => {
     const { getByRole, queryByRole } = render(
