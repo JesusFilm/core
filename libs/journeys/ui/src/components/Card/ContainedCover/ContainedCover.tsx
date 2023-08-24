@@ -123,9 +123,9 @@ export function ContainedCover({
             src={posterImage}
             aria-details={posterImage}
             alt="card video image"
-            fill
+            layout="fill"
+            objectFit="cover"
             sx={{
-              objectFit: 'cover',
               transform:
                 videoBlock?.source === VideoBlockSource.youTube
                   ? 'scale(1.35)'
@@ -142,10 +142,10 @@ export function ContainedCover({
               alt={imageBlock.alt}
               placeholder="blur"
               blurDataURL={backgroundBlur}
-              fill
+              layout="fill"
+              objectFit="cover"
               sx={{
-                transform: 'scale(2) translate(0px, -25%)',
-                objectFit: 'cover'
+                transform: 'scale(2) translate(0px, -25%)'
               }}
             />
             <Box
@@ -181,10 +181,7 @@ export function ContainedCover({
             alt={imageBlock?.alt}
             placeholder="blur"
             blurDataURL={backgroundBlur}
-            fill
-            sx={{
-              objectFit: 'cover'
-            }}
+            objectFit="cover"
           />
         )}
       </Box>

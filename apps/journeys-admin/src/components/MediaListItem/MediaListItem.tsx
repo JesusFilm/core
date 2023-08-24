@@ -94,8 +94,9 @@ export function MediaListItem({
               alt={title}
               height={79}
               width={79}
+              layout="fixed"
+              objectFit="cover"
               style={{
-                objectFit: 'cover',
                 borderRadius: 8
               }}
             />

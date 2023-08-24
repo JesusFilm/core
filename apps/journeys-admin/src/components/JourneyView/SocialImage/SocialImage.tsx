@@ -24,8 +24,8 @@ export function SocialImage(): ReactElement {
           blurDataURL={journey?.primaryImageBlock.blurhash}
           width={213}
           height={167}
+          objectFit="cover"
           style={{
-            objectFit: 'cover',
             borderRadius: 12
           }}
         />

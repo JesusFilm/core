@@ -111,10 +111,8 @@ export function VideoWrapper({
           alt={posterBlock.alt}
           placeholder={blurBackground != null ? 'blur' : 'empty'}
           blurDataURL={blurBackground ?? posterBlock.src}
-          style={{
-            objectFit: 'cover'
-          }}
-          fill
+          layout="fill"
+          objectFit="cover"
         />
       ) : block.videoId != null ? (
         <>

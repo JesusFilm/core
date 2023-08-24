@@ -39,13 +39,10 @@ export function Image({
           alt={alt}
           height={height}
           width={width}
+          placeholder="blur"
           blurDataURL={placeholderSrc ?? src}
-          sizes="100vw"
-          style={{
-            width: '100%',
-            height: 'auto',
-            objectFit: 'cover'
-          }}
+          layout="responsive"
+          objectFit="cover"
         />
       ) : (
         <Paper
