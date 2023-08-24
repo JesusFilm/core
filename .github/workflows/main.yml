@@ -185,7 +185,6 @@ jobs:
         with:
           targets: codecov
   visual-test:
-    if: false
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -240,4 +239,3 @@ jobs:
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
           untraced: '@(package*.json|.storybook/**)'
           traceChanged: 'expanded'
-          dryRun: 'true'
