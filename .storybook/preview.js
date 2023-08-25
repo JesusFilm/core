@@ -6,13 +6,13 @@ const {
 } = require('msw-storybook-addon')
 const { MockedProvider } = require('@apollo/client/testing')
 
-const OriginalNextImage = NextImage.default
+// const OriginalNextImage = NextImage.default
 
-Object.defineProperty(NextImage, 'default', {
-  configurable: true,
-  value: (props) =>
-    createElement(OriginalNextImage, { ...props, unoptimized: true })
-})
+// Object.defineProperty(NextImage, 'default', {
+//   configurable: true,
+//   value: (props) =>
+//     createElement(OriginalNextImage, { ...props, unoptimized: true })
+// })
 
 const customViewports = {
   mobileMin: {

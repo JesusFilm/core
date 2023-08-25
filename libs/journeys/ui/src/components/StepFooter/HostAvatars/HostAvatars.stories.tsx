@@ -117,6 +117,7 @@ export const WithPlaceholder = {
 }
 
 export const Placeholder = {
+  ...Template,
   args: {
     ...Empty.args,
     size: 'large'
@@ -124,6 +125,7 @@ export const Placeholder = {
 }
 
 export const TwoAvatars = {
+  ...Template,
   args: {
     ...Empty.args,
     journey: {
@@ -134,6 +136,7 @@ export const TwoAvatars = {
 }
 
 export const Large = {
+  ...Template,
   args: {
     ...Default.args,
     size: 'large'
