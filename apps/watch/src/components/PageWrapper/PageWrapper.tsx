@@ -27,6 +27,7 @@ export function PageWrapper({
       <Stack
         justifyContent="space-between"
         sx={{ width: '100%', height: '100%' }}
+        data-testid="PageWrapper"
       >
         {hideHeader !== true && <Header />}
         <Container maxWidth={false} disableGutters>
