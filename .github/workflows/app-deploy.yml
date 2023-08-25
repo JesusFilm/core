@@ -132,9 +132,12 @@ jobs:
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
       - uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: ${{ matrix.app }}-playwright-report
-          path: playwright-report/
+          path: |
+            playwright-report/
+            src/e2e/
           retention-days: 30
 
   deploy-production:
