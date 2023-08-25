@@ -28,11 +28,12 @@ const storiesForProject = {
 }
 
 const stories = [
-  ...storiesForProject['journeys'],
-  ...storiesForProject['journeys-admin'],
-  ...storiesForProject['journeys-ui'],
-  ...storiesForProject['watch'],
-  ...storiesForProject['shared-ui']
+  '../libs/journeys/ui/src/components/StepFooter/HostAvatars/HostAvatars.stories.tsx'
+  // ...storiesForProject['journeys'],
+  // ...storiesForProject['journeys-admin'],
+  // ...storiesForProject['journeys-ui'],
+  // ...storiesForProject['watch'],
+  // ...storiesForProject['shared-ui']
 ]
 
 module.exports = {
@@ -85,6 +86,6 @@ module.exports = {
   },
 
   docs: {
-    autodocs: true
+    autodocs: false
   }
 }
