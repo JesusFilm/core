@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
@@ -14,7 +14,7 @@ import { Typography } from '../Typography'
 
 import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
 
-const Demo = {
+const Demo: Meta<typeof SignUp> = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: SignUp,
@@ -78,94 +78,101 @@ const submitEventMock: MockedResponse = {
   }
 }
 
-const Template: Story<ComponentProps<typeof SignUp>> = ({
-  ...args
-}): ReactElement => (
-  <MockedProvider mocks={[submitEventMock]}>
-    <JourneyProvider>
-      <SnackbarProvider>
-        <StoryCard>
-          <Typography {...typographyProps} />
-          <SignUp {...args} uuid={() => 'uuid'} />
-          <Typography
-            {...typographyProps}
-            content="Some block below"
-            variant={TypographyVariant.body1}
-          />
-        </StoryCard>
-      </SnackbarProvider>
-    </JourneyProvider>
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = { ...signUpProps }
-
-export const Complete = Template.bind({})
-Complete.args = {
-  ...Default.args,
-  submitIconId: 'icon',
-  submitLabel: 'Custom label',
-  children: [
-    {
-      id: 'icon',
-      __typename: 'IconBlock',
-      parentBlockId: 'parent',
-      parentOrder: 0,
-      iconName: IconName.LockOpenRounded,
-      iconSize: null,
-      iconColor: null,
-      children: []
-    }
-  ]
-}
-
-export const SubmitError = Template.bind({})
-SubmitError.args = { ...Default.args }
-SubmitError.play = async () => {
-  const fields = screen.getAllByRole('textbox')
-
-  await userEvent.type(fields[0], 'Name')
-  await userEvent.type(fields[1], 'name@domain.com')
-  await userEvent.click(screen.getAllByRole('button')[0])
-}
-
-const LoadingTemplate: Story<ComponentProps<typeof SignUp>> = ({
-  ...args
-}): ReactElement => (
-  <ApolloLoadingProvider>
-    <JourneyProvider>
-      <SnackbarProvider>
-        <StoryCard>
-          <SignUp {...args} uuid={() => 'uuid'} />
-        </StoryCard>
-      </SnackbarProvider>
-    </JourneyProvider>
-  </ApolloLoadingProvider>
-)
-
-export const Loading = LoadingTemplate.bind({})
-Loading.args = { ...Default.args }
-Loading.play = async () => {
-  const submitButtons = screen.getAllByRole('button')
-  const fields = screen.getAllByRole('textbox')
-
-  await userEvent.type(fields[0], 'Name')
-  await userEvent.type(fields[1], 'name@domain.com')
-  await userEvent.type(fields[2], 'Name')
-  await userEvent.type(fields[3], 'name@domain.com')
-  await Promise.all(
-    submitButtons.map(async (button) => {
-      await userEvent.click(button)
-    })
+const Template: StoryObj<ComponentProps<typeof SignUp>> = {
+  render: ({ ...args }): ReactElement => (
+    <MockedProvider mocks={[submitEventMock]}>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <StoryCard>
+            <Typography {...typographyProps} />
+            <SignUp {...args} uuid={() => 'uuid'} />
+            <Typography
+              {...typographyProps}
+              content="Some block below"
+              variant={TypographyVariant.body1}
+            />
+          </StoryCard>
+        </SnackbarProvider>
+      </JourneyProvider>
+    </MockedProvider>
   )
 }
-Loading.parameters = {
-  chromatic: { disableSnapshot: true }
+
+export const Default = { ...Template, args: { ...signUpProps } }
+
+export const Complete = {
+  ...Template,
+  args: {
+    ...Default.args,
+    submitIconId: 'icon',
+    submitLabel: 'Custom label',
+    children: [
+      {
+        id: 'icon',
+        __typename: 'IconBlock',
+        parentBlockId: 'parent',
+        parentOrder: 0,
+        iconName: IconName.LockOpenRounded,
+        iconSize: null,
+        iconColor: null,
+        children: []
+      }
+    ]
+  }
 }
 
-export const RTL = Template.bind({})
-RTL.args = { ...Complete.args }
-RTL.parameters = { rtl: true }
+export const SubmitError = {
+  ...Template,
+  args: { ...Default.args },
+  play: async () => {
+    const fields = screen.getAllByRole('textbox')
 
-export default Demo as Meta
+    await userEvent.type(fields[0], 'Name')
+    await userEvent.type(fields[1], 'name@domain.com')
+    await userEvent.click(screen.getAllByRole('button')[0])
+  }
+}
+
+const LoadingTemplate: StoryObj<ComponentProps<typeof SignUp>> = {
+  render: ({ ...args }): ReactElement => (
+    <ApolloLoadingProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <StoryCard>
+            <SignUp {...args} uuid={() => 'uuid'} />
+          </StoryCard>
+        </SnackbarProvider>
+      </JourneyProvider>
+    </ApolloLoadingProvider>
+  )
+}
+
+export const Loading = {
+  ...LoadingTemplate,
+  args: { ...Default.args },
+  play: async () => {
+    const submitButtons = screen.getAllByRole('button')
+    const fields = screen.getAllByRole('textbox')
+
+    await userEvent.type(fields[0], 'Name')
+    await userEvent.type(fields[1], 'name@domain.com')
+    await userEvent.type(fields[2], 'Name')
+    await userEvent.type(fields[3], 'name@domain.com')
+    await Promise.all(
+      submitButtons.map(async (button) => {
+        await userEvent.click(button)
+      })
+    )
+  },
+  parameters: {
+    chromatic: { disableSnapshot: true }
+  }
+}
+
+export const RTL = {
+  ...Template,
+  args: { ...Complete.args },
+  parameters: { rtl: true }
+}
+
+export default Demo

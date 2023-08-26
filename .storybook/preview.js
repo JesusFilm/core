@@ -1,5 +1,5 @@
-const { createElement } = require('react')
-const NextImage = require('next/image')
+// const { createElement } = require('react')
+// const NextImage = require('next/image')
 const {
   initialize: mswInitialize,
   mswDecorator

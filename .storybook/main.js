@@ -28,7 +28,25 @@ const storiesForProject = {
 }
 
 const stories = [
-  '../libs/journeys/ui/src/components/StepFooter/HostAvatars/HostAvatars.stories.tsx'
+  '../libs/journeys/ui/src/components/StepFooter/HostAvatars/HostAvatars.stories.tsx',
+  '../libs/journeys/ui/src/components/Button/Button.stories.tsx',
+  '../libs/journeys/ui/src/components/Card/Card.stories.tsx',
+  '../libs/journeys/ui/src/components/Icon/Icon.stories.tsx',
+  '../libs/journeys/ui/src/components/Image/Image.stories.tsx',
+  '../libs/journeys/ui/src/components/RadioOption/RadioOption.stories.tsx',
+  '../libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.stories.tsx',
+  '../libs/journeys/ui/src/components/SignUp/SignUp.stories.tsx',
+  '../libs/journeys/ui/src/components/StepFooter/StepFooter.stories.tsx',
+  '../libs/journeys/ui/src/components/StepFooter/ChatButtons/ChatButtons.stories.tsx',
+  '../libs/journeys/ui/src/components/StepFooter/FooterButtonList/ReactionButton/ReactionButton.stories.tsx',
+  '../libs/journeys/ui/src/components/StepFooter/FooterButtonList/ShareButton/ShareDialog/ShareDialog.stories.tsx',
+  '../libs/journeys/ui/src/components/StepFooter/FooterButtonList/ShareButton/ShareButton.stories.tsx',
+  '../libs/journeys/ui/src/components/StepFooter/FooterButtonList/StyledFooterButton/StyledFooterButton.stories.tsx',
+  '../libs/journeys/ui/src/components/StepFooter/FooterButtonList/FooterButtonList.stories.tsx',
+  '../libs/journeys/ui/src/components/TextField/TextField.stories.tsx',
+  '../libs/journeys/ui/src/components/TextResponse/TextResponse.stories.tsx',
+  '../libs/journeys/ui/src/components/Typography/Typography.stories.tsx',
+  '../libs/journeys/ui/src/components/Video/Video.stories.tsx'
   // ...storiesForProject['journeys'],
   // ...storiesForProject['journeys-admin'],
   // ...storiesForProject['journeys-ui'],

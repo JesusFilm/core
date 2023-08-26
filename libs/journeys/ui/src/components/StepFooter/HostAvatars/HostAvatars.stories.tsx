@@ -24,8 +24,6 @@ const HostAvatarsDemo: Meta<typeof HostAvatars> = {
   }
 }
 
-export default HostAvatarsDemo
-
 const hostData = {
   id: 'hostId',
   __typename: 'Host' as const,
@@ -142,3 +140,5 @@ export const Large = {
     size: 'large'
   }
 }
+
+export default HostAvatarsDemo

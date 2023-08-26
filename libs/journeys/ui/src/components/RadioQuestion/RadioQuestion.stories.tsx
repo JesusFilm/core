@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { TypographyVariant } from '../../../__generated__/globalTypes'
@@ -11,7 +11,7 @@ import { Typography } from '../Typography'
 
 import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
 
-const Demo = {
+const Demo: Meta<typeof RadioQuestion> = {
   ...simpleComponentConfig,
   component: RadioQuestion,
   title: 'Journeys-Ui/RadioQuestion'
@@ -88,31 +88,38 @@ const submitEventMock: MockedResponse = {
   }
 }
 
-const Template: Story<ComponentProps<typeof RadioQuestion>> = ({ ...args }) => (
-  <MockedProvider mocks={[submitEventMock]}>
-    <StoryCard>
-      <Typography {...typographyProps} />
-      <RadioQuestion {...args} uuid={() => 'uuid'} />
-      <Typography
-        {...typographyProps}
-        content="RadioQuestion is just the button group above"
-        variant={TypographyVariant.body1}
-        parentOrder={2}
-      />
-    </StoryCard>
-  </MockedProvider>
-)
+type Story = StoryObj<typeof RadioQuestion>
 
-export const Default = Template.bind({})
-Default.args = {
-  id: 'Default',
-  children,
-  parentOrder: 1,
-  parentBlockId: 'Step1'
+const Template: Story = {
+  render: ({ ...args }) => (
+    <MockedProvider mocks={[submitEventMock]}>
+      <StoryCard>
+        <Typography {...typographyProps} />
+        <RadioQuestion {...args} uuid={() => 'uuid'} />
+        <Typography
+          {...typographyProps}
+          content="RadioQuestion is just the button group above"
+          variant={TypographyVariant.body1}
+          parentOrder={2}
+        />
+      </StoryCard>
+    </MockedProvider>
+  )
 }
 
-export const RTL = Template.bind({})
-RTL.args = { ...Default.args }
-RTL.parameters = { rtl: true }
+export const Default = {
+  ...Template,
+  args: {
+    id: 'Default',
+    children,
+    parentOrder: 1,
+    parentBlockId: 'Step1'
+  }
+}
 
-export default Demo as Meta
+export const RTL = {
+  args: { ...Default.args },
+  parameters: { rtl: true }
+}
+
+export default Demo
