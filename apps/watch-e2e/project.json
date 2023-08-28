@@ -9,6 +9,13 @@
         "cwd": "apps/watch-e2e"
       }
     },
+    "update-snapshots": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["playwright test --update-snapshots"],
+        "cwd": "apps/watch-e2e"
+      }
+    },     
     "debug": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
