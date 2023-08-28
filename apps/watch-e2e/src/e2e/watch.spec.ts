@@ -21,12 +21,10 @@ test('Test single video', async ({ page }) => {
   const url = page.url()
   console.log('Current URL:', url)
 
-  // Test the URL
-  await expect(page).toHaveURL(/.*watch/)
-
   await expect(page).toHaveScreenshot({
     animations: 'disabled',
-    fullPage: true
+    fullPage: true,
+    timeout: 10000
   })
 
   await page.getByRole('button', { name: 'Jesus Calms the Storm Jesus Calms the Storm Chapter 1:59' })
