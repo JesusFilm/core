@@ -128,7 +128,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:update-snapshots
+        run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
       - uses: actions/upload-artifact@v3
