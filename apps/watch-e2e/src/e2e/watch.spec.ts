@@ -35,7 +35,7 @@ test('Test single video', async ({ page }) => {
     fullPage: true
   })
 
-  await page.locator('[id="play-button-lg"]').click()
+  await page.getByRole('button', { name: 'Play Video' }).click()
 
   // wait for 2 minutes to see if the video is complete - a quick way of finding without writing much code for now
   // eslint-disable-next-line
