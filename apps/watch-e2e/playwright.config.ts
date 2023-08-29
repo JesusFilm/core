@@ -52,7 +52,7 @@ export default defineConfig({
     {
       name: 'chrome-mobile',
       use: { ...devices['Pixel 5'], channel: 'chrome' }
-    }
+    },
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },
