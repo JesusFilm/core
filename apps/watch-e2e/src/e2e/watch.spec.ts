@@ -21,7 +21,7 @@ test('Test single video', async ({ page }) => {
   const url = page.url()
   console.log('Current URL:', url)
 
-  await expect(page).toHaveScreenshot({
+  await expect(page).toHaveScreenshot('home-page.png', {
     animations: 'disabled',
     fullPage: true,
     timeout: 10000
@@ -33,19 +33,20 @@ test('Test single video', async ({ page }) => {
     })
     .click()
 
-  await expect(page).toHaveScreenshot({
+  await expect(page).toHaveScreenshot('before-video.png', {
     animations: 'disabled',
     fullPage: true
   })
 
-  await page.getByRole('button', { name: 'Play Video' }).click()
+  await page.getByRole('button', { name: 'Play' }).click()
 
   // wait for 2 minutes to see if the video is complete - a quick way of finding without writing much code for now
+  // later find a way to check if the video is complete and check if the video is playing. Also use 10 seconds video
   // eslint-disable-next-line
   await page.waitForTimeout(2 * 60 * 1000)
 
   // Take screenshot once video is played and test it is same all the times
-  await expect(page).toHaveScreenshot({
+  await expect(page).toHaveScreenshot('after-video.png', {
     animations: 'disabled',
     fullPage: true
   })
