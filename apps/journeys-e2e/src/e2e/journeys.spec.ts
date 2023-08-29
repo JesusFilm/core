@@ -43,11 +43,7 @@ test('journeys', async ({ page }) => {
   await page.getByText('The Son of God').click()
 
   // Test that app automatically navigated user to second journey upon completion of first journey
-  // await expect(page).toHaveURL(/.*what-about-the-resurrection/)
-  await expect(page).toHaveScreenshot({
-    animations: 'disabled',
-    fullPage: true
-  })
+  await expect(page).toHaveURL(/.*what-about-the-resurrection/)
 })
 
 /* 

@@ -15,7 +15,7 @@
         "commands": ["playwright test --update-snapshots"],
         "cwd": "apps/journeys-admin-e2e"
       }
-    },     
+    },
     "debug": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {

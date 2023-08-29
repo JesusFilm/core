@@ -17,5 +17,5 @@ test('sample docs e2e test', async ({ page }) => {
   await expect(page).toHaveScreenshot({
     animations: 'disabled',
     fullPage: true
-  })  
+  })
 })

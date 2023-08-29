@@ -12,8 +12,8 @@ Wait for two minutes as this video is for 1.59 minutes
 Take screenshot - so it will be tested all the times
 */
 test('Test single video', async ({ page }) => {
-   // 3 mins timeout for this test as it got videos (later we can use 10 seconds videos)
-   test.setTimeout(3*60*1000)
+  // 3 mins timeout for this test as it got videos (later we can use 10 seconds videos)
+  test.setTimeout(3 * 60 * 1000)
 
   await page.goto('/')
 
@@ -27,7 +27,10 @@ test('Test single video', async ({ page }) => {
     timeout: 10000
   })
 
-  await page.getByRole('button', { name: 'Jesus Calms the Storm Jesus Calms the Storm Chapter 1:59' })
+  await page
+    .getByRole('button', {
+      name: 'Jesus Calms the Storm Jesus Calms the Storm Chapter 1:59'
+    })
     .click()
 
   await expect(page).toHaveScreenshot({
