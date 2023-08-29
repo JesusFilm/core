@@ -41,16 +41,16 @@ export default defineConfig({
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
     {
-      name: 'Google Chrome',
+      name: 'chrome-desktop',
       use: { ...devices['Desktop Chrome'], channel: 'chrome' }
     },
 
     // /* Test against mobile viewports. */
     // // By default it's using chromium channel, changed it to chrome so it can play the video
     {
-      name: 'Mobile Chrome',
+      name: 'chrome-mobile',
       use: { ...devices['Pixel 5'], channel: 'chrome' }
-    },
+    }
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },
