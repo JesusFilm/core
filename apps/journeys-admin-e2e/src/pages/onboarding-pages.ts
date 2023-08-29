@@ -25,6 +25,10 @@ export class OnboardingPages {
       .getByLabel('I agree with listed above conditions and requirements')
       .check()
     await this.page.getByRole('button', { name: 'Next' }).click()
+
+    // Save Email and Password as environment variables for later use
+    process.env.EMAIL = email
+    process.env.PASSWORD = password
   }
 
   async fillOnboardingForm(teamName: string, legalName: string): Promise<void> {
