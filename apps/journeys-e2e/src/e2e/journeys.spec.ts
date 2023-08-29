@@ -17,25 +17,27 @@ test('journeys', async ({ page }) => {
   await page.getByRole('button', { name: 'Explore Now' }).click()
 
   // wait for 3 minutes to see if the video is complete - a quick way of finding without writing much code for now
+  // later find a way to check if the video is complete and check if the video is playing. Also use 10 seconds video
   // eslint-disable-next-line
   await page.waitForTimeout(3 * 60 * 1000)
-  await expect(page).toHaveScreenshot({
+  await expect(page).toHaveScreenshot('can-we-trust.png', {
     animations: 'disabled',
     fullPage: true
   })
   await page.getByText('Yes, it’s a true story', { exact: false }).click()
 
   // wait for 3 minutes to see if the video is complete - a quick way of finding without writing much code for now
+  // later find a way to check if the video is complete and check if the video is playing. Also use 10 seconds video
   // eslint-disable-next-line
   await page.waitForTimeout(3 * 60 * 1000)
-  await expect(page).toHaveScreenshot({
+  await expect(page).toHaveScreenshot('jesus-history.png', {
     animations: 'disabled',
     fullPage: true
   })
   await page.getByText('One question remains', { exact: false }).click()
 
   // Test Who was this Jesus? screen
-  await expect(page).toHaveScreenshot({
+  await expect(page).toHaveScreenshot('who-was-jesus.png', {
     animations: 'disabled',
     fullPage: true
   })
