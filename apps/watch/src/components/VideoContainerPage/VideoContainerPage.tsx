@@ -15,7 +15,7 @@ import { ContainerHero } from './ContainerHero'
 
 // Usually Series or Collection Videos
 export function VideoContainerPage(): ReactElement {
-  const { snippet, slug, variant } = useVideo()
+  const { description, slug, variant } = useVideo()
   const { loading, children } = useVideoChildren(variant?.slug)
   const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
@@ -46,7 +46,7 @@ export function VideoContainerPage(): ReactElement {
           direction="column"
         >
           <ContainerDescription
-            value={snippet[0].value}
+            value={description[0].value}
             openDialog={handleOpenDialog}
           />
           <ShareDialog open={shareDialog} onClose={handleCloseDialog} />
