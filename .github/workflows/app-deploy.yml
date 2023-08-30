@@ -137,8 +137,6 @@ jobs:
           name: ${{ matrix.app }}-playwright-report
           path: |
             playwright-report/
-            apps/${{ matrix.app }}-e2e/src/e2e/
-            test-results
           retention-days: 30
 
   deploy-production:
