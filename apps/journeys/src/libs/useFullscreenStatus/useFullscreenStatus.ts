@@ -68,9 +68,7 @@ function getBrowserFullscreenElementProp(): string {
   } else if (typeof document.msFullscreenElement !== 'undefined') {
     return 'msFullscreenElement'
   } else {
-    throw new Error(
-      'fullscreenElement is not supported by this browser - please try again with chrome'
-    )
+    throw new Error('fullscreenElement is not supported by this browser')
   }
 }
 
@@ -83,8 +81,6 @@ function getBrowserFullscreenExitProp(): string {
   } else if (typeof document.msFullscreenElement !== 'undefined') {
     return 'msExitFullscreen'
   } else {
-    throw new Error(
-      'fullscreenElement is not supported by this browser - please try again with chrome'
-    )
+    throw new Error('fullscreenElement is not supported by this browser')
   }
 }

@@ -201,7 +201,7 @@ This check runs `fetch-secrets`, `generate`, and `build` commands on all affecte
 
 ### Tests
 
-This check runs `generate` and `test` on all affected projects. Typically the `test` command will run all integration, unit and e2e tests contained within the affected projects. We use playwright to run e2e tests.
+This check runs `generate` and `test` on all affected projects. Typically the `test` command will run all integration, unit and e2e tests contained within the affected projects.
 
 ### Visual Tests
 

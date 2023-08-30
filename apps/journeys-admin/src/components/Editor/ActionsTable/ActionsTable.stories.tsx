@@ -67,7 +67,7 @@ Default.args = {
           __typename: 'LinkAction',
           parentBlockId: 'button1.id',
           gtmEventName: null,
-          url: 'https://www.google.co.nz/'
+          url: 'https://www.google.com/'
         }
       },
       {
