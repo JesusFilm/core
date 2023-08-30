@@ -15,7 +15,7 @@ test('Test single video', async ({ page }) => {
   // 3 mins timeout for this test as it got videos (later we can use 10 seconds videos)
   test.setTimeout(3 * 60 * 1000)
 
-  await page.goto('https://watch-1846-jesusfilm.vercel.app/watch')
+  await page.goto('https://www.jesusfilm.org/watch')
 
   // Get and log the current URL
   const url = page.url()
