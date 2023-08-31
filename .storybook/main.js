@@ -28,21 +28,11 @@ const storiesForProject = {
 }
 
 const stories = [
-  // ...storiesForProject['journeys'],
+  ...storiesForProject['journeys'],
   // ...storiesForProject['journeys-admin'],
   ...storiesForProject['journeys-ui'],
   // ...storiesForProject['watch'],
   ...storiesForProject['shared-ui']
-  // '../libs/shared/ui/src/components/icons/icon.stories.tsx',
-  // '../libs/shared/ui/src/components/CopyTextField/CopyTextField.stories.tsx',
-  // '../libs/shared/ui/src/components/Dialog/Dialog.stories.tsx',
-  // '../libs/shared/ui/src/components/LanguageAutocomplete/LanguageAutocomplete.stories.tsx',
-  // '../libs/shared/ui/src/components/SubmitListener/SubmitListener.stories.tsx',
-  // '../libs/shared/ui/src/libs/themes/base/tokens/components.stories.tsx',
-  // '../libs/shared/ui/src/libs/themes/base/theme.stories.tsx',
-  // '../libs/shared/ui/src/libs/themes/website/tokens/colors.stories.tsx',
-  // '../libs/shared/ui/src/libs/themes/website/tokens/components.stories.tsx',
-  // '../libs/shared/ui/src/libs/themes/website/tokens/typography.stories.tsx'
 ]
 
 module.exports = {
