@@ -145,7 +145,11 @@ export function ImageBlockEditor({
         />
       </TabPanel>
       <TabPanel name="generative" value={tabValue} index={2}>
-        <AIGallery onChange={handleSrcChange} />
+        <AIGallery
+          onChange={handleSrcChange}
+          setUploading={(upload) => setUploading(upload)}
+          loading={uploading != null ? uploading : loading}
+        />
       </TabPanel>
     </>
   )
