@@ -17,7 +17,7 @@ export const CREATE_AI_IMAGE = gql`
 
 export function AIGallery(): ReactElement {
   const somePrompt =
-    'picture of a Maori man with glasses and a beard and he is wearing a shit that says Jesus Film. Make him be sitting in front of a computer like a really cool nerd'
+    'picture of a Maori man with glasses and a beard and he is wearing a shirt that says Jesus Film. Make him be sitting in front of a computer like a really cool nerd'
   const [textValue, setTextvalue] = useState<string | null>(somePrompt)
 
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
