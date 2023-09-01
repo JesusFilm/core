@@ -1,5 +1,6 @@
 import BrushRounded from '@mui/icons-material/BrushRounded'
 import DashboardRounded from '@mui/icons-material/DashboardRounded'
+import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -124,9 +125,9 @@ export function ImageBlockEditor({
             {...tabA11yProps('custom', 1)}
           />
           <Tab
-            icon={<BrushRounded />}
-            label={<Typography variant="subtitle2">Custom</Typography>}
-            {...tabA11yProps('custom', 1)}
+            icon={<SmartToyOutlinedIcon />}
+            label={<Typography variant="subtitle2">AI</Typography>}
+            {...tabA11yProps('custom', 2)}
           />
         </Tabs>
       </Box>
@@ -142,7 +143,7 @@ export function ImageBlockEditor({
           error={error}
         />
       </TabPanel>
-      <TabPanel name="generative" value={tabValue} index={1}>
+      <TabPanel name="generative" value={tabValue} index={2}>
         <div>test</div>
       </TabPanel>
     </>
