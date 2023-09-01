@@ -31,7 +31,7 @@ const stories = [
   ...storiesForProject['journeys'],
   // ...storiesForProject['journeys-admin'],
   ...storiesForProject['journeys-ui'],
-  // ...storiesForProject['watch'],
+  ...storiesForProject['watch'],
   ...storiesForProject['shared-ui']
 ]
 

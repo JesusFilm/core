@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
 import { watchConfig } from '../../../libs/storybook'
@@ -7,29 +7,35 @@ import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoContent } from './VideoContent'
 
-const VideoContentStory = {
+const VideoContentStory: Meta<typeof VideoContent> = {
   ...watchConfig,
   component: VideoContent,
   title: 'Watch/VideoContentPage/VideoContent'
 }
 
-const Template: Story = (args) => (
-  <VideoProvider value={{ content: args.video }}>
-    <VideoContent />
-  </VideoProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  video: { ...videos[0], studyQuestions: [] }
+const Template: StoryObj<typeof VideoContent> = {
+  render: ({ ...args }) => (
+    <VideoProvider value={{ content: args.video }}>
+      <VideoContent />
+    </VideoProvider>
+  )
 }
 
-export const Discussion = Template.bind({})
-Discussion.args = {
-  video: { ...videos[0] }
-}
-Discussion.play = async () => {
-  await userEvent.click(screen.getByTestId('discussion'))
+export const Default = {
+  ...Template,
+  args: {
+    video: { ...videos[0], studyQuestions: [] }
+  }
 }
 
-export default VideoContentStory as Meta
+export const Discussion = {
+  ...Template,
+  args: {
+    video: { ...videos[0] }
+  },
+  play: async () => {
+    await userEvent.click(screen.getByTestId('discussion'))
+  }
+}
+
+export default VideoContentStory

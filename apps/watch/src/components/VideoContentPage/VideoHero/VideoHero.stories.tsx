@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { useState } from 'react'
 
@@ -14,31 +14,38 @@ import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoHero } from './VideoHero'
 
-const VideoHeroStory = {
+const VideoHeroStory: Meta<typeof VideoHero> = {
   ...watchConfig,
   component: VideoHero,
   title: 'Watch/VideoContentPage/VideoHero'
 }
 
-const Template: Story = () => {
-  const [hasPlayed, setHasPlayed] = useState(false)
-  return (
-    <MockedProvider mocks={[getLanguagesSlugMock, getSubtitleMock]}>
-      <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoHero onPlay={() => setHasPlayed(true)} hasPlayed={hasPlayed} />
-        </VideoProvider>
-      </ThemeProvider>
-    </MockedProvider>
-  )
+const Template: StoryObj<typeof VideoHero> = {
+  render: () => {
+    const [hasPlayed, setHasPlayed] = useState(false)
+    return (
+      <MockedProvider mocks={[getLanguagesSlugMock, getSubtitleMock]}>
+        <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoHero
+              onPlay={() => setHasPlayed(true)}
+              hasPlayed={hasPlayed}
+            />
+          </VideoProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export const VideoPlayer = Template.bind({})
-VideoPlayer.play = async () => {
-  const CustomPlayButton = screen.getAllByRole('button')[1]
-  await userEvent.click(CustomPlayButton)
+export const VideoPlayer = {
+  ...Template,
+  play: async () => {
+    const CustomPlayButton = screen.getAllByRole('button')[1]
+    await userEvent.click(CustomPlayButton)
+  }
 }
 
-export default VideoHeroStory as Meta
+export default VideoHeroStory
