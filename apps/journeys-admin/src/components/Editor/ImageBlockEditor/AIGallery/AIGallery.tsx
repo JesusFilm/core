@@ -15,7 +15,11 @@ export const CREATE_AI_IMAGE = gql`
   }
 `
 
-export function AIGallery(): ReactElement {
+interface AIGalleryProps {
+  onChange: (src: string) => void
+}
+
+export function AIGallery({ onChange }: AIGalleryProps): ReactElement {
   const somePrompt =
     'picture of a Maori man with glasses and a beard and he is wearing a shirt that says Jesus Film. Make him be sitting in front of a computer like a really cool nerd'
   const [textValue, setTextvalue] = useState<string | null>(somePrompt)
@@ -23,19 +27,22 @@ export function AIGallery(): ReactElement {
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
 
   const handleSubmit = async (): Promise<void> => {
-    console.log(textValue)
     const { data } = await createAiImage({
       variables: {
         prompt: textValue,
         model: SegmindModel.sdxl1__0_txt2img
       }
     })
-    console.log(data)
+    if (data?.createImageBySegmindPrompt?.id != null) {
+      const src = `https://imagedelivery.net/${
+        process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
+      }/${data?.createImageBySegmindPrompt?.id}/public`
+      onChange(src)
+    }
   }
 
   const handleChange = (e): void => {
     setTextvalue(e.target.value)
-    console.log(textValue)
   }
   return (
     <Box>
