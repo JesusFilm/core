@@ -123,6 +123,11 @@ export function ImageBlockEditor({
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />
+          <Tab
+            icon={<BrushRounded />}
+            label={<Typography variant="subtitle2">Custom</Typography>}
+            {...tabA11yProps('custom', 1)}
+          />
         </Tabs>
       </Box>
       <TabPanel name="gallery" value={tabValue} index={0}>
@@ -136,6 +141,9 @@ export function ImageBlockEditor({
           loading={uploading != null ? uploading : loading}
           error={error}
         />
+      </TabPanel>
+      <TabPanel name="generative" value={tabValue} index={1}>
+        <div>test</div>
       </TabPanel>
     </>
   )
