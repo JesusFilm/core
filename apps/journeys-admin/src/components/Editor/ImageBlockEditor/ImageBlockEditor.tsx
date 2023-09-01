@@ -13,6 +13,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
+import { AIGallery } from './AIGallery/AIGallery'
 import { CustomImage } from './CustomImage'
 import { UnsplashAuthor, UnsplashGallery } from './UnsplashGallery'
 
@@ -144,7 +145,7 @@ export function ImageBlockEditor({
         />
       </TabPanel>
       <TabPanel name="generative" value={tabValue} index={2}>
-        <div>test</div>
+        <AIGallery />
       </TabPanel>
     </>
   )
