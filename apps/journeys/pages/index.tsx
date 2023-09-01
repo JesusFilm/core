@@ -1,4 +1,6 @@
 import { gql } from '@apollo/client'
+import DesignServicesOutlinedIcon from '@mui/icons-material/DesignServicesOutlined'
+import { Button, Divider } from '@mui/material'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
@@ -39,10 +41,144 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
     <>
       <NextSeo nofollow noindex />
       <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-        <Container maxWidth="xxl">
+        <Container fixed>
           <Stack spacing={8} py={8}>
-            <Image src={logo} alt="Next Steps" height={68} width={152} />
+            <Stack direction="row">
+              <Box flexGrow={1}>
+                <Image
+                  src={logo}
+                  alt="Next Steps"
+                  height={40}
+                  width={152}
+                  sx={{ position: 'absolute' }}
+                />
+              </Box>
+              <NextLink href="/" passHref>
+                <Button variant="text" size="medium" sx={{ fontWeight: 400 }}>
+                  Product
+                </Button>
+              </NextLink>
+              {/* <Divider orientation='vertical' flexItem/> */}
+              <NextLink href="/templates" passHref>
+                <Button variant="text" size="medium" sx={{ fontWeight: 400 }}>
+                  Templates
+                </Button>
+              </NextLink>
+              <NextLink href="/templates" passHref>
+                <Button
+                  variant="contained"
+                  size="medium"
+                  sx={{ fontWeight: 400, marginLeft: '20px' }}
+                >
+                  Create Your Journey
+                </Button>
+              </NextLink>
+            </Stack>
+          </Stack>
+        </Container>
+        <Divider />
+        <Container fixed>
+          <Stack spacing={8} py={8}>
+            <Box
+              sx={{
+                position: 'relative',
+                paddingBottom: 'calc(56.25% + 14px)' /* 16:9 aspect ratio */,
+                height: 0,
+                overflow: 'hidden',
+                mx: '-12px!important',
+
+                '& > iframe': {
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: '#fff',
+                  border: 'none',
+                  padding: 0,
+                  margin: 0
+                }
+              }}
+            >
+              <iframe
+                loading="lazy"
+                src="https://www.canva.com/design/DAFrRM--fIE/view?embed"
+                frameBorder="0"
+                // width="960"
+                // height="569"
+                allowFullScreen="true"
+                mozallowfullscreen="true"
+                webkitallowfullscreen="true"
+              />
+            </Box>
+
             <Box>
+              <Typography
+                align="center"
+                variant="h6"
+                sx={{
+                  // fontSize: '50px',
+                  // fontWeight: 800,
+                  // lineHeight: 1.2,
+                  // letterSpacing: '-.75px',
+                  // textShadow: 'none',
+                  marginTop: '20px'
+                  // marginBottom: '20px'
+                }}
+              >
+                Introducing
+              </Typography>
+              <Typography
+                align="center"
+                variant="h1"
+                sx={{
+                  fontSize: '50px',
+                  fontWeight: 800,
+                  lineHeight: 1.2,
+                  letterSpacing: '-.75px',
+                  textShadow: 'none',
+                  marginBottom: '20px'
+                }}
+              >
+                Interactive Faith Journeys
+              </Typography>
+              <Typography
+                align="center"
+                variant="h2"
+                sx={{
+                  fontSize: '32px',
+                  fontWeight: 400,
+                  lineHeight: 1.2,
+                  textShadow: 'none'
+                }}
+              >
+                Relevant and interactive faith journeys that connect filtered
+                seekers into chat with missionaries
+              </Typography>
+              <NextLink href="/templates" passHref>
+                <Button
+                  variant="contained"
+                  size="large"
+                  startIcon={
+                    <DesignServicesOutlinedIcon
+                      sx={{ fontSize: '40px!important' }}
+                    />
+                  }
+                  sx={{
+                    width: '100%',
+                    fontSize: '40px',
+                    textTransform: 'none',
+                    position: 'sticky',
+                    bottom: '20px',
+                    mt: 8
+                  }}
+                >
+                  Explore Templates
+                </Button>
+              </NextLink>
+            </Box>
+
+            {/* <Box>
               <Grid container spacing={{ xs: 2, sm: 4 }}>
                 {journeys.map(({ id, slug }, index) => (
                   <Grid item key={id} xs={12} sm={6} md={4} lg={3}>
@@ -70,7 +206,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                           />
                         </Fade>
                       </Box>
-                      <NextLink href={`/${slug}`} passHref>
+                      <NextLink href={`/template/${slug}`} passHref>
                         <Box
                           component="a"
                           sx={{
@@ -84,7 +220,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                   </Grid>
                 ))}
               </Grid>
-            </Box>
+            </Box> */}
             <Stack
               direction={{ xs: 'column', sm: 'row' }}
               spacing={2}
