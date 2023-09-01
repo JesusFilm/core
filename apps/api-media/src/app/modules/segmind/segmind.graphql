@@ -1,0 +1,13 @@
+enum SegmindModel {
+  sdxl1__0_txt2img
+  kandinsky2__2_txt2img
+  sd1__5_paragon
+  tinysd1__5_txt2img
+}
+
+extend type Mutation {
+  createImageBySegmindPrompt(
+    prompt: String!
+    model: SegmindModel!
+  ): CloudflareImage
+}
