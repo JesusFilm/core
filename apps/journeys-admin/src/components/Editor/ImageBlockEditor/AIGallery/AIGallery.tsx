@@ -22,14 +22,15 @@ export function AIGallery(): ReactElement {
 
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
 
-  const handleSubmit = (): void => {
+  const handleSubmit = async (): Promise<void> => {
     console.log(textValue)
-    void createAiImage({
+    const { data } = await createAiImage({
       variables: {
         prompt: textValue,
         model: SegmindModel.sdxl1__0_txt2img
       }
     })
+    console.log(data)
   }
 
   const handleChange = (e): void => {
