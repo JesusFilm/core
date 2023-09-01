@@ -1,5 +1,6 @@
 import BrushRounded from '@mui/icons-material/BrushRounded'
 import DashboardRounded from '@mui/icons-material/DashboardRounded'
+import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -12,6 +13,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
+import { AIGallery } from './AIGallery/AIGallery'
 import { CustomImage } from './CustomImage'
 import { UnsplashAuthor, UnsplashGallery } from './UnsplashGallery'
 
@@ -124,9 +126,9 @@ export function ImageBlockEditor({
             {...tabA11yProps('custom', 1)}
           />
           <Tab
-            icon={<BrushRounded />}
-            label={<Typography variant="subtitle2">Custom</Typography>}
-            {...tabA11yProps('custom', 1)}
+            icon={<SmartToyOutlinedIcon />}
+            label={<Typography variant="subtitle2">AI</Typography>}
+            {...tabA11yProps('custom', 2)}
           />
         </Tabs>
       </Box>
@@ -142,8 +144,8 @@ export function ImageBlockEditor({
           error={error}
         />
       </TabPanel>
-      <TabPanel name="generative" value={tabValue} index={1}>
-        <div>test</div>
+      <TabPanel name="generative" value={tabValue} index={2}>
+        <AIGallery />
       </TabPanel>
     </>
   )
