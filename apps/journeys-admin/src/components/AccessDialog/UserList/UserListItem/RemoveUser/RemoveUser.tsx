@@ -1,6 +1,8 @@
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
-import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import MinusCircleContainedIcon from '@core/shared/ui/icons/MinusCircleContained'
 
 import { GetUserInvites } from '../../../../../../__generated__/GetUserInvites'
 import { UserInviteRemove } from '../../../../../../__generated__/UserInviteRemove'
@@ -42,6 +44,7 @@ export function RemoveUser({
   onClick,
   journeyId
 }: RemoveUserProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [userJourneyRemove] = useMutation<UserJourneyRemove>(
     USER_JOURNEY_REMOVE,
     {
@@ -107,8 +110,8 @@ export function RemoveUser({
 
   return (
     <MenuItem
-      label="Remove"
-      icon={<RemoveCircleRoundedIcon />}
+      label={t('Remove')}
+      icon={<MinusCircleContainedIcon sx={{ color: 'secondary.light' }} />}
       onClick={handleClick}
     />
   )
