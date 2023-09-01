@@ -1,11 +1,16 @@
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
 import { ReactElement } from 'react'
 
 export function AIPrompt(): ReactElement {
   return (
     <Box>
-      <Typography> best </Typography>
+      <TextField
+        id="outlined-textarea"
+        label="Multiline Placeholder"
+        placeholder="Placeholder"
+        multiline
+      />
     </Box>
   )
 }
