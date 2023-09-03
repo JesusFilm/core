@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import MenuRounded from '@mui/icons-material/MenuRounded'
 import IconButton from '@mui/material/IconButton'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
+import { ComponentProps } from 'react'
 
 import { Role } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
@@ -13,7 +14,7 @@ import { PageWrapperProps } from './PageWrapper'
 
 import { PageWrapper } from '.'
 
-const PageWrapperStory = {
+const PageWrapperStory: Meta<typeof PageWrapper> = {
   ...journeysAdminConfig,
   component: PageWrapper,
   title: 'Journeys-Admin/PageWrapper',
@@ -23,67 +24,75 @@ const PageWrapperStory = {
   }
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_ME
+const Template: StoryObj<
+  ComponentProps<typeof PageWrapper> & { props: PageWrapperProps }
+> = {
+  render: ({ ...args }) => (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_ME
+          },
+          result: {
+            data: {
+              me: {
+                id: 'userId',
+                firstName: 'Test',
+                lastName: 'User',
+                imageUrl: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com'
+              }
+            }
+          }
         },
-        result: {
-          data: {
-            me: {
-              id: 'userId',
-              firstName: 'Test',
-              lastName: 'User',
-              imageUrl: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com'
+        {
+          request: {
+            query: GET_USER_ROLE
+          },
+          result: {
+            data: {
+              getUserRole: {
+                id: 'userId',
+                roles: [Role.publisher]
+              }
             }
           }
         }
-      },
-      {
-        request: {
-          query: GET_USER_ROLE
-        },
-        result: {
-          data: {
-            getUserRole: {
-              id: 'userId',
-              roles: [Role.publisher]
-            }
-          }
-        }
-      }
-    ]}
-  >
-    <PageWrapper {...(args.props as unknown as PageWrapperProps)} />
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  props: { title: 'Active Journeys' }
+      ]}
+    >
+      <PageWrapper {...(args.props as unknown as PageWrapperProps)} />
+    </MockedProvider>
+  )
 }
 
-export const Complete = Template.bind({})
-Complete.args = {
-  props: {
-    backHref: '/',
-    showDrawer: true,
-    title: 'Journey Details',
-    authUser: {
-      displayName: 'Amin One',
-      photoURL: 'https://bit.ly/3Gth4Yf',
-      email: 'amin@email.com',
-      signOut: noop
-    },
-    menu: (
-      <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
-        <MenuRounded />
-      </IconButton>
-    )
+export const Default = {
+  ...Template,
+  args: {
+    props: { title: 'Active Journeys' }
   }
 }
 
-export default PageWrapperStory as Meta
+export const Complete = {
+  ...Template,
+  args: {
+    props: {
+      backHref: '/',
+      showDrawer: true,
+      title: 'Journey Details',
+      authUser: {
+        displayName: 'Amin One',
+        photoURL: 'https://bit.ly/3Gth4Yf',
+        email: 'amin@email.com',
+        signOut: noop
+      },
+      menu: (
+        <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
+          <MenuRounded />
+        </IconButton>
+      )
+    }
+  }
+}
+
+export default PageWrapperStory

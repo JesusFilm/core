@@ -1,8 +1,8 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -11,7 +11,7 @@ import { TeamProvider } from '../TeamProvider'
 
 import { TeamCreateDialog } from '.'
 
-const TeamCreateDialogStory = {
+const TeamCreateDialogStory: Meta<typeof TeamCreateDialog> = {
   ...journeysAdminConfig,
   component: TeamCreateDialog,
   title: 'Journeys-Admin/Team/TeamCreateDialog'
@@ -38,7 +38,7 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
   }
 }
 
-const Template: Story = () => {
+const TeamCreateDialogComponent = (): ReactElement => {
   const [open, setOpen] = useState(true)
   return (
     <TeamProvider>
@@ -53,14 +53,20 @@ const Template: Story = () => {
   )
 }
 
-export const Default = Template.bind({})
-Default.parameters = {
-  apolloClient: {
-    mocks: [teamCreateMock]
-  }
-}
-Default.play = async () => {
-  await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+const Template: StoryObj<typeof TeamCreateDialog> = {
+  render: () => <TeamCreateDialogComponent />
 }
 
-export default TeamCreateDialogStory as Meta
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [teamCreateMock]
+    }
+  },
+  play: async () => {
+    await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+  }
+}
+
+export default TeamCreateDialogStory

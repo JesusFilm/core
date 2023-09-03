@@ -1,5 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 
@@ -17,7 +17,7 @@ import {
 
 import { TeamOnboarding } from '.'
 
-const TeamOnboardingStory = {
+const TeamOnboardingStory: Meta<typeof TeamOnboarding> = {
   ...journeysAdminConfig,
   component: TeamOnboarding,
   title: 'Journeys-Admin/Team/TeamOnboarding'
@@ -100,33 +100,39 @@ const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
   }
 }
 
-const Template: Story = () => {
-  return (
-    <TeamProvider>
+const Template: StoryObj<typeof TeamOnboarding> = {
+  render: () => {
+    return (
       <TeamProvider>
-        <SnackbarProvider>
-          <TeamOnboarding />
-        </SnackbarProvider>
+        <TeamProvider>
+          <SnackbarProvider>
+            <TeamOnboarding />
+          </SnackbarProvider>
+        </TeamProvider>
       </TeamProvider>
-    </TeamProvider>
-  )
-}
-
-export const Default = Template.bind({})
-Default.parameters = {
-  apolloClient: {
-    mocks: [teamCreateMock]
-  }
-}
-Default.play = async () => {
-  await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
-}
-
-export const InviteMembers = Template.bind({})
-InviteMembers.parameters = {
-  apolloClient: {
-    mocks: [getTeams, getUserTeamMock1]
+    )
   }
 }
 
-export default TeamOnboardingStory as Meta
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [teamCreateMock]
+    }
+  },
+  play: async () => {
+    await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+  }
+}
+
+export const InviteMembers = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getTeams, getUserTeamMock1]
+    }
+  }
+}
+
+export default TeamOnboardingStory

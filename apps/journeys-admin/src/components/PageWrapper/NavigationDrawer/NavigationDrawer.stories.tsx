@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { AuthUser } from 'next-firebase-auth'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -12,13 +12,13 @@ import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 
 import { NavigationDrawer } from '.'
 
-const NavigationDrawerStory = {
+const NavigationDrawerStory: Meta<typeof NavigationDrawer> = {
   ...journeysAdminConfig,
   component: NavigationDrawer,
   title: 'Journeys-Admin/PageWrapper/NavigationDrawer'
 }
 
-const Template: Story = ({ ...args }) => {
+const NavigationDrawerComponent = (args): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -78,28 +78,34 @@ const Template: Story = ({ ...args }) => {
   )
 }
 
-export const Default = Template.bind({})
+const Template: StoryObj<typeof NavigationDrawer> = {
+  render: ({ ...args }) => <NavigationDrawerComponent {...args} />
+}
 
-export const WithBadge = Template.bind({})
-WithBadge.args = {
-  result: {
-    data: {
-      journeys: [
-        {
-          id: 'journey.id',
-          userJourneys: [
-            {
-              id: 'journey.userJourney1.id',
-              role: UserJourneyRole.editor,
-              user: {
-                id: 'user.id'
+export const Default = { ...Template }
+
+export const WithBadge = {
+  ...Template,
+  args: {
+    result: {
+      data: {
+        journeys: [
+          {
+            id: 'journey.id',
+            userJourneys: [
+              {
+                id: 'journey.userJourney1.id',
+                role: UserJourneyRole.editor,
+                user: {
+                  id: 'user.id'
+                }
               }
-            }
-          ]
-        }
-      ]
+            ]
+          }
+        ]
+      }
     }
   }
 }
 
-export default NavigationDrawerStory as Meta
+export default NavigationDrawerStory

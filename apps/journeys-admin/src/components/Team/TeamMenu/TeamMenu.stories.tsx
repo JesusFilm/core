@@ -1,5 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 
@@ -12,7 +12,7 @@ import {
 
 import { TeamMenu } from '.'
 
-const TeamMenuStory = {
+const TeamMenuStory: Meta<typeof TeamMenu> = {
   ...journeysAdminConfig,
   component: TeamMenu,
   title: 'Journeys-Admin/Team/TeamMenu',
@@ -61,32 +61,38 @@ const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-const Template: Story = () => (
-  <TeamProvider>
-    <SnackbarProvider>
-      <TeamMenu />
-    </SnackbarProvider>
-  </TeamProvider>
-)
+const Template: StoryObj<typeof TeamMenu> = {
+  render: () => (
+    <TeamProvider>
+      <SnackbarProvider>
+        <TeamMenu />
+      </SnackbarProvider>
+    </TeamProvider>
+  )
+}
 
-export const Default = Template.bind({})
-Default.parameters = {
-  apolloClient: {
-    mocks: [getTeamsMock]
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getTeamsMock]
+    }
+  },
+  play: async () => {
+    await userEvent.click(screen.getByRole('button'))
   }
 }
-Default.play = async () => {
-  await userEvent.click(screen.getByRole('button'))
-}
 
-export const EmptyTeams = Template.bind({})
-EmptyTeams.parameters = {
-  apolloClient: {
-    mocks: [getEmptyTeamsMock]
+export const EmptyTeams = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getEmptyTeamsMock]
+    }
+  },
+  play: async () => {
+    await userEvent.click(screen.getByRole('button'))
   }
 }
-EmptyTeams.play = async () => {
-  await userEvent.click(screen.getByRole('button'))
-}
 
-export default TeamMenuStory as Meta
+export default TeamMenuStory

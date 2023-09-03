@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -12,7 +12,7 @@ import { defaultJourney } from '../data'
 import { GET_LANGUAGES } from './LanguageDialog'
 import { Menu } from './Menu'
 
-const MenuStory = {
+const MenuStory: Meta<typeof Menu> = {
   ...simpleComponentConfig,
   component: Menu,
   title: 'Journeys-Admin/JourneyView/Menu'
@@ -78,39 +78,44 @@ const journeyMocks = [
   }
 ]
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider mocks={args.mocks}>
-    <TeamProvider>
-      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-        <Stack direction="row">
-          <Menu {...args} />
-        </Stack>
-      </JourneyProvider>
-    </TeamProvider>
-  </MockedProvider>
-)
-
-export const Draft = Template.bind({})
-Draft.args = { journey: defaultJourney, forceOpen: true, mocks: journeyMocks }
-Draft.play = async () => {
-  const button = screen.getByRole('button')
-  await userEvent.click(button)
+const Template: StoryObj<typeof Menu> = {
+  render: ({ ...args }) => (
+    <MockedProvider mocks={args.mocks}>
+      <TeamProvider>
+        <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+          <Stack direction="row">
+            <Menu {...args} />
+          </Stack>
+        </JourneyProvider>
+      </TeamProvider>
+    </MockedProvider>
+  )
 }
 
-export const TemplateMenu = Template.bind({})
-TemplateMenu.args = {
-  journey: {
-    ...defaultJourney,
-    userJourneys: null,
-    template: true
+export const Draft = {
+  ...Template,
+  args: { journey: defaultJourney, forceOpen: true, mocks: journeyMocks },
+  play: async () => {
+    const button = screen.getByRole('button')
+    await userEvent.click(button)
   }
 }
-TemplateMenu.play = async () => {
-  const button = screen.getByRole('button')
-  await userEvent.click(button)
+
+export const TemplateMenu = {
+  ...Template,
+  args: {
+    journey: {
+      ...defaultJourney,
+      userJourneys: null,
+      template: true
+    }
+  },
+  play: async () => {
+    const button = screen.getByRole('button')
+    await userEvent.click(button)
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = { journey: undefined }
+export const Loading = { ...Template, args: { journey: undefined } }
 
-export default MenuStory as Meta
+export default MenuStory

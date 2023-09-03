@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { SWRConfig } from 'swr'
 
 import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
@@ -11,33 +11,39 @@ import {
 
 import { VideoFromYouTube } from '.'
 
-const VideoFromYouTubeStory = {
+const VideoFromYouTubeStory: Meta<typeof VideoFromYouTube> = {
   ...journeysAdminConfig,
   component: VideoFromYouTube,
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromYouTube',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const Template: Story = ({ onSelect }) => (
-  <ApolloLoadingProvider>
-    <SWRConfig value={{ provider: () => new Map() }}>
-      <VideoFromYouTube onSelect={onSelect} />
-    </SWRConfig>
-  </ApolloLoadingProvider>
-)
+const Template: StoryObj<typeof VideoFromYouTube> = {
+  render: ({ onSelect }) => (
+    <ApolloLoadingProvider>
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <VideoFromYouTube onSelect={onSelect} />
+      </SWRConfig>
+    </ApolloLoadingProvider>
+  )
+}
 
-export const Default = Template.bind({})
-Default.parameters = {
-  msw: {
-    handlers: [getPlaylistItemsWithOffsetAndUrl]
+export const Default = {
+  ...Template,
+  parameters: {
+    msw: {
+      handlers: [getPlaylistItemsWithOffsetAndUrl]
+    }
   }
 }
 
-export const Loading = Template.bind({})
-Loading.parameters = {
-  msw: {
-    handlers: [getPlaylistItemsLoading]
+export const Loading = {
+  ...Template,
+  parameters: {
+    msw: {
+      handlers: [getPlaylistItemsLoading]
+    }
   }
 }
 
-export default VideoFromYouTubeStory as Meta
+export default VideoFromYouTubeStory
