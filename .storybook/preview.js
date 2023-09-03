@@ -1,9 +1,6 @@
 // const { createElement } = require('react')
 // const NextImage = require('next/image')
-const {
-  initialize: mswInitialize,
-  mswDecorator
-} = require('msw-storybook-addon')
+const { initialize: mswInitialize, mswLoader } = require('msw-storybook-addon')
 const { MockedProvider } = require('@apollo/client/testing')
 
 // const OriginalNextImage = NextImage.default
@@ -46,7 +43,7 @@ mswInitialize({
 })
 
 module.exports = {
-  decorators: [mswDecorator],
+  loaders: [mswLoader],
   parameters: {
     backgrounds: {
       disable: true,
