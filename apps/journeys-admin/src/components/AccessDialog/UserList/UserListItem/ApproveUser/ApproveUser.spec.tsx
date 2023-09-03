@@ -13,6 +13,15 @@ import { USER_JOURNEY_APPROVE } from './ApproveUser'
 
 import { ApproveUser } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('ApproveUser', () => {
   it('should approve user journey', async () => {
     const handleClick = jest.fn()

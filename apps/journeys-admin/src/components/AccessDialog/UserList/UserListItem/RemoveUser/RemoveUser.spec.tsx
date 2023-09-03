@@ -12,6 +12,15 @@ import { USER_INVITE_REMOVE, USER_JOURNEY_REMOVE } from './RemoveUser'
 
 import { RemoveUser } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('RemoveUser', () => {
   it('should remove user journey', async () => {
     const handleClick = jest.fn()

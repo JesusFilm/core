@@ -128,7 +128,7 @@ export function EmailInviteForm({
                         color:
                           values.email !== '' && errors.email == null
                             ? 'primary.main'
-                            : null
+                            : 'secondary.light'
                       }}
                     />
                   </IconButton>
