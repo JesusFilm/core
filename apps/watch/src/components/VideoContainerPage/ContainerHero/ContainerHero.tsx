@@ -28,7 +28,7 @@ export function ContainerHero({ openDialog }: Props): ReactElement {
         alignItems: 'flex-end',
         position: 'relative'
       }}
-      data-testid = "ContainerHero"
+      data-testid="ContainerHero"
     >
       {image != null && (
         <Image src={image} alt="Home Hero" layout="fill" objectFit="cover" />

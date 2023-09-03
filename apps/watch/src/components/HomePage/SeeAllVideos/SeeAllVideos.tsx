@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 export function SeeAllVideos(): ReactElement {
   return (
-    <Stack sx={{ pt: '54px', alignItems: 'center' }} data-testid = "SeeAllVideos">
+    <Stack sx={{ pt: '54px', alignItems: 'center' }} data-testid="SeeAllVideos">
       <Link href="/videos" passHref>
         <Button
           size="small"
@@ -15,7 +15,7 @@ export function SeeAllVideos(): ReactElement {
             width: '15%',
             whiteSpace: 'nowrap'
           }}
-          data-testid = "AllVideosButton"
+          data-testid="AllVideosButton"
         >
           See All
         </Button>
