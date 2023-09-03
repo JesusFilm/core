@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import {
   AccessDialog,
-  GET_JOURNEY_WITH_USER_JOURNEYS,
+  GET_JOURNEY_WITH_PERMISSIONS,
   GET_USER_INVITES
 } from './AccessDialog'
 
@@ -38,7 +38,7 @@ jest.mock('react-i18next', () => ({
 const mocks = [
   {
     request: {
-      query: GET_JOURNEY_WITH_USER_JOURNEYS,
+      query: GET_JOURNEY_WITH_PERMISSIONS,
       variables: {
         id: 'journeyId'
       }
@@ -47,6 +47,52 @@ const mocks = [
       data: {
         journey: {
           id: 'journeyId',
+          team: {
+            __typename: 'Team',
+            id: 'teamId',
+            userTeams: [
+              {
+                __typename: 'UserTeam',
+                id: 'userTeamId',
+                role: 'manager',
+                user: {
+                  __typename: 'User',
+                  email: 'kujojotaro@example.com',
+                  firstName: 'Jotaro',
+                  id: 'userId',
+                  imageUrl:
+                    'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c',
+                  lastName: 'Kujo'
+                }
+              },
+              {
+                __typename: 'UserTeam',
+                id: 'userTeamId1',
+                role: 'member',
+                user: {
+                  __typename: 'User',
+                  email: 'josukehigashikata@example.com',
+                  firstName: 'Josuke',
+                  id: 'userId1',
+                  imageUrl: null,
+                  lastName: 'Higashikata'
+                }
+              },
+              {
+                __typename: 'UserTeam',
+                id: 'userTeamId2',
+                role: 'member',
+                user: {
+                  __typename: 'User',
+                  email: 'KoichiHirose@example.com',
+                  firstName: 'Koichi',
+                  id: 'userId2',
+                  imageUrl: null,
+                  lastName: 'Hirose'
+                }
+              }
+            ]
+          },
           userJourneys: [
             {
               __typename: 'UserJourney',
@@ -130,6 +176,43 @@ describe('AccessDialog', () => {
       ).toBeInTheDocument()
     })
     expect(getByRole('heading', { name: 'Add editor by' })).toBeInTheDocument()
+  })
+
+  it('should display team members', async () => {
+    const handleClose = jest.fn()
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocks}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('heading', { name: 'Team Members' })).toBeInTheDocument()
+      expect(getByText('Jotaro Kujo')).toBeInTheDocument()
+      expect(getByText('Koichi Hirose')).toBeInTheDocument()
+      expect(getByText('Josuke Higashikata')).toBeInTheDocument()
+    })
+  })
+
+  it('team members list should be read only', async () => {
+    const handleClose = jest.fn()
+    const { getByRole, getAllByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocks}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('heading', { name: 'Team Members' })).toBeInTheDocument()
+    })
+
+    expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
+    expect(getAllByRole('button', { name: 'Member' })[0]).toBeDisabled()
+    expect(getAllByRole('button', { name: 'Member' })[1]).toBeDisabled()
   })
 
   it('calls on close', () => {

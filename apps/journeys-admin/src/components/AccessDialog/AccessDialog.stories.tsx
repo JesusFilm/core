@@ -6,10 +6,7 @@ import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
 
-import {
-  GET_JOURNEY_WITH_USER_JOURNEYS,
-  GET_USER_INVITES
-} from './AccessDialog'
+import { GET_JOURNEY_WITH_PERMISSIONS, GET_USER_INVITES } from './AccessDialog'
 
 import { AccessDialog } from '.'
 
@@ -26,7 +23,7 @@ export const Default: Story = () => {
       mocks={[
         {
           request: {
-            query: GET_JOURNEY_WITH_USER_JOURNEYS,
+            query: GET_JOURNEY_WITH_PERMISSIONS,
             variables: {
               id: 'journeyId'
             }
@@ -35,6 +32,52 @@ export const Default: Story = () => {
             data: {
               journey: {
                 id: 'journeyId',
+                team: {
+                  __typename: 'Team',
+                  id: 'teamId',
+                  userTeams: [
+                    {
+                      __typename: 'UserTeam',
+                      id: 'userTeamId',
+                      role: 'manager',
+                      user: {
+                        __typename: 'User',
+                        email: 'kujojotaro@example.com',
+                        firstName: 'Jotaro',
+                        id: 'userId',
+                        imageUrl:
+                          'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c',
+                        lastName: 'Kujo'
+                      }
+                    },
+                    {
+                      __typename: 'UserTeam',
+                      id: 'userTeamId1',
+                      role: 'member',
+                      user: {
+                        __typename: 'User',
+                        email: 'josukehigashikata@example.com',
+                        firstName: 'Josuke',
+                        id: 'userId1',
+                        imageUrl: null,
+                        lastName: 'Higashikata'
+                      }
+                    },
+                    {
+                      __typename: 'UserTeam',
+                      id: 'userTeamId2',
+                      role: 'member',
+                      user: {
+                        __typename: 'User',
+                        email: 'KoichiHirose@example.com',
+                        firstName: 'Koichi',
+                        id: 'userId2',
+                        imageUrl: null,
+                        lastName: 'Hirose'
+                      }
+                    }
+                  ]
+                },
                 userJourneys: [
                   {
                     __typename: 'UserJourney',
