@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { StoryObj, Meta } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { watchConfig } from '../../libs/storybook'
 

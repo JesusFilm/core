@@ -1,7 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -9,10 +11,8 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { journey } from '../ActionDetails/data'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 
 import { ActionsTable } from '.'
-import { ComponentProps } from 'react'
 
 const ActionsTableStory: Meta<typeof ActionsTable> = {
   ...journeysAdminConfig,

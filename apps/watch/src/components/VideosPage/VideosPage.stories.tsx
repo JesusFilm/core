@@ -1,11 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
 
 import { GET_VIDEOS, VideosPage } from './VideosPage'
-import { ComponentProps } from 'react'
 
 const VideosStory: Meta<typeof VideosPage> = {
   ...watchConfig,

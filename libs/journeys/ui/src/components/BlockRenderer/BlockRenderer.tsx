@@ -50,7 +50,7 @@ const DynamicCard = dynamic<
   TreeBlock<CardBlock> & { wrappers?: WrappersProps }
 >(
   async () =>
-    await import(
+    await import type (
       /* webpackChunkName: "Card" */
       '../Card'
     ).then((mod) => mod.Card)

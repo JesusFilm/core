@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { ComponentProps } from 'react'
 
 import { watchConfig } from '../../../libs/storybook'
 

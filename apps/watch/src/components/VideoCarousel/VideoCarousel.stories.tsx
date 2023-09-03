@@ -14,7 +14,10 @@ import { VideoCarousel } from './VideoCarousel'
 const VideoCarouselStory: Meta<typeof VideoCarousel> = {
   ...watchConfig,
   component: VideoCarousel,
-  title: 'Watch/VideoCarousel'
+  title: 'Watch/VideoCarousel',
+  parameters: {
+    layout: 'fullscreen'
+  }
 }
 
 const Template: StoryObj<typeof VideoCarousel> = {

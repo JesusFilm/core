@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import fetch from 'node-fetch'
+import { ComponentProps } from 'react'
 
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
@@ -9,7 +10,6 @@ import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS_REPORT } from './Report'
 
 import { Report } from '.'
-import { ComponentProps } from 'react'
 
 const ReportStory: Meta<typeof Report> = {
   ...journeysAdminConfig,
@@ -85,7 +85,7 @@ const loaders = [
 
 export const Default = {
   ...Template,
-  loaders: loaders,
+  loaders,
   args: {
     type: 'report'
   },
@@ -96,13 +96,13 @@ export const Default = {
 
 export const Loading = {
   ...Template,
-  loaders: loaders,
+  loaders,
   args: { type: 'loading' }
 }
 
 export const Error = {
   ...Template,
-  loaders: loaders,
+  loaders,
   args: {
     type: 'error'
   }

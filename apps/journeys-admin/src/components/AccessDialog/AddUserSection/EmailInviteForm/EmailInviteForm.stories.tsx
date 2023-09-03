@@ -3,11 +3,11 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
+import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '../../../../libs/storybook'
 
 import { EmailInviteForm } from '.'
-import { ComponentProps } from 'react'
 
 const EmailInviteFormStory: Meta<typeof EmailInviteForm> = {
   ...journeysAdminConfig,

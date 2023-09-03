@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -20,22 +20,21 @@ const VideoHeroStory: Meta<typeof VideoHero> = {
   title: 'Watch/VideoContentPage/VideoHero'
 }
 
+const VideoHeroComponent = (): ReactElement => {
+  const [hasPlayed, setHasPlayed] = useState(false)
+  return (
+    <MockedProvider mocks={[getLanguagesSlugMock, getSubtitleMock]}>
+      <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoHero onPlay={() => setHasPlayed(true)} hasPlayed={hasPlayed} />
+        </VideoProvider>
+      </ThemeProvider>
+    </MockedProvider>
+  )
+}
+
 const Template: StoryObj<typeof VideoHero> = {
-  render: () => {
-    const [hasPlayed, setHasPlayed] = useState(false)
-    return (
-      <MockedProvider mocks={[getLanguagesSlugMock, getSubtitleMock]}>
-        <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoHero
-              onPlay={() => setHasPlayed(true)}
-              hasPlayed={hasPlayed}
-            />
-          </VideoProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-  }
+  render: () => <VideoHeroComponent />
 }
 
 export const Default = { ...Template }
