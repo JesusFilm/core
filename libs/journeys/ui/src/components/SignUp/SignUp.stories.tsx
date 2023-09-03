@@ -24,7 +24,8 @@ const Demo: Meta<typeof SignUp> = {
       description: {
         component:
           'For the SignUp Loading story - to test the loading state of the component. Fill out the form and click submit to see the loading state.'
-      }
+      },
+      source: { type: 'code' }
     }
   }
 }

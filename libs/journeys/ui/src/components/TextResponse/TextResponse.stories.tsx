@@ -21,7 +21,12 @@ const Demo: Meta<typeof TextResponse> = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: TextResponse,
-  title: 'Journeys-Ui/TextResponse'
+  title: 'Journeys-Ui/TextResponse',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
 const typographyProps: ComponentProps<typeof Typography> = {

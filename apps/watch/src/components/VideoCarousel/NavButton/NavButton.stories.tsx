@@ -11,7 +11,12 @@ import { NavButton } from './NavButton'
 const NavButtonStory: Meta<typeof NavButton> = {
   ...watchConfig,
   component: NavButton,
-  title: 'Watch/VideoCarousel/NavButton'
+  title: 'Watch/VideoCarousel/NavButton',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
 const Template: StoryObj<typeof NavButton> = {

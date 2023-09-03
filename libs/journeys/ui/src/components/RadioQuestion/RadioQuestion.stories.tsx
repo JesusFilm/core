@@ -14,7 +14,12 @@ import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
 const Demo: Meta<typeof RadioQuestion> = {
   ...simpleComponentConfig,
   component: RadioQuestion,
-  title: 'Journeys-Ui/RadioQuestion'
+  title: 'Journeys-Ui/RadioQuestion',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
 const typographyProps: ComponentProps<typeof Typography> = {

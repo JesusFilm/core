@@ -12,7 +12,12 @@ import { Video } from '.'
 const Demo: Meta<typeof Video> = {
   ...journeyUiConfig,
   component: Video,
-  title: 'Journeys-Ui/Video'
+  title: 'Journeys-Ui/Video',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
 const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {

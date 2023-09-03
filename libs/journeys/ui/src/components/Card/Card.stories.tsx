@@ -23,7 +23,12 @@ import { Card } from './Card'
 const Demo: Meta<typeof Card> = {
   ...journeyUiConfig,
   component: Card,
-  title: 'Journeys-Ui/Card'
+  title: 'Journeys-Ui/Card',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
 const content: TreeBlock[] = [

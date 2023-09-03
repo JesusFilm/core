@@ -18,7 +18,12 @@ import { Button } from '.'
 const ButtonDemo: Meta<typeof Button> = {
   ...journeyUiConfig,
   component: Button,
-  title: 'Journeys-Ui/Button'
+  title: 'Journeys-Ui/Button',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
 type Story = StoryObj<
