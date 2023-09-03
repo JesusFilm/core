@@ -12,7 +12,6 @@ import { simpleComponentConfig } from '../../libs/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../AccessDialog/AccessDialog'
 
-import { AccessAvatarsProps } from './AccessAvatars'
 import {
   userJourney1,
   userJourney2,

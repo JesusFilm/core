@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 

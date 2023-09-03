@@ -7,7 +7,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
 import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
 
-import { GET_JOURNEY_WITH_PERMISSIONS, GET_USER_INVITES } from './AccessDialog'
+import { GET_JOURNEY_WITH_PERMISSIONS } from './AccessDialog'
 
 import { AccessDialog } from '.'
 

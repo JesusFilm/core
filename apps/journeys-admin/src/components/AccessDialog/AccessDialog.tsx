@@ -12,10 +12,10 @@ import {
   GetJourneyWithPermissions,
   GetJourneyWithPermissions_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithPermissions'
-import { GetUserInvites } from '../../../__generated__/GetUserInvites'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUser } from '../../libs/useCurrentUser'
+import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
 import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
