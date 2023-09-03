@@ -58,6 +58,9 @@ function JourneysAdminApp({
       }
     }
 
+    // generate token
+    void getToken()
+
     // Run the check every 55 mins
     const intervalId = setInterval(getToken, 55 * 60 * 1000)
 
