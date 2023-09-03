@@ -9,7 +9,8 @@ function VideosSubHeroStats(): ReactElement {
       direction="row"
       spacing={10}
       sx={{ justifyContent: { md: 'flex-end' } }}
-    >
+      data-testid="VideosSubHeroStats"
+      >
       <Box>
         <Typography variant="h3">724</Typography>
         <Typography variant="overline">Videos</Typography>
@@ -24,7 +25,7 @@ function VideosSubHeroStats(): ReactElement {
 
 export function VideosSubHero(): ReactElement {
   return (
-    <Stack py={12} direction={{ xs: 'column-reverse', sm: 'row' }} spacing={9}>
+    <Stack py={12} direction={{ xs: 'column-reverse', sm: 'row' }} spacing={9} data-testid="VideosSubHero">
       <Box flex={1}>
         <Typography variant="subtitle1">
           We believe film is the most dynamic way to hear and see the greatest

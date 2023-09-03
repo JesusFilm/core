@@ -186,7 +186,7 @@ export function FilterList({
       enableReinitialize
     >
       {({ values, setFieldValue, handleChange, handleBlur }) => (
-        <Box>
+        <Box data-testid="FilterList">
           <Accordion
             expanded={expanded === 'panel1'}
             onChange={handleExpandChange('panel1')}

@@ -39,6 +39,7 @@ export function VideoHeroOverlay({
         bottom: 0,
         zIndex: 1
       }}
+      data-testid="VideoHeroOverlay"
     >
       {image != null && (
         <Image
