@@ -3,46 +3,50 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { JourneyTitleUpdate } from '../../../../../../../__generated__/JourneyTitleUpdate'
+import { JourneyDescUpdate } from '../../../../../../__generated__/JourneyDescUpdate'
 
-export const JOURNEY_TITLE_UPDATE = gql`
-  mutation JourneyTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
+export const JOURNEY_DESC_UPDATE = gql`
+  mutation JourneyDescUpdate($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
       id
-      title
+      description
     }
   }
 `
 
-interface TitleDialogProps {
+interface DescriptionDialogProps {
   open: boolean
   onClose: () => void
 }
 
-export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
-  const [journeyUpdate] = useMutation<JourneyTitleUpdate>(JOURNEY_TITLE_UPDATE)
+export function DescriptionDialog({
+  open,
+  onClose
+}: DescriptionDialogProps): ReactElement {
+  const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const titleSchema = object().shape({
-    title: string().required('Required')
-  })
 
-  const handleUpdateTitle = async (values: FormikValues): Promise<void> => {
+  const handleUpdateDescription = async (
+    values: FormikValues
+  ): Promise<void> => {
     if (journey == null) return
 
     try {
       await journeyUpdate({
-        variables: { id: journey.id, input: { title: values.title } },
+        variables: {
+          id: journey.id,
+          input: { description: values.description }
+        },
         optimisticResponse: {
           journeyUpdate: {
             id: journey.id,
             __typename: 'Journey',
-            title: values.title
+            description: values.description
           }
         }
       })
@@ -71,7 +75,9 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     return () => {
       onClose()
       // wait for dialog animation to complete
-      setTimeout(() => resetForm({ values: { title: journey?.title } }))
+      setTimeout(() =>
+        resetForm({ values: { description: journey?.description } })
+      )
     }
   }
 
@@ -79,15 +85,14 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     <>
       {journey != null && (
         <Formik
-          initialValues={{ title: journey.title }}
-          onSubmit={handleUpdateTitle}
-          validationSchema={titleSchema}
+          initialValues={{ description: journey.description ?? '' }}
+          onSubmit={handleUpdateDescription}
         >
-          {({ values, errors, handleChange, handleSubmit, resetForm }) => (
+          {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: 'Edit Title' }}
+              dialogTitle={{ title: 'Edit Description' }}
               dialogAction={{
                 onSubmit: handleSubmit,
                 closeLabel: 'Cancel'
@@ -95,16 +100,16 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
             >
               <Form>
                 <TextField
-                  id="title"
-                  name="title"
+                  id="description"
+                  name="description"
                   hiddenLabel
                   fullWidth
-                  value={values.title}
-                  variant="filled"
-                  error={Boolean(errors.title)}
                   onKeyDown={(e) => e.stopPropagation()}
+                  value={values.description}
+                  multiline
+                  variant="filled"
+                  rows={3}
                   onChange={handleChange}
-                  helperText={errors.title as string}
                 />
               </Form>
             </Dialog>

@@ -307,4 +307,106 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Publisher Settings' })
     ).toHaveAttribute('href', '/publisher/journeyId')
   })
+
+  it('should handle edit journey title', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                slug: 'my-journey'
+              } as unknown as Journey
+            }}
+          >
+            <EditorProvider>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    fireEvent.click(getByRole('menuitem', { name: 'Title' }))
+    expect(getByRole('dialog')).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    expect(menu).not.toHaveAttribute('aria-expanded')
+  })
+
+  it('should handle edit journey description', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                slug: 'my-journey'
+              } as unknown as Journey
+            }}
+          >
+            <EditorProvider>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    fireEvent.click(getByRole('menuitem', { name: 'Description' }))
+    expect(getByRole('dialog')).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    expect(menu).not.toHaveAttribute('aria-expanded')
+  })
+
+  it('should handle edit journey title and description if user is publisher', async () => {
+    const { getByRole, queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userRoleId',
+                    userId: '1',
+                    roles: [Role.publisher]
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                slug: 'my-journey',
+                template: true
+              } as unknown as Journey
+            }}
+          >
+            <EditorProvider>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    expect(queryByRole('menuitem', { name: 'Title' })).not.toBeInTheDocument()
+    await waitFor(() =>
+      fireEvent.click(getByRole('menuitem', { name: 'Description' }))
+    )
+    expect(getByRole('dialog')).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    expect(menu).not.toHaveAttribute('aria-expanded')
+  })
 })

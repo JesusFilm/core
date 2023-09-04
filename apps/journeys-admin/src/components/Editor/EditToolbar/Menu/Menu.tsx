@@ -1,4 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
+import DescriptionIcon from '@mui/icons-material/Description'
+import EditIcon from '@mui/icons-material/Edit'
 import MoreVert from '@mui/icons-material/MoreVert'
 import SettingsIcon from '@mui/icons-material/Settings'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -14,16 +16,16 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
+import { TitleDescriptionDialog } from '../../../JourneyView/TitleDescription/TitleDescriptionDialog'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
 
 import { CopyMenuItem } from './CopyMenuItem'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
-import { DescriptionMenuItem } from './DescriptionMenuItem'
+import { DescriptionDialog } from './DescriptionDialog'
 import { LanguageMenuItem } from './LanguageMenuItem'
 import { ReportMenuItem } from './ReportMenuItem'
-import { TitleDescriptionMenuItem } from './TitleDescriptionMenuItem'
-import { TitleMenuItem } from './TitleMenuItem'
+import { TitleDialog } from './TitleDialog'
 
 export const GET_ROLE = gql`
   query GetRole {
@@ -46,11 +48,42 @@ export function Menu(): ReactElement {
 
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
+  const [showTitleDialog, setShowTitleDialog] = useState(false)
+  const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
+  const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
+    useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
   }
   const handleCloseMenu = (): void => {
+    setAnchorEl(null)
+  }
+
+  const handleUpdateTitle = (): void => {
+    setShowTitleDialog(true)
+  }
+
+  const handleCloseTitle = (): void => {
+    setShowTitleDialog(false)
+    setAnchorEl(null)
+  }
+
+  const handleUpdateDescription = (): void => {
+    setShowDescriptionDialog(true)
+  }
+
+  const handleCloseDescription = (): void => {
+    setShowDescriptionDialog(false)
+    setAnchorEl(null)
+  }
+
+  const handleUpdateTitleDescription = (): void => {
+    setShowTitleDescriptionDialog(true)
+  }
+
+  const handleCloseTitleDescription = (): void => {
+    setShowTitleDescriptionDialog(false)
     setAnchorEl(null)
   }
 
@@ -142,12 +175,24 @@ export function Menu(): ReactElement {
           <BlockMenu />
         )}
         {journey?.template === true && isPublisher && (
-          <TitleDescriptionMenuItem onClose={handleCloseMenu} />
+          <MenuItem
+            label="Description"
+            icon={<EditIcon />}
+            onClick={handleUpdateTitleDescription}
+          />
         )}
         {journey?.template !== true && (
           <>
-            <TitleMenuItem onClose={handleCloseMenu} />
-            <DescriptionMenuItem onClose={handleCloseMenu} />
+            <MenuItem
+              label="Title"
+              icon={<EditIcon />}
+              onClick={handleUpdateTitle}
+            />
+            <MenuItem
+              label="Description"
+              icon={<DescriptionIcon />}
+              onClick={handleUpdateDescription}
+            />
           </>
         )}
         {(journey?.template !== true || isPublisher) && (
@@ -164,6 +209,15 @@ export function Menu(): ReactElement {
           </>
         )}
       </MuiMenu>
+      <TitleDialog open={showTitleDialog} onClose={handleCloseTitle} />
+      <DescriptionDialog
+        open={showDescriptionDialog}
+        onClose={handleCloseDescription}
+      />
+      <TitleDescriptionDialog
+        open={showTitleDescriptionDialog}
+        onClose={handleCloseTitleDescription}
+      />
     </>
   )
 }

@@ -3,50 +3,46 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { JourneyDescUpdate } from '../../../../../../../__generated__/JourneyDescUpdate'
+import { JourneyTitleUpdate } from '../../../../../../__generated__/JourneyTitleUpdate'
 
-export const JOURNEY_DESC_UPDATE = gql`
-  mutation JourneyDescUpdate($id: ID!, $input: JourneyUpdateInput!) {
+export const JOURNEY_TITLE_UPDATE = gql`
+  mutation JourneyTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
       id
-      description
+      title
     }
   }
 `
 
-interface DescriptionDialogProps {
+interface TitleDialogProps {
   open: boolean
   onClose: () => void
 }
 
-export function DescriptionDialog({
-  open,
-  onClose
-}: DescriptionDialogProps): ReactElement {
-  const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
+export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
+  const [journeyUpdate] = useMutation<JourneyTitleUpdate>(JOURNEY_TITLE_UPDATE)
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
+  const titleSchema = object().shape({
+    title: string().required('Required')
+  })
 
-  const handleUpdateDescription = async (
-    values: FormikValues
-  ): Promise<void> => {
+  const handleUpdateTitle = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
 
     try {
       await journeyUpdate({
-        variables: {
-          id: journey.id,
-          input: { description: values.description }
-        },
+        variables: { id: journey.id, input: { title: values.title } },
         optimisticResponse: {
           journeyUpdate: {
             id: journey.id,
             __typename: 'Journey',
-            description: values.description
+            title: values.title
           }
         }
       })
@@ -75,9 +71,7 @@ export function DescriptionDialog({
     return () => {
       onClose()
       // wait for dialog animation to complete
-      setTimeout(() =>
-        resetForm({ values: { description: journey?.description } })
-      )
+      setTimeout(() => resetForm({ values: { title: journey?.title } }))
     }
   }
 
@@ -85,14 +79,15 @@ export function DescriptionDialog({
     <>
       {journey != null && (
         <Formik
-          initialValues={{ description: journey.description ?? '' }}
-          onSubmit={handleUpdateDescription}
+          initialValues={{ title: journey.title }}
+          onSubmit={handleUpdateTitle}
+          validationSchema={titleSchema}
         >
-          {({ values, handleChange, handleSubmit, resetForm }) => (
+          {({ values, errors, handleChange, handleSubmit, resetForm }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: 'Edit Description' }}
+              dialogTitle={{ title: 'Edit Title' }}
               dialogAction={{
                 onSubmit: handleSubmit,
                 closeLabel: 'Cancel'
@@ -100,16 +95,15 @@ export function DescriptionDialog({
             >
               <Form>
                 <TextField
-                  id="description"
-                  name="description"
+                  id="title"
+                  name="title"
                   hiddenLabel
                   fullWidth
-                  onKeyDown={(e) => e.stopPropagation()}
-                  value={values.description}
-                  multiline
+                  value={values.title}
                   variant="filled"
-                  rows={3}
+                  error={Boolean(errors.title)}
                   onChange={handleChange}
+                  helperText={errors.title as string}
                 />
               </Form>
             </Dialog>

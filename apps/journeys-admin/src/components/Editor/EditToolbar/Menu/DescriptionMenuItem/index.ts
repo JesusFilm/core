@@ -1,1 +1,0 @@
-export { DescriptionMenuItem } from './DescriptionMenuItem'
