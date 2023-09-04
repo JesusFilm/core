@@ -106,7 +106,7 @@ export function NavigationButton({
         ...alignSx,
         position: 'absolute',
         // StepFooter heights
-        bottom: { xs: '170px', sm: '133px', lg: '60.5px' },
+        bottom: { xs: '200px', sm: '150px', lg: '60.5px' },
         zIndex: 2,
         display: 'flex',
         width: { xs: 82, lg: 114 },
@@ -115,7 +115,7 @@ export function NavigationButton({
           sm: 'calc(100vh - 238px)',
           lg: 'calc(100% - 105px)'
         },
-        alignItems: 'center',
+        alignItems: 'right',
         pointerEvents: 'none'
       }}
     >
