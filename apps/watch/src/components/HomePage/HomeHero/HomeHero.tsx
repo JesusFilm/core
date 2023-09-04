@@ -17,6 +17,7 @@ export function HomeHero(): ReactElement {
         position: 'relative',
         backgroundColor: 'background.default'
       }}
+      data-testid="HomeHero"
     >
       <Image
         src={JesusHeader}

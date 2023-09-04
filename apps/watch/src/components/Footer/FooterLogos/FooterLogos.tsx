@@ -8,7 +8,7 @@ import JFLogo from './assets/jesus-film.svg'
 
 export function FooterLogos(): ReactElement {
   return (
-    <Stack direction="row" spacing={6} justifyContent="end">
+    <Stack direction="row" spacing={6} justifyContent="end" data-testid="FooterLogos">
       <FooterLink
         url="https://www.cru.org"
         label="Cru logo"

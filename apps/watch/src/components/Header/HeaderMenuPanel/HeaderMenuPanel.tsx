@@ -47,7 +47,7 @@ export function HeaderMenuPanel({
   )
 
   return (
-    <Paper elevation={0}>
+    <Paper elevation={0} data-testid="HeaderMenuPanel">
       <Container maxWidth="xxl" disableGutters>
         <Stack
           spacing={0.5}

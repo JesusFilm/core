@@ -35,6 +35,7 @@ export function FooterLink({
       target={target}
       rel={noFollow ? 'nofollow noopener' : 'noopener'}
       color="text.primary"
+      data-testid="FooterLink"
     >
       {src == null ? (
         <Typography variant={variant}>{label}</Typography>
