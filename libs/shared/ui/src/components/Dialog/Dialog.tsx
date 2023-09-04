@@ -21,7 +21,7 @@ interface DialogProps {
   children?: ReactChild
   container?: HTMLElement
   loading?: boolean
-  dataTestId?: string
+  testId?: string
 }
 
 interface DialogAction {
@@ -80,7 +80,7 @@ export function Dialog({
   children,
   container,
   loading = false,
-  dataTestId
+  testId
 }: DialogProps): ReactElement {
   return (
     <StyledDialog
@@ -90,7 +90,7 @@ export function Dialog({
       fullWidth
       onClose={onClose}
       container={container}
-      data-testid={dataTestId}
+      data-testid={testId}
     >
       {dialogTitle != null && (
         <MuiDialogTitle>
