@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import { Theme, useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { AuthUser } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode, useState } from 'react'
@@ -48,6 +49,7 @@ export function PageWrapper({
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
   const viewportHeight = use100vh()
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
   const router = useRouter()
 
@@ -61,12 +63,14 @@ export function PageWrapper({
         }}
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          <NavigationDrawer
-            open={open}
-            onClose={setOpen}
-            authUser={authUser}
-            router={router}
-          />
+          {mdUp && (
+            <NavigationDrawer
+              open={open}
+              onClose={setOpen}
+              authUser={authUser}
+              router={router}
+            />
+          )}
 
           <Stack
             direction={{ xs: 'column', md: 'row' }}
@@ -80,7 +84,9 @@ export function PageWrapper({
               }
             }}
           >
-            {showAppHeader && <AppHeader onClick={() => setOpen(!open)} />}
+            {showAppHeader && !mdUp && (
+              <AppHeader onClick={() => setOpen(!open)} />
+            )}
 
             <Stack
               component="main"

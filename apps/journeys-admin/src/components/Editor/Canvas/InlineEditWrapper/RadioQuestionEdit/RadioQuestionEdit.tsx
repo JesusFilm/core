@@ -14,8 +14,8 @@ import { RadioOptionBlockCreate } from '../../../../../../__generated__/RadioOpt
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
 import { adminTheme } from '../../../../ThemeProvider/admin/theme'
 
-const adminPrimaryColor = adminTheme.palette
-  .primary as SimplePaletteColorOptions
+const adminPrimaryColor = adminTheme().palette
+  ?.primary as SimplePaletteColorOptions
 
 export const RADIO_OPTION_BLOCK_CREATE = gql`
   mutation RadioOptionBlockCreate($input: RadioOptionBlockCreateInput!) {
