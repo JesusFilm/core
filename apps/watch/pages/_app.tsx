@@ -102,8 +102,6 @@ WatchApp.getInitialProps = async (context) => {
     userAgent = new UAParser(context.ctx.req.headers['user-agent'])
   }
 
-  console.log('userAgent - watch', userAgent)
-
   return await {
     ...NextApp.getInitialProps(context),
     deviceType: userAgent.getDevice().type ?? 'desktop'

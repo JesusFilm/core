@@ -14,8 +14,6 @@ import { FooterSocials } from './FooterSocials'
 export function Footer(): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  console.log('Footer media query -----', smUp)
-
   return (
     <>
       <Divider sx={{ height: 2 }} />

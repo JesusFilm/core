@@ -31,8 +31,6 @@ export function StepFooter({
   const { editableStepFooter } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  console.log('StepFooter media query -----', smUp)
-
   const hasAvatar =
     (variant === 'admin' && editableStepFooter) ||
     journey?.host?.src1 != null ||
