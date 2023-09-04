@@ -116,7 +116,7 @@ const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
 )
 
 interface BlockRenderProps {
-  block: TreeBlock
+  block?: TreeBlock
   wrappers?: WrappersProps
 }
 
@@ -138,7 +138,7 @@ export function BlockRenderer({
   const TypographyWrapper = wrappers?.TypographyWrapper ?? DefaultWrapper
   const VideoWrapper = wrappers?.VideoWrapper ?? DefaultWrapper
 
-  if (block.parentOrder === null) {
+  if (block == null || block?.parentOrder === null) {
     return <></>
   }
 
