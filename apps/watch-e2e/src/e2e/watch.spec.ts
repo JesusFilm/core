@@ -15,15 +15,15 @@ test('Test single video', async ({ page }) => {
   // 3 mins timeout for this test as it got videos (later we can use 10 seconds videos)
   test.setTimeout(3 * 60 * 1000)
 
-  await page.goto('https://watch-1841-jesusfilm.vercel.app/watch')
+  await page.goto('/')
 
   // Get and log the current URL
   const url = page.url()
   console.log('Current URL:', url)
 
-  // Wait for 8 seconds before taking screenshot without this all the video tiles are not fully loading
+  // Wait for 30 seconds before taking screenshot without this all the video tiles are not fully loading
   // eslint-disable-next-line
-  await page.waitForTimeout(8 * 1000)
+  await page.waitForTimeout(30 * 1000)
   await expect(page).toHaveScreenshot('home-page.png', {
     animations: 'disabled',
     fullPage: true,

@@ -22,7 +22,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report
+          name: watch-e2e-custom-report
           path: |
             playwright-report/
             apps/watch-e2e/src/e2e/
