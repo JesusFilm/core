@@ -1,13 +1,13 @@
 import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../libs/storybook'
 import { StyledList } from '../NavigationDrawer'
 
 import { NavigationListItem } from '.'
 
 const NavigationListItemStory: Meta<typeof NavigationListItem> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: NavigationListItem,
   title: 'Journeys-Admin/NewPageWrapper/NavigationDrawer/NavigationListItem'
 }

@@ -12,7 +12,10 @@ import { VisitorDetails } from '.'
 const VisitorDetailsStory: Meta<typeof VisitorDetails> = {
   ...journeysAdminConfig,
   component: VisitorDetails,
-  title: 'Journeys-Admin/VisitorInfo/VisitorDetails'
+  title: 'Journeys-Admin/VisitorInfo/VisitorDetails',
+  parameters: {
+    chromatic: { delay: 3000 }
+  }
 }
 
 const Template: StoryObj<

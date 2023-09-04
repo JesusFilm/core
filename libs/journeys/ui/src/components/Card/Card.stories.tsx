@@ -27,7 +27,9 @@ const Demo: Meta<typeof Card> = {
   parameters: {
     docs: {
       source: { type: 'code' }
-    }
+    },
+
+    chromatic: { delay: 3000 }
   }
 }
 

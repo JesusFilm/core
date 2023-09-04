@@ -5,7 +5,11 @@ import { NextRouter } from 'next/router'
 import { AuthUser } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 
-import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  Role,
+  UserJourneyRole
+} from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
@@ -57,7 +61,10 @@ const NavigationDrawerComponent = ({ ...args }): ReactElement => {
         },
         {
           request: {
-            query: GET_ADMIN_JOURNEYS
+            query: GET_ADMIN_JOURNEYS,
+            variables: {
+              status: [JourneyStatus.draft, JourneyStatus.published]
+            }
           },
           result: args.result
         }
