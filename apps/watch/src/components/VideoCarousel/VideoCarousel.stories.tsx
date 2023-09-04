@@ -16,7 +16,8 @@ const VideoCarouselStory: Meta<typeof VideoCarousel> = {
   component: VideoCarousel,
   title: 'Watch/VideoCarousel',
   parameters: {
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    chromatic: { delay: 3000 }
   }
 }
 
