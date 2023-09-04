@@ -96,7 +96,7 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getAllByTestId('footer-buttons')).toHaveLength(2)
+    expect(getAllByTestId('footer-buttons')).toHaveLength(1)
   })
 
   it('should display social media journey title by default', () => {
