@@ -2,8 +2,7 @@
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 })
-const withNx = require('@nx/next/plugins/with-nx')
-const withPlugins = require('next-compose-plugins')
+const { composePlugins, withNx } = require('@nx/next')
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
@@ -13,11 +12,9 @@ const nextConfig = {
     domains: ['localhost', 'd1wl257kev7hsz.cloudfront.net'],
     minimumCacheTTL: 31536000
   },
-  experimental: {
-    modularizeImports: {
-      lodash: {
-        transform: 'lodash/{{member}}'
-      }
+  modularizeImports: {
+    lodash: {
+      transform: 'lodash/{{member}}'
     }
   },
   nx: {
@@ -58,4 +55,4 @@ const nextConfig = {
     ]
   }
 }
-module.exports = withPlugins([[withBundleAnalyzer], [withNx]], nextConfig)
+module.exports = composePlugins(withBundleAnalyzer, withNx)(nextConfig)

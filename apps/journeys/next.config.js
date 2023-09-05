@@ -1,15 +1,18 @@
-const withNx = require('@nx/next/plugins/with-nx')
-const withPlugins = require('next-compose-plugins')
+const { composePlugins, withNx } = require('@nx/next')
 const withImages = require('next-images')
 
-const { i18n, localePath } = require('./next-i18next.config')
+const { i18n } = require('./next-i18next.config')
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  nx: {
+    // Set this to true if you would like to to use SVGR
+    // See: https://github.com/gregberge/svgr
+    svgr: false
+  },
   i18n,
-  localePath,
   images: {
     domains: [
       'images.unsplash.com',
@@ -25,11 +28,6 @@ const nextConfig = {
       'cloudflarestream.com'
     ]
   },
-  nx: {
-    // Set this to true if you would like to to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: false
-  },
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
@@ -41,4 +39,4 @@ const nextConfig = {
   },
   transpilePackages: ['journeys-ui']
 }
-module.exports = withPlugins([[withImages], [withNx]], nextConfig)
+module.exports = composePlugins(withImages, withNx)(nextConfig)
