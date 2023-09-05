@@ -82,7 +82,6 @@ export function VideoContentPage(): ReactElement {
       />
       <PageWrapper
         hideHeader
-        // pass id into page wrapper
         hero={
           <>
             <VideoHero
@@ -123,6 +122,7 @@ export function VideoContentPage(): ReactElement {
             </Stack>
           </>
         }
+        testId="VideoContentPage"
       >
         <Container maxWidth="xxl" sx={{ mb: 24 }}>
           <Stack

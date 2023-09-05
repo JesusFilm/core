@@ -15,19 +15,21 @@ interface PageWrapperProps {
   hero?: ReactNode
   children?: ReactNode
   hideHeader?: boolean
+  testId?: string
 }
 
 export function PageWrapper({
   hero,
   children,
-  hideHeader
+  hideHeader,
+  testId
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
       <Stack
         justifyContent="space-between"
         sx={{ width: '100%', height: '100%' }}
-        data-testid="PageWrapper"
+        data-testid={testId}
       >
         {hideHeader !== true && <Header />}
         <Container maxWidth={false} disableGutters>

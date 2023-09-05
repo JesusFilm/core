@@ -79,7 +79,7 @@ export function VideoCard({
         underline="none"
         color="inherit"
         sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
-        data-testid="VideoCard" // update to use also use the id since there will be multiple cards
+        data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
       >
         <Stack spacing={3}>
           <ImageButton
