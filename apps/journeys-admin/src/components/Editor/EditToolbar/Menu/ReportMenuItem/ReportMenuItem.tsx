@@ -11,7 +11,7 @@ interface Props {
 
 export function ReportMenuItem({ journey }: Props): ReactElement {
   return (
-    <NextLink href={`/journeys/${journey.id}/reports`} passHref>
+    <NextLink href={`/journeys/${journey.id}/reports`} passHref legacyBehavior>
       <MenuItem label="Report" icon={<AssessmentRoundedIcon />} />
     </NextLink>
   )

@@ -28,7 +28,7 @@ describe('ReportMenuItem', () => {
       </SnackbarProvider>
     )
     expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
-    expect(getByRole('link', { name: 'Report' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Report' })).toHaveAttribute(
       'href',
       '/journeys/journey-id/reports'
     )
