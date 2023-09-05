@@ -50,6 +50,7 @@ jobs:
         with:
           targets: prisma-generate
           all: true
+          parallel: 1
       - name: NPM apollo and graphql for codegen
         run: npm i -g apollo graphql @apollo/rover@0.16.2
       - name: Codegen
@@ -114,6 +115,7 @@ jobs:
         with:
           targets: prisma-generate
           all: true
+          parallel: 1
       - name: Install Doppler
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
@@ -178,6 +180,7 @@ jobs:
         with:
           targets: prisma-generate
           all: true
+          parallel: 1
       - name: run tests
         uses: mansagroup/nrwl-nx-action@v3
         with:

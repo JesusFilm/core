@@ -86,6 +86,7 @@ jobs:
         with:
           targets: prisma-generate
           projects: ${{ inputs.name }}
+          parallel: 1
 
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
