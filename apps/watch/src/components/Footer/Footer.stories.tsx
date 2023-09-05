@@ -1,10 +1,10 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { watchConfig } from '../../libs/storybook'
 
 import { Footer } from '.'
 
-const FooterStory = {
+const FooterStory: Meta<typeof Footer> = {
   ...watchConfig,
   component: Footer,
   title: 'Watch/Footer',
@@ -13,8 +13,10 @@ const FooterStory = {
   }
 }
 
-const Template: Story = () => <Footer />
+const Template: StoryObj<typeof Footer> = {
+  render: () => <Footer />
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default FooterStory as Meta
+export default FooterStory

@@ -45,7 +45,6 @@ export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
                 src={taskbarIcon}
                 width={32}
                 height={32}
-                layout="fixed"
                 alt="Next Steps"
               />
             </Stack>

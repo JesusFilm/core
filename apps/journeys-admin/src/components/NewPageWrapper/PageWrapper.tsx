@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import { AuthUser } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
+import { AuthUser } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 

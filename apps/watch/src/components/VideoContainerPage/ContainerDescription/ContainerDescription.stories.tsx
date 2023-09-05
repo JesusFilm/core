@@ -1,11 +1,11 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
 import { watchConfig } from '../../../libs/storybook/config'
 
 import { ContainerDescription } from './ContainerDescription'
 
-const ContainerDescriptionStory = {
+const ContainerDescriptionStory: Meta<typeof ContainerDescription> = {
   ...watchConfig,
   component: ContainerDescription,
   title: 'Watch/VideoContainerPage/ContainerDescription',
@@ -14,16 +14,16 @@ const ContainerDescriptionStory = {
   }
 }
 
-const Template: ComponentStory<typeof ContainerDescription> = ({ ...args }) => (
-  <ContainerDescription {...args} />
-)
-
-export const Default = Template.bind({})
-
-Default.args = {
-  value:
-    'This is where the description will go, to the left hand side of the share button',
-  openDialog: noop
+const Template: StoryObj<typeof ContainerDescription> = {
+  render: ({ ...args }) => <ContainerDescription {...args} />
+}
+export const Default = {
+  ...Template,
+  args: {
+    value:
+      'This is where the description will go, to the left hand side of the share button',
+    openDialog: noop
+  }
 }
 
-export default ContainerDescriptionStory as Meta
+export default ContainerDescriptionStory

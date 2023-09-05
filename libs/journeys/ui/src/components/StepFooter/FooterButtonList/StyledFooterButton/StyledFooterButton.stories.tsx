@@ -1,26 +1,27 @@
 import Typography from '@mui/material/Typography'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
-import { ComponentProps } from 'react'
 
 import { journeyUiConfig } from '../../../../libs/journeyUiConfig'
 
 import { StyledFooterButton } from './StyledFooterButton'
 
-const Demo = {
+const Demo: Meta<typeof StyledFooterButton> = {
   ...journeyUiConfig,
   component: StyledFooterButton,
   title: 'Journeys-Ui/StepFooter/FooterButtonList/StyledFooterButton'
 }
 
-const Template: Story<ComponentProps<typeof StyledFooterButton>> = ({
-  ...args
-}) => <StyledFooterButton {...args} />
-
-export const Default = Template.bind({})
-Default.args = {
-  onClick: noop,
-  children: <Typography>Test</Typography>
+const Template: StoryObj<typeof StyledFooterButton> = {
+  render: ({ ...args }) => <StyledFooterButton {...args} />
 }
 
-export default Demo as Meta
+export const Default = {
+  ...Template,
+  args: {
+    onClick: noop,
+    children: <Typography>Test</Typography>
+  }
+}
+
+export default Demo

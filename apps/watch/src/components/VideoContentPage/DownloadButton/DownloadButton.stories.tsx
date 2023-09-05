@@ -1,11 +1,11 @@
-import { ComponentMeta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
 import { watchConfig } from '../../../libs/storybook'
 
 import { DownloadButton } from '.'
 
-const DownloadButtonStory: ComponentMeta<typeof DownloadButton> = {
+const DownloadButtonStory: Meta<typeof DownloadButton> = {
   ...watchConfig,
   component: DownloadButton,
   title: 'Watch/DownloadButton',
@@ -15,13 +15,14 @@ const DownloadButtonStory: ComponentMeta<typeof DownloadButton> = {
   }
 }
 
-const Template: Story<typeof DownloadButton> = () => (
-  <>
-    <DownloadButton variant="icon" onClick={noop} />
-    <DownloadButton variant="button" onClick={noop} />
-  </>
-)
-
-export const Default = Template.bind({})
+const Template: StoryObj<typeof DownloadButton> = {
+  render: () => (
+    <>
+      <DownloadButton variant="icon" onClick={noop} />
+      <DownloadButton variant="button" onClick={noop} />
+    </>
+  )
+}
+export const Default = { ...Template }
 
 export default DownloadButtonStory

@@ -1,13 +1,12 @@
 import Stack from '@mui/material/Stack'
-import { Meta, Story } from '@storybook/react'
-import { ComponentProps } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { TeamAvatars } from './TeamAvatars'
 
-const TeamAvatarsStory = {
+const TeamAvatarsStory: Meta<typeof TeamAvatars> = {
   ...journeysAdminConfig,
   component: TeamAvatars,
   title: 'Journeys-Admin/Team/TeamAvatars'
@@ -118,40 +117,45 @@ const userTeamOverflow: UserTeams[] = [
   }
 ]
 
-const Template: Story<ComponentProps<typeof TeamAvatars>> = ({
-  userTeams,
-  onClick,
-  size
-}) => {
-  return (
-    <Stack direction="row">
-      <TeamAvatars userTeams={userTeams} onClick={onClick} size={size} />
-    </Stack>
-  )
+const Template: StoryObj<typeof TeamAvatars> = {
+  render: ({ userTeams, onClick, size }) => {
+    return (
+      <Stack direction="row">
+        <TeamAvatars userTeams={userTeams} onClick={onClick} size={size} />
+      </Stack>
+    )
+  }
+}
+export const Default = {
+  ...Template,
+  args: {
+    userTeams: userTeam
+  }
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  userTeams: userTeam
+export const Large = {
+  ...Template,
+  args: {
+    userTeams: userTeam,
+    size: 'large'
+  }
 }
 
-export const Large = Template.bind({})
-Large.args = {
-  userTeams: userTeam,
-  size: 'large'
+export const OverFlow = {
+  ...Template,
+  args: {
+    userTeams: userTeamOverflow,
+    size: 'large'
+  }
 }
 
-export const OverFlow = Template.bind({})
-OverFlow.args = {
-  userTeams: userTeamOverflow,
-  size: 'large'
+export const WithAdd = {
+  ...Template,
+  args: {
+    userTeams: userTeamOverflow,
+    size: 'large',
+    onClick: () => undefined
+  }
 }
 
-export const WithAdd = Template.bind({})
-WithAdd.args = {
-  userTeams: userTeamOverflow,
-  size: 'large',
-  onClick: () => undefined
-}
-
-export default TeamAvatarsStory as Meta
+export default TeamAvatarsStory

@@ -1,13 +1,12 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
-import { ComponentProps } from 'react'
 
 import { journeyUiConfig } from '../../../../../libs/journeyUiConfig'
 
 import { ShareDialog } from './ShareDialog'
 
-const Demo = {
+const Demo: Meta<typeof ShareDialog> = {
   ...journeyUiConfig,
   component: ShareDialog,
   title: 'Journeys-Ui/StepFooter/FooterButtonList/ShareButton/ShareDialog',
@@ -17,17 +16,21 @@ const Demo = {
   }
 }
 
-const Template: Story<ComponentProps<typeof ShareDialog>> = ({ ...args }) => (
-  <SnackbarProvider>
-    <ShareDialog {...args} />
-  </SnackbarProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  url: 'test-slug',
-  open: true,
-  closeDialog: noop
+const Template: StoryObj<typeof ShareDialog> = {
+  render: ({ ...args }) => (
+    <SnackbarProvider>
+      <ShareDialog {...args} />
+    </SnackbarProvider>
+  )
 }
 
-export default Demo as Meta
+export const Default = {
+  ...Template,
+  args: {
+    url: 'test-slug',
+    open: true,
+    closeDialog: noop
+  }
+}
+
+export default Demo
