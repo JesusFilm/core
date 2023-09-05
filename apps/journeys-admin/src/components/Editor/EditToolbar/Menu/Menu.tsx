@@ -90,7 +90,11 @@ export function Menu(): ReactElement {
   function BlockMenu(): ReactElement {
     return (
       <>
-        <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
+        <NextLink
+          href={`/api/preview?slug=${journey?.slug ?? ''}`}
+          passHref
+          legacyBehavior
+        >
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
@@ -121,7 +125,11 @@ export function Menu(): ReactElement {
 
     return (
       <>
-        <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
+        <NextLink
+          href={`/api/preview?slug=${journey?.slug ?? ''}`}
+          passHref
+          legacyBehavior
+        >
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
@@ -132,7 +140,11 @@ export function Menu(): ReactElement {
         <DuplicateBlock variant="list-item" />
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         <Divider />
-        <NextLink href={settingsLink != null ? settingsLink : ''} passHref>
+        <NextLink
+          href={settingsLink != null ? settingsLink : ''}
+          passHref
+          legacyBehavior
+        >
           <MenuItem
             label={
               journey?.template === true
@@ -174,7 +186,7 @@ export function Menu(): ReactElement {
         ) : (
           <BlockMenu />
         )}
-        {journey?.template === true && isPublisher && (
+        {journey?.template === true && isPublisher != null && (
           <MenuItem
             label="Description"
             icon={<EditIcon />}
@@ -195,19 +207,20 @@ export function Menu(): ReactElement {
             />
           </>
         )}
-        {(journey?.template !== true || isPublisher) && (
+        {(journey?.template !== true || isPublisher != null) && (
           <LanguageMenuItem onClose={handleCloseMenu} />
         )}
         {journey != null && <ReportMenuItem journey={journey} />}
-        {journey?.template !== true && isPublisher && (
+        {journey?.template !== true && isPublisher != null && (
           <CreateTemplateMenuItem />
         )}
-        {journey != null && (journey?.template !== true || isPublisher) && (
-          <>
-            <Divider />
-            <CopyMenuItem journey={journey} onClose={handleCloseMenu} />
-          </>
-        )}
+        {journey != null &&
+          (journey?.template !== true || isPublisher != null) && (
+            <>
+              <Divider />
+              <CopyMenuItem journey={journey} onClose={handleCloseMenu} />
+            </>
+          )}
       </MuiMenu>
       <TitleDialog open={showTitleDialog} onClose={handleCloseTitle} />
       <DescriptionDialog

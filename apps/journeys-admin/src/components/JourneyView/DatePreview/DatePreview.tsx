@@ -32,6 +32,7 @@ export function DatePreview(): ReactElement {
       <NextLink
         href={journey != null ? `/api/preview?slug=${journey.slug}` : ''}
         passHref
+        legacyBehavior
       >
         <Button
           startIcon={<VisibilityIcon />}

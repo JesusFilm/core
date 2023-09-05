@@ -1,22 +1,24 @@
-import { Meta, Story } from '@storybook/react'
-import { ComponentProps } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { simpleComponentConfig } from '../../libs/storybook'
 
 import { ReportsNavigation } from '.'
 
-const ReportsNavigationStory = {
+const ReportsNavigationStory: Meta<typeof ReportsNavigation> = {
   ...simpleComponentConfig,
+  component: ReportsNavigation,
   title: 'Journeys-Admin/ReportsNavigation'
 }
 
-const Template: Story<ComponentProps<typeof ReportsNavigation>> = ({
-  ...args
-}) => <ReportsNavigation {...args} />
-
-export const Default = Template.bind({})
-Default.args = {
-  selected: 'journeys'
+const Template: StoryObj<typeof ReportsNavigation> = {
+  render: ({ ...args }) => <ReportsNavigation {...args} />
 }
 
-export default ReportsNavigationStory as Meta
+export const Default = {
+  ...Template,
+  args: {
+    selected: 'journeys'
+  }
+}
+
+export default ReportsNavigationStory

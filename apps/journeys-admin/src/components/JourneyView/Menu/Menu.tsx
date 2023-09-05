@@ -117,7 +117,11 @@ export function Menu(): ReactElement {
               'aria-labelledby': 'journey-actions'
             }}
           >
-            <NextLink href={`/api/preview?slug=${journey.slug}`} passHref>
+            <NextLink
+              href={`/api/preview?slug=${journey.slug}`}
+              passHref
+              legacyBehavior
+            >
               <MenuItem
                 label="Preview"
                 icon={<VisibilityIcon />}
@@ -132,10 +136,14 @@ export function Menu(): ReactElement {
                 onClick={() => setDuplicateTeamDialogOpen(true)}
               />
             )}
-            {(journey.template !== true || isPublisher) && (
+            {(journey.template !== true || isPublisher != null) && (
               <>
                 <Divider />
-                <NextLink href={editLink != null ? editLink : ''} passHref>
+                <NextLink
+                  href={editLink != null ? editLink : ''}
+                  passHref
+                  legacyBehavior
+                >
                   <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
                 </NextLink>
               </>

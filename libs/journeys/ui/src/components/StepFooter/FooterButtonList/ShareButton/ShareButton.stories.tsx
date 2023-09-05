@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
@@ -7,22 +7,26 @@ import { journeyUiConfig } from '../../../../libs/journeyUiConfig'
 
 import { ShareButton } from './ShareButton'
 
-const Demo = {
+const Demo: Meta<typeof ShareButton> = {
   ...journeyUiConfig,
   component: ShareButton,
   title: 'Journeys-Ui/StepFooter/FooterButtons/ShareButton'
 }
 
-const Template: Story = () => (
-  <SnackbarProvider>
-    <JourneyProvider
-      value={{ journey: { slug: 'test-slug' } as unknown as Journey }}
-    >
-      <ShareButton />
-    </JourneyProvider>
-  </SnackbarProvider>
-)
+const Template: StoryObj = {
+  render: () => (
+    <SnackbarProvider>
+      <JourneyProvider
+        value={{ journey: { slug: 'test-slug' } as unknown as Journey }}
+      >
+        <ShareButton />
+      </JourneyProvider>
+    </SnackbarProvider>
+  )
+}
 
-export const Default = Template.bind({})
+export const Default = {
+  ...Template
+}
 
-export default Demo as Meta
+export default Demo
