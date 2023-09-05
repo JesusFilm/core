@@ -61,7 +61,7 @@ export function BackgroundMedia(): ReactElement {
 
   return (
     <>
-      <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
+      <Box sx={{ width: '100%', textAlign: 'center', py: 6 }}>
         <StyledToggleButtonGroup
           value={blockType}
           onChange={handleTypeChange}
