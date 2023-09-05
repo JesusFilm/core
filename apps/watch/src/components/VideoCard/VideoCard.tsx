@@ -79,6 +79,7 @@ export function VideoCard({
         underline="none"
         color="inherit"
         sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
+        aria-label="VideoCard"
         data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
       >
         <Stack spacing={3}>
