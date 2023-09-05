@@ -56,7 +56,16 @@ export function TermsAndConditions(): ReactElement {
         sx={{ maxWidth: { xs: '311px', sm: '311px', md: '397px' } }}
       >
         <Box sx={{ mb: 10, flexShrink: 0 }}>
-          <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
+          <Image
+            src={taskbarIcon}
+            alt="Next Steps"
+            height={43}
+            width={43}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
         </Box>
         <Typography variant="h4">Before You Start</Typography>
         <Typography variant="body1" sx={{ mt: 3 }}>

@@ -39,6 +39,9 @@ jobs:
       ECR_SEED_REPOSITORY: jfp-${{ inputs.name }}-seed-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v3
@@ -47,7 +50,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Cache Node Modules
@@ -55,8 +58,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
 
       - name: NPM Install
         run: npm install --silent
@@ -83,6 +86,7 @@ jobs:
         with:
           targets: prisma-generate
           projects: ${{ inputs.name }}
+          parallel: 1
 
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)

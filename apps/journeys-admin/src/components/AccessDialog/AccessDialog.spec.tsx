@@ -2,11 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  AccessDialog,
-  GET_JOURNEY_WITH_PERMISSIONS,
-  GET_USER_INVITES
-} from './AccessDialog'
+import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
+
+import { AccessDialog, GET_JOURNEY_WITH_PERMISSIONS } from './AccessDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

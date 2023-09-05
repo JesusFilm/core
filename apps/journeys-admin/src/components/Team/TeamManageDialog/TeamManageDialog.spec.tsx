@@ -18,7 +18,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-jest.mock('../../libs/useCurrentUser', () => ({
+jest.mock('apps/journeys-admin/src/libs/useCurrentUser', () => ({
   __esModule: true,
   useCurrentUser: jest.fn().mockReturnValue({
     loadUser: jest.fn(),

@@ -6,12 +6,12 @@ import {
   useTheme
 } from '@mui/material/styles'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 
 import { simpleComponentConfig } from '../../../libs/storybook'
 
-const AdminThemeDemo = {
+const AdminThemeDemo: Meta<typeof Typography> = {
   ...simpleComponentConfig,
   component: Typography,
   title: 'Admin Theme'
@@ -174,17 +174,19 @@ const ColorTokens = ({
   )
 }
 
-const ColorTemplate: Story<ColorStoryProps> = (args) => (
-  <ColorTokens {...args} />
-)
-
-export const Colors = ColorTemplate.bind({})
-Colors.args = {
-  mainColor: ['light', 'main', 'dark'],
-  overrideColors: ['error', 'warning', 'success']
+const ColorTemplate: StoryObj<typeof ColorTokens> = {
+  render: (args) => <ColorTokens {...args} />
 }
-Colors.parameters = {
-  theme: 'all'
+
+export const Colors = {
+  ...ColorTemplate,
+  args: {
+    mainColor: ['light', 'main', 'dark'],
+    overrideColors: ['error', 'warning', 'success']
+  },
+  parameters: {
+    theme: 'all'
+  }
 }
 
 // Make sure this is consistent with palette in colors.ts
@@ -240,13 +242,15 @@ const PaletteTokens = ({
   )
 }
 
-const PaletteTemplate: Story<ThemeStoryProps> = (args) => (
-  <PaletteTokens {...args} />
-)
-
-export const FullPalette = PaletteTemplate.bind({})
-FullPalette.args = {
-  variants: [...Object.keys(palette)]
+const PaletteTemplate: StoryObj<typeof PaletteTokens> = {
+  render: (args) => <PaletteTokens {...args} />
 }
 
-export default AdminThemeDemo as Meta
+export const FullPalette = {
+  ...PaletteTemplate,
+  args: {
+    variants: [...Object.keys(palette)]
+  }
+}
+
+export default AdminThemeDemo
