@@ -272,7 +272,7 @@ describe('VisitorResolver', () => {
       ).toMatchObject({
         browser: { major: '106', name: 'Chrome', version: '106.0.0.0' },
         device: { model: 'Macintosh', type: undefined, vendor: 'Apple' },
-        os: { name: 'macOS', version: '10.15.7' }
+        os: { name: 'Mac OS', version: '10.15.7' }
       })
     })
 
@@ -283,11 +283,7 @@ describe('VisitorResolver', () => {
             'Mozilla/5.0 (iPhone; U; CPU iPhone OS 5_1_1 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'
         })
       ).toMatchObject({
-        browser: {
-          major: '19',
-          name: 'Mobile Chrome',
-          version: '19.0.1084.60'
-        },
+        browser: { major: '19', name: 'Chrome', version: '19.0.1084.60' },
         device: { model: 'iPhone', type: 'mobile', vendor: 'Apple' },
         os: { name: 'iOS', version: '5.1.1' }
       })

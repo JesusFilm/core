@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { transformer } from '@core/journeys/ui/transformer'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { GetJourney_journey_blocks as Block } from '../__generated__/GetJourney'
 import {
@@ -9,6 +10,8 @@ import {
   ButtonSize,
   ButtonVariant,
   IconName,
+  ThemeMode,
+  ThemeName,
   TypographyAlign,
   TypographyVariant
 } from '../__generated__/globalTypes'
@@ -97,7 +100,11 @@ export function Custom500(): ReactElement {
     }
   ]
 
-  return <Conductor blocks={transformer(blocks)} />
+  return (
+    <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.dark}>
+      <Conductor blocks={transformer(blocks)} />
+    </ThemeProvider>
+  )
 }
 
 export default Custom500

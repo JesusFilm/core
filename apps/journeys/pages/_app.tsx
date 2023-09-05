@@ -3,7 +3,7 @@ import { datadogRum } from '@datadog/browser-rum'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import NextApp, { AppProps as NextJsAppProps } from 'next/app'
+import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
@@ -11,14 +11,11 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
-import { UAParser } from 'ua-parser-js'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { GetJourney_journey as Journey } from '../__generated__/GetJourney'
-import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
 import i18nConfig from '../next-i18next.config'
 import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
@@ -26,7 +23,6 @@ import { firebaseClient } from '../src/libs/firebaseClient'
 type JourneysAppProps = NextJsAppProps<{ journey?: Journey }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
-  deviceType: string
 }
 
 function JourneysApp({
@@ -34,8 +30,7 @@ function JourneysApp({
   pageProps,
   emotionCache = createEmotionCache({
     rtl: getJourneyRTL(pageProps.journey).rtl
-  }),
-  deviceType
+  })
 }: JourneysAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys')
   useEffect(() => {
@@ -93,36 +88,17 @@ function JourneysApp({
         />
       </Head>
       <ApolloProvider client={apolloClient}>
-        <ThemeProvider
-          themeName={ThemeName.base}
-          themeMode={ThemeMode.dark}
-          deviceType={deviceType}
+        <SnackbarProvider
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
         >
-          <SnackbarProvider
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-          >
-            <Component {...pageProps} />
-          </SnackbarProvider>
-        </ThemeProvider>
+          <Component {...pageProps} />
+        </SnackbarProvider>
       </ApolloProvider>
     </CacheProvider>
   )
-}
-
-JourneysApp.getInitialProps = async (context) => {
-  let userAgent
-
-  if (context.ctx.req != null) {
-    userAgent = new UAParser(context.ctx.req.headers['user-agent'])
-  }
-
-  return await {
-    ...NextApp.getInitialProps(context),
-    deviceType: userAgent.getDevice().type ?? 'desktop'
-  }
 }
 
 export default appWithTranslation(JourneysApp, i18nConfig)

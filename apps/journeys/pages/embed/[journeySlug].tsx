@@ -82,7 +82,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
         }
       `}</style>
       <JourneyProvider value={{ journey, variant: 'embed' }}>
-        <ThemeProvider {...theme} rtl={rtl} locale={locale} nested>
+        <ThemeProvider {...theme} rtl={rtl} locale={locale}>
           {journey.blocks != null && (
             <EmbeddedPreview blocks={transformer(journey.blocks)} />
           )}

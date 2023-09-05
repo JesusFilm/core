@@ -77,7 +77,6 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           themeMode={journey.themeMode}
           rtl={rtl}
           locale={locale}
-          nested
         >
           {journey.blocks != null && (
             <Conductor blocks={transformer(journey.blocks)} />

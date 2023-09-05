@@ -18,11 +18,14 @@ export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
 
   return (
-    <Box id="app-header">
+    <Box id="app-header" sx={{ display: { md: 'none' } }}>
       <AppBar
         role="banner"
         position="fixed"
-        sx={{ backgroundColor: 'secondary.dark' }}
+        sx={{
+          display: { xs: 'flex', md: 'none' },
+          backgroundColor: 'secondary.dark'
+        }}
       >
         <Toolbar variant={toolbar.variant}>
           <Stack direction="row" flexGrow={1} alignItems="center">

@@ -182,12 +182,7 @@ export function Canvas(): ReactElement {
                     height={640}
                     dir={rtl ? 'rtl' : 'ltr'}
                   >
-                    <ThemeProvider
-                      {...theme}
-                      rtl={rtl}
-                      locale={locale}
-                      deviceType="mobile"
-                    >
+                    <ThemeProvider {...theme} rtl={rtl} locale={locale}>
                       <Fade
                         in={selectedStep?.id === step.id}
                         mountOnEnter

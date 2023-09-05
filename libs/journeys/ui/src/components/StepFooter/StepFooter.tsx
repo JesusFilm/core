@@ -1,8 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { SxProps, Theme } from '@mui/material/styles'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -29,8 +28,6 @@ export function StepFooter({
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
   const hasAvatar =
     (variant === 'admin' && editableStepFooter) ||
     journey?.host?.src1 != null ||
@@ -70,11 +67,9 @@ export function StepFooter({
           alignItems: { xs: 'flex-start', lg: 'center' }
         }}
       >
-        {!smUp && (
-          <Box>
-            <FooterButtonList />
-          </Box>
-        )}
+        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+          <FooterButtonList />
+        </Box>
 
         <Stack
           sx={{
@@ -114,11 +109,9 @@ export function StepFooter({
               <HostTitleLocation />
             </Stack>
 
-            {smUp && (
-              <Box>
-                <FooterButtonList />
-              </Box>
-            )}
+            <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+              <FooterButtonList />
+            </Box>
           </Stack>
           {hasChatWidget && (
             <Box>

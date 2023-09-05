@@ -2,7 +2,7 @@ import { ApolloProvider } from '@apollo/client'
 import { datadogRum } from '@datadog/browser-rum'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import NextApp, { AppProps as NextJsAppProps } from 'next/app'
+import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
@@ -10,7 +10,6 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
-import { UAParser } from 'ua-parser-js'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -33,14 +32,12 @@ type JourneysAdminAppProps = NextJsAppProps<{
 }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
-  deviceType: string
 }
 
 function JourneysAdminApp({
   Component,
   pageProps,
-  emotionCache = clientSideEmotionCache,
-  deviceType
+  emotionCache = clientSideEmotionCache
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const token =
@@ -80,7 +77,7 @@ function JourneysAdminApp({
   return (
     <FlagsProvider flags={pageProps.flags}>
       <CacheProvider value={emotionCache}>
-        <ThemeProvider deviceType={deviceType}>
+        <ThemeProvider>
           <DefaultSeo
             titleTemplate={t('%s | Next Steps')}
             defaultTitle={t('Admin | Next Steps')}
@@ -109,19 +106,6 @@ function JourneysAdminApp({
       </CacheProvider>
     </FlagsProvider>
   )
-}
-
-JourneysAdminApp.getInitialProps = async (context) => {
-  let userAgent
-
-  if (context.ctx.req != null) {
-    userAgent = new UAParser(context.ctx.req.headers['user-agent'])
-  }
-
-  return await {
-    ...NextApp.getInitialProps(context),
-    deviceType: userAgent.getDevice().type ?? 'desktop'
-  }
 }
 
 export default appWithTranslation(JourneysAdminApp, i18nConfig)
