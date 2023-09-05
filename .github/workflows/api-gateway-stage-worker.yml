@@ -42,7 +42,9 @@ jobs:
         run: npm install -g nx --silent
 
       - name: Get affected apps
-        run: echo "apps=$(npx nx show projects --affected --projects apps/api-* | npx ts-node tools/scripts/affected-apps.ts)" >> $GITHUB_OUTPUT
+        run: |
+          echo "apps=$(npx nx show projects --affected --projects apps/api-* | npx ts-node tools/scripts/affected-apps.ts)" >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
         id: affected-apps
 
       #ECS Deployment

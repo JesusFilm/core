@@ -6,8 +6,8 @@ process.stdin.on('data', (data: string) => {
     .filter((value) => value != null && value !== '')
     .join('","')
   if (services === '') {
-    console.log('matrix=[]')
+    console.log('[]')
   } else {
-    console.log(`matrix=["${services}"]`)
+    console.log(`["${services}"]`)
   }
 })
