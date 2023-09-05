@@ -65,10 +65,7 @@ export function VideoHeading({
       </Collapse>
       {container != null && (
         <Box>
-          <Container
-            maxWidth="xxl"
-            data-testId="VideoHeading"
-          >
+          <Container maxWidth="xxl" data-testId="VideoHeading">
             <Stack
               direction="row"
               justifyContent="space-between"
