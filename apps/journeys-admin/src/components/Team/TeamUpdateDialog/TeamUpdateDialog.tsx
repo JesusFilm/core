@@ -107,7 +107,7 @@ export function TeamUpdateDialog({
               variant="filled"
               error={Boolean(errors.title)}
               onChange={handleChange}
-              helperText={errors.title}
+              helperText={errors.title as string}
               label="Team Name"
             />
           </Form>

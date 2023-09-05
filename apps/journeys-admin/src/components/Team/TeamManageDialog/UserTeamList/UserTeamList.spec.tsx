@@ -131,4 +131,19 @@ describe('UserTeamList', () => {
     expect(getByRole('button', { name: 'Member' })).toBeDisabled()
     expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
   })
+
+  it('should disable buttons if variant is readonly', () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <UserTeamList
+          data={mockData}
+          currentUserTeam={mockCurrentUserTeam}
+          loading={false}
+          variant="readonly"
+        />
+      </MockedProvider>
+    )
+    expect(getByRole('button', { name: 'Member' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
+  })
 })

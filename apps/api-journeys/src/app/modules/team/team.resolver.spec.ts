@@ -139,13 +139,33 @@ describe('TeamResolver', () => {
       userTeams: [
         {
           userId: 'userId',
-          role: UserTeamRole.manager
+          role: UserTeamRole.manager,
+          teamId: 'teamId',
+          team: {
+            id: 'teamId',
+            userTeams: [
+              {
+                id: 'userTeamId',
+                userId: 'userId',
+                role: UserTeamRole.manager
+              }
+            ]
+          }
         }
       ]
     } as unknown as Team & { userTeams: UserTeam[] }
 
+    const teamWithNoUserTeam = {
+      id: 'teamId'
+    } as unknown as Team
+
     it('returns userTeams of parent', async () => {
-      expect(await resolver.userTeams(team)).toEqual(team.userTeams)
+      const userTeams = jest.fn().mockResolvedValue(team.userTeams)
+      prismaService.team.findUnique.mockReturnValue({
+        ...team,
+        userTeams
+      } as unknown as Prisma.Prisma__TeamClient<Team>)
+      expect(await resolver.userTeams(team, ability)).toEqual(team.userTeams)
     })
 
     it('returns userTeams from database', async () => {
@@ -155,19 +175,23 @@ describe('TeamResolver', () => {
         userTeams
       } as unknown as Prisma.Prisma__TeamClient<Team>)
       await expect(
-        resolver.userTeams({ ...team, userTeams: undefined })
+        resolver.userTeams({ ...teamWithNoUserTeam }, ability)
       ).resolves.toEqual(team.userTeams)
     })
 
-    it('returns empty array when null', async () => {
+    it('returns empty userTeams array when null', async () => {
       const userTeams = jest.fn().mockResolvedValue(null)
       prismaService.team.findUnique.mockReturnValue({
         ...team,
         userTeams
       } as unknown as Prisma.Prisma__TeamClient<Team>)
       await expect(
-        resolver.userTeams({ ...team, userTeams: undefined })
+        resolver.userTeams({ ...teamWithNoUserTeam }, ability)
       ).resolves.toEqual([])
+    })
+
+    it('returns empty userTeams array when ability is undefined', async () => {
+      expect(await resolver.userTeams(team, undefined)).toEqual([])
     })
   })
 })
