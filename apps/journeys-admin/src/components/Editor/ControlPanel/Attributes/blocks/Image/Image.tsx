@@ -4,8 +4,8 @@ import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
+import { Attribute } from '../../Attribute'
 
 import { ImageOptions } from './Options/ImageOptions'
 

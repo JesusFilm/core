@@ -1,14 +1,16 @@
-export default {
-  displayName: 'api-languages',
+import type { Config } from 'jest'
 
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.spec.json'
-    }
-  },
+const config: Config = {
+  displayName: 'api-languages',
+  globals: {},
   testEnvironment: 'node',
   transform: {
-    '^.+\\.[tj]s$': 'ts-jest'
+    '^.+\\.[tj]s$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.spec.json'
+      }
+    ]
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/api-languages',
@@ -16,3 +18,5 @@ export default {
   coverageReporters: ['cobertura'],
   preset: '../../jest.preset.js'
 }
+
+export default config

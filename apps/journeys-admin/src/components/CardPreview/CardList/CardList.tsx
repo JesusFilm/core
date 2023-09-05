@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import DragHandleRounded from '@mui/icons-material/DragHandleRounded'
 import Box from '@mui/material/Box'
@@ -27,18 +26,17 @@ import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
-import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import {
   Role,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
 import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { useSocialPreview } from '../../Editor/SocialProvider'
 import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { NavigationCard } from '../NavigationCard'
 
 interface CardListProps {
@@ -70,7 +68,7 @@ export function CardList({
   const { journey } = useJourney()
   const { primaryImageBlock } = useSocialPreview()
 
-  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const { data } = useUserRoleQuery()
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
   const showNavigation =
@@ -175,8 +173,12 @@ export function CardList({
                 alt={primaryImageBlock?.src}
                 width={72}
                 height={72}
-                objectFit="cover"
-                style={{ borderRadius: '4px' }}
+                style={{
+                  borderRadius: '4px',
+                  maxWidth: '100%',
+                  height: 'auto',
+                  objectFit: 'cover'
+                }}
               />
             )
           }
