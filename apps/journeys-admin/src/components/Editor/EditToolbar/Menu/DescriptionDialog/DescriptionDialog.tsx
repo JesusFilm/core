@@ -104,7 +104,6 @@ export function DescriptionDialog({
                   name="description"
                   hiddenLabel
                   fullWidth
-                  onKeyDown={(e) => e.stopPropagation()}
                   value={values.description}
                   multiline
                   variant="filled"
