@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
@@ -36,7 +36,7 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "$(npx nx affected:apps --plain | npx ts-node tools/scripts/affected-frontend-apps.ts)" >> $GITHUB_OUTPUT
+          echo "$(nx show projects --affected | npx ts-node tools/scripts/affected-frontend-apps.ts)" >> $GITHUB_OUTPUT
   deploy-preview:
     name: Deploy Preview and Test
     needs: affected
@@ -66,7 +66,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
@@ -169,7 +169,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
