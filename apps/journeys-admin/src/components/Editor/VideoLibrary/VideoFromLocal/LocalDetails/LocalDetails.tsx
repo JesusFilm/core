@@ -94,11 +94,11 @@ export function LocalDetails({
   const handleSelect = (): void => {
     onSelect({
       videoId: id,
-      videoVariantLanguageId: selectedLanguage.id,
+      videoVariantLanguageId: selectedLanguage?.id,
       duration: time,
       source: VideoBlockSource.internal,
-      startAt: 0,
-      endAt: time
+      startAt: videoBlock?.videoId === id ? videoBlock?.startAt : 0,
+      endAt: videoBlock?.videoId === id ? videoBlock?.endAt : time
     })
   }
 
