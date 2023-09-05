@@ -24,15 +24,6 @@ services:
       PGDATABASE: postgres
     extra_hosts:
       - 'host.docker.internal:host-gateway'
-  arangodb:
-    image: arangodb/arangodb:3.8.8
-    volumes:
-      - arango-data:/var/lib/arangodb3
-    environment:
-      ARANGO_NO_AUTH: 1
-      ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY: 4GB
-    ports:
-      - 8529:8529
   db:
     image: postgres:13
     restart: unless-stopped
@@ -45,6 +36,5 @@ services:
     ports:
       - 5432:5432
 volumes:
-  arango-data:
   core-node-doppler:
   postgres-data:

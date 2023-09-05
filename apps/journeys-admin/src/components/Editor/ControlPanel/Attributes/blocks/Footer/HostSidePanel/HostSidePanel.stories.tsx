@@ -1,13 +1,16 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { expect } from '@storybook/jest'
 import { Meta, Story } from '@storybook/react'
-import { userEvent, waitFor, within } from '@storybook/testing-library'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { GET_CURRENT_USER } from '../../../../../../../libs/useCurrentUser'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { GET_ALL_TEAM_HOSTS, HostSidePanel } from './HostSidePanel'
@@ -47,119 +50,181 @@ const journey = {
   host: defaultHost
 } as unknown as Journey
 
-const Template: Story<ComponentProps<typeof HostSidePanel>> = ({ ...args }) => {
-  return (
-    <MockedProvider
-      mocks={[
+const user = {
+  id: 'userId',
+  email: 'admin@email.com'
+}
+
+const userMock = {
+  request: {
+    query: GET_CURRENT_USER
+  },
+  result: {
+    data: {
+      me: user
+    }
+  }
+}
+const userTeamMock = {
+  request: {
+    query: GET_USER_TEAMS_AND_INVITES,
+    variables: {
+      teamId: 'teamId',
+      where: { role: [UserTeamRole.manager, UserTeamRole.member] }
+    }
+  },
+  result: {
+    data: {
+      userTeams: [
         {
-          request: {
-            query: GET_ALL_TEAM_HOSTS,
-            variables: { teamId: journey?.team?.id }
-          },
-          result: {
-            data: {
-              hosts: [
-                {
-                  id: '1',
-                  location: '',
-                  src1: null,
-                  src2: null,
-                  title: `John "The Rock" Geronimo`
-                },
-                {
-                  id: '2',
-                  location: 'Auckland, New Zealand',
-                  src1: null,
-                  src2: null,
-                  title: 'Jian Wei'
-                },
-                {
-                  id: '3',
-                  location: 'Auckland, New Zealand',
-                  src1: null,
-                  src2: 'https://tinyurl.com/4b3327yn',
-                  title: 'Nisal Cottingham'
-                },
-                {
-                  id: '4',
-                  location: 'Tokyo, Japan',
-                  src1: 'https://tinyurl.com/3bxusmyb',
-                  src2: 'https://tinyurl.com/mr4a78kb',
-                  title: 'John G & Siyang C'
-                }
-              ]
-            }
+          id: 'teamId',
+          __typename: 'UserTeam',
+          role: UserTeamRole.manager,
+          user: {
+            __typename: 'User',
+            email: user.email,
+            firstName: 'User',
+            id: user.id,
+            imageUrl: 'imageURL',
+            lastName: '1'
           }
         }
-      ]}
-    >
-      <ThemeProvider>
-        <JourneyProvider value={{ ...args, variant: 'admin' }}>
-          <HostSidePanel />
-        </JourneyProvider>
-      </ThemeProvider>
-    </MockedProvider>
-  )
+      ],
+      userTeamInvites: []
+    }
+  }
 }
+const teamHostsMock = {
+  request: {
+    query: GET_ALL_TEAM_HOSTS,
+    variables: { teamId: journey?.team?.id }
+  },
+  result: {
+    data: {
+      hosts: [
+        {
+          id: '1',
+          location: '',
+          src1: null,
+          src2: null,
+          title: `John "The Rock" Geronimo`
+        },
+        {
+          id: '2',
+          location: 'Auckland, New Zealand',
+          src1: null,
+          src2: null,
+          title: 'Jian Wei'
+        },
+        {
+          id: '3',
+          location: 'Auckland, New Zealand',
+          src1: null,
+          src2: 'https://tinyurl.com/4b3327yn',
+          title: 'Nisal Cottingham'
+        },
+        {
+          id: '4',
+          location: 'Tokyo, Japan',
+          src1: 'https://tinyurl.com/3bxusmyb',
+          src2: 'https://tinyurl.com/mr4a78kb',
+          title: 'John G & Siyang C'
+        }
+      ]
+    }
+  }
+}
+
+const Template: Story<
+  ComponentProps<typeof HostSidePanel> & { mocks: MockedResponse[] }
+> = ({ mocks, ...args }) => (
+  <MockedProvider mocks={mocks}>
+    <ThemeProvider>
+      <JourneyProvider value={{ ...args, variant: 'admin' }}>
+        <HostSidePanel />
+      </JourneyProvider>
+    </ThemeProvider>
+  </MockedProvider>
+)
 
 // Default side panels based on host availability
 export const Default = Template.bind({})
 Default.args = {
+  mocks: [userMock, userTeamMock, teamHostsMock],
+  journey: { ...journey, host: null }
+}
+
+export const Disabled = Template.bind({})
+Disabled.args = {
+  mocks: [],
   journey: { ...journey, host: null }
 }
 
 export const EditHost = Template.bind({})
 EditHost.args = {
+  ...Default.args,
   journey
 }
 
 // Popup side panels
 export const SelectHost = Template.bind({})
 SelectHost.args = {
+  ...Default.args,
   journey: { ...journey, host: null }
 }
-SelectHost.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement)
-  expect(
-    canvas.getByRole('button', { name: 'Select a Host' })
-  ).toBeInTheDocument()
-  userEvent.click(canvas.getByRole('button', { name: 'Select a Host' }))
+SelectHost.play = async () => {
   await waitFor(() => {
-    expect(canvas.getAllByText('Authors')).toHaveLength(2)
+    expect(
+      screen.getByRole('button', { name: 'Select a Host' })
+    ).not.toBeDisabled()
+  })
+  userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
+  await waitFor(() => {
+    expect(screen.getAllByText('Authors')).toHaveLength(2)
   })
 }
 
 export const CreateHost = Template.bind({})
 CreateHost.args = {
+  ...Default.args,
   journey: { ...journey, host: null }
 }
-CreateHost.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement)
-  expect(
-    canvas.getByRole('button', { name: 'Select a Host' })
-  ).toBeInTheDocument()
-  userEvent.click(canvas.getByRole('button', { name: 'Select a Host' }))
-  expect(canvas.getByRole('button', { name: 'Create New' })).toBeInTheDocument()
-  userEvent.click(canvas.getByRole('button', { name: 'Create New' }))
+CreateHost.play = async () => {
   await waitFor(() => {
-    expect(canvas.getAllByText('Create Author')).toHaveLength(2)
+    expect(
+      screen.getByRole('button', { name: 'Select a Host' })
+    ).not.toBeDisabled()
+  })
+  userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Create New' })
+    ).toBeInTheDocument()
+  })
+  userEvent.click(screen.getByRole('button', { name: 'Create New' }))
+  await waitFor(() => {
+    expect(screen.getAllByText('Create Author')).toHaveLength(2)
   })
 }
 
 export const Info = Template.bind({})
 Info.args = {
+  ...Default.args,
   journey: { ...journey, host: null }
 }
-Info.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement)
-  expect(
-    canvas.getByRole('button', { name: 'Select a Host' })
-  ).toBeInTheDocument()
-  userEvent.click(canvas.getByRole('button', { name: 'Select a Host' }))
-  expect(canvas.getAllByTestId('info')[0]).toBeInTheDocument()
-  userEvent.click(canvas.getAllByTestId('info')[0])
+Info.play = async () => {
   await waitFor(() => {
-    expect(canvas.getByText('Information')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Select a Host' })
+    ).not.toBeDisabled()
+  })
+  userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
+  await waitFor(() => {
+    expect(screen.getAllByTestId('info')[0]).toBeInTheDocument()
+  })
+  userEvent.click(screen.getAllByTestId('info')[0])
+  await waitFor(() => {
+    expect(screen.getByText('Information')).toBeInTheDocument()
   })
 }
 

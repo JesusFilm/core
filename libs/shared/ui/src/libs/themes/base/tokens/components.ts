@@ -118,8 +118,10 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
         root: {
           paddingLeft: 10,
           opacity: 0.7,
-          '&:hover': {
-            opacity: 1
+          '@media (hover: hover)': {
+            '&:hover': {
+              opacity: 1
+            }
           }
         }
       }

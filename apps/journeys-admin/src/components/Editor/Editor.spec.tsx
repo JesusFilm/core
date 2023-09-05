@@ -110,16 +110,18 @@ describe('Editor', () => {
   it('should display Social Preview', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <ThemeProvider>
-            <Editor
-              journey={journey}
-              view={ActiveJourneyEditContent.SocialPreview}
-            >
-              <JourneyEdit />
-            </Editor>
-          </ThemeProvider>
-        </FlagsProvider>
+        <SnackbarProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <Editor
+                journey={journey}
+                view={ActiveJourneyEditContent.SocialPreview}
+              >
+                <JourneyEdit />
+              </Editor>
+            </ThemeProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByTestId('social-preview-panel')).toBeInTheDocument()

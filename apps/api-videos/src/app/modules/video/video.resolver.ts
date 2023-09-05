@@ -1,3 +1,5 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
+import { Inject } from '@nestjs/common'
 import {
   Args,
   Info,
@@ -7,18 +9,28 @@ import {
   ResolveReference,
   Resolver
 } from '@nestjs/graphql'
-import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
+import { Cache } from 'cache-manager'
+import { FieldNode, GraphQLError, GraphQLResolveInfo, Kind } from 'graphql'
 import compact from 'lodash/compact'
+import isEmpty from 'lodash/isEmpty'
 
+import { Video, VideoTitle, VideoVariant } from '.prisma/api-videos-client'
 import { TranslationField } from '@core/nest/decorators/TranslationField'
 
-import { IdType, Video, VideosFilter } from '../../__generated__/graphql'
+import { IdType, VideosFilter } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
 
 import { VideoService } from './video.service'
 
+const ONE_DAY_MS = 86400000
+
 @Resolver('Video')
 export class VideoResolver {
-  constructor(private readonly videoService: VideoService) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    private readonly videoService: VideoService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Query()
   async videos(
@@ -46,52 +58,81 @@ export class VideoResolver {
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.databaseId
   ): Promise<Video> {
+    let result: Video | null
     switch (idType) {
       case IdType.databaseId:
-        return await this.videoService.getVideo(
-          id,
-          this.extractVariantLanguageId(info)
-        )
+        result = await this.prismaService.video.findUnique({
+          where: { id }
+        })
+        break
       case IdType.slug:
-        return await this.videoService.getVideoBySlug(id)
+        result = await this.prismaService.video.findFirst({
+          where: { variants: { some: { slug: id } } }
+        })
+        break
     }
+    if (result == null)
+      throw new GraphQLError('Video not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    return result
   }
 
   @ResolveReference()
   async resolveReference(reference: {
     __typename: 'Video'
     id: string
-    primaryLanguageId?: string | null
-  }): Promise<Video> {
-    return await this.videoService.getVideo(
-      reference.id,
-      reference.primaryLanguageId ?? undefined
-    )
+  }): Promise<Video | null> {
+    return await this.prismaService.video.findUnique({
+      where: { id: reference.id }
+    })
   }
 
   @ResolveField()
-  async children(
-    @Parent()
-    video: {
-      childIds?: string[]
-      variant?: { languageId: string }
+  async children(@Parent() video: Video): Promise<Video[]> {
+    const key = `video-children-${video.id}`
+    const cache = await this.cacheManager.get<Video[]>(key)
+    if (cache != null) {
+      return cache
     }
-  ): Promise<Video[] | null> {
-    return video.childIds != null
-      ? await this.videoService.getVideosByIds(
-          video.childIds,
-          video.variant?.languageId
-        )
-      : null
+
+    const result =
+      (await this.prismaService.video
+        .findUnique({
+          where: { id: video.id }
+        })
+        .children()) ?? []
+
+    const sorted = compact(
+      video.childIds.map((id) => result.find((video) => video.id === id))
+    )
+
+    await this.cacheManager.set(key, sorted, ONE_DAY_MS)
+    return sorted
   }
 
   @ResolveField()
-  @TranslationField('title')
-  title(
-    @Parent() language,
+  async title(
+    @Parent() video,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<VideoTitle[]> {
+    return await this.prismaService.videoTitle.findMany({
+      where: {
+        videoId: video.id,
+        OR: compact([
+          primary != null
+            ? {
+                primary
+              }
+            : undefined,
+          {
+            languageId: languageId ?? '529'
+          }
+        ])
+      }
+    })
+  }
 
   @ResolveField()
   @TranslationField('seoTitle')
@@ -134,13 +175,94 @@ export class VideoResolver {
   ): void {}
 
   @ResolveField()
-  childrenCount(@Parent() video): number {
-    return compact(video.childIds).length
+  async childrenCount(@Parent() video): Promise<number> {
+    return await this.prismaService.video.count({
+      where: { parent: { some: { id: video.id } } }
+    })
   }
 
   @ResolveField('variantLanguagesCount')
-  variantLanguagesCount(@Parent() video): number {
-    return compact(video.variantLanguages).length
+  async variantLanguagesCount(@Parent() video): Promise<number> {
+    return await this.prismaService.videoVariant.count({
+      where: { videoId: video.id }
+    })
+  }
+
+  @ResolveField('variant')
+  async variant(
+    @Info() info: GraphQLResolveInfo,
+    @Parent() video,
+    @Args('languageId') languageId?: string
+  ): Promise<VideoVariant | null> {
+    const variableValueId =
+      (info.variableValues.id as string) ??
+      (info.variableValues.contentId as string) ??
+      ''
+    const requestedLanguage = variableValueId.includes('/')
+      ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
+      : ''
+
+    const journeysLanguageIdForBlock = (
+      info.variableValues as {
+        representations: Array<{ primaryLanguageId: string }>
+      }
+    ).representations?.[0].primaryLanguageId
+
+    if (
+      info.variableValues.idType !== IdType.databaseId &&
+      !isEmpty(variableValueId) &&
+      !isEmpty(requestedLanguage)
+    ) {
+      const slug = `${video.slug as string}/${requestedLanguage}`
+      const key = `video-variant-slug-${slug}`
+      const cache = await this.cacheManager.get<VideoVariant>(key)
+      if (cache != null) return cache
+
+      const results = await this.prismaService.videoVariant.findUnique({
+        where: {
+          slug
+        }
+      })
+
+      await this.cacheManager.set(key, results, ONE_DAY_MS)
+      return results
+    }
+
+    languageId = languageId ?? journeysLanguageIdForBlock ?? '529'
+    const key = `video-variant-${video.id as string}-${languageId}`
+    const cache = await this.cacheManager.get<VideoVariant>(key)
+    if (cache != null) return cache
+
+    const results = await this.prismaService.videoVariant.findUnique({
+      where: {
+        languageId_videoId: {
+          videoId: video.id,
+          languageId
+        }
+      }
+    })
+    await this.cacheManager.set(key, results, ONE_DAY_MS)
+    return results
+  }
+
+  @ResolveField('variantLanguages')
+  async variantLanguages(@Parent() video): Promise<Array<{ id: string }>> {
+    const result = await this.prismaService.videoVariant.findMany({
+      where: { videoId: video.id },
+      select: { languageId: true }
+    })
+    return result.map(({ languageId }) => ({ id: languageId }))
+  }
+
+  @ResolveField('variantLanguagesWithSlug')
+  async variantLanguagesWithSlug(
+    @Parent() video
+  ): Promise<Array<{ slug: string; languageId: string }>> {
+    const result = await this.prismaService.videoVariant.findMany({
+      where: { videoId: video.id },
+      select: { languageId: true, slug: true }
+    })
+    return result.map(({ slug, languageId }) => ({ slug, languageId }))
   }
 
   private extractVariantLanguageId(

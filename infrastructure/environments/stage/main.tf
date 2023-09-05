@@ -117,10 +117,12 @@ module "api-users" {
 }
 
 module "api-videos" {
-  source        = "../../../apps/api-videos/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
+  source                = "../../../apps/api-videos/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  env                   = "stage"
+  doppler_token         = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
+  subnet_group_name     = module.stage.vpc.db_subnet_group_name
+  vpc_security_group_id = module.stage.private_rds_security_group_id
 }
 
 module "api-media" {
@@ -152,3 +154,45 @@ module "cloudflared" {
   cloudflared_token  = data.aws_ssm_parameter.cloudflared_stage_token.value
 }
 
+module "datadog_aurora" {
+  source             = "../../modules/aws/ec2-dd-agent-aurora"
+  name               = "dd-aurora"
+  env                = "stage"
+  subnet_id          = module.stage.vpc.public_subnets[0]
+  security_group_ids = [module.stage.private_rds_security_group_id]
+  rds_instances = [{
+    host             = module.api-journeys.database.aws_rds_cluster.endpoint
+    port             = module.api-journeys.database.aws_rds_cluster.port
+    username         = module.api-journeys.database.aws_rds_cluster.master_username
+    password         = module.api-journeys.database.random_password.result
+    db_instance_name = module.api-journeys.database.aws_rds_cluster.id
+    },
+    {
+      host             = module.api-tags.database.aws_rds_cluster.endpoint
+      port             = module.api-tags.database.aws_rds_cluster.port
+      username         = module.api-tags.database.aws_rds_cluster.master_username
+      password         = module.api-tags.database.random_password.result
+      db_instance_name = module.api-tags.database.aws_rds_cluster.id
+    },
+    {
+      host             = module.api-users.database.aws_rds_cluster.endpoint
+      port             = module.api-users.database.aws_rds_cluster.port
+      username         = module.api-users.database.aws_rds_cluster.master_username
+      password         = module.api-users.database.random_password.result
+      db_instance_name = module.api-users.database.aws_rds_cluster.id
+    },
+    {
+      host             = module.api-media.database.aws_rds_cluster.endpoint
+      port             = module.api-media.database.aws_rds_cluster.port
+      username         = module.api-media.database.aws_rds_cluster.master_username
+      password         = module.api-media.database.random_password.result
+      db_instance_name = module.api-media.database.aws_rds_cluster.id
+    },
+    {
+      host             = module.api-languages.database.aws_rds_cluster.endpoint
+      port             = module.api-languages.database.aws_rds_cluster.port
+      username         = module.api-languages.database.aws_rds_cluster.master_username
+      password         = module.api-languages.database.random_password.result
+      db_instance_name = module.api-languages.database.aws_rds_cluster.id
+  }]
+}

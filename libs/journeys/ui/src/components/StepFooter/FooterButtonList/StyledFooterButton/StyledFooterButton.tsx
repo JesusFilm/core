@@ -26,16 +26,18 @@ const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
           ? `${theme.palette.grey[200]}FF`
           : `${theme.palette.grey[800]}FF`
     },
-    ...(clicked && {
-      animation: 'bounce 0.5s',
-      '@keyframes bounce': {
-        '0%': { transform: 'translateY(0)' },
-        '40%': { transform: 'translateY(-10px)' },
-        '50%': { transform: 'translateY(0)' },
-        '60%': { transform: 'translateY(-5px)' },
-        '100%': { transform: 'translateY(0)' }
-      }
-    })
+    ...(clicked
+      ? {
+          animation: 'bounce 0.5s',
+          '@keyframes bounce': {
+            '0%': { transform: 'translateY(0)' },
+            '40%': { transform: 'translateY(-10px)' },
+            '50%': { transform: 'translateY(0)' },
+            '60%': { transform: 'translateY(-5px)' },
+            '100%': { transform: 'translateY(0)' }
+          }
+        }
+      : {})
   })
 )
 

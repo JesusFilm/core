@@ -4,6 +4,7 @@ import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
+import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import responseCachePlugin from 'apollo-server-plugin-response-cache'
@@ -22,6 +23,7 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
     TranslationModule,
     VideoModule,
     VideoVariantModule,
+    CacheModule.register(),
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths:

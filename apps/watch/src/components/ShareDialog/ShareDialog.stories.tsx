@@ -1,5 +1,6 @@
+import { expect } from '@storybook/jest'
 import { Meta, Story } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
@@ -82,8 +83,13 @@ export const EmbedCode = Template.bind({})
 EmbedCode.args = {
   ...ShareLink.args
 }
-EmbedCode.play = () => {
+EmbedCode.play = async () => {
   userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))
+  await waitFor(() =>
+    expect(
+      screen.getByRole('button', { name: 'Copy Code' })
+    ).toBeInTheDocument()
+  )
   userEvent.click(screen.getByRole('button', { name: 'Copy Code' }))
 }
 
