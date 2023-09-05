@@ -71,7 +71,7 @@ jobs:
         run: npm install -g @apollo/rover@0.16.2
 
       - name: Get affected apps
-        run: echo "apps=$(npx nx show projects --affected --projects apps/api-*)" >> $GITHUB_OUTPUT
+        run: echo "apps=$(npx nx show projects --affected --projects apps/api-* | npx ts-node tools/scripts/affected-apps.ts)" >> $GITHUB_OUTPUT
         id: affected-apps
 
       - name: Has Prisma
