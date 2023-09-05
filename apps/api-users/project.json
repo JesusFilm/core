@@ -1,5 +1,4 @@
 {
-  "root": "apps/api-users",
   "sourceRoot": "apps/api-users/src",
   "projectType": "application",
   "targets": {
@@ -49,7 +48,7 @@
     "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx ts-node tools/scripts/generate-typings.ts api-users"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-users"
       }
     },
     "lint": {
@@ -63,7 +62,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-users"],
       "options": {
-        "jestConfig": "apps/api-users/jest.config.js",
+        "jestConfig": "apps/api-users/jest.config.ts",
         "passWithNoTests": true
       }
     },

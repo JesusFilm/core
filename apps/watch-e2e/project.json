@@ -1,5 +1,4 @@
 {
-  "root": "apps/watch-e2e",
   "sourceRoot": "apps/watch-e2e/src",
   "projectType": "application",
   "targets": {

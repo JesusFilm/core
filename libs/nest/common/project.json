@@ -1,5 +1,4 @@
 {
-  "root": "libs/nest/common",
   "sourceRoot": "libs/nest/common/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +13,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/nest/common"],
       "options": {
-        "jestConfig": "libs/nest/common/jest.config.js",
+        "jestConfig": "libs/nest/common/jest.config.ts",
         "passWithNoTests": true
       }
     },
