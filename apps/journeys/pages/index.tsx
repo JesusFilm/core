@@ -140,9 +140,9 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   )
 }
 
-export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
-  context
-) => {
+export const getStaticProps: GetStaticProps<
+  Omit<JourneysPageProps, 'deviceType'>
+> = async (context) => {
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourneys>({
     query: gql`

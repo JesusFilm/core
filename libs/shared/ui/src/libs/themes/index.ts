@@ -1,7 +1,7 @@
 import { Theme } from '@mui/material/styles'
 
 import { getBaseDark, getBaseLight } from './base/theme'
-import { websiteDark, websiteLight } from './website/theme'
+import { getWebsiteDark, getWebsiteLight } from './website/theme'
 
 export enum ThemeMode {
   dark = 'dark',
@@ -18,17 +18,25 @@ interface ThemeProps {
   themeMode: ThemeMode
   rtl?: boolean
   locale?: string
+  ssrMatchMedia?: (query: string) => { matches: boolean }
 }
 
 export const getTheme = ({
   themeName,
   themeMode,
   rtl = false,
-  locale = ''
+  locale = '',
+  ssrMatchMedia
 }: ThemeProps): Theme => {
   const themes = {
-    base: { light: getBaseLight(rtl, locale), dark: getBaseDark(rtl, locale) },
-    website: { light: websiteLight, dark: websiteDark }
+    base: {
+      light: getBaseLight({ rtl, locale, ssrMatchMedia }),
+      dark: getBaseDark({ rtl, locale, ssrMatchMedia })
+    },
+    website: {
+      light: getWebsiteLight({ ssrMatchMedia }),
+      dark: getWebsiteDark({ ssrMatchMedia })
+    }
   }
   return {
     ...themes[themeName][themeMode]

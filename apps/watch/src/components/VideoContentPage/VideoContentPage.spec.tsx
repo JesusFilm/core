@@ -8,6 +8,11 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContentPage } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('VideoContentPage', () => {
   it('should render VideoHero', () => {
     const { getAllByRole } = render(

@@ -40,6 +40,11 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Footer', () => {
   const state: EditorState = {
     steps: [],

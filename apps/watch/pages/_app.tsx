@@ -2,11 +2,12 @@ import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import { datadogRum } from '@datadog/browser-rum'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import { AppProps as NextJsAppProps } from 'next/app'
+import NextApp, { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import { DefaultSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
+import { UAParser } from 'ua-parser-js'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -20,12 +21,14 @@ const clientSideEmotionCache = createEmotionCache({ prepend: false })
 
 type WatchAppProps = NextJsAppProps & {
   emotionCache?: EmotionCache
+  deviceType: string
 }
 
 export default function WatchApp({
   Component,
   pageProps,
-  emotionCache = clientSideEmotionCache
+  emotionCache = clientSideEmotionCache,
+  deviceType
 }: WatchAppProps): ReactElement {
   useEffect(() => {
     if (
@@ -83,10 +86,24 @@ export default function WatchApp({
         <ThemeProvider
           themeName={ThemeName.website}
           themeMode={ThemeMode.light}
+          deviceType={deviceType}
         >
           <Component {...pageProps} />
         </ThemeProvider>
       </CacheProvider>
     </ApolloProvider>
   )
+}
+
+WatchApp.getInitialProps = async (context) => {
+  let userAgent
+
+  if (context.ctx.req != null) {
+    userAgent = new UAParser(context.ctx.req.headers['user-agent'])
+  }
+
+  return await {
+    ...NextApp.getInitialProps(context),
+    deviceType: userAgent.getDevice().type ?? 'desktop'
+  }
 }

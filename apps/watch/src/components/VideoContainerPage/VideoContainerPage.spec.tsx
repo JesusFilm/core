@@ -17,6 +17,11 @@ jest.mock('next/router', () => ({
   }
 }))
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('VideoContainerPage', () => {
   it('should render ContainerHero', () => {
     const { getByText } = render(
