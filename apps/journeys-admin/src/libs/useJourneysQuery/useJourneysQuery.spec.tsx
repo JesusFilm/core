@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { waitFor } from '@testing-library/react'
-import { act, renderHook } from '@testing-library/react-hooks'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { formatISO, startOfYear } from 'date-fns'
 
 import {

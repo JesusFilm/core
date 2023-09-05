@@ -178,7 +178,7 @@ export function DetailsForm({ id }: Props): ReactElement {
                     }
                     helperText={
                       touched.messagePlatformId === true &&
-                      errors.messagePlatformId
+                      (errors.messagePlatformId as string)
                     }
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -198,7 +198,9 @@ export function DetailsForm({ id }: Props): ReactElement {
                     fullWidth
                     value={values.name ?? data.visitor.id}
                     error={touched.name === true && Boolean(errors.name)}
-                    helperText={touched.name === true && errors.name}
+                    helperText={
+                      touched.name === true && (errors.name as string)
+                    }
                     onBlur={handleBlur}
                     onChange={handleChange}
                     sx={{ pb: 4 }}
@@ -213,7 +215,9 @@ export function DetailsForm({ id }: Props): ReactElement {
                     fullWidth
                     value={values.notes ?? ''}
                     error={touched.notes === true && Boolean(errors.notes)}
-                    helperText={touched.notes === true && errors.notes}
+                    helperText={
+                      touched.notes === true && (errors.notes as string)
+                    }
                     onBlur={handleBlur}
                     onChange={handleChange}
                     multiline

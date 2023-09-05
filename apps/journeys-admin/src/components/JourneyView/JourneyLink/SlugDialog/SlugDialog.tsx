@@ -110,7 +110,7 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
                         /<strong>{values.slug}</strong>
                       </>
                     ) : (
-                      errors.slug
+                      (errors.slug as string)
                     )
                   }
                 />

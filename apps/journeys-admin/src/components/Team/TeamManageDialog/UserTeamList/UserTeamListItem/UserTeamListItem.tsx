@@ -23,6 +23,7 @@ import { UserTeamDeleteMenuItem } from '../../UserTeamDeleteMenuItem'
 interface UserTeamListItemProps {
   user: UserTeam
   disabled?: boolean
+  variant?: 'readonly' | 'default'
 }
 
 export const USER_TEAM_UPDATE = gql`
@@ -38,7 +39,8 @@ export const USER_TEAM_UPDATE = gql`
 `
 export function UserTeamListItem({
   user: listItem,
-  disabled
+  disabled,
+  variant = 'default'
 }: UserTeamListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -93,7 +95,16 @@ export function UserTeamListItem({
             endIcon={<ArrowDropDownIcon />}
             sx={{
               color: 'text.primary',
-              typography: 'body2'
+              typography: 'body2',
+              '& > .MuiButton-endIcon': {
+                display: variant === 'readonly' ? 'none' : 'inherit'
+              },
+              '&.Mui-disabled': {
+                color:
+                  variant === 'readonly'
+                    ? 'text.primary'
+                    : 'rgba(0, 0, 0, 0.26)'
+              }
             }}
           >
             {menuLabel}

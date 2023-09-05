@@ -135,7 +135,7 @@ describe.skip('Admin Video', () => {
 
     fireEvent.click(getByTestId('video-video0.id'))
     expect(getByTestId('video-video0.id')).toHaveStyle(
-      'outline: 3px solid #C52D3A'
+      'outline: 2px solid #C52D3A'
     )
     expect(video).toHaveClass('vjs-paused')
   })

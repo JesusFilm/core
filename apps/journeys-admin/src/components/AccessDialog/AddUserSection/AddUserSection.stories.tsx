@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { expect } from '@storybook/jest'
 import { Meta, Story } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
@@ -28,10 +29,11 @@ export const Email = Template.bind({})
 
 export const Link = Template.bind({})
 Link.play = async () => {
+  userEvent.click(screen.getByRole('button', { name: 'Email' }))
   await waitFor(() => {
-    userEvent.click(screen.getByRole('button', { name: 'Email' }))
-    userEvent.click(screen.getByRole('menuitem', { name: 'Link' }))
+    expect(screen.getByRole('menuitem', { name: 'Link' })).toBeInTheDocument()
   })
+  userEvent.click(screen.getByRole('menuitem', { name: 'Link' }))
 }
 
 export default AddUsersSectionStory as Meta
