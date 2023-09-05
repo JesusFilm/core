@@ -10,6 +10,9 @@ concurrency:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     services:
       postgres:
         image: postgres
@@ -31,15 +34,15 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -71,6 +74,9 @@ jobs:
         run: ./tools/scripts/check-git-status.sh
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     services:
       postgres:
         image: postgres
@@ -92,15 +98,15 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -132,6 +138,9 @@ jobs:
           targets: fetch-secrets,build
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     services:
       postgres:
         image: postgres
@@ -153,15 +162,15 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -186,6 +195,9 @@ jobs:
           targets: codecov
   visual-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     services:
       postgres:
         image: postgres
@@ -206,15 +218,15 @@ jobs:
         run: ./tools/scripts/check-git-diff.sh
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - name: nx Install

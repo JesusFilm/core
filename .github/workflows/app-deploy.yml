@@ -10,6 +10,9 @@ concurrency:
 jobs:
   affected:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -25,8 +28,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v3
@@ -43,6 +46,7 @@ jobs:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
+        node-version: [18]
     runs-on: ubuntu-latest
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
@@ -69,8 +73,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v3
@@ -146,6 +150,7 @@ jobs:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
+        node-version: [18]
     runs-on: ubuntu-latest
     permissions:
       deployments: write
@@ -171,8 +176,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v3
