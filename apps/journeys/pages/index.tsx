@@ -82,6 +82,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                       </Box>
                       <NextLink href={`/${slug}`} passHref legacyBehavior>
                         <Box
+                          component="a"
                           sx={{
                             display: 'block',
                             width: '100%',
