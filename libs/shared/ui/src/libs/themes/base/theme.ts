@@ -11,10 +11,17 @@ import {
   baseTypographyUrdu
 } from './tokens/typography'
 
-export const baseTheme = (
-  rtl: boolean,
+interface ThemeProps {
+  rtl: boolean
   locale: string
-): Pick<
+  ssrMatchMedia?: (query: string) => { matches: boolean }
+}
+
+export const baseTheme = ({
+  rtl,
+  locale,
+  ssrMatchMedia
+}: ThemeProps): Pick<
   ThemeOptions,
   'spacing' | 'components' | 'breakpoints' | 'typography' | 'direction'
 > => {
@@ -24,18 +31,42 @@ export const baseTheme = (
       : baseTypographyArabic
     : baseTypographyLTR
 
+  const components =
+    ssrMatchMedia != null
+      ? {
+          ...baseComponents.components,
+          MuiUseMediaQuery: {
+            defaultProps: {
+              ssrMatchMedia
+            }
+          }
+        }
+      : baseComponents.components
+
   return {
     ...baseSpacing,
-    ...baseComponents,
     ...baseBreakpoints,
     ...baseTypography,
-    direction: rtl ? 'rtl' : 'ltr'
+    direction: rtl ? 'rtl' : 'ltr',
+    components
   }
 }
 
 // DeepMerge no longer needed - remove or keep just in case for future?
-export const getBaseLight = (rtl: boolean, locale: string): Theme =>
-  createTheme(deepmerge(baseColorsLight(), baseTheme(rtl, locale)))
+export const getBaseLight = ({
+  rtl,
+  locale,
+  ssrMatchMedia
+}: ThemeProps): Theme =>
+  createTheme(
+    deepmerge(baseColorsLight(), baseTheme({ rtl, locale, ssrMatchMedia }))
+  )
 
-export const getBaseDark = (rtl: boolean, locale: string): Theme =>
-  createTheme(deepmerge(baseColorsDark(), baseTheme(rtl, locale)))
+export const getBaseDark = ({
+  rtl,
+  locale,
+  ssrMatchMedia
+}: ThemeProps): Theme =>
+  createTheme(
+    deepmerge(baseColorsDark(), baseTheme({ rtl, locale, ssrMatchMedia }))
+  )

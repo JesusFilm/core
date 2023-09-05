@@ -5,8 +5,8 @@ import { adminTheme } from '../../../../ThemeProvider/admin/theme'
 
 interface StyledInputProps extends InputBaseProps {}
 
-const adminPrimaryColor = adminTheme.palette
-  .primary as SimplePaletteColorOptions
+const adminPrimaryColor = adminTheme().palette
+  ?.primary as SimplePaletteColorOptions
 
 export const InlineEditInput = styled(InputBase)<StyledInputProps>(() => ({
   '& .MuiInputBase-input': {

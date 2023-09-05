@@ -3,6 +3,11 @@ import { render } from '@testing-library/react'
 
 import { PageWrapper } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('PageWrapper', () => {
   it('should render header and footer', () => {
     const { getByRole } = render(<PageWrapper />)
