@@ -82,6 +82,7 @@ export function VideoContentPage(): ReactElement {
       />
       <PageWrapper
         hideHeader
+        // pass id into page wrapper
         hero={
           <>
             <VideoHero

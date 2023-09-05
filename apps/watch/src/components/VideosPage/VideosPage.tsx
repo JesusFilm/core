@@ -148,7 +148,10 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
   }
 
   return (
-    <PageWrapper hero={<VideosHero />}>
+    <PageWrapper
+      hero={<VideosHero />}
+      // pass in testid
+    >
       <Container maxWidth="xxl">
         <VideosSubHero />
       </Container>

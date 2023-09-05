@@ -82,6 +82,7 @@ export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
           transitionDuration: '225ms'
         }}
         timeout={{ exit: 2225 }}
+        // add here
       >
         <LocalAppBar
           sx={{
