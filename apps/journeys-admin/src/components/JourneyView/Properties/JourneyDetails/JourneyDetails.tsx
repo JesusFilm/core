@@ -8,7 +8,7 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyType } from '../../JourneyView'
+import type { JourneyType } from '../../JourneyView'
 
 import { Language } from './Language'
 

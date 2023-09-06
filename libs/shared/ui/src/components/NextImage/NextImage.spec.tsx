@@ -14,7 +14,6 @@ describe('NextImage', () => {
         objectFit="cover"
       />
     )
-
     expect(getByRole('img')).toHaveAttribute('src')
     expect(getByRole('img')).toHaveStyle(
       'background-image: url(https://blurUrl)'

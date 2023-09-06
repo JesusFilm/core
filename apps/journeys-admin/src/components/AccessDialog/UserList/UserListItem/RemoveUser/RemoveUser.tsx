@@ -1,12 +1,13 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
-import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded'
+import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { GetUserInvites } from '../../../../../../__generated__/GetUserInvites'
+import MinusCircleContainedIcon from '@core/shared/ui/icons/MinusCircleContained'
+
 import { UserInviteRemove } from '../../../../../../__generated__/UserInviteRemove'
 import { UserJourneyRemove } from '../../../../../../__generated__/UserJourneyRemove'
+import { useUserInvitesLazyQuery } from '../../../../../libs/useUserInvitesLazyQuery'
 import { MenuItem } from '../../../../MenuItem'
-import { GET_USER_INVITES } from '../../../AccessDialog'
 
 interface RemoveUserProps {
   id: string
@@ -42,6 +43,7 @@ export function RemoveUser({
   onClick,
   journeyId
 }: RemoveUserProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [userJourneyRemove] = useMutation<UserJourneyRemove>(
     USER_JOURNEY_REMOVE,
     {
@@ -81,9 +83,7 @@ export function RemoveUser({
     })
   }
 
-  const [loadUserInvites] = useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
-    variables: { journeyId }
-  })
+  const [loadUserInvites] = useUserInvitesLazyQuery({ journeyId })
 
   const handleClick = async (): Promise<void> => {
     if (email == null) {
@@ -107,8 +107,8 @@ export function RemoveUser({
 
   return (
     <MenuItem
-      label="Remove"
-      icon={<RemoveCircleRoundedIcon />}
+      label={t('Remove')}
+      icon={<MinusCircleContainedIcon sx={{ color: 'secondary.light' }} />}
       onClick={handleClick}
     />
   )

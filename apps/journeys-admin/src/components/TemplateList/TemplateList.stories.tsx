@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
@@ -13,7 +13,7 @@ import {
 
 import { TemplateList } from '.'
 
-const TemplateListStory = {
+const TemplateListStory: Meta<typeof TemplateList> = {
   ...journeysAdminConfig,
   component: TemplateList,
   title: 'Journeys-Admin/TemplatesList',
@@ -23,39 +23,43 @@ const TemplateListStory = {
   }
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_ADMIN_JOURNEYS,
-          variables: {
-            status: [JourneyStatus.draft, JourneyStatus.published],
-            template: true
-          }
-        },
-        result: {
-          data: {
-            journeys: [
-              defaultTemplate,
-              oldTemplate,
-              descriptiveTemplate,
-              publishedTemplate
-            ]
+const Template: StoryObj<typeof TemplateList> = {
+  render: ({ ...args }) => (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_ADMIN_JOURNEYS,
+            variables: {
+              status: [JourneyStatus.draft, JourneyStatus.published],
+              template: true
+            }
+          },
+          result: {
+            data: {
+              journeys: [
+                defaultTemplate,
+                oldTemplate,
+                descriptiveTemplate,
+                publishedTemplate
+              ]
+            }
           }
         }
-      }
-    ]}
-  >
-    <TemplateList {...args.props} />
-  </MockedProvider>
-)
+      ]}
+    >
+      <TemplateList {...args.props} />
+    </MockedProvider>
+  )
+}
 
-export const Default = Template.bind({})
-Default.args = {
-  props: {
-    event: ''
+export const Default = {
+  ...Template,
+  args: {
+    props: {
+      event: ''
+    }
   }
 }
 
-export default TemplateListStory as Meta
+export default TemplateListStory

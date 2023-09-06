@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box'
-import { Meta, Story } from '@storybook/react'
-import { useState } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ReactElement, useState } from 'react'
 
 import { journeysAdminConfig } from '../../libs/storybook'
 
 import { HorizontalSelect } from '.'
 
-const HorizontalSelectStory = {
+const HorizontalSelectStory: Meta<typeof HorizontalSelect> = {
   ...journeysAdminConfig,
   component: HorizontalSelect,
   title: 'Journeys-Admin/HorizontalSelect',
@@ -16,7 +16,7 @@ const HorizontalSelectStory = {
   }
 }
 
-const Template: Story = () => {
+const HorizontalSelectComponent = (): ReactElement => {
   const [id, setId] = useState<string>('1')
   return (
     <HorizontalSelect onChange={setId} id={id}>
@@ -84,6 +84,10 @@ const Template: Story = () => {
   )
 }
 
-export const Default = Template.bind({})
+const Template: StoryObj<typeof HorizontalSelect> = {
+  render: () => <HorizontalSelectComponent />
+}
 
-export default HorizontalSelectStory as Meta
+export const Default = { ...Template }
+
+export default HorizontalSelectStory

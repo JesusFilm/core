@@ -182,10 +182,11 @@ describe('NewTextResponseButton', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Feedback' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
-      { __ref: 'TextResponseBlock:textResponseBlock.id' },
-      { __ref: 'IconBlock:icon.id' }
-    ])
+    await waitFor(() =>
+      expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
+        { __ref: 'TextResponseBlock:textResponseBlock.id' },
+        { __ref: 'IconBlock:icon.id' }
+      ])
+    )
   })
 })

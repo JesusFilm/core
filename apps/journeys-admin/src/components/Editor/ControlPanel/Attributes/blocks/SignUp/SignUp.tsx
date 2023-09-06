@@ -5,10 +5,10 @@ import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Action, actions } from '../../Action/Action'
+import { Attribute } from '../../Attribute'
 import { Icon, icons } from '../../Icon'
 
 export function SignUp({

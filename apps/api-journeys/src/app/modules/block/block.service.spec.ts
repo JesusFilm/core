@@ -3,7 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Action, Block, Prisma } from '.prisma/api-journeys-client'
+import { Action, Block } from '.prisma/api-journeys-client'
 
 import {
   JourneyStatus,
@@ -191,13 +191,14 @@ describe('BlockService', () => {
 
   describe('reorderSiblings', () => {
     it('should update parent order', async () => {
-      prismaService.block.update.mockImplementation((result) => {
-        return {
-          ...block,
-          ...result.data
-        } as unknown as Prisma.Prisma__BlockClient<Block>
+      prismaService.block.update.mockResolvedValueOnce({
+        ...block,
+        parentOrder: 0
       })
-
+      prismaService.block.update.mockResolvedValueOnce({
+        ...block,
+        parentOrder: 1
+      })
       expect(
         await service.reorderSiblings([
           { ...block, parentOrder: 2 } as unknown as BlockWithAction,

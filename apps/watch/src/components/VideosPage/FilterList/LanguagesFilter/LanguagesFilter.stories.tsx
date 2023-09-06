@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import noop from 'lodash/noop'
 
@@ -6,7 +6,7 @@ import { watchConfig } from '../../../../libs/storybook'
 
 import { LanguagesFilter } from '.'
 
-const LanguagesFilterStory = {
+const LanguagesFilterStory: Meta<typeof LanguagesFilter> = {
   ...watchConfig,
   component: LanguagesFilter,
   title: 'Watch/VideosPage/LanguagesFilter'
@@ -50,16 +50,20 @@ const languages = [
   }
 ]
 
-const Template: Story = () => {
-  return (
-    <LanguagesFilter onChange={noop} loading={false} languages={languages} />
-  )
+const Template: StoryObj<typeof LanguagesFilter> = {
+  render: () => {
+    return (
+      <LanguagesFilter onChange={noop} loading={false} languages={languages} />
+    )
+  }
 }
 
-export const Default = Template.bind({})
-Default.play = () => {
-  const button = screen.getAllByRole('button', { name: 'Open' })[0]
-  userEvent.click(button)
+export const Default = {
+  ...Template,
+  play: async () => {
+    const button = screen.getAllByRole('button', { name: 'Open' })[0]
+    await userEvent.click(button)
+  }
 }
 
-export default LanguagesFilterStory as Meta
+export default LanguagesFilterStory

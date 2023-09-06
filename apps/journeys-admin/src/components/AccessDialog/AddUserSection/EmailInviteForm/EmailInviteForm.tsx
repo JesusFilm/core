@@ -111,7 +111,7 @@ export function EmailInviteForm({
             error={errors.email != null && touched.email != null}
             helperText={
               touched?.email != null && errors.email != null
-                ? errors.email
+                ? (errors.email as string)
                 : t('No email notifications. New users get access instantly.')
             }
             InputProps={{
@@ -128,7 +128,7 @@ export function EmailInviteForm({
                         color:
                           values.email !== '' && errors.email == null
                             ? 'primary.main'
-                            : null
+                            : 'secondary.light'
                       }}
                     />
                   </IconButton>

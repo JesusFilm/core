@@ -20,8 +20,8 @@ describe('FooterLink', () => {
         url="https://www.facebook.com/jesusfilm"
         label="Facebook"
         src={Facebook}
-        width="66"
-        height="72"
+        width={66}
+        height={72}
         target="_blank"
       />
     )
