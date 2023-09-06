@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -26,7 +26,7 @@ import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { Canvas } from '.'
 
-const CanvasStory = {
+const CanvasStory: Meta<typeof Canvas> = {
   ...journeysAdminConfig,
   component: Canvas,
   title: 'Journeys-Admin/Editor/Canvas',
@@ -591,89 +591,96 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story<
+type Story = StoryObj<
   ComponentProps<typeof Canvas> & {
     journey: Partial<Journey>
     state: Partial<EditorState>
   }
-> = ({ journey, state }) => {
-  return (
-    <MockedProvider>
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journeyId',
-            themeMode: ThemeMode.light,
-            themeName: ThemeName.base,
-            seoTitle: 'my journey',
-            language: {
-              __typename: 'Language',
-              id: '529',
-              bcp47: 'en',
-              iso3: 'eng',
-              name: [
-                {
-                  __typename: 'Translation',
-                  value: 'English',
-                  primary: true
-                }
-              ]
-            },
-            ...journey
-          } as unknown as Journey,
-          variant: 'admin'
-        }}
-      >
-        <EditorProvider initialState={{ steps, ...state }}>
-          <Canvas />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
+>
+
+const Template: Story = {
+  render: ({ journey, state }) => {
+    return (
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              seoTitle: 'my journey',
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: 'English',
+                    primary: true
+                  }
+                ]
+              },
+              ...journey
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ steps, ...state }}>
+            <Canvas />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+  }
+}
+export const Default = { ...Template }
+
+export const RTL = {
+  ...Template,
+  args: {
+    journey: {
+      language: {
+        __typename: 'Language',
+        id: '529',
+        bcp47: 'ar',
+        name: [
+          {
+            __typename: 'Translation',
+            value: 'Arabic',
+            primary: true
+          }
+        ]
+      }
+    }
+  }
 }
 
-export const Default = Template.bind({})
-
-export const RTL = Template.bind({})
-RTL.args = {
-  journey: {
-    language: {
-      __typename: 'Language',
-      id: '529',
-      bcp47: 'ar',
-      name: [
+export const FooterEdit = {
+  ...Template,
+  args: {
+    state: {
+      selectedBlock: {},
+      selectedComponent: 'Footer'
+    },
+    journey: {
+      chatButtons: [
         {
-          __typename: 'Translation',
-          value: 'Arabic',
-          primary: true
+          __typename: 'ChatButton',
+          id: '1',
+          link: 'https://m.me/',
+          platform: ChatPlatform.tikTok
+        },
+        {
+          __typename: 'ChatButton',
+          id: '1',
+          link: 'https://m.me/',
+          platform: ChatPlatform.snapchat
         }
       ]
     }
   }
 }
 
-export const FooterEdit = Template.bind({})
-FooterEdit.args = {
-  state: {
-    selectedBlock: {},
-    selectedComponent: 'Footer'
-  },
-  journey: {
-    chatButtons: [
-      {
-        __typename: 'ChatButton',
-        id: '1',
-        link: 'https://m.me/',
-        platform: ChatPlatform.tikTok
-      },
-      {
-        __typename: 'ChatButton',
-        id: '1',
-        link: 'https://m.me/',
-        platform: ChatPlatform.snapchat
-      }
-    ]
-  }
-}
-
-export default CanvasStory as Meta
+export default CanvasStory

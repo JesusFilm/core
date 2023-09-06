@@ -16,15 +16,18 @@ jobs:
     env:
       IMAGE_TAG: ${{ github.sha }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
-
+          fetch-depth: 0
+      - uses: nrwl/nx-set-shas@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Cache Node Modules
@@ -32,14 +35,16 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
 
       - name: nx Install
         run: npm install -g nx --silent
 
       - name: Get affected apps
-        run: echo "apps=$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)" >> $GITHUB_OUTPUT
+        run: |
+          echo "apps=$(npx nx show projects --affected --projects apps/api-* | npx ts-node tools/scripts/affected-apps.ts)" >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
         id: affected-apps
 
       #ECS Deployment

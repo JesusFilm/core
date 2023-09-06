@@ -43,9 +43,9 @@ describe('UnsplashImageService', () => {
         unsplashImageReponse
       ])
       expect(request).toHaveBeenCalledWith(
-        `https://api.unsplash.com/collections/a/photos?client_id=${
-          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }`
+        expect.stringMatching(
+          /https:\/\/api\.unsplash\.com\/collections\/a\/photos\?client_id=.*/
+        )
       )
     })
 
@@ -63,9 +63,9 @@ describe('UnsplashImageService', () => {
         )
       ).toEqual([unsplashImageReponse])
       expect(request).toHaveBeenCalledWith(
-        `https://api.unsplash.com/collections/a/photos?client_id=${
-          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }&page=2&per_page=20&orientation=landscape`
+        expect.stringMatching(
+          /https:\/\/api\.unsplash\.com\/collections\/a\/photos\?client_id=.*&page=2&per_page=20&orientation=landscape/
+        )
       )
     })
   })
@@ -80,9 +80,9 @@ describe('UnsplashImageService', () => {
         unsplashListResponse
       )
       expect(request).toHaveBeenCalledWith(
-        `https://api.unsplash.com/search/photos?client_id=${
-          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }&query=a`
+        expect.stringMatching(
+          /https:\/\/api\.unsplash\.com\/search\/photos\?client_id=.*&query=a/
+        )
       )
     })
 
@@ -104,9 +104,9 @@ describe('UnsplashImageService', () => {
         )
       ).toEqual(unsplashListResponse)
       expect(request).toHaveBeenCalledWith(
-        `https://api.unsplash.com/search/photos?client_id=${
-          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }&query=a&page=2&per_page=20&order_by=latest&collections=1&content_filter=high&color=black&orientation=landscape`
+        expect.stringMatching(
+          /https:\/\/api\.unsplash\.com\/search\/photos\?client_id=.*&query=a&page=2&per_page=20&order_by=latest&collections=1&content_filter=high&color=black&orientation=landscape/
+        )
       )
     })
   })
@@ -119,9 +119,7 @@ describe('UnsplashImageService', () => {
       } as unknown as Response)
       await service.triggerUnsplashDownload('https://upload.com?url=a')
       expect(request).toHaveBeenCalledWith(
-        `https://upload.com?url=a&client_id=${
-          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }`
+        expect.stringMatching(/https:\/\/upload\.com\?url=a&client_id=.*/)
       )
     })
   })

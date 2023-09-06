@@ -60,6 +60,10 @@ export function JourneyVisitorsList({
               alt="visitors-placeholder"
               width={384}
               height={245.69}
+              style={{
+                maxWidth: '100%',
+                height: 'auto'
+              }}
             />
           </Box>
         )}

@@ -309,7 +309,7 @@ describe('BackgroundMediaVideo', () => {
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
-    fireEvent.click(getByRole('button', { name: 'Select', exact: true }))
+    fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:cardId' },

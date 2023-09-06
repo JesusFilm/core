@@ -101,7 +101,7 @@ export function TitleEdit(): ReactElement {
                 onKeyUp={handleKeyUp}
                 onBlur={(e) => {
                   handleBlur(e)
-                  errors.seoTitle == null && handleSubmit(e)
+                  if (errors.seoTitle == null) void handleSubmit(e)
                 }}
                 sx={{
                   pb: 4
