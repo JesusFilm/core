@@ -1,6 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import EditIcon from '@mui/icons-material/Edit'
-import ImageIcon from '@mui/icons-material/Image'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
@@ -9,6 +7,8 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Edit2 from '@core/shared/ui/icons/Edit2'
+import Image3 from '@core/shared/ui/icons/Image3'
 
 import { BlockDeletePrimaryImage } from '../../../../../../__generated__/BlockDeletePrimaryImage'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
@@ -239,7 +239,7 @@ export function ImageEdit(): ReactElement {
               }}
             />
           ) : (
-            <ImageIcon fontSize="large" />
+            <Image3 fontSize="large" />
           )}
 
           <Button
@@ -253,7 +253,7 @@ export function ImageEdit(): ReactElement {
               backgroundColor: 'background.paper'
             }}
             startIcon={
-              <EditIcon fontSize="small" sx={{ color: 'secondary.dark' }} />
+              <Edit2 fontSize="small" sx={{ color: 'secondary.dark' }} />
             }
             onClick={handleOpen}
           >
@@ -289,7 +289,7 @@ export function ImageEdit(): ReactElement {
               backgroundColor: 'background.paper'
             }}
             startIcon={
-              <EditIcon fontSize="small" sx={{ color: 'secondary.dark' }} />
+              <Edit2 fontSize="small" sx={{ color: 'secondary.dark' }} />
             }
             onClick={handleOpen}
             disabled

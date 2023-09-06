@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import MenuRounded from '@mui/icons-material/MenuRounded'
 import IconButton from '@mui/material/IconButton'
 import { Meta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
+
+import Menu1 from '@core/shared/ui/icons/Menu1'
 
 import { Role } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
@@ -80,7 +81,7 @@ Complete.args = {
     },
     menu: (
       <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
-        <MenuRounded />
+        <Menu1 />
       </IconButton>
     )
   }

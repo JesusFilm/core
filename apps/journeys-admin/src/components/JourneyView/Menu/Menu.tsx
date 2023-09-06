@@ -1,13 +1,9 @@
 import { gql, useQuery } from '@apollo/client'
-import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
-import CheckRounded from '@mui/icons-material/CheckRounded'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import DescriptionIcon from '@mui/icons-material/Description'
-import EditIcon from '@mui/icons-material/Edit'
-import MoreVert from '@mui/icons-material/MoreVert'
-import TranslateIcon from '@mui/icons-material/Translate'
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
-import VisibilityIcon from '@mui/icons-material/Visibility'
+import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded' // icon-replace: add bar-chart-square-03
+import DescriptionIcon from '@mui/icons-material/Description' // icon-replace: add file-05
+import MoreVert from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
+import TranslateIcon from '@mui/icons-material/Translate' // icon-replace: no icon serves similar purpose
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel' // icon-replace: no icon serves similar purpose
 import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
@@ -19,6 +15,10 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import CheckContained from '@core/shared/ui/icons/CheckContained'
+import CopyLeft from '@core/shared/ui/icons/CopyLeft'
+import Edit2 from '@core/shared/ui/icons/Edit2'
+import EyeOpen from '@core/shared/ui/icons/EyeOpen'
 
 import { GetRole } from '../../../../__generated__/GetRole'
 import { Role } from '../../../../__generated__/globalTypes'
@@ -139,7 +139,7 @@ export function Menu(): ReactElement {
           {journey.template !== true && (
             <>
               <Chip
-                icon={<VisibilityIcon />}
+                icon={<EyeOpen />}
                 label="Preview"
                 component="a"
                 href={`/api/preview?slug=${journey.slug}`}
@@ -164,7 +164,7 @@ export function Menu(): ReactElement {
                   }
                 }}
               >
-                <VisibilityIcon />
+                <EyeOpen />
               </IconButton>
             </>
           )}
@@ -190,7 +190,7 @@ export function Menu(): ReactElement {
             <NextLink href={`/api/preview?slug=${journey.slug}`} passHref>
               <MenuItem
                 label="Preview"
-                icon={<VisibilityIcon />}
+                icon={<EyeOpen />}
                 openInNew
                 onClick={handleCloseMenu}
               />
@@ -198,14 +198,14 @@ export function Menu(): ReactElement {
             {journey.template === true && (
               <MenuItem
                 label="Use Template"
-                icon={<CheckRounded />}
+                icon={<CheckContained />}
                 onClick={() => setDuplicateTeamDialogOpen(true)}
               />
             )}
             {journey.template === true && isPublisher && (
               <MenuItem
                 label="Description"
-                icon={<EditIcon />}
+                icon={<Edit2 />}
                 onClick={handleUpdateTitleDescription}
               />
             )}
@@ -213,7 +213,7 @@ export function Menu(): ReactElement {
               <>
                 <MenuItem
                   label="Title"
-                  icon={<EditIcon />}
+                  icon={<Edit2 />}
                   onClick={handleUpdateTitle}
                 />
                 <MenuItem
@@ -251,7 +251,7 @@ export function Menu(): ReactElement {
                 <Divider />
                 <MenuItem
                   label="Copy Link"
-                  icon={<ContentCopyIcon />}
+                  icon={<CopyLeft />}
                   onClick={handleCopyLink}
                 />
               </>

@@ -1,4 +1,3 @@
-import Close from '@mui/icons-material/Close'
 import AppBar from '@mui/material/AppBar'
 import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -10,6 +9,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import X2 from '@core/shared/ui/icons/X2'
 
 export const DRAWER_WIDTH = 328
 
@@ -42,7 +42,7 @@ function DrawerContent({
             sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
             edge="end"
           >
-            <Close />
+            <X2 />
           </IconButton>
         </Toolbar>
       </AppBar>

@@ -1,9 +1,10 @@
-import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined'
-import ImageIcon from '@mui/icons-material/Image'
+import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined' // icon-replace: add image-x
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import SvgIcon from '@mui/material/SvgIcon'
 import { ReactElement } from 'react'
+
+import Image3 from '@core/shared/ui/icons/Image3'
 
 interface ImageBlockThumbnailProps {
   selectedBlock?: { src: string | null; alt: string } | null
@@ -15,7 +16,7 @@ interface ImageBlockThumbnailProps {
 export function ImageBlockThumbnail({
   selectedBlock,
   loading,
-  Icon = ImageIcon,
+  Icon = Image3,
   error
 }: ImageBlockThumbnailProps): ReactElement {
   return (

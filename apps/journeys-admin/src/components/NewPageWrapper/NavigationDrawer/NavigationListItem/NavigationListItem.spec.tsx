@@ -1,4 +1,4 @@
-import AbcRoundedIcon from '@mui/icons-material/AbcRounded'
+import AbcRoundedIcon from '@mui/icons-material/AbcRounded' // icon-replace: no icon serves similar purpose
 import { fireEvent, render } from '@testing-library/react'
 
 import { NavigationListItem } from './NavigationListItem'

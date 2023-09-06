@@ -1,12 +1,13 @@
-import AddIcon from '@mui/icons-material/Add'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import EditRounded from '@mui/icons-material/EditRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+
+import Edit2 from '@core/shared/ui/icons/Edit2'
+import Plus2 from '@core/shared/ui/icons/Plus2'
+import Trash2 from '@core/shared/ui/icons/Trash2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import type { UnsplashAuthor } from '../ImageBlockEditor/UnsplashGallery'
@@ -103,14 +104,11 @@ export function ImageBlockHeader({
         }}
       >
         {showAdd && selectedBlock?.src != null ? (
-          <EditRounded color="primary" />
+          <Edit2 color="primary" />
         ) : showAdd ? (
-          <AddIcon color="primary" />
+          <Plus2 color="primary" />
         ) : selectedBlock?.src != null ? (
-          <DeleteOutlineIcon
-            color="primary"
-            data-testid="imageBlockHeaderDelete"
-          />
+          <Trash2 color="primary" data-testid="imageBlockHeaderDelete" />
         ) : (
           <></>
         )}

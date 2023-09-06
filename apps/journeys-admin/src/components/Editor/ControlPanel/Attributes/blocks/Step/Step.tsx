@@ -1,11 +1,11 @@
-import LockIcon from '@mui/icons-material/Lock'
-import LockOpenIcon from '@mui/icons-material/LockOpen'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import Lock1 from '@core/shared/ui/icons/Lock1'
+import LockOpen1 from '@core/shared/ui/icons/LockOpen1'
 
 import { Attribute } from '../..'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
@@ -39,7 +39,7 @@ export function Step({
   return (
     <Attribute
       id={`${id}-next-block`}
-      icon={locked ? <LockIcon /> : <LockOpenIcon />}
+      icon={locked ? <Lock1 /> : <LockOpen1 />}
       name="Next Card"
       value={heading}
       description={locked ? 'Locked With Interaction' : 'Unlocked Card'}

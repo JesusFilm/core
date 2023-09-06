@@ -1,5 +1,3 @@
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
-import EditIcon from '@mui/icons-material/Edit'
 import Fab from '@mui/material/Fab'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
@@ -8,6 +6,8 @@ import { ReactElement, useState } from 'react'
 import TagManager from 'react-gtm-module'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Check from '@core/shared/ui/icons/Check'
+import Edit2 from '@core/shared/ui/icons/Edit2'
 
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
@@ -72,7 +72,7 @@ export function JourneyViewFab({
           disabled={journey == null}
           onClick={() => setDuplicateTeamDialogOpen(true)}
         >
-          <CheckRoundedIcon sx={{ mr: 3 }} />
+          <Check sx={{ mr: 3 }} />
           <Typography
             variant="subtitle2"
             sx={{ display: { xs: 'none', sm: 'flex' } }}
@@ -99,7 +99,7 @@ export function JourneyViewFab({
             color="primary"
             disabled={journey == null}
           >
-            <EditIcon sx={{ mr: 3 }} />
+            <Edit2 sx={{ mr: 3 }} />
             Edit
           </Fab>
         </NextLink>

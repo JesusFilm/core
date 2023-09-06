@@ -1,5 +1,4 @@
-import DeveloperModeRoundedIcon from '@mui/icons-material/DeveloperModeRounded'
-import EditIcon from '@mui/icons-material/Edit'
+import DeveloperModeRoundedIcon from '@mui/icons-material/DeveloperModeRounded' // icon-replace: add code-01
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -10,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
+import Edit2 from '@core/shared/ui/icons/Edit2'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 import { SlugDialog } from './SlugDialog'
@@ -52,7 +52,7 @@ export function JourneyLink(): ReactElement {
         <Button
           onClick={() => setShowSlugDialog(true)}
           size="small"
-          startIcon={<EditIcon />}
+          startIcon={<Edit2 />}
           disabled={journey == null}
         >
           {t('Edit URL')}

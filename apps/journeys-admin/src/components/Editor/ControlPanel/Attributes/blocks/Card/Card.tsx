@@ -1,7 +1,5 @@
-import ImageIcon from '@mui/icons-material/Image'
-import Palette from '@mui/icons-material/Palette'
-import VerticalSplit from '@mui/icons-material/VerticalSplit'
-import Videocam from '@mui/icons-material/Videocam'
+import VerticalSplit from '@mui/icons-material/VerticalSplit' // icon-replace: add layout-02
+import Videocam from '@mui/icons-material/Videocam' // icon-replace: add video-on
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { ReactElement } from 'react'
@@ -10,6 +8,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import Image3 from '@core/shared/ui/icons/Image3'
+import Palette from '@core/shared/ui/icons/Palette'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { Attribute } from '../..'
@@ -92,7 +92,7 @@ export function Card({
       {coverBlock?.__typename === 'ImageBlock' && coverBlock.src != null && (
         <Attribute
           id={`${id}-cover-block`}
-          icon={<ImageIcon />}
+          icon={<Image3 />}
           name="Background"
           value={coverBlock.src.substring(
             coverBlock.src.lastIndexOf('/') + 1,
@@ -115,7 +115,7 @@ export function Card({
       {coverBlock == null && (
         <Attribute
           id={`${id}-cover-block`}
-          icon={<ImageIcon />}
+          icon={<Image3 />}
           name="Background"
           value="None"
           description="Background Media"

@@ -1,10 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
-import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
-import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
-import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
-import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
-import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
+import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded' // icon-replace: no icon serves similar purpose
+import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded' // icon-replace: no icon serves similar purpose
 import Avatar from '@mui/material/Avatar'
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
@@ -24,6 +20,10 @@ import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Bag5 from '@core/shared/ui/icons/Bag5'
+import BarGroup3 from '@core/shared/ui/icons/BarGroup3'
+import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
+import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 
 import { GetMe } from '../../../../__generated__/GetMe'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
@@ -154,7 +154,7 @@ export function NavigationDrawer({
               }
             }}
           >
-            {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
+            {open ? <ChevronLeft /> : <ChevronRight />}
           </ListItemIcon>
         </ListItemButton>
 
@@ -167,7 +167,7 @@ export function NavigationDrawer({
         />
 
         <NavigationListItem
-          icon={<ShopRoundedIcon />}
+          icon={<Bag5 />}
           label="Templates"
           selected={selectedPage === 'templates'}
           link="/templates"
@@ -175,7 +175,7 @@ export function NavigationDrawer({
 
         {globalReports && (
           <NavigationListItem
-            icon={<LeaderboardRoundedIcon />}
+            icon={<BarGroup3 />}
             label="Reports"
             selected={selectedPage === 'reports'}
             link="/reports"

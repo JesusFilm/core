@@ -1,4 +1,3 @@
-import VisibilityIcon from '@mui/icons-material/Visibility'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement } from 'react'
@@ -8,6 +7,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import EyeOpen from '@core/shared/ui/icons/EyeOpen'
 
 import { DuplicateBlock } from '../../DuplicateBlock'
 
@@ -23,7 +23,7 @@ export function EditToolbar(): ReactElement {
       {journey != null && (
         <>
           <Chip
-            icon={<VisibilityIcon />}
+            icon={<EyeOpen />}
             label="Preview"
             component="a"
             href={`/api/preview?slug=${journey.slug}`}
@@ -48,7 +48,7 @@ export function EditToolbar(): ReactElement {
               }
             }}
           >
-            <VisibilityIcon />
+            <EyeOpen />
           </IconButton>
         </>
       )}

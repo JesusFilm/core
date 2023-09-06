@@ -1,4 +1,4 @@
-import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import NoteAddIcon from '@mui/icons-material/NoteAdd' // icon-replace: could use file-plus-01
 import Box from '@mui/material/Box'
 import { Meta, Story } from '@storybook/react'
 

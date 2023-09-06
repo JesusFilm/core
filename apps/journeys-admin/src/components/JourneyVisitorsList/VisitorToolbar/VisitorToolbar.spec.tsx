@@ -1,4 +1,4 @@
-import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded' // icon-replace: add filter
 import { fireEvent, render } from '@testing-library/react'
 
 describe('Visitor Toolbar', () => {

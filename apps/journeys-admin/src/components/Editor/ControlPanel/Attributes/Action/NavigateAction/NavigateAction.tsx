@@ -1,10 +1,10 @@
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
 
 import { CardPreview } from '../../../../../CardPreview'
 import { getNextStep } from '../utils/getNextStep'
@@ -37,7 +37,7 @@ export function NavigateAction(): ReactElement {
         sx={{ pt: 8 }}
         color="text.secondary"
       >
-        <InfoOutlinedIcon />
+        <InformationCircleContained />
         <Typography variant="caption">
           Default Next Step defined in the current card settings.
         </Typography>

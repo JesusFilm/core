@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import VideocamRounded from '@mui/icons-material/VideocamRounded'
+import VideocamRounded from '@mui/icons-material/VideocamRounded' // icon-replace: add video-on
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

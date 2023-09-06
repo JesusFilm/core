@@ -1,6 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
-import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
@@ -11,6 +9,8 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronUp from '@core/shared/ui/icons/ChevronUp'
 
 import { BlockOrderUpdate } from '../../../../../../__generated__/BlockOrderUpdate'
 
@@ -103,7 +103,7 @@ export function MoveBlockButtons({
           onClick={handleMove('up')}
           onMouseDown={(e) => e.preventDefault()}
         >
-          <KeyboardArrowUpRoundedIcon />
+          <ChevronUp />
         </StyledMoveButton>
         <StyledMoveButton
           aria-label="move-block-down"
@@ -111,7 +111,7 @@ export function MoveBlockButtons({
           onClick={handleMove('down')}
           onMouseDown={(e) => e.preventDefault()}
         >
-          <KeyboardArrowDownRoundedIcon />
+          <ChevronDown />
         </StyledMoveButton>
       </ButtonGroup>
       <Box sx={{ height: 24 }}>

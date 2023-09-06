@@ -1,5 +1,5 @@
-import BrushRounded from '@mui/icons-material/BrushRounded'
-import DashboardRounded from '@mui/icons-material/DashboardRounded'
+import BrushRounded from '@mui/icons-material/BrushRounded' // icon-replace: no icon serves similar purpose
+import DashboardRounded from '@mui/icons-material/DashboardRounded' // icon-replace: no icon serves similar purpose
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'

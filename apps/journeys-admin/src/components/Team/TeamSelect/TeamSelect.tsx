@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -13,6 +12,7 @@ import sortBy from 'lodash/sortBy'
 import { ReactElement, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import UsersProfiles3Icon from '@core/shared/ui/icons/UsersProfiles3'
 
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
@@ -100,7 +100,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 horizontal: 'left'
               }
             }}
-            IconComponent={ExpandMoreRoundedIcon}
+            IconComponent={ChevronDown}
           >
             {(query?.data?.teams != null
               ? sortBy(query.data?.teams, 'title')

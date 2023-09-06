@@ -1,4 +1,4 @@
-import MoreVert from '@mui/icons-material/MoreVert'
+import MoreVert from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'

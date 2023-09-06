@@ -1,4 +1,3 @@
-import Close from '@mui/icons-material/Close'
 import AppBar from '@mui/material/AppBar'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -7,6 +6,8 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
+
+import X2 from '@core/shared/ui/icons/X2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '../ImageBlockEditor'
@@ -71,7 +72,7 @@ export function ImageLibrary({
             sx={{ display: 'inline-flex' }}
             edge="end"
           >
-            <Close />
+            <X2 />
           </IconButton>
         </Toolbar>
       </AppBar>

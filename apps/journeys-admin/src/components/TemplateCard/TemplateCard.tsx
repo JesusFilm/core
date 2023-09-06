@@ -1,7 +1,6 @@
 import { ApolloQueryResult } from '@apollo/client'
-import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
+import MoreVertIcon from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
+import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded' // icon-replace: no icon serves similar purpose
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -15,6 +14,8 @@ import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Link from 'next/link'
 import { ReactElement } from 'react'
+
+import Image3 from '@core/shared/ui/icons/Image3'
 
 import {
   GetAdminJourneys_journeys as AdminJourney,
@@ -105,7 +106,7 @@ export function TemplateCard({
             backgroundColor: 'background.default'
           }}
         >
-          <InsertPhotoRoundedIcon />
+          <Image3 />
         </CardMedia>
       )}
 

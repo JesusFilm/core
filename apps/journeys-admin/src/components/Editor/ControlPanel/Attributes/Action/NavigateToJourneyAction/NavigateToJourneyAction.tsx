@@ -1,5 +1,4 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
@@ -8,6 +7,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { GetJourneyNames } from '../../../../../../../__generated__/GetJourneyNames'
@@ -95,7 +95,7 @@ export function NavigateToJourneyAction(): ReactElement {
         displayEmpty
         onChange={handleChange}
         value={currentActionJourneyId}
-        IconComponent={KeyboardArrowDownRoundedIcon}
+        IconComponent={ChevronDown}
         inputProps={{ 'aria-label': 'journey' }}
       >
         <MenuItem value="">Select the Journey...</MenuItem>

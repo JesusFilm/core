@@ -1,4 +1,3 @@
-import Close from '@mui/icons-material/Close'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -10,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
+import X2 from '@core/shared/ui/icons/X2'
 import {
   LanguageAutocomplete,
   LanguageOption
@@ -69,7 +69,7 @@ export function VideoLanguage({
             Available Languages
           </Typography>
           <IconButton onClick={handleClose} edge="end" aria-label="Close">
-            <Close />
+            <X2 />
           </IconButton>
         </Toolbar>
       </AppBar>

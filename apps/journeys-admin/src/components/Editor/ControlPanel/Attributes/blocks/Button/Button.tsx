@@ -1,12 +1,12 @@
-import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
-import ViewDayOutlinedIcon from '@mui/icons-material/ViewDayOutlined'
+import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded' // icon-replace: add transform
 import capitalize from 'lodash/capitalize'
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import AlertCircle from '@core/shared/ui/icons/AlertCircle'
+import Link from '@core/shared/ui/icons/Link'
+import SpaceHorizontal from '@core/shared/ui/icons/SpaceHorizontal'
 
 import { Attribute } from '../..'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
@@ -62,7 +62,7 @@ export function Button({
     <>
       <Attribute
         id={`${id}-button-action`}
-        icon={<LinkRoundedIcon />}
+        icon={<Link />}
         name="Action"
         value={selectedAction?.label ?? 'None'}
         description="Action"
@@ -94,7 +94,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-size`}
-        icon={<ViewDayOutlinedIcon />}
+        icon={<SpaceHorizontal />}
         name="Button Size"
         value={capitalize(size?.toString() ?? ButtonSize.medium)}
         description="Button Size"
@@ -126,7 +126,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-leading-icon`}
-        icon={<InfoOutlinedIcon />}
+        icon={<AlertCircle />}
         name="Leading Icon"
         value={
           icons.find(({ value }) => value === startIcon?.iconName)?.label ??
@@ -145,7 +145,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-trailing-icon`}
-        icon={<InfoOutlinedIcon />}
+        icon={<AlertCircle />}
         name="Trailing Icon"
         value={
           icons.find(({ value }) => value === endIcon?.iconName)?.label ??

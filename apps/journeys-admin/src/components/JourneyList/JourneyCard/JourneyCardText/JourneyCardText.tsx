@@ -1,4 +1,3 @@
-import CircleRoundedIcon from '@mui/icons-material/CircleRounded'
 import Badge from '@mui/material/Badge'
 import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
@@ -6,6 +5,8 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import { ReactElement } from 'react'
+
+import Circle from '@core/shared/ui/icons/Circle'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyCardVariant } from '../journeyCardVariant'
@@ -34,7 +35,7 @@ export function JourneyCardText({ journey, variant }: Props): ReactElement {
         sx={{ width: '100%' }}
         badgeContent={
           <Tooltip title="New">
-            <CircleRoundedIcon color="warning" sx={{ fontSize: '10px' }} />
+            <Circle color="warning" sx={{ fontSize: '10px' }} />
           </Tooltip>
         }
       >

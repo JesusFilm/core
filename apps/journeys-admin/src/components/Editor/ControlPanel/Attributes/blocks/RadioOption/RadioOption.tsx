@@ -1,8 +1,8 @@
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Link from '@core/shared/ui/icons/Link'
 
 import { Attribute } from '../..'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
@@ -30,7 +30,7 @@ export function RadioOption({
     <>
       <Attribute
         id={`${id}-radio-option-action`}
-        icon={<LinkRoundedIcon />}
+        icon={<Link />}
         name="Action"
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??

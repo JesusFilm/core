@@ -1,4 +1,3 @@
-import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Collapse from '@mui/material/Collapse'
@@ -7,6 +6,8 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement, useState } from 'react'
+
+import AlertCircle from '@core/shared/ui/icons/AlertCircle'
 
 import { EventVariant, JourneyWithEvents, transformEvents } from '../utils'
 
@@ -101,7 +102,7 @@ export function EventsCard({ journey }: Props): ReactElement {
                 {array.length === 1 &&
                   timelineItem.event.__typename === 'JourneyViewEvent' && (
                     <GenericEvent
-                      icon={<ErrorOutlineRoundedIcon />}
+                      icon={<AlertCircle />}
                       value="User left journey with no actions"
                     />
                   )}

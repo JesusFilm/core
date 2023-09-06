@@ -1,8 +1,9 @@
-import SearchIcon from '@mui/icons-material/Search'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import { ReactElement } from 'react'
+
+import Search1 from '@core/shared/ui/icons/Search1'
 
 interface UnsplashSearchProps {
   handleSubmit: (value?: string | null) => void
@@ -41,7 +42,7 @@ export function UnsplashSearch({
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon />
+                  <Search1 />
                 </InputAdornment>
               )
             }}

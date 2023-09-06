@@ -1,11 +1,12 @@
-import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
-import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
-import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
+import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded' // icon-replace: no icon serves similar purpose
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded' // icon-replace: no icon serves similar purpose
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
+
+import CheckContained from '@core/shared/ui/icons/CheckContained'
+import MessageText1 from '@core/shared/ui/icons/MessageText1'
 
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { EventVariant } from '../../utils'
@@ -45,7 +46,7 @@ Chat.args = {
   activity: 'Chat Open:',
   label: 'Facebook',
   value: '2:34pm, Sep 25',
-  icon: <ChatBubbleOutlineRoundedIcon />,
+  icon: <MessageText1 />,
   duration: '0.02',
   variant: EventVariant.chat
 }
@@ -55,7 +56,7 @@ Featured.args = {
   activity: 'Button Click:',
   label: 'www.google.com',
   value: 'Button Label',
-  icon: <CheckCircleOutlineRoundedIcon />,
+  icon: <CheckContained />,
   duration: '1:02',
   variant: EventVariant.featured
 }

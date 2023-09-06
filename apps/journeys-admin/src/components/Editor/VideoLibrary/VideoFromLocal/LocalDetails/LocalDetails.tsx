@@ -1,6 +1,4 @@
 import { gql, useLazyQuery } from '@apollo/client'
-import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
-import Check from '@mui/icons-material/Check'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
@@ -12,6 +10,8 @@ import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Check from '@core/shared/ui/icons/Check'
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
@@ -227,7 +227,7 @@ export function LocalDetails({
         <Chip
           label={selectedLanguage?.localName ?? selectedLanguage?.nativeName}
           onClick={() => setOpenLanguage(true)}
-          avatar={<ArrowDropDown />}
+          avatar={<ChevronDown />}
           disabled={loading}
           sx={{
             whiteSpace: 'nowrap',

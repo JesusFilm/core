@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
@@ -10,6 +9,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Instagram from '@core/shared/ui/icons/Instagram'
 import Line from '@core/shared/ui/icons/Line'
 import MessageTyping from '@core/shared/ui/icons/MessageTyping'
@@ -172,7 +172,7 @@ export function Details({
               onChange={async (event) =>
                 await handleUpdate('platform', event.target.value)
               }
-              IconComponent={KeyboardArrowDownRoundedIcon}
+              IconComponent={ChevronDown}
             >
               {chatPlatformOptions.map(({ value, label, icon }) => (
                 <MenuItem key={`chat-icon-${value}`} value={value}>

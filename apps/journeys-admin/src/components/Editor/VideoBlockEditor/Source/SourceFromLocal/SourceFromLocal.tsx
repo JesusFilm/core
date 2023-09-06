@@ -1,11 +1,11 @@
 import { gql, useQuery } from '@apollo/client'
-import EditRoundedIcon from '@mui/icons-material/EditRounded'
-import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded'
+import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded' // icon-replace: add video-on
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import Edit2 from '@core/shared/ui/icons/Edit2'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages } from '../../../../../../__generated__/GetVideoVariantLanguages'
@@ -95,7 +95,7 @@ export function SourceFromLocal({
           &nbsp;
         </Typography>
       </Box>
-      <EditRoundedIcon color="primary" />
+      <Edit2 color="primary" />
     </>
   )
 }

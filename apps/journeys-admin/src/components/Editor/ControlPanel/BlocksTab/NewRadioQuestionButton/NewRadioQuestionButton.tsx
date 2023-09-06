@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -8,6 +7,7 @@ import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFields'
 import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQuestionFields'
+import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
@@ -134,7 +134,7 @@ export function NewRadioQuestionButton(): ReactElement {
 
   return (
     <Button
-      icon={<ContactSupportRounded />}
+      icon={<HelpCircleContained />}
       value="Poll"
       onClick={handleClick}
     />

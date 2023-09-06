@@ -1,6 +1,5 @@
-import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
-import DashboardRounded from '@mui/icons-material/DashboardRounded'
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
+import DashboardRounded from '@mui/icons-material/DashboardRounded' // icon-replace: no icon serves similar purpose
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel' // icon-replace: no icon serves similar purpose
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
@@ -11,6 +10,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 
 import { GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys } from '../../../__generated__/GetOnboardingJourneys'
 import { useJourneyCreate } from '../../libs/useJourneyCreate/useJourneyCreate'
@@ -82,7 +82,7 @@ export function OnboardingPanelContent({
               sx={{ display: 'flex', alignItems: 'center' }}
             >
               {t('See all')}
-              <ChevronRightRounded />
+              <ChevronRight />
             </Link>
           </NextLink>
         </Stack>

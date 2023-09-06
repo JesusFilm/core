@@ -1,4 +1,4 @@
-import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded' // icon-replace: no icon serves similar purpose
 import { Meta, Story } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../../libs/storybook'

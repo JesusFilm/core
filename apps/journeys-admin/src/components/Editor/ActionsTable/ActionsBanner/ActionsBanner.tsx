@@ -1,4 +1,3 @@
-import InfoOutlined from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -8,6 +7,7 @@ import Image from 'next/image'
 import { ReactElement, useEffect } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
 
 import goal from '../../../../../public/goal.svg'
 import { ActionDetails } from '../../ActionDetails'
@@ -78,7 +78,9 @@ export function ActionsBanner(): ReactElement {
           </Typography>
           <Button
             variant="outlined"
-            startIcon={<InfoOutlined sx={{ color: 'secondary.light' }} />}
+            startIcon={
+              <InformationCircleContained sx={{ color: 'secondary.light' }} />
+            }
             sx={{
               [theme.breakpoints.up('md')]: { display: 'none' },
               color: 'secondary.main',

@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -11,6 +10,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ObjectSchema, object, string } from 'yup'
 
+import AddSquare4 from '@core/shared/ui/icons/AddSquare4'
 import AlertCircle from '@core/shared/ui/icons/AlertCircle'
 
 import {
@@ -134,7 +134,7 @@ export function UserTeamInviteForm({
                       color="primary"
                       disabled={values.email === ''}
                     >
-                      <AddCircleOutlineIcon
+                      <AddSquare4
                         sx={{
                           color:
                             values.email !== '' && errors.email == null

@@ -1,4 +1,3 @@
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
@@ -9,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
 import { useTeam } from '../TeamProvider'
 
@@ -88,7 +88,7 @@ export function CopyToTeamDialog({
                 handleChange(e)
               }}
               SelectProps={{
-                IconComponent: KeyboardArrowDownIcon
+                IconComponent: ChevronDown
               }}
               sx={{
                 '& >.MuiFormHelperText-contained': {

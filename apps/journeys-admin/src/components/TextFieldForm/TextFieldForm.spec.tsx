@@ -1,6 +1,7 @@
-import Search from '@mui/icons-material/Search'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { object, string } from 'yup'
+
+import Search1 from '@core/shared/ui/icons/Search1'
 
 import { TextFieldForm } from './TextFieldForm'
 
@@ -17,7 +18,7 @@ describe('TextFieldForm', () => {
           'aria-label': 'Search'
         }}
         onSubmit={jest.fn()}
-        endIcon={<Search />}
+        endIcon={<Search1 />}
       />
     )
     const textField = getByRole('textbox')

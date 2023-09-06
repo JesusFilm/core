@@ -1,9 +1,10 @@
-import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
-import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
-import WebOutlined from '@mui/icons-material/WebOutlined'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
+
+import Book from '@core/shared/ui/icons/Book'
+import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
+import Web from '@core/shared/ui/icons/Web'
 
 interface GoalDescriptionProps {
   label: string
@@ -42,17 +43,17 @@ export function ActionInformation(): ReactElement {
       <GoalDescription
         label="Start a Conversation"
         description="If the goal is to go any chat platform"
-        icon={<QuestionAnswerOutlined />}
+        icon={<MessageChat1 />}
       />
       <GoalDescription
         label="Visit a Website"
         description="This could be your church or ministry website, or whatever you want to redirect the viewer to."
-        icon={<WebOutlined />}
+        icon={<Web />}
       />
       <GoalDescription
         label="Link to Bible"
         description="If the target of the journey is to download the Bible"
-        icon={<MenuBookRounded />}
+        icon={<Book />}
       />
     </Stack>
   )

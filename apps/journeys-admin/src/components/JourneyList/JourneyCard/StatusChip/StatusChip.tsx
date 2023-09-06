@@ -1,10 +1,11 @@
 import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
-import EditIcon from '@mui/icons-material/Edit'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+
+import Circle from '@core/shared/ui/icons/Circle'
+import Edit2 from '@core/shared/ui/icons/Edit2'
 
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
@@ -16,12 +17,12 @@ const options = [
   {
     journeyStatus: JourneyStatus.draft,
     text: 'Draft',
-    icon: <EditIcon color="warning" sx={{ fontSize: 13 }} />
+    icon: <Edit2 color="warning" sx={{ fontSize: 13 }} />
   },
   {
     journeyStatus: JourneyStatus.published,
     text: 'Published',
-    icon: <CheckCircleRoundedIcon color="success" sx={{ fontSize: 13 }} />
+    icon: <Circle color="success" sx={{ fontSize: 13 }} />
   },
   {
     journeyStatus: JourneyStatus.archived,

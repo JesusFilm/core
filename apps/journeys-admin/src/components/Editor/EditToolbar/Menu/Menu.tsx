@@ -1,7 +1,6 @@
-import MoreVert from '@mui/icons-material/MoreVert'
-import SettingsIcon from '@mui/icons-material/Settings'
-import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
-import VisibilityIcon from '@mui/icons-material/Visibility'
+import MoreVert from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
+import SettingsIcon from '@mui/icons-material/Settings' // icon-replace: add settings
+import ShareRoundedIcon from '@mui/icons-material/ShareRounded' // icon-replace: no icon serves similar purpose
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -12,6 +11,7 @@ import { ReactElement, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import EyeOpen from '@core/shared/ui/icons/EyeOpen'
 
 import { DuplicateBlock } from '../../../DuplicateBlock'
 import { MenuItem } from '../../../MenuItem'
@@ -40,7 +40,7 @@ export function Menu(): ReactElement {
         <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
           <MenuItem
             label="Preview"
-            icon={<VisibilityIcon />}
+            icon={<EyeOpen />}
             openInNew
             onClick={handleCloseMenu}
           />
@@ -77,7 +77,7 @@ export function Menu(): ReactElement {
         <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
           <MenuItem
             label="Preview"
-            icon={<VisibilityIcon />}
+            icon={<EyeOpen />}
             openInNew
             onClick={handleCloseMenu}
           />

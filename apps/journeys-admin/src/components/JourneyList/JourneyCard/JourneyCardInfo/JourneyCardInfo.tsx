@@ -1,4 +1,4 @@
-import TranslateIcon from '@mui/icons-material/Translate'
+import TranslateIcon from '@mui/icons-material/Translate' // icon-replace: no icon serves similar purpose
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'

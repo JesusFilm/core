@@ -1,11 +1,11 @@
-import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
-import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
+import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded' // icon-replace: add type-02
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import AlignLeft from '@core/shared/ui/icons/AlignLeft'
 
 import { Attribute } from '../..'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
@@ -70,7 +70,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
 
       <Attribute
         id={`${id}-typography-alignment`}
-        icon={<FormatAlignLeftRoundedIcon />}
+        icon={<AlignLeft />}
         name="Text Alignment"
         value={capitalize(align?.toString() ?? 'Left')}
         description="Text Alignment"

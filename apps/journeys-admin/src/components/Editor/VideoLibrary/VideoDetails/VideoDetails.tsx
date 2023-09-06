@@ -1,7 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import Close from '@mui/icons-material/Close'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded'
+import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded' // icon-replace: no icon serves similar purpose
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -17,6 +15,8 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Trash2 from '@core/shared/ui/icons/Trash2'
+import X2 from '@core/shared/ui/icons/X2'
 
 import { BlockDeleteForCoverImage } from '../../../../../__generated__/BlockDeleteForCoverImage'
 import {
@@ -161,7 +161,7 @@ export function VideoDetails({
               edge="end"
               aria-label="Close"
             >
-              <Close />
+              <X2 />
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -188,7 +188,7 @@ export function VideoDetails({
                 size="small"
                 aria-label="clear-video"
               >
-                <DeleteOutlineIcon />
+                <Trash2 />
               </IconButton>
             </Stack>
           )}

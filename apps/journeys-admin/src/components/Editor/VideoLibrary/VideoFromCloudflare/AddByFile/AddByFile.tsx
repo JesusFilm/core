@@ -1,9 +1,9 @@
 import type { ReadStream } from 'fs'
 
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
-import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded'
-import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded'
+import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined' // icon-replace: no icon serves similar purpose
+import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded' // icon-replace: no icon serves similar purpose
+import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded' // icon-replace: add alert-triangle
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'

@@ -1,12 +1,13 @@
 import { gql, useQuery } from '@apollo/client'
-import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
-import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined'
+import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined' // icon-replace: add phone-01
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement } from 'react'
+
+import Marker2 from '@core/shared/ui/icons/Marker2'
+import MessageText1 from '@core/shared/ui/icons/MessageText1'
+import UserProfile2 from '@core/shared/ui/icons/UserProfile2'
 
 import { GetVisitorForDetails } from '../../../../__generated__/GetVisitorForDetails'
 
@@ -48,7 +49,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
           spacing={2}
           sx={{ mr: 'auto' }}
         >
-          <ChatBubbleOutlineRoundedIcon />
+          <MessageText1 />
           <Typography>
             {intlFormat(parseISO(data?.visitor.lastChatStartedAt), {
               hour: 'numeric',
@@ -63,7 +64,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
 
       {data?.visitor.countryCode != null && (
         <Stack direction="row" alignItems="center" spacing={2}>
-          <LocationOnOutlinedIcon />
+          <Marker2 />
           <Typography>{data?.visitor.countryCode}</Typography>
         </Stack>
       )}
@@ -82,7 +83,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
           spacing={2}
           sx={{ display: { xs: 'none', md: 'flex' } }}
         >
-          <PersonOutlinedIcon />
+          <UserProfile2 />
           <Typography>{`#${data?.visitor.id.slice(-12)}`}</Typography>
         </Stack>
       )}

@@ -1,5 +1,3 @@
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
-import MenuIcon from '@mui/icons-material/Menu'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
@@ -11,6 +9,9 @@ import { AuthUser } from 'next-firebase-auth'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ReactElement, ReactNode, useState } from 'react'
+
+import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
+import Menu1 from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 
@@ -81,7 +82,7 @@ export function PageWrapper({
                 left: '25px'
               }}
             >
-              <MenuIcon sx={{ color: 'background.paper' }} />
+              <Menu1 sx={{ color: 'background.paper' }} />
             </IconButton>
             <Image
               src={taskbarIcon}
@@ -103,7 +104,7 @@ export function PageWrapper({
                 color="inherit"
                 sx={{ mr: 2 }}
               >
-                <ChevronLeftRounded />
+                <ChevronLeft />
               </IconButton>
             </Link>
           )}

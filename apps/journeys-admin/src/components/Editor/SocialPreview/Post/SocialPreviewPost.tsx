@@ -1,7 +1,5 @@
-import ChatBubble from '@mui/icons-material/ChatBubble'
-import PersonIcon from '@mui/icons-material/Person'
-import Share from '@mui/icons-material/Share'
-import ThumbUp from '@mui/icons-material/ThumbUp'
+import ChatBubble from '@mui/icons-material/ChatBubble' // icon-replace: add message-circle
+import Share from '@mui/icons-material/Share' // icon-replace: no icon serves similar purpose
 import Avatar from '@mui/material/Avatar'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -13,6 +11,9 @@ import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
+
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+import UserProfile2 from '@core/shared/ui/icons/UserProfile2'
 
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 import { useSocialPreview } from '../../SocialProvider'
@@ -64,7 +65,7 @@ export function SocialPreviewPost({
                   color: (theme) => theme.palette.background.paper
                 }}
               >
-                <PersonIcon />
+                <UserProfile2 />
               </Avatar>
               <Box flexGrow={1}>
                 <Box
@@ -166,7 +167,7 @@ export function SocialPreviewPost({
                 color="#EFEFEF"
                 my={2}
               >
-                <ThumbUp sx={{ fontSize: 12 }} />
+                <ThumbsUp sx={{ fontSize: 12 }} />
                 <ChatBubble sx={{ fontSize: 12 }} />
                 <Share sx={{ fontSize: 12 }} />
               </Stack>

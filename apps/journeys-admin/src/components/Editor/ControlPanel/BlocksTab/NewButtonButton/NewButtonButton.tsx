@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import TouchAppRounded from '@mui/icons-material/TouchAppRounded'
+import TouchAppRounded from '@mui/icons-material/TouchAppRounded' // icon-replace: add cursor-pointer
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 

@@ -1,4 +1,3 @@
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -8,6 +7,8 @@ import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import { MouseEvent, ReactElement, useState } from 'react'
+
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
 import { GetUserTeamsAndInvites_userTeamInvites as UserTeamInvite } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamInviteRemoveMenuItem } from '../../UserTeamInviteRemoveMenuItem'
@@ -50,7 +51,7 @@ export function UserTeamInviteListItem({
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
             disabled={disabled}
-            endIcon={<ArrowDropDownIcon />}
+            endIcon={<ChevronDown />}
             sx={{
               color: 'text.primary',
               typography: 'body2'

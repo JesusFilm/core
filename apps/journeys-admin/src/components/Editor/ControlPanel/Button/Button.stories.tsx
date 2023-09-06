@@ -1,5 +1,6 @@
-import PaletteIcon from '@mui/icons-material/Palette'
 import { Meta, Story } from '@storybook/react'
+
+import Palette from '@core/shared/ui/icons/Palette'
 
 import { journeysAdminConfig } from '../../../../libs/storybook'
 
@@ -14,7 +15,7 @@ const ButtonStory = {
 export const Default: Story = () => {
   return (
     <Button
-      icon={<PaletteIcon />}
+      icon={<Palette />}
       name="Style"
       value="Dark"
       description="Card Styling"
@@ -25,7 +26,7 @@ export const Default: Story = () => {
 export const Empty: Story = () => {
   return (
     <Button
-      icon={<PaletteIcon />}
+      icon={<Palette />}
       name="Style"
       value=""
       description="Card Styling"
@@ -36,7 +37,7 @@ export const Empty: Story = () => {
 export const Selected: Story = () => {
   return (
     <Button
-      icon={<PaletteIcon />}
+      icon={<Palette />}
       name="Style"
       value="Dark"
       description="Card Styling"
@@ -46,7 +47,7 @@ export const Selected: Story = () => {
 }
 
 export const Minimal: Story = () => {
-  return <Button icon={<PaletteIcon />} value="Palette" selected />
+  return <Button icon={<Palette />} value="Palette" selected />
 }
 
 export default ButtonStory as Meta

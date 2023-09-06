@@ -1,6 +1,5 @@
 import { useQuery } from '@apollo/client'
-import AddIcon from '@mui/icons-material/Add'
-import DragHandleRounded from '@mui/icons-material/DragHandleRounded'
+import DragHandleRounded from '@mui/icons-material/DragHandleRounded' // icon-replace: no icon serves similar purpose
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -22,6 +21,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import Plus2 from '@core/shared/ui/icons/Plus2'
 import Target from '@core/shared/ui/icons/Target'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -96,7 +96,7 @@ export function CardList({
           }}
           onClick={handleClick}
         >
-          <AddIcon color="primary" />
+          <Plus2 color="primary" />
         </CardActionArea>
       </Card>
     )

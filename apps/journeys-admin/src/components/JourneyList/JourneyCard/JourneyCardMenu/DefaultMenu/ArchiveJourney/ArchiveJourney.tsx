@@ -1,6 +1,6 @@
 import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
-import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
-import UnarchiveRoundedIcon from '@mui/icons-material/UnarchiveRounded'
+import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded' // icon-replace: add folder-down-01
+import UnarchiveRoundedIcon from '@mui/icons-material/UnarchiveRounded' // icon-replace: add folder-up-01
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 

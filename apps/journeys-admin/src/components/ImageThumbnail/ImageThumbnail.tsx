@@ -1,5 +1,5 @@
-import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined'
-import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined' // icon-replace: add image-x
+import NoteAddIcon from '@mui/icons-material/NoteAdd' // icon-replace: could use file-plus-01
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Icon from '@mui/material/Icon'

@@ -1,6 +1,5 @@
-import Close from '@mui/icons-material/Close'
-import UploadIcon from '@mui/icons-material/Upload'
-import VideocamIcon from '@mui/icons-material/Videocam'
+import UploadIcon from '@mui/icons-material/Upload' // icon-replace: add upload-02
+import VideocamIcon from '@mui/icons-material/Videocam' // icon-replace: add video-on
 import YouTubeIcon from '@mui/icons-material/YouTube'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
@@ -16,6 +15,7 @@ import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import X2 from '@core/shared/ui/icons/X2'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
@@ -107,7 +107,7 @@ export function VideoLibrary({
               sx={{ display: 'inline-flex' }}
               edge="end"
             >
-              <Close />
+              <X2 />
             </IconButton>
           </Toolbar>
         </AppBar>

@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import DraftsIcon from '@mui/icons-material/Drafts'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import { ReactElement } from 'react'
@@ -8,6 +7,7 @@ import { object, string } from 'yup'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Mail2 from '@core/shared/ui/icons/Mail2'
 
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { TextFieldForm } from '../../../../../TextFieldForm'
@@ -83,7 +83,7 @@ export function EmailAction(): ReactElement {
         onSubmit={handleSubmit}
         startIcon={
           <InputAdornment position="start">
-            <DraftsIcon />
+            <Mail2 />
           </InputAdornment>
         }
       />

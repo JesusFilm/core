@@ -1,8 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
-import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded'
-import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
+import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded' // icon-replace: no icon serves similar purpose
+import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded' // icon-replace: no icon serves similar purpose
+import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded' // icon-replace: no icon serves similar purpose
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
@@ -17,6 +16,8 @@ import Box from '@mui/system/Box'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
+
+import ArrowRightSm from '@core/shared/ui/icons/ArrowRightSm'
 
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
@@ -127,7 +128,7 @@ export function TermsAndConditions(): ReactElement {
               bgcolor: 'secondary.dark'
             }
           }}
-          endIcon={<ArrowForwardIcon />}
+          endIcon={<ArrowRightSm />}
         >
           Next
         </Button>

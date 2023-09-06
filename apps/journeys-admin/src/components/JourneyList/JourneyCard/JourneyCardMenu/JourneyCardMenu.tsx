@@ -1,5 +1,5 @@
 import { ApolloQueryResult } from '@apollo/client'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
+import MoreVertIcon from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import { ReactElement, useState } from 'react'

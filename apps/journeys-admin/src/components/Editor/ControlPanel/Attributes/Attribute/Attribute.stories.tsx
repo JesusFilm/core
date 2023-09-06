@@ -1,7 +1,7 @@
-import PaletteIcon from '@mui/icons-material/Palette'
 import { Meta, Story } from '@storybook/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import Palette from '@core/shared/ui/icons/Palette'
 
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 
@@ -18,7 +18,7 @@ export const Default: Story = () => {
     <EditorProvider>
       <Attribute
         id="custom-id"
-        icon={<PaletteIcon />}
+        icon={<Palette />}
         name="Style"
         value="Dark"
         description="Card Styling"

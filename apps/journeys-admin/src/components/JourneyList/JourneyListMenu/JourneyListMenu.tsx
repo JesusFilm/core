@@ -1,14 +1,15 @@
-import Archive from '@mui/icons-material/Archive'
-import CheckCircle from '@mui/icons-material/CheckCircle'
-import DeleteForever from '@mui/icons-material/DeleteForever'
-import DeleteOutline from '@mui/icons-material/DeleteOutline'
-import MoreVert from '@mui/icons-material/MoreVert'
-import Unarchive from '@mui/icons-material/Unarchive'
+import Archive from '@mui/icons-material/Archive' // icon-replace: add folder-down-01
+import DeleteForever from '@mui/icons-material/DeleteForever' // icon-replace: no icon serves similar purpose
+import MoreVert from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
+import Unarchive from '@mui/icons-material/Unarchive' // icon-replace: add folder-up-01
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import CheckContained from '@core/shared/ui/icons/CheckContained'
+import Trash2 from '@core/shared/ui/icons/Trash2'
 
 import { MenuItem } from '../../MenuItem'
 
@@ -73,7 +74,7 @@ export function JourneyListMenu({
               />,
               <MenuItem
                 label={t('Trash All')}
-                icon={<DeleteOutline />}
+                icon={<Trash2 />}
                 onClick={() => handleEvent('trashAllActive')}
                 key="trashAllActive"
               />
@@ -87,7 +88,7 @@ export function JourneyListMenu({
               />,
               <MenuItem
                 label={t('Trash All')}
-                icon={<DeleteOutline />}
+                icon={<Trash2 />}
                 onClick={() => handleEvent('trashAllArchived')}
                 key="trashAllArchived"
               />
@@ -95,7 +96,7 @@ export function JourneyListMenu({
             {activeTab === 'trashed' && [
               <MenuItem
                 label={t('Restore All')}
-                icon={<CheckCircle />}
+                icon={<CheckContained />}
                 onClick={() => handleEvent('restoreAllTrashed')}
                 key="restoreAllTrashed"
               />,

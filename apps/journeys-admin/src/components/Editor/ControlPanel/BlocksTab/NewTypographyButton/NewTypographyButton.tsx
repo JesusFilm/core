@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded'
+import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded' // icon-replace: add type-02
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

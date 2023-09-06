@@ -1,9 +1,9 @@
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
 import Box from '@mui/material/Box'
 import { Meta, Story } from '@storybook/react'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import Target from '@core/shared/ui/icons/Target'
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 
 import { simpleComponentConfig } from '../../../libs/storybook'
 
@@ -21,7 +21,7 @@ const Template: Story = ({ ...args }) => {
       id={args.id}
       title={args.title}
       destination={ActiveJourneyEditContent.Canvas}
-      header={args.header ?? <ThumbUpOffAltIcon />}
+      header={args.header ?? <ThumbsUp />}
       loading={args.loading ?? false}
     />
   )

@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import VerticalSplit from '@mui/icons-material/VerticalSplit'
+import VerticalSplit from '@mui/icons-material/VerticalSplit' // icon-replace: add layout-02
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'

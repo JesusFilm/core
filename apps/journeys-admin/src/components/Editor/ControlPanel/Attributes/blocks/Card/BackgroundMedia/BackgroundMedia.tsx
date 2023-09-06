@@ -1,5 +1,4 @@
-import ImageIcon from '@mui/icons-material/Image'
-import Videocam from '@mui/icons-material/Videocam'
+import Videocam from '@mui/icons-material/Videocam' // icon-replace: add video-on
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
@@ -9,6 +8,7 @@ import { MouseEvent, ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Image3 from '@core/shared/ui/icons/Image3'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
@@ -84,7 +84,7 @@ export function BackgroundMedia(): ReactElement {
             data-testid="bgvideo-image-tab"
           >
             <Stack direction="row" spacing="8px">
-              <ImageIcon />
+              <Image3 />
               <span>Image</span>
             </Stack>
           </ToggleButton>

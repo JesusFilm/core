@@ -1,10 +1,11 @@
-import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
-import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
-import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
-import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded'
+import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded' // icon-replace: add dash
 import Typography from '@mui/material/Typography'
 import { Meta, Story } from '@storybook/react'
 import { useState } from 'react'
+
+import AlignCenter from '@core/shared/ui/icons/AlignCenter'
+import AlignLeft from '@core/shared/ui/icons/AlignLeft'
+import AlignRight from '@core/shared/ui/icons/AlignRight'
 
 import {
   TypographyAlign,
@@ -28,17 +29,17 @@ const Template: Story = ({ ...args }) => {
     {
       value: TypographyAlign.left,
       label: 'Left',
-      icon: <FormatAlignLeftRoundedIcon />
+      icon: <AlignLeft />
     },
     {
       value: TypographyAlign.center,
       label: 'Center',
-      icon: <FormatAlignCenterRoundedIcon />
+      icon: <AlignCenter />
     },
     {
       value: TypographyAlign.right,
       label: 'Right',
-      icon: <FormatAlignRightRoundedIcon />
+      icon: <AlignRight />
     }
   ]
 

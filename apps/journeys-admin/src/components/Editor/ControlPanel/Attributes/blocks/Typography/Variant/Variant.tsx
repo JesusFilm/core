@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded'
+import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded' // icon-replace: add dash
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
