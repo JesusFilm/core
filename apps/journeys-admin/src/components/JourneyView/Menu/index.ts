@@ -1,1 +1,1 @@
-export { Menu, JOURNEY_PUBLISH } from './Menu'
+export { Menu } from './Menu'

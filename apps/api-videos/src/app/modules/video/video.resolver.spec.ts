@@ -1,8 +1,14 @@
+import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
 import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Video, VideoTitle, VideoVariant } from '.prisma/api-videos-client'
+import {
+  Prisma,
+  Video,
+  VideoTitle,
+  VideoVariant
+} from '.prisma/api-videos-client'
 
 import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -57,6 +63,7 @@ describe('VideoResolver', () => {
       })
     }
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CacheModule.register()],
       providers: [
         VideoResolver,
         videoService,
@@ -77,6 +84,7 @@ describe('VideoResolver', () => {
     prismaService.videoTitle.findMany.mockResolvedValue([videoTitle])
     prismaService.videoVariant.findUnique.mockResolvedValue(videoVariant[0])
     prismaService.videoVariant.findMany.mockResolvedValue(videoVariant)
+    prismaService.video.count.mockResolvedValue(1)
   })
 
   describe('videos', () => {
@@ -235,15 +243,20 @@ describe('VideoResolver', () => {
   })
 
   describe('children', () => {
-    beforeEach(() => {
-      prismaService.video.findMany.mockResolvedValueOnce([video, video])
-    })
-
     it('returns videos by childIds without languageId', async () => {
+      const children = jest.fn().mockReturnValueOnce([video, video])
+      prismaService.video.findUnique.mockReturnValueOnce({
+        ...video,
+        children
+      } as unknown as Prisma.Prisma__VideoClient<Video>)
       expect(await resolver.children(video)).toEqual([video, video])
-      expect(prismaService.video.findMany).toHaveBeenCalledWith({
-        where: { id: { in: ['20615', '20615'] } }
+      expect(prismaService.video.findUnique).toHaveBeenCalledWith({
+        where: { id: '20615' }
       })
+      expect(children).toHaveBeenCalledWith()
+      // ensure cache is used
+      expect(await resolver.children(video)).toEqual([video, video])
+      expect(children).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -293,6 +306,32 @@ describe('VideoResolver', () => {
         where: {
           languageId_videoId: {
             languageId: '529',
+            videoId: video.id
+          }
+        }
+      })
+      // ensure cache
+      expect(await resolver.variant(info, video, '529')).toEqual(
+        videoVariant[0]
+      )
+      expect(prismaService.videoVariant.findUnique).toHaveBeenCalledTimes(1)
+    })
+
+    it('returns variant for journeys', async () => {
+      const info = {
+        variableValues: {
+          representations: [
+            {
+              primaryLanguageId: '1234'
+            }
+          ]
+        }
+      } as unknown as GraphQLResolveInfo
+      expect(await resolver.variant(info, video)).toEqual(videoVariant[0])
+      expect(prismaService.videoVariant.findUnique).toHaveBeenCalledWith({
+        where: {
+          languageId_videoId: {
+            languageId: '1234',
             videoId: video.id
           }
         }

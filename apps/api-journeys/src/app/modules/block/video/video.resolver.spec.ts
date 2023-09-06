@@ -112,6 +112,10 @@ describe('VideoBlockResolver', () => {
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('videoBlockCreate', () => {
     beforeEach(() => {
       prismaService.$transaction.mockImplementation(
@@ -586,12 +590,14 @@ describe('VideoBlockResolver', () => {
           duration: 100,
           endAt: 100,
           image:
-            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s',
+            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s&height=768',
           title: 'video.mp4'
         })
         expect(mockFetch).toHaveBeenCalledWith(
-          'https://api.cloudflare.com/client/v4/accounts//stream/ea95132c15732412d22c1476fa83f27a',
-          { headers: { Authorization: 'Bearer ' } }
+          expect.stringMatching(
+            /https:\/\/api\.cloudflare\.com\/client\/v4\/accounts\/.*\/stream\/ea95132c15732412d22c1476fa83f27a/
+          ),
+          { headers: { Authorization: expect.stringMatching(/Bearer .*/) } }
         )
       })
 
@@ -634,7 +640,7 @@ describe('VideoBlockResolver', () => {
           duration: 100,
           endAt: 100,
           image:
-            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s',
+            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s&height=768',
           title: 'ea95132c15732412d22c1476fa83f27a'
         })
       })

@@ -7,9 +7,9 @@ import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
+import { Attribute } from '../../Attribute'
 
 import { Align } from './Align'
 import { Color } from './Color'

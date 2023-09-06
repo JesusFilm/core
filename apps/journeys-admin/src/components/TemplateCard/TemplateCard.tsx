@@ -1,5 +1,4 @@
 import { ApolloQueryResult } from '@apollo/client'
-import EditIcon from '@mui/icons-material/Edit'
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
@@ -14,7 +13,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import {
@@ -23,7 +22,6 @@ import {
 } from '../../../__generated__/GetAdminJourneys'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
-import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
 
 export interface TemplateCardProps {
   journey?: AdminJourney | Journey
@@ -118,7 +116,7 @@ export function TemplateCard({
           display: 'flex'
         }}
       >
-        <Link
+        <NextLink
           href={
             journey != null
               ? `/${isPublisher === true ? 'publisher' : 'templates'}/${
@@ -127,6 +125,7 @@ export function TemplateCard({
               : ''
           }
           passHref
+          legacyBehavior
         >
           <CardActionArea>
             <CardContent>
@@ -150,7 +149,7 @@ export function TemplateCard({
               )}
             </CardContent>
           </CardActionArea>
-        </Link>
+        </NextLink>
 
         <CardActions sx={{ px: 4, py: 2 }}>
           <Stack
@@ -163,19 +162,6 @@ export function TemplateCard({
               width: '100%'
             }}
           >
-            {isPublisher === true && (
-              <Box sx={{ pr: 3, display: 'flex' }}>
-                {journey != null ? (
-                  <StatusChip status={journey.status} />
-                ) : (
-                  <Stack direction="row" alignItems="center" spacing={1.5}>
-                    <EditIcon sx={{ fontSize: '14px' }} />
-                    <Skeleton variant="text" width={50} height={20} />
-                  </Stack>
-                )}
-              </Box>
-            )}
-
             {journey != null ? (
               <>
                 <TranslateRoundedIcon sx={{ fontSize: 13, pl: 0 }} />

@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useAuthUser,
@@ -6,7 +7,6 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -79,6 +79,9 @@ function TemplateEditPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
+  if (AuthUser == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
   const { flags, redirect, translations } = await initAndAuthApp({
     AuthUser,
     locale

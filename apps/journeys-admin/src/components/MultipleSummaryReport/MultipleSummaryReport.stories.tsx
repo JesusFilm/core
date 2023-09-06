@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
@@ -6,20 +6,22 @@ import { journeysAdminConfig } from '../../libs/storybook'
 
 import { MultipleSummaryReport } from '.'
 
-const MultipleSummaryReportDemo = {
+const MultipleSummaryReportDemo: Meta<typeof MultipleSummaryReport> = {
   ...journeysAdminConfig,
   component: MultipleSummaryReport,
   title: 'Journeys-Admin/MultipleSummaryReport'
 }
 
-const Template: Story = () => (
-  <ApolloLoadingProvider>
-    <SnackbarProvider>
-      <MultipleSummaryReport />
-    </SnackbarProvider>
-  </ApolloLoadingProvider>
-)
+const Template: StoryObj<typeof MultipleSummaryReport> = {
+  render: () => (
+    <ApolloLoadingProvider>
+      <SnackbarProvider>
+        <MultipleSummaryReport />
+      </SnackbarProvider>
+    </ApolloLoadingProvider>
+  )
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default MultipleSummaryReportDemo as Meta
+export default MultipleSummaryReportDemo

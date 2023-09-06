@@ -195,7 +195,7 @@ describe('UserJourneyResolver', () => {
 
   describe('UserJourneyOpen', () => {
     beforeAll(() => {
-      jest.useFakeTimers('modern')
+      jest.useFakeTimers()
       jest.setSystemTime(new Date('2021-02-18'))
     })
 

@@ -1,19 +1,20 @@
 {
-  "root": "libs/nest/health",
+  "name": "nest-health",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/nest/health/src",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["libs/nest/health/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/nest/health"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/nest/health"],
       "options": {
-        "jestConfig": "libs/nest/health/jest.config.js",
+        "jestConfig": "libs/nest/health/jest.config.ts",
         "passWithNoTests": true
       }
     }

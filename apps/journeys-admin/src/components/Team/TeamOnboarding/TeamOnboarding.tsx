@@ -29,7 +29,7 @@ export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'
 
 export function TeamOnboarding(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
   const router = useRouter()
   const { activeTeam } = useTeam()
   const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
@@ -44,7 +44,16 @@ export function TeamOnboarding(): ReactElement {
     >
       <Stack alignItems="center" sx={{ maxWidth: { xs: 311, md: 397 } }}>
         <Box sx={{ mb: 10, flexShrink: 0 }}>
-          <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
+          <Image
+            src={taskbarIcon}
+            alt="Next Steps"
+            height={43}
+            width={43}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
         </Box>
         {activeTeam != null ? (
           <TeamManageWrapper>
@@ -96,7 +105,6 @@ export function TeamOnboarding(): ReactElement {
                     onClick={async () =>
                       await router?.push('/?onboarding=true')
                     }
-                    disabled={loading}
                   >
                     {(data?.userTeamInvites ?? []).length > 0
                       ? t('Continue')
