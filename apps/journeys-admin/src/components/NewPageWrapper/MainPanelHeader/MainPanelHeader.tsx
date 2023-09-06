@@ -11,16 +11,16 @@ import { ReactElement, ReactNode } from 'react'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelHeaderProps {
-  title: string | ReactNode
+  title?: string
   backHref?: string
-  menu?: ReactNode
+  children?: ReactNode
   backHrefHistory?: boolean
 }
 
 export function MainPanelHeader({
   title,
   backHref,
-  menu,
+  children,
   backHrefHistory
 }: MainPanelHeaderProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
@@ -31,8 +31,8 @@ export function MainPanelHeader({
       <AppBar
         color="default"
         sx={{
-          position: { xs: 'fixed', sm: 'sticky' },
-          top: { xs: toolbar.height, sm: 0 }
+          position: { xs: 'fixed', md: 'sticky' },
+          top: { xs: toolbar.height, md: 0 }
         }}
       >
         <Toolbar variant={toolbar.variant}>
@@ -62,23 +62,16 @@ export function MainPanelHeader({
               </NextLink>
             )
           )}
-          {typeof title === 'string' ? (
-            <Typography
-              variant="subtitle1"
-              component="div"
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
+          {title != null && (
+            <Typography variant="subtitle1" component="div" noWrap>
               {title}
             </Typography>
-          ) : (
-            title
           )}
-          {menu}
+          {children}
         </Toolbar>
       </AppBar>
       {/* Reserves space beneath MainHeader on mobile - allows us to export MainPanel */}
-      <Toolbar variant={toolbar.variant} sx={{ display: { sm: 'none' } }} />
+      <Toolbar variant={toolbar.variant} sx={{ display: { md: 'none' } }} />
     </>
   )
 }
