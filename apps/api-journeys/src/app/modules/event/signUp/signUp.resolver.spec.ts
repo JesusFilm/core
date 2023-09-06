@@ -7,7 +7,7 @@ import { SignUpSubmissionEventResolver } from './signUp.resolver'
 
 describe('SignUpEventResolver', () => {
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
     jest.setSystemTime(new Date('2021-02-18'))
   })
 

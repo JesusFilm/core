@@ -21,6 +21,7 @@ export function VisitorCard({ visitorNode, loading }: Props): ReactElement {
       <NextLink
         href={`/reports/visitors/${visitorNode?.visitorId ?? ''}`}
         passHref
+        legacyBehavior
       >
         {block}
       </NextLink>

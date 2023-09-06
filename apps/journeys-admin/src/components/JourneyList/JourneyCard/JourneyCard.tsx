@@ -3,7 +3,7 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { ReactElement, useEffect, useRef } from 'react'
 
 import {
@@ -60,7 +60,11 @@ export function JourneyCard({
       }}
     >
       <>
-        <Link href={journey != null ? `/journeys/${journey.id}` : ''} passHref>
+        <NextLink
+          href={journey != null ? `/journeys/${journey.id}` : ''}
+          passHref
+          legacyBehavior
+        >
           <CardActionArea>
             <CardContent
               sx={{
@@ -71,7 +75,7 @@ export function JourneyCard({
               <JourneyCardText journey={journey} variant={variant} />
             </CardContent>
           </CardActionArea>
-        </Link>
+        </NextLink>
         <CardActions
           sx={{
             px: 6,

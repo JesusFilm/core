@@ -7,10 +7,10 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
 import Link from '@core/shared/ui/icons/Link'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Action, actions } from '../../Action/Action'
+import { Attribute } from '../../Attribute'
 import { Icon, icons } from '../../Icon'
 
 import { TextResponseFields } from './TextResponseFields'

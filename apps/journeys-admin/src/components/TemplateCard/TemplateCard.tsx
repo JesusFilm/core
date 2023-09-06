@@ -12,7 +12,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import Image3 from '@core/shared/ui/icons/Image3'
@@ -117,7 +117,7 @@ export function TemplateCard({
           display: 'flex'
         }}
       >
-        <Link
+        <NextLink
           href={
             journey != null
               ? `/${isPublisher === true ? 'publisher' : 'templates'}/${
@@ -126,6 +126,7 @@ export function TemplateCard({
               : ''
           }
           passHref
+          legacyBehavior
         >
           <CardActionArea>
             <CardContent>
@@ -149,7 +150,7 @@ export function TemplateCard({
               )}
             </CardContent>
           </CardActionArea>
-        </Link>
+        </NextLink>
 
         <CardActions sx={{ px: 4, py: 2 }}>
           <Stack

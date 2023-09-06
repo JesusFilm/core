@@ -3,7 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
 
@@ -51,7 +51,7 @@ export function MainPanelHeader({
             </Box>
           ) : (
             backHref != null && (
-              <Link href={backHref} passHref>
+              <NextLink href={backHref} passHref legacyBehavior>
                 <IconButton
                   edge="start"
                   size="small"
@@ -60,7 +60,7 @@ export function MainPanelHeader({
                 >
                   <ChevronLeft />
                 </IconButton>
-              </Link>
+              </NextLink>
             )
           )}
           {typeof title === 'string' ? (

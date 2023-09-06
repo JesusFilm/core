@@ -4,9 +4,9 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Link from '@core/shared/ui/icons/Link'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
 import { Action, actions } from '../../Action/Action'
+import { Attribute } from '../../Attribute'
 
 export function RadioOption({
   id,

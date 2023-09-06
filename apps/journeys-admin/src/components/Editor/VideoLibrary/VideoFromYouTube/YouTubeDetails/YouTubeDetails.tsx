@@ -12,13 +12,10 @@ import Player from 'video.js/dist/types/player'
 import Check from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
+import { parseISO8601Duration } from '../../../../../libs/parseISO8601Duration'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
-import {
-  YoutubeVideo,
-  YoutubeVideosData,
-  parseISO8601Duration
-} from '../VideoFromYouTube'
+import type { YoutubeVideo, YoutubeVideosData } from '../VideoFromYouTube'
 
 import 'video.js/dist/video-js.css'
 

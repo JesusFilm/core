@@ -7,8 +7,8 @@ import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import Lock1 from '@core/shared/ui/icons/Lock1'
 import LockOpen1 from '@core/shared/ui/icons/LockOpen1'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
+import { Attribute } from '../../Attribute'
 
 import { NextCard } from './NextCard'
 

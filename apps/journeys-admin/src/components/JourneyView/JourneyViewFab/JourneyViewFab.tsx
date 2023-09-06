@@ -87,7 +87,11 @@ export function JourneyViewFab({
           </Typography>
         </Fab>
       ) : (
-        <NextLink href={editLink != null ? editLink : ''} passHref>
+        <NextLink
+          href={editLink != null ? editLink : ''}
+          passHref
+          legacyBehavior
+        >
           <Fab
             variant="extended"
             size="large"

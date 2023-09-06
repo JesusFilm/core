@@ -187,7 +187,11 @@ export function Menu(): ReactElement {
               'aria-labelledby': 'journey-actions'
             }}
           >
-            <NextLink href={`/api/preview?slug=${journey.slug}`} passHref>
+            <NextLink
+              href={`/api/preview?slug=${journey.slug}`}
+              passHref
+              legacyBehavior
+            >
               <MenuItem
                 label="Preview"
                 icon={<EyeOpen />}
@@ -202,7 +206,7 @@ export function Menu(): ReactElement {
                 onClick={() => setDuplicateTeamDialogOpen(true)}
               />
             )}
-            {journey.template === true && isPublisher && (
+            {journey.template === true && isPublisher === true && (
               <MenuItem
                 label="Description"
                 icon={<Edit2 />}
@@ -223,7 +227,7 @@ export function Menu(): ReactElement {
                 />
               </>
             )}
-            {(journey.template !== true || isPublisher) && (
+            {(journey.template !== true || isPublisher === true) && (
               <MenuItem
                 label="Language"
                 icon={<TranslateIcon />}
@@ -231,17 +235,25 @@ export function Menu(): ReactElement {
               />
             )}
             {journey.template !== true && (
-              <NextLink href={`/journeys/${journey.id}/reports`} passHref>
+              <NextLink
+                href={`/journeys/${journey.id}/reports`}
+                passHref
+                legacyBehavior
+              >
                 <MenuItem label="Report" icon={<AssessmentRoundedIcon />} />
               </NextLink>
             )}
             {journey.template !== true && isPublisher === true && (
               <CreateTemplateMenuItem />
             )}
-            {(journey.template !== true || isPublisher) && (
+            {(journey.template !== true || isPublisher === true) && (
               <>
                 <Divider />
-                <NextLink href={editLink != null ? editLink : ''} passHref>
+                <NextLink
+                  href={editLink != null ? editLink : ''}
+                  passHref
+                  legacyBehavior
+                >
                   <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
                 </NextLink>
               </>

@@ -1,5 +1,5 @@
 import { expect } from '@storybook/jest'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
@@ -11,7 +11,7 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { ShareDialog } from './ShareDialog'
 
-const ShareDialogStory = {
+const ShareDialogStory: Meta<typeof ShareDialog> = {
   ...watchConfig,
   component: ShareDialog,
   title: 'Watch/ShareDialog',
@@ -49,48 +49,59 @@ const video: VideoContentFields = {
 
 const routes = ['the-story-of-jesus-for-children']
 
-const Template: Story<
+type Story = StoryObj<
   ComponentProps<typeof ShareDialog> & { video: VideoContentFields }
-> = ({ ...args }) => {
-  return (
-    <VideoProvider value={{ content: args.video }}>
-      <ShareDialog {...args} />
-    </VideoProvider>
-  )
+>
+
+const Template: Story = {
+  render: ({ ...args }) => {
+    return (
+      <VideoProvider value={{ content: args.video }}>
+        <ShareDialog {...args} />
+      </VideoProvider>
+    )
+  }
 }
 
-export const Basic = Template.bind({})
-Basic.args = {
-  open: true,
-  onClose: noop,
-  video: {
-    ...video,
-    childrenCount: 1
+export const Basic = {
+  ...Template,
+  args: {
+    open: true,
+    onClose: noop,
+    video: {
+      ...video,
+      childrenCount: 1
+    },
+    routes
+  }
+}
+
+export const ShareLink = {
+  ...Template,
+  args: {
+    ...Basic.args,
+    video
   },
-  routes
+  play: async () => {
+    await userEvent.click(screen.getByRole('button', { name: 'Copy Link' }))
+  }
 }
 
-export const ShareLink = Template.bind({})
-ShareLink.args = {
-  ...Basic.args,
-  video
-}
-ShareLink.play = () => {
-  userEvent.click(screen.getByRole('button', { name: 'Copy Link' }))
-}
-
-export const EmbedCode = Template.bind({})
-EmbedCode.args = {
-  ...ShareLink.args
-}
-EmbedCode.play = async () => {
-  userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))
-  await waitFor(() =>
-    expect(
-      screen.getByRole('button', { name: 'Copy Code' })
-    ).toBeInTheDocument()
-  )
-  userEvent.click(screen.getByRole('button', { name: 'Copy Code' }))
+export const EmbedCode = {
+  ...Template,
+  args: {
+    ...ShareLink.args
+  },
+  play: async () => {
+    await userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))
+    await waitFor(
+      async () =>
+        await expect(
+          screen.getByRole('button', { name: 'Copy Code' })
+        ).toBeInTheDocument()
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Copy Code' }))
+  }
 }
 
-export default ShareDialogStory as Meta
+export default ShareDialogStory

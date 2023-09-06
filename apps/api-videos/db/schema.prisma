@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "orderByNulls"]
+  previewFeatures = ["fullTextSearch"]
   output          = env("PRISMA_LOCATION")
 }
 

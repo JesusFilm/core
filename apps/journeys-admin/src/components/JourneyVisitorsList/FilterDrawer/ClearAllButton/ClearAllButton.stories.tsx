@@ -1,11 +1,10 @@
-import { Meta, Story } from '@storybook/react'
-import { ComponentProps } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../../libs/storybook'
 
 import { ClearAllButton } from './ClearAllButton'
 
-const ClearAllButtonStory = {
+const ClearAllButtonStory: Meta<typeof ClearAllButton> = {
   ...journeysAdminConfig,
   component: ClearAllButton,
   title: 'Journeys-Admin/JourneyVisitorsList/FilterDrawer/ClearAllButton',
@@ -15,10 +14,10 @@ const ClearAllButtonStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof ClearAllButton>> = () => (
-  <ClearAllButton />
-)
+const Template: StoryObj<typeof ClearAllButton> = {
+  render: () => <ClearAllButton />
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default ClearAllButtonStory as Meta
+export default ClearAllButtonStory

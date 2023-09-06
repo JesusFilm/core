@@ -47,7 +47,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
           direction="row"
           alignItems="center"
           spacing={2}
-          sx={{ mr: 'auto' }}
+          sx={{ flexGrow: 1 }}
         >
           <MessageText1 />
           <Typography>

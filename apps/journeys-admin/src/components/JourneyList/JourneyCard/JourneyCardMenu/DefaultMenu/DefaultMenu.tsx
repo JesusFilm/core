@@ -50,6 +50,7 @@ export function DefaultMenu({
             : `/journeys/${journeyId}`
         }
         passHref
+        legacyBehavior
       >
         <MenuItem label="Edit" icon={<Edit2 color="secondary" />} />
       </NextLink>
@@ -63,7 +64,7 @@ export function DefaultMenu({
           }}
         />
       )}
-      <NextLink href={`/api/preview?slug=${slug}`} passHref>
+      <NextLink href={`/api/preview?slug=${slug}`} passHref legacyBehavior>
         <MenuItem
           label="Preview"
           icon={<EyeOpen color="secondary" />}

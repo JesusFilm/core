@@ -45,7 +45,16 @@ export function TeamOnboarding(): ReactElement {
     >
       <Stack alignItems="center" sx={{ maxWidth: { xs: 311, md: 397 } }}>
         <Box sx={{ mb: 10, flexShrink: 0 }}>
-          <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
+          <Image
+            src={taskbarIcon}
+            alt="Next Steps"
+            height={43}
+            width={43}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
         </Box>
         {activeTeam != null ? (
           <TeamManageWrapper>

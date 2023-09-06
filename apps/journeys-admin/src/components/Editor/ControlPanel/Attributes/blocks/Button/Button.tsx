@@ -8,7 +8,6 @@ import AlertCircle from '@core/shared/ui/icons/AlertCircle'
 import Link from '@core/shared/ui/icons/Link'
 import SpaceHorizontal from '@core/shared/ui/icons/SpaceHorizontal'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   ButtonColor,
@@ -18,6 +17,7 @@ import {
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Action, actions } from '../../Action/Action'
+import { Attribute } from '../../Attribute'
 import { Icon, icons } from '../../Icon'
 
 import { Color } from './Color'

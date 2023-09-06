@@ -115,10 +115,28 @@ export function CardStyling(): ReactElement {
             sx={{ display: 'flex' }}
             data-testid="Light"
           >
-            <Image src={cardStyleLight} alt="Light" width={89} height={134} />
+            <Image
+              src={cardStyleLight}
+              alt="Light"
+              width={89}
+              height={134}
+              style={{
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
           </Box>
           <Box id={ThemeMode.dark} sx={{ display: 'flex' }} data-testid="Dark">
-            <Image src={cardStyleDark} alt="Dark" width={89} height={134} />
+            <Image
+              src={cardStyleDark}
+              alt="Dark"
+              width={89}
+              height={134}
+              style={{
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
           </Box>
         </HorizontalSelect>
       </Box>

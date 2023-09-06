@@ -1,6 +1,6 @@
 import NoteAddIcon from '@mui/icons-material/NoteAdd' // icon-replace: could use file-plus-01
 import Box from '@mui/material/Box'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -13,7 +13,7 @@ import { simpleComponentConfig } from '../../libs/storybook'
 
 import { ImageThumbnail } from './ImageThumbnail'
 
-const ImageEditorStory = {
+const ImageEditorStory: Meta<typeof ImageThumbnail> = {
   ...simpleComponentConfig,
   component: ImageThumbnail,
   title: 'Journeys-Admin/ImageThumbnail',
@@ -48,48 +48,60 @@ const image: ImageBlock = {
   alt: 'poster'
 }
 
-const Template: Story = ({ ...args }) => (
-  <Box bgcolor="white">
-    <ImageThumbnail
-      imageSrc={args.imageSrc}
-      imageAlt={args.imageAlt}
-      loading={args.loading}
-      icon={args.icon}
-      error={args.error}
-    />
-  </Box>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  imageSrc: null,
-  loading: false
+const Template: StoryObj<typeof ImageThumbnail> = {
+  render: ({ ...args }) => (
+    <Box bgcolor="white">
+      <ImageThumbnail
+        imageSrc={args.imageSrc}
+        imageAlt={args.imageAlt}
+        loading={args.loading}
+        icon={args.icon}
+        error={args.error}
+      />
+    </Box>
+  )
 }
 
-export const ImageFromBlock = Template.bind({})
-ImageFromBlock.args = {
-  imageSrc: image.src,
-  imageAlt: image.alt,
-  loading: false
+export const Default = {
+  ...Template,
+  args: {
+    imageSrc: null,
+    loading: false
+  }
 }
 
-export const Icon = Template.bind({})
-Icon.arg = {
-  imageSrc: null,
-  icon: <NoteAddIcon />,
-  loading: false
+export const ImageFromBlock = {
+  ...Template,
+  args: {
+    imageSrc: image.src,
+    imageAlt: image.alt,
+    loading: false
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  selectedBlock: image,
-  loading: true
+export const Icon = {
+  ...Template,
+  args: {
+    imageSrc: null,
+    icon: <NoteAddIcon />,
+    loading: false
+  }
 }
 
-export const Error = Template.bind({})
-Error.args = {
-  selectedBlock: null,
-  error: true
+export const Loading = {
+  ...Template,
+  args: {
+    selectedBlock: image,
+    loading: true
+  }
 }
 
-export default ImageEditorStory as Meta
+export const Error = {
+  ...Template,
+  args: {
+    selectedBlock: null,
+    error: true
+  }
+}
+
+export default ImageEditorStory
