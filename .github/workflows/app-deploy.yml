@@ -36,13 +36,13 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "$(npx nx show projects --affected --withTarget deploy --projects apps/* --exclude api-* | npx ts-node tools/scripts/affected-frontend-apps.ts)" >> $GITHUB_OUTPUT
+          echo "matrix=$(npx nx show projects --affected --withTarget deploy --projects apps/* --exclude api-* | npx ts-node tools/scripts/affected-apps.ts)" >> $GITHUB_OUTPUT
           echo $GITHUB_OUTPUT
   deploy-preview:
     name: Deploy Preview and Test
     needs: affected
     # feature branch, stage branch, or pull request
-    if: ${{ needs.affected.outputs.matrix != '[]' && (github.ref != 'refs/heads/main' || github.event_name == 'pull_request') }}
+    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && (github.ref != 'refs/heads/main' || github.event_name == 'pull_request') }}
     strategy:
       fail-fast: false
       matrix:
@@ -145,7 +145,7 @@ jobs:
   deploy-production:
     name: Deploy Production
     # main branch and not a pull request
-    if: ${{ needs.affected.outputs.matrix != '[]' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
     needs: affected
     strategy:
       fail-fast: false
