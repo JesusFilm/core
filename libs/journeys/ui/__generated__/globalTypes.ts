@@ -7,6 +7,14 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum ButtonAction {
+  EmailAction = "EmailAction",
+  LinkAction = "LinkAction",
+  NavigateAction = "NavigateAction",
+  NavigateToBlockAction = "NavigateToBlockAction",
+  NavigateToJourneyAction = "NavigateToJourneyAction",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",
@@ -25,24 +33,18 @@ export enum ButtonVariant {
   text = "text",
 }
 
-export enum GridAlignItems {
-  baseline = "baseline",
-  center = "center",
-  flexEnd = "flexEnd",
-  flexStart = "flexStart",
-}
-
-export enum GridDirection {
-  column = "column",
-  columnReverse = "columnReverse",
-  row = "row",
-  rowReverse = "rowReverse",
-}
-
-export enum GridJustifyContent {
-  center = "center",
-  flexEnd = "flexEnd",
-  flexStart = "flexStart",
+export enum ChatPlatform {
+  custom = "custom",
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
 }
 
 export enum IconColor {
@@ -94,6 +96,7 @@ export enum JourneyStatus {
 }
 
 export enum MessagePlatform {
+  custom = "custom",
   facebook = "facebook",
   instagram = "instagram",
   line = "line",
@@ -155,6 +158,7 @@ export enum VideoBlockObjectFit {
 }
 
 export enum VideoBlockSource {
+  cloudflare = "cloudflare",
   internal = "internal",
   youTube = "youTube",
 }
@@ -165,6 +169,8 @@ export interface ButtonClickEventCreateInput {
   stepId?: string | null;
   label?: string | null;
   value?: string | null;
+  action?: ButtonAction | null;
+  actionValue?: string | null;
 }
 
 export interface ChatOpenEventCreateInput {

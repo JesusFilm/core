@@ -1,9 +1,11 @@
-import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { Button } from '@core/journeys/ui/Button'
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { Button } from '@core/journeys/ui/Button'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { ButtonBlockUpdateContent } from '../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
 import { InlineEditInput } from '../InlineEditInput'

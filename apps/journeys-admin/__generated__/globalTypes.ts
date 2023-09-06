@@ -7,6 +7,14 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum ButtonAction {
+  EmailAction = "EmailAction",
+  LinkAction = "LinkAction",
+  NavigateAction = "NavigateAction",
+  NavigateToBlockAction = "NavigateToBlockAction",
+  NavigateToJourneyAction = "NavigateToJourneyAction",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",
@@ -25,24 +33,18 @@ export enum ButtonVariant {
   text = "text",
 }
 
-export enum GridAlignItems {
-  baseline = "baseline",
-  center = "center",
-  flexEnd = "flexEnd",
-  flexStart = "flexStart",
-}
-
-export enum GridDirection {
-  column = "column",
-  columnReverse = "columnReverse",
-  row = "row",
-  rowReverse = "rowReverse",
-}
-
-export enum GridJustifyContent {
-  center = "center",
-  flexEnd = "flexEnd",
-  flexStart = "flexStart",
+export enum ChatPlatform {
+  custom = "custom",
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
 }
 
 export enum IconColor {
@@ -93,6 +95,12 @@ export enum JourneyStatus {
   trashed = "trashed",
 }
 
+export enum JourneyVisitorSort {
+  activity = "activity",
+  date = "date",
+  duration = "duration",
+}
+
 export enum JourneysReportType {
   multipleFull = "multipleFull",
   multipleSummary = "multipleSummary",
@@ -101,6 +109,7 @@ export enum JourneysReportType {
 }
 
 export enum MessagePlatform {
+  custom = "custom",
   facebook = "facebook",
   instagram = "instagram",
   line = "line",
@@ -159,6 +168,11 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum UserTeamRole {
+  manager = "manager",
+  member = "member",
+}
+
 export enum VideoBlockObjectFit {
   fill = "fill",
   fit = "fit",
@@ -166,6 +180,7 @@ export enum VideoBlockObjectFit {
 }
 
 export enum VideoBlockSource {
+  cloudflare = "cloudflare",
   internal = "internal",
   youTube = "youTube",
 }
@@ -223,6 +238,8 @@ export interface ButtonClickEventCreateInput {
   stepId?: string | null;
   label?: string | null;
   value?: string | null;
+  action?: ButtonAction | null;
+  actionValue?: string | null;
 }
 
 export interface CardBlockUpdateInput {
@@ -233,11 +250,40 @@ export interface CardBlockUpdateInput {
   themeName?: ThemeName | null;
 }
 
+export interface ChatButtonCreateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
+}
+
+export interface ChatButtonUpdateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
+}
+
 export interface ChatOpenEventCreateInput {
   id?: string | null;
   blockId: string;
   stepId?: string | null;
   value?: MessagePlatform | null;
+}
+
+export interface EmailActionInput {
+  gtmEventName?: string | null;
+  email: string;
+}
+
+export interface HostCreateInput {
+  title: string;
+  location?: string | null;
+  src1?: string | null;
+  src2?: string | null;
+}
+
+export interface HostUpdateInput {
+  title?: string | null;
+  location?: string | null;
+  src1?: string | null;
+  src2?: string | null;
 }
 
 export interface IconBlockCreateInput {
@@ -257,7 +303,7 @@ export interface IconBlockUpdateInput {
 
 export interface ImageBlockCreateInput {
   id?: string | null;
-  parentBlockId: string;
+  parentBlockId?: string | null;
   journeyId: string;
   src?: string | null;
   alt: string;
@@ -276,6 +322,10 @@ export interface ImageBlockUpdateInput {
   height?: number | null;
 }
 
+export interface JourneyProfileUpdateInput {
+  lastActiveTeamId?: string | null;
+}
+
 export interface JourneyTemplateInput {
   template?: boolean | null;
 }
@@ -290,6 +340,23 @@ export interface JourneyUpdateInput {
   slug?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
+  hostId?: string | null;
+}
+
+export interface JourneyVisitorFilter {
+  journeyId: string;
+  hasChatStarted?: boolean | null;
+  hasPollAnswers?: boolean | null;
+  hasTextResponse?: boolean | null;
+  hasIcon?: boolean | null;
+  hideInactive?: boolean | null;
+  countryCode?: string | null;
+}
+
+export interface JourneysFilter {
+  featured?: boolean | null;
+  template?: boolean | null;
+  ids?: string[] | null;
 }
 
 export interface LinkActionInput {
@@ -371,6 +438,14 @@ export interface StepViewEventCreateInput {
   value?: string | null;
 }
 
+export interface TeamCreateInput {
+  title: string;
+}
+
+export interface TeamUpdateInput {
+  title: string;
+}
+
 export interface TextResponseBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -418,12 +493,25 @@ export interface UserInviteCreateInput {
   email: string;
 }
 
+export interface UserTeamFilterInput {
+  role?: UserTeamRole[] | null;
+}
+
+export interface UserTeamInviteCreateInput {
+  email: string;
+}
+
+export interface UserTeamUpdateInput {
+  role: UserTeamRole;
+}
+
 export interface VideoBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
   startAt?: number | null;
   endAt?: number | null;
+  duration?: number | null;
   description?: string | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
@@ -441,6 +529,7 @@ export interface VideoBlockUpdateInput {
   endAt?: number | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
+  duration?: number | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
   source?: VideoBlockSource | null;
@@ -531,6 +620,8 @@ export interface VisitorUpdateInput {
   name?: string | null;
   notes?: string | null;
   status?: VisitorStatus | null;
+  countryCode?: string | null;
+  referrer?: string | null;
 }
 
 //==============================================================

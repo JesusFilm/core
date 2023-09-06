@@ -1,18 +1,20 @@
-import { ReactElement, useState, forwardRef, MouseEventHandler } from 'react'
-import Fade from '@mui/material/Fade'
-import Slide from '@mui/material/Slide'
-import Container from '@mui/material/Container'
-import SwipeableDrawer from '@mui/material/SwipeableDrawer'
-import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
-import Stack from '@mui/material/Stack'
 import AppBar, { AppBarProps } from '@mui/material/AppBar'
+import Container from '@mui/material/Container'
+import Fade from '@mui/material/Fade'
+import IconButton from '@mui/material/IconButton'
+import Slide from '@mui/material/Slide'
+import Stack from '@mui/material/Stack'
+import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import Toolbar from '@mui/material/Toolbar'
+import useScrollTrigger from '@mui/material/useScrollTrigger'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
+
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import useScrollTrigger from '@mui/material/useScrollTrigger'
+
 import logo from './assets/logo.svg'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 
@@ -34,16 +36,18 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
       >
         <Container maxWidth="xxl" disableGutters>
           <Toolbar sx={{ justifyContent: 'space-between' }}>
-            <NextLink href="/" passHref>
-              <a>
-                <Image
-                  src={logo}
-                  width="160"
-                  height="40"
-                  alt="Watch Logo"
-                  style={{ cursor: 'pointer' }}
-                />
-              </a>
+            <NextLink href="/" passHref legacyBehavior>
+              <Image
+                src={logo}
+                width="160"
+                height="40"
+                alt="Watch Logo"
+                style={{
+                  cursor: 'pointer',
+                  maxWidth: '100%',
+                  height: 'auto'
+                }}
+              />
             </NextLink>
             <Stack spacing={0.5} direction="row">
               <IconButton

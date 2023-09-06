@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
-import { GetJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetJourneys'
+
+import { GetAdminJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetAdminJourneys'
+
 import { Avatar } from '.'
 
 describe('Avatar', () => {
@@ -10,6 +12,7 @@ describe('Avatar', () => {
     lastName: 'One',
     imageUrl: 'https://bit.ly/3Gth4Yf'
   }
+
   it('should show avatar', () => {
     const { getByRole } = render(<Avatar user={user} />)
     expect(getByRole('img')).toBeInTheDocument()

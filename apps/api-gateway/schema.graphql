@@ -43,6 +43,16 @@ type Browser
   version: String
 }
 
+enum ButtonAction
+  @join__type(graph: JOURNEYS)
+{
+  NavigateAction @join__enumValue(graph: JOURNEYS)
+  NavigateToBlockAction @join__enumValue(graph: JOURNEYS)
+  NavigateToJourneyAction @join__enumValue(graph: JOURNEYS)
+  LinkAction @join__enumValue(graph: JOURNEYS)
+  EmailAction @join__enumValue(graph: JOURNEYS)
+}
+
 type ButtonBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -101,6 +111,18 @@ type ButtonClickEvent implements Event
 
   """label of the button"""
   value: String
+
+  """Action type of the button when it was clicked"""
+  action: ButtonAction
+
+  """
+  The label for each corresponding action, mapping below:
+  NavigateAction - null
+  NavigateToBlockAction - StepName (generated in client) of the StepBlock
+  NavigateToJourneyAction - slug of the journey
+  LinkAction - url of the link
+  """
+  actionValue: String
 }
 
 input ButtonClickEventCreateInput
@@ -120,6 +142,18 @@ input ButtonClickEventCreateInput
 
   """label of the button"""
   value: String
+
+  """Action type of the button when it was clicked"""
+  action: ButtonAction
+
+  """
+  The label for each corresponding action, mapping below:
+  NavigateAction - undefined
+  NavigateToBlockAction - StepName (generated in client) of the StepBlock
+  NavigateToJourneyAction - slug of the journey
+  LinkAction - url of the link
+  """
+  actionValue: String
 }
 
 enum ButtonColor
@@ -144,6 +178,14 @@ enum ButtonVariant
 {
   text @join__enumValue(graph: JOURNEYS)
   contained @join__enumValue(graph: JOURNEYS)
+}
+
+enum CacheControlScope
+  @join__type(graph: LANGUAGES)
+  @join__type(graph: VIDEOS)
+{
+  PUBLIC @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  PRIVATE @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
 }
 
 type CardBlock implements Block
@@ -207,6 +249,28 @@ input CardBlockUpdateInput
   themeName: ThemeName
 }
 
+type ChatButton
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  link: String
+  platform: ChatPlatform
+}
+
+input ChatButtonCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  link: String
+  platform: ChatPlatform
+}
+
+input ChatButtonUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  link: String
+  platform: ChatPlatform
+}
+
 type ChatOpenEvent implements Event
   @join__implements(graph: JOURNEYS, interface: "Event")
   @join__type(graph: JOURNEYS)
@@ -247,6 +311,22 @@ input ChatOpenEventCreateInput
   value: MessagePlatform
 }
 
+enum ChatPlatform
+  @join__type(graph: JOURNEYS)
+{
+  facebook @join__enumValue(graph: JOURNEYS)
+  telegram @join__enumValue(graph: JOURNEYS)
+  whatsApp @join__enumValue(graph: JOURNEYS)
+  instagram @join__enumValue(graph: JOURNEYS)
+  viber @join__enumValue(graph: JOURNEYS)
+  vk @join__enumValue(graph: JOURNEYS)
+  snapchat @join__enumValue(graph: JOURNEYS)
+  skype @join__enumValue(graph: JOURNEYS)
+  line @join__enumValue(graph: JOURNEYS)
+  tikTok @join__enumValue(graph: JOURNEYS)
+  custom @join__enumValue(graph: JOURNEYS)
+}
+
 type CloudflareImage
   @join__type(graph: MEDIA)
 {
@@ -256,22 +336,14 @@ type CloudflareImage
   createdAt: String!
 }
 
-type Country
-  @join__type(graph: LANGUAGES, key: "id")
+type CloudflareVideo
+  @join__type(graph: MEDIA)
 {
   id: ID!
-  name(languageId: ID, primary: Boolean): [Translation!]!
-  population: Int!
-  continent(languageId: ID, primary: Boolean): [Translation!]!
-
-  """
-  slug is a permanent link to the country. It should only be appended, not edited or deleted
-  """
-  slug(languageId: ID, primary: Boolean): [Translation!]!
-  languages: [Language!]!
-  latitude: Float!
-  longitude: Float!
-  image: String
+  uploadUrl: String
+  userId: ID!
+  createdAt: String!
+  readyToStream: Boolean!
 }
 
 scalar DateTime
@@ -294,6 +366,22 @@ enum DeviceType
   smarttv @join__enumValue(graph: JOURNEYS)
   wearable @join__enumValue(graph: JOURNEYS)
   embedded @join__enumValue(graph: JOURNEYS)
+}
+
+type EmailAction implements Action
+  @join__implements(graph: JOURNEYS, interface: "Action")
+  @join__type(graph: JOURNEYS)
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  email: String!
+}
+
+input EmailActionInput
+  @join__type(graph: JOURNEYS)
+{
+  gtmEventName: String
+  email: String!
 }
 
 interface Event
@@ -357,6 +445,38 @@ enum GridJustifyContent
   flexStart @join__enumValue(graph: JOURNEYS)
   flexEnd @join__enumValue(graph: JOURNEYS)
   center @join__enumValue(graph: JOURNEYS)
+}
+
+type Host
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  teamId: ID!
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+input HostCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+input HostUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
+  location: String
+  src1: String
+  src2: String
 }
 
 type IconBlock implements Block
@@ -440,11 +560,10 @@ enum IconSize
 
 enum IdType
   @join__type(graph: JOURNEYS)
-  @join__type(graph: LANGUAGES)
   @join__type(graph: VIDEOS)
 {
-  databaseId @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
-  slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  databaseId @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: VIDEOS)
+  slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: VIDEOS)
 }
 
 type ImageBlock implements Block
@@ -474,7 +593,7 @@ input ImageBlockCreateInput
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  parentBlockId: ID!
+  parentBlockId: ID
   journeyId: ID!
   src: String
   alt: String!
@@ -513,6 +632,7 @@ enum join__Graph {
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
+  TAGS @join__graph(name: "tags", url: "http://127.0.0.1:4006/graphql")
   USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql")
   VIDEOS @join__graph(name: "videos", url: "http://127.0.0.1:4004/graphql")
 }
@@ -522,6 +642,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  chatButtons: [ChatButton!]!
   id: ID!
   title: String!
   language: Language!
@@ -539,6 +660,8 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
+  host: Host
+  team: Team
   userJourneys: [UserJourney!]
 }
 
@@ -572,6 +695,13 @@ type JourneyProfile
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
+  lastActiveTeamId: String
+}
+
+input JourneyProfileUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  lastActiveTeamId: String
 }
 
 input JourneysFilter
@@ -579,6 +709,7 @@ input JourneysFilter
 {
   featured: Boolean
   template: Boolean
+  ids: [ID!]
 }
 
 enum JourneysReportType
@@ -618,6 +749,7 @@ input JourneyUpdateInput
   slug: String
   seoTitle: String
   seoDescription: String
+  hostId: String
 }
 
 type JourneyViewEvent implements Event
@@ -660,9 +792,134 @@ input JourneyViewEventCreateInput
   value: ID
 }
 
+type JourneyVisitor
+  @join__type(graph: JOURNEYS, key: "visitorId journeyId")
+{
+  visitorId: ID!
+  journeyId: ID!
+
+  """
+  The time when the visitor created their first event on a journey connected
+  to the requested team.
+  """
+  createdAt: DateTime!
+
+  """Duration between createdAt and lastStepViewedAt in seconds"""
+  duration: Int
+
+  """
+  The last time the visitor called the ButtonClickEvent mutation where the url
+  is in the format of a recognized chat platform.
+  """
+  lastChatStartedAt: DateTime
+
+  """
+  The last message platform the visitor called the ButtonClickEvent where the
+  url is in the format of a recognized chat platform
+  """
+  lastChatPlatform: MessagePlatform
+
+  """
+  The country code of the visitor as poulated by visitor ip address detected in
+  the JourneyViewEventCreate mutation. This field country code is converted
+  from an IP address by the @maxmind/geoip2-node library. If this field is empty
+  it is likely that the JourneyViewEventCreate mutation was not called by the
+  visitor or that the country was not able to be determined based on the
+  visitor IP address.
+  """
+  countryCode: String
+
+  """
+  Message platform the visitor wishes to be connected to us on as populated by
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
+  """
+  messagePlatform: MessagePlatform
+
+  """
+  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+  number, user id or other unique identifier provided by the message platform.
+  """
+  notes: String
+
+  """
+  The last time the visitor called StepViewEvent mutation. It is populated when
+  the visitor is first created, and is updated by all event creation mutations.
+  """
+  lastStepViewedAt: DateTime
+
+  """
+  The label of a link action button of the last time the visitor clicked a
+  link action button. Populated by ButtonClickEvent
+  """
+  lastLinkAction: String
+
+  """
+  The response of the last text response block the visitor filled out,
+  populated by TextResponseSubmission mutation
+  """
+  lastTextResponse: String
+
+  """
+  The question of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioQuestion: String
+
+  """
+  The selected option  of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioOptionSubmission: String
+  events: [Event!]!
+  visitor: Visitor!
+}
+
+type JourneyVisitorEdge
+  @join__type(graph: JOURNEYS)
+{
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: JourneyVisitor!
+}
+
+input JourneyVisitorFilter
+  @join__type(graph: JOURNEYS)
+{
+  journeyId: String!
+  hasChatStarted: Boolean
+  hasPollAnswers: Boolean
+  hasTextResponse: Boolean
+  hasIcon: Boolean
+  hideInactive: Boolean
+  countryCode: String
+}
+
+type JourneyVisitorsConnection
+  @join__type(graph: JOURNEYS)
+{
+  """A list of edges."""
+  edges: [JourneyVisitorEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+enum JourneyVisitorSort
+  @join__type(graph: JOURNEYS)
+{
+  date @join__enumValue(graph: JOURNEYS)
+  duration @join__enumValue(graph: JOURNEYS)
+  activity @join__enumValue(graph: JOURNEYS)
+}
+
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
+  @join__type(graph: MEDIA, key: "id")
+  @join__type(graph: TAGS, key: "id")
+  @join__type(graph: USERS, key: "id")
   @join__type(graph: VIDEOS, key: "id")
 {
   id: ID!
@@ -730,6 +987,7 @@ enum MessagePlatform
   skype @join__enumValue(graph: JOURNEYS)
   line @join__enumValue(graph: JOURNEYS)
   tikTok @join__enumValue(graph: JOURNEYS)
+  custom @join__enumValue(graph: JOURNEYS)
 }
 
 type Mutation
@@ -741,45 +999,131 @@ type Mutation
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
+  blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction! @join__field(graph: JOURNEYS)
 
   """blockDelete returns the updated sibling blocks on successful delete"""
-  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]! @join__field(graph: JOURNEYS)
+  blockDelete(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+
+    """drop this parameter after merging teams"""
+    parentBlockId: ID
+  ): [Block!]! @join__field(graph: JOURNEYS)
 
   """
   blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
   """
   blockDuplicate(
     id: ID!
-    journeyId: ID!
 
     """
     parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
     """
     parentOrder: Int
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
   ): [Block!]! @join__field(graph: JOURNEYS)
-  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): [Block!]! @join__field(graph: JOURNEYS)
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
-  buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock @join__field(graph: JOURNEYS)
+  buttonBlockUpdate(
+    id: ID!
+    input: ButtonBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ButtonBlock @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
-  cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock! @join__field(graph: JOURNEYS)
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): CardBlock! @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
-  iconBlockUpdate(id: ID!, journeyId: ID!, input: IconBlockUpdateInput!): IconBlock! @join__field(graph: JOURNEYS)
+  iconBlockUpdate(
+    id: ID!
+    input: IconBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): IconBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
-  imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock! @join__field(graph: JOURNEYS)
+  imageBlockUpdate(
+    id: ID!
+    input: ImageBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ImageBlock! @join__field(graph: JOURNEYS)
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioOptionBlockUpdate(
+    id: ID!
+    input: RadioOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
-  radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
-  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockUpdate(
+    id: ID!
+    parentBlockId: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
-  signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock @join__field(graph: JOURNEYS)
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): SignUpBlock @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
-  stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock! @join__field(graph: JOURNEYS)
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): StepBlock! @join__field(graph: JOURNEYS)
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
-  textResponseBlockUpdate(id: ID!, journeyId: ID!, input: TextResponseBlockUpdateInput!): TextResponseBlock @join__field(graph: JOURNEYS)
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TextResponseBlock @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
-  typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TypographyBlock! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
-  videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
+  videoBlockUpdate(
+    id: ID!
+    input: VideoBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): VideoBlock! @join__field(graph: JOURNEYS)
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @join__field(graph: JOURNEYS)
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
+  chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
@@ -795,8 +1139,11 @@ type Mutation
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @join__field(graph: JOURNEYS)
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
-  journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
-  journeyDuplicate(id: ID!): Journey! @join__field(graph: JOURNEYS)
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
+  hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
+  journeyDuplicate(id: ID!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
 
   """Sets journey status to published"""
@@ -817,6 +1164,9 @@ type Mutation
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
+  teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
+  teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite! @join__field(graph: JOURNEYS)
   userInviteAcceptAll: [UserInvite!]! @join__field(graph: JOURNEYS)
@@ -826,15 +1176,33 @@ type Mutation
 
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]! @join__field(graph: JOURNEYS)
-  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyRequest(
+    journeyId: ID!
+
+    """drop this parameter after merging teams"""
+    idType: IdType
+  ): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam! @join__field(graph: JOURNEYS)
+  userTeamDelete(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
+  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite @join__field(graph: JOURNEYS)
+  userTeamInviteRemove(id: ID!): UserTeamInvite! @join__field(graph: JOURNEYS)
+  userTeamInviteAcceptAll: [UserTeamInvite!]! @join__field(graph: JOURNEYS)
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
+
+  """
+  Allow current user to update specific allowable fields of their visitor record
+  """
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
   createCloudflareUploadByFile: CloudflareImage @join__field(graph: MEDIA)
   createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
   deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
   cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo @join__field(graph: MEDIA)
+  deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
 }
 
@@ -933,22 +1301,54 @@ type Query
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
+  @join__type(graph: TAGS)
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
-  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
+  hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
+
+  """
+  returns all journeys that match the provided filters
+  If no team id is provided and template is not true then only returns journeys
+  where the user is not a member of a team but is an editor or owner of the
+  journey
+  """
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
-  adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  journey(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
+
+  """Get a list of Visitor Information by Journey"""
+  journeyVisitorsConnection(
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection! @join__field(graph: JOURNEYS)
+
+  """Get a JourneyVisitor count by JourneyVisitorFilter"""
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
+  teams: [Team!]! @join__field(graph: JOURNEYS)
+  team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]! @join__field(graph: JOURNEYS)
+  userTeam(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]! @join__field(graph: JOURNEYS)
 
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
     """Returns the visitor items related to a specific team."""
-    teamId: String!
+    teamId: String
 
     """Returns the first n elements from the list."""
     first: Int
@@ -959,13 +1359,14 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-  countries: [Country!]! @join__field(graph: LANGUAGES)
-  country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
+  getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
+  getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
+  tags: [Tag!]! @join__field(graph: TAGS)
   me: User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
@@ -1247,6 +1648,36 @@ input StepViewEventCreateInput
   value: String
 }
 
+type Tag
+  @join__type(graph: TAGS, key: "id")
+{
+  id: ID!
+  name: [Translation!]!
+  parentId: ID
+}
+
+type Team
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID!
+  title: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  userTeams: [UserTeam!]!
+}
+
+input TeamCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String!
+}
+
+input TeamUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String!
+}
+
 type TextResponseBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -1336,7 +1767,11 @@ enum ThemeName
 }
 
 type Translation
+  @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
+  @join__type(graph: MEDIA)
+  @join__type(graph: TAGS)
+  @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
   value: String!
@@ -1608,6 +2043,49 @@ type UserRole
   roles: [Role!]
 }
 
+type UserTeam
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID!
+  user: User!
+  role: UserTeamRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input UserTeamFilterInput
+  @join__type(graph: JOURNEYS)
+{
+  role: [UserTeamRole!]
+}
+
+type UserTeamInvite
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  teamId: ID!
+  email: String!
+}
+
+input UserTeamInviteCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+}
+
+enum UserTeamRole
+  @join__type(graph: JOURNEYS)
+{
+  manager @join__enumValue(graph: JOURNEYS)
+  member @join__enumValue(graph: JOURNEYS)
+}
+
+input UserTeamUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  role: UserTeamRole!
+}
+
 type Video
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
   @join__type(graph: VIDEOS, key: "id primaryLanguageId")
@@ -1735,6 +2213,7 @@ input VideoBlockCreateInput
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
+  duration: Int
   description: String
   muted: Boolean
   autoplay: Boolean
@@ -1810,6 +2289,7 @@ enum VideoBlockSource
 {
   internal @join__enumValue(graph: JOURNEYS)
   youTube @join__enumValue(graph: JOURNEYS)
+  cloudflare @join__enumValue(graph: JOURNEYS)
 }
 
 input VideoBlockUpdateInput
@@ -1822,6 +2302,7 @@ input VideoBlockUpdateInput
   endAt: Int
   muted: Boolean
   autoplay: Boolean
+  duration: Int
 
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
@@ -2278,11 +2759,20 @@ type Visitor
   """
   createdAt: DateTime!
 
+  """Duration between createdAt and lastStepViewedAt in seconds"""
+  duration: Int
+
   """
   The last time the visitor called the ButtonClickEvent mutation where the url
   is in the format of a recognized chat platform.
   """
   lastChatStartedAt: DateTime
+
+  """
+  The last message platform the visitor called the ButtonClickEvent where the
+  url is in the format of a recognized chat platform
+  """
+  lastChatPlatform: MessagePlatform
 
   """
   The user agent of the visitor as poulated by the visitor's user-agent string
@@ -2331,6 +2821,39 @@ type Visitor
 
   """Private notes of the visitor as set by VisitorUpdate mutation."""
   notes: String
+
+  """
+  The last time the visitor called StepViewEvent mutation. It is populated when
+  the visitor is first created, and is updated by all event creation mutations.
+  """
+  lastStepViewedAt: DateTime
+
+  """
+  The label of a link action button of the last time the visitor clicked a
+  link action button. Populated by ButtonClickEvent
+  """
+  lastLinkAction: String
+
+  """
+  The response of the last text response block the visitor filled out,
+  populated by TextResponseSubmission mutation
+  """
+  lastTextResponse: String
+
+  """
+  The question of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioQuestion: String
+
+  """
+  The selected option  of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioOptionSubmission: String
+
+  """The url visitor was referred from"""
+  referrer: String
   events: [Event!]!
 }
 
@@ -2415,4 +2938,12 @@ input VisitorUpdateInput
 
   """Status of the visitor."""
   status: VisitorStatus
+
+  """
+  The country code of the visitor as poulated by visitor ip address detected
+  """
+  countryCode: String
+
+  """The referring url of the visitor"""
+  referrer: String
 }

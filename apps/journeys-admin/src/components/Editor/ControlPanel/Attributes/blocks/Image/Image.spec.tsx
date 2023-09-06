@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
@@ -9,6 +10,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
+
 import { Image } from './Image'
 import { ImageOptions } from './Options/ImageOptions'
 
@@ -39,7 +41,7 @@ describe('Image', () => {
   const state: EditorState = {
     steps: [],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
+    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
@@ -50,6 +52,7 @@ describe('Image', () => {
       dispatch: jest.fn()
     })
   })
+
   it('should display Image Options', () => {
     const { getByText } = render(<Image {...block} alt={block.alt} />)
 

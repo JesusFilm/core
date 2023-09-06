@@ -1,11 +1,16 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps, ReactElement, useState } from 'react'
+
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
-import { simpleComponentConfig } from '../../../../libs/storybook'
+
 import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
+import { simpleComponentConfig } from '../../../../libs/storybook'
+
 import { VideoLanguage } from '.'
 
-const VideoLanguageStory = {
+const VideoLanguageStory: Meta<
+  ComponentProps<typeof VideoLanguage> & { onSelect: { action: string } }
+> = {
   ...simpleComponentConfig,
   component: VideoLanguage,
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoLanguage',
@@ -58,7 +63,7 @@ const languages: Language[] = [
   }
 ]
 
-const Template: Story = ({ onSelect }) => {
+const VideoLanguageComponent = ({ onSelect }): ReactElement => {
   const [open, setOpen] = useState(true)
   const [language, setLanguage] = useState<LanguageOption>({
     id: '529',
@@ -82,6 +87,12 @@ const Template: Story = ({ onSelect }) => {
   )
 }
 
-export const Default = Template.bind({})
+const Template: StoryObj<
+  ComponentProps<typeof VideoLanguage> & { onSelect: { action: string } }
+> = {
+  render: ({ onSelect }) => <VideoLanguageComponent onSelect={onSelect} />
+}
 
-export default VideoLanguageStory as Meta
+export const Default = { ...Template }
+
+export default VideoLanguageStory

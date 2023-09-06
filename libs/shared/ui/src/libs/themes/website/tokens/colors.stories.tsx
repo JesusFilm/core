@@ -1,18 +1,18 @@
-import { ReactElement } from 'react'
-import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
-import Typography, { TypographyProps } from '@mui/material/Typography'
 import {
-  useTheme,
   PaletteColor,
   PaletteOptions,
-  SimplePaletteColorOptions
+  SimplePaletteColorOptions,
+  useTheme
 } from '@mui/material/styles'
+import Typography, { TypographyProps } from '@mui/material/Typography'
+import { Meta, StoryObj } from '@storybook/react'
+import { ReactElement } from 'react'
 
-import { simpleComponentConfig } from '../../../simpleComponentConfig'
 import { ThemeName } from '../..'
+import { simpleComponentConfig } from '../../../simpleComponentConfig'
 
-const ColorsDemo = {
+const ColorsDemo: Meta<typeof Typography> = {
   ...simpleComponentConfig,
   component: Typography,
   title: 'Website Theme',
@@ -171,17 +171,19 @@ const ColorTokens = ({
   )
 }
 
-const ColorTemplate: Story<ColorStoryProps> = (args) => (
-  <ColorTokens {...args} />
-)
-
-export const Colors = ColorTemplate.bind({})
-Colors.args = {
-  mainColor: ['light', 'main', 'dark'],
-  overrideColors: ['primary', 'secondary', 'error']
-}
-Colors.parameters = {
-  theme: 'all'
+const ColorTemplate: StoryObj<typeof ColorTokens> = {
+  render: (args) => <ColorTokens {...args} />
 }
 
-export default ColorsDemo as Meta
+export const Colors = {
+  ...ColorTemplate,
+  args: {
+    mainColor: ['light', 'main', 'dark'],
+    overrideColors: ['primary', 'secondary', 'error']
+  },
+  parameters: {
+    theme: 'all'
+  }
+}
+
+export default ColorsDemo

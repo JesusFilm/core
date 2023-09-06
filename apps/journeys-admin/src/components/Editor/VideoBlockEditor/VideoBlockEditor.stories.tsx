@@ -1,27 +1,29 @@
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import MuiDrawer from '@mui/material/Drawer'
 import { MockedProvider } from '@apollo/client/testing'
+import MuiDrawer from '@mui/material/Drawer'
+import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
-import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   ThemeMode,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { ThemeProvider } from '../../ThemeProvider'
 import { videos } from '../VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { VideoBlockEditor } from './VideoBlockEditor'
-import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
 
-const BackgroundMediaStory = {
+import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
+import { VideoBlockEditor } from './VideoBlockEditor'
+
+const BackgroundMediaStory: Meta<typeof VideoBlockEditor> = {
   ...journeysAdminConfig,
   component: VideoBlockEditor,
   title: 'Journeys-Admin/Editor/VideoBlockEditor',
@@ -155,113 +157,123 @@ const videoLanguages: GetVideoVariantLanguages_video = {
   ]
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_VIDEOS,
-          variables: {
-            offset: 0,
-            limit: 5,
-            where: {
-              availableVariantLanguageIds: ['529'],
-              title: null
+const Template: StoryObj<typeof VideoBlockEditor> = {
+  render: ({ ...args }) => (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_VIDEOS,
+            variables: {
+              offset: 0,
+              limit: 5,
+              where: {
+                availableVariantLanguageIds: ['529'],
+                title: null
+              }
+            }
+          },
+          result: {
+            data: {
+              videos
             }
           }
         },
-        result: {
-          data: {
-            videos
+        {
+          request: {
+            query: GET_VIDEO_VARIANT_LANGUAGES,
+            variables: {
+              id: videoLanguages.id
+            }
+          },
+          result: {
+            data: {
+              video: videoLanguages
+            }
           }
         }
-      },
-      {
-        request: {
-          query: GET_VIDEO_VARIANT_LANGUAGES,
-          variables: {
-            id: videoLanguages.id
-          }
-        },
-        result: {
-          data: {
-            video: videoLanguages
-          }
-        }
-      }
-    ]}
-  >
-    <ThemeProvider>
-      <MuiDrawer
-        anchor="right"
-        variant="permanent"
-        sx={{
-          display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: 328
-          }
-        }}
-        ModalProps={{
-          keepMounted: true
-        }}
-        open
-      >
-        <VideoBlockEditor
-          selectedBlock={args.selectedBlock}
-          onChange={onChange}
-        />
-      </MuiDrawer>
-      <MuiDrawer
-        anchor="bottom"
-        variant="temporary"
-        open
-        sx={{
-          display: { xs: 'block', sm: 'none' }
-        }}
-      >
-        <VideoBlockEditor
-          selectedBlock={args.selectedBlock}
-          onChange={onChange}
-        />
-      </MuiDrawer>
-    </ThemeProvider>
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  selectedBlock: null
+      ]}
+    >
+      <ThemeProvider>
+        <MuiDrawer
+          anchor="right"
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: 328
+            }
+          }}
+          ModalProps={{
+            keepMounted: true
+          }}
+          open
+        >
+          <VideoBlockEditor
+            selectedBlock={args.selectedBlock}
+            onChange={onChange}
+          />
+        </MuiDrawer>
+        <MuiDrawer
+          anchor="bottom"
+          variant="temporary"
+          open
+          sx={{
+            display: { xs: 'block', sm: 'none' }
+          }}
+        >
+          <VideoBlockEditor
+            selectedBlock={args.selectedBlock}
+            onChange={onChange}
+          />
+        </MuiDrawer>
+      </ThemeProvider>
+    </MockedProvider>
+  )
 }
 
-export const Internal = Template.bind({})
-Internal.args = {
-  selectedBlock: {
-    ...videoInternal,
-    children: [posterInternal]
+export const Default = {
+  ...Template,
+  args: {
+    selectedBlock: null
   }
 }
 
-export const YouTube = Template.bind({})
-YouTube.storyName = 'YouTube'
-YouTube.args = {
-  selectedBlock: {
-    ...videoYouTube,
-    children: [posterYouTube]
+export const Internal = {
+  ...Template,
+  args: {
+    selectedBlock: {
+      ...videoInternal,
+      children: [posterInternal]
+    }
   }
 }
 
-export const PosterModal = Template.bind({})
-PosterModal.args = {
-  selectedBlock: {
-    ...videoInternal,
-    children: [posterInternal]
+export const YouTube = {
+  ...Template,
+  args: {
+    selectedBlock: {
+      ...videoYouTube,
+      children: [posterYouTube]
+    }
+  },
+
+  name: 'YouTube'
+}
+
+export const PosterModal = {
+  ...Template,
+  args: {
+    selectedBlock: {
+      ...videoInternal,
+      children: [posterInternal]
+    }
+  },
+  play: async () => {
+    const settingsTab = await screen.getAllByTestId('posterCreateButton')[0]
+    await userEvent.click(settingsTab)
   }
 }
 
-PosterModal.play = async () => {
-  const settingsTab = await screen.getAllByTestId('posterCreateButton')[0]
-  await userEvent.click(settingsTab)
-}
-
-export default BackgroundMediaStory as Meta
+export default BackgroundMediaStory

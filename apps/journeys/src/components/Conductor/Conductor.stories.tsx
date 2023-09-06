@@ -1,29 +1,33 @@
-import { ComponentProps } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { expect } from '@storybook/jest'
+import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
+import { ComponentProps } from 'react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   JourneyFields as Journey,
   JourneyFields_language as Language
 } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { journeysConfig } from '../../libs/storybook'
+
 import {
-  ThemeName,
+  ChatPlatform,
+  JourneyStatus,
   ThemeMode,
-  JourneyStatus
+  ThemeName
 } from '../../../__generated__/globalTypes'
+import { journeysConfig } from '../../libs/storybook'
 import {
   basic,
   imageBlocks,
   videoBlocks,
   videoLoop
 } from '../../libs/testData/storyData'
+
 import { Conductor } from '.'
 
-const Demo = {
+const Demo: Meta<typeof Conductor> = {
   ...journeysConfig,
   component: Conductor,
   title: 'Journeys/Conductor',
@@ -76,55 +80,92 @@ const defaultJourney: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  chatButtons: [],
+  host: null,
+  team: null
 }
 
-const Template: Story<
-  ComponentProps<typeof Conductor> & { journey?: Journey }
-> = ({ journey = defaultJourney, ...args }) => (
-  <MockedProvider mocks={[]}>
-    <JourneyProvider value={{ journey }}>
-      <SnackbarProvider>
-        <Conductor {...args} />
-      </SnackbarProvider>
-    </JourneyProvider>
-  </MockedProvider>
-)
+type Story = StoryObj<ComponentProps<typeof Conductor> & { journey?: Journey }>
 
-export const Default = Template.bind({})
-Default.args = {
-  blocks: basic
+const Template: Story = {
+  render: ({ journey = defaultJourney, ...args }) => (
+    <MockedProvider mocks={[]}>
+      <JourneyProvider value={{ journey }}>
+        <SnackbarProvider>
+          <Conductor {...args} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    </MockedProvider>
+  )
 }
 
-export const WithContent = Template.bind({})
-WithContent.args = {
-  blocks: imageBlocks
-}
-WithContent.play = async () => {
-  const nextButton = screen.getAllByTestId('conductorRightButton')[0]
-  await waitFor(() => {
-    userEvent.click(nextButton)
-    expect(screen.getAllByTestId('leftNavContainer')[1]).toBeInTheDocument()
-  })
+export const Default = {
+  ...Template,
+  args: {
+    blocks: basic
+  }
 }
 
-export const WithVideo = Template.bind({})
-WithVideo.args = {
-  blocks: videoBlocks
+export const WithContent = {
+  ...Template,
+  args: {
+    journey: {
+      ...defaultJourney,
+      chatButtons: [
+        {
+          __typename: 'ChatButton',
+          id: '1',
+          link: 'https://m.me/',
+          platform: ChatPlatform.tikTok
+        },
+        {
+          __typename: 'ChatButton',
+          id: '1',
+          link: 'https://m.me/',
+          platform: ChatPlatform.snapchat
+        }
+      ]
+    },
+    blocks: imageBlocks
+  },
+  play: async () => {
+    const nextButton = screen.getAllByTestId('conductorNextButton')[0]
+    await userEvent.click(nextButton)
+    await waitFor(async () => {
+      await expect(
+        screen.getAllByTestId('prevNavContainer')[1]
+      ).toBeInTheDocument()
+    })
+  }
 }
 
-export const WithVideoLoop = Template.bind({})
-WithVideoLoop.args = {
-  blocks: videoLoop
+export const WithVideo = {
+  ...Template,
+  args: {
+    blocks: videoBlocks
+  }
 }
 
-export const RTL = Template.bind({})
-RTL.args = {
-  journey: { ...defaultJourney, language: rtlLanguage },
-  blocks: basic
-}
-RTL.parameters = {
-  rtl: true
+export const WithVideoLoop = {
+  ...Template,
+  args: {
+    blocks: videoLoop
+  },
+  parameters: {
+    chromatic: { disableSnapshot: true }
+  }
 }
 
-export default Demo as Meta
+export const RTL = {
+  ...Template,
+  args: {
+    journey: { ...defaultJourney, language: rtlLanguage },
+    blocks: basic
+  },
+  parameters: {
+    rtl: true
+  }
+}
+
+export default Demo

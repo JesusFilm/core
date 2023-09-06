@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE, ImageUpload } from './ImageUpload'
 
 jest.mock('node-fetch', () => {
@@ -154,6 +156,50 @@ describe('ImageUpload', () => {
       </MockedProvider>
     )
     expect(getByTestId('CloudOffRoundedIcon')).toBeInTheDocument()
-    expect(getByText('Upload Failed!'))
+    expect(getByText('Upload Failed!')).toBeInTheDocument()
+  })
+
+  it('should call setUploading on file drop', async () => {
+    const setUploading = jest.fn()
+    const { getByTestId, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+            },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={jest.fn()}
+          setUploading={setUploading}
+          loading
+          selectedBlock={imageBlock}
+          error
+        />
+      </MockedProvider>
+    )
+    const inputEl = getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', {
+          type: 'image/png'
+        })
+      ]
+    })
+    fireEvent.drop(inputEl)
+    await waitFor(() => expect(setUploading).toHaveBeenCalled())
+    expect(getByText('Uploading...')).toBeInTheDocument()
   })
 })

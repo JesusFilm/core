@@ -1,18 +1,19 @@
-import { ReactElement, useMemo } from 'react'
-import NextLink from 'next/link'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Collapse from '@mui/material/Collapse'
+import Container from '@mui/material/Container'
 import Link from '@mui/material/Link'
 import Skeleton from '@mui/material/Skeleton'
-import Collapse from '@mui/material/Collapse'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import NextLink from 'next/link'
+import { ReactElement, useMemo } from 'react'
+
 import { VideoLabel } from '../../../../__generated__/globalTypes'
+import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 import { useVideo } from '../../../libs/videoContext'
 import { ShareButton } from '../../ShareButton'
 import { DownloadButton } from '../DownloadButton'
-import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 interface VideoHeadingProps {
   loading?: boolean
@@ -74,6 +75,7 @@ export function VideoHeading({
                 <NextLink
                   href={`/${container.variant?.slug as string}`}
                   passHref
+                  legacyBehavior
                 >
                   <Link
                     variant="overline1"
@@ -104,7 +106,11 @@ export function VideoHeading({
                   )}
                 </Typography>
               </Stack>
-              <NextLink href={`/${container.variant?.slug as string}`} passHref>
+              <NextLink
+                href={`/${container.variant?.slug as string}`}
+                passHref
+                legacyBehavior
+              >
                 <Button
                   variant="outlined"
                   size="small"

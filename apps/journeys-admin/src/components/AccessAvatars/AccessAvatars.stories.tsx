@@ -1,16 +1,17 @@
-import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { simpleComponentConfig } from '../../libs/storybook'
-import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
+import { Meta, StoryObj } from '@storybook/react'
+
 import {
-  GetJourneys_journeys_userJourneys as UserJourney,
-  GetJourneys_journeys_userJourneys_user as User
-} from '../../../__generated__/GetJourneys'
-import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
+  GetAdminJourneys_journeys_userJourneys_user as User,
+  GetAdminJourneys_journeys_userJourneys as UserJourney
+} from '../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import { AccessAvatarsProps } from './AccessAvatars'
+import { simpleComponentConfig } from '../../libs/storybook'
+import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
+import { GET_JOURNEY_WITH_PERMISSIONS } from '../AccessDialog/AccessDialog'
+
 import {
   userJourney1,
   userJourney2,
@@ -20,9 +21,10 @@ import {
   userJourney6,
   userJourney7
 } from './data'
+
 import { AccessAvatars } from '.'
 
-const AccessAvatarsDemo = {
+const AccessAvatarsDemo: Meta<typeof AccessAvatars> = {
   ...simpleComponentConfig,
   component: AccessAvatars,
   title: 'Journeys-Admin/AccessAvatars'
@@ -86,7 +88,7 @@ const loadingUserJourneys = undefined
 const mocks = [
   {
     request: {
-      query: GET_JOURNEY_WITH_USER_JOURNEYS,
+      query: GET_JOURNEY_WITH_PERMISSIONS,
       variables: {
         id: 'journeyId'
       }
@@ -153,79 +155,86 @@ const mocks = [
   }
 ]
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider mocks={mocks}>
-    <Stack spacing={4}>
-      <Typography>Default</Typography>
-      <AccessAvatars
-        journeyId="journeyId"
-        userJourneys={defaultUserJourneys}
-        size={args.size}
-      />
+const Template: StoryObj<typeof AccessAvatars> = {
+  render: ({ ...args }) => (
+    <MockedProvider mocks={mocks}>
+      <Stack spacing={4}>
+        <Typography>Default</Typography>
+        <AccessAvatars
+          journeyId="journeyId"
+          userJourneys={defaultUserJourneys}
+          size={args.size}
+        />
 
-      <Typography>No Image</Typography>
-      <AccessAvatars
-        journeyId="journeyId"
-        userJourneys={noImageUserJourneys}
-        size={args.size}
-      />
+        <Typography>No Image</Typography>
+        <AccessAvatars
+          journeyId="journeyId"
+          userJourneys={noImageUserJourneys}
+          size={args.size}
+        />
 
-      <Typography>ManageButton</Typography>
-      <AccessAvatars
-        journeyId="journeyId"
-        userJourneys={defaultUserJourneys}
-        size={args.size}
-        showManageButton
-      />
+        <Typography>ManageButton</Typography>
+        <AccessAvatars
+          journeyId="journeyId"
+          userJourneys={defaultUserJourneys}
+          size={args.size}
+          showManageButton
+        />
 
-      <Typography>Overflow</Typography>
-      <AccessAvatars
-        journeyId="journeyId"
-        userJourneys={overflowUserJourneys}
-        size={args.size}
-      />
+        <Typography>Overflow</Typography>
+        <AccessAvatars
+          journeyId="journeyId"
+          userJourneys={overflowUserJourneys}
+          size={args.size}
+        />
 
-      <Typography>ManageButtonOverflow</Typography>
-      <AccessAvatars
-        journeyId="journeyId"
-        userJourneys={overflowUserJourneys}
-        size={args.size}
-        showManageButton
-      />
+        <Typography>ManageButtonOverflow</Typography>
+        <AccessAvatars
+          journeyId="journeyId"
+          userJourneys={overflowUserJourneys}
+          size={args.size}
+          showManageButton
+        />
 
-      <Typography>Notification</Typography>
-      <AccessAvatars
-        journeyId="journeyId"
-        userJourneys={notificationJourneys}
-        size={args.size}
-      />
+        <Typography>Notification</Typography>
+        <AccessAvatars
+          journeyId="journeyId"
+          userJourneys={notificationJourneys}
+          size={args.size}
+        />
 
-      <Typography>Overflow Notification</Typography>
-      <AccessAvatars
-        journeyId="journeyId"
-        userJourneys={overflowNotificationUserJourneys}
-        size={args.size}
-      />
+        <Typography>Overflow Notification</Typography>
+        <AccessAvatars
+          journeyId="journeyId"
+          userJourneys={overflowNotificationUserJourneys}
+          size={args.size}
+        />
 
-      <Typography>Loading</Typography>
-      <AccessAvatars
-        journeyId="journeyId"
-        userJourneys={loadingUserJourneys}
-        size={args.size}
-      />
-    </Stack>
-  </MockedProvider>
-)
-
-export const Default: Story<AccessAvatarsProps> = Template.bind({})
-
-export const Medium: Story<AccessAvatarsProps> = Template.bind({})
-Medium.args = {
-  size: 'medium'
+        <Typography>Loading</Typography>
+        <AccessAvatars
+          journeyId="journeyId"
+          userJourneys={loadingUserJourneys}
+          size={args.size}
+        />
+      </Stack>
+    </MockedProvider>
+  )
 }
 
-export const Large: Story<AccessAvatarsProps> = Template.bind({})
-Large.args = {
-  size: 'large'
+export const Default = { ...Template }
+
+export const Medium = {
+  ...Template,
+  args: {
+    size: 'medium'
+  }
 }
-export default AccessAvatarsDemo as Meta
+
+export const Large = {
+  ...Template,
+  args: {
+    size: 'large'
+  }
+}
+
+export default AccessAvatarsDemo

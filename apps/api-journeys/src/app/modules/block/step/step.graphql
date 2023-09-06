@@ -33,7 +33,10 @@ extend type Mutation {
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(
     id: ID!
-    journeyId: ID!
     input: StepBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): StepBlock!
 }

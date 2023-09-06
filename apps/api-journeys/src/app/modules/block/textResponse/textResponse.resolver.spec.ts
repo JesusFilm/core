@@ -1,73 +1,59 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
-  TextResponseBlock,
-  TextResponseBlockCreateInput
+  TextResponseBlockCreateInput,
+  TextResponseBlockUpdateInput
 } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { UserRoleService } from '../../userRole/userRole.service'
-import { BlockResolver } from '../block.resolver'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
+
 import { TextResponseBlockResolver } from './textResponse.resolver'
 
 describe('TextResponseBlockResolver', () => {
   let resolver: TextResponseBlockResolver,
-    blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
   const block = {
-    id: '1',
-    journeyId: '2',
-    parentBlockId: '0',
-    __typename: 'TextResponseBlock',
+    id: 'blockId',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId',
+    typename: 'TextResponseBlock',
     parentOrder: 1,
-    action: {
-      gtmEventName: 'gtmEventName',
-      journeyId: '2'
-    },
-    submitIconId: 'icon1',
+    submitIconId: 'submitIconId',
     submitLabel: 'Submit'
+  } as unknown as Block
+  const blockWithUserTeam = {
+    ...block,
+    journey
   }
-
-  const actionResponse = {
-    ...block.action,
-    parentBlockId: block.id
-  }
-
-  const input: TextResponseBlockCreateInput & { __typename: string } = {
-    id: '1',
-    journeyId: '2',
-    parentBlockId: '',
-    __typename: '',
+  const blockCreateInput: TextResponseBlockCreateInput = {
+    id: 'blockId',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId',
     label: 'Your answer here...',
     submitLabel: 'Submit'
   }
-
-  const textResponseBlockResponse = {
-    ...input,
-    __typename: 'TextResponseBlock',
-    parentOrder: 2
-  }
-
-  const blockUpdate = {
-    parentBlockId: '0',
+  const blockUpdateInput: TextResponseBlockUpdateInput = {
+    parentBlockId: 'parentBlockId',
     label: 'Your answer',
     hint: 'Enter your answer above',
     submitIconId: 'icon1',
     submitLabel: 'Next'
   }
-
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
-      save: jest.fn((input) => input),
       update: jest.fn((input) => input),
       validateBlock: jest.fn()
     })
@@ -75,77 +61,113 @@ describe('TextResponseBlockResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        BlockResolver,
         blockService,
         TextResponseBlockResolver,
-        UserJourneyService,
-        UserRoleService,
-        JourneyService,
-        MemberService,
         {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<TextResponseBlockResolver>(TextResponseBlockResolver)
     service = await module.resolve(BlockService)
-  })
-
-  describe('TextResponseBlock', () => {
-    it('returns TextResponseBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(block)
-      expect(await blockResolver.blocks()).toEqual([block, block])
-    })
-  })
-
-  describe('action', () => {
-    it('returns TextResponseBlock action with parentBlockId', async () => {
-      expect(
-        await resolver.action(block as unknown as TextResponseBlock)
-      ).toEqual(actionResponse)
-    })
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   describe('TextResponseBlockCreate', () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
     it('creates a TextResponseBlock', async () => {
-      await resolver.textResponseBlockCreate(input)
-      expect(service.save).toHaveBeenCalledWith(textResponseBlockResponse)
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.textResponseBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: 2,
+          typename: 'TextResponseBlock',
+          label: 'Your answer here...',
+          submitLabel: 'Submit'
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        blockCreateInput.journeyId,
+        blockCreateInput.parentBlockId
+      )
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.create.mockResolvedValueOnce(block)
+      await expect(
+        resolver.textResponseBlockCreate(ability, blockCreateInput)
+      ).rejects.toThrow('user is not allowed to create block')
     })
   })
 
   describe('TextResponseBlockUpdate', () => {
-    it('updates a TextResponseBlock', async () => {
-      const mockValidate = service.validateBlock as jest.MockedFunction<
+    let mockValidate: jest.MockedFunction<typeof service.validateBlock>
+
+    beforeEach(() => {
+      mockValidate = service.validateBlock as jest.MockedFunction<
         typeof service.validateBlock
       >
-      mockValidate.mockResolvedValueOnce(true)
-
-      await resolver.textResponseBlockUpdate(
-        block.id,
-        block.journeyId,
-        blockUpdate
-      )
-      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
+      mockValidate.mockResolvedValue(true)
     })
 
-    it('should throw error with an invalid submitIconId', async () => {
-      const mockValidate = service.validateBlock as jest.MockedFunction<
-        typeof service.validateBlock
-      >
+    it('updates a TextResponseBlock', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.textResponseBlockUpdate(
+        ability,
+        'blockId',
+        blockUpdateInput
+      )
+      expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
+    })
+
+    it('throws error if submitIconId does not exist', async () => {
       mockValidate.mockResolvedValueOnce(false)
 
-      await resolver
-        .textResponseBlockUpdate(block.id, block.journeyId, {
-          ...blockUpdate,
+      await expect(
+        resolver.textResponseBlockUpdate(ability, 'blockId', {
+          ...blockUpdateInput,
           submitIconId: 'wrong!'
         })
-        .catch((error) => {
-          expect(error.message).toEqual('Submit icon does not exist')
-        })
-      expect(service.update).not.toHaveBeenCalled()
+      ).rejects.toThrow('Submit icon does not exist')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.textResponseBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.textResponseBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('user is not allowed to update block')
     })
   })
 })

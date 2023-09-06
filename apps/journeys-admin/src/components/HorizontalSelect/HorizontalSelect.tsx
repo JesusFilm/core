@@ -1,16 +1,15 @@
-import {
-  ReactElement,
-  Children,
-  ReactNode,
-  isValidElement,
-  useRef,
-  useEffect
-} from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/system/styleFunctionSx'
 import { Theme } from '@mui/material/styles'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { SxProps } from '@mui/system/styleFunctionSx'
+import {
+  Children,
+  ReactElement,
+  ReactNode,
+  isValidElement,
+  useEffect,
+  useRef
+} from 'react'
 
 export interface HorizontalSelectProps {
   onChange?: (id: string) => void
@@ -19,7 +18,6 @@ export interface HorizontalSelectProps {
   sx?: SxProps<Theme>
   footer?: ReactNode
   isDragging?: boolean
-  view?: ActiveJourneyEditContent
 }
 
 export function HorizontalSelect({
@@ -28,8 +26,7 @@ export function HorizontalSelect({
   onChange,
   sx,
   footer,
-  isDragging,
-  view
+  isDragging
 }: HorizontalSelectProps): ReactElement {
   const selectedRef = useRef<HTMLElement>(null)
 
@@ -66,9 +63,7 @@ export function HorizontalSelect({
                 transition: '0.2s border-color ease-out',
                 position: 'relative',
                 outline: (theme) =>
-                  id === child.props.id &&
-                  isDragging !== true &&
-                  (view == null || view === ActiveJourneyEditContent.Canvas)
+                  id === child.props.id && isDragging !== true
                     ? `2px solid ${theme.palette.primary.main} `
                     : '2px solid transparent',
                 border: '3px solid transparent',

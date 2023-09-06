@@ -1,13 +1,23 @@
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database/DatabaseModule'
-import { BlockService } from '../block/block.service'
+
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
-import { JourneyService } from './journey.service'
+import { PrismaService } from '../../lib/prisma.service'
+import { BlockService } from '../block/block.service'
+import { ChatButtonResolver } from '../chatButton/chatButton.resolver'
+
 import { JourneyResolver } from './journey.resolver'
 
 @Module({
-  imports: [DatabaseModule],
-  providers: [JourneyService, JourneyResolver, BlockService, DateTimeScalar],
-  exports: [JourneyService]
+  imports: [CaslAuthModule.register(AppCaslFactory)],
+  providers: [
+    JourneyResolver,
+    BlockService,
+    DateTimeScalar,
+    ChatButtonResolver,
+    PrismaService
+  ]
 })
 export class JourneyModule {}

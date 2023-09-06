@@ -25,7 +25,10 @@ extend type Mutation {
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
   signUpBlockUpdate(
     id: ID!
-    journeyId: ID!
     input: SignUpBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): SignUpBlock
 }

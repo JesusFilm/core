@@ -1,15 +1,14 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloQueryResult } from '@apollo/client'
-import { useSnackbar } from 'notistack'
+import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
 import UnarchiveRoundedIcon from '@mui/icons-material/UnarchiveRounded'
-import { MenuItem } from '../../../../../MenuItem'
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+
+import { GetAdminJourneys } from '../../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
-import { GetActiveJourneys } from '../../../../../../../__generated__/GetActiveJourneys'
-import { GetArchivedJourneys } from '../../../../../../../__generated__/GetArchivedJourneys'
-import { GetTrashedJourneys } from '../../../../../../../__generated__/GetTrashedJourneys'
+import { MenuItem } from '../../../../../MenuItem'
 
 export const JOURNEY_ARCHIVE = gql`
   mutation JourneyArchive($ids: [ID!]!) {
@@ -34,11 +33,7 @@ export interface ArchiveJourneyProps {
   id: string
   published: boolean
   handleClose: () => void
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function ArchiveJourney({

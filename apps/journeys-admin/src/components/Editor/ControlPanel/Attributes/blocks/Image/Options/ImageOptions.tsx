@@ -1,9 +1,11 @@
-import { ReactElement } from 'react'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ImageBlockUpdate } from '../../../../../../../../__generated__/ImageBlockUpdate'
 import { ImageBlockEditor } from '../../../../../ImageBlockEditor'
@@ -49,10 +51,6 @@ export function ImageOptions(): ReactElement {
             src: null
           }
         }
-      })
-      enqueueSnackbar('Image Deleted', {
-        variant: 'success',
-        preventDuplicate: true
       })
     } catch (e) {
       enqueueSnackbar(e.message, {

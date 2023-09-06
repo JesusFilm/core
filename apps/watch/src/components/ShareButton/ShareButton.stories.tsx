@@ -1,9 +1,11 @@
-import { ComponentMeta, Story } from '@storybook/react'
-import { noop } from 'lodash'
+import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
+
 import { watchConfig } from '../../libs/storybook'
+
 import { ShareButton } from '.'
 
-const ShareButtonStory: ComponentMeta<typeof ShareButton> = {
+const ShareButtonStory: Meta<typeof ShareButton> = {
   ...watchConfig,
   component: ShareButton,
   title: 'Watch/ShareButton',
@@ -13,13 +15,15 @@ const ShareButtonStory: ComponentMeta<typeof ShareButton> = {
   }
 }
 
-const Template: Story<typeof ShareButton> = () => (
-  <>
-    <ShareButton variant="icon" onClick={noop} />
-    <ShareButton variant="button" onClick={noop} />
-  </>
-)
+const Template: StoryObj<typeof ShareButton> = {
+  render: () => (
+    <>
+      <ShareButton variant="icon" onClick={noop} />
+      <ShareButton variant="button" onClick={noop} />
+    </>
+  )
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
 export default ShareButtonStory

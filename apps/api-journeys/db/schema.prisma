@@ -1,0 +1,415 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = env("PRISMA_LOCATION")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL")
+}
+
+enum ChatPlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+  custom
+}
+
+enum MessagePlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+  custom
+}
+
+enum VisitorStatus {
+  star
+  prohibited
+  checkMarkSymbol
+  thumbsUp
+  thumbsDown
+  partyPopper
+  warning
+  robotFace
+  redExclamationMark
+  redQuestionMark
+}
+
+enum DeviceType {
+  console
+  mobile
+  tablet
+  smarttv
+  wearable
+  embedded
+}
+
+enum ButtonAction {
+  NavigateAction
+  NavigateToBlockAction
+  NavigateToJourneyAction
+  LinkAction
+  EmailAction
+}
+
+enum VideoBlockSource {
+  cloudflare
+  internal
+  youTube
+}
+
+model ChatButton {
+  id        String        @id @default(uuid())
+  journeyId String
+  link      String?
+  updatedAt DateTime      @default(now()) @updatedAt
+  platform  ChatPlatform?
+  journey   Journey       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@index([journeyId])
+}
+
+model Event {
+  id                      String            @id @default(uuid())
+  typename                String
+  journeyId               String?
+  blockId                 String?
+  stepId                  String?
+  createdAt               DateTime          @default(now())
+  label                   String?
+  value                   String?
+  visitorId               String
+  action                  ButtonAction?
+  actionValue             String?
+  messagePlatform         MessagePlatform?
+  languageId              String?
+  radioOptionBlockId      String?
+  email                   String?
+  nextStepId              String?
+  position                Float?
+  source                  VideoBlockSource?
+  progress                Int?
+  userId                  String?
+  journeyVisitorJourneyId String?
+  journeyVisitorVisitorId String?
+  updatedAt               DateTime          @default(now()) @updatedAt
+  visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
+
+  @@index([id, journeyId, visitorId, blockId, userId])
+}
+
+model Visitor {
+  id                        String           @id
+  createdAt                 DateTime         @default(now())
+  countryCode               String?
+  duration                  Int              @default(0)
+  email                     String?
+  events                    Event[]
+  lastChatStartedAt         DateTime?
+  lastChatPlatform          MessagePlatform?
+  lastStepViewedAt          DateTime?
+  lastLinkAction            String?
+  lastTextResponse          String?
+  lastRadioQuestion         String?
+  lastRadioOptionSubmission String?
+  messagePlatform           MessagePlatform?
+  messagePlatformId         String?
+  name                      String?
+  notes                     String?
+  status                    VisitorStatus?
+  referrer                  String?
+  teamId                    String
+  userId                    String
+  userAgent                 Json?
+  updatedAt                 DateTime         @default(now()) @updatedAt
+  journeyVisitors           JourneyVisitor[]
+  team                      Team             @relation(fields: [teamId], references: [id])
+
+  @@index([id, teamId, createdAt, userId, status, countryCode])
+}
+
+model Host {
+  id        String    @id @default(uuid())
+  teamId    String
+  team      Team      @relation(fields: [teamId], references: [id])
+  title     String
+  location  String?
+  src1      String?
+  src2      String?
+  updatedAt DateTime  @default(now()) @updatedAt
+  journeys  Journey[]
+}
+
+model JourneyVisitor {
+  id                        String           @id @default(uuid())
+  journeyId                 String
+  visitorId                 String
+  createdAt                 DateTime         @default(now())
+  duration                  Int              @default(0)
+  lastChatStartedAt         DateTime?
+  lastChatPlatform          MessagePlatform?
+  lastStepViewedAt          DateTime?
+  lastLinkAction            String?
+  lastTextResponse          String?
+  lastRadioQuestion         String?
+  lastRadioOptionSubmission String?
+  activityCount             Int              @default(0)
+  updatedAt                 DateTime         @default(now()) @updatedAt
+  journey                   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  visitor                   Visitor          @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  events                    Event[]
+
+  @@unique([journeyId, visitorId])
+  @@index([journeyId, visitorId, createdAt, lastChatStartedAt, lastRadioQuestion, lastTextResponse, activityCount, duration])
+}
+
+model Team {
+  id              String           @id @default(uuid())
+  title           String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  visitors        Visitor[]
+  userTeams       UserTeam[]
+  journeys        Journey[]
+  hosts           Host[]
+  UserTeamInvites UserTeamInvite[]
+
+  @@index([title])
+}
+
+model UserTeam {
+  id        String       @id @default(uuid())
+  teamId    String
+  team      Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String
+  role      UserTeamRole @default(member)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([teamId, userId])
+}
+
+model UserTeamInvite {
+  id           String    @id @default(uuid())
+  teamId       String
+  team         Team      @relation(fields: [teamId], references: [id])
+  email        String
+  senderId     String
+  receipientId String?
+  acceptedAt   DateTime?
+  removedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([teamId, email])
+  @@index([email])
+}
+
+enum UserTeamRole {
+  manager
+  member
+}
+
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
+}
+
+model UserJourney {
+  id        String          @id @default(uuid())
+  userId    String
+  journeyId String
+  updatedAt DateTime        @default(now()) @updatedAt
+  journey   Journey         @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  role      UserJourneyRole
+  openedAt  DateTime?
+
+  @@unique([journeyId, userId])
+}
+
+enum JourneyStatus {
+  archived
+  deleted
+  draft
+  published
+  trashed
+}
+
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}
+
+model Journey {
+  id                  String           @id @default(uuid())
+  title               String
+  languageId          String
+  description         String?
+  slug                String           @unique
+  archivedAt          DateTime?
+  createdAt           DateTime         @default(now())
+  deletedAt           DateTime?
+  publishedAt         DateTime?
+  trashedAt           DateTime?
+  featuredAt          DateTime?
+  status              JourneyStatus
+  seoTitle            String?
+  seoDescription      String?
+  primaryImageBlockId String?          @unique
+  template            Boolean?         @default(false)
+  teamId              String
+  hostId              String?
+  themeMode           ThemeMode?       @default(light)
+  themeName           ThemeName?       @default(base)
+  updatedAt           DateTime         @default(now()) @updatedAt
+  userJourneys        UserJourney[]
+  team                Team             @relation(fields: [teamId], references: [id])
+  userInvites         UserInvite[]
+  blocks              Block[]
+  chatButtons         ChatButton[]
+  host                Host?            @relation(fields: [hostId], references: [id])
+  actions             Action[]
+  primaryImageBlock   Block?           @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
+  journeyVisitors     JourneyVisitor[]
+
+  @@index([title])
+}
+
+enum Role {
+  publisher
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String @unique
+  roles  Role[]
+}
+
+model JourneyProfile {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  acceptedTermsAt  DateTime @default(now())
+  lastActiveTeamId String?
+}
+
+model UserInvite {
+  id         String    @id @default(uuid())
+  journeyId  String
+  senderId   String
+  email      String
+  acceptedAt DateTime?
+  removedAt  DateTime?
+  updatedAt  DateTime  @default(now()) @updatedAt
+  journey    Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@unique([journeyId, email])
+  @@index([journeyId, email])
+}
+
+enum VideoBlockObjectFit {
+  fill
+  fit
+  zoomed
+}
+
+model Block {
+  id                      String               @id @default(uuid())
+  typename                String
+  journeyId               String
+  parentBlockId           String?
+  parentOrder             Int?
+  label                   String?
+  variant                 String?
+  color                   String?
+  size                    String?
+  startIconId             String?
+  endIconId               String?
+  action                  Action?
+  backgroundColor         String?
+  coverBlockId            String?              @unique
+  fullscreen              Boolean?
+  themeMode               String?
+  themeName               String?
+  spacing                 Int?
+  direction               String?
+  justifyContent          String?
+  alignItems              String?
+  xl                      Int?
+  lg                      Int?
+  sm                      Int?
+  name                    String?
+  src                     String?
+  width                   Int?
+  height                  Int?
+  alt                     String?
+  blurhash                String?
+  submitIconId            String?
+  submitLabel             String?
+  nextBlockId             String?
+  locked                  Boolean?
+  hint                    String?
+  minRows                 Int?
+  content                 String?
+  align                   String?
+  startAt                 Int?
+  endAt                   Int?
+  muted                   Boolean?
+  autoplay                Boolean?
+  posterBlockId           String?              @unique
+  fullsize                Boolean?
+  videoId                 String?
+  videoVariantLanguageId  String?
+  source                  VideoBlockSource?
+  title                   String?
+  description             String?
+  image                   String?
+  duration                Int?
+  objectFit               VideoBlockObjectFit?
+  triggerStart            Int?
+  updatedAt               DateTime             @default(now()) @updatedAt
+  journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
+  posterBlockParent       Block?               @relation("PosterBlock")
+  coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
+  coverBlockParent        Block?               @relation("CoverBlock")
+  primaryImageBlockParent Journey?             @relation("PrimaryImageBlock")
+  nextBlock               Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
+  nextBlockParents        Block[]              @relation("NextBlock")
+  parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
+  childBlocks             Block[]              @relation("ParentBlock")
+  targetActions           Action[]             @relation("Block")
+}
+
+model Action {
+  parentBlockId String   @id
+  gtmEventName  String?
+  blockId       String?
+  journeyId     String?
+  url           String?
+  target        String?
+  email         String?
+  updatedAt     DateTime @default(now()) @updatedAt
+  parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
+  journey       Journey? @relation(fields: [journeyId], references: [id])
+  block         Block?   @relation("Block", fields: [blockId], references: [id])
+}

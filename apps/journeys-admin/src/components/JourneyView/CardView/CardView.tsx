@@ -1,14 +1,15 @@
-import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
-import Skeleton from '@mui/material/Skeleton'
 import Box from '@mui/material/Box'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+import Skeleton from '@mui/material/Skeleton'
+import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
-import { CardPreview } from '../../CardPreview'
-import { OnSelectProps } from '../../CardPreview/CardPreview'
+import { CardPreview, OnSelectProps } from '../../CardPreview'
 
 export interface CardViewProps {
   id?: string
@@ -32,18 +33,19 @@ export function CardView({
     if (step != null) {
       location += `?stepId=${step.id}`
     }
-    if (journey?.template !== true) {
-      void router.push(`/journeys/${location}`, undefined, {
-        shallow: true
-      })
-    }
+
     if (view != null) {
       void router.push(`/journeys/${location}?view=${view}`, undefined, {
         shallow: true
       })
+      return
     }
 
-    if (journey?.template === true && isPublisher === true) {
+    if (journey?.template !== true) {
+      void router.push(`/journeys/${location}`, undefined, {
+        shallow: true
+      })
+    } else if (journey.template && isPublisher === true) {
       void router.push(`/publisher/${location}`, undefined, {
         shallow: true
       })
@@ -64,6 +66,7 @@ export function CardView({
         onSelect={handleSelect}
         steps={blocks}
         showAddButton={journey?.template !== true || isPublisher}
+        showNavigationCards
         isDraggable={false}
       />
       <Box sx={{ pt: 2, display: 'flex', justifyContent: 'center' }}>

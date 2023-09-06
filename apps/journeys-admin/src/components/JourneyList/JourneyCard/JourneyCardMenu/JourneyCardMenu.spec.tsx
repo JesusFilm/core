@@ -1,8 +1,11 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { TeamProvider } from '../../../Team/TeamProvider'
 import { ThemeProvider } from '../../../ThemeProvider'
+
 import { JourneyCardMenu } from '.'
 
 describe('JourneyCardMenu', () => {
@@ -10,14 +13,16 @@ describe('JourneyCardMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <ThemeProvider>
-            <JourneyCardMenu
-              id="journeyId"
-              status={JourneyStatus.published}
-              slug="published-journey"
-              published
-            />
-          </ThemeProvider>
+          <TeamProvider>
+            <ThemeProvider>
+              <JourneyCardMenu
+                id="journeyId"
+                status={JourneyStatus.published}
+                slug="published-journey"
+                published
+              />
+            </ThemeProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -77,14 +82,16 @@ describe('JourneyCardMenu', () => {
     const { getByRole, queryByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <ThemeProvider>
-            <JourneyCardMenu
-              id="journeyId"
-              status={JourneyStatus.draft}
-              slug="draft-journey"
-              published={false}
-            />
-          </ThemeProvider>
+          <TeamProvider>
+            <ThemeProvider>
+              <JourneyCardMenu
+                id="journeyId"
+                status={JourneyStatus.draft}
+                slug="draft-journey"
+                published={false}
+              />
+            </ThemeProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -102,14 +109,16 @@ describe('JourneyCardMenu', () => {
     const { getByRole, queryByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <ThemeProvider>
-            <JourneyCardMenu
-              id="journeyId"
-              status={JourneyStatus.draft}
-              slug="draft-journey"
-              published={false}
-            />
-          </ThemeProvider>
+          <TeamProvider>
+            <ThemeProvider>
+              <JourneyCardMenu
+                id="journeyId"
+                status={JourneyStatus.draft}
+                slug="draft-journey"
+                published={false}
+              />
+            </ThemeProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

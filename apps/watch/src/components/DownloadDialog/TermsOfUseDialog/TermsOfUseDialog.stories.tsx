@@ -1,9 +1,10 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
+
 import { watchConfig } from '../../../libs/storybook'
+
 import { TermsOfUseDialog } from './TermsOfUseDialog'
 
-const TermsOfUseDialogStory = {
+const TermsOfUseDialogStory: Meta<typeof TermsOfUseDialog> = {
   ...watchConfig,
   component: TermsOfUseDialog,
   title: 'Watch/TermsOfUseDialog',
@@ -13,15 +14,17 @@ const TermsOfUseDialogStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof TermsOfUseDialog>> = ({
-  ...args
-}) => {
-  return <TermsOfUseDialog {...args} />
+const Template: StoryObj<typeof TermsOfUseDialog> = {
+  render: ({ ...args }) => {
+    return <TermsOfUseDialog {...args} />
+  }
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  open: true
+export const Default = {
+  ...Template,
+  args: {
+    open: true
+  }
 }
 
-export default TermsOfUseDialogStory as Meta
+export default TermsOfUseDialogStory

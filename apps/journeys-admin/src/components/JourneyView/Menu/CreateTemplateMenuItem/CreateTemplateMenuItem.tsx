@@ -1,20 +1,14 @@
-import { ReactElement } from 'react'
+import { gql, useMutation } from '@apollo/client'
 import ShopRounded from '@mui/icons-material/ShopRounded'
-import { useMutation, gql } from '@apollo/client'
 import { useRouter } from 'next/router'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { CreateTemplate } from '../../../../../__generated__/CreateTemplate'
-import { DuplicateJourney } from '../../../../../__generated__/DuplicateJourney'
-import { RemoveUserJourney } from '../../../../../__generated__/RemoveUserJourney'
-import { MenuItem } from '../../../MenuItem'
+import { ReactElement } from 'react'
 
-export const DUPLICATE_JOURNEY = gql`
-  mutation DuplicateJourney($id: ID!) {
-    journeyDuplicate(id: $id) {
-      id
-    }
-  }
-`
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { CreateTemplate } from '../../../../../__generated__/CreateTemplate'
+import { RemoveUserJourney } from '../../../../../__generated__/RemoveUserJourney'
+import { useJourneyDuplicateMutation } from '../../../../libs/useJourneyDuplicateMutation'
+import { MenuItem } from '../../../MenuItem'
 
 export const REMOVE_USER_JOURNEY = gql`
   mutation RemoveUserJourney($id: ID!) {
@@ -37,7 +31,8 @@ export function CreateTemplateMenuItem(): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
 
-  const [duplicateJourney] = useMutation<DuplicateJourney>(DUPLICATE_JOURNEY)
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
+
   const [removeUserJourney] =
     useMutation<RemoveUserJourney>(REMOVE_USER_JOURNEY)
   const [createTemplate] = useMutation<CreateTemplate>(CREATE_TEMPLATE)
@@ -45,32 +40,12 @@ export function CreateTemplateMenuItem(): ReactElement {
   const handleCreateTemplate = async (): Promise<void> => {
     if (journey == null) return
 
-    const { data } = await duplicateJourney({
-      variables: {
-        id: journey?.id
-      },
-      update(cache, { data }) {
-        if (data?.journeyDuplicate != null) {
-          cache.modify({
-            fields: {
-              adminJourneys(existingAdminJourneyRefs = []) {
-                const duplicatedJourneyRef = cache.writeFragment({
-                  data: data.journeyDuplicate,
-                  fragment: gql`
-                    fragment DuplicatedJourney on Journey {
-                      id
-                    }
-                  `
-                })
-                return [...existingAdminJourneyRefs, duplicatedJourneyRef]
-              }
-            }
-          })
-        }
-      }
+    const { data } = await journeyDuplicate({
+      variables: { id: journey?.id, teamId: 'jfp-team' }
     })
 
-    if (data?.journeyDuplicate != null) {
+    // Convert duplicated journey to a template
+    if (data != null) {
       const { data: templateData } = await createTemplate({
         variables: {
           id: data.journeyDuplicate.id,

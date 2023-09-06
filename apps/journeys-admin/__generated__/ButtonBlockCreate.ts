@@ -73,7 +73,14 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_LinkAction {
   url: string;
 }
 
-export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_buttonBlockUpdate_action_NavigateAction | ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction | ButtonBlockCreate_buttonBlockUpdate_action_LinkAction;
+export interface ButtonBlockCreate_buttonBlockUpdate_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_buttonBlockUpdate_action_NavigateAction | ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction | ButtonBlockCreate_buttonBlockUpdate_action_LinkAction | ButtonBlockCreate_buttonBlockUpdate_action_EmailAction;
 
 export interface ButtonBlockCreate_buttonBlockUpdate {
   __typename: "ButtonBlock";

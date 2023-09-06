@@ -1,15 +1,17 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { gql, useQuery } from '@apollo/client'
+import { ReactElement, useEffect, useState } from 'react'
+
+import { GetVideos } from '../../../../../__generated__/GetVideos'
 import {
   VideoBlockSource,
-  VideoBlockUpdateInput
+  VideoBlockUpdateInput,
+  VideoLabel
 } from '../../../../../__generated__/globalTypes'
-import { VideoSearch } from '../VideoSearch'
 import { VideoList } from '../VideoList'
-import { GetVideos } from '../../../../../__generated__/GetVideos'
 import { VideoListProps } from '../VideoList/VideoList'
+import { VideoSearch } from '../VideoSearch'
 
 export const GET_VIDEOS = gql`
   query GetVideos($where: VideosFilter, $limit: Int!, $offset: Int!) {
@@ -48,7 +50,13 @@ export function VideoFromLocal({
       limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
-        title: searchQuery === '' ? null : searchQuery
+        title: searchQuery === '' ? null : searchQuery,
+        labels: [
+          VideoLabel.episode,
+          VideoLabel.featureFilm,
+          VideoLabel.segment,
+          VideoLabel.shortFilm
+        ]
       }
     },
     onCompleted: (data) => {

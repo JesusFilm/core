@@ -1,14 +1,16 @@
+import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { userEvent, screen } from '@storybook/testing-library'
-import { noop } from 'lodash'
+
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
+
 import { DownloadDialog } from './DownloadDialog'
 
-const DownloadDialogStory = {
+const DownloadDialogStory: Meta<typeof DownloadDialog> = {
   ...watchConfig,
   component: DownloadDialog,
   title: 'Watch/DownloadDialog',
@@ -19,30 +21,38 @@ const DownloadDialogStory = {
 
 const routes = ['the-story-of-jesus-for-children']
 
-const Template: Story<
+type Story = StoryObj<
   ComponentProps<typeof DownloadDialog> & { video: VideoContentFields }
-> = ({ ...args }) => {
-  return (
-    <VideoProvider value={{ content: args.video }}>
-      <DownloadDialog {...args} />
-    </VideoProvider>
-  )
+>
+
+const Template: Story = {
+  render: ({ ...args }) => {
+    return (
+      <VideoProvider value={{ content: args.video }}>
+        <DownloadDialog {...args} />
+      </VideoProvider>
+    )
+  }
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  open: true,
-  onClose: noop,
-  video: videos[0],
-  routes
+export const Default = {
+  ...Template,
+  args: {
+    open: true,
+    onClose: noop,
+    video: videos[0],
+    routes
+  }
 }
 
-export const AcceptedTerms = Template.bind({})
-AcceptedTerms.args = {
-  ...Default.args
-}
-AcceptedTerms.play = () => {
-  userEvent.click(screen.getByRole('checkbox'))
+export const AcceptedTerms = {
+  ...Template,
+  args: {
+    ...Default.args
+  },
+  play: async () => {
+    await userEvent.click(screen.getByRole('checkbox'))
+  }
 }
 
-export default DownloadDialogStory as Meta
+export default DownloadDialogStory

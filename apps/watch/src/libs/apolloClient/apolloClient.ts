@@ -1,13 +1,14 @@
 import {
   ApolloClient,
-  createHttpLink,
   NormalizedCacheObject,
+  createHttpLink,
   from
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
-import { useMemo } from 'react'
 import { RetryLink } from '@apollo/client/link/retry'
 import fetch from 'cross-fetch'
+import { useMemo } from 'react'
+
 import { cache } from './cache'
 
 interface CreateApolloClientParams {

@@ -1,26 +1,29 @@
-import { ReactElement, useState, useEffect, useRef } from 'react'
-import { debounce } from 'lodash'
+import { gql, useMutation } from '@apollo/client'
+import EditIcon from '@mui/icons-material/Edit'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
+import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import ColorizeIcon from '@mui/icons-material/Colorize'
+import debounce from 'lodash/debounce'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { HexColorPicker } from 'react-colorful'
-import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { CardFields } from '../../../../../../../../__generated__/CardFields'
+import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
+
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
-import { Swatch } from './Swatch'
+import { CardFields } from '../../../../../../../../__generated__/CardFields'
+
 import { PaletteColorPicker } from './PaletteColorPicker'
+import { Swatch } from './Swatch'
 
 const palette = [
   { dark: '#C62828', light: '#FFCDD2' },
@@ -170,7 +173,7 @@ export function BackgroundColor(): ReactElement {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <ColorizeIcon
+                <EditIcon
                   onClick={(e) => handleTabChange(e, 1)}
                   style={{ cursor: 'pointer' }}
                 />

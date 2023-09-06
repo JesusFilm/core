@@ -2,20 +2,22 @@
 
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import {
   SignUpSubmissionEvent,
   SignUpSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
+import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
-import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('SignUpSubmissionEvent')
 export class SignUpSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly visitorService: VisitorService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Mutation()
@@ -24,35 +26,56 @@ export class SignUpSubmissionEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: SignUpSubmissionEventCreateInput
   ): Promise<SignUpSubmissionEvent> {
-    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
-      userId,
-      input.blockId,
-      input.stepId
-    )
+    const { visitor, journeyVisitor, journeyId } =
+      await this.eventService.validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
-    if (visitor.name == null) {
-      void this.visitorService.update(visitor.id, {
-        name: input.name
-      })
-    }
-
-    if (visitor.email == null) {
-      void this.visitorService.update(visitor.id, {
+    const promises = [
+      this.eventService.save({
+        id: input.id ?? undefined,
+        blockId: input.blockId,
+        typename: 'SignUpSubmissionEvent',
+        visitor: { connect: { id: visitor.id } },
+        createdAt: new Date().toISOString(),
+        journeyId,
+        stepId: input.stepId ?? undefined,
+        label: null,
+        value: input.name,
         email: input.email
       })
+    ]
+
+    let req = {}
+    if (visitor.name == null) {
+      req = {
+        name: input.name
+      }
+    }
+    if (visitor.email == null) {
+      req = {
+        ...req,
+        email: input.email
+      }
+    }
+    if (req != null) {
+      promises.push(
+        this.prismaService.visitor.update({
+          where: { id: visitor.id },
+          data: req
+        })
+      )
+      promises.push(
+        this.prismaService.journeyVisitor.update({
+          where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
+          data: { activityCount: journeyVisitor.activityCount + 1 }
+        })
+      )
     }
 
-    return await this.eventService.save({
-      id: input.id,
-      blockId: input.blockId,
-      __typename: 'SignUpSubmissionEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId,
-      stepId: input.stepId,
-      label: null,
-      value: input.name,
-      email: input.email
-    })
+    const [signUpSubmissionEvent] = await Promise.all(promises)
+    return signUpSubmissionEvent as SignUpSubmissionEvent
   }
 }

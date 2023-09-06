@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const withNx = require('@nrwl/next/plugins/with-nx')
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 })
+const { composePlugins, withNx } = require('@nx/next')
 /**
- * @type {import('@nrwl/next/plugins/with-nx').WithNxOptions}
+ * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
   swcMinify: true,
@@ -12,11 +12,9 @@ const nextConfig = {
     domains: ['localhost', 'd1wl257kev7hsz.cloudfront.net'],
     minimumCacheTTL: 31536000
   },
-  experimental: {
-    modularizeImports: {
-      lodash: {
-        transform: 'lodash/{{member}}'
-      }
+  modularizeImports: {
+    lodash: {
+      transform: 'lodash/{{member}}'
     }
   },
   nx: {
@@ -26,6 +24,15 @@ const nextConfig = {
   },
   basePath: '/watch',
   productionBrowserSourceMaps: true,
+  typescript: {
+    // handled by github actions
+    ignoreBuildErrors: process.env.CI === 'true'
+  },
+  eslint: {
+    // handled by github actions
+    ignoreDuringBuilds: process.env.CI === 'true'
+  },
+  transpilePackages: ['shared-ui'],
   async redirects() {
     return [
       {
@@ -48,10 +55,4 @@ const nextConfig = {
     ]
   }
 }
-module.exports = (_phase, { defaultConfig }) => {
-  const plugins = [withBundleAnalyzer, withNx]
-  return plugins.reduce((acc, plugin) => plugin(acc), {
-    ...defaultConfig,
-    ...nextConfig
-  })
-}
+module.exports = composePlugins(withBundleAnalyzer, withNx)(nextConfig)

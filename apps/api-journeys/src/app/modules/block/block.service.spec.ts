@@ -1,24 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { v4 as uuidv4 } from 'uuid'
-import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import {
-  mockCollectionRemoveResult,
-  mockCollectionSaveResult,
-  mockCollectionSaveAllResult,
-  mockCollectionUpdateAllResult,
-  mockDbQueryResult
-} from '@core/nest/database/mock'
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
-import { keyAsId } from '@core/nest/decorators/KeyAsId'
+import omit from 'lodash/omit'
+import { v4 as uuidv4 } from 'uuid'
+
+import { Action, Block } from '.prisma/api-journeys-client'
 
 import {
-  Journey,
   JourneyStatus,
   ThemeMode,
-  ThemeName,
-  Block
+  ThemeName
 } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { BlockService } from './block.service'
 
 jest.mock('uuid', () => ({
@@ -27,224 +20,215 @@ jest.mock('uuid', () => ({
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+type BlockWithAction = Block & { action: Action | null }
 
 describe('BlockService', () => {
-  let service: BlockService,
-    db: DeepMockProxy<Database>,
-    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
+  let service: BlockService, prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
-    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BlockService,
         {
-          provide: 'DATABASE',
-          useFactory: () => db
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
 
     service = module.get<BlockService>(BlockService)
-    collectionMock = mockDeep()
-    service.collection = collectionMock
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })
 
-  const journey: Journey = {
+  const journey = {
     id: '1',
     title: 'published',
-    createdAt: '1234',
+    createdAt: new Date(),
     status: JourneyStatus.published,
-    language: { id: '529' },
+    languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
-    primaryImageBlock: null,
-    slug: 'published-slug'
+    primaryImageBlockId: null,
+    slug: 'published-slug',
+    teamId: 'teamId',
+    chatButtons: []
   }
 
   const block = {
-    _key: '1',
+    id: '1',
     journeyId: journey.id,
-    __typename: 'CardBlock',
+    typename: 'CardBlock',
     parentBlockId: '3',
     parentOrder: 0,
     backgroundColor: '#FFF',
     coverBlockId: '4',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
-    fullscreen: true
+    fullscreen: true,
+    action: null
+  } as unknown as BlockWithAction
+
+  const blockWithAction = {
+    ...block,
+    action: null
   }
-  const blockWithId = keyAsId(block) as Block
+
+  const blockResponse = {
+    ...omit(block, ['typename']),
+    __typename: block.typename
+  }
 
   const stepBlock = {
-    __typename: 'StepBlock',
+    typename: 'StepBlock',
     id: 'step',
     journeyId: journey.id,
     parentBlockId: null,
     nextBlockId: 'someId'
-  }
+  } as unknown as Block
   const cardBlock = {
-    __typename: 'CardBlock',
+    typename: 'CardBlock',
     id: 'card',
     journeyId: journey.id,
     parentBlockId: stepBlock.id,
     coverBlockId: 'video'
-  }
+  } as unknown as Block
   const videoBlock = {
-    __typename: 'VideoBlock',
+    typename: 'VideoBlock',
     id: cardBlock.coverBlockId,
     journeyId: journey.id,
     parentBlockId: cardBlock.id,
     posterBlockId: 'image',
     videoId: 'videoId',
     videoVariantLanguageId: 'videoVariantLanguageId'
-  }
+  } as unknown as Block
   const imageBlock = {
-    __typename: 'ImageBlock',
+    typename: 'ImageBlock',
     id: videoBlock.posterBlockId,
     journeyId: journey.id,
     parentBlockId: videoBlock.id
-  }
+  } as unknown as Block
   const typographyBlock = {
-    __typename: 'TypographyBlock',
+    typename: 'TypographyBlock',
     id: 'typography',
     journeyId: journey.id,
     parentBlockId: cardBlock.id
-  }
+  } as unknown as Block
   const buttonBlock = {
-    __typename: 'ButtonBlock',
+    typename: 'ButtonBlock',
     id: 'button',
     journeyId: journey.id,
     parentBlockId: cardBlock.id,
     startIconId: null,
     endIconId: 'icon',
     action: { parentBlockId: 'ButtonBlock', blockId: 'step' }
-  }
+  } as unknown as BlockWithAction
   const iconBlock = {
-    __typename: 'IconBlock',
+    typename: 'IconBlock',
     id: buttonBlock.endIconId,
     journeyId: journey.id,
     parentBlockId: buttonBlock.id
-  }
-
-  describe('getAll', () => {
-    beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
-    })
-
-    it('should return an array of all blocks', async () => {
-      expect(await service.getAll()).toEqual([blockWithId, blockWithId])
-    })
-  })
-
-  describe('forJourney', () => {
-    beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
-    })
-
-    it('should return all blocks in a journey', async () => {
-      expect(await service.forJourney(journey)).toEqual([
-        blockWithId,
-        blockWithId
-      ])
-    })
-  })
+  } as unknown as Block
 
   describe('getSiblings', () => {
-    beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
-    })
-
     it('should return all siblings of a block', async () => {
+      prismaService.block.findMany.mockResolvedValue([block, block])
       expect(
         await service.getSiblings(block.journeyId, block.parentBlockId)
-      ).toEqual([blockWithId, blockWithId])
-    })
-  })
-
-  describe('get', () => {
-    beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block]))
-    })
-
-    it('should return a block', async () => {
-      expect(await service.get('1')).toEqual(blockWithId)
+      ).toEqual([blockResponse, blockResponse])
     })
   })
 
   describe('save', () => {
-    beforeEach(() => {
-      collectionMock.save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, block)
-      )
-    })
-
     it('should return a saved block', async () => {
-      expect(await service.save(block)).toEqual(blockWithId)
-    })
-  })
-
-  describe('saveAll', () => {
-    beforeEach(() => {
-      collectionMock.saveAll.mockReturnValue(
-        mockCollectionSaveAllResult(service.collection, [block, block])
-      )
-    })
-
-    it('should return saved blocks', async () => {
-      expect(await service.saveAll([block, block])).toEqual([
-        blockWithId,
-        blockWithId
-      ])
+      prismaService.block.create.mockResolvedValue(block)
+      expect(
+        await service.save({
+          data: {
+            ...omit(
+              block,
+              '__typename',
+              'journeyId',
+              'parentBlockId',
+              'coverBlockId',
+              'nextBlockId',
+              'posterBlockId',
+              'action'
+            ),
+            typename: 'CardBlock',
+            journey: { connect: { id: journey.id } }
+          }
+        })
+      ).toEqual(blockResponse)
     })
   })
 
   describe('update', () => {
-    beforeEach(() => {
-      collectionMock.update.mockReturnValue(
-        mockCollectionSaveResult(service.collection, block)
-      )
-    })
-
     it('should return an updated block', async () => {
-      expect(await service.update(block._key, block)).toEqual(blockWithId)
+      prismaService.block.update.mockResolvedValueOnce(block)
+      expect(await service.update(block.id, { title: 'test' })).toEqual(
+        blockResponse
+      )
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        data: {
+          title: 'test'
+        },
+        include: {
+          action: true
+        },
+        where: {
+          id: '1'
+        }
+      })
     })
   })
 
   describe('reorderSiblings', () => {
     it('should update parent order', async () => {
-      service.updateAll = jest.fn().mockReturnValue([
-        { ...block, parentOrder: 0 },
-        { ...block, parentOrder: 1 }
-      ])
+      prismaService.block.update.mockResolvedValueOnce({
+        ...block,
+        parentOrder: 0
+      })
+      prismaService.block.update.mockResolvedValueOnce({
+        ...block,
+        parentOrder: 1
+      })
       expect(
         await service.reorderSiblings([
-          { ...block, id: block._key, parentOrder: 2 },
-          { ...block, id: block._key, parentOrder: 3 }
+          { ...block, parentOrder: 2 } as unknown as BlockWithAction,
+          { ...block, parentOrder: 3 } as unknown as BlockWithAction
         ])
       ).toEqual([
         { ...block, parentOrder: 0 },
         { ...block, parentOrder: 1 }
       ])
-      expect(service.updateAll).toHaveBeenCalledWith([
-        { ...block, id: block._key, parentOrder: 0 },
-        { ...block, id: block._key, parentOrder: 1 }
-      ])
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: block.id },
+        data: { parentOrder: 0 },
+        include: { action: true }
+      })
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: block.id },
+        data: { parentOrder: 1 },
+        include: { action: true }
+      })
     })
   })
 
   describe('reorderBlock', () => {
     beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
+      prismaService.block.findMany.mockResolvedValue([block, block])
       service.reorderSiblings = jest.fn(
         async () =>
           await Promise.resolve([
-            { _key: '2', parentOrder: 0 } as unknown as Block,
-            { _key: block._key, parentOrder: 1 } as unknown as Block
+            { id: '2', parentOrder: 0 } as unknown as BlockWithAction,
+            { id: block.id, parentOrder: 1 } as unknown as BlockWithAction
           ])
       )
     })
@@ -252,135 +236,131 @@ describe('BlockService', () => {
     it('should update block order', async () => {
       service.getSiblingsInternal = jest
         .fn()
-        .mockReturnValue([block, { ...block, _key: '2', parentOrder: 1 }])
+        .mockReturnValue([block, { ...block, id: '2', parentOrder: 1 }])
 
-      expect(await service.reorderBlock(block._key, journey.id, 1)).toEqual([
+      expect(await service.reorderBlock(blockWithAction, 1)).toEqual([
         { id: '2', parentOrder: 0 },
-        { id: block._key, parentOrder: 1 }
+        { id: block.id, parentOrder: 1 }
       ])
       expect(service.reorderSiblings).toHaveBeenCalledWith([
-        { ...block, _key: '2', parentOrder: 1 },
-        block
+        { ...block, id: '2', parentOrder: 1 },
+        blockWithAction
       ])
-    })
-    it('does not update if block not part of current journey', async () => {
-      expect(
-        await service.reorderBlock(block.__typename, 'invalidJourney', 2)
-      ).toEqual([])
-      expect(service.reorderSiblings).toBeCalledTimes(0)
     })
 
     it('does not update if block does not have parent order', async () => {
-      service.get = jest.fn().mockReturnValue({ ...block, parentOrder: null })
-
-      expect(await service.reorderBlock(block._key, journey.id, 2)).toEqual([])
-      expect(service.reorderSiblings).toBeCalledTimes(0)
+      expect(
+        await service.reorderBlock(
+          {
+            ...block,
+            parentOrder: null
+          },
+          2
+        )
+      ).toEqual([])
+      expect(service.reorderSiblings).toHaveBeenCalledTimes(0)
     })
   })
 
   describe('duplicateBlock', () => {
-    const block2 = { ...block, _key: '2', parentOrder: 1 }
-    const duplicatedBlock = { ...block, _key: 'duplicated' }
+    const block2 = { ...block, id: '2', parentOrder: 1 }
+    const duplicatedBlock = { ...block, id: 'duplicated' }
     const blockChild = {
-      _key: 'child',
-      _typename: 'TypographyBlock',
-      parentBlockId: duplicatedBlock._key
-    }
-    const blockChildWithId = keyAsId(blockChild) as Block
+      id: 'child',
+      __typename: 'TypographyBlock',
+      parentBlockId: duplicatedBlock.id
+    } as unknown as Block
 
     beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block2]))
-      collectionMock.saveAll.mockReturnValue(
-        mockCollectionSaveAllResult(service.collection, [
-          duplicatedBlock,
-          blockChild
-        ])
-      )
-      collectionMock.updateAll.mockReturnValue(
-        mockCollectionUpdateAllResult(service.collection, [])
-      )
-      service.getSiblingsInternal = jest.fn().mockReturnValue([
-        { ...block, id: block._key },
-        { ...duplicatedBlock, id: duplicatedBlock._key },
-        { ...block2, id: block2._key }
-      ])
-      service.getDuplicateBlockAndChildren = jest.fn().mockReturnValue([
-        { ...duplicatedBlock, id: duplicatedBlock._key },
-        { ...blockChild, id: blockChild._key }
-      ])
+      prismaService.block.create
+        .mockResolvedValueOnce(duplicatedBlock)
+        .mockResolvedValueOnce(blockChild)
+      prismaService.block.findMany.mockResolvedValue([block, block2])
+      prismaService.block.findUnique.mockResolvedValue(block)
+      prismaService.block.update
+        .mockResolvedValueOnce(duplicatedBlock)
+        .mockResolvedValueOnce(blockChild)
+        .mockResolvedValueOnce(block2)
+      service.getSiblingsInternal = jest
+        .fn()
+        .mockReturnValue([block, duplicatedBlock, block2])
+      service.getDuplicateBlockAndChildren = jest
+        .fn()
+        .mockReturnValue([duplicatedBlock, blockChild])
       service.reorderSiblings = jest.fn().mockReturnValue([])
     })
 
     it('should return the duplicated block, its siblings and children', async () => {
       const blockAndSiblings = [
-        blockWithId,
-        { ...blockWithId, id: block2._key },
-        { ...duplicatedBlock, id: duplicatedBlock._key, parentOrder: '2' }
+        block,
+        { ...block, id: block2.id },
+        { ...duplicatedBlock, parentOrder: '2' }
       ]
 
       service.reorderSiblings = jest.fn().mockReturnValue(blockAndSiblings)
 
-      expect(await service.duplicateBlock(block._key, journey.id)).toEqual([
-        ...blockAndSiblings,
-        blockChildWithId
+      expect(await service.duplicateBlock(block)).toEqual([
+        blockResponse,
+        { ...blockResponse, id: block2.id },
+        {
+          ...omit(duplicatedBlock, 'typename'),
+          __typename: duplicatedBlock.typename,
+          parentOrder: '2'
+        },
+        blockChild
       ])
     })
 
     it('should add duplicated block at end by default', async () => {
-      await service.duplicateBlock(block._key, journey.id)
+      await service.duplicateBlock(block)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
-        { ...block, id: block._key },
-        { ...block2, id: block2._key },
-        { ...duplicatedBlock, id: duplicatedBlock._key }
+        block,
+        block2,
+        duplicatedBlock
       ])
     })
 
     it('should add duplicate block at position specified', async () => {
-      await service.duplicateBlock(block._key, journey.id, 1)
+      await service.duplicateBlock(block, 1)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
-        { ...block, id: block._key },
-        { ...duplicatedBlock, id: duplicatedBlock._key },
-        { ...block2, id: block2._key }
+        block,
+        duplicatedBlock,
+        block2
       ])
     })
 
     it('should add duplicate block at end if parentOrder exceeds list length', async () => {
-      await service.duplicateBlock(block._key, journey.id, 5)
+      await service.duplicateBlock(block, 5)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
-        { ...block, id: block._key },
-        { ...block2, id: block2._key },
-        { ...duplicatedBlock, id: duplicatedBlock._key }
+        block,
+        block2,
+        duplicatedBlock
       ])
     })
 
     it('should add duplicate block from end if parentOrder is negative', async () => {
-      await service.duplicateBlock(block._key, journey.id, -1)
+      await service.duplicateBlock(block, -1)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
-        { ...block, id: block._key },
-        { ...duplicatedBlock, id: duplicatedBlock._key },
-        { ...block2, id: block2._key }
+        block,
+        duplicatedBlock,
+        block2
       ])
-    })
-
-    it('does not duplicate if block not part of current journey', async () => {
-      expect(
-        await service.reorderBlock(block.__typename, 'invalidJourney', 2)
-      ).toEqual([])
-      expect(service.reorderSiblings).toBeCalledTimes(0)
     })
   })
 
   describe('getDuplicateBlockAndChildren', () => {
     beforeEach(() => {
-      service.getBlocksForParentId = jest.fn().mockReturnValue([])
+      prismaService.block.findMany.mockResolvedValue([])
     })
 
     it('should return block with randomised id', async () => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [{ id: 'block' }]))
+      prismaService.block.findUnique.mockResolvedValue({
+        id: 'block'
+      } as unknown as Block)
       mockUuidv4.mockReturnValueOnce(`${typographyBlock.id}Copy`)
 
       expect(
@@ -391,93 +371,86 @@ describe('BlockService', () => {
         )
       ).toEqual([
         {
-          _key: `${typographyBlock.id}Copy`,
           id: `${typographyBlock.id}Copy`,
           parentBlockId: cardBlock.id
         }
       ])
-      expect(service.getBlocksForParentId).toBeCalledTimes(1)
+      expect(prismaService.block.findMany).toHaveBeenCalledTimes(1)
     })
 
     it('should return block with specific id', async () => {
-      db.query
-        .mockReturnValueOnce(mockDbQueryResult(service.db, [stepBlock]))
-        .mockReturnValueOnce(mockDbQueryResult(service.db, [cardBlock]))
-        .mockReturnValueOnce(mockDbQueryResult(service.db, [videoBlock]))
-        .mockReturnValueOnce(mockDbQueryResult(service.db, [buttonBlock]))
-        .mockReturnValueOnce(mockDbQueryResult(service.db, [imageBlock]))
-        .mockReturnValueOnce(mockDbQueryResult(service.db, [iconBlock]))
+      prismaService.block.findUnique
+        .mockResolvedValueOnce(stepBlock)
+        .mockResolvedValueOnce(cardBlock)
+        .mockResolvedValueOnce(videoBlock)
+        .mockResolvedValueOnce(buttonBlock)
+        .mockResolvedValueOnce(imageBlock)
+        .mockResolvedValueOnce(iconBlock)
       mockUuidv4
         .mockReturnValueOnce(`${cardBlock.id}Copy`)
         .mockReturnValueOnce(`${videoBlock.id}Copy`)
         .mockReturnValueOnce(`${buttonBlock.id}Copy`)
         .mockReturnValueOnce(`${imageBlock.id}Copy`)
         .mockReturnValue(`${iconBlock.id}Copy`)
-      service.getBlocksForParentId = jest
-        .fn()
-        .mockReturnValueOnce([cardBlock])
-        .mockReturnValueOnce([videoBlock, buttonBlock])
-        .mockReturnValueOnce([imageBlock])
-        .mockReturnValueOnce([iconBlock])
-        .mockReturnValue([])
+      prismaService.block.findMany
+        .mockResolvedValueOnce([cardBlock])
+        .mockResolvedValueOnce([videoBlock, buttonBlock])
+        .mockResolvedValueOnce([imageBlock])
+        .mockResolvedValueOnce([iconBlock])
+        .mockResolvedValue([])
 
       // StepBlock uses specific id. Child block id's, parentBlockIds & unique block ids (coverBlockId, posterBlockId & iconIds) are randomised
       // Actions remain the same & nextBlockId is made null
       expect(
         await service.getDuplicateBlockAndChildren(
           stepBlock.id,
-          '1',
+          journey.id,
           null,
           'specificStepId'
         )
       ).toEqual([
         {
           ...stepBlock,
-          _key: 'specificStepId',
           id: 'specificStepId',
           parentBlockId: null,
           nextBlockId: null
         },
         {
           ...cardBlock,
-          _key: `${cardBlock.id}Copy`,
           id: `${cardBlock.id}Copy`,
           parentBlockId: 'specificStepId',
           coverBlockId: `${videoBlock.id}Copy`
         },
         {
           ...videoBlock,
-          _key: `${videoBlock.id}Copy`,
           id: `${videoBlock.id}Copy`,
           parentBlockId: `${cardBlock.id}Copy`,
           posterBlockId: `${imageBlock.id}Copy`
         },
         {
           ...imageBlock,
-          _key: `${imageBlock.id}Copy`,
           id: `${imageBlock.id}Copy`,
           parentBlockId: `${videoBlock.id}Copy`
         },
         {
           ...buttonBlock,
-          _key: `${buttonBlock.id}Copy`,
           id: `${buttonBlock.id}Copy`,
           parentBlockId: `${cardBlock.id}Copy`,
-          endIconId: `${iconBlock.id}Copy`
+          endIconId: `${iconBlock.id}Copy`,
+          action: omit(buttonBlock.action, 'parentBlockId')
         },
         {
           ...iconBlock,
-          _key: `${iconBlock.id}Copy`,
           id: `${iconBlock.id}Copy`,
           parentBlockId: `${buttonBlock.id}Copy`
         }
       ])
 
-      expect(service.getBlocksForParentId).toBeCalledTimes(6)
+      expect(prismaService.block.findMany).toHaveBeenCalledTimes(6)
     })
 
     it('should return block with updated journeyId & nextBlockId', async () => {
-      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, [stepBlock]))
+      prismaService.block.findUnique.mockResolvedValueOnce(stepBlock)
       const duplicateStepIds = new Map()
       duplicateStepIds.set(stepBlock.nextBlockId, 'duplicateStepId')
       mockUuidv4.mockReturnValueOnce(`${stepBlock.id}Copy`)
@@ -485,7 +458,7 @@ describe('BlockService', () => {
       expect(
         await service.getDuplicateBlockAndChildren(
           buttonBlock.id,
-          '1',
+          journey.id,
           cardBlock.id,
           undefined,
           'journey2',
@@ -494,7 +467,6 @@ describe('BlockService', () => {
       ).toEqual([
         {
           ...stepBlock,
-          _key: `${stepBlock.id}Copy`,
           id: `${stepBlock.id}Copy`,
           journeyId: 'journey2',
           parentBlockId: cardBlock.id,
@@ -502,15 +474,15 @@ describe('BlockService', () => {
         }
       ])
 
-      expect(service.getBlocksForParentId).toBeCalledTimes(1)
+      expect(prismaService.block.findMany).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('getDuplicateChildren', () => {
     it('should return an array of duplicate blocks from array', async () => {
-      db.query
-        .mockReturnValueOnce(mockDbQueryResult(service.db, [stepBlock]))
-        .mockReturnValueOnce(mockDbQueryResult(service.db, [cardBlock]))
+      prismaService.block.findUnique
+        .mockResolvedValueOnce(stepBlock)
+        .mockResolvedValueOnce(cardBlock)
 
       service.getDuplicateBlockAndChildren = jest
         .fn()
@@ -521,7 +493,7 @@ describe('BlockService', () => {
 
       expect(
         await service.getDuplicateChildren(
-          [stepBlock],
+          [stepBlock as BlockWithAction],
           '1',
           null,
           duplicateStepIds,
@@ -547,93 +519,79 @@ describe('BlockService', () => {
 
   describe('removeBlockAndChildren', () => {
     beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
-      collectionMock.remove.mockReturnValue(
-        mockCollectionRemoveResult(service.collection, block)
-      )
-      service.reorderSiblings = jest.fn(
-        async () =>
-          await Promise.resolve([
-            { _key: block._key, parentOrder: 0 } as unknown as Block,
-            { _key: block._key, parentOrder: 1 } as unknown as Block
-          ])
-      )
+      prismaService.block.findMany
+        .mockResolvedValueOnce([block, block])
+        .mockResolvedValueOnce([])
+      prismaService.block.delete.mockResolvedValue(block)
     })
 
     it('should remove blocks and return siblings', async () => {
-      service.getSiblingsInternal = jest.fn().mockReturnValue([
-        { _key: block._key, parentOrder: 1 },
-        { _key: block._key, parentOrder: 2 }
+      service.getSiblingsInternal = jest.fn().mockResolvedValue([
+        { id: block.id, parentOrder: 1 },
+        { id: block.id, parentOrder: 2 }
       ])
-      service.reorderSiblings = jest.fn().mockReturnValue([
-        { _key: block._key, parentOrder: 0 },
-        { _key: block._key, parentOrder: 1 }
+      service.reorderSiblings = jest.fn().mockResolvedValue([
+        { id: block.id, parentOrder: 0 },
+        { id: block.id, parentOrder: 1 }
       ])
 
-      expect(
-        await service.removeBlockAndChildren(
-          block._key,
-          journey.id,
-          block.parentBlockId
-        )
-      ).toEqual([
-        { id: block._key, parentOrder: 0 },
-        { id: block._key, parentOrder: 1 }
+      expect(await service.removeBlockAndChildren(block)).toEqual([
+        { id: block.id, parentOrder: 0 },
+        { id: block.id, parentOrder: 1 }
       ])
       expect(service.getSiblingsInternal).toHaveBeenCalledWith(
         journey.id,
-        block.parentBlockId
+        block.parentBlockId,
+        prismaService
       )
     })
+  })
 
-    it('should update parent order', async () => {
-      collectionMock.updateAll.mockReturnValue(
-        mockCollectionUpdateAllResult(service.collection, [
-          { _key: block._key, new: block },
-          { _key: block._key, new: block }
+  it('should update parent order', async () => {
+    service.reorderSiblings = jest.fn(
+      async () =>
+        await Promise.resolve([
+          { id: block.id, parentOrder: 0 } as unknown as BlockWithAction,
+          { id: block.id, parentOrder: 1 } as unknown as BlockWithAction
         ])
-      )
-      const siblings = [
-        { ...block, id: block._key },
-        { ...block, id: block._key }
-      ]
+    )
+    prismaService.block.update.mockResolvedValue(block)
+    const siblings = [block, block]
 
-      service.getSiblingsInternal = jest.fn(
-        async () => await Promise.resolve(siblings)
-      )
-      expect(await service.reorderSiblings(siblings)).toEqual([
-        { _key: block._key, parentOrder: 0 },
-        { _key: block._key, parentOrder: 1 }
-      ])
+    service.getSiblingsInternal = jest.fn().mockResolvedValue(siblings)
+    expect(await service.reorderSiblings(siblings)).toEqual([
+      { id: block.id, parentOrder: 0 },
+      { id: block.id, parentOrder: 1 }
+    ])
+  })
+
+  describe('validateBlock', () => {
+    beforeEach(() => {
+      prismaService.block.findUnique.mockResolvedValue(block)
     })
 
-    describe('validateBlock', () => {
-      beforeEach(() => {
-        db.query.mockReturnValue(mockDbQueryResult(service.db, [block]))
-      })
-      it('should return false with non-existent id', async () => {
-        expect(await service.validateBlock(null, '1')).toEqual(false)
-      })
-      it('should return false with incorrect parent id', async () => {
-        expect(await service.validateBlock('1', 'wrongParent')).toEqual(false)
-      })
-      it('should validate block against parentBlockId', async () => {
-        expect(await service.validateBlock('1', '3', 'parentBlockId')).toEqual(
-          true
-        )
-      })
+    it('should return false with non-existent id', async () => {
+      expect(await service.validateBlock(null, '1')).toBe(false)
+    })
 
-      it('should validate block against journeyId', async () => {
-        expect(
-          await service.validateBlock('1', journey.id, 'journeyId')
-        ).toEqual(true)
-      })
+    it('should return false with incorrect parent id', async () => {
+      expect(await service.validateBlock('1', 'wrongParent')).toBe(false)
+    })
 
-      it('should return false with incorrect journey id', async () => {
-        expect(
-          await service.validateBlock('1', 'wrongJourney', 'journeyId')
-        ).toEqual(false)
-      })
+    it('should validate block against parentBlockId', async () => {
+      expect(await service.validateBlock('1', '3', 'parentBlockId')).toBe(true)
+    })
+
+    it('should validate block against journeyId', async () => {
+      expect(await service.validateBlock('1', journey.id, 'journeyId')).toBe(
+        true
+      )
+    })
+
+    it('should return false with incorrect journey id', async () => {
+      expect(
+        await service.validateBlock('1', 'wrongJourney', 'journeyId')
+      ).toBe(false)
     })
   })
 })

@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
-import { BLOCK_FIELDS } from '../block/blockFields'
+
 import { IMAGE_FIELDS } from '../../components/Image/imageFields'
+import { BLOCK_FIELDS } from '../block/blockFields'
 
 export const JOURNEY_FIELDS = gql`
   ${BLOCK_FIELDS}
@@ -43,6 +44,23 @@ export const JOURNEY_FIELDS = gql`
         lastName
         imageUrl
       }
+    }
+    chatButtons {
+      id
+      link
+      platform
+    }
+    host {
+      id
+      teamId
+      title
+      location
+      src1
+      src2
+    }
+    team {
+      id
+      title
     }
   }
 `

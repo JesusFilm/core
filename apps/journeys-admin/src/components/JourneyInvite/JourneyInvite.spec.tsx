@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { USER_JOURNEY_REQUEST } from './JourneyInvite'
+
 import { JourneyInvite } from '.'
 
 describe('JourneyInvite', () => {
@@ -32,15 +34,5 @@ describe('JourneyInvite', () => {
     expect(getAllByText("You can't edit this journey")).toHaveLength(2)
     fireEvent.click(getAllByRole('button', { name: 'Request Now' })[0])
     await waitFor(() => expect(getAllByText('Request Sent')).toHaveLength(2))
-  })
-
-  it('should render invite request received', () => {
-    const { getAllByText, queryAllByRole } = render(
-      <MockedProvider mocks={[]}>
-        <JourneyInvite journeyId="journeyId" requestReceived />
-      </MockedProvider>
-    )
-    expect(queryAllByRole('button', { name: 'Request Access' })).toHaveLength(0)
-    expect(getAllByText('Request Sent')).toHaveLength(2)
   })
 })

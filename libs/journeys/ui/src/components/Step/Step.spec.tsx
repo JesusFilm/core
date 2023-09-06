@@ -1,12 +1,15 @@
-import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { v4 as uuidv4 } from 'uuid'
+import { render, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
+import { v4 as uuidv4 } from 'uuid'
+
 import type { TreeBlock } from '../../libs/block'
-import { activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
+
 import { StepFields } from './__generated__/StepFields'
 import { STEP_VIEW_EVENT_CREATE } from './Step'
+
 import { Step } from '.'
 
 jest.mock('uuid', () => ({
@@ -78,7 +81,7 @@ const block: TreeBlock<StepFields> = {
 describe('Step', () => {
   it('should create a stepViewEvent', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    activeBlockVar(block)
+    blockHistoryVar([block])
 
     const result = jest.fn(() => ({
       data: {
@@ -117,7 +120,7 @@ describe('Step', () => {
 
   it('should stepViewEvent to dataLayer', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    activeBlockVar(block)
+    blockHistoryVar([block])
     treeBlocksVar([block])
     render(
       <MockedProvider
@@ -160,9 +163,10 @@ describe('Step', () => {
       })
     )
   })
+
   it('should not create a stepViewEvent if there are wrappers', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    activeBlockVar(block)
+    blockHistoryVar([block])
 
     const result = jest.fn(() => ({
       data: {

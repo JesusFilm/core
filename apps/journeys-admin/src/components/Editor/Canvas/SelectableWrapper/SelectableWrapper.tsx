@@ -1,12 +1,13 @@
-import { ReactElement, MouseEvent } from 'react'
-import {
-  useEditor,
-  ActiveTab,
-  ActiveFab
-} from '@core/journeys/ui/EditorProvider'
+import Box from '@mui/material/Box'
+import { MouseEvent, ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
-import Box from '@mui/material/Box'
+import {
+  ActiveFab,
+  ActiveTab,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 
 export function SelectableWrapper({
   block,
@@ -92,7 +93,8 @@ export function SelectableWrapper({
           top: 0,
           left: 0,
           outlineOffset: '-3px',
-          borderRadius: '16px',
+          borderRadius: '20px',
+          my: '0px !important',
           '&:first-child': {
             '& > *': { zIndex: -1 }
           }
@@ -115,7 +117,7 @@ export function SelectableWrapper({
           '& > *': { mb: '0px' }
         },
         borderRadius: block.__typename === 'RadioOptionBlock' ? '8px' : '4px',
-        outline: selectedBlock?.id === block.id ? '3px solid #C52D3A' : 'none',
+        outline: selectedBlock?.id === block.id ? '2px solid #C52D3A' : 'none',
         outlineOffset: '5px',
         zIndex: selectedBlock?.id === block.id ? 1 : 0,
         ...videoOutlineStyles

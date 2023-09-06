@@ -1,13 +1,15 @@
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
+
+import { useVideoChildren } from '../../libs/useVideoChildren'
+import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
-import { useVideo } from '../../libs/videoContext'
-import { useVideoChildren } from '../../libs/useVideoChildren'
+
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
 
@@ -18,7 +20,7 @@ export function VideoContainerPage(): ReactElement {
   const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
   const routeArray: string[] = []
-
+  const realChildren = children.filter((video) => video.variant !== null)
   function handleOpenDialog(): void {
     setShareDialog(true)
   }
@@ -54,7 +56,7 @@ export function VideoContainerPage(): ReactElement {
             ) : (
               <VideoGrid
                 containerSlug={slug}
-                videos={children}
+                videos={realChildren}
                 variant="expanded"
               />
             )}

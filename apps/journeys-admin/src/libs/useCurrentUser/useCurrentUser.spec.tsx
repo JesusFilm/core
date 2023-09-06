@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { waitFor } from '@testing-library/react'
-import { renderHook, act } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
+
 import { GET_CURRENT_USER, useCurrentUser } from './useCurrentUser'
 
 describe('useCurrentUser', () => {
@@ -29,16 +29,14 @@ describe('useCurrentUser', () => {
       )
     })
 
-    await act(async () => {
-      await result.current.loadUser()
+    await result.current.loadUser()
 
-      await waitFor(() =>
-        expect(result.current.data).toEqual({
-          id: 'user.id',
-          email: 'test@email.com'
-        })
-      )
-    })
+    await waitFor(() =>
+      expect(result.current.data).toEqual({
+        id: 'user.id',
+        email: 'test@email.com'
+      })
+    )
   })
 
   it('should return placeholder user by default', async () => {

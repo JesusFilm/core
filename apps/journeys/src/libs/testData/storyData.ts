@@ -1,4 +1,5 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   ButtonColor,
   ButtonSize,
@@ -1384,7 +1385,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             parentOrder: 0,
             autoplay: true,
             muted: true,
-            videoId: '2_0-FallingPlates',
+            videoId: null,
             videoVariantLanguageId: '529',
             source: VideoBlockSource.internal,
             title: null,

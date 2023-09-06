@@ -1,45 +1,53 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { SWRConfig } from 'swr'
+
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import {
   getVideosLoading,
   getVideosWithOffsetAndUrl
 } from '../VideoFromYouTube.handlers'
+
 import { YouTubeDetails } from '.'
 
-const YouTubeDetailsStory = {
+const YouTubeDetailsStory: Meta<typeof YouTubeDetails> = {
   ...journeysAdminConfig,
   component: YouTubeDetails,
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromYouTube/YouTubeDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const Template: Story = ({ id, onSelect }) => {
-  return (
-    <SWRConfig value={{ provider: () => new Map() }}>
-      <YouTubeDetails id={id} open onSelect={onSelect} />
-    </SWRConfig>
-  )
-}
-
-export const Default = Template.bind({})
-Default.args = {
-  id: 'jQaeIJOA6J0'
-}
-Default.parameters = {
-  msw: {
-    handlers: [getVideosWithOffsetAndUrl]
+const Template: StoryObj<typeof YouTubeDetails> = {
+  render: ({ id, onSelect }) => {
+    return (
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <YouTubeDetails id={id} open onSelect={onSelect} />
+      </SWRConfig>
+    )
   }
 }
 
-export const Loading: Story = Template.bind({})
-Loading.args = {
-  id: 'jQaeIJOA6J0'
-}
-Loading.parameters = {
-  msw: {
-    handlers: [getVideosLoading]
+export const Default = {
+  ...Template,
+  args: {
+    id: 'jQaeIJOA6J0'
+  },
+  parameters: {
+    msw: {
+      handlers: [getVideosWithOffsetAndUrl]
+    }
   }
 }
 
-export default YouTubeDetailsStory as Meta
+export const Loading: StoryObj<typeof YouTubeDetails> = {
+  ...Template,
+  args: {
+    id: 'jQaeIJOA6J0'
+  },
+  parameters: {
+    msw: {
+      handlers: [getVideosLoading]
+    }
+  }
+}
+
+export default YouTubeDetailsStory

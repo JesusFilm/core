@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useAuthUser,
@@ -6,31 +6,33 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+
+import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import { VisitorInfo } from '../../../src/components/VisitorInfo'
-import { PageWrapper } from '../../../src/components/PageWrapper'
-import i18nConfig from '../../../next-i18next.config'
-import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
+import { DetailsForm } from '../../../src/components/VisitorInfo/DetailsForm'
+import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 
 function SingleVisitorReportsPage(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
-  useTermsRedirect()
+  const id = router.query.visitorId as string
 
   return (
     <>
       <NextSeo title={t('Visitor Info')} />
       <PageWrapper
-        title={t('Visitor Info')}
+        title={t("Visitor's Activity")}
+        backHref="/reports/visitors"
         authUser={AuthUser}
-        router={router}
+        sidePanelChildren={<DetailsForm id={id} />}
+        sidePanelTitle={t('Visitor Details')}
+        backHrefHistory
       >
-        <VisitorInfo id={router.query.visitorId as string} />
+        <VisitorInfo id={id} />
       </PageWrapper>
     </>
   )
@@ -39,23 +41,20 @@ function SingleVisitorReportsPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  if (AuthUser == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
+
+  if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })

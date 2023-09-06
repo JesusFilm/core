@@ -1,21 +1,26 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { userEvent, waitFor, within } from '@storybook/testing-library'
 import { expect } from '@storybook/jest'
+import { Meta, StoryObj } from '@storybook/react'
+import { userEvent, waitFor, within } from '@storybook/testing-library'
+import { ReactElement, useState } from 'react'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { videos } from './VideoFromLocal/data'
 import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
+
 import { VideoLibrary } from '.'
 
-const VideoLibraryStory = {
+const VideoLibraryStory: Meta<typeof VideoLibrary> = {
   ...journeysAdminConfig,
   component: VideoLibrary,
   title: 'Journeys-Admin/Editor/VideoLibrary',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const Template: Story = ({ onSelect }) => {
+const VideoLibraryDefault = ({ onSelect }): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -118,30 +123,41 @@ const Template: Story = ({ onSelect }) => {
         }
       ]}
     >
-      <VideoLibrary
-        open={open}
-        onClose={() => setOpen(false)}
-        onSelect={onSelect}
-      />
+      <FlagsProvider flags={{ videoFromCloudflare: true }}>
+        <VideoLibrary
+          open={open}
+          onClose={() => setOpen(false)}
+          onSelect={onSelect}
+        />
+      </FlagsProvider>
     </MockedProvider>
   )
 }
 
-export const Default = Template.bind({})
-
-export const WithSearch = Template.bind({})
-WithSearch.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
-  await waitFor(() =>
-    expect(canvas.getByRole('textbox', { name: 'Search' })).toBeInTheDocument()
-  )
-  await userEvent.type(
-    canvas.getByRole('textbox', { name: 'Search' }),
-    'Andreas'
-  )
+const Template: StoryObj<typeof VideoLibrary> = {
+  render: ({ onSelect }) => <VideoLibraryDefault onSelect={onSelect} />
 }
 
-export const Empty: Story = ({ onSelect }) => {
+export const Default = { ...Template }
+
+export const WithSearch = {
+  ...Template,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
+    await waitFor(
+      async () =>
+        await expect(
+          canvas.getByRole('textbox', { name: 'Search' })
+        ).toBeInTheDocument()
+    )
+    await userEvent.type(
+      canvas.getByRole('textbox', { name: 'Search' }),
+      'Andreas'
+    )
+  }
+}
+
+const VideoLibraryEmpty = ({ onSelect }): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -175,15 +191,22 @@ export const Empty: Story = ({ onSelect }) => {
     </MockedProvider>
   )
 }
-Empty.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
-  await waitFor(() =>
-    expect(canvas.getByRole('textbox', { name: 'Search' })).toBeInTheDocument()
-  )
-  await userEvent.type(
-    canvas.getByRole('textbox', { name: 'Search' }),
-    '#FallingPlates'
-  )
+
+export const Empty: StoryObj<typeof VideoLibrary> = {
+  render: ({ onSelect }) => <VideoLibraryEmpty onSelect={onSelect} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
+    await waitFor(
+      async () =>
+        await expect(
+          canvas.getByRole('textbox', { name: 'Search' })
+        ).toBeInTheDocument()
+    )
+    await userEvent.type(
+      canvas.getByRole('textbox', { name: 'Search' }),
+      '#FallingPlates'
+    )
+  }
 }
 
-export default VideoLibraryStory as Meta
+export default VideoLibraryStory

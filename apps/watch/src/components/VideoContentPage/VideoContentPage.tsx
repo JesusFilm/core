@@ -1,21 +1,24 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { ReactElement, useState } from 'react'
 import { NextSeo } from 'next-seo'
-import { useVideo } from '../../libs/videoContext'
-import { PageWrapper } from '../PageWrapper'
-import { ShareDialog } from '../ShareDialog'
-import { DownloadDialog } from '../DownloadDialog'
-import { ShareButton } from '../ShareButton'
+import { ReactElement, useState } from 'react'
+
 import { useVideoChildren } from '../../libs/useVideoChildren'
+import { useVideo } from '../../libs/videoContext'
+import { DownloadDialog } from '../DownloadDialog'
+import { PageWrapper } from '../PageWrapper'
+import { ShareButton } from '../ShareButton'
+import { ShareDialog } from '../ShareDialog'
+import { getSlug } from '../VideoCard'
 import { VideoCarousel } from '../VideoCarousel'
+
 import { DownloadButton } from './DownloadButton'
-import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
+import { VideoHeading } from './VideoHeading'
+import { VideoHero } from './VideoHero'
 
 import 'video.js/dist/video-js.css'
-import { VideoHeading } from './VideoHeading'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
@@ -27,6 +30,7 @@ export function VideoContentPage(): ReactElement {
     slug,
     variant,
     id,
+    label,
     container,
     childrenCount
   } = useVideo()
@@ -36,6 +40,9 @@ export function VideoContentPage(): ReactElement {
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
+
+  const ogSlug = getSlug(container?.slug, label, variant?.slug)
+  const realChildren = children.filter((video) => video.variant !== null)
 
   return (
     <>
@@ -48,7 +55,7 @@ export function VideoContentPage(): ReactElement {
           url: `${
             process.env.NEXT_PUBLIC_WATCH_URL ??
             'https://watch-jesusfilm.vercel.app'
-          }/${slug}`,
+          }${ogSlug}`,
           description: snippet[0].value ?? undefined,
           images:
             image != null
@@ -96,20 +103,22 @@ export function VideoContentPage(): ReactElement {
               <VideoHeading
                 loading={loading}
                 hasPlayed={hasPlayed}
-                videos={children}
+                videos={realChildren}
                 onShareClick={() => setOpenShare(true)}
                 onDownloadClick={() => setOpenDownload(true)}
               />
-              {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) && (
-                <Box pb={4}>
-                  <VideoCarousel
-                    loading={loading}
-                    videos={children}
-                    containerSlug={container?.slug ?? slug}
-                    activeVideoId={id}
-                  />
-                </Box>
-              )}
+              {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
+                (realChildren.length === children.length ||
+                  realChildren.length > 0) && (
+                  <Box pb={4}>
+                    <VideoCarousel
+                      loading={loading}
+                      videos={realChildren}
+                      containerSlug={container?.slug ?? slug}
+                      activeVideoId={id}
+                    />
+                  </Box>
+                )}
             </Stack>
           </>
         }

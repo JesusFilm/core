@@ -1,81 +1,115 @@
-// Block resolver tests are in individual block type spec files
-
-import { Args, Query, ResolveField, Resolver, Mutation } from '@nestjs/graphql'
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
-import { Block, Role, UserJourneyRole } from '../../__generated__/graphql'
-import { RoleGuard } from '../../lib/roleGuard/roleGuard'
+import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
+
+import { Block } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { BlockService } from './block.service'
 
-interface DbBlock extends Block {
-  __typename: string
-}
 @Resolver('Block')
 export class BlockResolver {
-  constructor(private readonly blockService: BlockService) {}
+  constructor(
+    private readonly blockService: BlockService,
+    private readonly prismaService: PrismaService
+  ) {}
+
   @ResolveField()
-  __resolveType(obj: DbBlock): string {
-    return obj.__typename
-  }
-
-  @Query()
-  async blocks(): Promise<Block[]> {
-    return await this.blockService.getAll()
-  }
-
-  @Query()
-  async block(@Args('id') id: string): Promise<Block> {
-    return await this.blockService.get(id)
+  __resolveType(obj: { __typename?: string; typename: string }): string {
+    return obj.__typename ?? obj.typename
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async blockOrderUpdate(
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('journeyId') journeyId: string,
     @Args('parentOrder') parentOrder: number
   ): Promise<Block[]> {
-    return await this.blockService.reorderBlock(id, journeyId, parentOrder)
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+    if (block == null)
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.blockService.reorderBlock(block, parentOrder)
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async blockDuplicate(
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('journeyId') journeyId: string,
     @Args('parentOrder') parentOrder?: number
   ): Promise<Block[]> {
-    return await this.blockService.duplicateBlock(id, journeyId, parentOrder)
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+    if (block == null)
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.blockService.duplicateBlock(block, parentOrder)
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async blockDelete(
-    @Args('id') id: string,
-    @Args('journeyId') journeyId: string,
-    @Args('parentBlockId') parentBlockId?: string
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
   ): Promise<Block[]> {
-    return await this.blockService.removeBlockAndChildren(
-      id,
-      journeyId,
-      parentBlockId
-    )
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+    if (block == null)
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to delete block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.blockService.removeBlockAndChildren(block)
   }
 }

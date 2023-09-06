@@ -1,4 +1,5 @@
-import { ReactElement } from 'react'
+import { useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useAuthUser,
@@ -6,22 +7,20 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/router'
-import { useQuery } from '@apollo/client'
-import { PageWrapper } from '../../../src/components/PageWrapper'
-import i18nConfig from '../../../next-i18next.config'
-import { GetPublisherTemplate } from '../../../__generated__/GetPublisherTemplate'
-import { Editor } from '../../../src/components/Editor'
-import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
-import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
+
 import { GetPublisher } from '../../../__generated__/GetPublisher'
-import { PublisherInvite } from '../../../src/components/PublisherInvite'
+import { GetPublisherTemplate } from '../../../__generated__/GetPublisherTemplate'
 import { Role } from '../../../__generated__/globalTypes'
+import { Editor } from '../../../src/components/Editor'
+import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
+import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
+import { PageWrapper } from '../../../src/components/PageWrapper'
+import { PublisherInvite } from '../../../src/components/PublisherInvite'
+import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
+import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect'
 import { GET_PUBLISHER, GET_PUBLISHER_TEMPLATE } from '../[journeyId]'
-import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function TemplateEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -35,7 +34,7 @@ function TemplateEditPage(): ReactElement {
     Role.publisher
   )
 
-  useTermsRedirect()
+  useInvalidJourneyRedirect(data)
 
   return (
     <>
@@ -61,7 +60,6 @@ function TemplateEditPage(): ReactElement {
               backHref={`/publisher/${router.query.journeyId as string}`}
               authUser={AuthUser}
               menu={<EditToolbar />}
-              router={router}
             >
               <JourneyEdit />
             </PageWrapper>
@@ -81,23 +79,20 @@ function TemplateEditPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  if (AuthUser == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
+
+  if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })

@@ -1,11 +1,14 @@
-import { ReactElement } from 'react'
-import { useMutation, gql } from '@apollo/client'
-import TextField from '@mui/material/TextField'
-import { Formik, Form } from 'formik'
-import { object, string } from 'yup'
+import { gql, useMutation } from '@apollo/client'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
+import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
+import { ReactElement, useEffect, useRef } from 'react'
+import { object, string } from 'yup'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneySeoTitleUpdate } from '../../../../../../__generated__/JourneySeoTitleUpdate'
+import { useSocialPreview } from '../../../SocialProvider'
 
 export const JOURNEY_SEO_TITLE_UPDATE = gql`
   mutation JourneySeoTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -22,6 +25,20 @@ export function TitleEdit(): ReactElement {
   )
 
   const { journey } = useJourney()
+
+  const ref = useRef<TextFieldProps | null>()
+  const { setSeoTitle } = useSocialPreview()
+  const once = useRef(false)
+  useEffect(() => {
+    if (!once.current && journey != null) {
+      setSeoTitle(journey?.seoTitle)
+      once.current = true
+    }
+  }, [journey, setSeoTitle])
+
+  function handleKeyUp(): void {
+    setSeoTitle(ref.current?.value as string)
+  }
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return
@@ -65,6 +82,7 @@ export function TitleEdit(): ReactElement {
           {({ values, touched, errors, handleChange, handleBlur }) => (
             <Form>
               <TextField
+                inputRef={ref}
                 id="seoTitle"
                 name="seoTitle"
                 variant="filled"
@@ -76,13 +94,14 @@ export function TitleEdit(): ReactElement {
                 error={touched.seoTitle === true && Boolean(errors.seoTitle)}
                 helperText={
                   errors.seoTitle != null
-                    ? errors.seoTitle
+                    ? (errors.seoTitle as string)
                     : 'Recommended length: 5 words'
                 }
                 onChange={handleChange}
+                onKeyUp={handleKeyUp}
                 onBlur={(e) => {
                   handleBlur(e)
-                  errors.seoTitle == null && handleSubmit(e)
+                  if (errors.seoTitle == null) void handleSubmit(e)
                 }}
                 sx={{
                   pb: 4

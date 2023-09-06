@@ -1,24 +1,28 @@
-import { useEffect, ReactElement } from 'react'
+import { ApolloProvider } from '@apollo/client'
+import { datadogRum } from '@datadog/browser-rum'
+import type { EmotionCache } from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
-import { ApolloProvider } from '@apollo/client'
-import { SnackbarProvider } from 'notistack'
+import { SSRConfig, appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
+import { SnackbarProvider } from 'notistack'
+import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
-import { datadogRum } from '@datadog/browser-rum'
-import { CacheProvider } from '@emotion/react'
-import type { EmotionCache } from '@emotion/cache'
+import { useTranslation } from 'react-i18next'
+
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { appWithTranslation, SSRConfig } from 'next-i18next'
-import { useTranslation } from 'react-i18next'
-import { useApollo } from '../src/libs/apolloClient'
-import { ThemeProvider } from '../src/components/ThemeProvider'
-import { initAuth } from '../src/libs/firebaseClient/initAuth'
+
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
+import { TeamProvider } from '../src/components/Team/TeamProvider'
+import { ThemeProvider } from '../src/components/ThemeProvider'
+import { useApollo } from '../src/libs/apolloClient'
+import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
-// your _app component
+import '../public/swiper-pagination-override.css'
+
 initAuth()
 const clientSideEmotionCache = createEmotionCache({})
 
@@ -57,7 +61,8 @@ function JourneysAdminApp({
         service: 'journeys-admin',
         env: process.env.NEXT_PUBLIC_VERCEL_ENV,
         version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-        sampleRate: 100,
+        sampleRate: 50,
+        sessionReplaySampleRate: 10,
         trackInteractions: true,
         defaultPrivacyLevel: 'mask-user-input'
       })
@@ -86,14 +91,16 @@ function JourneysAdminApp({
           </Head>
 
           <ApolloProvider client={apolloClient}>
-            <SnackbarProvider
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right'
-              }}
-            >
-              <Component {...pageProps} />
-            </SnackbarProvider>
+            <TeamProvider>
+              <SnackbarProvider
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+              >
+                <Component {...pageProps} />
+              </SnackbarProvider>
+            </TeamProvider>
           </ApolloProvider>
         </ThemeProvider>
       </CacheProvider>

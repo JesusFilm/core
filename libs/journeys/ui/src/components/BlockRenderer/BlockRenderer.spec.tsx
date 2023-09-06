@@ -1,15 +1,50 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { v4 as uuidv4 } from 'uuid'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../../libs/block'
+import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
+import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
+
 import { BlockRenderer } from '.'
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
 describe('BlockRenderer', () => {
-  it('should render Button', () => {
+  const stepViewEventResult = jest.fn(() => ({
+    data: {
+      stepViewEventCreate: {
+        id: 'uuid',
+        __typename: 'StepViewEvent'
+      }
+    }
+  }))
+
+  const mocks = [
+    {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'step',
+            value: 'Untitled'
+          }
+        }
+      },
+      result: stepViewEventResult
+    }
+  ]
+
+  it('should render Button', async () => {
     const block: TreeBlock = {
       __typename: 'ButtonBlock',
       id: 'button',
@@ -29,7 +64,9 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    expect(getByText('Click to continue')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('Click to continue')).toBeInTheDocument()
+    )
   })
 
   it('should render Button with general wrapper and specific wrapper', () => {
@@ -64,13 +101,13 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('button-wrapper')
+    ).toBe('button-wrapper')
     expect(getByTestId('button-wrapper')).toContainElement(
       getByText('Click to continue')
     )
   })
 
-  it('should render Card', () => {
+  it('should render Card', async () => {
     const block: TreeBlock = {
       __typename: 'CardBlock',
       id: 'card',
@@ -100,7 +137,9 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    expect(getByText('How did we get here?')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('How did we get here?')).toBeInTheDocument()
+    )
   })
 
   it('should render Card with general wrapper and specific wrapper', () => {
@@ -149,13 +188,13 @@ describe('BlockRenderer', () => {
       getByTestId('general-wrapper-CardBlock').children[0].getAttribute(
         'data-testid'
       )
-    ).toEqual('card-wrapper')
+    ).toBe('card-wrapper')
     expect(getByTestId('card-wrapper')).toContainElement(
       getByText('How did we get here?')
     )
   })
 
-  it('should render Image', () => {
+  it('should render Image', async () => {
     const block: TreeBlock = {
       __typename: 'ImageBlock',
       id: 'main',
@@ -169,9 +208,11 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByRole } = render(<BlockRenderer block={block} />)
-    expect(getByRole('img')).toHaveAttribute(
-      'alt',
-      'random image from unsplash'
+    await waitFor(() =>
+      expect(getByRole('img')).toHaveAttribute(
+        'alt',
+        'random image from unsplash'
+      )
     )
   })
 
@@ -203,13 +244,13 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('image-wrapper')
+    ).toBe('image-wrapper')
     expect(getByTestId('image-wrapper')).toContainElement(
       getByRole('img', { name: 'random image from unsplash' })
     )
   })
 
-  it('should render RadioOption', () => {
+  it('should render RadioOption', async () => {
     const block: TreeBlock = {
       __typename: 'RadioOptionBlock',
       id: 'main',
@@ -224,7 +265,7 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    expect(getByText('radio option')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('radio option')).toBeInTheDocument())
   })
 
   it('should render RadioOption with general wrapper and specific wrapper', () => {
@@ -254,13 +295,13 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('radio-option-wrapper')
+    ).toBe('radio-option-wrapper')
     expect(getByTestId('radio-option-wrapper')).toContainElement(
       getByText('radio option')
     )
   })
 
-  it('should render RadioQuestion', () => {
+  it('should render RadioQuestion', async () => {
     const option: TreeBlock<RadioOptionFields> = {
       __typename: 'RadioOptionBlock',
       id: 'main',
@@ -283,7 +324,7 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    expect(getByText('radio option 1')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('radio option 1')).toBeInTheDocument())
     expect(getByText('radio option 2')).toBeInTheDocument()
   })
 
@@ -312,7 +353,7 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('radio-question-wrapper')
+    ).toBe('radio-question-wrapper')
 
     const buttonGroup = getByRole('group')
     expect(buttonGroup).toHaveClass(
@@ -321,7 +362,7 @@ describe('BlockRenderer', () => {
     expect(getByTestId('radio-question-wrapper')).toContainElement(buttonGroup)
   })
 
-  it('should render SignUp', () => {
+  it('should render SignUp', async () => {
     const block: TreeBlock = {
       __typename: 'SignUpBlock',
       id: 'signUp',
@@ -343,7 +384,7 @@ describe('BlockRenderer', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByLabelText('Name')).toBeInTheDocument()
+    await waitFor(() => expect(getByLabelText('Name')).toBeInTheDocument())
     expect(getByLabelText('Email')).toBeInTheDocument()
   })
 
@@ -381,7 +422,7 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('sign-up-wrapper')
+    ).toBe('sign-up-wrapper')
     expect(getByTestId('sign-up-wrapper')).toContainElement(
       getByLabelText('Name')
     )
@@ -390,7 +431,8 @@ describe('BlockRenderer', () => {
     )
   })
 
-  it('should render Step', () => {
+  it('should render Step', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
     const block: TreeBlock = {
       __typename: 'StepBlock',
       id: 'step',
@@ -415,15 +457,18 @@ describe('BlockRenderer', () => {
         }
       ]
     }
+    blockHistoryVar([block])
     const { getByText } = render(
-      <MockedProvider>
+      <MockedProvider mocks={mocks}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
+    await waitFor(() => expect(stepViewEventResult).toHaveBeenCalled())
     expect(getByText('Click to continue')).toBeInTheDocument()
   })
 
-  it('should render Step with general wrapper and specific wrapper', () => {
+  it('should render Step with general wrapper and specific wrapper', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
     const block: TreeBlock = {
       __typename: 'StepBlock',
       id: 'step',
@@ -448,8 +493,9 @@ describe('BlockRenderer', () => {
         }
       ]
     }
+    blockHistoryVar([block])
     const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={mocks}>
         <BlockRenderer
           block={block}
           wrappers={{
@@ -469,7 +515,8 @@ describe('BlockRenderer', () => {
       getByTestId('general-wrapper-StepBlock').children[0].getAttribute(
         'data-testid'
       )
-    ).toEqual('step-wrapper')
+    ).toBe('step-wrapper')
+    await waitFor(() => expect(stepViewEventResult).toHaveBeenCalled())
     expect(getByTestId('step-wrapper')).toContainElement(
       getByText('Click to continue')
     )
@@ -518,13 +565,13 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('typography-wrapper')
+    ).toBe('typography-wrapper')
     expect(getByTestId('typography-wrapper')).toHaveTextContent(
       'How did we get here?'
     )
   })
 
-  it('should render Video', () => {
+  it('should render Video', async () => {
     const block: TreeBlock = {
       __typename: 'VideoBlock',
       id: 'main',
@@ -557,7 +604,7 @@ describe('BlockRenderer', () => {
       muted: false,
       endAt: null,
       startAt: null,
-      parentBlockId: null,
+      parentBlockId: 'step',
       posterBlockId: null,
       parentOrder: 0,
       fullsize: null,
@@ -569,7 +616,7 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    expect(getByTestId('video-main')).toBeInTheDocument()
+    await waitFor(() => expect(getByTestId('video-main')).toBeInTheDocument())
   })
 
   it('should render Video with general wrapper and specific wrapper', () => {
@@ -629,7 +676,7 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('video-wrapper')
+    ).toBe('video-wrapper')
     expect(getByTestId('video-wrapper')).toContainElement(
       getByTestId('video-main')
     )

@@ -1,17 +1,21 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
-  ButtonVariant,
   ButtonColor,
-  ButtonSize
+  ButtonSize,
+  ButtonVariant
 } from '../../../../../../__generated__/globalTypes'
+
 import { BUTTON_BLOCK_CREATE } from './NewButtonButton'
+
 import { NewButtonButton } from '.'
 
 jest.mock('uuid', () => ({
@@ -44,6 +48,7 @@ describe('NewButtonButton', () => {
       }
     ]
   }
+
   it('should check if the mutation gets called', async () => {
     mockUuidv4.mockReturnValueOnce('buttonBlockId')
     mockUuidv4.mockReturnValueOnce('startIconId')
@@ -132,7 +137,7 @@ describe('NewButtonButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -244,7 +249,7 @@ describe('NewButtonButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>

@@ -1,13 +1,13 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloQueryResult } from '@apollo/client'
+import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
-import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
-import { JourneyDelete } from '../../../../../../__generated__/JourneyDelete'
+import { ReactElement } from 'react'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
+import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
-import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
-import { GetTrashedJourneys } from '../../../../../../__generated__/GetTrashedJourneys'
+import { JourneyDelete } from '../../../../../../__generated__/JourneyDelete'
 
 export const JOURNEY_DELETE = gql`
   mutation JourneyDelete($ids: [ID!]!) {
@@ -22,11 +22,7 @@ export interface DeleteJourneyDialogProps {
   id: string
   open: boolean
   handleClose: () => void
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function DeleteJourneyDialog({

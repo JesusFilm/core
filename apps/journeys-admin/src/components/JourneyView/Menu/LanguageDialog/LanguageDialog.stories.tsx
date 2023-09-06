@@ -1,20 +1,24 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
+import { ReactElement, useState } from 'react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { defaultJourney } from '../../data'
-import { JOURNEY_LANGUAGE_UPDATE, GET_LANGUAGES } from './LanguageDialog'
+
+import { GET_LANGUAGES, JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
+
 import { LanguageDialog } from '.'
 
-const LanguageDialogStory = {
+const LanguageDialogStory: Meta<typeof LanguageDialog> = {
   ...journeysAdminConfig,
   component: LanguageDialog,
   title: 'Journeys-Admin/JourneyView/Menu/LanguageDialog'
 }
 
-const Template: Story = () => {
+const LanguageDialogComponent = (): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -114,18 +118,29 @@ const Template: Story = () => {
         }
       ]}
     >
-      <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+      <JourneyProvider
+        value={{
+          journey: defaultJourney,
+          variant: 'admin'
+        }}
+      >
         <LanguageDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
     </MockedProvider>
   )
 }
 
-export const Default = Template.bind({})
-export const Error = Template.bind({})
-Error.play = () => {
-  const button = screen.getByRole('button', { name: 'Save' })
-  userEvent.click(button)
+const Template: StoryObj<typeof LanguageDialog> = {
+  render: () => <LanguageDialogComponent />
 }
 
-export default LanguageDialogStory as Meta
+export const Default = { ...Template }
+export const Error = {
+  ...Template,
+  play: async () => {
+    const button = screen.getByRole('button', { name: 'Save' })
+    await userEvent.click(button)
+  }
+}
+
+export default LanguageDialogStory

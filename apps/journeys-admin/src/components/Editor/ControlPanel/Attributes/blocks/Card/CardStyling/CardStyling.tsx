@@ -1,23 +1,25 @@
-import { ReactElement } from 'react'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Divider from '@mui/material/Divider'
-import Typography from '@mui/material/Typography'
-import ColorLens from '@mui/icons-material/ColorLens'
-import Image from 'next/image'
 import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import ColorLens from '@mui/icons-material/ColorLens'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import Image from 'next/image'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { HorizontalSelect } from '../../../../../../HorizontalSelect'
-import {
-  ThemeName,
-  ThemeMode
-} from '../../../../../../../../__generated__/globalTypes'
-import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
-import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { CardBlockThemeModeUpdate } from '../../../../../../../../__generated__/CardBlockThemeModeUpdate'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../../__generated__/globalTypes'
+import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
+import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
+import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 
 export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
   mutation CardBlockThemeModeUpdate(
@@ -113,10 +115,28 @@ export function CardStyling(): ReactElement {
             sx={{ display: 'flex' }}
             data-testid="Light"
           >
-            <Image src={cardStyleLight} alt="Light" width={89} height={134} />
+            <Image
+              src={cardStyleLight}
+              alt="Light"
+              width={89}
+              height={134}
+              style={{
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
           </Box>
           <Box id={ThemeMode.dark} sx={{ display: 'flex' }} data-testid="Dark">
-            <Image src={cardStyleDark} alt="Dark" width={89} height={134} />
+            <Image
+              src={cardStyleDark}
+              alt="Dark"
+              width={89}
+              height={134}
+              style={{
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
           </Box>
         </HorizontalSelect>
       </Box>

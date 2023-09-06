@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
+
 import Facebook from '../FooterSocials/assets/facebook.svg'
+
 import { FooterLink } from './FooterLink'
 
 describe('FooterLink', () => {
@@ -18,8 +20,8 @@ describe('FooterLink', () => {
         url="https://www.facebook.com/jesusfilm"
         label="Facebook"
         src={Facebook}
-        width="66"
-        height="72"
+        width={66}
+        height={72}
         target="_blank"
       />
     )

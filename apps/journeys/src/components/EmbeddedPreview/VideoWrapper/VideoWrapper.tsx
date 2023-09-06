@@ -1,17 +1,20 @@
-import { ReactElement, useRef, useMemo, useEffect } from 'react'
-import type { TreeBlock } from '@core/journeys/ui/block'
+import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
-import { blurImage } from '@core/journeys/ui/blurImage'
-import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { NextImage } from '@core/shared/ui/NextImage'
+import { ReactElement, useEffect, useMemo, useRef } from 'react'
 import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { blurImage } from '@core/journeys/ui/blurImage'
+import { NextImage } from '@core/shared/ui/NextImage'
 
 import {
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
@@ -23,7 +26,7 @@ export function VideoWrapper({
 }): ReactElement {
   const theme = useTheme()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
+  const playerRef = useRef<Player>()
 
   const posterBlock = block.children.find(
     (child) =>
@@ -62,7 +65,6 @@ export function VideoWrapper({
         height: '100%',
         minHeight: 'inherit',
         backgroundColor: VIDEO_BACKGROUND_COLOR,
-        borderRadius: 4,
         overflow: 'hidden',
         m: 0,
         position: 'absolute',
@@ -78,7 +80,10 @@ export function VideoWrapper({
             objectFit: 'cover'
           },
           '> .vjs-loading-spinner': {
-            zIndex: 1
+            zIndex: 1,
+            ...(block.source === VideoBlockSource.youTube && {
+              display: 'none'
+            })
           },
           '> .vjs-big-play-button': {
             zIndex: 1
@@ -109,19 +114,46 @@ export function VideoWrapper({
           layout="fill"
           objectFit="cover"
         />
-      ) : block.video?.variant?.hls != null ? (
-        <video
-          ref={videoRef}
-          className="video-js vjs-big-play-centered"
-          playsInline
-        >
-          <source src={block.video.variant.hls} type="application/x-mpegURL" />
-        </video>
+      ) : block.videoId != null ? (
+        <>
+          <video
+            ref={videoRef}
+            className="video-js vjs-big-play-centered"
+            playsInline
+          >
+            {block.source === VideoBlockSource.cloudflare &&
+              block.videoId != null && (
+                <source
+                  src={`https://customer-${
+                    process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
+                    ''
+                  }.cloudflarestream.com/${
+                    block.videoId ?? ''
+                  }/manifest/video.m3u8`}
+                  type="application/x-mpegURL"
+                />
+              )}
+            {block.source === VideoBlockSource.internal &&
+              block.video?.variant?.hls != null && (
+                <source
+                  src={block.video.variant.hls}
+                  type="application/x-mpegURL"
+                />
+              )}
+            {block.source === VideoBlockSource.youTube && (
+              <source
+                src={`https://www.youtube.com/embed/${block.videoId}?start=${
+                  block.startAt ?? 0
+                }&end=${block.endAt ?? 0}`}
+                type="video/youtube"
+              />
+            )}
+          </video>
+        </>
       ) : (
         <Paper
           sx={{
             backgroundColor: 'transparent',
-            borderRadius: (theme) => theme.spacing(4),
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

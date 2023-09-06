@@ -1,0 +1,9 @@
+type Tag @key(fields: "id") {
+  id: ID!
+  name: [Translation!]!
+  parentId: ID
+}
+
+extend type Query {
+  tags: [Tag!]!
+}

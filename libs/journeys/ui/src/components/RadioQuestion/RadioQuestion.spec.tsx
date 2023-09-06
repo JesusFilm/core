@@ -1,12 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
+
 import type { TreeBlock } from '../../libs/block'
-import { activeBlockVar, treeBlocksVar } from '../../libs/block'
-import { JourneyProvider } from '../../libs/JourneyProvider'
+import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
-import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
+
+import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -87,7 +90,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should select an option onClick', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
 
     const result = jest.fn(() => ({
       data: {
@@ -133,7 +136,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should disable unselected options', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
 
     const { getByTestId, getAllByRole } = render(
       <MockedProvider
@@ -180,7 +183,7 @@ describe('RadioQuestion', () => {
     expect(buttons[1]).toBeDisabled()
   })
 
-  it('should display options with wrappers', () => {
+  it('should display options with wrappers', async () => {
     const { getByText, getAllByTestId } = render(
       <MockedProvider mocks={[]} addTypename={false}>
         <RadioQuestion
@@ -193,8 +196,10 @@ describe('RadioQuestion', () => {
         />
       </MockedProvider>
     )
-    expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
-      getByText('Option 1')
+    await waitFor(() =>
+      expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
+        getByText('Option 1')
+      )
     )
     expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
       getByText('Option 2')
@@ -202,7 +207,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should add radio submission to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const { getAllByRole } = render(

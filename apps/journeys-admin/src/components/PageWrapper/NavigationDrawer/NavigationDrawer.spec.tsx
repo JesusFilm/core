@@ -1,12 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { AuthUser } from 'next-firebase-auth'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { NextRouter } from 'next/router'
+
 import { Role } from '../../../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
-import { GET_ME } from './NavigationDrawer'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
+import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
+
 import { NavigationDrawer } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -23,25 +26,22 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('NavigationDrawer', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   const onClose = jest.fn()
   const signOut = jest.fn()
 
-  function getRouter(path: string): NextRouter {
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */
-    return {
-      pathname: path
-    } as unknown as NextRouter
-  }
-
   it('should render the default menu items', () => {
     const { getByText, getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} title="Journeys" />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     expect(getAllByRole('button')[0]).toContainElement(
@@ -85,11 +85,10 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ templates: true, reports: true }}>
+        <FlagsProvider flags={{ globalReports: true }}>
           <NavigationDrawer
             open
             onClose={onClose}
-            title="Journeys"
             authUser={
               {
                 displayName: 'Amin One',
@@ -108,16 +107,13 @@ describe('NavigationDrawer', () => {
   })
 
   it('should select templates button', () => {
+    mockUseRouter.mockReturnValue({
+      pathname: '/templates'
+    } as unknown as NextRouter)
+
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            title="Journey Templates"
-            router={getRouter('/templates')}
-          />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     expect(getByTestId('Templates-list-item')).toHaveAttribute(
@@ -127,15 +123,14 @@ describe('NavigationDrawer', () => {
   })
 
   it('should select the reports button', () => {
+    mockUseRouter.mockReturnValue({
+      pathname: '/reports'
+    } as unknown as NextRouter)
+
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            title="Reports"
-            router={getRouter('/reports')}
-          />
+        <FlagsProvider flags={{ globalReports: true }}>
+          <NavigationDrawer open onClose={onClose} />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -145,7 +140,22 @@ describe('NavigationDrawer', () => {
     )
   })
 
+  it('should hide the reports button', () => {
+    const { queryByText } = render(
+      <MockedProvider mocks={[]}>
+        <FlagsProvider flags={{ globalReports: false }}>
+          <NavigationDrawer open onClose={onClose} />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(queryByText('Reports')).not.toBeInTheDocument()
+  })
+
   it('should select publisher button', async () => {
+    mockUseRouter.mockReturnValue({
+      pathname: '/publisher/[journeyId]'
+    } as unknown as NextRouter)
+
     const { getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -180,22 +190,18 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            title="Templates Admin"
-            authUser={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as AuthUser
-            }
-            router={getRouter('/publisher/[journeyId]')}
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          authUser={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as AuthUser
+          }
+        />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -241,21 +247,18 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            title="Templates Admin"
-            authUser={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as AuthUser
-            }
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          authUser={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as AuthUser
+          }
+        />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -274,9 +277,7 @@ describe('NavigationDrawer', () => {
   it('should close the navigation drawer on chevron left click', () => {
     const { getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} title="Journeys" />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     const button = getAllByRole('button')[0]
@@ -286,11 +287,13 @@ describe('NavigationDrawer', () => {
   })
 
   it('should select the journeys drawer', () => {
+    mockUseRouter.mockReturnValue({
+      pathname: '/'
+    } as unknown as NextRouter)
+
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} title="Active Journeys" />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     expect(getByTestId('ViewCarouselRoundedIcon').parentElement).toHaveStyle(

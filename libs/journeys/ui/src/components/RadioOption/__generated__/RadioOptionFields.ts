@@ -46,7 +46,14 @@ export interface RadioOptionFields_action_LinkAction {
   url: string;
 }
 
-export type RadioOptionFields_action = RadioOptionFields_action_NavigateAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_NavigateToJourneyAction | RadioOptionFields_action_LinkAction;
+export interface RadioOptionFields_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type RadioOptionFields_action = RadioOptionFields_action_NavigateAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_NavigateToJourneyAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction;
 
 export interface RadioOptionFields {
   __typename: "RadioOptionBlock";

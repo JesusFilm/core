@@ -1,7 +1,9 @@
 import { NextRouter } from 'next/dist/client/router'
+
 import { nextActiveBlock } from '../block'
 import { JourneyFields as Journey } from '../JourneyProvider/__generated__/JourneyFields'
 import { getJourneyRTL } from '../rtl'
+
 import { ActionFields } from './__generated__/ActionFields'
 
 export function handleAction(
@@ -35,6 +37,9 @@ export function handleAction(
       } else {
         void router.push(action.url)
       }
+      break
+    case 'EmailAction':
+      window.open(`mailto:${action.email}`, '_blank')
       break
   }
 }

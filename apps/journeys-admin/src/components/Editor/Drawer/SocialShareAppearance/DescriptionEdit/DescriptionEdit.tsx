@@ -1,11 +1,14 @@
-import { ReactElement } from 'react'
-import { useMutation, gql } from '@apollo/client'
-import TextField from '@mui/material/TextField'
-import { Formik, Form } from 'formik'
-import { object, string } from 'yup'
+import { gql, useMutation } from '@apollo/client'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
+import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
+import { ReactElement, useEffect, useRef } from 'react'
+import { object, string } from 'yup'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneySeoDescriptionUpdate } from '../../../../../../__generated__/JourneySeoDescriptionUpdate'
+import { useSocialPreview } from '../../../SocialProvider'
 
 export const JOURNEY_SEO_DESCRIPTION_UPDATE = gql`
   mutation JourneySeoDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -22,6 +25,20 @@ export function DescriptionEdit(): ReactElement {
   )
 
   const { journey } = useJourney()
+
+  const ref = useRef<TextFieldProps | null>()
+  const { setSeoDescription } = useSocialPreview()
+  const once = useRef(false)
+  useEffect(() => {
+    if (!once.current && journey != null) {
+      setSeoDescription(journey?.seoDescription)
+      once.current = true
+    }
+  }, [journey, setSeoDescription])
+
+  function handleKeyUp(): void {
+    setSeoDescription(ref.current?.value as string)
+  }
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return
@@ -65,6 +82,7 @@ export function DescriptionEdit(): ReactElement {
           {({ values, touched, errors, handleChange, handleBlur }) => (
             <Form>
               <TextField
+                inputRef={ref}
                 id="seoDescription"
                 name="seoDescription"
                 variant="filled"
@@ -79,13 +97,14 @@ export function DescriptionEdit(): ReactElement {
                 }
                 helperText={
                   errors.seoDescription != null
-                    ? errors.seoDescription
+                    ? (errors.seoDescription as string)
                     : 'Recommended length: up to 18 words'
                 }
                 onChange={handleChange}
+                onKeyUp={handleKeyUp}
                 onBlur={(e) => {
                   handleBlur(e)
-                  errors.seoDescription == null && handleSubmit(e)
+                  if (errors.seoDescription == null) void handleSubmit(e)
                 }}
                 sx={{
                   pb: 6

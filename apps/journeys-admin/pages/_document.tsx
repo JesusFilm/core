@@ -1,8 +1,9 @@
-import { ReactElement, FunctionComponent } from 'react'
-import Document, { Html, Head, Main, NextScript } from 'next/document'
-import createEmotionServer from '@emotion/server/create-instance'
 import type { EmotionCache } from '@emotion/cache'
-import type { Enhancer, AppType } from 'next/dist/shared/lib/utils'
+import createEmotionServer from '@emotion/server/create-instance'
+import type { AppType, Enhancer } from 'next/dist/shared/lib/utils'
+import Document, { Head, Html, Main, NextScript } from 'next/document'
+import { FunctionComponent, ReactElement } from 'react'
+
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 export default class MyDocument extends Document<{
@@ -78,8 +79,8 @@ MyDocument.getInitialProps = async (ctx) => {
   const cache = createEmotionCache({})
   const { extractCriticalToChunks } = createEmotionServer(cache)
 
-  ctx.renderPage = () =>
-    originalRenderPage({
+  ctx.renderPage = async () =>
+    await originalRenderPage({
       enhanceApp: ((App: FunctionComponent<{ emotionCache: EmotionCache }>) => {
         return function EnhanceApp(props) {
           return <App emotionCache={cache} {...props} />

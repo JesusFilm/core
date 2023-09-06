@@ -1,16 +1,28 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourney'
 import {
-  ThemeName,
   ThemeMode,
+  ThemeName,
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
+
 import { Attributes } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 describe('Attributes', () => {
   const card: TreeBlock<CardBlock> = {
@@ -118,7 +130,7 @@ describe('Attributes', () => {
     expect(getByText('Video Source')).toBeInTheDocument()
   })
 
-  it('should render video properties with move buttons ', () => {
+  it('should render video properties with move buttons', () => {
     const stepWithVideo: TreeBlock = {
       ...step,
       children: [{ ...card, children: [video] }]
@@ -134,7 +146,7 @@ describe('Attributes', () => {
     expect(getByText('Video Source')).toBeInTheDocument()
   })
 
-  it('should render typography properties with move buttons ', () => {
+  it('should render typography properties with move buttons', () => {
     const block: TreeBlock = {
       id: 'typographyBlockId1',
       __typename: 'TypographyBlock',
@@ -158,7 +170,7 @@ describe('Attributes', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render button properties with move buttons ', () => {
+  it('should render button properties with move buttons', () => {
     const block: TreeBlock = {
       id: 'button.id',
       __typename: 'ButtonBlock',
@@ -205,7 +217,7 @@ describe('Attributes', () => {
     expect(getAllByRole('button')).toHaveLength(2)
   })
 
-  it('should render Radio Option properties with move buttons ', () => {
+  it('should render Radio Option properties with move buttons', () => {
     const block: TreeBlock = {
       id: 'radio-option.id',
       __typename: 'RadioOptionBlock',
@@ -225,7 +237,7 @@ describe('Attributes', () => {
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
   })
 
-  it('should render Sign Up properties with move buttons ', () => {
+  it('should render Sign Up properties with move buttons', () => {
     const block: TreeBlock = {
       id: 'signup.id',
       __typename: 'SignUpBlock',
@@ -244,5 +256,18 @@ describe('Attributes', () => {
 
     expect(getByTestId('move-block-buttons')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+  })
+
+  it('should render Footer properties', () => {
+    const { queryByTestId, getByRole } = render(
+      <MockedProvider>
+        <Attributes selected="Footer" step={card} />
+      </MockedProvider>
+    )
+
+    expect(queryByTestId('move-block-buttons')).not.toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Chat Widget None' })
+    ).toBeInTheDocument()
   })
 })

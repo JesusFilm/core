@@ -18,11 +18,14 @@ type CloudflareImage {
 }
 
 type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
 }
 
 extend type Query {
   getMyCloudflareImages: [CloudflareImage]
+  getMyCloudflareVideos: [CloudflareVideo]
+  getMyCloudflareVideo(id: ID!): CloudflareVideo
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
 }
@@ -32,7 +35,18 @@ extend type Mutation {
   createCloudflareUploadByUrl(url: String!): CloudflareImage
   deleteCloudflareImage(id: ID!): Boolean
   cloudflareUploadComplete(id: ID!): Boolean
+  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo
+  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo
+  deleteCloudflareVideo(id: ID!): Boolean
   triggerUnsplashDownload(url: String!): Boolean
+}
+
+type CloudflareVideo {
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: String!
+  readyToStream: Boolean!
 }
 
 type UnsplashQueryResponse {
@@ -141,6 +155,18 @@ type UnsplashPhotoLinks {
   download_location: String!
 }
 
+extend type Language
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}
+
 scalar _FieldSet
 
 scalar _Any
@@ -148,3 +174,5 @@ scalar _Any
 type _Service {
   sdl: String
 }
+
+union _Entity = Language

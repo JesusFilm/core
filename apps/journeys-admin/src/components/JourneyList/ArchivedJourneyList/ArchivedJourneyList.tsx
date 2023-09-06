@@ -1,54 +1,20 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import { gql, useMutation, useQuery } from '@apollo/client'
-import { Dialog } from '@core/shared/ui/Dialog'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
-import { AuthUser } from 'next-firebase-auth'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
-import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourneys'
-import { JourneyCard } from '../JourneyCard'
-import { SortOrder } from '../JourneySort'
-import { sortJourneys } from '../JourneySort/utils/sortJourneys'
+import { ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-export const GET_ARCHIVED_JOURNEYS = gql`
-  query GetArchivedJourneys {
-    journeys: adminJourneys(status: [archived]) {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      status
-      seoTitle
-      seoDescription
-      userJourneys {
-        id
-        role
-        openedAt
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-    }
-  }
-`
+import { Dialog } from '@core/shared/ui/Dialog'
+
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { useTeam } from '../../Team/TeamProvider'
+import { JourneyCard } from '../JourneyCard'
+import type { JourneyListProps } from '../JourneyList'
+import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 
 export const RESTORE_ARCHIVED_JOURNEYS = gql`
   mutation RestoreArchivedJourneys($ids: [ID!]!) {
@@ -68,38 +34,21 @@ export const TRASH_ARCHIVED_JOURNEYS = gql`
   }
 `
 
-interface ArchivedJourneyListProps {
-  onLoad: () => void
-  sortOrder?: SortOrder
-  event: string | undefined
-  authUser?: AuthUser
-}
-
 export function ArchivedJourneyList({
-  onLoad,
+  authUser,
   sortOrder,
-  event,
-  authUser
-}: ArchivedJourneyListProps): ReactElement {
+  event
+}: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, loading, error, refetch } = useQuery<GetArchivedJourneys>(
-    GET_ARCHIVED_JOURNEYS
-  )
-  const journeys = data?.journeys
+  const { activeTeam } = useTeam()
+  const { data, refetch } = useAdminJourneysQuery({
+    status: [JourneyStatus.archived],
+    teamId: activeTeam?.id
+  })
 
-  const [restoreArchived] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
-    variables: {
-      ids: journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
-    },
-    update(cache, { data }) {
+  const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
+    update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
@@ -108,19 +57,8 @@ export function ArchivedJourneyList({
       }
     }
   })
-
-  const [trashArchived] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
-    variables: {
-      ids: journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
-    },
-    update(cache, { data }) {
+  const [trash] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
+    update(_cache, { data }) {
       if (data?.journeysTrash != null) {
         enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
@@ -129,53 +67,61 @@ export function ArchivedJourneyList({
       }
     }
   })
+  const [openRestoreDialog, setOpenRestoreDialog] = useState(false)
+  const [openTrashDialog, setOpenTrashDialog] = useState(false)
 
-  const [openRestoreAll, setOpenRestoreAll] = useState(false)
-  const [openTrashAll, setOpenTrashAll] = useState(false)
-
-  const snackbarError = (error: Error): void => {
-    enqueueSnackbar(error.message, {
-      variant: 'error',
-      preventDuplicate: true
-    })
-  }
-
-  const restoreAll = async (): Promise<void> => {
+  async function handleRestoreSubmit(): Promise<void> {
     try {
-      await restoreArchived()
+      const journeyIds = data?.journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
+      await restore({ variables: { ids: journeyIds } })
     } catch (error) {
-      snackbarError(error)
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
     handleClose()
   }
 
-  const trashAll = async (): Promise<void> => {
+  async function handleTrashSubmit(): Promise<void> {
     try {
-      await trashArchived()
+      const journeyIds = data?.journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
+      await trash({ variables: { ids: journeyIds } })
     } catch (error) {
-      snackbarError(error)
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
     handleClose()
   }
 
-  const handleClose = (): void => {
-    setOpenRestoreAll(false)
-    setOpenTrashAll(false)
+  function handleClose(): void {
+    setOpenRestoreDialog(false)
+    setOpenTrashDialog(false)
   }
-
-  useEffect(() => {
-    if (!loading && error == null) {
-      onLoad()
-    }
-  }, [onLoad, loading, error])
 
   useEffect(() => {
     switch (event) {
       case 'restoreAllArchived':
-        setOpenRestoreAll(true)
+        setOpenRestoreDialog(true)
         break
       case 'trashAllArchived':
-        setOpenTrashAll(true)
+        setOpenTrashDialog(true)
         break
       case 'refetchArchived':
         void refetch()
@@ -184,75 +130,66 @@ export function ArchivedJourneyList({
   }, [event, refetch])
 
   const sortedJourneys =
-    journeys != null ? sortJourneys(journeys, sortOrder) : undefined
+    data?.journeys != null ? sortJourneys(data.journeys, sortOrder) : undefined
 
   return (
     <>
-      {journeys != null && sortedJourneys != null ? (
-        <>
-          {sortedJourneys.map((journey) => (
-            <JourneyProvider
-              key={journey.id}
-              value={{ journey: journey as JourneyFields, admin: true }}
-            >
-              <JourneyCard journey={journey} refetch={refetch} />
-            </JourneyProvider>
-          ))}
-          {journeys.length > 0 ? (
-            <span>
-              <Box width="100%" sx={{ textAlign: 'center' }}>
-                <Typography variant="caption">
-                  {t(
-                    'Archived journeys are hidden from your active journey list for better organization.'
-                  )}
-                </Typography>
-              </Box>
-            </span>
-          ) : (
-            <>
-              <Card
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  pt: 20,
-                  pb: 16,
-                  borderBottomLeftRadius: { xs: 0, sm: 12 },
-                  borderBottomRightRadius: { xs: 0, sm: 12 },
-                  borderTopLeftRadius: 0,
-                  borderTopRightRadius: 0
-                }}
-              >
-                <Typography variant="subtitle1" align="center" gutterBottom>
-                  {t('No archived journeys.')}
-                </Typography>
-              </Card>
-              <Box width="100%" sx={{ textAlign: 'center' }}>
-                <Typography variant="caption">
-                  {t(
-                    'You can archive a Journey to hide it from your active Journey list for better organization.'
-                  )}
-                </Typography>
-              </Box>
-            </>
+      <Box>
+        {sortedJourneys != null ? (
+          <>
+            {sortedJourneys.map((journey) => (
+              <JourneyCard
+                key={journey.id}
+                journey={journey}
+                refetch={refetch}
+              />
+            ))}
+            {sortedJourneys.length === 0 && (
+              <>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    py: 20,
+                    borderBottomLeftRadius: { xs: 0, sm: 12 },
+                    borderBottomRightRadius: { xs: 0, sm: 12 },
+                    borderTopLeftRadius: 0,
+                    borderTopRightRadius: 0
+                  }}
+                >
+                  <Typography variant="subtitle1" align="center">
+                    {t('No archived journeys.')}
+                  </Typography>
+                </Card>
+              </>
+            )}
+          </>
+        ) : (
+          [0, 1, 2].map((index) => <JourneyCard key={`journeyCard${index}`} />)
+        )}
+      </Box>
+      <Stack alignItems="center">
+        <Typography
+          variant="caption"
+          align="center"
+          component="div"
+          sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
+        >
+          {t(
+            'You can archive a Journey to hide it from your active Journey list for better organization.'
           )}
-        </>
-      ) : (
-        <>
-          {[0, 1, 2].map((index) => (
-            <JourneyCard key={`journeyCard${index}`} />
-          ))}
-        </>
-      )}
+        </Typography>
+      </Stack>
       <Dialog
-        open={openRestoreAll ?? false}
+        open={openRestoreDialog}
         onClose={handleClose}
         dialogTitle={{
           title: t('Unarchive Journeys'),
           closeButton: true
         }}
         dialogAction={{
-          onSubmit: restoreAll,
+          onSubmit: handleRestoreSubmit,
           submitLabel: t('Unarchive'),
           closeLabel: t('Cancel')
         }}
@@ -264,14 +201,14 @@ export function ArchivedJourneyList({
         </Typography>
       </Dialog>
       <Dialog
-        open={openTrashAll ?? false}
+        open={openTrashDialog}
         onClose={handleClose}
         dialogTitle={{
           title: t('Trash Journeys'),
           closeButton: true
         }}
         dialogAction={{
-          onSubmit: trashAll,
+          onSubmit: handleTrashSubmit,
           submitLabel: t('Trash'),
           closeLabel: t('Cancel')
         }}

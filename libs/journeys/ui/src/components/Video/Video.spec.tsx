@@ -1,9 +1,12 @@
-import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
+
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
+
 import { VideoFields } from './__generated__/VideoFields'
+
 import { Video } from '.'
 
 const block: TreeBlock<VideoFields> = {
@@ -60,7 +63,7 @@ const block: TreeBlock<VideoFields> = {
 }
 
 describe('Video', () => {
-  it('should render the video through mediaComponentId and languageId successfully', () => {
+  it('should render internal video', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <Video {...block} />
@@ -68,10 +71,30 @@ describe('Video', () => {
     )
     const sourceTag =
       getByTestId('video-video0.id').querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual(
+    expect(sourceTag?.getAttribute('src')).toBe(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
-    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
+  })
+
+  it('should render cloudflare video', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <Video
+          {...{
+            ...block,
+            source: VideoBlockSource.cloudflare,
+            videoId: 'videoId'
+          }}
+        />
+      </MockedProvider>
+    )
+    const sourceTag =
+      getByTestId('video-video0.id').querySelector('.vjs-tech source')
+    expect(sourceTag?.getAttribute('src')).toBe(
+      'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8'
+    )
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
 
   it('should render an image if videoId is null', () => {
@@ -112,7 +135,7 @@ describe.skip('Admin Video', () => {
 
     fireEvent.click(getByTestId('video-video0.id'))
     expect(getByTestId('video-video0.id')).toHaveStyle(
-      'outline: 3px solid #C52D3A'
+      'outline: 2px solid #C52D3A'
     )
     expect(video).toHaveClass('vjs-paused')
   })

@@ -1,11 +1,11 @@
 import {
-  GetActiveJourneys_journeys as Journey,
-  GetActiveJourneys_journeys_userJourneys as UserJourney
-} from '../../../../../__generated__/GetActiveJourneys'
+  GetAdminJourneys_journeys as Journey,
+  GetAdminJourneys_journeys_userJourneys as UserJourney
+} from '../../../../../__generated__/GetAdminJourneys'
 import {
-  ThemeName,
-  ThemeMode,
   JourneyStatus,
+  ThemeMode,
+  ThemeName,
   UserJourneyRole
 } from '../../../../../__generated__/globalTypes'
 
@@ -75,7 +75,10 @@ export const defaultJourney: Journey = {
   status: JourneyStatus.draft,
   seoTitle: null,
   seoDescription: null,
-  userJourneys: [ownerUserJourney, editorUserJourney]
+  userJourneys: [ownerUserJourney, editorUserJourney],
+  trashedAt: null,
+  template: false,
+  primaryImageBlock: null
 }
 
 export const journey: Journey = {

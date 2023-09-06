@@ -8,12 +8,22 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-journeys
-      repository: jfp-api-journeys-stage
-      seed_repository: jfp-api-journeys-seed-stage
+      env: stage
       branch: ${{ github.ref_name }}
-      ecs_cluster: jfp-ecs-cluster-stage
-      ecs_service: api-journeys-stage-service
       endpoint_url: http://api-journeys.stage.internal:4001/graphql
+    secrets:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+  api-tags:
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
+    with:
+      name: api-tags
+      env: stage
+      branch: ${{ github.ref_name }}
+      endpoint_url: http://api-tags.stage.internal:4006/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -24,11 +34,8 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-users
-      repository: jfp-api-users-stage
-      seed_repository: jfp-api-users-seed-stage
+      env: stage
       branch: ${{ github.ref_name }}
-      ecs_cluster: jfp-ecs-cluster-stage
-      ecs_service: api-users-stage-service
       endpoint_url: http://api-users.stage.internal:4002/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
@@ -40,11 +47,8 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-languages
-      repository: jfp-api-languages-stage
-      seed_repository: jfp-api-languages-seed-stage
+      env: stage
       branch: ${{ github.ref_name }}
-      ecs_cluster: jfp-ecs-cluster-stage
-      ecs_service: api-languages-stage-service
       endpoint_url: http://api-languages.stage.internal:4003/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
@@ -56,11 +60,8 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-videos
-      repository: jfp-api-videos-stage
-      seed_repository: jfp-api-videos-seed-stage
+      env: stage
       branch: ${{ github.ref_name }}
-      ecs_cluster: jfp-ecs-cluster-stage
-      ecs_service: api-videos-stage-service
       endpoint_url: http://api-videos.stage.internal:4004/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
@@ -72,11 +73,8 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-media
-      repository: jfp-api-media-stage
-      seed_repository: jfp-api-media-seed-stage
+      env: stage
       branch: ${{ github.ref_name }}
-      ecs_cluster: jfp-ecs-cluster-stage
-      ecs_service: api-media-stage-service
       endpoint_url: http://api-media.stage.internal:4005/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}

@@ -1,10 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { mockCollectionSaveResult } from '@core/nest/database/mock'
 import FormData from 'form-data'
-
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import fetch, { Response } from 'node-fetch'
 
 import { ImageService } from './image.service'
@@ -36,27 +31,17 @@ const cfDeleteResult = {
 }
 
 describe('ImageService', () => {
-  let service: ImageService,
-    db: DeepMockProxy<Database>,
-    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
+  let service: ImageService
 
   beforeEach(async () => {
-    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ImageService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => db
-        }
-      ]
+      providers: [ImageService]
     }).compile()
 
     service = module.get<ImageService>(ImageService)
-    collectionMock = mockDeep()
-    service.collection = collectionMock
     mockFetch.mockClear()
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })
@@ -81,6 +66,7 @@ describe('ImageService', () => {
       )
     })
   })
+
   describe('uploadToCloudlareByUrl', () => {
     it('returns cloudflare response information', async () => {
       const url = 'https://upload.com'
@@ -109,6 +95,7 @@ describe('ImageService', () => {
       )
     })
   })
+
   describe('deleteImageFromCloudflare', () => {
     it('returns cloudflare response information', async () => {
       const request = mockFetch.mockResolvedValueOnce({
@@ -129,29 +116,6 @@ describe('ImageService', () => {
           method: 'DELETE'
         }
       )
-    })
-  })
-  describe('getCloudflareImagesForUserId', () => {
-    const input = {
-      _key: cfResult.result.id,
-      uploadUrl: cfResult.result.uploadURL,
-      uploaded: true
-    }
-    const result = {
-      id: input._key,
-      uploadUrl: input.uploadUrl,
-      uploaded: input.uploaded
-    }
-    beforeEach(() => {
-      collectionMock.update.mockReturnValue(
-        mockCollectionSaveResult(service.collection, input)
-      )
-    })
-
-    it('should return an updated result', async () => {
-      expect(
-        await service.update(cfResult.result.id, { uploaded: true })
-      ).toEqual(result)
     })
   })
 })

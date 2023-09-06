@@ -1,14 +1,18 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_TypographyBlock as TypographyBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
+
 import { TYPOGRAPHY_BLOCK_UPDATE_VARIANT } from './Variant'
+
 import { Variant } from '.'
 
 describe('Typography variant selector', () => {
@@ -89,7 +93,7 @@ describe('Typography variant selector', () => {
               id: 'journeyId',
               language: { bcp47: 'en' }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

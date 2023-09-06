@@ -1,24 +1,57 @@
 {
-  "root": "apps/docs",
+  "name": "docs",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "sourceRoot": "apps/docs/src",
   "targets": {
     "build": {
-      "executor": "@nx-plus/docusaurus:browser",
+      "executor": "nx:run-commands",
       "options": {
-        "outputPath": "dist/apps/docs"
+        "command": "docusaurus build --out-dir ../../dist/apps/docs",
+        "cwd": "apps/docs"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "npx vercel build",
+          "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/docs/.vercel-url"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "npx vercel build --prod",
+            "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/docs/.vercel-url"
+          ]
+        }
+      }
+    },
+    "vercel-alias": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx vercel alias set $(cat apps/docs/.vercel-url) docs-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo \"https://docs-$PR_NUMBER-jesusfilm.vercel.app\" > apps/docs/.vercel-url"
+        ],
+        "parallel": false
       }
     },
     "serve": {
-      "executor": "@nx-plus/docusaurus:dev-server",
+      "executor": "nx:run-commands",
       "options": {
-        "port": 3000
+        "command": "docusaurus start --port 3000",
+        "cwd": "apps/docs"
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/watch/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["apps/docs/**/*.{ts,tsx,js,jsx}"]
       },
       "outputs": ["{options.outputFile}"]
     }

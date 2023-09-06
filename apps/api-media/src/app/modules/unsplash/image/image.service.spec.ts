@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import fetch, { Response } from 'node-fetch'
+
 import {
   UnsplashColor,
   UnsplashContentFilter,
@@ -7,8 +8,8 @@ import {
   UnsplashPhotoOrientation
 } from '../../../__generated__/graphql'
 
-import { unsplashImageReponse, unsplashListResponse } from './testData'
 import { UnsplashImageService } from './image.service'
+import { unsplashImageReponse, unsplashListResponse } from './testData'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -42,11 +43,12 @@ describe('UnsplashImageService', () => {
         unsplashImageReponse
       ])
       expect(request).toHaveBeenCalledWith(
-        `https://api.unsplash.com/collections/a/photos?client_id=${
-          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }`
+        expect.stringMatching(
+          /https:\/\/api\.unsplash\.com\/collections\/a\/photos\?client_id=.*/
+        )
       )
     })
+
     it('returns full unsplash photo search response', async () => {
       const request = mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -61,12 +63,13 @@ describe('UnsplashImageService', () => {
         )
       ).toEqual([unsplashImageReponse])
       expect(request).toHaveBeenCalledWith(
-        `https://api.unsplash.com/collections/a/photos?client_id=${
-          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }&page=2&per_page=20&orientation=landscape`
+        expect.stringMatching(
+          /https:\/\/api\.unsplash\.com\/collections\/a\/photos\?client_id=.*&page=2&per_page=20&orientation=landscape/
+        )
       )
     })
   })
+
   describe('searchUnsplashImages', () => {
     it('returns  default unsplash photo search response', async () => {
       const request = mockFetch.mockResolvedValueOnce({
@@ -77,11 +80,12 @@ describe('UnsplashImageService', () => {
         unsplashListResponse
       )
       expect(request).toHaveBeenCalledWith(
-        `https://api.unsplash.com/search/photos?client_id=${
-          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }&query=a`
+        expect.stringMatching(
+          /https:\/\/api\.unsplash\.com\/search\/photos\?client_id=.*&query=a/
+        )
       )
     })
+
     it('returns full unsplash photo search response', async () => {
       const request = mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -100,12 +104,13 @@ describe('UnsplashImageService', () => {
         )
       ).toEqual(unsplashListResponse)
       expect(request).toHaveBeenCalledWith(
-        `https://api.unsplash.com/search/photos?client_id=${
-          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }&query=a&page=2&per_page=20&order_by=latest&collections=1&content_filter=high&color=black&orientation=landscape`
+        expect.stringMatching(
+          /https:\/\/api\.unsplash\.com\/search\/photos\?client_id=.*&query=a&page=2&per_page=20&order_by=latest&collections=1&content_filter=high&color=black&orientation=landscape/
+        )
       )
     })
   })
+
   describe('triggerUnsplashDownload', () => {
     it('triggers an unsplash download', async () => {
       const request = mockFetch.mockResolvedValueOnce({
@@ -114,9 +119,7 @@ describe('UnsplashImageService', () => {
       } as unknown as Response)
       await service.triggerUnsplashDownload('https://upload.com?url=a')
       expect(request).toHaveBeenCalledWith(
-        `https://upload.com?url=a&client_id=${
-          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }`
+        expect.stringMatching(/https:\/\/upload\.com\?url=a&client_id=.*/)
       )
     })
   })

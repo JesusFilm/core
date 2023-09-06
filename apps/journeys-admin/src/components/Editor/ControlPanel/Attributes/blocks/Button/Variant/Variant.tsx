@@ -1,12 +1,14 @@
-import { ReactElement } from 'react'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
-import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { ButtonBlockUpdateVariant } from '../../../../../../../../__generated__/ButtonBlockUpdateVariant'
-import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
+import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
+import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateVariant(

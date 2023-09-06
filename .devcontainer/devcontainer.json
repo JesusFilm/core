@@ -11,7 +11,6 @@
       "extensions": [
         "dbaeumer.vscode-eslint",
         "nrwl.angular-console",
-        "monotykamary.vscode-aql",
         "eamodio.gitlens",
         "graphql.vscode-graphql",
         "esbenp.prettier-vscode",
@@ -26,8 +25,7 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // 8529 is Arangodb
-  "forwardPorts": [8529],
+  // "forwardPorts": [],
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bash /workspaces/core/.devcontainer/post-create-command.sh",
@@ -35,13 +33,13 @@
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "node",
   "features": {
-    "docker-from-docker": "latest",
-    "git": "os-provided",
-    "aws-cli": "latest",
-    "python": "os-provided",
-    "terraform": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {
       "version": "latest",
-      "tflint": "latest",
+      "tflint": "0.46.1",
       "terragrunt": "latest"
     }
   }

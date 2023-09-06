@@ -1,21 +1,23 @@
-import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
+import MuiDrawer from '@mui/material/Drawer'
+import { Meta, StoryObj } from '@storybook/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import MuiDrawer from '@mui/material/Drawer'
-import { MockedProvider } from '@apollo/client/testing'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
+import { GetVideoVariantLanguages_video } from '../../../../../../../../__generated__/GetVideoVariantLanguages'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
-import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
-import { GetVideoVariantLanguages_video } from '../../../../../../../../__generated__/GetVideoVariantLanguages'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
+import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+
 import { VideoOptions } from './VideoOptions'
 
-const VideoOptionsStory = {
+const VideoOptionsStory: Meta<typeof VideoOptions> = {
   ...journeysAdminConfig,
   component: VideoOptions,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Video/VideoOptions',
@@ -83,114 +85,116 @@ const videoLanguages: GetVideoVariantLanguages_video = {
   ]
 }
 
-export const Default: Story = () => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_VIDEOS,
-          variables: {
-            offset: 0,
-            limit: 5,
-            where: {
-              availableVariantLanguageIds: ['529'],
-              title: null
+export const Default: StoryObj<typeof VideoOptions> = {
+  render: () => (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_VIDEOS,
+            variables: {
+              offset: 0,
+              limit: 5,
+              where: {
+                availableVariantLanguageIds: ['529'],
+                title: null
+              }
+            }
+          },
+          result: {
+            data: {
+              videos
             }
           }
         },
-        result: {
-          data: {
-            videos
-          }
-        }
-      },
-      {
-        request: {
-          query: GET_VIDEO,
-          variables: {
-            id: '2_Acts7302-0-0'
-          }
-        },
-        result: {
-          data: {
-            video: {
-              id: '2_Acts7302-0-0',
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
-              primaryLanguageId: '529',
-              title: [
-                {
-                  primary: true,
-                  value: 'Jesus Taken Up Into Heaven'
+        {
+          request: {
+            query: GET_VIDEO,
+            variables: {
+              id: '2_Acts7302-0-0'
+            }
+          },
+          result: {
+            data: {
+              video: {
+                id: '2_Acts7302-0-0',
+                image:
+                  'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+                primaryLanguageId: '529',
+                title: [
+                  {
+                    primary: true,
+                    value: 'Jesus Taken Up Into Heaven'
+                  }
+                ],
+                description: [
+                  {
+                    primary: true,
+                    value:
+                      'Jesus promises the Holy Spirit; then ascends into the clouds.'
+                  }
+                ],
+                variant: {
+                  id: 'variantA',
+                  duration: 144,
+                  hls: 'https://arc.gt/opsgn'
                 }
-              ],
-              description: [
-                {
-                  primary: true,
-                  value:
-                    'Jesus promises the Holy Spirit; then ascends into the clouds.'
-                }
-              ],
-              variant: {
-                id: 'variantA',
-                duration: 144,
-                hls: 'https://arc.gt/opsgn'
               }
             }
           }
-        }
-      },
-      {
-        request: {
-          query: GET_VIDEO_VARIANT_LANGUAGES,
-          variables: {
-            id: videoLanguages.id
-          }
         },
-        result: {
-          data: {
-            video: videoLanguages
+        {
+          request: {
+            query: GET_VIDEO_VARIANT_LANGUAGES,
+            variables: {
+              id: videoLanguages.id
+            }
+          },
+          result: {
+            data: {
+              video: videoLanguages
+            }
           }
         }
-      }
-    ]}
-  >
-    <ThemeProvider>
-      <EditorProvider
-        initialState={{
-          selectedBlock: video
-        }}
-      >
-        <MuiDrawer
-          anchor="right"
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: 328
-            }
-          }}
-          ModalProps={{
-            keepMounted: true
-          }}
-          open
-        >
-          <VideoOptions />
-        </MuiDrawer>
-        <MuiDrawer
-          anchor="bottom"
-          variant="temporary"
-          open
-          sx={{
-            display: { xs: 'block', sm: 'none' }
+      ]}
+    >
+      <ThemeProvider>
+        <EditorProvider
+          initialState={{
+            selectedBlock: video
           }}
         >
-          <VideoOptions />
-        </MuiDrawer>
-      </EditorProvider>
-    </ThemeProvider>
-  </MockedProvider>
-)
+          <MuiDrawer
+            anchor="right"
+            variant="permanent"
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
+                width: 328
+              }
+            }}
+            ModalProps={{
+              keepMounted: true
+            }}
+            open
+          >
+            <VideoOptions />
+          </MuiDrawer>
+          <MuiDrawer
+            anchor="bottom"
+            variant="temporary"
+            open
+            sx={{
+              display: { xs: 'block', sm: 'none' }
+            }}
+          >
+            <VideoOptions />
+          </MuiDrawer>
+        </EditorProvider>
+      </ThemeProvider>
+    </MockedProvider>
+  )
+}
 
-export default VideoOptionsStory as Meta
+export default VideoOptionsStory

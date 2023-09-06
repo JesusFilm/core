@@ -1,11 +1,13 @@
-import { ReactElement } from 'react'
-import { styled } from '@mui/material/styles'
-import Button, { ButtonProps } from '@mui/material/Button'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
+import Button, { ButtonProps } from '@mui/material/Button'
+import { styled } from '@mui/material/styles'
 import { useRouter } from 'next/router'
-import type { TreeBlock } from '../../libs/block'
+import { MouseEvent, ReactElement } from 'react'
+
 import { handleAction } from '../../libs/action'
+import type { TreeBlock } from '../../libs/block'
+
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
 interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
@@ -37,7 +39,8 @@ export function RadioOption({
 }: RadioOptionProps): ReactElement {
   const router = useRouter()
 
-  const handleClick = (): void => {
+  const handleClick = (e: MouseEvent): void => {
+    e.stopPropagation()
     onClick?.(id, label)
     handleAction(router, action)
   }

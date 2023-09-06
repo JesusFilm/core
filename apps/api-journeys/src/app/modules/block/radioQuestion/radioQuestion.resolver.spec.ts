@@ -1,168 +1,142 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { RadioOptionBlock } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { UserRoleService } from '../../userRole/userRole.service'
-import { BlockResolver } from '../block.resolver'
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { RadioQuestionBlockCreateInput } from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
-import {
-  RadioOptionBlockResolver,
-  RadioQuestionBlockResolver
-} from './radioQuestion.resolver'
+
+import { RadioQuestionBlockResolver } from './radioQuestion.resolver'
 
 describe('RadioQuestionBlockResolver', () => {
   let resolver: RadioQuestionBlockResolver,
-    blockResolver: BlockResolver,
-    radioOptionBlockResolver: RadioOptionBlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
   const block = {
-    id: '1',
-    journeyId: '2',
+    id: 'blockId',
+    journeyId: 'journeyId',
     __typename: 'RadioOptionBlock',
     parentBlockId: '3',
     parentOrder: 3,
-    label: 'label',
-    action: {
-      gtmEventName: 'gtmEventName',
-      blockId: '4'
-    }
-  }
-
-  const actionResponse = {
-    ...block.action,
-    parentBlockId: block.id
-  }
-
-  const radioOptionInput = {
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '2',
-    parentOrder: 2,
-    journeyId: '2',
     label: 'label'
+  } as unknown as Block
+  const blockWithUserTeam = {
+    ...block,
+    journey
   }
-
-  const radioOptionUpdate = {
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '2',
-    parentOrder: 1,
-    journeyId: '2',
-    label: 'label',
-    action: {
-      gtmEventName: 'gtmEventName',
-      blockId: '4'
-    }
-  }
-
-  const radioQuestionInput = {
-    __typename: 'RadioQuestionBlock',
-    parentBlockId: '2',
-    parentOrder: 2,
-    journeyId: '2'
+  const blockCreateInput: RadioQuestionBlockCreateInput = {
+    id: 'blockId',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId'
   }
 
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
-      save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        BlockResolver,
         blockService,
         RadioQuestionBlockResolver,
-        RadioOptionBlockResolver,
-        UserJourneyService,
-        UserRoleService,
-        JourneyService,
-        MemberService,
         {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolver>(BlockResolver)
-    radioOptionBlockResolver = module.get<RadioOptionBlockResolver>(
-      RadioOptionBlockResolver
-    )
     resolver = module.get<RadioQuestionBlockResolver>(
       RadioQuestionBlockResolver
     )
     service = await module.resolve(BlockService)
-  })
-
-  describe('RadioOptionBlock', () => {
-    it('returns RadioOptionBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(block)
-      expect(await blockResolver.blocks()).toEqual([block, block])
-    })
-  })
-
-  describe('action', () => {
-    it('returns RadioOptionBlock action with parentBlockId', async () => {
-      expect(
-        await radioOptionBlockResolver.action(
-          block as unknown as RadioOptionBlock
-        )
-      ).toEqual(actionResponse)
-    })
-  })
-
-  describe('radioOptionBlockCreate', () => {
-    it('creates a RadioOptionBlock', async () => {
-      await radioOptionBlockResolver.radioOptionBlockCreate(radioOptionInput)
-      expect(service.getSiblings).toHaveBeenCalledWith(
-        radioOptionInput.journeyId,
-        radioOptionInput.parentBlockId
-      )
-      expect(service.save).toHaveBeenCalledWith(radioOptionInput)
-    })
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   describe('radioQuestionBlockCreate', () => {
-    it('creates a RadioQuestionBlock', async () => {
-      await resolver.radioQuestionBlockCreate(radioQuestionInput)
-      expect(service.getSiblings).toHaveBeenCalledWith(
-        radioQuestionInput.journeyId,
-        radioQuestionInput.parentBlockId
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
       )
-      expect(service.save).toHaveBeenCalledWith(radioQuestionInput)
     })
-  })
 
-  describe('radioOptionBlockUpdate', () => {
-    it('updates a RadioOptionBlock', async () => {
-      await radioOptionBlockResolver.radioOptionBlockUpdate(
-        block.id,
-        block.journeyId,
-        radioOptionUpdate
+    it('creates a RadioQuestionBlock', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.radioQuestionBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: 2,
+          typename: 'RadioQuestionBlock'
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        blockCreateInput.journeyId,
+        blockCreateInput.parentBlockId
       )
-      expect(service.update).toHaveBeenCalledWith(block.id, radioOptionUpdate)
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.create.mockResolvedValueOnce(block)
+      await expect(
+        resolver.radioQuestionBlockCreate(ability, blockCreateInput)
+      ).rejects.toThrow('user is not allowed to create block')
     })
   })
 
   describe('radioQuestionBlockUpdate', () => {
-    it('updates a RadioQuestionBlock', async () => {
+    it('updates a TypographyBlock', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.radioQuestionBlockUpdate(
-        block.id,
-        block.journeyId,
-        block.parentBlockId
+        ability,
+        'blockId',
+        'parentBlockId'
       )
-      expect(service.update).toHaveBeenCalledWith(block.id, {
-        parentBlockId: block.parentBlockId
+      expect(service.update).toHaveBeenCalledWith('blockId', {
+        parentBlockId: 'parentBlockId'
       })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.radioQuestionBlockUpdate(ability, 'blockId', 'parentBlockId')
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.radioQuestionBlockUpdate(ability, 'blockId', 'parentBlockId')
+      ).rejects.toThrow('user is not allowed to update block')
     })
   })
 })

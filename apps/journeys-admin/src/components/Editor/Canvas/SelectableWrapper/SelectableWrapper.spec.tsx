@@ -1,22 +1,25 @@
-import { NextRouter, useRouter } from 'next/router'
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
+import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { Image } from '@core/journeys/ui/Image'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import { Typography } from '@core/journeys/ui/Typography'
-import { SnackbarProvider } from 'notistack'
+
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
-import { SignUpFields } from '../../../../../__generated__/SignUpFields'
+import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { ImageFields } from '../../../../../__generated__/ImageFields'
 import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
+import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../__generated__/StepFields'
-import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
+
 import { SelectableWrapper } from '.'
 
 jest.mock('next/router', () => ({
@@ -165,30 +168,30 @@ describe('SelectableWrapper', () => {
 
     fireEvent.click(getByRole('img'))
     expect(getByTestId(`selected-${imageBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     fireEvent.click(getByText('typography content'))
     expect(getByTestId(`selected-${typographyBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
 
     fireEvent.click(getByText('button label'))
     expect(getByTestId(`selected-${buttonBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     fireEvent.click(getByText('sign up label'))
     await waitFor(() =>
       expect(getByTestId(`selected-${signUpBlock.id}`)).toHaveStyle({
-        outline: '3px solid #C52D3A',
+        outline: '2px solid #C52D3A',
         zIndex: '1'
       })
     )
     fireEvent.click(getByTestId(`radioQuestion-${radioQuestionBlock.id}`))
     expect(getByTestId(`selected-${radioQuestionBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
 
@@ -216,7 +219,7 @@ describe('SelectableWrapper', () => {
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
     expect(getByTestId(`selected-${radioQuestionBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
   })
@@ -243,7 +246,7 @@ describe('SelectableWrapper', () => {
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
     expect(getByTestId(`selected-RadioOption1`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     expect(push).not.toHaveBeenCalled()
@@ -271,7 +274,7 @@ describe('SelectableWrapper', () => {
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
     expect(getByTestId(`selected-RadioOption1`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     expect(push).not.toHaveBeenCalled()

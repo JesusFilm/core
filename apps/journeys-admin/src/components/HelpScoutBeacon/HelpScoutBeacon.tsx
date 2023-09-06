@@ -35,7 +35,7 @@ window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')`}</Script>
           bottom: 80px;
         }
 
-        ${breakpoints.down('sm')} {
+        ${breakpoints.down('md')} {
           .hsds-beacon .BeaconContainer.is-configDisplayLeft {
             height: calc(100% - 80px);
             border-radius: 0px;
@@ -47,7 +47,7 @@ window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')`}</Script>
           }
         }
 
-        ${breakpoints.up('sm')} {
+        ${breakpoints.up('md')} {
           .hsds-beacon .BeaconFabButtonFrame.is-configDisplayLeft,
           .hsds-beacon .BeaconFabButtonFrame--left {
             bottom: 70px !important;

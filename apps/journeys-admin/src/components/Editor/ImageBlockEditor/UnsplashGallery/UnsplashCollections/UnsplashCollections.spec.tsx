@@ -1,4 +1,5 @@
-import { render, fireEvent } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
+
 import { UnsplashCollections } from './UnsplashCollections'
 
 describe('UnsplashCollections', () => {
@@ -12,6 +13,6 @@ describe('UnsplashCollections', () => {
     expect(christChip).toBeInTheDocument()
     expect(getByText('Church')).toBeInTheDocument()
     fireEvent.click(christChip)
-    expect(onClick).toHaveBeenCalledWith('5TziIavS84o')
+    expect(onClick).toHaveBeenCalledWith('5TziIavS84o', 'Christ')
   })
 })

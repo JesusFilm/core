@@ -1,9 +1,8 @@
-import { ReactElement } from 'react'
-import { useField } from 'formik'
-
 import MuiTextField, {
   OutlinedTextFieldProps as MuiTextFieldProps
 } from '@mui/material/TextField'
+import { useField } from 'formik'
+import { ReactElement } from 'react'
 
 interface TextFieldProps
   extends Omit<MuiTextFieldProps, 'variant' | 'error' | 'fullWidth'> {}

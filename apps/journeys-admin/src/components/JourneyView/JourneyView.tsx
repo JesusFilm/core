@@ -1,34 +1,27 @@
-import { ReactElement, useState } from 'react'
-import { gql, useQuery } from '@apollo/client'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { transformer } from '@core/journeys/ui/transformer'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import { JourneysReportType, Role } from '../../../__generated__/globalTypes'
-import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { GetUserRole } from '../../../__generated__/GetUserRole'
-import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
-import { Properties } from './Properties'
-import { CardView } from './CardView'
-import { SlugDialog } from './JourneyLink/SlugDialog'
-import { EmbedJourneyDialog } from './JourneyLink/EmbedJourneyDialog'
-import { TitleDescription } from './TitleDescription'
-import { SocialImage } from './SocialImage'
-import { DatePreview } from './DatePreview'
-import { JourneyViewFab } from './JourneyViewFab'
-import { JourneyLink } from './JourneyLink'
+import { ReactElement, useState } from 'react'
 
-export const GET_USER_ROLE = gql`
-  query GetUserRole {
-    getUserRole {
-      id
-      roles
-    }
-  }
-`
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { transformer } from '@core/journeys/ui/transformer'
+
+import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import { JourneysReportType, Role } from '../../../__generated__/globalTypes'
+import { useUserRoleQuery } from '../../libs/useUserRoleQuery/useUserRoleQuery'
+import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
+
+import { CardView } from './CardView'
+import { DatePreview } from './DatePreview'
+import { JourneyLink } from './JourneyLink'
+import { EmbedJourneyDialog } from './JourneyLink/EmbedJourneyDialog'
+import { SlugDialog } from './JourneyLink/SlugDialog'
+import { JourneyViewFab } from './JourneyViewFab'
+import { Properties } from './Properties'
+import { SocialImage } from './SocialImage'
+import { TitleDescription } from './TitleDescription'
 
 export type JourneyType = 'Journey' | 'Template'
 
@@ -43,7 +36,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
     journey?.blocks != null
       ? (transformer(journey.blocks) as Array<TreeBlock<StepBlock>>)
       : undefined
-  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const { data } = useUserRoleQuery()
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
   const [showSlugDialog, setShowSlugDialog] = useState(false)

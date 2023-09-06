@@ -1,10 +1,12 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloError } from '@apollo/client'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
-import { Dialog } from '@core/shared/ui/Dialog'
+import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
-import { Formik, Form, FormikValues } from 'formik'
+import { ReactElement } from 'react'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 
 export const JOURNEY_DESC_UPDATE = gql`

@@ -1,9 +1,12 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+
 import { CREATE_USER_INVITE, EmailInviteForm } from './EmailInviteForm'
 
 jest.mock('react-i18next', () => ({
@@ -20,7 +23,7 @@ describe('EmailInviteForm', () => {
     const { getByRole, getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <EmailInviteForm users={[]} />
+          <EmailInviteForm users={[]} journeyId="journeyId" />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -30,12 +33,15 @@ describe('EmailInviteForm', () => {
     fireEvent.click(email)
     expect(getByRole('button', { name: 'add user' })).toBeDisabled()
     fireEvent.change(email, { target: { value: '123abc@' } })
-    fireEvent.click(getByRole('button', { name: 'add user' }))
-    fireEvent.change(email, { target: { value: '' } })
-
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: 'add user' }))
+    })
+    await waitFor(() => {
+      fireEvent.change(email, { target: { value: '' } })
+    })
     await waitFor(() => {
       const inlineErrors = getAllByText('Required')
-      expect(inlineErrors[0]).toHaveProperty('id', 'email-helper-text')
+      expect(inlineErrors[0]).toBeInTheDocument()
     })
   })
 
@@ -43,7 +49,7 @@ describe('EmailInviteForm', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <EmailInviteForm users={[]} />
+          <EmailInviteForm users={[]} journeyId="journeyId" />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -56,7 +62,29 @@ describe('EmailInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText('Please enter a valid email address')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
+    })
+  })
+
+  it('should validate when user inputs uppercase strings for email if email already exists', async () => {
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <EmailInviteForm
+            users={['edmondshenwashere@gmail.com']}
+            journeyId="journeyId"
+          />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const email = getByRole('textbox', { name: 'Email' })
+    fireEvent.change(email, {
+      target: { value: 'EdmondShenWasHere@gmail.com' }
+    })
+    fireEvent.click(getByRole('button', { name: 'add user' }))
+    await waitFor(() => {
+      const inlineError = getByText('This email is already on the list')
+      expect(inlineError).toBeInTheDocument()
     })
   })
 
@@ -64,7 +92,7 @@ describe('EmailInviteForm', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <EmailInviteForm users={['admin@email.com']} />
+          <EmailInviteForm users={['admin@email.com']} journeyId="journeyId" />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -77,7 +105,7 @@ describe('EmailInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText('This email is already on the list')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
     })
   })
 
@@ -103,7 +131,10 @@ describe('EmailInviteForm', () => {
 
     const { getByRole } = render(
       <JourneyProvider
-        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        value={{
+          journey: { id: 'journeyId' } as unknown as Journey,
+          variant: 'admin'
+        }}
       >
         <SnackbarProvider>
           <MockedProvider
@@ -123,7 +154,7 @@ describe('EmailInviteForm', () => {
               }
             ]}
           >
-            <EmailInviteForm users={[]} />
+            <EmailInviteForm users={[]} journeyId="journeyId" />
           </MockedProvider>
         </SnackbarProvider>
       </JourneyProvider>

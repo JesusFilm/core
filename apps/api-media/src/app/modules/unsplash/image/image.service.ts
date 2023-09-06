@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { isArray, isNumber, isString } from 'lodash'
+import isArray from 'lodash/isArray'
+import isNumber from 'lodash/isNumber'
+import isString from 'lodash/isString'
 import fetch from 'node-fetch'
+
 import {
   UnsplashColor,
   UnsplashContentFilter,

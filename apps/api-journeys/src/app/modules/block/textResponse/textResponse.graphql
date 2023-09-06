@@ -32,7 +32,10 @@ extend type Mutation {
   ): TextResponseBlock!
   textResponseBlockUpdate(
     id: ID!
-    journeyId: ID!
     input: TextResponseBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): TextResponseBlock
 }

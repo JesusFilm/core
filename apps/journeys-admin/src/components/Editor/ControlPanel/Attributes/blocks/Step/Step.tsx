@@ -1,12 +1,15 @@
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { getStepHeading } from '@core/journeys/ui/getStepHeading'
-import { ReactElement } from 'react'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
-import { Attribute } from '../..'
+import { Attribute } from '../../Attribute'
+
 import { NextCard } from './NextCard'
 
 export function Step({

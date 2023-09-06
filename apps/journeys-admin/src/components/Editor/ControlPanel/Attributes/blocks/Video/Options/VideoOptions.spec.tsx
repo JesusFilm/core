@@ -1,28 +1,32 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { InMemoryCache } from '@apollo/client'
-import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName,
-  VideoBlockSource
+  VideoBlockSource,
+  VideoLabel
 } from '../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
+import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+
 import {
-  VideoOptions,
+  UPDATE_VIDEO_BLOCK_NEXT_STEP,
   VIDEO_BLOCK_UPDATE,
-  UPDATE_VIDEO_BLOCK_NEXT_STEP
+  VideoOptions
 } from './VideoOptions'
 
 const video: TreeBlock<VideoBlock> = {
@@ -66,63 +70,81 @@ const video: TreeBlock<VideoBlock> = {
 }
 
 describe('VideoOptions', () => {
-  const mocks = [
-    {
-      request: {
-        query: GET_VIDEOS,
-        variables: {
-          offset: 0,
-          limit: 5,
-          where: {
-            availableVariantLanguageIds: ['529'],
-            title: null
-          }
-        }
-      },
-      result: {
-        data: {
-          videos
+  const getVideosMock = {
+    request: {
+      query: GET_VIDEOS,
+      variables: {
+        offset: 0,
+        limit: 5,
+        where: {
+          availableVariantLanguageIds: ['529'],
+          title: null,
+          labels: [
+            VideoLabel.episode,
+            VideoLabel.featureFilm,
+            VideoLabel.segment,
+            VideoLabel.shortFilm
+          ]
         }
       }
     },
-    {
-      request: {
-        query: GET_VIDEO,
-        variables: {
+    result: {
+      data: {
+        videos
+      }
+    }
+  }
+
+  const getVideoMock = {
+    request: {
+      query: GET_VIDEO,
+      variables: {
+        id: '2_0-Brand_Video',
+        languageId: '529'
+      }
+    },
+    result: {
+      data: {
+        video: {
           id: '2_0-Brand_Video',
-          languageId: '529'
-        }
-      },
-      result: {
-        data: {
-          video: {
-            id: '2_0-Brand_Video',
-            image:
-              'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
-            primaryLanguageId: '529',
-            title: [
-              {
-                primary: true,
-                value: 'Jesus Taken Up Into Heaven'
-              }
-            ],
-            description: [
-              {
-                primary: true,
-                value:
-                  'Jesus promises the Holy Spirit; then ascends into the clouds.'
-              }
-            ],
-            variant: {
-              id: 'variantA',
-              duration: 144,
-              hls: 'https://arc.gt/opsgn'
+          image:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+          primaryLanguageId: '529',
+          title: [
+            {
+              primary: true,
+              value: 'Jesus Taken Up Into Heaven'
             }
-          }
+          ],
+          description: [
+            {
+              primary: true,
+              value:
+                'Jesus promises the Holy Spirit; then ascends into the clouds.'
+            }
+          ],
+          variant: {
+            id: 'variantA',
+            duration: 144,
+            hls: 'https://arc.gt/opsgn'
+          },
+          variantLanguages: [
+            {
+              __typename: 'Language',
+              id: '529',
+              name: [
+                {
+                  value: 'English',
+                  primary: true,
+                  __typename: 'Translation'
+                }
+              ]
+            }
+          ]
         }
       }
     }
-  ]
+  }
 
   it('updates video block', async () => {
     const videoBlockResult = jest.fn(() => ({
@@ -130,10 +152,12 @@ describe('VideoOptions', () => {
         videoBlockUpdate: video
       }
     }))
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
-          ...mocks,
+          { ...getVideoMock, result },
+          getVideosMock,
           {
             request: {
               query: VIDEO_BLOCK_UPDATE,
@@ -145,7 +169,8 @@ describe('VideoOptions', () => {
                   videoVariantLanguageId: '529',
                   source: VideoBlockSource.internal,
                   startAt: 0,
-                  endAt: 144
+                  endAt: 144,
+                  duration: 144
                 }
               }
             },
@@ -156,7 +181,7 @@ describe('VideoOptions', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <ThemeProvider>
@@ -176,9 +201,7 @@ describe('VideoOptions', () => {
     fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalledWith())
   })
@@ -230,10 +253,13 @@ describe('VideoOptions', () => {
       }
     }))
 
+    const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
+
     const { getByText, getByRole } = render(
       <MockedProvider
         mocks={[
-          ...mocks,
+          { ...getVideoMock, result: getVideoResult },
+          getVideosMock,
           {
             request: {
               query: VIDEO_BLOCK_UPDATE,
@@ -245,7 +271,8 @@ describe('VideoOptions', () => {
                   videoVariantLanguageId: '529',
                   source: VideoBlockSource.internal,
                   startAt: 0,
-                  endAt: 144
+                  endAt: 144,
+                  duration: 144
                 }
               }
             },
@@ -278,7 +305,7 @@ describe('VideoOptions', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <ThemeProvider>
@@ -299,9 +326,7 @@ describe('VideoOptions', () => {
     fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
-    )
+    await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['VideoBlock:video1.id']?.action).toEqual({

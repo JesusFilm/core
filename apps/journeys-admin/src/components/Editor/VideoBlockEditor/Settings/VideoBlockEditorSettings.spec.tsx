@@ -1,11 +1,15 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+
 import {
-  VideoBlockSource,
-  VideoBlockObjectFit as ObjectFit
+  VideoBlockObjectFit as ObjectFit,
+  VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../ThemeProvider'
+
 import { VideoBlockEditorSettings } from '.'
 
 const video: TreeBlock = {
@@ -14,7 +18,7 @@ const video: TreeBlock = {
   parentBlockId: 'card1.id',
   parentOrder: 0,
   startAt: 0,
-  endAt: null,
+  endAt: 60,
   muted: true,
   autoplay: true,
   fullsize: true,
@@ -53,11 +57,13 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <VideoBlockEditorSettings
-            selectedBlock={null}
-            posterBlock={null}
-            onChange={jest.fn()}
-          />
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={null}
+              posterBlock={null}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
     )
@@ -71,11 +77,13 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <VideoBlockEditorSettings
-            selectedBlock={{ ...video, parentOrder: null }}
-            posterBlock={null}
-            onChange={jest.fn()}
-          />
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{ ...video, parentOrder: null }}
+              posterBlock={null}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
     )
@@ -90,11 +98,13 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <VideoBlockEditorSettings
-            selectedBlock={video}
-            posterBlock={null}
-            onChange={onChange}
-          />
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={video}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
     )
@@ -103,22 +113,25 @@ describe('VideoBlockEditorSettings', () => {
       expect(onChange).toHaveBeenCalledWith({
         autoplay: false,
         muted: true,
-        endAt: 0,
+        endAt: 60,
         startAt: 0,
         objectFit: ObjectFit.fill
       })
     )
   })
+
   it('should update muted', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <VideoBlockEditorSettings
-            selectedBlock={video}
-            posterBlock={null}
-            onChange={onChange}
-          />
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={video}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
     )
@@ -127,22 +140,25 @@ describe('VideoBlockEditorSettings', () => {
       expect(onChange).toHaveBeenCalledWith({
         autoplay: true,
         muted: false,
-        endAt: 0,
+        endAt: 60,
         startAt: 0,
         objectFit: ObjectFit.fill
       })
     })
   })
+
   it('should update startAt', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <VideoBlockEditorSettings
-            selectedBlock={video}
-            posterBlock={null}
-            onChange={onChange}
-          />
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={video}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
     )
@@ -153,22 +169,25 @@ describe('VideoBlockEditorSettings', () => {
       expect(onChange).toHaveBeenCalledWith({
         autoplay: true,
         muted: true,
-        endAt: 0,
+        endAt: 60,
         startAt: 11,
         objectFit: ObjectFit.fill
       })
     )
   })
+
   it('should update endAt', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <VideoBlockEditorSettings
-            selectedBlock={video}
-            posterBlock={null}
-            onChange={onChange}
-          />
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={video}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
     )
@@ -185,16 +204,19 @@ describe('VideoBlockEditorSettings', () => {
       })
     )
   })
+
   it('should update objectFit to fit', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <VideoBlockEditorSettings
-            selectedBlock={video}
-            posterBlock={null}
-            onChange={onChange}
-          />
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={video}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
     )
@@ -203,7 +225,7 @@ describe('VideoBlockEditorSettings', () => {
       expect(onChange).toHaveBeenCalledWith({
         autoplay: true,
         muted: true,
-        endAt: 0,
+        endAt: 60,
         startAt: 0,
         objectFit: ObjectFit.fit
       })
@@ -215,15 +237,17 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <VideoBlockEditorSettings
-            selectedBlock={{
-              ...video,
-              source: VideoBlockSource.youTube,
-              objectFit: ObjectFit.fill
-            }}
-            posterBlock={null}
-            onChange={onChange}
-          />
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                objectFit: ObjectFit.fill
+              }}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
     )
@@ -234,5 +258,42 @@ describe('VideoBlockEditorSettings', () => {
       'true'
     )
     expect(getByRole('button', { name: 'Crop' })).toBeDisabled()
+  })
+
+  it('should not allow startAt to be greater than endAt', async () => {
+    const onChange = jest.fn()
+    const { getByRole, getByText } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={video}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    fireEvent.change(getByRole('textbox', { name: 'Ends At' }), {
+      target: { value: '00:00:10' }
+    })
+    fireEvent.blur(getByRole('textbox', { name: 'Ends At' }))
+    fireEvent.change(getByRole('textbox', { name: 'Starts At' }), {
+      target: { value: '00:00:11' }
+    })
+    fireEvent.blur(getByRole('textbox', { name: 'Starts At' }))
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        autoplay: true,
+        muted: true,
+        endAt: 10,
+        startAt: 0,
+        objectFit: ObjectFit.fill
+      })
+    })
+    expect(
+      getByText('Start time has to be at least 3 seconds less than end time')
+    ).toBeInTheDocument()
   })
 })

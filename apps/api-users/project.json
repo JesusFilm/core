@@ -1,10 +1,11 @@
 {
-  "root": "apps/api-users",
+  "name": "api-users",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-users/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-users",
@@ -16,9 +17,16 @@
             "glob": "**/*.graphql",
             "input": "apps/api-users/src/app/",
             "output": "./assets"
+          },
+          {
+            "glob": "**/*.graphql",
+            "input": "libs/nest/common/src/lib/TranslationModule/",
+            "output": "./assets"
           }
         ],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node"
       },
       "configurations": {
         "production": {
@@ -34,58 +42,109 @@
         }
       }
     },
-    "seed": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "command": "npx ts-node apps/api-users/db/seed.ts"
-      }
-    },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api-users:build",
         "inspect": false
       }
     },
     "watcher": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
-        "command": "npx ts-node apps/api-users/src/generate-typings.ts"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-users"
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/api-users/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/api-users"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/api-users"],
       "options": {
-        "jestConfig": "apps/api-users/jest.config.js",
+        "jestConfig": "apps/api-users/jest.config.ts",
         "passWithNoTests": true
       }
     },
     "generate-graphql": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "rover subgraph introspect http://localhost:4002/graphql > apps/api-users/schema.graphql"
-          }
-        ]
+        "command": "rover subgraph introspect http://localhost:4002/graphql > apps/api-users/schema.graphql"
+      }
+    },
+    "subgraph-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-users --schema apps/api-users/schema.graphql"
       }
     },
     "fetch-secrets": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_USERS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-users > apps/api-users/.env"
+      }
+    },
+    "prisma-generate": {
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
-          {
-            "command": "DOPPLER_TOKEN=$DOPPLER_API_USERS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-users > apps/api-users/.env"
-          }
+          "npx prisma generate --schema apps/api-users/db/schema.prisma"
         ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "bash -c 'npx prisma migrate dev --schema apps/api-users/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "npx prisma migrate deploy --schema apps/api-users/db/schema.prisma"
+          ]
+        }
+      }
+    },
+    "prisma-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate reset --schema apps/api-users/db/schema.prisma --force"
+        ]
+      }
+    },
+    "prisma-studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma studio --schema apps/api-users/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma validate --schema apps/api-users/db/schema.prisma"
+        ]
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/api-users/tsconfig.json"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-users/cobertura-coverage.xml -F apps.api-users"
       }
     }
   },

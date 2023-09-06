@@ -1,100 +1,36 @@
-import { ReactElement, useState, useEffect, useRef } from 'react'
-import { AuthUser } from 'next-firebase-auth'
-import Typography from '@mui/material/Typography'
-import { gql, useMutation, useQuery } from '@apollo/client'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { useSnackbar } from 'notistack'
+import { useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SortOrder } from '../../JourneyList/JourneySort'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { JourneyListProps } from '../../JourneyList/JourneyList'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
-  RESTORE_TRASHED_JOURNEYS,
-  DELETE_TRASHED_JOURNEYS
+  DELETE_TRASHED_JOURNEYS,
+  RESTORE_TRASHED_JOURNEYS
 } from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
-import {
-  GetTrashedPublisherTemplates,
-  GetTrashedPublisherTemplates_journeys as TrashedJourney
-} from '../../../../__generated__/GetTrashedPublisherTemplates'
 import { TemplateCard } from '../../TemplateCard'
 
-export const GET_TRASHED_PUBLISHER_TEMPLATES = gql`
-  query GetTrashedPublisherTemplates {
-    journeys: adminJourneys(status: [trashed], template: true) {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      status
-      seoTitle
-      seoDescription
-      template
-      trashedAt
-      userJourneys {
-        id
-        role
-        openedAt
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      primaryImageBlock {
-        id
-        parentBlockId
-        parentOrder
-        src
-        alt
-        width
-        height
-        blurhash
-      }
-    }
-  }
-`
-
-interface TrashedTemplatesProps {
-  onLoad: (journeys: string[] | undefined) => void
-  event: string | undefined
-  sortOrder?: SortOrder
-  authUser?: AuthUser
-}
-
 export function TrashedTemplates({
-  onLoad,
-  event,
   sortOrder,
-  authUser
-}: TrashedTemplatesProps): ReactElement {
+  event
+}: Omit<JourneyListProps, 'authUser'>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
-  const { data, loading, error, refetch } =
-    useQuery<GetTrashedPublisherTemplates>(GET_TRASHED_PUBLISHER_TEMPLATES)
-
   const { enqueueSnackbar } = useSnackbar()
-  const [openRestoreAll, setOpenRestoreAll] = useState(false)
-  const [openDeleteAll, setOpenDeleteAll] = useState(false)
-
-  const journeys = data?.journeys
-
+  const { data, refetch } = useAdminJourneysQuery({
+    status: [JourneyStatus.trashed],
+    template: true
+  })
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
-    variables: {
-      ids: journeys?.map((journey) => journey.id)
-    },
-    update(cache, { data }) {
+    update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
@@ -103,12 +39,8 @@ export function TrashedTemplates({
       }
     }
   })
-
   const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
-    variables: {
-      ids: journeys?.map((journey) => journey.id)
-    },
-    update(cache, { data }) {
+    update(_cache, { data }) {
       if (data?.journeysDelete != null) {
         enqueueSnackbar(t('Journeys Deleted'), {
           variant: 'success'
@@ -117,54 +49,53 @@ export function TrashedTemplates({
       }
     }
   })
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
-  const snackbarError = (error: Error): void => {
-    enqueueSnackbar(error.message, {
-      variant: 'error',
-      preventDuplicate: true
-    })
-  }
-
-  const restoreAll = async (): Promise<void> => {
+  async function handleRestoreSubmit(): Promise<void> {
     try {
-      await restoreTrashed()
+      await restoreTrashed({
+        variables: {
+          ids: data?.journeys?.map((journey) => journey.id)
+        }
+      })
     } catch (error) {
-      snackbarError(error)
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
     handleClose()
   }
 
-  const deleteAll = async (): Promise<void> => {
+  async function handleDeleteSubmit(): Promise<void> {
     try {
-      await deleteTrashed()
+      await deleteTrashed({
+        variables: {
+          ids: data?.journeys?.map((journey) => journey.id)
+        }
+      })
     } catch (error) {
-      snackbarError(error)
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
     handleClose()
   }
 
-  const handleClose = (): void => {
-    setOpenRestoreAll(false)
-    setOpenDeleteAll(false)
+  function handleClose(): void {
+    setRestoreDialogOpen(false)
+    setDeleteDialogOpen(false)
   }
-
-  const once = useRef(false)
-  useEffect(() => {
-    if (!once.current) {
-      if (!loading && error == null) {
-        onLoad(journeys?.map((journey) => journey.id))
-        once.current = true
-      }
-    }
-  }, [onLoad, loading, error, journeys, once])
 
   useEffect(() => {
     switch (event) {
       case 'restoreAllTrashed':
-        setOpenRestoreAll(true)
+        setRestoreDialogOpen(true)
         break
       case 'deleteAllTrashed':
-        setOpenDeleteAll(true)
+        setDeleteDialogOpen(true)
         break
       case 'refetchTrashed':
         void refetch()
@@ -177,62 +108,76 @@ export function TrashedTemplates({
   daysAgo.setDate(new Date().getDate() - 40)
 
   const sortedJourneys =
-    journeys != null
-      ? (sortJourneys(journeys, sortOrder) as TrashedJourney[]).filter(
-          (journey) => new Date(journey.trashedAt) > daysAgo
+    data?.journeys != null
+      ? sortJourneys(
+          data.journeys.filter(
+            (journey) => new Date(journey.trashedAt) > daysAgo
+          ),
+          sortOrder
         )
       : undefined
 
   return (
     <>
-      {sortedJourneys != null ? (
-        <>
-          {sortedJourneys.map((journey) => (
-            <TemplateCard
-              key={journey.id}
-              journey={journey}
-              isPublisher
-              refetch={refetch}
-            />
-          ))}
+      <Box>
+        {sortedJourneys != null ? (
+          <>
+            {sortedJourneys.map((journey) => (
+              <TemplateCard
+                key={journey.id}
+                journey={journey}
+                isPublisher
+                refetch={refetch}
+              />
+            ))}
 
-          {sortedJourneys.length === 0 && (
-            <Card
-              variant="outlined"
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                pt: 20,
-                pb: 16,
-                borderBottomLeftRadius: { xs: 0, sm: 12 },
-                borderBottomRightRadius: { xs: 0, sm: 12 },
-                borderTopLeftRadius: 0,
-                borderTopRightRadius: 0
-              }}
-            >
-              <Typography variant="subtitle1" align="center" gutterBottom>
-                {t('Your trashed templates will appear here.')}
-              </Typography>
-            </Card>
-          )}
-        </>
-      ) : (
-        <>
-          {[0, 1, 2].map((index) => (
-            <TemplateCard key={`templateCard${index}`} isPublisher />
-          ))}
-        </>
-      )}
-
+            {sortedJourneys.length === 0 && (
+              <Card
+                variant="outlined"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  pt: 20,
+                  pb: 16,
+                  borderBottomLeftRadius: { xs: 0, sm: 12 },
+                  borderBottomRightRadius: { xs: 0, sm: 12 },
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0
+                }}
+              >
+                <Typography variant="subtitle1" align="center" gutterBottom>
+                  {t('Your trashed templates will appear here.')}
+                </Typography>
+              </Card>
+            )}
+          </>
+        ) : (
+          <>
+            {[0, 1, 2].map((index) => (
+              <TemplateCard key={`templateCard${index}`} isPublisher />
+            ))}
+          </>
+        )}
+      </Box>
+      <Stack alignItems="center">
+        <Typography
+          variant="caption"
+          align="center"
+          component="div"
+          sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
+        >
+          {t('Trashed templates are moved here for up to 40 days.')}
+        </Typography>
+      </Stack>
       <Dialog
-        open={openRestoreAll ?? false}
+        open={restoreDialogOpen}
         onClose={handleClose}
         dialogTitle={{
           title: t('Restore Templates'),
           closeButton: true
         }}
         dialogAction={{
-          onSubmit: restoreAll,
+          onSubmit: handleRestoreSubmit,
           submitLabel: t('Restore'),
           closeLabel: t('Cancel')
         }}
@@ -244,14 +189,14 @@ export function TrashedTemplates({
         </Typography>
       </Dialog>
       <Dialog
-        open={openDeleteAll ?? false}
+        open={deleteDialogOpen}
         onClose={handleClose}
         dialogTitle={{
           title: t('Delete Templates Forever'),
           closeButton: true
         }}
         dialogAction={{
-          onSubmit: deleteAll,
+          onSubmit: handleDeleteSubmit,
           submitLabel: t('Delete Forever'),
           closeLabel: t('Cancel')
         }}

@@ -8,12 +8,22 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
       name: api-journeys
-      repository: jfp-api-journeys-prod
-      seed_repository: jfp-api-journeys-seed-prod
+      env: prod
       branch: ${{ github.ref_name }}
-      ecs_cluster: jfp-ecs-cluster-prod
-      ecs_service: api-journeys-prod-service
       endpoint_url: http://api-journeys.service.internal:4001/graphql
+    secrets:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+  api-tags:
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
+    with:
+      name: api-tags
+      env: prod
+      branch: ${{ github.ref_name }}
+      endpoint_url: http://api-tags.service.internal:4006/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -24,11 +34,8 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
       name: api-users
-      repository: jfp-api-users-prod
-      seed_repository: jfp-api-users-seed-prod
+      env: prod
       branch: ${{ github.ref_name }}
-      ecs_cluster: jfp-ecs-cluster-prod
-      ecs_service: api-users-prod-service
       endpoint_url: http://api-users.service.internal:4002/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
@@ -40,11 +47,8 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
       name: api-languages
-      repository: jfp-api-languages-prod
-      seed_repository: jfp-api-languages-seed-prod
+      env: prod
       branch: ${{ github.ref_name }}
-      ecs_cluster: jfp-ecs-cluster-prod
-      ecs_service: api-languages-prod-service
       endpoint_url: http://api-languages.service.internal:4003/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
@@ -56,11 +60,8 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
       name: api-videos
-      repository: jfp-api-videos-prod
-      seed_repository: jfp-api-videos-seed-prod
+      env: prod
       branch: ${{ github.ref_name }}
-      ecs_cluster: jfp-ecs-cluster-prod
-      ecs_service: api-videos-prod-service
       endpoint_url: http://api-videos.service.internal:4004/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
@@ -72,11 +73,8 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
       name: api-media
-      repository: jfp-api-media-prod
-      seed_repository: jfp-api-media-seed-prod
+      env: prod
       branch: ${{ github.ref_name }}
-      ecs_cluster: jfp-ecs-cluster-prod
-      ecs_service: api-media-prod-service
       endpoint_url: http://api-media.service.internal:4005/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}

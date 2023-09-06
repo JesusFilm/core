@@ -1,64 +1,100 @@
+import Stack from '@mui/material/Stack'
 import { ReactElement, ReactNode } from 'react'
-import Box from '@mui/material/Box'
+
+import { NextImage } from '@core/shared/ui/NextImage'
+
+import type { TreeBlock } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
+import { ImageFields } from '../../Image/__generated__/ImageFields'
+import { OverlayContent } from '../OverlayContent'
 
 interface ExpandedCoverProps {
   children: ReactNode
+  imageBlock?: TreeBlock<ImageFields>
+  backgroundColor?: string
   backgroundBlur?: string
+  hasFullscreenVideo?: boolean
 }
 
 export function ExpandedCover({
   children,
-  backgroundBlur
+  imageBlock,
+  backgroundColor,
+  backgroundBlur,
+  hasFullscreenVideo = false
 }: ExpandedCoverProps): ReactElement {
+  const { variant } = useJourney()
+  const enableVerticalScroll = {
+    overflowY: 'scroll',
+    // Hide on Firefox https://caniuse.com/?search=scrollbar-width
+    scrollbarWidth: 'none',
+    // Hide on all others https://caniuse.com/?search=webkit-scrollbar
+    '&::-webkit-scrollbar': {
+      display: 'none'
+    }
+  }
+
+  const background =
+    backgroundColor != null
+      ? imageBlock?.src != null
+        ? `${backgroundColor}4d`
+        : backgroundColor
+      : 'unset'
+
   return (
-    <Box
-      data-testid="ExpandedCover"
-      sx={{
-        flexGrow: 1,
-        overflow: 'auto',
-        display: 'flex',
-        padding: (theme) => ({
-          xs: theme.spacing(7),
-          sm: theme.spacing(7, 10),
-          md: theme.spacing(10)
-        }),
-        borderRadius: (theme) => theme.spacing(4),
-        justifyContent: 'center'
-      }}
-    >
-      <Box
-        sx={{
-          margin: 'auto',
-          width: '100%',
-          maxWidth: 500,
-          zIndex: 1,
-          '& > *': {
-            '&:first-child': { mt: 0 },
-            '&:last-child': { mb: 0 }
-          }
-        }}
-      >
-        {children}
-      </Box>
-      {backgroundBlur != null && (
-        <Box
-          data-testid="expandedBlurBackground"
-          sx={{
-            position: 'absolute',
-            width: '100%',
-            height: '110%',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: '100% 100%',
-            backgroundPosition: '0% 0%',
-            left: 0,
-            top: '-10%',
-            zIndex: -1,
-            transform: 'scaleY(-1)',
-            backgroundBlendMode: 'hard-light',
-            backgroundImage: `url(${backgroundBlur}), url(${backgroundBlur})`
-          }}
+    <>
+      {/* Background Image */}
+      {backgroundBlur != null && imageBlock != null && (
+        <NextImage
+          data-testid="ExpandedImageCover"
+          src={imageBlock.src ?? backgroundBlur}
+          alt={imageBlock.alt}
+          placeholder="blur"
+          blurDataURL={backgroundBlur}
+          layout="fill"
+          objectFit="cover"
         />
       )}
-    </Box>
+      <Stack
+        data-testid="ExpandedCover"
+        sx={{
+          height: '100%',
+          WebkitBackdropFilter: 'blur(20px)',
+          backdropFilter: 'blur(20px)',
+          background,
+          borderRadius: 'inherit',
+          overflow: 'hidden'
+        }}
+      >
+        <Stack
+          data-testid="overlay-content-container"
+          justifyContent="center"
+          sx={{
+            flexGrow: 1,
+            pt: { xs: 10, sm: 8 },
+            pb: { xs: 28, sm: 16 },
+            ...enableVerticalScroll
+          }}
+        >
+          <OverlayContent
+            hasFullscreenVideo={hasFullscreenVideo}
+            sx={{
+              margin: 'auto',
+              width: {
+                xs:
+                  variant === 'default'
+                    ? 'calc(100% - 48px - env(safe-area-inset-left) - env(safe-area-inset-right))'
+                    : 'calc(100% - 48px)',
+                sm: 360,
+                md: 500
+              },
+              pb: 4
+            }}
+          >
+            {children}
+          </OverlayContent>
+        </Stack>
+      </Stack>
+    </>
   )
 }

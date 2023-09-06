@@ -1,9 +1,11 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
+
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
+
 import { HomePage } from '.'
 
-const HomePageStory: ComponentMeta<typeof HomePage> = {
+const HomePageStory: Meta<typeof HomePage> = {
   ...watchConfig,
   component: HomePage,
   title: 'Watch/HomePage',
@@ -13,13 +15,10 @@ const HomePageStory: ComponentMeta<typeof HomePage> = {
   }
 }
 
-const Template: ComponentStory<typeof HomePage> = ({ ...args }) => (
-  <HomePage {...args} />
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  videos
+const Template: StoryObj<typeof HomePage> = {
+  render: ({ ...args }) => <HomePage {...args} />
 }
+
+export const Default = { ...Template, args: { videos } }
 
 export default HomePageStory

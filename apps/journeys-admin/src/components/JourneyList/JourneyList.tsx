@@ -1,82 +1,77 @@
-import { ReactElement, useState, useEffect } from 'react'
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import { NextRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { AuthUser } from 'next-firebase-auth'
+import { ReactElement, useState } from 'react'
+
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { useTranslation } from 'react-i18next'
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
-import { ContactSupport } from '../ContactSupport'
-import { AddJourneyButton } from './AddJourneyButton'
-import { ActiveJourneyList } from './ActiveJourneyList'
-import { ArchivedJourneyList } from './ArchivedJourneyList'
-import { TrashedJourneyList } from './TrashedJourneyList'
-import { SortOrder } from './JourneySort'
 
-export interface JourneysListProps {
-  journeys?: Journey[]
-  router?: NextRouter
-  event: string | undefined
+import { ActiveJourneyList } from './ActiveJourneyList'
+import { AddJourneyFab } from './AddJourneyFab'
+import { ArchivedJourneyList } from './ArchivedJourneyList'
+import { SortOrder } from './JourneySort'
+import { TrashedJourneyList } from './TrashedJourneyList'
+
+export interface JourneyListProps {
+  sortOrder?: SortOrder
+  event?: JourneyListEvent
   authUser?: AuthUser
 }
 
+export type JourneyListEvent =
+  | 'archiveAllActive'
+  | 'trashAllActive'
+  | 'refetchActive'
+  | 'restoreAllArchived'
+  | 'trashAllArchived'
+  | 'refetchArchived'
+  | 'restoreAllTrashed'
+  | 'deleteAllTrashed'
+  | 'refetchTrashed'
+
 export function JourneyList({
-  journeys,
-  router,
-  event,
   authUser
-}: JourneysListProps): ReactElement {
+}: Pick<JourneyListProps, 'authUser'>): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
-  const [activeTabLoaded, setActiveTabLoaded] = useState(false)
-  const [activeEvent, setActiveEvent] = useState(event)
-  const { t } = useTranslation()
-  const { journeysSummaryReport, inviteRequirement } = useFlags()
+  const router = useRouter()
+  const { journeysSummaryReport } = useFlags()
+  const [event, setEvent] = useState<JourneyListEvent>()
 
-  useEffect(() => {
-    setActiveEvent(event)
-  }, [event])
-
-  function activeTabOnLoad(): void {
-    setActiveTabLoaded(true)
+  const handleClick = (event: JourneyListEvent): void => {
+    setEvent(event)
+    // remove event after component lifecycle
+    setTimeout(() => {
+      setEvent(undefined)
+    }, 1000)
   }
 
-  const journeyListProps = {
-    onLoad: activeTabOnLoad,
+  const journeyListProps: JourneyListProps = {
+    authUser,
     sortOrder,
-    event: activeEvent,
-    authUser
+    event
   }
 
   return (
     <>
-      {journeys != null && journeys.length === 0 && inviteRequirement ? (
-        <ContactSupport
-          title={t('You need to be invited to use your first journey')}
-          description={t(
-            'Someone with a full account should add you to their journey as an editor, after that you will have full access'
-          )}
-        />
-      ) : (
-        <>
-          {journeysSummaryReport && <MultipleSummaryReport />}
-          <Container sx={{ px: { xs: 0, sm: 8 } }}>
-            <StatusTabPanel
-              activeList={<ActiveJourneyList {...journeyListProps} />}
-              archivedList={<ArchivedJourneyList {...journeyListProps} />}
-              trashedList={<TrashedJourneyList {...journeyListProps} />}
-              activeTabLoaded={activeTabLoaded}
-              setActiveEvent={setActiveEvent}
-              setSortOrder={setSortOrder}
-              sortOrder={sortOrder}
-              router={router}
-            />
-            {!['archived', 'trashed'].includes(
-              (router?.query?.tab as string) ?? ''
-            ) && <AddJourneyButton variant="fab" />}
-          </Container>
-        </>
-      )}
+      {journeysSummaryReport && <MultipleSummaryReport />}
+      <Box sx={{ mx: { xs: -6, sm: 0 } }}>
+        <Container disableGutters>
+          <StatusTabPanel
+            activeList={<ActiveJourneyList {...journeyListProps} />}
+            archivedList={<ArchivedJourneyList {...journeyListProps} />}
+            trashedList={<TrashedJourneyList {...journeyListProps} />}
+            setActiveEvent={handleClick}
+            setSortOrder={setSortOrder}
+            sortOrder={sortOrder}
+          />
+        </Container>
+      </Box>
+      {!['archived', 'trashed'].includes(
+        router?.query?.tab?.toString() ?? ''
+      ) && <AddJourneyFab />}
     </>
   )
 }

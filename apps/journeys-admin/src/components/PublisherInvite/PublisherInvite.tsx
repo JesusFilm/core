@@ -1,14 +1,15 @@
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import Image from 'next/image'
+import NextLink from 'next/link'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import CardActions from '@mui/material/CardActions'
-import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Box from '@mui/material/Box'
-import Image from 'next/image'
-import Link from 'next/link'
+
 import logo from '../../../public/logo.svg'
 
 export function PublisherInvite(): ReactElement {
@@ -25,11 +26,18 @@ export function PublisherInvite(): ReactElement {
           pb: 10
         }}
       >
-        <Link href="/" passHref>
-          <a>
-            <Image src={logo} alt="Next Steps" height={68} width={152} />
-          </a>
-        </Link>
+        <NextLink href="/" passHref legacyBehavior>
+          <Image
+            src={logo}
+            alt="Next Steps"
+            height={68}
+            width={152}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
+        </NextLink>
       </Box>
       <Card
         variant="outlined"
@@ -50,9 +58,9 @@ export function PublisherInvite(): ReactElement {
           </Typography>
         </CardContent>
         <CardActions>
-          <Link href="/" passHref>
+          <NextLink href="/" passHref legacyBehavior>
             <Button variant="contained">Back to the Admin Panel</Button>
-          </Link>
+          </NextLink>
         </CardActions>
       </Card>
     </Container>

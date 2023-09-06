@@ -1,21 +1,24 @@
-import { render, waitFor, act, cleanup } from '@testing-library/react'
-import videojs from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
-import { v4 as uuidv4 } from 'uuid'
+import { act, cleanup, render, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
+import { v4 as uuidv4 } from 'uuid'
+import videojs from 'video.js'
+
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { TreeBlock, activeBlockVar } from '../../libs/block'
+import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+
 import {
-  VideoEventsProps,
-  VIDEO_START_EVENT_CREATE,
-  VIDEO_PLAY_EVENT_CREATE,
-  VIDEO_PAUSE_EVENT_CREATE,
+  VIDEO_COLLAPSE_EVENT_CREATE,
   VIDEO_COMPLETE_EVENT_CREATE,
   VIDEO_EXPAND_EVENT_CREATE,
-  VIDEO_COLLAPSE_EVENT_CREATE,
-  VIDEO_PROGRESS_EVENT_CREATE
+  VIDEO_PAUSE_EVENT_CREATE,
+  VIDEO_PLAY_EVENT_CREATE,
+  VIDEO_PROGRESS_EVENT_CREATE,
+  VIDEO_START_EVENT_CREATE,
+  VideoEventsProps
 } from './VideoEvents'
+
 import { VideoEvents } from '.'
 
 jest.mock('uuid', () => ({
@@ -38,6 +41,7 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
+
   beforeEach(() => {
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -63,6 +67,7 @@ describe('VideoEvents', () => {
       videoId: 'video.id'
     }
   })
+
   afterEach(() => {
     cleanup()
   })
@@ -86,7 +91,7 @@ describe('VideoEvents', () => {
   }
 
   it('should create start event', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
 
     const result = jest.fn(() => ({
       data: {
@@ -126,7 +131,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add start event to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     render(
       <MockedProvider
         mocks={[
@@ -174,7 +179,7 @@ describe('VideoEvents', () => {
   })
 
   it('should create play event', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     const result = jest.fn(() => ({
       data: {
         videoPlayEventCreate: {
@@ -212,7 +217,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add play event to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     render(
       <MockedProvider
         mocks={[
@@ -259,7 +264,7 @@ describe('VideoEvents', () => {
   })
 
   it('should create pause event', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     const result = jest.fn(() => ({
       data: {
         videoPauseEventCreate: {
@@ -297,7 +302,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add pause event to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     render(
       <MockedProvider
         mocks={[
@@ -344,7 +349,7 @@ describe('VideoEvents', () => {
   })
 
   it('should create expand event', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     const result = jest.fn(() => ({
       data: {
         videoExpandEventCreate: {
@@ -382,7 +387,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add expand event to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     render(
       <MockedProvider
         mocks={[
@@ -429,7 +434,7 @@ describe('VideoEvents', () => {
   })
 
   it('should create collapse event', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     const result = jest.fn(() => ({
       data: {
         videoCollapseEventCreate: {
@@ -481,13 +486,13 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0.78)
       props.player.enterFullWindow()
-      props.player.exitFullscreen()
+      void props.player.exitFullscreen()
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should add collapse event to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     render(
       <MockedProvider
         mocks={[
@@ -537,7 +542,7 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0.78)
       props.player.enterFullWindow()
-      props.player.exitFullscreen()
+      void props.player.exitFullscreen()
     })
     await waitFor(() =>
       expect(mockedDataLayer).toHaveBeenCalledWith({
@@ -554,7 +559,7 @@ describe('VideoEvents', () => {
   })
 
   it('should create progress event and complete event', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     const resultStart = jest.fn(() => ({
       data: {
         videoStartEventCreate: {
@@ -704,7 +709,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add progress event and complete event to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     render(
       <MockedProvider
         mocks={[

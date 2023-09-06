@@ -6,19 +6,13 @@ on:
       name:
         required: true
         type: string
-      repository:
+      env:
         required: true
         type: string
       seed_repository:
         required: true
         type: string
       branch:
-        required: true
-        type: string
-      ecs_cluster:
-        required: true
-        type: string
-      ecs_service:
         required: true
         type: string
       endpoint_url:
@@ -42,18 +36,24 @@ jobs:
     env:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       ENV_SUFFIX: ${{ inputs.branch }}
-      ECR_REPOSITORY: ${{ inputs.repository }}
+      ECS_CLUSTER: jfp-ecs-cluster-${{ inputs.env }}
+      ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
+      ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
+      ECR_SEED_REPOSITORY: jfp-${{ inputs.name }}-seed-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
-
+          fetch-depth: 0
+      - uses: nrwl/nx-set-shas@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Cache Node Modules
@@ -61,8 +61,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
 
       - name: NPM Install
         run: npm install --silent
@@ -71,11 +71,27 @@ jobs:
         run: npm install -g nx --silent
 
       - name: rover Install
-        run: npm install -g @apollo/rover@0.10.0
+        run: npm install -g @apollo/rover@0.16.2
 
       - name: Get affected apps
-        run: echo "apps=$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)" >> $GITHUB_OUTPUT
+        run: |
+          echo "apps=$(npx nx show projects --affected --projects apps/api-* | npx ts-node tools/scripts/affected-apps.ts)" >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
         id: affected-apps
+
+      - name: Has Prisma
+        id: has_prisma
+        uses: andstor/file-existence-action@v2
+        with:
+          files: 'apps/${{inputs.name}}/db/schema.prisma'
+
+      - name: Prisma Migrate
+        if: steps.has_prisma.outputs.files_exists == 'true' && contains(steps.affected-apps.outputs.apps, inputs.name)
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-generate
+          projects: ${{ inputs.name }}
+          parallel: 1
 
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
@@ -83,6 +99,7 @@ jobs:
         with:
           targets: build
           projects: ${{ inputs.name }}
+          args: --c=production
 
       # ECS Deployment
       - name: Configure ECS AWS credentials
@@ -113,7 +130,7 @@ jobs:
       - name: Restart task definition
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
-          aws ecs update-service --force-new-deployment --service ${{ inputs.ecs_service }} --cluster ${{ inputs.ecs_cluster }}
+          aws ecs update-service --force-new-deployment --service $ECS_SERVICE --cluster $ECS_CLUSTER
 
       - name: Update stage Apollo managed subgraph
         if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'stage')
@@ -136,12 +153,12 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/${{ inputs.seed_repository }}:$IMAGE_TAG -t $ECR_REGISTRY/${{ inputs.seed_repository }}:latest . -f apps/${{ inputs.name }}/db/Dockerfile
+          docker build -t $ECR_REGISTRY/$ECR_SEED_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_SEED_REPOSITORY:latest . -f apps/${{ inputs.name }}/db/Dockerfile
           echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/${{ inputs.seed_repository }}
-          echo "image=$ECR_REGISTRY/${{ inputs.seed_repository }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker push -a $ECR_REGISTRY/$ECR_SEED_REPOSITORY
+          echo "image=$ECR_REGISTRY/$ECR_SEED_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Seed Database
         if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
         run: |
-          aws ecs run-task --task-definition ${{ inputs.seed_repository }} --cluster ${{ inputs.ecs_cluster }} --launch-type FARGATE --network-configuration "${{ secrets.AWS_NETWORK_CONFIG }}"
+          aws ecs run-task --task-definition $ECR_SEED_REPOSITORY --cluster $ECS_CLUSTER --launch-type FARGATE --network-configuration "${{ secrets.AWS_NETWORK_CONFIG }}"

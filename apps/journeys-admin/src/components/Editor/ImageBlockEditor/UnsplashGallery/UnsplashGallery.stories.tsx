@@ -1,22 +1,26 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Story, Meta } from '@storybook/react'
-import { noop } from 'lodash'
+import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
+
 import { simpleComponentConfig } from '../../../../libs/storybook'
+
 import { listUnsplashCollectionMock } from './data'
 import { UnsplashGallery } from './UnsplashGallery'
 
-const UnsplashGalleryStory = {
+const UnsplashGalleryStory: Meta<typeof UnsplashGallery> = {
   ...simpleComponentConfig,
   component: UnsplashGallery,
   title: 'Journeys-Admin/Editor/ImageBlockEditor/UnsplashGallery'
 }
 
-const Template: Story = () => (
-  <MockedProvider mocks={[listUnsplashCollectionMock]}>
-    <UnsplashGallery onChange={noop} />
-  </MockedProvider>
-)
+const Template: StoryObj<typeof UnsplashGallery> = {
+  render: () => (
+    <MockedProvider mocks={[listUnsplashCollectionMock]}>
+      <UnsplashGallery onChange={noop} />
+    </MockedProvider>
+  )
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default UnsplashGalleryStory as Meta
+export default UnsplashGalleryStory

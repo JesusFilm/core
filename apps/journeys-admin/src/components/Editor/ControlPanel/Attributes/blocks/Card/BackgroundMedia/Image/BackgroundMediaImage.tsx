@@ -1,18 +1,20 @@
-import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useSnackbar } from 'notistack'
-import {
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
-} from '../../../../../../../../../__generated__/GetJourney'
+
+import { BlockDeleteForBackgroundImage } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
 import { CardBlockImageBlockCreate } from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
 import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
-import { BlockDeleteForBackgroundImage } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
-import { ImageSource } from '../../../../../../ImageSource'
+import {
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../../../../../__generated__/GetJourney'
 import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { ImageSource } from '../../../../../../ImageSource'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
   mutation BlockDeleteForBackgroundImage(
@@ -86,10 +88,6 @@ export function BackgroundMediaImage({
   const handleImageDelete = async (): Promise<void> => {
     try {
       await deleteCoverBlock()
-      enqueueSnackbar('Image Deleted', {
-        variant: 'success',
-        preventDuplicate: true
-      })
     } catch (e) {
       enqueueSnackbar(e.message, {
         variant: 'error',
@@ -115,6 +113,9 @@ export function BackgroundMediaImage({
 
   const createImageBlock = async (block): Promise<void> => {
     if (journey == null) return
+
+    if (coverBlock != null && coverBlock.__typename === 'VideoBlock')
+      await deleteCoverBlock()
 
     await imageBlockCreate({
       variables: {

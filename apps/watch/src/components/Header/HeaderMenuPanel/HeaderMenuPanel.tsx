@@ -1,17 +1,17 @@
-import { ReactElement } from 'react'
-import Paper from '@mui/material/Paper'
-import Container from '@mui/material/Container'
-import Button from '@mui/material/Button'
-import FavoriteIcon from '@mui/icons-material/Favorite'
-import IconButton from '@mui/material/IconButton'
-import Stack from '@mui/material/Stack'
 import CloseIcon from '@mui/icons-material/Close'
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
 import MuiLink from '@mui/material/Link'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { ReactElement } from 'react'
 
 import logo from '../assets/logo.svg'
 
@@ -55,16 +55,18 @@ export function HeaderMenuPanel({
           justifyContent="space-between"
           p={8}
         >
-          <NextLink href="/" passHref>
-            <a>
-              <Image
-                src={logo}
-                width="160"
-                height="40"
-                alt="Watch Logo"
-                style={{ cursor: 'pointer' }}
-              />
-            </a>
+          <NextLink href="/" passHref legacyBehavior>
+            <Image
+              src={logo}
+              width="160"
+              height="40"
+              alt="Watch Logo"
+              style={{
+                cursor: 'pointer',
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
           </NextLink>
           <IconButton
             color="inherit"

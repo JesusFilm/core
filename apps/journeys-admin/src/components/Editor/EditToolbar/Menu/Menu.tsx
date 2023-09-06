@@ -1,20 +1,21 @@
-import { ReactElement, useState } from 'react'
-import IconButton from '@mui/material/IconButton'
 import MoreVert from '@mui/icons-material/MoreVert'
-import MuiMenu from '@mui/material/Menu'
+import SettingsIcon from '@mui/icons-material/Settings'
+import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Divider from '@mui/material/Divider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import IconButton from '@mui/material/IconButton'
+import MuiMenu from '@mui/material/Menu'
 import { Theme } from '@mui/material/styles'
-import SettingsIcon from '@mui/icons-material/Settings'
-import NextLink from 'next/link'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
-import { DeleteBlock } from '../DeleteBlock'
-import { MenuItem } from '../../../MenuItem'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import NextLink from 'next/link'
+import { ReactElement, useState } from 'react'
+
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { DuplicateBlock } from '../../../DuplicateBlock'
+import { MenuItem } from '../../../MenuItem'
+import { DeleteBlock } from '../DeleteBlock'
 
 export function Menu(): ReactElement {
   const {
@@ -36,17 +37,23 @@ export function Menu(): ReactElement {
   function BlockMenu(): ReactElement {
     return (
       <>
-        <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
+        <NextLink
+          href={`/api/preview?slug=${journey?.slug ?? ''}`}
+          passHref
+          legacyBehavior
+        >
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
-            disabled={journey?.status === JourneyStatus.draft}
             openInNew
             onClick={handleCloseMenu}
           />
         </NextLink>
 
-        <DuplicateBlock variant="list-item" />
+        <DuplicateBlock
+          variant="list-item"
+          disabled={selectedBlock?.__typename === 'VideoBlock'}
+        />
         <DeleteBlock variant="list-item" />
         {!smUp && (
           <MenuItem
@@ -71,11 +78,14 @@ export function Menu(): ReactElement {
 
     return (
       <>
-        <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
+        <NextLink
+          href={`/api/preview?slug=${journey?.slug ?? ''}`}
+          passHref
+          legacyBehavior
+        >
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
-            disabled={journey?.status === JourneyStatus.draft}
             openInNew
             onClick={handleCloseMenu}
           />
@@ -90,7 +100,11 @@ export function Menu(): ReactElement {
           />
         )}
         <Divider />
-        <NextLink href={settingsLink != null ? settingsLink : ''} passHref>
+        <NextLink
+          href={settingsLink != null ? settingsLink : ''}
+          passHref
+          legacyBehavior
+        >
           <MenuItem
             label={
               journey?.template === true

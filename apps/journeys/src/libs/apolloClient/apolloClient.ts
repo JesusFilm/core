@@ -1,30 +1,32 @@
 import {
   ApolloClient,
-  createHttpLink,
-  NormalizedCacheObject
+  NormalizedCacheObject,
+  createHttpLink
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
-import { getAuth, signInAnonymously } from 'firebase/auth'
+import { UserCredential, getAuth, signInAnonymously } from 'firebase/auth'
 import { useMemo } from 'react'
+
 import { firebaseClient } from '../firebaseClient'
+
 import { cache } from './cache'
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GATEWAY_URL
 })
 
+let signInPromise: Promise<UserCredential>
+
 const authLink = setContext(async (_, { headers }) => {
-  const isSsrMode = typeof window === 'undefined'
   const auth = getAuth(firebaseClient)
-  const userCredential = await signInAnonymously(auth)
+  if (signInPromise == null) signInPromise = signInAnonymously(auth)
+  const userCredential = await signInPromise
+
   const token = await userCredential.user.getIdToken()
 
-  // If this is SSR, DO NOT PASS THE REQUEST HEADERS.
-  // Just send along the authorization headers.
-  // The **correct** headers will be supplied by the `getServerSideProps` invocation of the query
   return {
     headers: {
-      ...(!isSsrMode ? headers : []),
+      ...headers,
       Authorization: token ?? ''
     }
   }

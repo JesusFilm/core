@@ -1,15 +1,17 @@
-import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
+import MuiDrawer from '@mui/material/Drawer'
+import { Meta, StoryObj } from '@storybook/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import MuiDrawer from '@mui/material/Drawer'
-import { MockedProvider } from '@apollo/client/testing'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
+
 import { ImageOptions } from './ImageOptions'
 
-const ImageOptionsStory = {
+const ImageOptionsStory: Meta<typeof ImageOptions> = {
   ...journeysAdminConfig,
   component: ImageOptions,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Image/ImageOptions',
@@ -32,44 +34,46 @@ const image: TreeBlock<ImageBlock> = {
   children: []
 }
 
-export const Default: Story = ({ ...args }) => (
-  <MockedProvider>
-    <ThemeProvider>
-      <EditorProvider
-        initialState={{
-          selectedBlock: image
-        }}
-      >
-        <MuiDrawer
-          anchor="right"
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: 328
-            }
-          }}
-          ModalProps={{
-            keepMounted: true
-          }}
-          open
-        >
-          <ImageOptions />
-        </MuiDrawer>
-        <MuiDrawer
-          anchor="bottom"
-          variant="temporary"
-          open
-          sx={{
-            display: { xs: 'block', sm: 'none' }
+export const Default: StoryObj<typeof ImageOptions> = {
+  render: ({ ...args }) => (
+    <MockedProvider>
+      <ThemeProvider>
+        <EditorProvider
+          initialState={{
+            selectedBlock: image
           }}
         >
-          <ImageOptions />
-        </MuiDrawer>
-      </EditorProvider>
-    </ThemeProvider>
-  </MockedProvider>
-)
+          <MuiDrawer
+            anchor="right"
+            variant="permanent"
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
+                width: 328
+              }
+            }}
+            ModalProps={{
+              keepMounted: true
+            }}
+            open
+          >
+            <ImageOptions />
+          </MuiDrawer>
+          <MuiDrawer
+            anchor="bottom"
+            variant="temporary"
+            open
+            sx={{
+              display: { xs: 'block', sm: 'none' }
+            }}
+          >
+            <ImageOptions />
+          </MuiDrawer>
+        </EditorProvider>
+      </ThemeProvider>
+    </MockedProvider>
+  )
+}
 
-export default ImageOptionsStory as Meta
+export default ImageOptionsStory

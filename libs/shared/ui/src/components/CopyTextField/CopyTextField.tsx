@@ -1,10 +1,10 @@
-import { ReactElement, useRef } from 'react'
+import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
-import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
-import { useSnackbar } from 'notistack'
 import { SxProps } from '@mui/system/styleFunctionSx'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useRef } from 'react'
 
 export interface CopyTextFieldProps {
   label?: string
@@ -40,6 +40,7 @@ export function CopyTextField({
       sx={{ ...sx }}
       hiddenLabel={label == null}
       label={label}
+      InputLabelProps={{ shrink: true }}
       inputRef={inputRef}
       disabled={value == null}
       inputProps={{ onFocus: handleFocus, value }}

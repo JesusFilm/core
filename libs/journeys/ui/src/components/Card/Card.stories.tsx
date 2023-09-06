@@ -1,27 +1,36 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { useTheme } from '@mui/material/styles'
-import Box from '@mui/material/Box'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import type { TreeBlock } from '../../libs/block'
+import Box from '@mui/material/Box'
+import { useTheme } from '@mui/material/styles'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import {
-  TypographyVariant,
-  ButtonVariant,
   ButtonColor,
   ButtonSize,
+  ButtonVariant,
   IconName,
   IconSize,
+  TypographyVariant,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
+import type { TreeBlock } from '../../libs/block'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
+
 import { Card } from './Card'
 
-const Demo = {
+const Demo: Meta<typeof Card> = {
   ...journeyUiConfig,
   component: Card,
-  title: 'Journeys-Ui/Card'
+  title: 'Journeys-Ui/Card',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    },
+
+    chromatic: { delay: 3000 }
+  }
 }
 
 const content: TreeBlock[] = [
@@ -128,130 +137,179 @@ const video: TreeBlock<VideoFields> = {
   children: []
 }
 
-const Template: Story<ComponentProps<typeof Card>> = ({ ...args }) => {
-  const theme = useTheme()
-  return (
-    <MockedProvider>
-      <Box
-        sx={{
-          height: 'calc(100vh - 80px)',
-          maxHeight: 'calc(100vh - 80px)',
-          [theme.breakpoints.up('sm')]: {
-            maxHeight: '460px'
-          },
-          [theme.breakpoints.up('lg')]: {
-            maxWidth: '854px',
-            maxHeight: '480px'
-          }
-        }}
-      >
-        <Card {...args} />
-      </Box>
-    </MockedProvider>
-  )
+type Story = StoryObj<ComponentProps<typeof Card>>
+
+const Template: Story = {
+  render: ({ ...args }) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const theme = useTheme()
+    return (
+      <MockedProvider>
+        <Box
+          sx={{
+            height: 'calc(100vh - 80px)',
+            maxHeight: 'calc(100vh - 80px)',
+            [theme.breakpoints.up('sm')]: {
+              maxHeight: '460px'
+            },
+            [theme.breakpoints.up('lg')]: {
+              maxWidth: '854px',
+              maxHeight: '480px'
+            }
+          }}
+        >
+          <Card {...args} />
+        </Box>
+      </MockedProvider>
+    )
+  }
 }
 
 // Expanded - default content background
-export const Default = Template.bind({})
-Default.args = {
-  themeMode: null,
-  themeName: null,
-  children: content
+export const Default = {
+  ...Template,
+  args: {
+    themeMode: null,
+    themeName: null,
+    children: content
+  }
 }
 
 // Expanded - override content background
-export const Custom = Template.bind({})
-Custom.args = {
-  ...Default.args,
-  backgroundColor: '#F1A025'
+export const Custom = {
+  ...Template,
+  args: {
+    ...Default.args,
+    backgroundColor: '#F1A025'
+  }
 }
 
 // Expanded - blur image content background
-export const ImageBlur = Template.bind({})
-ImageBlur.args = {
-  ...Default.args,
-  coverBlockId: image.id,
-  children: [...content, image],
-  fullscreen: true
+export const ImageBlur = {
+  ...Template,
+  args: {
+    ...Default.args,
+    coverBlockId: image.id,
+    children: [...content, image],
+    fullscreen: true
+  }
 }
 
 // RTL Expanded - blur image content background
-export const RTLImageBlur = Template.bind({})
-RTLImageBlur.args = { ...ImageBlur.args }
-RTLImageBlur.parameters = { rtl: true }
+export const RTLImageBlur = {
+  ...Template,
+  args: { ...ImageBlur.args },
+  parameters: { rtl: true }
+}
 
 // Contained - cover image background with blur image content background
-export const ImageCover = Template.bind({})
-ImageCover.args = {
-  ...Default.args,
-  coverBlockId: image.id,
-  children: [...content, image]
-}
-ImageCover.parameters = {
-  chromatic: { viewports: [360, 599, 1200] }
+export const ImageCover = {
+  ...Template,
+  args: {
+    ...Default.args,
+    coverBlockId: image.id,
+    children: [...content, image]
+  },
+  parameters: {
+    chromatic: { viewports: [360, 599, 1200] }
+  }
 }
 
 // RTL Expanded - blur image content background
-export const RTLImageCover = Template.bind({})
-RTLImageCover.args = { ...ImageCover.args }
-RTLImageCover.parameters = {
-  rtl: true,
-  chromatic: { viewports: [360, 599, 1200] }
+export const RTLImageCover = {
+  ...Template,
+  args: { ...ImageCover.args },
+  parameters: {
+    rtl: true,
+    chromatic: { viewports: [360, 599, 1200] }
+  }
 }
+
 // Contained - cover video background with default content background
-export const VideoCoverDefault = Template.bind({})
-VideoCoverDefault.args = {
-  ...Default.args,
-  coverBlockId: video.id,
-  children: [...content, video]
+export const VideoCoverDefault = {
+  ...Template,
+  args: {
+    ...Default.args,
+    coverBlockId: video.id,
+    children: [...content, video]
+  }
 }
 
 // Contained - cover video background with override content background
-export const VideoCoverCustom = Template.bind({})
-VideoCoverCustom.args = {
-  ...Default.args,
-  backgroundColor: '#F1A025',
-  coverBlockId: video.id,
-  children: [...content, video]
+export const VideoCoverCustom = {
+  ...Template,
+  args: {
+    ...Default.args,
+    backgroundColor: '#F1A025',
+    coverBlockId: video.id,
+    children: [...content, video]
+  }
 }
 
 // Contained - cover video background with blur poster image content background
-export const VideoCoverPoster = Template.bind({})
-VideoCoverPoster.args = {
-  ...Default.args,
-  coverBlockId: video.id,
-  children: [
-    ...content,
-    {
-      ...video,
-      posterBlockId: image.id,
-      children: [image]
-    }
-  ]
+export const VideoCoverPoster = {
+  ...Template,
+  args: {
+    ...Default.args,
+    coverBlockId: video.id,
+    children: [
+      ...content,
+      {
+        ...video,
+        posterBlockId: image.id,
+        children: [image]
+      }
+    ]
+  }
 }
 
 // Contained - youtube
-export const VideoYoutubeDefault = Template.bind({})
-VideoYoutubeDefault.args = {
-  ...Default.args,
-  coverBlockId: video.id,
-  children: [
-    ...content,
-    {
-      ...video,
-      video: null,
-      videoId: '5I69DCxYbBg',
-      source: VideoBlockSource.youTube,
-      startAt: 2738
-    }
-  ]
+export const VideoYoutubeDefault = {
+  ...Template,
+  args: {
+    ...Default.args,
+    coverBlockId: video.id,
+    children: [
+      ...content,
+      {
+        ...video,
+        video: null,
+        videoId: '5I69DCxYbBg',
+        source: VideoBlockSource.youTube,
+        startAt: 2738
+      }
+    ]
+  }
 }
 
-// Expanded - child video block displays fullscreen simulating video only card
-export const VideoContent = Template.bind({})
-VideoContent.args = {
-  ...Default.args,
-  children: [{ ...video, autoplay: false, parentOrder: 0 }]
+// Child video block displays fullscreen simulating video only card
+export const ExpandedWithVideo = {
+  ...Template,
+  args: {
+    ...Default.args,
+    children: [...content, { ...video, autoplay: false, parentOrder: 0 }]
+  }
 }
 
-export default Demo as Meta
+// Child video block displays fullscreen simulating video only card
+export const ContainedWithVideo = {
+  ...Template,
+  args: {
+    ...Default.args,
+    coverBlockId: 'backgroundVideo',
+    children: [
+      ...content,
+      { ...video, autoplay: false, parentOrder: 0 },
+      {
+        ...video,
+        id: 'backgroundVideo',
+        video: null,
+        videoId: '5I69DCxYbBg',
+        source: VideoBlockSource.youTube,
+        startAt: 2738
+      }
+    ]
+  }
+}
+
+export default Demo

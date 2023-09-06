@@ -1,10 +1,22 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
+
 import { USER_JOURNEY_PROMOTE } from './PromoteUser'
+
 import { PromoteUser } from '.'
 
 describe('PromoteUser', () => {
+  jest.mock('react-i18next', () => ({
+    __esModule: true,
+    useTranslation: () => {
+      return {
+        t: (str: string) => str
+      }
+    }
+  }))
+
   it('should promote user journey', async () => {
     const handleClick = jest.fn()
     const result = jest.fn(() => ({

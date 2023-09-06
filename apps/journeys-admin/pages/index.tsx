@@ -1,4 +1,5 @@
-import { ReactElement, useState } from 'react'
+import { gql } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useAuthUser,
@@ -6,67 +7,77 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/router'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { gql } from '@apollo/client'
-import { useJourneys } from '../src/libs/useJourneys'
-import { UserInviteAcceptAll } from '../__generated__/UserInviteAcceptAll'
-import { JourneyList } from '../src/components/JourneyList'
-import { PageWrapper } from '../src/components/PageWrapper'
-import { createApolloClient } from '../src/libs/apolloClient'
-import i18nConfig from '../next-i18next.config'
-import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
-import { useTermsRedirect } from '../src/libs/useTermsRedirect/useTermsRedirect'
 
-export const ACCEPT_USER_INVITE = gql`
-  mutation UserInviteAcceptAll {
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
+import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
+import {
+  GetOnboardingJourneys,
+  GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
+} from '../__generated__/GetOnboardingJourneys'
+import { JourneyList } from '../src/components/JourneyList'
+import { PageWrapper } from '../src/components/NewPageWrapper'
+import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
+import { TeamMenu } from '../src/components/Team/TeamMenu'
+import { TeamSelect } from '../src/components/Team/TeamSelect'
+import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+
+export const ACCEPT_ALL_INVITES = gql`
+  mutation AcceptAllInvites {
+    userTeamInviteAcceptAll {
+      id
+    }
     userInviteAcceptAll {
       id
-      acceptedAt
     }
   }
 `
 
-function IndexPage(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-  const journeys = useJourneys()
-  const AuthUser = useAuthUser()
-  const router = useRouter()
-  const [listEvent, setListEvent] = useState('')
-
-  const activeTab = router.query.tab ?? 'active'
-  const pageTitle =
-    activeTab === 'active'
-      ? t('Active Journeys')
-      : activeTab === 'archived'
-      ? t('Archived Journeys')
-      : t('Trashed Journeys')
-
-  const handleClick = (event: string): void => {
-    setListEvent(event)
-    // remove event after component lifecycle
-    setTimeout(() => {
-      setListEvent('')
-    }, 1000)
+export const GET_ONBOARDING_JOURNEYS = gql`
+  query GetOnboardingJourneys($where: JourneysFilter) {
+    onboardingJourneys: journeys(where: $where) {
+      id
+      title
+      description
+      template
+      primaryImageBlock {
+        src
+      }
+    }
   }
-  useTermsRedirect()
+`
+
+interface IndexPageProps {
+  onboardingJourneys: OnboardingJourneys[]
+}
+
+function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const AuthUser = useAuthUser()
+  const { teams } = useFlags()
+  const router = useRouter()
 
   return (
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper
-        title={pageTitle}
+        title={
+          teams ? (
+            <TeamSelect onboarding={router.query.onboarding === 'true'} />
+          ) : (
+            t('Journeys')
+          )
+        }
         authUser={AuthUser}
-        menu={<JourneyListMenu router={router} onClick={handleClick} />}
+        menu={teams && <TeamMenu />}
+        sidePanelChildren={
+          <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+        }
+        sidePanelTitle={t('Create a New Journey')}
       >
-        <JourneyList
-          journeys={journeys}
-          router={router}
-          event={listEvent}
-          authUser={AuthUser}
-        />
+        <JourneyList authUser={AuthUser} />
       </PageWrapper>
     </>
   )
@@ -75,35 +86,44 @@ function IndexPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  if (AuthUser == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const token = await AuthUser.getIdToken()
-  const apolloClient = createApolloClient(token != null ? token : '')
+  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
 
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
+  if (redirect != null) return { redirect }
+
+  await apolloClient.mutate<AcceptAllInvites>({
+    mutation: ACCEPT_ALL_INVITES
+  })
+
+  const { data } = await apolloClient.query<GetOnboardingJourneys>({
+    query: GET_ONBOARDING_JOURNEYS,
+    variables: {
+      where: {
+        ids: [
+          '014c7add-288b-4f84-ac85-ccefef7a07d3',
+          'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+          'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+          '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+          '13317d05-a805-4b3c-b362-9018971d9b57'
+        ]
+      }
+    }
   })
 
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      onboardingJourneys: data?.onboardingJourneys,
+      ...translations
     }
   }
 })
 
-export default withAuthUser({
+export default withAuthUser<IndexPageProps>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(IndexPage)

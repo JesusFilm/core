@@ -1,17 +1,20 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
+  ChatPlatform,
   IconName,
   IconSize,
   ThemeMode,
@@ -19,9 +22,11 @@ import {
   TypographyVariant,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { Canvas } from '.'
 
-const CanvasStory = {
+const CanvasStory: Meta<typeof Canvas> = {
   ...journeysAdminConfig,
   component: Canvas,
   title: 'Journeys-Admin/Editor/Canvas',
@@ -586,59 +591,96 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = ({ ...args }) => {
-  return (
-    <MockedProvider>
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journeyId',
-            themeMode: ThemeMode.light,
-            themeName: ThemeName.base,
-            ...args
-          } as unknown as Journey,
-          admin: true
-        }}
-      >
-        <EditorProvider initialState={{ steps }}>
-          <Canvas />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
-}
+type Story = StoryObj<
+  ComponentProps<typeof Canvas> & {
+    journey: Partial<Journey>
+    state: Partial<EditorState>
+  }
+>
 
-export const Default = Template.bind({})
-Default.args = {
-  language: {
-    __typename: 'Language',
-    id: '529',
-    bcp47: 'en',
-    iso3: 'eng',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'English',
-        primary: true
+const Template: Story = {
+  render: ({ journey, state }) => {
+    return (
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              seoTitle: 'my journey',
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: 'English',
+                    primary: true
+                  }
+                ]
+              },
+              ...journey
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ steps, ...state }}>
+            <Canvas />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+  }
+}
+export const Default = { ...Template }
+
+export const RTL = {
+  ...Template,
+  args: {
+    journey: {
+      language: {
+        __typename: 'Language',
+        id: '529',
+        bcp47: 'ar',
+        name: [
+          {
+            __typename: 'Translation',
+            value: 'Arabic',
+            primary: true
+          }
+        ]
       }
-    ]
+    }
   }
 }
 
-export const RTL = Template.bind({})
-RTL.args = {
-  language: {
-    __typename: 'Language',
-    id: '529',
-    bcp47: 'ar',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'Arabic',
-        primary: true
-      }
-    ]
+export const FooterEdit = {
+  ...Template,
+  args: {
+    state: {
+      selectedBlock: {},
+      selectedComponent: 'Footer'
+    },
+    journey: {
+      chatButtons: [
+        {
+          __typename: 'ChatButton',
+          id: '1',
+          link: 'https://m.me/',
+          platform: ChatPlatform.tikTok
+        },
+        {
+          __typename: 'ChatButton',
+          id: '1',
+          link: 'https://m.me/',
+          platform: ChatPlatform.snapchat
+        }
+      ]
+    }
   }
 }
 
-export default CanvasStory as Meta
+export default CanvasStory

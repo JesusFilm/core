@@ -1,107 +1,113 @@
-import { BaseService } from '@core/nest/database/BaseService'
 import { Injectable } from '@nestjs/common'
-import { aql } from 'arangojs'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
-import { GeneratedAqlQuery } from 'arangojs/aql'
-import { forEach } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
-import {
-  VisitorsConnection,
-  MessagePlatform
-} from '../../__generated__/graphql'
+
+import { JourneyVisitor, Prisma, Visitor } from '.prisma/api-journeys-client'
+
+import { PageInfo } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
 
 interface ListParams {
   after?: string | null
   first: number
-  filter: {
-    teamId: string
-  }
+  filter: Prisma.VisitorWhereInput
   sortOrder?: 'ASC' | 'DESC'
 }
 
-export interface VisitorRecord {
-  id: string
-  teamId: string
-  userId: string
-  createdAt: string
-  userAgent?: string
-  messagePlatform?: MessagePlatform
-  name?: string
-  email?: string
+export interface VisitorsConnection {
+  edges: Array<{
+    node: Visitor
+    cursor: string
+  }>
+  pageInfo: PageInfo
 }
 
 @Injectable()
-export class VisitorService extends BaseService<VisitorRecord> {
-  collection = this.db.collection<VisitorRecord>('visitors')
+export class VisitorService {
+  constructor(private readonly prismaService: PrismaService) {}
 
-  @KeyAsId()
   async getList({
     after,
     first,
     filter
   }: ListParams): Promise<VisitorsConnection> {
-    const filters: GeneratedAqlQuery[] = []
-    if (after != null) filters.push(aql`FILTER item.createdAt > ${after}`)
-
-    forEach(filter, (value, key) => {
-      if (value !== undefined) filters.push(aql`FILTER item.${key} == ${value}`)
+    const result = await this.prismaService.visitor.findMany({
+      where: { teamId: filter.teamId },
+      cursor: after != null ? { id: after } : undefined,
+      orderBy: { createdAt: 'desc' },
+      skip: after == null ? 0 : 1,
+      take: first + 1
     })
 
-    const result = await this.db.query(aql`
-    LET $edges_plus_one = (
-      FOR item IN visitors
-        ${aql.join(filters)}
-        SORT item.createdAt DESC
-        LIMIT ${first} + 1
-        RETURN { cursor: item.createdAt, node: MERGE({ id: item._key }, item) }
-    )
-    LET $edges = SLICE($edges_plus_one, 0, ${first})
-    RETURN {
-      edges: $edges,
+    const sendResult = result.length > first ? result.slice(0, -1) : result
+    return {
+      edges: sendResult.map((visitor) => ({
+        node: visitor,
+        cursor: visitor.id
+      })),
       pageInfo: {
-        hasNextPage: LENGTH($edges_plus_one) == ${first} + 1,
-        startCursor: LENGTH($edges) > 0 ? FIRST($edges).cursor : null,
-        endCursor: LENGTH($edges) > 0 ? LAST($edges).cursor : null
+        hasNextPage: result.length > first,
+        startCursor: result.length > 0 ? result[0].id : null,
+        endCursor:
+          result.length > 0 ? sendResult[sendResult.length - 1].id : null
       }
     }
-    `)
-    return await result.next()
   }
 
-  @KeyAsId()
   async getByUserIdAndJourneyId(
     userId: string,
     journeyId: string
-  ): Promise<VisitorRecord> {
-    let visitor = await (
-      await this.db.query(aql`
-    FOR v in visitors
-      FILTER v.userId == ${userId}
-      FOR j in journeys
-        FILTER j._key == ${journeyId} AND j.teamId == v.teamId
-        LIMIT 1
-        RETURN v
-  `)
-    ).next()
+  ): Promise<{
+    visitor: Visitor
+    journeyVisitor: JourneyVisitor
+  }> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: {
+        id: journeyId
+      }
+    })
+
+    if (journey == null) throw new Error('Journey not found')
+
+    let visitor = await this.prismaService.visitor.findFirst({
+      where: { userId, teamId: journey.teamId }
+    })
 
     if (visitor == null) {
-      const journey: { teamId: string } = await (
-        await this.db.query(aql`
-        FOR j in journeys
-          FILTER j._key == ${journeyId}
-          LIMIT 1
-          RETURN j
-      `)
-      ).next()
-
-      visitor = await this.collection.save({
-        id: uuidv4(),
-        teamId: journey.teamId,
-        userId,
-        createdAt: new Date().toISOString()
+      const id = uuidv4()
+      const createdAt = new Date()
+      visitor = await this.prismaService.visitor.create({
+        data: {
+          id,
+          teamId: journey.teamId,
+          userId,
+          createdAt
+        }
+      })
+    }
+    let journeyVisitor = await this.prismaService.journeyVisitor.findUnique({
+      where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } }
+    })
+    if (journeyVisitor == null) {
+      journeyVisitor = await this.prismaService.journeyVisitor.create({
+        data: {
+          journeyId,
+          visitorId: visitor.id
+        }
       })
     }
 
-    return visitor
+    return { visitor, journeyVisitor }
+  }
+
+  async update(id: string, data: Partial<Visitor>): Promise<Visitor> {
+    return await this.prismaService.visitor.update({
+      where: { id },
+      data: {
+        ...data,
+        createdAt:
+          data.createdAt != null ? new Date(data.createdAt) : undefined,
+        userAgent: data.userAgent ?? undefined
+      }
+    })
   }
 }

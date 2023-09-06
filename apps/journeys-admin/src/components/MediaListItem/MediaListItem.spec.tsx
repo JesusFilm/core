@@ -1,4 +1,5 @@
-import { render, fireEvent } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
+
 import { MediaListItem } from './MediaListItem'
 
 describe('MediaListItem', () => {
@@ -7,7 +8,6 @@ describe('MediaListItem', () => {
   it('should render content', async () => {
     const { getByRole } = render(
       <MediaListItem
-        id="mediaListItemId"
         image="https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg"
         title="Heading"
         description="Description"
@@ -25,7 +25,6 @@ describe('MediaListItem', () => {
   it('should call onClick on button click', () => {
     const { getByRole } = render(
       <MediaListItem
-        id="mediaListItemId"
         image="https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg"
         title="Heading"
         description="Description"
@@ -40,7 +39,6 @@ describe('MediaListItem', () => {
   it('should hide image and text if loading', () => {
     const { getByRole, getByTestId } = render(
       <MediaListItem
-        id="mediaListItemId"
         image="https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg"
         title="Heading"
         description="Description"

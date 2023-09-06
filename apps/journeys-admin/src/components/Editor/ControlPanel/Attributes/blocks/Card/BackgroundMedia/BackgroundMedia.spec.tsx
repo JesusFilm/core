@@ -1,24 +1,26 @@
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourney'
-import { ThemeProvider } from '../../../../../../ThemeProvider'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '../../../../../../ThemeProvider'
+
 import { BackgroundMedia } from './BackgroundMedia'
 
 const journey: Journey = {
@@ -50,7 +52,10 @@ const journey: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  chatButtons: [],
+  host: null,
+  team: null
 }
 
 describe('BackgroundMedia', () => {
@@ -70,7 +75,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -85,7 +90,7 @@ describe('BackgroundMedia', () => {
     ).toBeTruthy()
   })
 
-  it('shows Video selected ', () => {
+  it('shows Video selected', () => {
     const videoBlock: TreeBlock<VideoBlock> = {
       id: 'video1.id',
       __typename: 'VideoBlock',
@@ -140,7 +145,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -192,7 +197,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: step }}>
               <SnackbarProvider>
                 <BackgroundMedia />

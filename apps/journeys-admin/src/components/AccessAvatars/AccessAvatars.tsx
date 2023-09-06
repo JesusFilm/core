@@ -1,15 +1,17 @@
-import { ReactElement, useState } from 'react'
 import MuiAvatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
-import Box from '@mui/material/Box'
 import Badge from '@mui/material/Badge'
-import { noop } from 'lodash'
+import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
-import { AccessDialog } from '../AccessDialog'
-import { GetJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneys'
-import { Avatar } from '../Avatar'
+import noop from 'lodash/noop'
+import { ReactElement, useState } from 'react'
+
+import { GetAdminJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { AccessDialog } from '../AccessDialog'
+import { Avatar } from '../Avatar'
+
 import { ManageAccessAvatar } from './ManageAccessAvatar/ManageAccessAvatar'
 
 export interface AccessAvatarsProps {
@@ -69,6 +71,16 @@ interface Props {
   showManageButton: boolean
 }
 
+const sortByOwner = (values: UserJourney[] = []): UserJourney[] => {
+  const ownerJourneys = values?.filter(
+    (userJourney) => userJourney.role === UserJourneyRole.owner
+  )
+  const remainingJourneys = values?.filter(
+    (userJourney) => userJourney.role !== UserJourneyRole.owner
+  )
+  return ownerJourneys.concat(remainingJourneys)
+}
+
 const withRenderLogic = ({
   size,
   max,
@@ -98,6 +110,7 @@ const withRenderLogic = ({
     const loading = values == null
     let invisible = true
     const maxIndex = max <= 2 ? 0 : max - 2
+    const users = sortByOwner(values)
 
     const children = loading
       ? [0, 1, 2].map((i) => {
@@ -113,7 +126,7 @@ const withRenderLogic = ({
             </MuiAvatar>
           )
         })
-      : values?.map(({ role, user }, index) => {
+      : users?.map(({ role, user }, index) => {
           if (
             index > maxIndex &&
             role === UserJourneyRole.inviteRequested &&

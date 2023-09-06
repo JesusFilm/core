@@ -1,32 +1,51 @@
 import { join } from 'path'
-import { Module } from '@nestjs/common'
+
+import responseCachePlugin from '@apollo/server-plugin-response-cache'
 import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
+import { CacheModule } from '@nestjs/cache-manager'
+import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
-import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
+import { LoggerModule } from 'nestjs-pino'
+
+import TranslationModule from '@core/nest/common/TranslationModule'
+import { NestHealthModule } from '@core/nest/health'
+
 import { VideoModule } from './modules/video/video.module'
 import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
-import { TranslationModule } from './modules/translation/translation.module'
 
 @Module({
   imports: [
+    NestHealthModule,
     TranslationModule,
     VideoModule,
     VideoVariantModule,
+    CacheModule.register(),
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
-      typePaths: [
-        join(process.cwd(), 'apps/api-videos/src/app/**/*.graphql'),
-        join(process.cwd(), 'assets/**/*.graphql')
-      ],
-      cors: true,
-      context: ({ req }) => ({ headers: req.headers })
+      typePaths:
+        process.env.NODE_ENV !== 'production'
+          ? [
+              join(process.cwd(), 'apps/api-videos/src/app/**/*.graphql'),
+              join(
+                process.cwd(),
+                'libs/nest/common/src/lib/TranslationModule/translation.graphql'
+              )
+            ]
+          : [join(process.cwd(), 'assets/**/*.graphql')],
+      context: ({ req }) => ({ headers: req.headers }),
+      cache: 'bounded',
+      plugins: [responseCachePlugin()]
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        redact: ['req.headers.authorization'],
+        autoLogging: {
+          ignore: (req) => req.url === '/.well-known/apollo/server-health'
+        },
         transport:
           process.env.NODE_ENV !== 'production'
             ? {

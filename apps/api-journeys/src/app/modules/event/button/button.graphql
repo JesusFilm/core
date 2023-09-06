@@ -1,3 +1,11 @@
+enum ButtonAction {
+  NavigateAction
+  NavigateToBlockAction
+  NavigateToJourneyAction
+  LinkAction
+  EmailAction
+}
+
 input ButtonClickEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -16,6 +24,18 @@ input ButtonClickEventCreateInput {
   label of the button
   """
   value: String
+  """
+  Action type of the button when it was clicked
+  """
+  action: ButtonAction
+  """
+  The label for each corresponding action, mapping below:
+  NavigateAction - undefined
+  NavigateToBlockAction - StepName (generated in client) of the StepBlock
+  NavigateToJourneyAction - slug of the journey
+  LinkAction - url of the link
+  """
+  actionValue: String
 }
 
 type ButtonClickEvent implements Event {
@@ -36,6 +56,18 @@ type ButtonClickEvent implements Event {
   label of the button
   """
   value: String
+  """
+  Action type of the button when it was clicked
+  """
+  action: ButtonAction
+  """
+  The label for each corresponding action, mapping below:
+  NavigateAction - null
+  NavigateToBlockAction - StepName (generated in client) of the StepBlock
+  NavigateToJourneyAction - slug of the journey
+  LinkAction - url of the link
+  """
+  actionValue: String
 }
 
 enum MessagePlatform {
@@ -49,6 +81,7 @@ enum MessagePlatform {
   skype
   line
   tikTok
+  custom
 }
 
 input ChatOpenEventCreateInput {

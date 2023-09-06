@@ -1,13 +1,14 @@
-import { ReactElement, ReactNode } from 'react'
+import Close from '@mui/icons-material/Close'
 import AppBar from '@mui/material/AppBar'
 import MuiDrawer from '@mui/material/Drawer'
-import Paper from '@mui/material/Paper'
 import IconButton from '@mui/material/IconButton'
+import Paper from '@mui/material/Paper'
+import { Theme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Theme } from '@mui/material/styles'
-import Close from '@mui/icons-material/Close'
+import { ReactElement, ReactNode } from 'react'
+
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 export const DRAWER_WIDTH = 328
@@ -80,7 +81,8 @@ export function Drawer(): ReactElement {
         width: '328px',
         borderLeft: 1,
         borderColor: 'divider',
-        borderRadius: 0
+        borderRadius: 0,
+        overflow: 'hidden'
       }}
     >
       <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>

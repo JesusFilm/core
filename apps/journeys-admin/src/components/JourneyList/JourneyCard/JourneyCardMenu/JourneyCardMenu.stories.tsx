@@ -1,89 +1,106 @@
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { ThemeProvider } from '../../../ThemeProvider'
-import { JourneyCardMenu, JourneyCardMenuProps } from './JourneyCardMenu'
 
-const JoruneyCardMenuDemo = {
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../libs/storybook'
+import { TeamProvider } from '../../../Team/TeamProvider'
+import { ThemeProvider } from '../../../ThemeProvider'
+
+import { JourneyCardMenu } from './JourneyCardMenu'
+
+const JoruneyCardMenuDemo: Meta<typeof JourneyCardMenu> = {
   ...journeysAdminConfig,
   component: JourneyCardMenu,
   title: 'Journeys-Admin/JourneyList/JourneyCard/Menu'
 }
 
-const StoryTemplate: Story<JourneyCardMenuProps> = ({ ...args }) => (
-  <MockedProvider>
-    <SnackbarProvider>
-      <ThemeProvider>
-        <JourneyCardMenu {...args} />
-      </ThemeProvider>
-    </SnackbarProvider>
-  </MockedProvider>
-)
-
-export const Draft = StoryTemplate.bind({})
-Draft.args = {
-  status: JourneyStatus.draft,
-  slug: 'draft-journey',
-  published: false,
-  journeyId: 'journey-id'
-}
-Draft.play = async () => {
-  const menuButton = screen.getByRole('button')
-  userEvent.click(menuButton)
-  await waitFor(async () => {
-    await userEvent.hover(screen.getByRole('menu'))
-  })
+const StoryTemplate: StoryObj<typeof JourneyCardMenu> = {
+  render: ({ ...args }) => (
+    <MockedProvider>
+      <SnackbarProvider>
+        <TeamProvider>
+          <ThemeProvider>
+            <JourneyCardMenu {...args} />
+          </ThemeProvider>
+        </TeamProvider>
+      </SnackbarProvider>
+    </MockedProvider>
+  )
 }
 
-export const Published = StoryTemplate.bind({})
-Published.args = {
-  status: JourneyStatus.published,
-  slug: 'published-journey',
-  published: true,
-  journeyId: 'journey-id'
-}
-Published.play = async () => {
-  const menuButton = screen.getByRole('button')
-  userEvent.click(menuButton)
-  await waitFor(async () => {
-    await userEvent.hover(screen.getByRole('menu'))
-  })
-}
-
-export const Archived = StoryTemplate.bind({})
-Archived.args = {
-  status: JourneyStatus.archived,
-  slug: 'archived-journey'
-}
-Archived.play = () => {
-  const menuButton = screen.getByTestId('MoreVertIcon')
-  userEvent.click(menuButton)
+export const Draft = {
+  ...StoryTemplate,
+  args: {
+    status: JourneyStatus.draft,
+    slug: 'draft-journey',
+    published: false,
+    journeyId: 'journey-id'
+  },
+  play: async () => {
+    const menuButton = screen.getByRole('button')
+    await userEvent.click(menuButton)
+    await waitFor(async () => {
+      await userEvent.hover(screen.getByRole('menu'))
+    })
+  }
 }
 
-export const Trashed = StoryTemplate.bind({})
-Trashed.args = {
-  status: JourneyStatus.trashed,
-  slug: 'trashed-journey'
-}
-Trashed.play = () => {
-  const menuButton = screen.getByTestId('MoreVertIcon')
-  userEvent.click(menuButton)
-}
-
-export const Template = StoryTemplate.bind({})
-Template.args = {
-  status: JourneyStatus.published,
-  slug: 'template-journey',
-  published: true,
-  journeyId: 'template-id',
-  template: true
-}
-Template.play = () => {
-  const menuButton = screen.getByTestId('MoreVertIcon')
-  userEvent.click(menuButton)
+export const Published = {
+  ...StoryTemplate,
+  args: {
+    status: JourneyStatus.published,
+    slug: 'published-journey',
+    published: true,
+    journeyId: 'journey-id'
+  },
+  play: async () => {
+    const menuButton = screen.getByRole('button')
+    await userEvent.click(menuButton)
+    await waitFor(async () => {
+      await userEvent.hover(screen.getByRole('menu'))
+    })
+  }
 }
 
-export default JoruneyCardMenuDemo as Meta
+export const Archived = {
+  ...StoryTemplate,
+  args: {
+    status: JourneyStatus.archived,
+    slug: 'archived-journey'
+  },
+  play: async () => {
+    const menuButton = screen.getByTestId('MoreVertIcon')
+    await userEvent.click(menuButton)
+  }
+}
+
+export const Trashed = {
+  ...StoryTemplate,
+  args: {
+    status: JourneyStatus.trashed,
+    slug: 'trashed-journey'
+  },
+  play: async () => {
+    const menuButton = screen.getByTestId('MoreVertIcon')
+    await userEvent.click(menuButton)
+  }
+}
+
+export const Template = {
+  ...StoryTemplate,
+  args: {
+    status: JourneyStatus.published,
+    slug: 'template-journey',
+    published: true,
+    journeyId: 'template-id',
+    template: true
+  },
+  play: async () => {
+    const menuButton = screen.getByTestId('MoreVertIcon')
+    await userEvent.click(menuButton)
+  }
+}
+
+export default JoruneyCardMenuDemo

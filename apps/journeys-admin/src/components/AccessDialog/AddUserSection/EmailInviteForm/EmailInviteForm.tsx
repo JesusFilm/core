@@ -1,13 +1,13 @@
-import { ReactElement } from 'react'
-import TextField from '@mui/material/TextField'
 import { gql, useMutation } from '@apollo/client'
-import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
-import { object, string } from 'yup'
-import { useTranslation } from 'react-i18next'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import TextField from '@mui/material/TextField'
+import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+import { object, string } from 'yup'
+
 import { UserInviteCreate } from '../../../../../__generated__/UserInviteCreate'
 
 export const CREATE_USER_INVITE = gql`
@@ -23,21 +23,24 @@ export const CREATE_USER_INVITE = gql`
 
 interface EmailInviteFormProps {
   users: string[]
+  journeyId: string
 }
 
-export function EmailInviteForm({ users }: EmailInviteFormProps): ReactElement {
+export function EmailInviteForm({
+  users,
+  journeyId
+}: EmailInviteFormProps): ReactElement {
   const [userInviteCreate] = useMutation<UserInviteCreate>(CREATE_USER_INVITE)
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
 
   const handleAddUser = async (
     values: FormikValues,
     actions: FormikHelpers<{ email: string }>
   ): Promise<void> => {
-    if (journey != null) {
+    if (journeyId != null) {
       await userInviteCreate({
         variables: {
-          journeyId: journey.id,
+          journeyId,
           input: {
             email: values.email
           }
@@ -79,11 +82,13 @@ export function EmailInviteForm({ users }: EmailInviteFormProps): ReactElement {
     }
   }
 
+  const usersToLowerCase = users.map((user) => user.toLowerCase())
   const validationSchema = object().shape({
     email: string()
+      .lowercase()
       .email(t('Please enter a valid email address'))
       .required(t('Required'))
-      .notOneOf(users, t('This email is already on the list'))
+      .notOneOf(usersToLowerCase, t('This email is already on the list'))
   })
 
   return (
@@ -93,22 +98,21 @@ export function EmailInviteForm({ users }: EmailInviteFormProps): ReactElement {
       validationSchema={validationSchema}
     >
       {({ values, handleChange, handleBlur, errors, touched }) => (
-        <Form noValidate>
+        <Form noValidate autoComplete="off">
           <TextField
-            id="email"
             label={t('Email')}
             name="email"
-            type="email"
             fullWidth
             variant="filled"
             value={values.email}
+            autoComplete="off"
             onChange={handleChange}
             onBlur={handleBlur}
             error={errors.email != null && touched.email != null}
             helperText={
               touched?.email != null && errors.email != null
-                ? errors.email
-                : t("Users invited by email don't require approval")
+                ? (errors.email as string)
+                : t('No email notifications. New users get access instantly.')
             }
             InputProps={{
               endAdornment: (
@@ -124,7 +128,7 @@ export function EmailInviteForm({ users }: EmailInviteFormProps): ReactElement {
                         color:
                           values.email !== '' && errors.email == null
                             ? 'primary.main'
-                            : null
+                            : 'secondary.light'
                       }}
                     />
                   </IconButton>

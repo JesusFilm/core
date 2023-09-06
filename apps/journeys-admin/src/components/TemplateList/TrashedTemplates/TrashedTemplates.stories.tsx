@@ -1,21 +1,25 @@
-import { Story, Meta } from '@storybook/react'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { Decorator, Meta, StoryObj } from '@storybook/react'
 import { formatISO } from 'date-fns'
-import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
+import { ComponentProps } from 'react'
+
+import { GetAdminJourneys } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
   defaultTemplate,
-  oldTemplate,
   descriptiveTemplate,
+  oldTemplate,
   publishedTemplate
 } from '../../TemplateLibrary/TemplateListData'
 import { ThemeProvider } from '../../ThemeProvider'
-import { GET_TRASHED_PUBLISHER_TEMPLATES } from './TrashedTemplates'
+
 import { TrashedTemplates } from '.'
 
-const TrashedTemplatesStory = {
+const TrashedTemplatesStory: Meta<typeof TrashedTemplates> = {
   component: TrashedTemplates,
   title: 'Journeys-Admin/TemplatesList/TrashedTemplates',
   parameters: {
@@ -23,7 +27,7 @@ const TrashedTemplatesStory = {
     layout: 'fullscreen'
   },
   decorators: [
-    (Story: Story) => (
+    (Story: Parameters<Decorator>[0]) => (
       <SnackbarProvider>
         <ThemeProvider>
           <div style={{ height: '900px' }}>
@@ -56,82 +60,93 @@ const publishedDeletedTemplate = {
   status: JourneyStatus.trashed
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider mocks={args.mocks}>
-    <TrashedTemplates {...args.props} />
-  </MockedProvider>
-)
+const Template: StoryObj<
+  ComponentProps<typeof TrashedTemplates> & {
+    props: JourneyListProps
+    mocks: [MockedResponse<GetAdminJourneys>]
+  }
+> = {
+  render: ({ ...args }) => (
+    <MockedProvider mocks={args.mocks}>
+      <TrashedTemplates {...args.props} />
+    </MockedProvider>
+  )
+}
 
-export const Default = Template.bind({})
-Default.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
-  mocks: [
-    {
-      request: {
-        query: GET_TRASHED_PUBLISHER_TEMPLATES
-      },
-      result: {
-        data: {
-          journeys: [
-            defaultDeletedTemplate,
-            oldDeletedTemplate,
-            descriptiveDeletedTemplate,
-            publishedDeletedTemplate
-          ]
+export const Default = {
+  ...Template,
+  args: {
+    mocks: [
+      {
+        request: {
+          query: GET_ADMIN_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.trashed],
+            template: true
+          }
+        },
+        result: {
+          data: {
+            journeys: [
+              defaultDeletedTemplate,
+              oldDeletedTemplate,
+              descriptiveDeletedTemplate,
+              publishedDeletedTemplate
+            ]
+          }
         }
       }
-    }
-  ]
+    ]
+  }
 }
 
-export const NoTemplates = Template.bind({})
-NoTemplates.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
-  mocks: [
-    {
-      request: {
-        query: GET_TRASHED_PUBLISHER_TEMPLATES
-      },
-      result: {
-        data: {
-          journeys: []
+export const NoTemplates = {
+  ...Template,
+  args: {
+    mocks: [
+      {
+        request: {
+          query: GET_ADMIN_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.trashed],
+            template: true
+          }
+        },
+        result: {
+          data: {
+            journeys: []
+          }
         }
       }
-    }
-  ]
+    ]
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
-  mocks: []
+export const Loading = {
+  ...Template,
+  args: {
+    mocks: []
+  }
 }
 
-export const RestoreDialog = Template.bind({})
-RestoreDialog.args = {
-  props: {
-    onLoad: noop,
-    event: 'restoreAllTrashed'
-  },
-  mocks: []
+export const RestoreDialog = {
+  ...Template,
+  args: {
+    props: {
+      event: 'restoreAllTrashed'
+    },
+    mocks: []
+  }
 }
 
-export const DeleteDialog = Template.bind({})
-DeleteDialog.args = {
-  props: {
-    onLoad: noop,
-    event: 'deleteAllTrashed'
-  },
-  mocks: []
+export const DeleteDialog = {
+  ...Template,
+  args: {
+    props: {
+      event: 'deleteAllTrashed'
+    },
+    mocks: []
+  }
 }
 
-export default TrashedTemplatesStory as Meta
+export default TrashedTemplatesStory

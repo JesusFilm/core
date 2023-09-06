@@ -1,22 +1,25 @@
-import { ReactElement } from 'react'
+import { gql, useMutation } from '@apollo/client'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import IconButton from '@mui/material/IconButton'
+import last from 'lodash/last'
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useSnackbar } from 'notistack'
-import { gql, useMutation } from '@apollo/client'
-import last from 'lodash/last'
-import { MenuItem } from '../MenuItem'
+
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
 import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
 } from '../../../__generated__/BlockFields'
+import { MenuItem } from '../MenuItem'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
+  disabled?: boolean
 }
 
 export const BLOCK_DUPLICATE = gql`
@@ -27,7 +30,10 @@ export const BLOCK_DUPLICATE = gql`
   }
 `
 
-export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
+export function DuplicateBlock({
+  variant,
+  disabled = false
+}: DuplicateBlockProps): ReactElement {
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
 
   const {
@@ -38,6 +44,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
   const { journey } = useJourney()
   const blockLabel =
     selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const disableAction = selectedBlock == null || disabled
 
   const handleDuplicateBlock = async (): Promise<void> => {
     if (selectedBlock != null && journey != null) {
@@ -120,6 +127,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         <IconButton
           id={`duplicate-${blockLabel}-actions`}
           aria-label={`Duplicate ${blockLabel} Actions`}
+          disabled={disableAction}
           onClick={handleDuplicateBlock}
         >
           <ContentCopyRounded />
@@ -128,7 +136,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         <MenuItem
           label={`Duplicate ${blockLabel}`}
           icon={<ContentCopyRounded color="inherit" />}
-          disabled={selectedBlock == null}
+          disabled={disableAction}
           onClick={handleDuplicateBlock}
         />
       )}

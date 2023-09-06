@@ -1,22 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
-import { EventService } from '../event.service'
+
 import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
+import { PrismaService } from '../../../lib/prisma.service'
 import { VisitorService } from '../../visitor/visitor.service'
-import { JourneyService } from '../../journey/journey.service'
+import { EventService } from '../event.service'
+
 import { JourneyViewEventResolver } from './journey.resolver'
 
 describe('JourneyViewEventResolver', () => {
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2021-02-18'))
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
-
-  let resolver: JourneyViewEventResolver, vService: VisitorService
+  let resolver: JourneyViewEventResolver, prismaService: PrismaService
 
   const eventService = {
     provide: EventService,
@@ -31,22 +25,9 @@ describe('JourneyViewEventResolver', () => {
       getByUserIdAndJourneyId: jest.fn((userId) => {
         switch (userId) {
           case visitor.userId:
-            return visitorWithId
+            return { visitor: visitorWithId }
           case newVisitor.userId:
-            return newVisitorWithId
-        }
-      }),
-      update: jest.fn(() => '')
-    })
-  }
-
-  const journeyService = {
-    provide: JourneyService,
-    useFactory: () => ({
-      get: jest.fn((journeyId) => {
-        switch (journeyId) {
-          case input.journeyId:
-            return { id: input.journeyId }
+            return { visitor: newVisitorWithId }
         }
       })
     })
@@ -81,11 +62,21 @@ describe('JourneyViewEventResolver', () => {
         JourneyViewEventResolver,
         eventService,
         visitorService,
-        journeyService
+        PrismaService
       ]
     }).compile()
     resolver = module.get<JourneyViewEventResolver>(JourneyViewEventResolver)
-    vService = module.get<VisitorService>(VisitorService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.journey.findUnique = jest
+      .fn()
+      .mockImplementationOnce((req) => {
+        if (req.where.id === input.journeyId) {
+          return { id: input.id }
+        }
+        return null
+      })
+    prismaService.journeyVisitor.upsert = jest.fn().mockResolvedValueOnce(null)
+    prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('JourneyViewEventCreate', () => {
@@ -94,19 +85,21 @@ describe('JourneyViewEventResolver', () => {
         await resolver.journeyViewEventCreate('user.id', userAgent, input)
       ).toEqual({
         ...input,
-        __typename: 'JourneyViewEvent',
-        visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString()
+        typename: 'JourneyViewEvent',
+        visitor: {
+          connect: { id: visitorWithId.id }
+        }
       })
-
-      expect(vService.update).not.toHaveBeenCalled()
     })
 
     it('should update user agent on visitor if visitor does not have a user agent', async () => {
       await resolver.journeyViewEventCreate('newUser.id', userAgent, input)
 
-      expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
-        userAgent
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
+        where: { id: 'newVisitor.id' },
+        data: {
+          userAgent
+        }
       })
     })
 

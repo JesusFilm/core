@@ -1,144 +1,46 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import Typography from '@mui/material/Typography'
 import { MockedProvider } from '@apollo/client/testing'
-import { StoryCard } from '../StoryCard'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import Typography from '@mui/material/Typography'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import {
-  ButtonVariant,
   ButtonColor,
   ButtonSize,
+  ButtonVariant,
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { StoryCard } from '../StoryCard'
+
 import { Button } from '.'
 
-const ButtonDemo = {
+const ButtonDemo: Meta<typeof Button> = {
   ...journeyUiConfig,
   component: Button,
-  title: 'Journeys-Ui/Button'
+  title: 'Journeys-Ui/Button',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
-const Template: Story<
+type Story = StoryObj<
   ComponentProps<typeof Button> & { variants: ButtonVariant[] }
-> = ({ ...args }) => (
-  <MockedProvider>
-    <StoryCard>
-      {args.variants.map((variant, i) => (
-        <Button
-          {...args}
-          id="id"
-          key={i}
-          label={`${variant ?? ''}`}
-          buttonVariant={variant}
-        />
-      ))}
-    </StoryCard>
-  </MockedProvider>
-)
+>
 
-export const Variant = Template.bind({})
-Variant.args = {
-  variants: [ButtonVariant.contained],
-  children: []
-}
-
-const ColorTemplate: Story<
-  ComponentProps<typeof Button> & { variants: ButtonColor[] }
-> = ({ ...args }) => (
-  <MockedProvider>
-    <StoryCard>
-      {args.variants.map((variant, i) => (
-        <Button
-          {...args}
-          id="id"
-          key={i}
-          label={`${variant} ${variant === 'primary' ? '(Default)' : ''}`}
-          buttonColor={variant}
-        />
-      ))}
-    </StoryCard>
-  </MockedProvider>
-)
-
-export const Color = ColorTemplate.bind({})
-Color.args = {
-  variants: [ButtonColor.primary, ButtonColor.secondary, ButtonColor.error],
-  children: []
-}
-
-const SizeTemplate: Story<
-  ComponentProps<typeof Button> & { variants: ButtonSize[] }
-> = ({ ...args }) => (
-  <MockedProvider>
-    <StoryCard>
-      <Typography variant="overline" gutterBottom>
-        Some element above
-      </Typography>
-      {args.variants.map((variant, i) => (
-        <Button
-          {...args}
-          id="id"
-          key={i}
-          label={`${variant ?? ''}`}
-          size={variant}
-        />
-      ))}
-      <Typography variant="body1" gutterBottom>
-        Some element below
-      </Typography>
-    </StoryCard>
-  </MockedProvider>
-)
-
-export const Size = SizeTemplate.bind({})
-Size.args = {
-  variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large],
-  children: []
-}
-
-const IconTemplate: Story<
-  ComponentProps<typeof Button> & { variants: Array<'Start' | 'End'> }
-> = ({ ...args }) => {
-  return (
+const Template: Story = {
+  render: ({ ...args }) => (
     <MockedProvider>
       <StoryCard>
-        {args.variants.map((variant: string, i) => (
+        {args.variants.map((variant, i) => (
           <Button
             {...args}
             id="id"
             key={i}
-            label={`${variant} Icon`}
-            startIconId="start"
-            endIconId="end"
-            // eslint-disable-next-line react/no-children-prop
-            children={
-              variant === 'Start'
-                ? [
-                    {
-                      id: 'start',
-                      __typename: 'IconBlock',
-                      parentBlockId: 'id',
-                      parentOrder: 0,
-                      iconName: IconName.CheckCircleRounded,
-                      iconColor: null,
-                      iconSize: IconSize.md,
-                      children: []
-                    }
-                  ]
-                : [
-                    {
-                      id: 'end',
-                      __typename: 'IconBlock',
-                      parentBlockId: 'id',
-                      parentOrder: 0,
-                      iconName: IconName.CheckCircleRounded,
-                      iconColor: null,
-                      iconSize: IconSize.md,
-                      children: []
-                    }
-                  ]
-            }
+            label={`${variant ?? ''}`}
+            buttonVariant={variant}
           />
         ))}
       </StoryCard>
@@ -146,21 +48,154 @@ const IconTemplate: Story<
   )
 }
 
-export const Icon = IconTemplate.bind({})
-Icon.args = { variants: ['Start', 'End'] }
-
-export const RTL = IconTemplate.bind({})
-RTL.args = { ...Icon.args }
-RTL.parameters = { rtl: true }
-
-// Only added here since Urdu language uses separate typography theme
-export const Urdu = IconTemplate.bind({})
-Urdu.args = { ...RTL.args }
-Urdu.parameters = {
-  rtl: true,
-  locale: 'ur',
-  // Disable until we get i18n translations in SB
-  chromatic: { disableSnapshot: true }
+export const Variant = {
+  ...Template,
+  args: {
+    variants: [ButtonVariant.contained],
+    children: []
+  }
 }
 
-export default ButtonDemo as Meta
+type ColorStory = StoryObj<
+  ComponentProps<typeof Button> & { variants: ButtonColor[] }
+>
+
+const ColorTemplate: ColorStory = {
+  render: ({ ...args }) => (
+    <MockedProvider>
+      <StoryCard>
+        {args.variants.map((variant, i) => (
+          <Button
+            {...args}
+            id="id"
+            key={i}
+            label={`${variant} ${variant === 'primary' ? '(Default)' : ''}`}
+            buttonColor={variant}
+          />
+        ))}
+      </StoryCard>
+    </MockedProvider>
+  )
+}
+
+export const Color = {
+  ...ColorTemplate,
+  args: {
+    variants: [ButtonColor.primary, ButtonColor.secondary, ButtonColor.error],
+    children: []
+  }
+}
+
+type SizeStory = StoryObj<
+  ComponentProps<typeof Button> & { variants: ButtonSize[] }
+>
+
+const SizeTemplate: SizeStory = {
+  render: ({ ...args }) => (
+    <MockedProvider>
+      <StoryCard>
+        <Typography variant="overline" gutterBottom>
+          Some element above
+        </Typography>
+        {args.variants.map((variant, i) => (
+          <Button
+            {...args}
+            id="id"
+            key={i}
+            label={`${variant ?? ''}`}
+            size={variant}
+          />
+        ))}
+        <Typography variant="body1" gutterBottom>
+          Some element below
+        </Typography>
+      </StoryCard>
+    </MockedProvider>
+  )
+}
+
+export const Size = {
+  ...SizeTemplate,
+  args: {
+    variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large],
+    children: []
+  }
+}
+
+type IconStory = StoryObj<
+  ComponentProps<typeof Button> & { variants: Array<'Start' | 'End'> }
+>
+
+const IconTemplate: IconStory = {
+  render: ({ ...args }) => {
+    return (
+      <MockedProvider>
+        <StoryCard>
+          {args.variants.map((variant: string, i) => (
+            <Button
+              {...args}
+              id="id"
+              key={i}
+              label={`${variant} Icon`}
+              startIconId="start"
+              endIconId="end"
+              // eslint-disable-next-line react/no-children-prop
+              children={
+                variant === 'Start'
+                  ? [
+                      {
+                        id: 'start',
+                        __typename: 'IconBlock',
+                        parentBlockId: 'id',
+                        parentOrder: 0,
+                        iconName: IconName.CheckCircleRounded,
+                        iconColor: null,
+                        iconSize: IconSize.md,
+                        children: []
+                      }
+                    ]
+                  : [
+                      {
+                        id: 'end',
+                        __typename: 'IconBlock',
+                        parentBlockId: 'id',
+                        parentOrder: 0,
+                        iconName: IconName.CheckCircleRounded,
+                        iconColor: null,
+                        iconSize: IconSize.md,
+                        children: []
+                      }
+                    ]
+              }
+            />
+          ))}
+        </StoryCard>
+      </MockedProvider>
+    )
+  }
+}
+
+export const Icon = {
+  ...IconTemplate,
+  args: { variants: ['Start', 'End'] }
+}
+
+export const RTL = {
+  ...IconTemplate,
+  args: { ...Icon.args },
+  parameters: { rtl: true }
+}
+
+// Only added here since Urdu language uses separate typography theme
+export const Urdu = {
+  ...IconTemplate,
+  args: { ...RTL.args },
+  parameters: {
+    rtl: true,
+    locale: 'ur',
+    // Disable until we get i18n translations in SB
+    chromatic: { disableSnapshot: true }
+  }
+}
+
+export default ButtonDemo

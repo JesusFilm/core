@@ -1,29 +1,47 @@
-import { ReactElement } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { transformer } from '@core/journeys/ui/transformer'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import { EmbeddedPreview } from '../../src/components/EmbeddedPreview'
-import { createApolloClient } from '../../src/libs/apolloClient'
+import { ReactElement, useMemo } from 'react'
+
+import { TreeBlock } from '@core/journeys/ui/block'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { transformer } from '@core/journeys/ui/transformer'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import { GetJourneySlugs } from '../../__generated__/GetJourneySlugs'
+import { StepFields } from '../../__generated__/StepFields'
 import i18nConfig from '../../next-i18next.config'
+import { EmbeddedPreview } from '../../src/components/EmbeddedPreview'
+import { createApolloClient } from '../../src/libs/apolloClient'
 import { GET_JOURNEY, GET_JOURNEY_SLUGS } from '../[journeySlug]'
 
 interface JourneyPageProps {
   journey: Journey
+  locale: string
+  rtl: boolean
 }
 
-function JourneyPage({ journey }: JourneyPageProps): ReactElement {
+function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
+  const blocks = useMemo(() => {
+    return transformer(journey.blocks ?? [])
+  }, [journey])
+
+  const theme =
+    blocks.length > 0
+      ? getStepTheme(blocks[0] as TreeBlock<StepFields>, journey)
+      : { themeName: journey.themeName, themeMode: journey.themeMode }
   return (
     <>
       <NextSeo
         title={journey.title}
+        nofollow
+        noindex
         description={journey.description ?? undefined}
         openGraph={{
           type: 'website',
@@ -63,11 +81,8 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           background: transparent;
         }
       `}</style>
-      <JourneyProvider value={{ journey }}>
-        <ThemeProvider
-          themeName={journey.themeName}
-          themeMode={journey.themeMode}
-        >
+      <JourneyProvider value={{ journey, variant: 'embed' }}>
+        <ThemeProvider {...theme} rtl={rtl} locale={locale}>
           {journey.blocks != null && (
             <EmbeddedPreview blocks={transformer(journey.blocks)} />
           )}
@@ -81,26 +96,15 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetJourney>({
-    query: GET_JOURNEY,
-    variables: {
-      id: context.params?.journeySlug
-    }
-  })
+  try {
+    const { data } = await apolloClient.query<GetJourney>({
+      query: GET_JOURNEY,
+      variables: {
+        id: context.params?.journeySlug
+      }
+    })
+    const { rtl, locale } = getJourneyRTL(data.journey)
 
-  if (data.journey === null) {
-    return {
-      props: {
-        ...(await serverSideTranslations(
-          context.locale ?? 'en',
-          ['apps-journeys', 'libs-journeys-ui'],
-          i18nConfig
-        ))
-      },
-      notFound: true,
-      revalidate: 60
-    }
-  } else {
     return {
       props: {
         ...(await serverSideTranslations(
@@ -108,10 +112,26 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
           ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),
-        journey: data.journey
+        journey: data.journey,
+        locale,
+        rtl
       },
       revalidate: 60
     }
+  } catch (e) {
+    if (e.message === 'journey not found') {
+      return {
+        props: {
+          ...(await serverSideTranslations(
+            context.locale ?? 'en',
+            ['apps-journeys', 'libs-journeys-ui'],
+            i18nConfig
+          ))
+        },
+        notFound: true
+      }
+    }
+    throw e
   }
 }
 

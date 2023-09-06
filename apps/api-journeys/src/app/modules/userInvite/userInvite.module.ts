@@ -1,19 +1,16 @@
 import { Global, Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database/DatabaseModule'
-import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
-import { JourneyService } from '../journey/journey.service'
-import { UserInviteService } from './userInvite.service'
+
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { UserInviteResolver } from './userInvite.resolver'
 
 @Global()
 @Module({
-  imports: [DatabaseModule],
-  providers: [
-    UserInviteService,
-    UserInviteResolver,
-    UserJourneyResolver,
-    JourneyService
-  ],
-  exports: [UserInviteService]
+  imports: [CaslAuthModule.register(AppCaslFactory)],
+  providers: [UserInviteResolver, PrismaService],
+  exports: []
 })
 export class UserInviteModule {}

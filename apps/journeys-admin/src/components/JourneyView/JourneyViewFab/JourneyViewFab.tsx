@@ -1,22 +1,16 @@
-import { ReactElement } from 'react'
-import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Fab from '@mui/material/Fab'
-import TagManager from 'react-gtm-module'
-import EditIcon from '@mui/icons-material/Edit'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
+import EditIcon from '@mui/icons-material/Edit'
+import Fab from '@mui/material/Fab'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { ConvertTemplate } from '../../../../__generated__/ConvertTemplate'
+import { ReactElement, useState } from 'react'
+import TagManager from 'react-gtm-module'
 
-export const CONVERT_TEMPLATE = gql`
-  mutation ConvertTemplate($id: ID!) {
-    journeyDuplicate(id: $id) {
-      id
-    }
-  }
-`
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 
 interface JourneyViewFabProps {
   isPublisher?: boolean
@@ -27,37 +21,19 @@ export function JourneyViewFab({
 }: JourneyViewFabProps): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
-  const [ConvertTemplate] = useMutation<ConvertTemplate>(CONVERT_TEMPLATE)
+  const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
 
-  const handleConvertTemplate = async (): Promise<void> => {
-    if (journey == null) return
+  const handleConvertTemplate = async (
+    teamId: string | undefined
+  ): Promise<void> => {
+    if (journey == null || teamId == null) return
 
-    const { data } = await ConvertTemplate({
-      variables: {
-        id: journey.id
-      },
-      update(cache, { data }) {
-        if (data?.journeyDuplicate != null) {
-          cache.modify({
-            fields: {
-              adminJourneys(existingAdminJourneyRefs = []) {
-                const duplicatedJourneyRef = cache.writeFragment({
-                  data: data.journeyDuplicate,
-                  fragment: gql`
-                    fragment DuplicatedJourney on Journey {
-                      id
-                    }
-                  `
-                })
-                return [...existingAdminJourneyRefs, duplicatedJourneyRef]
-              }
-            }
-          })
-        }
-      }
+    const { data } = await journeyDuplicate({
+      variables: { id: journey.id, teamId }
     })
 
-    if (data?.journeyDuplicate != null) {
+    if (data != null) {
       TagManager.dataLayer({
         dataLayer: {
           event: 'template_use',
@@ -94,7 +70,7 @@ export function JourneyViewFab({
           }}
           color="primary"
           disabled={journey == null}
-          onClick={handleConvertTemplate}
+          onClick={() => setDuplicateTeamDialogOpen(true)}
         >
           <CheckRoundedIcon sx={{ mr: 3 }} />
           <Typography
@@ -111,7 +87,11 @@ export function JourneyViewFab({
           </Typography>
         </Fab>
       ) : (
-        <NextLink href={editLink != null ? editLink : ''} passHref>
+        <NextLink
+          href={editLink != null ? editLink : ''}
+          passHref
+          legacyBehavior
+        >
           <Fab
             variant="extended"
             size="large"
@@ -128,6 +108,14 @@ export function JourneyViewFab({
           </Fab>
         </NextLink>
       )}
+
+      <CopyToTeamDialog
+        submitLabel="Add"
+        title="Add Journey to Team"
+        open={duplicateTeamDialogOpen}
+        onClose={() => setDuplicateTeamDialogOpen(false)}
+        submitAction={handleConvertTemplate}
+      />
     </>
   )
 }

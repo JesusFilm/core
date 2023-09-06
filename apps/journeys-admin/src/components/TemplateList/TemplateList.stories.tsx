@@ -1,17 +1,19 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { Meta, StoryObj } from '@storybook/react'
+
+import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
+import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
   defaultTemplate,
-  oldTemplate,
   descriptiveTemplate,
+  oldTemplate,
   publishedTemplate
 } from '../TemplateLibrary/TemplateListData'
-import { GET_ACTIVE_PUBLISHER_TEMPLATES } from './ActiveTemplates/ActiveTemplates'
+
 import { TemplateList } from '.'
 
-const TemplateListStory = {
+const TemplateListStory: Meta<typeof TemplateList> = {
   ...journeysAdminConfig,
   component: TemplateList,
   title: 'Journeys-Admin/TemplatesList',
@@ -21,37 +23,43 @@ const TemplateListStory = {
   }
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_ACTIVE_PUBLISHER_TEMPLATES
-        },
-        result: {
-          data: {
-            journeys: [
-              defaultTemplate,
-              oldTemplate,
-              descriptiveTemplate,
-              publishedTemplate
-            ]
+const Template: StoryObj<typeof TemplateList> = {
+  render: ({ ...args }) => (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_ADMIN_JOURNEYS,
+            variables: {
+              status: [JourneyStatus.draft, JourneyStatus.published],
+              template: true
+            }
+          },
+          result: {
+            data: {
+              journeys: [
+                defaultTemplate,
+                oldTemplate,
+                descriptiveTemplate,
+                publishedTemplate
+              ]
+            }
           }
         }
-      }
-    ]}
-  >
-    <FlagsProvider flags={{ templates: true }}>
+      ]}
+    >
       <TemplateList {...args.props} />
-    </FlagsProvider>
-  </MockedProvider>
-)
+    </MockedProvider>
+  )
+}
 
-export const Default = Template.bind({})
-Default.args = {
-  props: {
-    event: ''
+export const Default = {
+  ...Template,
+  args: {
+    props: {
+      event: ''
+    }
   }
 }
 
-export default TemplateListStory as Meta
+export default TemplateListStory

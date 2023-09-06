@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useState } from 'react'
+
 import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
 import { AccessDenied } from '../AccessDenied'
 
@@ -13,18 +14,12 @@ export const USER_JOURNEY_REQUEST = gql`
 
 export interface JourneyInviteProps {
   journeyId: string
-  requestReceived?: boolean
 }
 
-export function JourneyInvite({
-  journeyId,
-  requestReceived: initialRequestReceived
-}: JourneyInviteProps): ReactElement {
+export function JourneyInvite({ journeyId }: JourneyInviteProps): ReactElement {
   const [userJourneyRequest] =
     useMutation<UserJourneyRequest>(USER_JOURNEY_REQUEST)
-  const [requestReceived, setRequestReceived] = useState(
-    Boolean(initialRequestReceived)
-  )
+  const [requestReceived, setRequestReceived] = useState(false)
 
   const handleClick = async (): Promise<void> => {
     await userJourneyRequest({

@@ -1,11 +1,13 @@
-import { useState } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
 import Box from '@mui/material/Box'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { LanguageAutocomplete, LanguageOption, Language } from '.'
+import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+import { ReactElement, useState } from 'react'
 
-const LanguageAutocompleteStory = {
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+
+import { Language, LanguageAutocomplete, LanguageOption } from '.'
+
+const LanguageAutocompleteStory: Meta<typeof LanguageAutocomplete> = {
   ...simpleComponentConfig,
   component: LanguageAutocomplete,
   title: 'Shared-Ui/LanguageAutocomplete',
@@ -54,7 +56,11 @@ const languages: Language[] = [
   }
 ]
 
-const Template: Story = ({ onChange }) => {
+function LanguageAutocompleteTemplate({
+  onChange
+}: {
+  onChange: (value: LanguageOption | undefined) => void
+}): ReactElement {
   const [value, setValue] = useState<LanguageOption | undefined>({
     id: '529',
     localName: undefined,
@@ -78,10 +84,15 @@ const Template: Story = ({ onChange }) => {
   )
 }
 
-export const Default = Template.bind({})
-Default.play = () => {
-  const button = screen.getAllByRole('button', { name: 'Open' })[0]
-  userEvent.click(button)
+const Template: StoryObj<typeof LanguageAutocomplete> = {
+  render: ({ onChange }) => <LanguageAutocompleteTemplate onChange={onChange} />
 }
 
-export default LanguageAutocompleteStory as Meta
+export const Default = {
+  ...Template,
+  play: async () => {
+    await userEvent.click(screen.getAllByRole('button', { name: 'Open' })[0])
+  }
+}
+
+export default LanguageAutocompleteStory

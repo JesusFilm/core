@@ -1,51 +1,65 @@
-import { Meta, Story } from '@storybook/react'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+
 import { journeysAdminConfig } from '../../libs/storybook'
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+
 import {
+  defaultTemplate,
+  descriptiveTemplate,
   oldTemplate,
-  publishedTemplate,
-  descriptiveTemplate
+  publishedTemplate
 } from './TemplateListData'
+
 import { TemplateLibrary } from '.'
 
-const TemplateLibraryStory = {
+const TemplateLibraryStory: Meta<typeof TemplateLibrary> = {
   ...journeysAdminConfig,
   component: TemplateLibrary,
   title: 'Journeys-Admin/TemplateLibrary'
 }
 
-const Template: Story = ({ ...args }) => (
-  <FlagsProvider flags={args.flags}>
-    <TemplateLibrary {...args.props} />
-  </FlagsProvider>
-)
+const Template: StoryObj<typeof TemplateLibrary> = {
+  render: ({ ...args }) => (
+    <MockedProvider mocks={args.mocks}>
+      <TemplateLibrary {...args.props} />
+    </MockedProvider>
+  )
+}
 
-export const Default = Template.bind({})
-Default.args = {
-  props: {
-    journeys: [oldTemplate],
-    templates: [oldTemplate, publishedTemplate, descriptiveTemplate]
-  },
-  flags: {
-    inviteRequirement: false
+export const Default = {
+  ...Template,
+  args: {
+    mocks: [
+      {
+        request: {
+          query: GET_JOURNEYS,
+          variables: {
+            where: {
+              template: true
+            }
+          }
+        },
+        result: {
+          data: {
+            journeys: [
+              defaultTemplate,
+              oldTemplate,
+              descriptiveTemplate,
+              publishedTemplate
+            ]
+          }
+        }
+      }
+    ]
   }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  journeys: null,
-  templates: null
-}
-
-export const InviteRequirement = Template.bind({})
-InviteRequirement.args = {
-  props: {
-    journeys: [],
-    templates: []
-  },
-  flags: {
-    inviteRequirement: true
+export const Loading = {
+  ...Template,
+  args: {
+    mocks: []
   }
 }
 
-export default TemplateLibraryStory as Meta
+export default TemplateLibraryStory

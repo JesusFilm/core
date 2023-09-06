@@ -1,10 +1,10 @@
-import { ReactElement, useMemo, useEffect, useState, ChangeEvent } from 'react'
-import TextField from '@mui/material/TextField'
-import InputAdornment from '@mui/material/InputAdornment'
-import Search from '@mui/icons-material/Search'
 import LinkRounded from '@mui/icons-material/LinkRounded'
-import { debounce } from 'lodash'
+import Search from '@mui/icons-material/Search'
 import Box from '@mui/material/Box'
+import InputAdornment from '@mui/material/InputAdornment'
+import TextField from '@mui/material/TextField'
+import debounce from 'lodash/debounce'
+import { ChangeEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 
 interface VideoSearchProps {
   label?: string

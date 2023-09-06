@@ -1,22 +1,25 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
+import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import { TextResponse } from '@core/journeys/ui/TextResponse'
 import { Typography } from '@core/journeys/ui/Typography'
-import { SnackbarProvider } from 'notistack'
+
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
+import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../__generated__/StepFields'
 import { TextResponseFields } from '../../../../../__generated__/TextResponseFields'
-import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
 import { SelectableWrapper } from '../SelectableWrapper'
+
 import { InlineEditWrapper } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -87,7 +90,7 @@ describe('InlineEditWrapper', () => {
     fireEvent.click(getByText('test content'))
     fireEvent.click(getByText('test content'))
     expect(getByTestId(`selected-${typographyBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     const input = getByDisplayValue('test content')
@@ -133,7 +136,7 @@ describe('InlineEditWrapper', () => {
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
     expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
 
@@ -175,14 +178,14 @@ describe('InlineEditWrapper', () => {
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
     expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     const input = getByDisplayValue('test label')
     await waitFor(() => expect(input).toBeInTheDocument())
   })
 
-  it('should edit sign up button label on double click', async () => {
+  it('should edit text response button label on double click', async () => {
     const block: TreeBlock<TextResponseFields> = {
       __typename: 'TextResponseBlock',
       id: 'textResponse.id',
@@ -219,7 +222,7 @@ describe('InlineEditWrapper', () => {
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
     expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     const input = getByDisplayValue('test label')
@@ -279,15 +282,12 @@ describe('InlineEditWrapper', () => {
       )
 
       // Select RadioQuestion
-      fireEvent.click(getByText('option'))
+      await waitFor(() => fireEvent.click(getByText('option')))
       expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
-        outline: '3px solid #C52D3A',
+        outline: '2px solid #C52D3A',
         zIndex: '1'
       })
-
-      await waitFor(() =>
-        expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
-      )
+      expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
     })
 
     it('should show add option when radio option selected', async () => {
@@ -306,7 +306,7 @@ describe('InlineEditWrapper', () => {
       )
       fireEvent.click(getByText('option'))
       expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
-        outline: '3px solid #C52D3A',
+        outline: '2px solid #C52D3A',
         zIndex: '1'
       })
 
@@ -332,7 +332,7 @@ describe('InlineEditWrapper', () => {
       fireEvent.click(getByText('option'))
       fireEvent.click(getByText('option'))
       expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
-        outline: '3px solid #C52D3A',
+        outline: '2px solid #C52D3A',
         zIndex: '1'
       })
       const input = getByDisplayValue('option')

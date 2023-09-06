@@ -1,9 +1,11 @@
-import { waitFor, fireEvent, render } from '@testing-library/react'
-import { VideoJsPlayer } from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
-import { VideoProvider } from '../../libs/videoContext'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import Player from 'video.js/dist/types/player'
+
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
+
 import { SubtitleDialog } from './SubtitleDialog'
 import { getSubtitleMock } from './testData'
 
@@ -14,7 +16,7 @@ describe('SubtitleDialog', () => {
   const player = {
     addRemoteTextTrack: (textTrack: TextTrack) => textTracks.push(textTrack),
     textTracks: () => textTracks
-  } as unknown as VideoJsPlayer
+  } as unknown as Player & { textTracks: () => TextTrackList }
   let textTracks: TextTrack[] = []
 
   beforeEach(() => {
@@ -33,7 +35,7 @@ describe('SubtitleDialog', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('it offers subtitles if they exist', async () => {
+  it('offers subtitles if they exist', async () => {
     const { getByRole, queryAllByRole } = render(
       <MockedProvider mocks={[getSubtitleMock]}>
         <VideoProvider value={{ content: video }}>
@@ -69,6 +71,6 @@ describe('SubtitleDialog', () => {
     const ArabicId = '22658'
     const track = tracks[0]
     expect(track.id).toEqual(ArabicId)
-    expect(track.mode).toEqual('showing')
+    expect(track.mode).toBe('showing')
   })
 })

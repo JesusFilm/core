@@ -1,12 +1,25 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { InMemoryCache } from '@apollo/client'
-import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { GET_USER_INVITES } from '../../../AccessDialog'
+import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
+import { GET_USER_INVITES } from '../../../../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
+
 import { USER_INVITE_REMOVE, USER_JOURNEY_REMOVE } from './RemoveUser'
+
 import { RemoveUser } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 describe('RemoveUser', () => {
   it('should remove user journey', async () => {
@@ -45,7 +58,7 @@ describe('RemoveUser', () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <MockedProvider
@@ -98,6 +111,7 @@ describe('RemoveUser', () => {
             id="userJourneyId"
             email="invite@email.com"
             onClick={handleClick}
+            journeyId="journeyId"
           />
         </MockedProvider>
       </JourneyProvider>
@@ -137,7 +151,7 @@ describe('RemoveUser', () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <MockedProvider
@@ -155,7 +169,11 @@ describe('RemoveUser', () => {
             }
           ]}
         >
-          <RemoveUser id="userInviteId" onClick={handleClick} />
+          <RemoveUser
+            id="userInviteId"
+            onClick={handleClick}
+            journeyId="journeyId"
+          />
         </MockedProvider>
       </JourneyProvider>
     )

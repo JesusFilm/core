@@ -1,4 +1,5 @@
-import { has, omit } from 'lodash'
+import has from 'lodash/has'
+import omit from 'lodash/omit'
 
 interface TransformObject {
   _key?: string

@@ -1,46 +1,62 @@
-import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
+
+import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   defaultTemplate,
   descriptiveTemplate
 } from '../TemplateLibrary/TemplateListData'
+
 import { TemplateCard } from '.'
 
-const TemplateCardStory = {
+const TemplateCardStory: Meta<typeof TemplateCard> = {
   ...journeysAdminConfig,
   component: TemplateCard,
   title: 'Journeys-Admin/TemplateCard'
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider>
-    <TemplateCard journey={args.template} isPublisher={args.isPublisher} />
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  template: defaultTemplate,
-  isPublisher: false
+const Template: StoryObj<
+  ComponentProps<typeof TemplateCard> & { template: Journey }
+> = {
+  render: ({ ...args }) => (
+    <MockedProvider>
+      <TemplateCard journey={args.template} isPublisher={args.isPublisher} />
+    </MockedProvider>
+  )
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  template: undefined,
-  isPublisher: false
+export const Default = {
+  ...Template,
+  args: {
+    template: defaultTemplate,
+    isPublisher: false
+  }
 }
 
-export const Complete = Template.bind({})
-Complete.args = {
-  template: descriptiveTemplate,
-  isPublisher: true
+export const Loading = {
+  ...Template,
+  args: {
+    template: undefined,
+    isPublisher: false
+  }
 }
 
-export const CompleteLoading = Template.bind({})
-CompleteLoading.args = {
-  template: undefined,
-  isPublisher: true
+export const Complete = {
+  ...Template,
+  args: {
+    template: descriptiveTemplate,
+    isPublisher: true
+  }
 }
 
-export default TemplateCardStory as Meta
+export const CompleteLoading = {
+  ...Template,
+  args: {
+    template: undefined,
+    isPublisher: true
+  }
+}
+
+export default TemplateCardStory

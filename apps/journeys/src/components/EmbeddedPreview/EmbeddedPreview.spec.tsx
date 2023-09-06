@@ -1,21 +1,64 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { v4 as uuidv4 } from 'uuid'
+
+import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
+
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../__generated__/GetJourney'
 import { basic } from '../../libs/testData/storyData'
+
 import { EmbeddedPreview } from './EmbeddedPreview'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
 describe('EmbeddedPreview', () => {
-  it('renders first block', () => {
+  it('renders first block', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
     const { getByText } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: STEP_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'step1.id',
+                  value: 'Step 1'
+                }
+              }
+            },
+            result: {
+              data: {
+                stepViewEventCreate: {
+                  id: 'uuid',
+                  __typename: 'StepViewEvent'
+                }
+              }
+            }
+          }
+        ]}
+      >
         <SnackbarProvider>
           <EmbeddedPreview blocks={basic} />
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(
-      getByText((basic[0].children[0].children[0] as TypographyBlock).content)
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        getByText((basic[0].children[0].children[0] as TypographyBlock).content)
+      ).toBeInTheDocument()
+    })
   })
 })

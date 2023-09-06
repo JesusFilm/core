@@ -6,6 +6,16 @@
   "Name": "Name",
   "Email": "Email",
   "Submit": "Submit",
+  "Journey": "Journey",
+  "Copied to clipboard": "Copied to clipboard",
+  "Share": "Share",
+  "Copy Link": "Copy Link",
+  "Facebook": "Facebook",
+  "Twitter": "Twitter",
+  "Report this content": "Report this content",
+  "Terms & Conditions": "Terms & Conditions",
+  "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".",
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
   "Untitled": "Untitled",
   "Step {{number}}": "Step {{number}}"
 }

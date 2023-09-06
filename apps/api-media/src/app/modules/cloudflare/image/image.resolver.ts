@@ -1,12 +1,19 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
-import { ForbiddenError, UserInputError } from 'apollo-server-errors'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
+
+import { CloudflareImage } from '.prisma/api-media-client'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { CloudflareImage } from '../../../__generated__/graphql'
+
+import { PrismaService } from '../../../lib/prisma.service'
+
 import { ImageService } from './image.service'
 
 @Resolver('Image')
 export class ImageResolver {
-  constructor(private readonly imageService: ImageService) {}
+  constructor(
+    private readonly imageService: ImageService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Mutation()
   async createCloudflareUploadByFile(
@@ -16,49 +23,40 @@ export class ImageResolver {
     if (!result.success) {
       throw new Error(result.errors[0])
     }
-    const createdAt = new Date().toISOString()
-    await this.imageService.save({
-      _key: result.result.id,
-      uploadUrl: result.result.uploadURL,
-      userId,
-      createdAt
+    return await this.prismaService.cloudflareImage.create({
+      data: {
+        id: result.result.id,
+        uploadUrl: result.result.uploadURL,
+        userId
+      }
     })
-    return {
-      id: result.result.id,
-      uploadUrl: result.result.uploadURL,
-      userId,
-      createdAt
-    }
   }
 
   @Mutation()
   async createCloudflareUploadByUrl(
     @Args('url') url: string,
     @CurrentUserId() userId: string
-  ): Promise<CloudflareImage> {
+  ): Promise<CloudflareImage | null> {
     const result = await this.imageService.uploadToCloudlareByUrl(url)
     if (!result.success) {
       throw new Error(result.errors[0])
     }
-    const createdAt = new Date().toISOString()
-    await this.imageService.save({
-      _key: result.result.id,
-      userId,
-      createdAt,
-      uploaded: true
+    return await this.prismaService.cloudflareImage.create({
+      data: {
+        id: result.result.id,
+        userId,
+        uploaded: true
+      }
     })
-    return {
-      id: result.result.id,
-      userId,
-      createdAt
-    }
   }
 
   @Query()
   async getMyCloudflareImages(
     @CurrentUserId() userId: string
   ): Promise<CloudflareImage[]> {
-    return await this.imageService.getCloudflareImagesForUserId(userId)
+    return await this.prismaService.cloudflareImage.findMany({
+      where: { userId }
+    })
   }
 
   @Mutation()
@@ -66,18 +64,24 @@ export class ImageResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<boolean> {
-    const image = (await this.imageService.get(id)) as CloudflareImage
+    const image = await this.prismaService.cloudflareImage.findUnique({
+      where: { id }
+    })
     if (image == null) {
-      throw new UserInputError('Image not found')
+      throw new GraphQLError('Image not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
     if (image.userId !== userId) {
-      throw new ForbiddenError('This image does not belong to you')
+      throw new GraphQLError('This image does not belong to you', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     }
     const result = await this.imageService.deleteImageFromCloudflare(id)
     if (!result.success) {
       throw new Error(result.errors[0])
     }
-    await this.imageService.remove(id)
+    await this.prismaService.cloudflareImage.delete({ where: { id } })
     return true
   }
 
@@ -86,15 +90,24 @@ export class ImageResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<boolean> {
-    const image = (await this.imageService.get(id)) as CloudflareImage
+    const image = await this.prismaService.cloudflareImage.findUnique({
+      where: { id }
+    })
     if (image == null) {
-      throw new UserInputError('Image not found')
+      throw new GraphQLError('Image not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
     if (image.userId !== userId) {
-      throw new ForbiddenError('This image does not belong to you')
+      throw new GraphQLError('This image does not belong to you', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     }
-    await this.imageService.update(id, {
-      uploaded: true
+    await this.prismaService.cloudflareImage.update({
+      where: { id },
+      data: {
+        uploaded: true
+      }
     })
     return true
   }

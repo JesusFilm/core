@@ -46,7 +46,14 @@ export interface VideoTriggerFields_triggerAction_LinkAction {
   url: string;
 }
 
-export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_NavigateAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_NavigateToJourneyAction | VideoTriggerFields_triggerAction_LinkAction;
+export interface VideoTriggerFields_triggerAction_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_NavigateAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_NavigateToJourneyAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction;
 
 export interface VideoTriggerFields {
   __typename: "VideoTriggerBlock";

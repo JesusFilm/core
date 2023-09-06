@@ -12,12 +12,55 @@ module "internal_alb_security_group" {
   egress_rules  = local.internal_alb_config.egress_rules
 }
 
+module "internal_rds_security_group" {
+  source = "./security-group"
+  name   = "jfp-internal-rds-sg-${var.env}"
+  vpc_id = module.vpc.vpc_id
+  ingress_rules = [
+    {
+      from_port   = 5432
+      to_port     = 5432
+      protocol    = "tcp"
+      cidr_blocks = [var.cidr]
+    }
+  ]
+  egress_rules = local.egress_rules
+}
+
 module "public_alb_security_group" {
   source        = "./security-group"
   name          = "jfp-public-alb-sg-${var.env}"
   vpc_id        = module.vpc.vpc_id
   ingress_rules = local.public_alb_config.ingress_rules
   egress_rules  = local.public_alb_config.egress_rules
+}
+
+module "public_bastion_security_group" {
+  source = "./security-group"
+  name   = "jfp-public-bastion-sg-${var.env}"
+  vpc_id = module.vpc.vpc_id
+  ingress_rules = [
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = concat([var.cidr], local.google_datastream_ip_list)
+    },
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["172.221.20.111/32"]
+    },
+    // EC2_INSTANCE_CONNECT
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["3.16.146.0/29"]
+    }
+  ]
+  egress_rules = local.egress_rules
 }
 
 module "internal_alb" {
@@ -60,4 +103,3 @@ module "ecs" {
   internal_alb_security_group = module.internal_alb_security_group
   public_alb_security_group   = module.public_alb_security_group
 }
-

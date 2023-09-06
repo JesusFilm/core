@@ -1,15 +1,16 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+
 import { watchConfig } from '../../libs/storybook'
-import { VideoProvider } from '../../libs/videoContext'
-import { videos } from '../Videos/__generated__/testData'
-import { getSubtitleMock } from '../SubtitleDialog/testData'
-import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
+import { VideoProvider } from '../../libs/videoContext'
+import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
+import { getSubtitleMock } from '../SubtitleDialog/testData'
+import { videos } from '../Videos/__generated__/testData'
+
 import { VideoContentPage } from '.'
 
-const VideoContentPageStory = {
+const VideoContentPageStory: Meta<typeof VideoContentPage> = {
   ...watchConfig,
   component: VideoContentPage,
   title: 'Watch/VideoContentPage',
@@ -19,16 +20,18 @@ const VideoContentPageStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof VideoContentPage>> = () => (
-  <MockedProvider
-    mocks={[getLanguagesSlugMock, getSubtitleMock, getVideoChildrenMock]}
-  >
-    <VideoProvider value={{ content: videos[0] }}>
-      <VideoContentPage />
-    </VideoProvider>
-  </MockedProvider>
-)
+const Template: StoryObj<typeof VideoContentPage> = {
+  render: () => (
+    <MockedProvider
+      mocks={[getLanguagesSlugMock, getSubtitleMock, getVideoChildrenMock]}
+    >
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoContentPage />
+      </VideoProvider>
+    </MockedProvider>
+  )
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default VideoContentPageStory as Meta
+export default VideoContentPageStory

@@ -1,19 +1,22 @@
 import { render } from '@testing-library/react'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { getTheme } from '@core/shared/ui/themes'
-import {
-  TypographyColor,
-  TypographyAlign,
-  TypographyVariant,
-  ThemeName,
-  ThemeMode
-} from '../../../../../__generated__/globalTypes'
+
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
+import {
+  ThemeMode,
+  ThemeName,
+  TypographyAlign,
+  TypographyColor,
+  TypographyVariant
+} from '../../../../../__generated__/globalTypes'
+
 import { ColorDisplayIcon } from '.'
 
 describe('ColorDisplayIcon', () => {
-  it('should show the selected color primary as default ', () => {
+  it('should show the selected color primary as default', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step.id',
       __typename: 'StepBlock',

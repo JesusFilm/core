@@ -1,48 +1,69 @@
 import { join } from 'path'
-import { Module } from '@nestjs/common'
-import { GraphQLModule } from '@nestjs/graphql'
+
 import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
-import { LoggerModule } from 'nestjs-pino'
+import { Module } from '@nestjs/common'
+import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
+import { LoggerModule } from 'nestjs-pino'
+
+import { NestHealthModule } from '@core/nest/health'
+
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
-import { JourneyModule } from './modules/journey/journey.module'
 import { EventModule } from './modules/event/event.module'
-import { UserJourneyModule } from './modules/userJourney/userJourney.module'
+import { HostModule } from './modules/host/host.module'
+import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
-import { UserRoleModule } from './modules/userRole/userRole.module'
-import { UserInviteModule } from './modules/userInvite/userInvite.module'
-import { VisitorModule } from './modules/visitor/visitor.module'
-import { MemberModule } from './modules/member/member.module'
+import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { TeamModule } from './modules/team/team.module'
+import { UserInviteModule } from './modules/userInvite/userInvite.module'
+import { UserJourneyModule } from './modules/userJourney/userJourney.module'
+import { UserRoleModule } from './modules/userRole/userRole.module'
+import { UserTeamModule } from './modules/userTeam/userTeam.module'
+import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.module'
+import { VisitorModule } from './modules/visitor/visitor.module'
 
 @Module({
   imports: [
     ActionModule,
     BlockModule,
-    JourneyModule,
     EventModule,
-    MemberModule,
+    HostModule,
+    JourneyModule,
+    JourneyVisitorModule,
+    JourneyProfileModule,
+    NestHealthModule,
     TeamModule,
     UserJourneyModule,
     UserInviteModule,
     UserRoleModule,
-    JourneyProfileModule,
+    UserTeamModule,
+    UserTeamInviteModule,
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
-      typePaths: [
-        join(process.cwd(), 'apps/api-journeys/src/app/**/*.graphql'),
-        join(process.cwd(), 'assets/**/*.graphql')
-      ],
-      cors: true,
-      context: ({ req }) => ({ headers: req.headers })
+      typePaths:
+        process.env.NODE_ENV !== 'production'
+          ? [
+              join(process.cwd(), 'apps/api-journeys/src/app/**/*.graphql'),
+              join(
+                process.cwd(),
+                'libs/nest/common/src/lib/TranslationModule/translation.graphql'
+              )
+            ]
+          : [join(process.cwd(), 'assets/**/*.graphql')],
+      context: ({ req }) => ({ headers: req.headers }),
+      cache: 'bounded'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        redact: ['req.headers.authorization'],
+        autoLogging: {
+          ignore: (req) => req.url === '/.well-known/apollo/server-health'
+        },
         transport:
           process.env.NODE_ENV !== 'production'
             ? {

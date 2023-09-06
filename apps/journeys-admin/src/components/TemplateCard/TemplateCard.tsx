@@ -1,57 +1,39 @@
-import { ReactElement, useRef, useEffect } from 'react'
-import { parseISO, isThisYear, intlFormat } from 'date-fns'
-import Card from '@mui/material/Card'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import CardActionArea from '@mui/material/CardActionArea'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import CardMedia from '@mui/material/CardMedia'
-import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
-import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
-import EditIcon from '@mui/icons-material/Edit'
-import Skeleton from '@mui/material/Skeleton'
-import IconButton from '@mui/material/IconButton'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { ApolloQueryResult } from '@apollo/client'
-import Link from 'next/link'
-import { GetActivePublisherTemplates } from '../../../__generated__/GetActivePublisherTemplates'
-import { GetArchivedPublisherTemplates } from '../../../__generated__/GetArchivedPublisherTemplates'
-import { GetTrashedPublisherTemplates } from '../../../__generated__/GetTrashedPublisherTemplates'
-import { GetPublishedTemplates_journeys as Journey } from '../../../__generated__/GetPublishedTemplates'
+import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import IconButton from '@mui/material/IconButton'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { intlFormat, isThisYear, parseISO } from 'date-fns'
+import NextLink from 'next/link'
+import { ReactElement } from 'react'
+
+import {
+  GetAdminJourneys_journeys as AdminJourney,
+  GetAdminJourneys
+} from '../../../__generated__/GetAdminJourneys'
+import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
-import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
 
 export interface TemplateCardProps {
-  journey?: Journey
+  journey?: AdminJourney | Journey
   isPublisher?: boolean
-  duplicatedJourneyId?: string
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      | GetActivePublisherTemplates
-      | GetArchivedPublisherTemplates
-      | GetTrashedPublisherTemplates
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function TemplateCard({
   journey,
   isPublisher,
-  duplicatedJourneyId,
   refetch
 }: TemplateCardProps): ReactElement {
-  const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
-      duplicatedJourneyRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      })
-    }
-  }, [duplicatedJourneyId, journey])
-
   const nativeLanguage =
     journey?.language.name.find(({ primary }) => primary)?.value ?? ''
   const localLanguage = journey?.language.name.find(
@@ -73,9 +55,6 @@ export function TemplateCard({
 
   return (
     <Card
-      ref={
-        journey?.id === duplicatedJourneyId ? duplicatedJourneyRef : undefined
-      }
       aria-label="template-card"
       variant="outlined"
       sx={{
@@ -137,7 +116,7 @@ export function TemplateCard({
           display: 'flex'
         }}
       >
-        <Link
+        <NextLink
           href={
             journey != null
               ? `/${isPublisher === true ? 'publisher' : 'templates'}/${
@@ -146,6 +125,7 @@ export function TemplateCard({
               : ''
           }
           passHref
+          legacyBehavior
         >
           <CardActionArea>
             <CardContent>
@@ -169,7 +149,7 @@ export function TemplateCard({
               )}
             </CardContent>
           </CardActionArea>
-        </Link>
+        </NextLink>
 
         <CardActions sx={{ px: 4, py: 2 }}>
           <Stack
@@ -182,19 +162,6 @@ export function TemplateCard({
               width: '100%'
             }}
           >
-            {isPublisher === true && (
-              <Box sx={{ pr: 3, display: 'flex' }}>
-                {journey != null ? (
-                  <StatusChip status={journey.status} />
-                ) : (
-                  <Stack direction="row" alignItems="center" spacing={1.5}>
-                    <EditIcon sx={{ fontSize: '14px' }} />
-                    <Skeleton variant="text" width={50} height={20} />
-                  </Stack>
-                )}
-              </Box>
-            )}
-
             {journey != null ? (
               <>
                 <TranslateRoundedIcon sx={{ fontSize: 13, pl: 0 }} />

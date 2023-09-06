@@ -19,5 +19,8 @@ export const ACTION_FIELDS = gql`
     ... on LinkAction {
       url
     }
+    ... on EmailAction {
+      email
+    }
   }
 `

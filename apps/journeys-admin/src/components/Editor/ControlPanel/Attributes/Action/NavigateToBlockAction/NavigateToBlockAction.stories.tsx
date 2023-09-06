@@ -1,20 +1,23 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { Meta, StoryObj } from '@storybook/react'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
-  ThemeName,
-  ThemeMode
+  ThemeMode,
+  ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { steps } from '../data'
+
 import { NavigateToBlockAction } from '.'
 
-const NavigateToBlockActionStory = {
+const NavigateToBlockActionStory: Meta<typeof NavigateToBlockAction> = {
   ...simpleComponentConfig,
   component: NavigateToBlockAction,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
@@ -32,34 +35,46 @@ const journeyTheme = {
   }
 } as unknown as Journey
 
-export const NavigateToBlock: Story = () => {
-  const selectedBlock = steps[4].children[0].children[4]
+export const NavigateToBlock: StoryObj<typeof NavigateToBlockAction> = {
+  render: () => {
+    const selectedBlock = steps[4].children[0].children[4]
 
-  return (
-    <Stack spacing={10}>
-      <Box>
-        <Typography>Default</Typography>
-        <MockedProvider>
-          <JourneyProvider value={{ journey: journeyTheme, admin: true }}>
-            <EditorProvider initialState={{ steps }}>
-              <NavigateToBlockAction />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </Box>
+    return (
+      <Stack spacing={10}>
+        <Box>
+          <Typography>Default</Typography>
+          <MockedProvider>
+            <JourneyProvider
+              value={{
+                journey: journeyTheme,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider initialState={{ steps }}>
+                <NavigateToBlockAction />
+              </EditorProvider>
+            </JourneyProvider>
+          </MockedProvider>
+        </Box>
 
-      <Box>
-        <Typography>Selected card</Typography>
-        <MockedProvider>
-          <JourneyProvider value={{ journey: journeyTheme, admin: true }}>
-            <EditorProvider initialState={{ selectedBlock, steps }}>
-              <NavigateToBlockAction />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </Box>
-    </Stack>
-  )
+        <Box>
+          <Typography>Selected card</Typography>
+          <MockedProvider>
+            <JourneyProvider
+              value={{
+                journey: journeyTheme,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock, steps }}>
+                <NavigateToBlockAction />
+              </EditorProvider>
+            </JourneyProvider>
+          </MockedProvider>
+        </Box>
+      </Stack>
+    )
+  }
 }
 
-export default NavigateToBlockActionStory as Meta
+export default NavigateToBlockActionStory

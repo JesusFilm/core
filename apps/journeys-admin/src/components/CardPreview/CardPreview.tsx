@@ -1,25 +1,24 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { ReactElement, useState, useMemo } from 'react'
-import { transformer } from '@core/journeys/ui/transformer'
-import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
-import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { v4 as uuidv4 } from 'uuid'
-import { useMutation, gql } from '@apollo/client'
+import { ReactElement, useMemo, useState } from 'react'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
-import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
-import { CardList } from './CardList'
+import { v4 as uuidv4 } from 'uuid'
 
-export interface OnSelectProps {
-  step?: TreeBlock<StepBlock>
-  view?: ActiveJourneyEditContent
-}
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
+import { transformer } from '@core/journeys/ui/transformer'
+
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
+import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
+import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
+
+import { CardList } from './CardList'
+import { OnSelectProps } from './OnSelectProps'
 
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void
@@ -27,6 +26,7 @@ export interface CardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
   isDraggable?: boolean
+  showNavigationCards?: boolean
 }
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
@@ -62,7 +62,8 @@ export function CardPreview({
   selected,
   onSelect,
   showAddButton,
-  isDraggable
+  isDraggable,
+  showNavigationCards
 }: CardPreviewProps): ReactElement {
   const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
@@ -72,6 +73,14 @@ export function CardPreview({
   const { journey } = useJourney()
 
   const handleChange = (selectedId: string): void => {
+    switch (selectedId) {
+      case 'goals':
+        onSelect?.({ view: ActiveJourneyEditContent.Action })
+        return
+      case 'social':
+        onSelect?.({ view: ActiveJourneyEditContent.SocialPreview })
+        return
+    }
     if (steps == null) return
 
     const selectedStep = steps.find(({ id }) => id === selectedId)
@@ -175,7 +184,7 @@ export function CardPreview({
   )
 
   return (
-    <Stack direction="row">
+    <>
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext
@@ -194,6 +203,7 @@ export function CardPreview({
                     handleChange={handleChange}
                     isDragging={isDragging}
                     isDraggable={isDraggable}
+                    showNavigationCards={showNavigationCards}
                   />
                 </Box>
               )}
@@ -206,6 +216,7 @@ export function CardPreview({
             handleClick={handleClick}
             handleChange={handleChange}
             showAddButton={showAddButton}
+            showNavigationCards={showNavigationCards}
           />
         )
       ) : (
@@ -257,6 +268,6 @@ export function CardPreview({
           </Box>
         </Stack>
       )}
-    </Stack>
+    </>
   )
 }

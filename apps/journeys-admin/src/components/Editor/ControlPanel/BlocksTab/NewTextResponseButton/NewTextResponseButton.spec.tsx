@@ -1,15 +1,19 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { v4 as uuidv4 } from 'uuid'
+
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import { v4 as uuidv4 } from 'uuid'
-import { InMemoryCache } from '@apollo/client'
+
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
+
 import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
+
 import { NewTextResponseButton } from '.'
 
 jest.mock('uuid', () => ({
@@ -127,7 +131,7 @@ describe('NewTextResponseButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -167,7 +171,7 @@ describe('NewTextResponseButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -178,10 +182,11 @@ describe('NewTextResponseButton', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Feedback' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
-      { __ref: 'TextResponseBlock:textResponseBlock.id' },
-      { __ref: 'IconBlock:icon.id' }
-    ])
+    await waitFor(() =>
+      expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
+        { __ref: 'TextResponseBlock:textResponseBlock.id' },
+        { __ref: 'IconBlock:icon.id' }
+      ])
+    )
   })
 })

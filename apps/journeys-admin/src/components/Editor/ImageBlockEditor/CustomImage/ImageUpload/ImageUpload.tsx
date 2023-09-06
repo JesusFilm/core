@@ -1,16 +1,17 @@
-import { ReactElement, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
-import Typography from '@mui/material/Typography'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import { gql, useMutation } from '@apollo/client'
-import fetch from 'node-fetch'
-import type FormDataType from 'form-data'
+import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
 import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined'
 import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded'
 import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import type FormDataType from 'form-data'
+import fetch from 'node-fetch'
+import { ReactElement, useState } from 'react'
+import { useDropzone } from 'react-dropzone'
+
 import { CreateCloudflareUploadByFile } from '../../../../../../__generated__/CreateCloudflareUploadByFile'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 
@@ -25,6 +26,7 @@ export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
 
 interface ImageUploadProps {
   onChange: (src: string) => void
+  setUploading?: (uploading?: boolean) => void
   selectedBlock: ImageBlock | null
   loading?: boolean
   error?: boolean
@@ -33,6 +35,7 @@ interface ImageUploadProps {
 export function ImageUpload({
   onChange,
   selectedBlock,
+  setUploading,
   loading,
   error
 }: ImageUploadProps): ReactElement {
@@ -42,6 +45,7 @@ export function ImageUpload({
 
   const onDrop = async (acceptedFiles: File[]): Promise<void> => {
     const { data } = await createCloudflareUploadByFile({})
+    setUploading?.(true)
 
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
       const file = acceptedFiles[0]
@@ -61,11 +65,12 @@ export function ImageUpload({
           setSuccess(false)
         }
 
-        const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
-          response.result.id as string
-        }/public`
+        const src = `https://imagedelivery.net/${
+          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
+        }/${response.result.id as string}/public`
         onChange(src)
         setTimeout(() => setSuccess(undefined), 4000)
+        setUploading?.(undefined)
       } catch (e) {
         setSuccess(false)
       }

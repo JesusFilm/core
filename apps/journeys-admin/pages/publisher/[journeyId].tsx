@@ -1,27 +1,27 @@
-import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { gql, useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import { gql, useQuery } from '@apollo/client'
+import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/router'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { PageWrapper } from '../../src/components/PageWrapper'
-import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+
 import { GetPublisher } from '../../__generated__/GetPublisher'
-import i18nConfig from '../../next-i18next.config'
-import { JourneyView } from '../../src/components/JourneyView'
+import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { Role } from '../../__generated__/globalTypes'
-import { PublisherInvite } from '../../src/components/PublisherInvite'
+import { JourneyView } from '../../src/components/JourneyView'
 import { Menu } from '../../src/components/JourneyView/Menu'
-import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
+import { PageWrapper } from '../../src/components/PageWrapper'
+import { PublisherInvite } from '../../src/components/PublisherInvite'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
 export const GET_PUBLISHER_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -53,8 +53,7 @@ function TemplateDetailsAdmin(): ReactElement {
     Role.publisher
   )
 
-  useTermsRedirect()
-
+  useInvalidJourneyRedirect(data)
   return (
     <>
       {isPublisher === true && (
@@ -66,7 +65,7 @@ function TemplateDetailsAdmin(): ReactElement {
           <JourneyProvider
             value={{
               journey: data?.publisherTemplate ?? undefined,
-              admin: true
+              variant: 'admin'
             }}
           >
             <PageWrapper
@@ -75,7 +74,6 @@ function TemplateDetailsAdmin(): ReactElement {
               showDrawer
               backHref="/publisher"
               menu={<Menu />}
-              router={router}
             >
               <JourneyView journeyType="Template" />
             </PageWrapper>
@@ -95,23 +93,20 @@ function TemplateDetailsAdmin(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  if (AuthUser == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
+
+  if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })

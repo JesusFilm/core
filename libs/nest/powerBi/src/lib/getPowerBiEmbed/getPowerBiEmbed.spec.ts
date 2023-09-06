@@ -1,6 +1,8 @@
-import fetch, { Response, FetchError } from 'node-fetch'
 import { TokenResponse } from 'adal-node'
+import fetch, { FetchError, Response } from 'node-fetch'
+
 import { getPowerBiAccessToken } from '../getPowerBiAccessToken'
+
 import { getPowerBiEmbed } from '.'
 
 jest.mock('node-fetch', () => {

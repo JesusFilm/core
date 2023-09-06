@@ -1,14 +1,15 @@
 import Stack from '@mui/material/Stack'
-import { Meta, Story } from '@storybook/react'
-import { noop } from 'lodash'
-import { simpleComponentConfig } from '../../../simpleComponentConfig'
+import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
+
 import { ThemeName } from '../..'
 import {
-  LanguageAutocomplete,
-  Language
+  Language,
+  LanguageAutocomplete
 } from '../../../../components/LanguageAutocomplete'
+import { simpleComponentConfig } from '../../../simpleComponentConfig'
 
-const ComponentsDemo = {
+const ComponentsDemo: Meta<typeof LanguageAutocomplete> = {
   ...simpleComponentConfig,
   component: LanguageAutocomplete,
   title: 'Default Theme',
@@ -57,20 +58,22 @@ const languages: Language[] = [
   }
 ]
 
-const Template: Story = (args) => {
-  return (
-    <Stack spacing={8} alignItems="flex-start">
-      {/* LANGUAGE AUTOCOMPLETE */}
-      <LanguageAutocomplete
-        onChange={noop}
-        value={languages[0]}
-        languages={languages}
-        loading={false}
-      />
-    </Stack>
-  )
+const Template: StoryObj<typeof LanguageAutocomplete> = {
+  render: (args) => {
+    return (
+      <Stack spacing={8} alignItems="flex-start">
+        {/* LANGUAGE AUTOCOMPLETE */}
+        <LanguageAutocomplete
+          onChange={noop}
+          value={languages[0]}
+          languages={languages}
+          loading={false}
+        />
+      </Stack>
+    )
+  }
 }
 
-export const Components = Template.bind({})
+export const Components = { ...Template }
 
-export default ComponentsDemo as Meta
+export default ComponentsDemo

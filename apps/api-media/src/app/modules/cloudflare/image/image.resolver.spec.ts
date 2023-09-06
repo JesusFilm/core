@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { CloudflareImage } from '../../../__generated__/graphql'
+
+import { PrismaService } from '../../../lib/prisma.service'
 
 import { ImageResolver } from './image.resolver'
 import { ImageService } from './image.service'
@@ -12,16 +13,17 @@ const cfResult = {
   success: true
 }
 
-const cfImage: CloudflareImage = {
+const cfImage = {
   id: '1',
   uploadUrl: 'https://upload.com',
-  createdAt: new Date().toISOString(),
+  createdAt: new Date(),
   userId: 'user_1'
 }
 
 describe('ImageResolver', () => {
-  let resolver: ImageResolver
-  let service: ImageService
+  let resolver: ImageResolver,
+    service: ImageService,
+    prismaService: PrismaService
 
   const user = {
     id: 'user_1',
@@ -35,41 +37,51 @@ describe('ImageResolver', () => {
     const imageService = {
       provide: ImageService,
       useFactory: () => ({
-        get: jest.fn(() => cfImage),
-        getAll: jest.fn(() => [cfImage, cfImage]),
-        save: jest.fn((input) => input),
-        update: jest.fn((input) => input),
         getImageInfoFromCloudflare: jest.fn(() => cfResult),
         deleteImageFromCloudflare: jest.fn(() => cfResult),
-        getCloudflareImagesForUserId: jest.fn(() => [cfImage]),
         uploadToCloudlareByUrl: jest.fn(() => cfResult),
         remove: jest.fn(() => cfImage)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ImageResolver, imageService]
+      providers: [ImageResolver, imageService, PrismaService]
     }).compile()
     resolver = module.get<ImageResolver>(ImageResolver)
     service = await module.resolve(ImageService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.cloudflareImage.findUnique = jest
+      .fn()
+      .mockResolvedValue(cfImage)
+    prismaService.cloudflareImage.findMany = jest
+      .fn()
+      .mockResolvedValue([cfImage, cfImage])
+    prismaService.cloudflareImage.create = jest
+      .fn()
+      .mockImplementationOnce((input) => input.data)
+    prismaService.cloudflareImage.update = jest
+      .fn()
+      .mockImplementationOnce((input) => input.data)
+    prismaService.cloudflareImage.delete = jest.fn().mockResolvedValue(cfImage)
   })
 
-  describe('createCloudflareUploadByFile ', () => {
+  describe('createCloudflareUploadByFile', () => {
     it('returns cloudflare response information', async () => {
       expect(await resolver.createCloudflareUploadByFile(user.id)).toEqual({
         id: '1',
         uploadUrl: 'https://upload.com',
-        createdAt: expect.any(String),
         userId: user.id
       })
-      expect(service.save).toHaveBeenCalledWith({
-        _key: '1',
-        uploadUrl: 'https://upload.com',
-        createdAt: expect.any(String),
-        userId: user.id
+      expect(prismaService.cloudflareImage.create).toHaveBeenCalledWith({
+        data: {
+          id: '1',
+          uploadUrl: 'https://upload.com',
+          userId: user.id
+        }
       })
     })
   })
-  describe('createCloudflareUploadByFile ', () => {
+
+  describe('createCloudflareUploadByUrl', () => {
     it('returns cloudflare response information', async () => {
       expect(
         await resolver.createCloudflareUploadByUrl(
@@ -78,49 +90,64 @@ describe('ImageResolver', () => {
         )
       ).toEqual({
         id: '1',
-        createdAt: expect.any(String),
+        uploaded: true,
         userId: user.id
       })
-      expect(service.save).toHaveBeenCalledWith({
-        _key: '1',
-        createdAt: expect.any(String),
-        userId: user.id,
-        uploaded: true
+      expect(prismaService.cloudflareImage.create).toHaveBeenCalledWith({
+        data: {
+          id: '1',
+          userId: user.id,
+          uploaded: true
+        }
       })
     })
   })
+
   describe('deleteCloudflareImage', () => {
     it('throws an error if wrong user', async () => {
-      await resolver.deleteCloudflareImage('1', 'user_2').catch((e) => {
-        expect(e.message).toEqual('This image does not belong to you')
-      })
+      await expect(
+        resolver.deleteCloudflareImage('1', 'user_2')
+      ).rejects.toThrow('This image does not belong to you')
     })
+
     it('calls service.deleteCloudflareImage', async () => {
-      expect(await resolver.deleteCloudflareImage('1', user.id)).toEqual(true)
+      expect(await resolver.deleteCloudflareImage('1', user.id)).toBe(true)
       expect(service.deleteImageFromCloudflare).toHaveBeenCalledWith('1')
     })
+
     it('calls service.remove', async () => {
-      expect(await resolver.deleteCloudflareImage('1', user.id)).toEqual(true)
-      expect(service.remove).toHaveBeenCalledWith('1')
-    })
-  })
-  describe('getMyCloudflareImages', () => {
-    it('returns cloudflare response information', async () => {
-      expect(await resolver.getMyCloudflareImages('1')).toEqual([cfImage])
-    })
-  })
-  describe('cloudflareUploadComplete', () => {
-    it('throws an error if wrong user', async () => {
-      await resolver.cloudflareUploadComplete('1', 'user_2').catch((e) => {
-        expect(e.message).toEqual('This image does not belong to you')
+      expect(await resolver.deleteCloudflareImage('1', user.id)).toBe(true)
+      expect(prismaService.cloudflareImage.delete).toHaveBeenCalledWith({
+        where: { id: '1' }
       })
     })
+  })
+
+  describe('getMyCloudflareImages', () => {
+    it('returns cloudflare response information', async () => {
+      expect(await resolver.getMyCloudflareImages('1')).toEqual([
+        cfImage,
+        cfImage
+      ])
+    })
+  })
+
+  describe('cloudflareUploadComplete', () => {
+    it('throws an error if wrong user', async () => {
+      await expect(
+        resolver.cloudflareUploadComplete('1', 'user_2')
+      ).rejects.toThrow('This image does not belong to you')
+    })
+
     it('calls service.save', async () => {
-      expect(
-        await resolver.cloudflareUploadComplete(cfImage.id, user.id)
-      ).toEqual(true)
-      expect(service.update).toHaveBeenCalledWith(cfImage.id, {
-        uploaded: true
+      expect(await resolver.cloudflareUploadComplete(cfImage.id, user.id)).toBe(
+        true
+      )
+      expect(prismaService.cloudflareImage.update).toHaveBeenCalledWith({
+        where: { id: cfImage.id },
+        data: {
+          uploaded: true
+        }
       })
     })
   })

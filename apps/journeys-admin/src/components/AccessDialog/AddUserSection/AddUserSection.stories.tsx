@@ -1,12 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Story, Meta } from '@storybook/react'
+import { expect } from '@storybook/jest'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+
 import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { AddUserSection } from '.'
 
-const AddUsersSectionStory = {
+const AddUsersSectionStory: Meta<typeof AddUserSection> = {
   ...journeysAdminConfig,
   component: AddUserSection,
   title: 'Journeys-Admin/AccessDialog/AddUserSection',
@@ -16,26 +17,29 @@ const AddUsersSectionStory = {
   }
 }
 
-const Template: Story = () => {
-  return (
-    <JourneyProvider
-      value={{ journey: { id: 'journeyId' } as unknown as Journey }}
-    >
+const Template: StoryObj<typeof AddUserSection> = {
+  render: () => {
+    return (
       <MockedProvider>
-        <AddUserSection users={[]} />
+        <AddUserSection users={[]} journeyId="journeyId" />
       </MockedProvider>
-    </JourneyProvider>
-  )
+    )
+  }
 }
 
-export const Email = Template.bind({})
+export const Email = { ...Template }
 
-export const Link = Template.bind({})
-Link.play = async () => {
-  await waitFor(() => {
-    userEvent.click(screen.getByRole('button', { name: 'Email' }))
-    userEvent.click(screen.getByRole('menuitem', { name: 'Link' }))
-  })
+export const Link = {
+  ...Template,
+  play: async () => {
+    await userEvent.click(screen.getByRole('button', { name: 'Email' }))
+    await waitFor(async () => {
+      await expect(
+        screen.getByRole('menuitem', { name: 'Link' })
+      ).toBeInTheDocument()
+    })
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Link' }))
+  }
 }
 
-export default AddUsersSectionStory as Meta
+export default AddUsersSectionStory

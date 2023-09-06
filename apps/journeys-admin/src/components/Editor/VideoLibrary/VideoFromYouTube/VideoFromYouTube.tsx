@@ -1,33 +1,50 @@
-import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
-import useSWRInfinite from 'swr/infinite'
-import { reduce } from 'lodash'
 import Typography from '@mui/material/Typography'
+import reduce from 'lodash/reduce'
 import fetch from 'node-fetch'
+import { ReactElement, useState } from 'react'
+import useSWRInfinite from 'swr/infinite'
+
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
-import { VideoSearch } from '../VideoSearch'
+import { parseISO8601Duration } from '../../../../libs/parseISO8601Duration'
 import { VideoList } from '../VideoList'
 import { VideoListProps } from '../VideoList/VideoList'
+import { VideoSearch } from '../VideoSearch'
 
 interface VideoFromYouTubeProps {
   onSelect: (block: VideoBlockUpdateInput) => void
 }
 
+export interface YoutubeVideo {
+  kind: 'youtube#video'
+  id: string
+  snippet: {
+    title: string
+    description: string
+    thumbnails: { default: { url: string } }
+  }
+  contentDetails: {
+    duration: string
+  }
+}
+
+export interface YoutubePlaylist {
+  kind: 'youtube#playlistItem'
+  snippet: {
+    title: string
+    description: string
+    thumbnails: { default: { url: string } }
+  }
+  contentDetails: {
+    videoId: string
+  }
+}
+
 export interface YoutubeVideosData {
-  items: Array<{
-    id: string
-    snippet: {
-      title: string
-      description: string
-      thumbnails: { default: { url: string } }
-    }
-    contentDetails: {
-      duration: string
-    }
-  }>
+  items: Array<YoutubeVideo | YoutubePlaylist>
   nextPageToken?: string
 }
 
@@ -36,42 +53,32 @@ interface Data {
   nextPageToken?: string
 }
 
-export function parseISO8601Duration(duration: string): number {
-  const match = duration.match(/P(\d+Y)?(\d+W)?(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/)
-
-  if (match == null) {
-    console.error(`Invalid duration: ${duration}`)
-    return 0
-  }
-  const [years, weeks, days, hours, minutes, seconds] = match
-    .slice(1)
-    .map((period) => (period != null ? parseInt(period.replace(/\D/, '')) : 0))
-  return (
-    (((years * 365 + weeks * 7 + days) * 24 + hours) * 60 + minutes) * 60 +
-    seconds
-  )
-}
-
 const fetcher = async (query: string): Promise<Data> => {
   const params = new URLSearchParams({
     part: 'snippet,contentDetails',
     key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? ''
   }).toString()
-  const videosData: YoutubeVideosData = await (
-    await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?${query}&${params}`
-    )
-  ).json()
+  const apiUrl = query.startsWith('id')
+    ? `https://www.googleapis.com/youtube/v3/videos?${query}&${params}`
+    : `https://www.googleapis.com/youtube/v3/playlistItems?${query}&${params}`
+
+  const videosData: YoutubeVideosData = await (await fetch(apiUrl)).json()
+
+  const items = videosData.items.map((item) => ({
+    id: item.kind === 'youtube#video' ? item.id : item.contentDetails.videoId,
+    title: item.snippet.title,
+    description: item.snippet.description,
+    image: item.snippet.thumbnails.default.url,
+    source: VideoBlockSource.youTube,
+    duration:
+      item.kind === 'youtube#video'
+        ? parseISO8601Duration(item.contentDetails.duration)
+        : undefined
+  }))
+
   return {
     nextPageToken: videosData.nextPageToken,
-    items: videosData.items.map((video) => ({
-      id: video.id,
-      title: video.snippet.title,
-      description: video.snippet.description,
-      image: video.snippet.thumbnails.default.url,
-      duration: parseISO8601Duration(video.contentDetails.duration),
-      source: VideoBlockSource.youTube
-    }))
+    items
   }
 }
 
@@ -88,13 +95,16 @@ export function VideoFromYouTube({
       const pageToken = previousPageData?.nextPageToken ?? ''
       return id != null
         ? `id=${id}`
-        : `chart=mostPopular&pageToken=${pageToken}`
+        : `playlistId=${
+            process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST_ID ?? ''
+          }&pageToken=${pageToken}`
     },
     fetcher
   )
+
   const loading = Boolean(
     (data == null && error == null) ||
-      (size > 0 && data && typeof data[size - 1] === 'undefined')
+      (size > 0 && data != null && typeof data[size - 1] === 'undefined')
   )
 
   const videos = reduce(

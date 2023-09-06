@@ -1,12 +1,28 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../Team/TeamProvider'
 import { defaultJourney } from '../data'
-import { CONVERT_TEMPLATE, JourneyViewFab } from './JourneyViewFab'
+
+import { JourneyViewFab } from './JourneyViewFab'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -30,13 +46,15 @@ describe('JourneyViewFab', () => {
   it('should redirect to journey editor on edit button click', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <SnackbarProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider
+              value={{ journey: defaultJourney, variant: 'admin' }}
+            >
               <JourneyViewFab />
             </JourneyProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
+          </TeamProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
@@ -48,18 +66,18 @@ describe('JourneyViewFab', () => {
   it('should redirect to template editor on edit button click', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <SnackbarProvider>
+        <SnackbarProvider>
+          <TeamProvider>
             <JourneyProvider
               value={{
                 journey: { ...defaultJourney, template: true },
-                admin: true
+                variant: 'admin'
               }}
             >
               <JourneyViewFab isPublisher />
             </JourneyProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
+          </TeamProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
@@ -71,6 +89,7 @@ describe('JourneyViewFab', () => {
   it('should convert template to journey on use template click', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
     const result = jest.fn(() => {
       return {
         data: {
@@ -80,33 +99,60 @@ describe('JourneyViewFab', () => {
         }
       }
     })
-    const { getByRole, getByText } = render(
+
+    const result2 = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: CONVERT_TEMPLATE,
+              query: JOURNEY_DUPLICATE,
               variables: {
-                id: 'journey-id'
+                id: 'journey-id',
+                teamId: 'teamId'
               }
             },
             result
+          },
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: result2
           }
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider>
+          <TeamProvider>
             <JourneyProvider
               value={{ journey: { ...defaultJourney, template: true } }}
             >
               <JourneyViewFab />
             </JourneyProvider>
-          </FlagsProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
+    await waitFor(() => expect(result2).toHaveBeenCalled())
     expect(getByText('Use Template')).toBeInTheDocument()
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('button', { name: 'Use Template Use It' }))
+    const muiSelect = getByTestId('team-duplicate-select')
+    const muiSelectDropDownButton = await within(muiSelect).getByRole('button')
+    await fireEvent.mouseDown(muiSelectDropDownButton)
+    const muiSelectOptions = await getByRole('option', {
+      name: 'Team Name'
+    })
+    fireEvent.click(muiSelectOptions)
+    await waitFor(() => fireEvent.click(getByText('Add')))
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -118,14 +164,28 @@ describe('JourneyViewFab', () => {
   })
 
   it('should send custom event to GTM when preview button is clicked', async () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
+    const result2 = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+
     const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: CONVERT_TEMPLATE,
+              query: JOURNEY_DUPLICATE,
               variables: {
-                id: 'journey-id'
+                id: 'journey-id',
+                teamId: 'teamId'
               }
             },
             result: {
@@ -135,22 +195,29 @@ describe('JourneyViewFab', () => {
                 }
               }
             }
+          },
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: result2
           }
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider>
+          <TeamProvider>
             <JourneyProvider
               value={{ journey: { ...defaultJourney, template: true } }}
             >
               <JourneyViewFab />
             </JourneyProvider>
-          </FlagsProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('button', { name: 'Use Template Use It' }))
+
     await waitFor(() =>
       expect(mockedDataLayer).toHaveBeenCalledWith({
         dataLayer: {

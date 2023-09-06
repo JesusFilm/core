@@ -1,16 +1,18 @@
-import { ReactElement, ComponentProps, useState } from 'react'
-import { Dialog } from '@core/shared/ui/Dialog'
-import TextField from '@mui/material/TextField'
-import CircularProgress from '@mui/material/CircularProgress'
+import { gql, useQuery } from '@apollo/client'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
+import CircularProgress from '@mui/material/CircularProgress'
+import TextField from '@mui/material/TextField'
+import { ComponentProps, ReactElement, useState } from 'react'
+import Player from 'video.js/dist/types/player'
+
+import { Dialog } from '@core/shared/ui/Dialog'
 import {
   Language,
   LanguageAutocomplete
 } from '@core/shared/ui/LanguageAutocomplete'
-import { gql, useQuery } from '@apollo/client'
-import { VideoJsPlayer } from 'video.js'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { GetSubtitles } from '../../../__generated__/GetSubtitles'
 import { useVideo } from '../../libs/videoContext'
 
@@ -36,7 +38,7 @@ export const GET_SUBTITLES = gql`
 
 interface SubtitleDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  player: VideoJsPlayer
+  player: Player & { textTracks: () => TextTrackList }
 }
 
 export function SubtitleDialog({

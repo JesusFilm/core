@@ -1,8 +1,10 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
+
 import { watchConfig } from '../../../libs/storybook/config'
+
 import { SeeAllVideos } from './SeeAllVideos'
 
-const SeeAllVideosStory = {
+const SeeAllVideosStory: Meta<typeof SeeAllVideos> = {
   ...watchConfig,
   component: SeeAllVideos,
   title: 'Watch/VideoContainerPage/SeeAllVideos',
@@ -11,8 +13,10 @@ const SeeAllVideosStory = {
   }
 }
 
-const Template: ComponentStory<typeof SeeAllVideos> = () => <SeeAllVideos />
+const Template: StoryObj<typeof SeeAllVideos> = {
+  render: () => <SeeAllVideos />
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default SeeAllVideosStory as Meta
+export default SeeAllVideosStory

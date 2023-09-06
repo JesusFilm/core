@@ -1,12 +1,12 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
 import Container from '@mui/material/Container'
 import MuiTypography, { TypographyTypeMap } from '@mui/material/Typography'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
-import { simpleComponentConfig } from '../../../simpleComponentConfig'
 import { ThemeName } from '../..'
+import { simpleComponentConfig } from '../../../simpleComponentConfig'
 
-const TypographyDemo = {
+const TypographyDemo: Meta<typeof MuiTypography> = {
   ...simpleComponentConfig,
   component: MuiTypography,
   title: 'Website Theme',
@@ -17,37 +17,41 @@ const TypographyDemo = {
   }
 }
 
-const Template: Story<
+const Template: StoryObj<
   ComponentProps<typeof MuiTypography> & {
     variants: Array<TypographyTypeMap['props']['variant']>
   }
-> = (args) => (
-  <Container>
-    {args.variants.map((variant) => (
-      <MuiTypography {...args} variant={variant}>
-        {variant}
-        <br />
-      </MuiTypography>
-    ))}
-  </Container>
-)
-
-export const Typography = Template.bind({})
-Typography.args = {
-  variants: [
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'subtitle1',
-    'subtitle2',
-    'body1',
-    'body2',
-    'overline1',
-    'overline2'
-  ]
+> = {
+  render: (args) => (
+    <Container>
+      {args.variants.map((variant) => (
+        <MuiTypography {...args} variant={variant}>
+          {variant}
+          <br />
+        </MuiTypography>
+      ))}
+    </Container>
+  )
 }
 
-export default TypographyDemo as Meta
+export const Typography = {
+  ...Template,
+  args: {
+    variants: [
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'subtitle1',
+      'subtitle2',
+      'body1',
+      'body2',
+      'overline1',
+      'overline2'
+    ]
+  }
+}
+
+export default TypographyDemo

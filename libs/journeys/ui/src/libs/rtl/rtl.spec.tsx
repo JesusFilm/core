@@ -1,12 +1,13 @@
 import {
-  JourneyFields as Journey,
-  JourneyFields_language as Language
-} from '../JourneyProvider/__generated__/JourneyFields'
-import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import {
+  JourneyFields as Journey,
+  JourneyFields_language as Language
+} from '../JourneyProvider/__generated__/JourneyFields'
+
 import { getJourneyRTL } from '.'
 
 const language: Language = {
@@ -40,7 +41,10 @@ const journey: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  chatButtons: [],
+  host: null,
+  team: null
 }
 
 describe('getJourneyRTL', () => {

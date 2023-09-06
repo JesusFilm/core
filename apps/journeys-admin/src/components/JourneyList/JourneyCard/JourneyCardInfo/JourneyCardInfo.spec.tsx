@@ -1,13 +1,15 @@
-import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { publishedJourney } from '../../journeyListData'
+import { render } from '@testing-library/react'
+
 import {
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_userJourneys as UserJourney
-} from '../../../../../__generated__/GetJourneys'
-import { ThemeProvider } from '../../../ThemeProvider'
-import { JourneyCardVariant } from '../journeyCardVariant'
+  GetAdminJourneys_journeys as Journey,
+  GetAdminJourneys_journeys_userJourneys as UserJourney
+} from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '../../../ThemeProvider'
+import { publishedJourney } from '../../journeyListData'
+import { JourneyCardVariant } from '../journeyCardVariant'
+
 import { JourneyCardInfo } from '.'
 
 jest.mock('react-i18next', () => ({

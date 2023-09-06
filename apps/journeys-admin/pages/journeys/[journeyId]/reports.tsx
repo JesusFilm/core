@@ -1,4 +1,5 @@
-import { ReactElement } from 'react'
+import Box from '@mui/material/Box'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useAuthUser,
@@ -6,22 +7,19 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import Box from '@mui/material/Box'
-import { useRouter } from 'next/router'
+
+import { ACCEPT_ALL_INVITES } from '../..'
+import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 import { GetJourney } from '../../../__generated__/GetJourney'
-import { PageWrapper } from '../../../src/components/PageWrapper'
-import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
-import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
-import i18nConfig from '../../../next-i18next.config'
-import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
-import { createApolloClient } from '../../../src/libs/apolloClient'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
-import { ACCEPT_USER_INVITE } from '../..'
-import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
+import { PageWrapper } from '../../../src/components/NewPageWrapper'
+import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
+import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
+import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -30,8 +28,6 @@ function JourneyReportsPage(): ReactElement {
 
   const journeyId = router.query.journeyId as string
 
-  useTermsRedirect()
-
   return (
     <>
       <NextSeo title={t('Journey Report')} />
@@ -39,9 +35,13 @@ function JourneyReportsPage(): ReactElement {
         title={t('Journey Report')}
         authUser={AuthUser}
         backHref={`/journeys/${journeyId}`}
-        router={router}
       >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
+          <ReportsNavigation
+            reportType={JourneysReportType.singleFull}
+            journeyId={journeyId}
+            selected="journeys"
+          />
           <MemoizedDynamicReport
             reportType={JourneysReportType.singleFull}
             journeyId={journeyId}
@@ -55,21 +55,18 @@ function JourneyReportsPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale, query }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  if (AuthUser == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const token = await AuthUser.getIdToken()
-  const apolloClient = createApolloClient(token != null ? token : '')
+  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
 
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
+  if (redirect != null) return { redirect }
+
+  await apolloClient.mutate<AcceptAllInvites>({
+    mutation: ACCEPT_ALL_INVITES
   })
 
   try {
@@ -96,11 +93,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })

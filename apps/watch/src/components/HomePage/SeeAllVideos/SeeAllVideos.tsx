@@ -1,12 +1,12 @@
-import { ReactElement } from 'react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import Link from 'next/link'
+import NextLink from 'next/link'
+import { ReactElement } from 'react'
 
 export function SeeAllVideos(): ReactElement {
   return (
     <Stack sx={{ pt: '54px', alignItems: 'center' }}>
-      <Link href="/videos" passHref>
+      <NextLink href="/videos" passHref legacyBehavior>
         <Button
           size="small"
           color="secondary"
@@ -19,7 +19,7 @@ export function SeeAllVideos(): ReactElement {
         >
           See All
         </Button>
-      </Link>
+      </NextLink>
     </Stack>
   )
 }

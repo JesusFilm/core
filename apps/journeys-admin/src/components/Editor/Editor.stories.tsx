@@ -1,7 +1,10 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { journeysAdminConfig } from '../../libs/storybook'
+
+import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -14,13 +17,15 @@ import {
   TypographyVariant,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
+import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
-import { JourneyEdit } from './JourneyEdit'
+
 import { EditToolbar } from './EditToolbar'
+import { JourneyEdit } from './JourneyEdit'
+
 import { Editor } from '.'
 
-const EditorStory = {
+const EditorStory: Meta<typeof Editor> = {
   ...journeysAdminConfig,
   component: Editor,
   title: 'Journeys-Admin/Editor',
@@ -30,6 +35,9 @@ const EditorStory = {
     chromatic: {
       ...journeysAdminConfig.parameters.chromatic,
       diffThreshold: 0.75
+    },
+    docs: {
+      source: { type: 'code' }
     }
   }
 }
@@ -594,89 +602,111 @@ const blocks: GetJourney_journey_blocks[] = [
   }
 ]
 
-const Template: Story = (args) => (
-  <MockedProvider>
-    <FlagsProvider>
-      <Editor journey={args.journey}>
-        <PageWrapper
-          title={args.journey?.title ?? 'Edit Journey'}
-          showDrawer
-          menu={<EditToolbar />}
-          backHref="/journeys/nua-journey-ep-3-decision"
-        >
-          <JourneyEdit />
-        </PageWrapper>
-      </Editor>
-    </FlagsProvider>
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  journey: {
-    __typename: 'Journey',
-    id: 'journeyId',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    title: 'NUA Journey: Ep.3 – Decision',
-    slug: 'nua-journey-ep-3-decision',
-    description: 'my cool journey',
-    language: {
-      __typename: 'Language',
-      id: '529',
-      bcp47: 'en',
-      iso3: 'eng',
-      name: [
-        {
-          __typename: 'Translation',
-          value: 'English',
-          primary: true
-        }
-      ]
-    },
-    status: JourneyStatus.draft,
-    createdAt: '2021-11-19T12:34:56.647Z',
-    publishedAt: null,
-    primaryImageBlock: null,
-    userJourneys: [],
-    blocks
+const Template: StoryObj<typeof Editor> = {
+  render: (args) => {
+    console.log(args)
+    return (
+      <MockedProvider>
+        <FlagsProvider>
+          <Editor
+            journey={args.journey}
+            view={args.view ?? ActiveJourneyEditContent.Canvas}
+          >
+            <PageWrapper
+              title={args.journey?.title ?? 'Edit Journey'}
+              showDrawer
+              menu={<EditToolbar />}
+              backHref="/journeys/nua-journey-ep-3-decision"
+            >
+              <JourneyEdit />
+            </PageWrapper>
+          </Editor>
+        </FlagsProvider>
+      </MockedProvider>
+    )
   }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  journey: undefined
-}
-
-export const RTL = Template.bind({})
-RTL.args = {
-  journey: {
-    __typename: 'Journey',
-    id: 'journeyId',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    title: 'NUA Journey: Ep.3 – Decision',
-    slug: 'nua-journey-ep-3-decision',
-    description: 'my cool journey',
-    language: {
-      __typename: 'Language',
-      id: '529',
-      bcp47: 'ar',
-      name: [
-        {
-          __typename: 'Translation',
-          value: 'Arabic',
-          primary: true
-        }
-      ]
-    },
-    status: JourneyStatus.draft,
-    createdAt: '2021-11-19T12:34:56.647Z',
-    publishedAt: null,
-    primaryImageBlock: null,
-    userJourneys: [],
-    blocks
+export const Default = {
+  ...Template,
+  args: {
+    journey: {
+      __typename: 'Journey',
+      id: 'journeyId',
+      themeName: ThemeName.base,
+      themeMode: ThemeMode.light,
+      title: 'NUA Journey: Ep.3 – Decision',
+      slug: 'nua-journey-ep-3-decision',
+      description: 'my cool journey',
+      language: {
+        __typename: 'Language',
+        id: '529',
+        bcp47: 'en',
+        iso3: 'eng',
+        name: [
+          {
+            __typename: 'Translation',
+            value: 'English',
+            primary: true
+          }
+        ]
+      },
+      status: JourneyStatus.draft,
+      createdAt: '2021-11-19T12:34:56.647Z',
+      publishedAt: null,
+      primaryImageBlock: null,
+      userJourneys: [],
+      blocks
+    }
   }
 }
 
-export default EditorStory as Meta
+export const SocialPreview = {
+  ...Template,
+  args: {
+    ...Default.args,
+    view: ActiveJourneyEditContent.SocialPreview
+  }
+}
+
+export const Loading = {
+  ...Template,
+  args: {
+    journey: undefined
+  }
+}
+
+export const RTL = {
+  ...Template,
+  args: {
+    journey: {
+      __typename: 'Journey',
+      id: 'journeyId',
+      themeName: ThemeName.base,
+      themeMode: ThemeMode.light,
+      title: 'NUA Journey: Ep.3 – Decision',
+      slug: 'nua-journey-ep-3-decision',
+      description: 'my cool journey',
+      language: {
+        __typename: 'Language',
+        id: '529',
+        bcp47: 'ar',
+        name: [
+          {
+            __typename: 'Translation',
+            value: 'Arabic',
+            primary: true
+          }
+        ]
+      },
+      status: JourneyStatus.draft,
+      createdAt: '2021-11-19T12:34:56.647Z',
+      publishedAt: null,
+      primaryImageBlock: null,
+      userJourneys: [],
+      blocks
+    }
+  }
+}
+
+export default EditorStory

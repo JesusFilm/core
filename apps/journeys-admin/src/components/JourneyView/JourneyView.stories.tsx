@@ -1,17 +1,24 @@
-import { Story, Meta } from '@storybook/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { NextRouter } from 'next/router'
-import { journeysAdminConfig } from '../../libs/storybook'
-import { PageWrapper } from '../PageWrapper'
-import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
+
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { GetUserRole } from '../../../__generated__/GetUserRole'
 import { Role } from '../../../__generated__/globalTypes'
-import { JourneyView, GET_USER_ROLE } from './JourneyView'
+import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
+import { journeysAdminConfig } from '../../libs/storybook'
+import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
+import { PageWrapper } from '../PageWrapper'
+import { TeamProvider } from '../Team/TeamProvider'
+
 import { publishedJourney } from './data'
+import { JourneyView } from './JourneyView'
 import { Menu } from './Menu'
 
-const JourneyViewStory = {
+const JourneyViewStory: Meta<typeof JourneyView> = {
   ...journeysAdminConfig,
   component: JourneyView,
   title: 'Journeys-Admin/JourneyView',
@@ -21,52 +28,80 @@ const JourneyViewStory = {
   }
 }
 
-const Template: Story = ({ ...args }) => (
-  <ApolloLoadingProvider>
-    <FlagsProvider>
-      <JourneyProvider value={{ journey: args.journey }}>
-        <PageWrapper
-          title="Journey Details"
-          showDrawer
-          backHref="/"
-          menu={<Menu />}
-          router={{ pathname: undefined } as unknown as NextRouter}
-        >
-          <JourneyView journeyType="Journey" />
-        </PageWrapper>
-      </JourneyProvider>
-    </FlagsProvider>
-  </ApolloLoadingProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  journey: publishedJourney
-}
-
-export const Loading = Template.bind({})
-Loading.args = {
-  journey: undefined
-}
-
-const JourneyTemplate: Story = ({ ...args }) => (
-  <ApolloLoadingProvider>
-    <FlagsProvider>
-      <MockedProvider mocks={args.mocks}>
-        <JourneyProvider value={{ journey: args.journey }}>
-          <PageWrapper
-            title="Journey Template"
-            showDrawer
-            backHref="/"
-            menu={<Menu />}
+const Template: StoryObj<
+  ComponentProps<typeof JourneyView> & { journey: Journey }
+> = {
+  render: ({ ...args }) => (
+    <ApolloLoadingProvider>
+      <FlagsProvider>
+        <TeamProvider>
+          <JourneyProvider
+            value={{
+              journey: args.journey,
+              variant: 'admin'
+            }}
           >
-            <JourneyView journeyType="Template" />
-          </PageWrapper>
-        </JourneyProvider>
-      </MockedProvider>
-    </FlagsProvider>
-  </ApolloLoadingProvider>
-)
+            <PageWrapper
+              title="Journey Details"
+              showDrawer
+              backHref="/"
+              menu={<Menu />}
+            >
+              <JourneyView journeyType="Journey" />
+            </PageWrapper>
+          </JourneyProvider>
+        </TeamProvider>
+      </FlagsProvider>
+    </ApolloLoadingProvider>
+  )
+}
+
+export const Default = {
+  ...Template,
+  args: {
+    journey: publishedJourney
+  }
+}
+
+export const Loading = {
+  ...Template,
+  args: {
+    journey: undefined
+  }
+}
+
+const JourneyTemplate: StoryObj<
+  ComponentProps<typeof JourneyView> & {
+    mocks: [MockedResponse<GetUserRole>]
+    journey: Journey
+  }
+> = {
+  render: ({ ...args }) => (
+    <ApolloLoadingProvider>
+      <FlagsProvider>
+        <MockedProvider mocks={args.mocks}>
+          <TeamProvider>
+            <JourneyProvider
+              value={{
+                journey: args.journey,
+                variant: 'admin'
+              }}
+            >
+              <PageWrapper
+                title="Journey Template"
+                showDrawer
+                backHref="/"
+                menu={<Menu />}
+              >
+                <JourneyView journeyType="Template" />
+              </PageWrapper>
+            </JourneyProvider>
+          </TeamProvider>
+        </MockedProvider>
+      </FlagsProvider>
+    </ApolloLoadingProvider>
+  )
+}
 
 const template = {
   ...publishedJourney,
@@ -87,34 +122,40 @@ const template = {
   }
 }
 
-export const DefaultTemplate = JourneyTemplate.bind({})
-DefaultTemplate.args = {
-  journey: template
+export const DefaultTemplate = {
+  ...JourneyTemplate,
+  args: {
+    journey: template
+  }
 }
 
-export const PublisherTemplate = JourneyTemplate.bind({})
-PublisherTemplate.args = {
-  journey: template,
-  mocks: [
-    {
-      request: {
-        query: GET_USER_ROLE
-      },
-      result: {
-        data: {
-          getUserRole: {
-            id: '1',
-            roles: [Role.publisher]
+export const PublisherTemplate = {
+  ...JourneyTemplate,
+  args: {
+    journey: template,
+    mocks: [
+      {
+        request: {
+          query: GET_USER_ROLE
+        },
+        result: {
+          data: {
+            getUserRole: {
+              id: '1',
+              roles: [Role.publisher]
+            }
           }
         }
       }
-    }
-  ]
+    ]
+  }
 }
 
-export const LoadingTemplate = JourneyTemplate.bind({})
-LoadingTemplate.args = {
-  journey: null
+export const LoadingTemplate = {
+  ...JourneyTemplate,
+  args: {
+    journey: null
+  }
 }
 
-export default JourneyViewStory as Meta
+export default JourneyViewStory

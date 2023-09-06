@@ -1,12 +1,15 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+import { ReactElement, useState } from 'react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { publishedJourney } from '../../data'
+
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
-const EmbedJourneyDialogStory = {
+const EmbedJourneyDialogStory: Meta<typeof EmbedJourneyDialog> = {
   ...journeysAdminConfig,
   component: EmbedJourneyDialog,
   title: 'Journeys-Admin/JourneyView/JourneyLink/EmbedJourneyDialog',
@@ -16,7 +19,7 @@ const EmbedJourneyDialogStory = {
   }
 }
 
-const Template: Story = ({ ...args }) => {
+const EmbedJourneyDialogComponent = ({ ...args }): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -24,7 +27,7 @@ const Template: Story = ({ ...args }) => {
       <JourneyProvider
         value={{
           journey: args.journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EmbedJourneyDialog
@@ -37,9 +40,15 @@ const Template: Story = ({ ...args }) => {
   )
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  journey: publishedJourney
+const Template: StoryObj<typeof EmbedJourneyDialog> = {
+  render: ({ ...args }) => <EmbedJourneyDialogComponent {...args} />
 }
 
-export default EmbedJourneyDialogStory as Meta
+export const Default = {
+  ...Template,
+  args: {
+    journey: publishedJourney
+  }
+}
+
+export default EmbedJourneyDialogStory

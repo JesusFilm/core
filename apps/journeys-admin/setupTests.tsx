@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom'
 import './test/createMatchMedia'
 import crypto from 'crypto'
+
 import { configure } from '@testing-library/react'
+
 import { mswServer } from './test/mswServer'
 
 configure({ asyncUtilTimeout: 2500 })
@@ -29,3 +31,5 @@ Object.defineProperty(window.self, 'crypto', {
 beforeAll(() => mswServer.listen())
 afterEach(() => mswServer.resetHandlers())
 afterAll(() => mswServer.close())
+
+jest.mock('next/router', () => require('next-router-mock'))

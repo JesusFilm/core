@@ -51,9 +51,22 @@ export abstract class IQuery {
 
     abstract getMyCloudflareImages(): Nullable<Nullable<CloudflareImage>[]> | Promise<Nullable<Nullable<CloudflareImage>[]>>;
 
+    abstract getMyCloudflareVideos(): Nullable<Nullable<CloudflareVideo>[]> | Promise<Nullable<Nullable<CloudflareVideo>[]>>;
+
+    abstract getMyCloudflareVideo(id: string): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
+
     abstract listUnsplashCollectionPhotos(collectionId: string, page?: Nullable<number>, perPage?: Nullable<number>, orientation?: Nullable<UnsplashPhotoOrientation>): UnsplashPhoto[] | Promise<UnsplashPhoto[]>;
 
     abstract searchUnsplashPhotos(query: string, page?: Nullable<number>, perPage?: Nullable<number>, orderBy?: Nullable<UnsplashOrderBy>, collections?: Nullable<Nullable<string>[]>, contentFilter?: Nullable<UnsplashContentFilter>, color?: Nullable<UnsplashColor>, orientation?: Nullable<UnsplashPhotoOrientation>): UnsplashQueryResponse | Promise<UnsplashQueryResponse>;
+}
+
+export class CloudflareVideo {
+    __typename?: 'CloudflareVideo';
+    id: string;
+    uploadUrl?: Nullable<string>;
+    userId: string;
+    createdAt: string;
+    readyToStream: boolean;
 }
 
 export class UnsplashQueryResponse {
@@ -139,6 +152,13 @@ export class UnsplashPhotoLinks {
     download_location: string;
 }
 
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
+}
+
 export abstract class IMutation {
     abstract createCloudflareUploadByFile(): Nullable<CloudflareImage> | Promise<Nullable<CloudflareImage>>;
 
@@ -148,7 +168,17 @@ export abstract class IMutation {
 
     abstract cloudflareUploadComplete(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 
+    abstract createCloudflareVideoUploadByFile(uploadLength: number, name: string): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
+
+    abstract createCloudflareVideoUploadByUrl(url: string): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
+
+    abstract deleteCloudflareVideo(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+
     abstract triggerUnsplashDownload(url: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+}
+
+export class Language {
+    id: string;
 }
 
 type Nullable<T> = T | null;

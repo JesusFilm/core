@@ -1,7 +1,12 @@
-import { ComponentProps, ReactElement } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { Story, Meta } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
+import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { journeysConfig } from '../../libs/storybook'
 import {
   basic,
@@ -14,7 +19,7 @@ import {
 
 import { EmbeddedPreview } from './EmbeddedPreview'
 
-const Demo = {
+const Demo: Meta<typeof EmbeddedPreview> = {
   ...journeysConfig,
   component: EmbeddedPreview,
   title: 'Journeys/EmbeddedPreview',
@@ -24,42 +29,84 @@ const Demo = {
   }
 }
 
-const Template: Story<ComponentProps<typeof EmbeddedPreview>> = ({
-  ...args
-}): ReactElement => (
-  <MockedProvider>
-    <EmbeddedPreview {...args} />
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  blocks: basic
+const Template: StoryObj<typeof EmbeddedPreview> = {
+  render: ({ ...args }): ReactElement => (
+    <MockedProvider>
+      <SnackbarProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              seoTitle: 'my journey',
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: 'English',
+                    primary: true
+                  }
+                ]
+              }
+            } as unknown as Journey,
+            variant: 'embed'
+          }}
+        >
+          <EmbeddedPreview {...args} />
+        </JourneyProvider>
+      </SnackbarProvider>
+    </MockedProvider>
+  )
 }
 
-export const WithContent = Template.bind({})
-WithContent.args = {
-  blocks: imageBlocks
+export const Default = {
+  ...Template,
+  args: {
+    blocks: basic
+  }
 }
 
-export const WithVideo = Template.bind({})
-WithVideo.args = {
-  blocks: videoBlocks
+export const WithContent = {
+  ...Template,
+  args: {
+    blocks: imageBlocks
+  }
 }
 
-export const WithVideoNoPoster = Template.bind({})
-WithVideoNoPoster.args = {
-  blocks: videoBlocksNoPoster
+export const WithVideo = {
+  ...Template,
+  args: {
+    blocks: videoBlocks
+  }
 }
 
-export const WithVideoNoVideo = Template.bind({})
-WithVideoNoVideo.args = {
-  blocks: videoBlocksNoVideo
+export const WithVideoNoPoster = {
+  ...Template,
+  args: {
+    blocks: videoBlocksNoPoster
+  }
 }
 
-export const WithVideoLoop = Template.bind({})
-WithVideoLoop.args = {
-  blocks: videoLoop
+export const WithVideoNoVideo = {
+  ...Template,
+  args: {
+    blocks: videoBlocksNoVideo
+  }
 }
 
-export default Demo as Meta
+export const WithVideoLoop = {
+  ...Template,
+  args: {
+    blocks: videoLoop
+  },
+  parameters: {
+    chromatic: { disableSnapshot: true }
+  }
+}
+
+export default Demo

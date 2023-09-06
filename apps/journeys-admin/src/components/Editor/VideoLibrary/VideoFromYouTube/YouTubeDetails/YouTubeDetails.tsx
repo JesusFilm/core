@@ -1,21 +1,24 @@
-import videojs from 'video.js'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import Check from '@mui/icons-material/Check'
+import Button from '@mui/material/Button'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import Check from '@mui/icons-material/Check'
-import Skeleton from '@mui/material/Skeleton'
-import 'video.js/dist/video-js.css'
-import useSWR from 'swr'
 import fetch from 'node-fetch'
-import { parseISO8601Duration, YoutubeVideosData } from '../VideoFromYouTube'
-import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
-import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+import { ReactElement, useEffect, useRef, useState } from 'react'
+import useSWR from 'swr'
+import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 
-const fetcher = async (
-  id: string
-): Promise<YoutubeVideosData['items'][number]> => {
+import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
+import { parseISO8601Duration } from '../../../../../libs/parseISO8601Duration'
+import { VideoDescription } from '../../VideoDescription'
+import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+import type { YoutubeVideo, YoutubeVideosData } from '../VideoFromYouTube'
+
+import 'video.js/dist/video-js.css'
+
+const fetcher = async (id: string): Promise<YoutubeVideo> => {
   const videosQuery = new URLSearchParams({
     part: 'snippet,contentDetails',
     key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
@@ -24,7 +27,7 @@ const fetcher = async (
   const videosData: YoutubeVideosData = await (
     await fetch(`https://www.googleapis.com/youtube/v3/videos?${videosQuery}`)
   ).json()
-  return videosData.items[0]
+  return videosData.items[0] as YoutubeVideo
 }
 
 export function YouTubeDetails({
@@ -33,9 +36,9 @@ export function YouTubeDetails({
   onSelect
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
+  const playerRef = useRef<Player>()
   const [playing, setPlaying] = useState(false)
-  const { data, error } = useSWR<YoutubeVideosData['items'][number]>(
+  const { data, error } = useSWR<YoutubeVideo>(
     () => (open ? id : null),
     fetcher
   )
@@ -55,6 +58,8 @@ export function YouTubeDetails({
     time < 3600
       ? new Date(time * 1000).toISOString().substring(14, 19)
       : new Date(time * 1000).toISOString().substring(11, 19)
+
+  const videoDescription = data?.snippet.description ?? ''
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -129,9 +134,9 @@ export function YouTubeDetails({
           </Box>
           <Box>
             <Typography variant="subtitle1">{data?.snippet.title}</Typography>
-            <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap' }}>
-              {data?.snippet.description}
-            </Typography>
+            <Box sx={{ display: 'inline', position: 'relative' }}>
+              <VideoDescription videoDescription={videoDescription} />
+            </Box>
           </Box>
         </>
       )}

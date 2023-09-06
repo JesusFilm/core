@@ -1,21 +1,21 @@
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 import fetch, { Response } from 'node-fetch'
+
 import {
-  getArclightMediaLanguages,
-  getArclightMediaComponents,
-  getArclightMediaComponentLanguages,
-  getArclightMediaComponentLinks,
-  transformArclightMediaComponentToVideo,
-  transformArclightMediaComponentLanguageToVideoVariant,
-  ArclightMediaComponentLanguage,
   ArclightMediaComponent,
+  ArclightMediaComponentLanguage,
   ArclightMediaLanguage,
   Language,
-  transformArclightMediaLanguageToLanguage,
   MediaComponent,
-  Video,
   fetchMediaComponentsAndTransformToVideos,
-  fetchMediaLanguagesAndTransformToLanguages
+  fetchMediaLanguagesAndTransformToLanguages,
+  getArclightMediaComponentLanguages,
+  getArclightMediaComponentLinks,
+  getArclightMediaComponents,
+  getArclightMediaLanguages,
+  transformArclightMediaComponentLanguageToVideoVariant,
+  transformArclightMediaComponentToVideo,
+  transformArclightMediaLanguageToLanguage
 } from './arclight'
 
 jest.mock('node-fetch', () => {
@@ -31,6 +31,10 @@ const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 describe('arclight', () => {
   beforeEach(() => {
     mockFetch.mockClear()
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   describe('getArclightMediaLanguages', () => {
@@ -68,7 +72,7 @@ describe('arclight', () => {
       await expect(getArclightMediaComponents(1)).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
         expect.stringContaining(
-          'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey='
+          'https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=1&apiKey='
         ),
         undefined
       )
@@ -80,13 +84,13 @@ describe('arclight', () => {
         json: async () =>
           await Promise.resolve({
             message:
-              'Page [30] does not exist. Given a limit of [25] per page, value must not be greater than [29].'
+              'Page [30] does not exist. Given a limit of [10] per page, value must not be greater than [29].'
           })
       } as unknown as Response)
       await expect(getArclightMediaComponents(1)).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
         expect.stringContaining(
-          'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey='
+          'https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=1&apiKey='
         ),
         undefined
       )
@@ -137,6 +141,7 @@ describe('arclight', () => {
         undefined
       )
     })
+
     it('handles null media component links from arclight', async () => {
       const request = mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -203,7 +208,7 @@ describe('arclight', () => {
         mobileCinematicHigh: 'mobileCinematicHigh'
       },
       studyQuestions: [],
-      subType: 'video',
+      subType: 'episode',
       slug: 'title'
     }
     const language: Language = {
@@ -214,16 +219,19 @@ describe('arclight', () => {
     }
     const videoVariant = {
       id: 'refId',
+      videoId: 'mediaComponentId',
       languageId: '529',
       duration: 1,
       hls: 'hlsUrl',
       subtitle: [
         {
+          videoVariantId: 'refId',
           languageId: '529',
           primary: true,
           value: 'subtitleUrl529'
         },
         {
+          videoVariantId: 'refId',
           languageId: '2048',
           primary: false,
           value: 'subtitleUrl2048'
@@ -231,11 +239,13 @@ describe('arclight', () => {
       ],
       downloads: [
         {
+          videoVariantId: 'refId',
           quality: 'low',
           size: 1024,
           url: 'lowUrl'
         },
         {
+          videoVariantId: 'refId',
           quality: 'high',
           size: 1024,
           url: 'highUrl'
@@ -262,12 +272,13 @@ describe('arclight', () => {
           language
         )
       ).toEqual({
-        ...videoVariant,
-        downloads: [],
+        ...omit(videoVariant, 'downloads'),
         subtitle: [],
-        hls: undefined
+        hls: null,
+        videoId: mediaComponent.mediaComponentId
       })
     })
+
     it('handles null duration when media component is series', () => {
       expect(
         transformArclightMediaComponentLanguageToVideoVariant(
@@ -278,11 +289,11 @@ describe('arclight', () => {
           language
         )
       ).toEqual({
-        ...videoVariant,
+        ...omit(videoVariant, 'downloads'),
         duration: 0,
-        hls: undefined,
-        downloads: [],
-        subtitle: []
+        hls: null,
+        subtitle: [],
+        videoId: mediaComponent.mediaComponentId
       })
     })
 
@@ -303,8 +314,9 @@ describe('arclight', () => {
           mediaComponent,
           language
         )
-      ).toEqual({ ...videoVariant, hls: undefined })
+      ).toEqual({ ...videoVariant, hls: null })
     })
+
     it('handles null duration', () => {
       expect(
         transformArclightMediaComponentLanguageToVideoVariant(
@@ -315,7 +327,7 @@ describe('arclight', () => {
           mediaComponent,
           language
         )
-      ).toEqual({ ...videoVariant, duration: 0, hls: undefined })
+      ).toEqual({ ...videoVariant, duration: 0, hls: null })
     })
   })
 
@@ -331,7 +343,7 @@ describe('arclight', () => {
         mobileCinematicHigh: 'mobileCinematicHigh'
       },
       studyQuestions: [],
-      subType: 'video'
+      subType: 'episode'
     }
     const mediaComponentLanguages: ArclightMediaComponentLanguage[] = [
       {
@@ -378,15 +390,15 @@ describe('arclight', () => {
         slug: 'english'
       }
     ]
-    const video: Video = {
-      _key: 'mediaComponentId',
+    const video = {
+      id: 'mediaComponentId',
       childIds: [],
       description: [
         { languageId: '529', primary: true, value: 'longDescription' }
       ],
       image: 'mobileCinematicHigh',
       imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
-      label: 'video',
+      label: 'episode',
       noIndex: false,
       primaryLanguageId: '529',
       seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
@@ -395,20 +407,30 @@ describe('arclight', () => {
         { languageId: '529', primary: true, value: 'shortDescription' }
       ],
       studyQuestions: [],
-      title: [{ languageId: '529', primary: true, value: 'title' }],
+      title: [
+        {
+          videoId: 'mediaComponentId',
+          languageId: '529',
+          primary: true,
+          value: 'title'
+        }
+      ],
       variants: [
         {
           id: 'refId',
+          videoId: 'mediaComponentId',
           languageId: '529',
           duration: 1,
           hls: 'hlsUrl',
           subtitle: [
             {
+              videoVariantId: 'refId',
               languageId: '529',
               primary: true,
               value: 'subtitleUrl529'
             },
             {
+              videoVariantId: 'refId',
               languageId: '2048',
               primary: false,
               value: 'subtitleUrl2048'
@@ -416,11 +438,13 @@ describe('arclight', () => {
           ],
           downloads: [
             {
+              videoVariantId: 'refId',
               quality: 'low',
               size: 1024,
               url: 'lowUrl'
             },
             {
+              videoVariantId: 'refId',
               quality: 'high',
               size: 1024,
               url: 'highUrl'
@@ -432,7 +456,7 @@ describe('arclight', () => {
     }
 
     it('transforms media component to video', () => {
-      const usedSlugs = []
+      const usedSlugs = {}
       expect(
         transformArclightMediaComponentToVideo(
           mediaComponent,
@@ -442,11 +466,11 @@ describe('arclight', () => {
           usedSlugs
         )
       ).toEqual(video)
-      expect(usedSlugs).toEqual(['title'])
+      expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
     })
 
     it('transforms media component to video when slug exists', () => {
-      const usedSlugs = ['title']
+      const usedSlugs = { title: 'id' }
       expect(
         transformArclightMediaComponentToVideo(
           mediaComponent,
@@ -465,11 +489,11 @@ describe('arclight', () => {
           }
         ]
       })
-      expect(usedSlugs).toEqual(['title', 'title-2'])
+      expect(usedSlugs).toEqual({ title: 'id', 'title-2': 'mediaComponentId' })
     })
 
     it('transforms media component to video without languages', () => {
-      const usedSlugs = []
+      const usedSlugs = {}
       expect(
         transformArclightMediaComponentToVideo(
           mediaComponent,
@@ -479,11 +503,11 @@ describe('arclight', () => {
           usedSlugs
         )
       ).toEqual({ ...video, variants: [] })
-      expect(usedSlugs).toEqual(['title'])
+      expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
     })
 
     it('transforms media component to video with study questions', () => {
-      const usedSlugs = []
+      const usedSlugs = {}
       expect(
         transformArclightMediaComponentToVideo(
           { ...mediaComponent, studyQuestions: ['How can I know Jesus?'] },
@@ -502,11 +526,11 @@ describe('arclight', () => {
           }
         ]
       })
-      expect(usedSlugs).toEqual(['title'])
+      expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
     })
 
     it('transforms media component to video with long title', () => {
-      const usedSlugs = []
+      const usedSlugs = {}
       expect(
         transformArclightMediaComponentToVideo(
           {
@@ -523,6 +547,7 @@ describe('arclight', () => {
         ...video,
         title: [
           {
+            videoId: 'mediaComponentId',
             languageId: '529',
             primary: true,
             value:
@@ -553,9 +578,10 @@ describe('arclight', () => {
           }
         ]
       })
-      expect(usedSlugs).toEqual([
-        'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters'
-      ])
+      expect(usedSlugs).toEqual({
+        'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters':
+          'mediaComponentId'
+      })
     })
   })
 
@@ -568,16 +594,16 @@ describe('arclight', () => {
 
     it('adds slug', () => {
       expect(
-        transformArclightMediaLanguageToLanguage(mediaLanguage, []).slug
-      ).toEqual('english-new-zealand')
+        transformArclightMediaLanguageToLanguage(mediaLanguage, {}).slug
+      ).toBe('english-new-zealand')
     })
 
     it('when slug already used then slug value will have number following', () => {
       expect(
-        transformArclightMediaLanguageToLanguage(mediaLanguage, [
-          'english-new-zealand'
-        ]).slug
-      ).toEqual('english-new-zealand-2')
+        transformArclightMediaLanguageToLanguage(mediaLanguage, {
+          'english-new-zealand': 'id'
+        }).slug
+      ).toBe('english-new-zealand-2')
     })
   })
 
@@ -613,80 +639,87 @@ describe('arclight', () => {
 
   describe('fetchMediaComponentsAndTransformToVideos', () => {
     it('returns a collection of videos', async () => {
-      mockFetch.mockImplementation(async (url) => {
-        let response
-        switch (url) {
-          case 'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey=':
-            response = {
-              _embedded: {
-                mediaComponents: [
-                  {
-                    mediaComponentId: 'mediaComponentId',
-                    primaryLanguageId: 529,
-                    title: 'title',
-                    shortDescription: 'shortDescription',
-                    longDescription: 'longDescription',
-                    metadataLanguageTag: 'metadataLanguageTag',
-                    imageUrls: {
-                      mobileCinematicHigh: 'mobileCinematicHigh'
-                    },
-                    studyQuestions: [],
-                    subType: 'video'
-                  }
-                ]
-              }
+      mockFetch.mockImplementation(async (url: string) => {
+        let response = {}
+        if (
+          url.startsWith(
+            'https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=1&apiKey='
+          )
+        )
+          response = {
+            _embedded: {
+              mediaComponents: [
+                {
+                  mediaComponentId: 'mediaComponentId',
+                  primaryLanguageId: 529,
+                  title: 'title',
+                  shortDescription: 'shortDescription',
+                  longDescription: 'longDescription',
+                  metadataLanguageTag: 'metadataLanguageTag',
+                  imageUrls: {
+                    mobileCinematicHigh: 'mobileCinematicHigh'
+                  },
+                  studyQuestions: [],
+                  subType: 'episode'
+                }
+              ]
             }
-            break
-          case 'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey=':
-            response = {
-              linkedMediaComponentIds: {
-                contains: ['otherMediaComponentId']
-              }
+          }
+        else if (
+          url.startsWith(
+            'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey='
+          )
+        )
+          response = {
+            linkedMediaComponentIds: {
+              contains: ['otherMediaComponentId']
             }
-            break
-          case 'https://api.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey=':
-            response = {
-              _embedded: {
-                mediaComponentLanguage: [
-                  {
-                    refId: 'refId',
-                    languageId: 529,
-                    lengthInMilliseconds: 1000,
-                    subtitleUrls: {
-                      vtt: [
-                        {
-                          languageId: 529,
-                          url: 'subtitleUrl529'
-                        },
-                        {
-                          languageId: 2048,
-                          url: 'subtitleUrl2048'
-                        }
-                      ]
-                    },
-                    streamingUrls: {
-                      hls: [
-                        {
-                          url: 'hlsUrl'
-                        }
-                      ]
-                    },
-                    downloadUrls: {
-                      low: {
-                        url: 'lowUrl',
-                        sizeInBytes: 1024
+          }
+        else if (
+          url.startsWith(
+            'https://api.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey='
+          )
+        )
+          response = {
+            _embedded: {
+              mediaComponentLanguage: [
+                {
+                  refId: 'refId',
+                  languageId: 529,
+                  lengthInMilliseconds: 1000,
+                  subtitleUrls: {
+                    vtt: [
+                      {
+                        languageId: 529,
+                        url: 'subtitleUrl529'
                       },
-                      high: {
-                        url: 'highUrl',
-                        sizeInBytes: 1024
+                      {
+                        languageId: 2048,
+                        url: 'subtitleUrl2048'
                       }
+                    ]
+                  },
+                  streamingUrls: {
+                    hls: [
+                      {
+                        url: 'hlsUrl'
+                      }
+                    ]
+                  },
+                  downloadUrls: {
+                    low: {
+                      url: 'lowUrl',
+                      sizeInBytes: 1024
+                    },
+                    high: {
+                      url: 'highUrl',
+                      sizeInBytes: 1024
                     }
                   }
-                ]
-              }
+                }
+              ]
             }
-            break
-        }
+          }
 
         return await Promise.resolve({
           json: async () => await Promise.resolve(response)
@@ -700,50 +733,77 @@ describe('arclight', () => {
           slug: 'english'
         }
       ]
-      await expect(
-        fetchMediaComponentsAndTransformToVideos(languages, [], 1)
-      ).resolves.toEqual([
-        {
-          _key: 'mediaComponentId',
-          childIds: ['otherMediaComponentId'],
-          description: [
-            { languageId: '529', primary: true, value: 'longDescription' }
-          ],
-          image: 'mobileCinematicHigh',
-          imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
-          label: 'video',
-          noIndex: false,
-          primaryLanguageId: '529',
-          seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
-          slug: 'title',
-          snippet: [
-            { languageId: '529', primary: true, value: 'shortDescription' }
-          ],
-          studyQuestions: [],
-          title: [{ languageId: '529', primary: true, value: 'title' }],
-          variants: [
-            {
-              downloads: [
-                { quality: 'low', size: 1024, url: 'lowUrl' },
-                { quality: 'high', size: 1024, url: 'highUrl' }
-              ],
-              duration: 1,
-              hls: 'hlsUrl',
-              id: 'refId',
-              languageId: '529',
-              slug: 'title/english',
-              subtitle: [
-                { languageId: '529', primary: true, value: 'subtitleUrl529' },
-                {
-                  languageId: '2048',
-                  primary: false,
-                  value: 'subtitleUrl2048'
-                }
-              ]
-            }
-          ]
-        }
-      ])
+      expect(
+        await fetchMediaComponentsAndTransformToVideos(languages, {}, 1, [])
+      ).toEqual({
+        count: 1,
+        videos: [
+          {
+            id: 'mediaComponentId',
+            childIds: ['otherMediaComponentId'],
+            description: [
+              { languageId: '529', primary: true, value: 'longDescription' }
+            ],
+            image: 'mobileCinematicHigh',
+            imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
+            label: 'episode',
+            noIndex: false,
+            primaryLanguageId: '529',
+            seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
+            slug: 'title',
+            snippet: [
+              { languageId: '529', primary: true, value: 'shortDescription' }
+            ],
+            studyQuestions: [],
+            title: [
+              {
+                videoId: 'mediaComponentId',
+                languageId: '529',
+                primary: true,
+                value: 'title'
+              }
+            ],
+            variants: [
+              {
+                downloads: [
+                  {
+                    videoVariantId: 'refId',
+                    quality: 'low',
+                    size: 1024,
+                    url: 'lowUrl'
+                  },
+                  {
+                    videoVariantId: 'refId',
+                    quality: 'high',
+                    size: 1024,
+                    url: 'highUrl'
+                  }
+                ],
+                videoId: 'mediaComponentId',
+                duration: 1,
+                hls: 'hlsUrl',
+                id: 'refId',
+                languageId: '529',
+                slug: 'title/english',
+                subtitle: [
+                  {
+                    videoVariantId: 'refId',
+                    languageId: '529',
+                    primary: true,
+                    value: 'subtitleUrl529'
+                  },
+                  {
+                    videoVariantId: 'refId',
+                    languageId: '2048',
+                    primary: false,
+                    value: 'subtitleUrl2048'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      })
     })
   })
 })

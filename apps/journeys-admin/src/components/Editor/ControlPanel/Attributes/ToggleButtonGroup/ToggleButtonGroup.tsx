@@ -1,10 +1,10 @@
-import { ReactElement } from 'react'
-import MuiToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
+import MuiToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
 
-interface ToggleButtonGroupProps<T = unknown> {
+interface ToggleButtonGroupProps<T = string | number> {
   label?: string
   value: T
   options: Array<{
@@ -42,7 +42,7 @@ export function ToggleButtonGroup({
       >
         {options.map(({ value, label, icon }) => (
           <ToggleButton
-            key={value as string}
+            key={value}
             value={value}
             onMouseDown={(e) => e.preventDefault()}
             sx={{

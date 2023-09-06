@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+
 import { HorizontalSelect } from '../../../../../../../HorizontalSelect'
 import { Swatch } from '../Swatch'
 

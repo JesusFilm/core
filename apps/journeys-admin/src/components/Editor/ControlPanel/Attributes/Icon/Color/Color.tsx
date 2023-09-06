@@ -1,12 +1,14 @@
-import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { IconColor } from '../../../../../../../__generated__/globalTypes'
+import { IconBlockColorUpdate } from '../../../../../../../__generated__/IconBlockColorUpdate'
+import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../ToggleButtonGroup'
-import { IconFields } from '../../../../../../../__generated__/IconFields'
-import { IconBlockColorUpdate } from '../../../../../../../__generated__/IconBlockColorUpdate'
 
 export const ICON_BLOCK_COLOR_UPDATE = gql`
   mutation IconBlockColorUpdate(
@@ -75,7 +77,7 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
 
   return (
     <ToggleButtonGroup
-      value={iconColor}
+      value={iconColor ?? IconColor.inherit}
       onChange={handleChange}
       options={options}
     />

@@ -1,1 +1,0 @@
-export { VisitorDetailForm } from './VisitorDetailForm'

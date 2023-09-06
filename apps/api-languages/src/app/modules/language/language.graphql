@@ -1,4 +1,4 @@
-type Language @key(fields: "id") {
+type Language @key(fields: "id") @cacheControl(maxAge: 86400) {
   id: ID!
   bcp47: String
   iso3: String
@@ -9,7 +9,8 @@ enum LanguageIdType {
   databaseId
   bcp47
 }
-extend type Query {
-  languages(offset: Int, limit: Int): [Language!]!
+type Query {
+  languages(offset: Int, limit: Int): [Language!]! @cacheControl(maxAge: 86400)
   language(id: ID!, idType: LanguageIdType): Language
+    @cacheControl(maxAge: 86400)
 }

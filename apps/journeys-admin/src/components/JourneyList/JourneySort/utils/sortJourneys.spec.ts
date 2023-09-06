@@ -1,6 +1,7 @@
+import { GetAdminJourneys_journeys as ActiveJourney } from '../../../../../__generated__/GetAdminJourneys'
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { SortOrder } from '../JourneySort'
-import { GetActiveJourneys_journeys as ActiveJourney } from '../../../../../__generated__/GetActiveJourneys'
+
 import { sortJourneys } from './sortJourneys'
 
 describe('sortJourneys', () => {
@@ -17,13 +18,19 @@ describe('sortJourneys', () => {
     expect(sorted).toEqual([defaultJourney, oldJourney])
   })
 
-  it('should return journeys sorted by alphabetical order', () => {
+  it('should return journeys sorted by alphabetical order ignoring special characters', () => {
     const journeys = [
       {
         title: 'Z'
       } as unknown as ActiveJourney,
       {
+        title: '(xyz'
+      } as unknown as ActiveJourney,
+      {
         title: 'aA'
+      } as unknown as ActiveJourney,
+      {
+        title: '#aBc'
       } as unknown as ActiveJourney,
       {
         title: 'AB'
@@ -33,10 +40,16 @@ describe('sortJourneys', () => {
     const sorted = sortJourneys(journeys, SortOrder.TITLE)
     expect(sorted).toEqual([
       {
+        title: 'aA'
+      } as unknown as ActiveJourney,
+      {
         title: 'AB'
       } as unknown as ActiveJourney,
       {
-        title: 'aA'
+        title: '#aBc'
+      } as unknown as ActiveJourney,
+      {
+        title: '(xyz'
       } as unknown as ActiveJourney,
       {
         title: 'Z'

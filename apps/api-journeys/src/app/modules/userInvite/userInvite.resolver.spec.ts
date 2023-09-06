@@ -1,302 +1,221 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Role, UserJourneyRole } from '../../__generated__/graphql'
-import { JourneyService } from '../journey/journey.service'
-import { UserJourneyService } from '../userJourney/userJourney.service'
-import { UserRoleService } from '../userRole/userRole.service'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Journey, UserInvite, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { UserInviteCreateInput } from '../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
 
 import { UserInviteResolver } from './userInvite.resolver'
-import { UserInviteService } from './userInvite.service'
 
 describe('UserInviteResolver', () => {
   let resolver: UserInviteResolver,
-    service: UserInviteService,
-    ujService: UserJourneyService
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
-  const createInput = {
-    email: 'test@email.com'
-  }
-
-  const userInvite = {
-    id: '1',
-    journeyId: 'journeyId',
-    senderId: 'senderId',
-    email: 'test@email.com',
+  const userInvite: UserInvite = {
+    id: 'userInviteId',
+    removedAt: null,
     acceptedAt: null,
-    removedAt: null
-  }
-
-  const acceptedInvite = {
-    ...userInvite,
-    id: '2',
-    journeyId: 'acceptedJourneyId',
-    acceptedAt: '2021-02-10T00:00:00.000Z'
-  }
-
-  const removedInvite = {
-    ...userInvite,
-    id: '3',
-    journeyId: 'removedJourneyId',
-    removedAt: '2021-02-18T00:00:00.000Z'
-  }
-
-  const outdatedAcceptedInvite = {
-    ...userInvite,
-    id: '4',
-    journeyId: 'outdatedAcceptedJourneyId',
-    email: 'existing@email.com',
-    acceptedAt: '2021-02-10T00:00:00.000Z'
-  }
-
-  const userInviteService = {
-    provide: UserInviteService,
-    useFactory: () => ({
-      save: jest.fn((input) => {
-        return { ...input, acceptedAt: null, removedAt: null }
-      }),
-      update: jest.fn((id, input) => {
-        if (id === removedInvite.id) {
-          return { ...removedInvite, ...input }
-        } else if (id === acceptedInvite.id) {
-          return { ...acceptedInvite, ...input }
-        } else if (id === outdatedAcceptedInvite.id) {
-          return { ...outdatedAcceptedInvite, ...input }
-        }
-        return { ...userInvite, ...input }
-      }),
-      remove: jest.fn((id, journeyId) =>
-        id === userInvite.id ? userInvite : outdatedAcceptedInvite
-      ),
-      getAllUserInvitesByEmail: jest.fn((email) => {
-        if (email === userInvite.email) {
-          return [userInvite, acceptedInvite, removedInvite]
-        } else if (email === outdatedAcceptedInvite.email) {
-          return [outdatedAcceptedInvite]
-        }
-        return []
-      }),
-      getAllUserInvitesByJourney: jest.fn((journeyId) => {
-        return [{ ...userInvite, journeyId }]
-      }),
-      getUserInviteByJourneyAndEmail: jest.fn((journeyId, email) => {
-        if (
-          journeyId === removedInvite.journeyId &&
-          email === removedInvite.email
-        ) {
-          return removedInvite
-        } else if (
-          journeyId === acceptedInvite.journeyId &&
-          email === acceptedInvite.email
-        ) {
-          return acceptedInvite
-        }
-        return null
-      })
-    })
-  }
-
-  const userJourney = {
-    id: 'userJourneyId',
-    userId: 'userId',
+    email: 'bob.jones@example.com',
+    senderId: 'senderId',
     journeyId: 'journeyId',
-    role: UserJourneyRole.editor
+    updatedAt: new Date()
   }
 
-  const userJourneyService = {
-    provide: UserJourneyService,
-    useFactory: () => ({
-      get: jest.fn((key) => userJourney),
-      requestAccess: jest.fn((journeyId, idType, userId) => {
-        return userId === 'existingUserId'
-          ? undefined
-          : { ...userJourney, journeyId, userId, role: 'inviteRequested' }
-      }),
-      approveAccess: jest.fn((id, userId) => {
-        return userJourney
-      })
-    })
+  const journey = {
+    team: {
+      userTeams: [
+        {
+          userId: 'userId',
+          role: UserTeamRole.manager
+        }
+      ]
+    }
+  } as unknown as Journey
+
+  const userInviteWithUserTeam = {
+    ...userInvite,
+    journey
   }
-
-  const userRole = {
-    id: 'userRoleId',
-    userId: 'userId',
-    roles: [Role.publisher]
-  }
-
-  const userRole2 = {
-    id: 'userRoleId2',
-    userId: 'existingUserId',
-    roles: []
-  }
-
-  const userRoleService = {
-    provide: UserRoleService,
-    useFactory: () => ({
-      getUserRoleById: jest.fn((id) =>
-        id === userRole.id ? userRole : userRole2
-      )
-    })
-  }
-
-  const journeyService = {
-    provide: JourneyService,
-    useFactory: () => ({
-      get: jest.fn((id) => ({ id }))
-    })
-  }
-
-  const user = {
-    id: 'userId',
-    email: 'test@email.com',
-    firstName: 'Test'
-  }
-
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2021-02-18'))
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         UserInviteResolver,
-        userInviteService,
-        userJourneyService,
-        userRoleService,
-        journeyService
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
       ]
     }).compile()
-    resolver = module.get(UserInviteResolver)
-    service = await module.resolve(UserInviteService)
-    ujService = await module.resolve(UserJourneyService)
+
+    resolver = module.get<UserInviteResolver>(UserInviteResolver)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   describe('userInvites', () => {
-    it('should return all user invites sent for a journey', async () => {
-      await resolver.userInvites('journeyId')
-
-      expect(service.getAllUserInvitesByJourney).toHaveBeenCalledWith(
+    it('fetches accessible userInvites', async () => {
+      prismaService.userInvite.findMany.mockResolvedValueOnce([
+        { id: 'userInviteId' } as unknown as UserInvite
+      ])
+      const userTeams = await resolver.userInvites(
+        {
+          journey: {
+            is: {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            }
+          }
+        },
         'journeyId'
       )
+      expect(prismaService.userInvite.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            {
+              journey: {
+                is: {
+                  team: {
+                    is: {
+                      userTeams: { some: { userId: 'userId' } }
+                    }
+                  }
+                }
+              }
+            },
+            { journeyId: 'journeyId' }
+          ]
+        }
+      })
+      expect(userTeams).toEqual([{ id: 'userInviteId' }])
     })
   })
 
   describe('userInviteCreate', () => {
-    it('should create user invite if does not exist', async () => {
-      const invite = await resolver.userInviteCreate(
-        'senderId',
-        'newJourneyId',
-        createInput
-      )
+    const input: UserInviteCreateInput = {
+      email: 'brian.smith@example.com'
+    }
 
-      expect(service.save).toHaveBeenCalledWith({
-        journeyId: 'newJourneyId',
-        senderId: 'senderId',
-        email: createInput.email,
-        acceptedAt: null,
-        removedAt: null
-      })
-      expect(service.update).not.toHaveBeenCalled()
-      expect(invite).toEqual({
-        journeyId: 'newJourneyId',
-        senderId: 'senderId',
-        email: createInput.email,
-        acceptedAt: null,
-        removedAt: null
+    it('creates a user team invite', async () => {
+      prismaService.$transaction.mockImplementationOnce(
+        async (cb) => await cb(prismaService)
+      )
+      prismaService.userInvite.upsert.mockResolvedValueOnce(
+        userInviteWithUserTeam
+      )
+      await resolver.userInviteCreate(ability, 'userId', 'journeyId', input)
+      expect(prismaService.userInvite.upsert).toHaveBeenCalledWith({
+        where: {
+          journeyId_email: {
+            journeyId: 'journeyId',
+            email: input.email
+          }
+        },
+        create: {
+          email: 'brian.smith@example.com',
+          senderId: 'userId',
+          journey: { connect: { id: 'journeyId' } }
+        },
+        update: {
+          acceptedAt: null,
+          removedAt: null,
+          senderId: 'userId'
+        },
+        include: {
+          journey: {
+            include: {
+              team: {
+                include: { userTeams: true }
+              },
+              userJourneys: true
+            }
+          }
+        }
       })
     })
 
-    it('should re-activate existing user invite if not accepted', async () => {
-      await resolver.userInviteCreate(
-        'senderId',
-        'removedJourneyId',
-        createInput
+    it('throws error if not authorized', async () => {
+      prismaService.$transaction.mockImplementationOnce(
+        async (cb) => await cb(prismaService)
       )
-
-      expect(service.save).not.toHaveBeenCalled()
-      expect(service.update).toHaveBeenCalledWith(removedInvite.id, {
-        senderId: removedInvite.senderId,
-        acceptedAt: null,
-        removedAt: null
-      })
-    })
-
-    it('should ignore accepted user invite', async () => {
-      const invite = await resolver.userInviteCreate(
-        'senderId',
-        'acceptedJourneyId',
-        createInput
-      )
-
-      expect(service.save).not.toHaveBeenCalled()
-      expect(service.update).not.toHaveBeenCalled()
-      expect(invite).toEqual(null)
-    })
-
-    it('throws UserInputError when journey does not exist', async () => {
-      await resolver
-        .userInviteCreate('senderId', 'randomJourneyId', createInput)
-        .catch((error) => {
-          expect(error.message).toEqual('journey does not exist')
-        })
+      prismaService.userInvite.upsert.mockResolvedValueOnce(userInvite)
+      await expect(
+        resolver.userInviteCreate(ability, 'userId', 'journeyId', input)
+      ).rejects.toThrow('user is not allowed to create userInvite')
     })
   })
 
   describe('userInviteRemove', () => {
-    it('should remove user invite', async () => {
-      const invite = await resolver.userInviteRemove('1', 'journeyId')
+    it('should delete a userInvite', async () => {
+      prismaService.userInvite.findUnique.mockResolvedValue(
+        userInviteWithUserTeam
+      )
+      await resolver.userInviteRemove(ability, 'userInviteId')
+      await expect(prismaService.userInvite.update).toHaveBeenCalledWith({
+        data: { acceptedAt: null, removedAt: expect.any(Date) },
+        where: { id: 'userInviteId' }
+      })
+    })
 
-      expect(service.update).toHaveBeenCalledWith('1', {
-        acceptedAt: null,
-        removedAt: '2021-02-18T00:00:00.000Z'
+    it('throws error if not found', async () => {
+      prismaService.userInvite.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.userInviteRemove(ability, 'userInviteId')
+      ).rejects.toThrow('userInvite not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      const ability = await new AppCaslFactory().createAbility({
+        id: 'userId'
       })
-      expect(invite).toEqual({
-        ...userInvite,
-        acceptedAt: null,
-        removedAt: '2021-02-18T00:00:00.000Z'
-      })
+      prismaService.userInvite.findUnique.mockResolvedValue(userInvite)
+      await expect(
+        resolver.userInviteRemove(ability, 'userInviteId')
+      ).rejects.toThrow('user is not allowed to remove userInvite')
     })
   })
 
   describe('userInviteAcceptAll', () => {
-    it('should accept unredeemed valid user invites', async () => {
-      const invites = await resolver.userInviteAcceptAll(user)
+    it('should accept pending team invites for current user', async () => {
+      const user = {
+        id: 'userId',
+        firstName: 'Robert',
+        email: 'robert.smith@example.com'
+      }
+      const userInvite: UserInvite = {
+        id: 'inviteId1',
+        email: 'robert.smith@example.com',
+        senderId: 'senderId1',
+        journeyId: 'journeyId',
+        acceptedAt: null,
+        removedAt: null,
+        updatedAt: new Date()
+      }
 
-      expect(ujService.requestAccess).toHaveBeenCalledTimes(1)
-      expect(ujService.requestAccess).toHaveBeenCalledWith(
-        'journeyId',
-        'databaseId',
-        'userId'
-      )
-      expect(ujService.approveAccess).toHaveBeenCalledTimes(1)
-      expect(ujService.approveAccess).toHaveBeenCalledWith(
-        'userJourneyId',
-        'senderId'
-      )
-
-      expect(await invites[0]).toEqual({
+      const redeemedUserInvite = {
         ...userInvite,
-        acceptedAt: '2021-02-18T00:00:00.000Z'
-      })
-      // accepted invites unchanged
-      expect(await invites[1]).toEqual(acceptedInvite)
-      // Expired invites unchanged
-      expect(await invites[2]).toEqual(removedInvite)
-    })
+        acceptedAt: expect.any(Date),
+        receipientId: user.id
+      }
 
-    it('should show no invites if email does not match', async () => {
-      const rejectedInvite = await resolver.userInviteAcceptAll({
-        ...user,
-        email: 'doesnotexist@email.com'
-      })
-
-      expect(ujService.requestAccess).not.toHaveBeenCalled()
-      expect(ujService.approveAccess).not.toHaveBeenCalled()
-      expect(service.update).not.toHaveBeenCalled()
-      expect(rejectedInvite).toEqual([])
+      prismaService.userInvite.findMany.mockResolvedValue([userInvite])
+      prismaService.$transaction.mockImplementation(
+        async (promises) => promises
+      )
+      prismaService.userInvite.update.mockResolvedValueOnce(redeemedUserInvite)
+      expect(await resolver.userInviteAcceptAll(user)).toEqual([
+        redeemedUserInvite
+      ])
     })
   })
 })

@@ -1,8 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect } from 'react'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
+
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'
 import { PosterImageBlockUpdate } from '../../../../../../../__generated__/PosterImageBlockUpdate'
 import { VideoBlockPosterImageUpdate } from '../../../../../../../__generated__/VideoBlockPosterImageUpdate'
@@ -230,6 +232,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
       onClose={onClose}
       onChange={handleChange}
       onDelete={deleteCoverBlock}
+      loading={createLoading || updateLoading}
       selectedBlock={selectedBlock}
       error={createError != null ?? updateError != null}
     />

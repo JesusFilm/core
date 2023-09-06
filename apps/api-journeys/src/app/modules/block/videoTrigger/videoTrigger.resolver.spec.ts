@@ -1,17 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+
 import { VideoTriggerBlock } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { UserRoleService } from '../../userRole/userRole.service'
-import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
+
 import { VideoTriggerResolver } from './videoTrigger.resolver'
 
 describe('VideoTriggerBlockResolver', () => {
-  let resolver: VideoTriggerResolver, blockResolver: BlockResolver
+  let resolver: VideoTriggerResolver, prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -28,8 +25,8 @@ describe('VideoTriggerBlockResolver', () => {
 
   const blockResponse = {
     id: '1',
-    journeyId: '2',
-    __typename: 'VideoTriggerBlock',
+    journey: { connect: { id: '2' } },
+    typename: 'VideoTriggerBlock',
     parentBlockId: '3',
     parentOrder: 0,
     triggerStart: 5,
@@ -44,42 +41,21 @@ describe('VideoTriggerBlockResolver', () => {
     parentBlockId: block.id
   }
 
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block])
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolver,
-        blockService,
+        BlockService,
         VideoTriggerResolver,
-        UserJourneyService,
         UserRoleService,
-        JourneyService,
-        MemberService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     resolver = module.get<VideoTriggerResolver>(VideoTriggerResolver)
-    blockResolver = module.get<BlockResolver>(BlockResolver)
-  })
-
-  describe('VideoTriggerBlock', () => {
-    it('returns VideoTriggerBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse)
-      expect(await blockResolver.blocks()).toEqual([
-        blockResponse,
-        blockResponse
-      ])
-    })
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(blockResponse)
+    prismaService.block.findMany = jest
+      .fn()
+      .mockResolvedValue([blockResponse, blockResponse])
   })
 
   describe('action', () => {

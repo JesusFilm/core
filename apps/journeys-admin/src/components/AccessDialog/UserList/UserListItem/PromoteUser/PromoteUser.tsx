@@ -1,8 +1,11 @@
+import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import { useMutation, gql } from '@apollo/client'
-import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded'
-import { MenuItem } from '../../../../MenuItem'
+import { useTranslation } from 'react-i18next'
+
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+
 import { UserJourneyPromote } from '../../../../../../__generated__/UserJourneyPromote'
+import { MenuItem } from '../../../../MenuItem'
 
 interface PromoteUserProps {
   id: string
@@ -26,6 +29,7 @@ export const USER_JOURNEY_PROMOTE = gql`
 `
 
 export function PromoteUser({ id, onClick }: PromoteUserProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [userJourneyPromote] = useMutation<UserJourneyPromote>(
     USER_JOURNEY_PROMOTE,
     { variables: { id } }
@@ -38,8 +42,8 @@ export function PromoteUser({ id, onClick }: PromoteUserProps): ReactElement {
 
   return (
     <MenuItem
-      label="Promote"
-      icon={<NewReleasesRoundedIcon />}
+      label={t('Promote')}
+      icon={<AlertCircleIcon sx={{ color: 'secondary.light' }} />}
       onClick={handleClick}
     />
   )

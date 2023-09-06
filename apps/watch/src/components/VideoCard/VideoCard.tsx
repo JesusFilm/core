@@ -1,15 +1,17 @@
-import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
 import PlayArrow from '@mui/icons-material/PlayArrowRounded'
-import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
-import NextLink from 'next/link'
-import Stack from '@mui/material/Stack'
-import Link from '@mui/material/Link'
-import { styled, SxProps } from '@mui/material/styles'
-import ButtonBase from '@mui/material/ButtonBase'
-import Image from 'next/image'
 import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
+import Link from '@mui/material/Link'
 import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
+import { SxProps, styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import Image from 'next/image'
+import NextLink from 'next/link'
+import { ReactElement } from 'react'
+
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
@@ -39,6 +41,23 @@ const Layer = styled(Box)({
   overflow: 'hidden'
 })
 
+export function getSlug(
+  containerSlug: string | undefined,
+  label: VideoLabel | undefined,
+  variantSlug: string | undefined
+): string {
+  if (
+    containerSlug != null &&
+    label !== undefined &&
+    ![VideoLabel.collection, VideoLabel.series].includes(label)
+  ) {
+    return `/${containerSlug}.html/${variantSlug ?? ''}.html`
+  } else {
+    const [videoId, languageId] = (variantSlug ?? '').split('/')
+    return `/${videoId}.html/${languageId}.html`
+  }
+}
+
 export function VideoCard({
   video,
   containerSlug,
@@ -51,21 +70,10 @@ export function VideoCard({
     video?.label,
     video?.childrenCount ?? 0
   )
-  let href = ''
-
-  if (
-    containerSlug != null &&
-    video?.label != null &&
-    ![VideoLabel.collection, VideoLabel.series].includes(video.label)
-  ) {
-    href += `/${containerSlug}.html/${video?.variant?.slug ?? ''}.html`
-  } else {
-    const [videoId, languageId] = (video?.variant?.slug ?? '').split('/')
-    href = `/${videoId}.html/${languageId}.html`
-  }
+  const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
   return (
-    <NextLink href={href} passHref>
+    <NextLink href={href} passHref legacyBehavior>
       <Link
         display="block"
         underline="none"
@@ -103,13 +111,17 @@ export function VideoCard({
               {video?.image != null ? (
                 <Image
                   src={video.image}
-                  layout="fill"
-                  objectFit="cover"
-                  objectPosition="left top"
                   alt={video.title[0].value}
+                  fill
+                  sizes="100vw"
+                  style={{
+                    objectFit: 'cover',
+                    objectPosition: 'left top'
+                  }}
                 />
               ) : (
                 <Box
+                  component="span"
                   sx={{
                     aspectRatio: '16 / 9'
                   }}

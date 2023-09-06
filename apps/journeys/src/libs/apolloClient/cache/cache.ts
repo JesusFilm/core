@@ -1,4 +1,4 @@
-import { InMemoryCache } from '@apollo/client'
+import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client'
 
 export const cache = (): InMemoryCache =>
   new InMemoryCache({
@@ -13,7 +13,8 @@ export const cache = (): InMemoryCache =>
         'NavigateAction',
         'NavigateToBlockAction',
         'NavigateToJourneyAction',
-        'LinkAction'
+        'LinkAction',
+        'EmailAction'
       ],
       Block: [
         'ButtonBlock',
@@ -31,5 +32,24 @@ export const cache = (): InMemoryCache =>
         'VideoBlock',
         'VideoTriggerBlock'
       ]
+    },
+    dataIdFromObject(responseObject) {
+      let id: string
+      switch (responseObject.__typename) {
+        case 'Video':
+          if (responseObject.variant != null) {
+            id = (
+              responseObject.variant as unknown as {
+                id: string
+              }
+            ).id
+          } else {
+            id = responseObject.id as unknown as string
+          }
+          return `Video:${id}`
+        case 'Person':
+        default:
+          return defaultDataIdFromObject(responseObject)
+      }
     }
   })

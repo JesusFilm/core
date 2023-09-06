@@ -1,24 +1,41 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
-import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
+
 import {
-  IdType,
+  Action,
+  Block,
+  ChatButton,
+  Host,
   Journey,
-  JourneyStatus,
+  Prisma,
+  Team,
   ThemeMode,
   ThemeName,
+  UserJourney,
   UserJourneyRole,
-  JourneysReportType,
-  Role
+  UserTeamRole
+} from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
+
+import {
+  IdType,
+  JourneyStatus,
+  JourneysReportType
 } from '../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
-import { UserJourneyService } from '../userJourney/userJourney.service'
-import { UserRoleService } from '../userRole/userRole.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
-import { MemberService } from '../member/member.service'
-import { JourneyResolver } from './journey.resolver'
-import { JourneyService } from './journey.service'
+import { UserRoleService } from '../userRole/userRole.service'
+
+import {
+  ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
+  JourneyResolver
+} from './journey.resolver'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -37,261 +54,83 @@ const mockGetPowerBiEmbed = getPowerBiEmbed as jest.MockedFunction<
 >
 
 describe('JourneyResolver', () => {
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2021-02-18'))
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
-
   let resolver: JourneyResolver,
-    service: JourneyService,
-    bService: BlockService,
-    ujService: UserJourneyService,
-    urService: UserRoleService,
-    mService: MemberService
-  const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
-  const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
+    blockService: DeepMockProxy<BlockService>,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
   const journey: Journey = {
     id: 'journeyId',
     slug: 'journey-slug',
     title: 'published',
     status: JourneyStatus.published,
-    language: { id: '529' },
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    description: null,
-    primaryImageBlock: null,
-    publishedAt,
-    createdAt
-  }
-
-  const template: Journey = {
-    ...journey,
-    title: 'template',
-    id: 'templateJourneyId',
-    template: true
-  }
-
-  const draftJourney = {
-    ...journey,
-    id: 'draftJourney',
-    publishedAt: null,
-    status: JourneyStatus.draft
-  }
-  const archivedJourney = {
-    ...journey,
-    id: 'archivedJourney',
-    status: JourneyStatus.archived
-  }
-  const trashedJourney = {
-    ...journey,
-    id: 'deletedJourney',
-    status: JourneyStatus.trashed
-  }
-  const trashedDraftJourney = {
-    ...journey,
-    id: 'deletedDraftJourney',
-    status: JourneyStatus.trashed,
-    publishedAt: null
-  }
-
-  const draftTemplate = {
-    ...journey,
-    id: 'draftTemplate',
-    template: true,
-    slug: 'draft-template-slug',
-    status: JourneyStatus.draft
-  }
-
-  const block = {
-    id: 'blockId',
-    journeyId: 'journeyId',
-    __typename: 'ImageBlock',
-    parentBlockId: 'stepId',
-    parentOrder: 0,
-    src: 'https://source.unsplash.com/random/1920x1080',
-    alt: 'random image from unsplash',
-    width: 1920,
-    height: 1080
-  }
-
-  const journeyUpdate = {
-    title: 'published',
     languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
     primaryImageBlockId: null,
-    slug: 'published-slug',
-    seoTitle: 'Social media title',
-    seoDescription: 'Social media description'
+    teamId: 'teamId',
+    publishedAt: new Date('2021-11-19T12:34:56.647Z'),
+    createdAt: new Date('2021-11-19T12:34:56.647Z'),
+    updatedAt: new Date('2021-11-19T12:34:56.647Z'),
+    archivedAt: null,
+    trashedAt: null,
+    featuredAt: null,
+    deletedAt: null,
+    seoTitle: null,
+    seoDescription: null,
+    template: false,
+    hostId: null
   }
+  const journeyWithUserTeam = {
+    ...journey,
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  }
+  const block = {
+    id: 'blockId',
+    typename: 'ImageBlock',
+    journeyId: 'journeyId'
+  } as unknown as Block
+  const accessibleJourneys: Prisma.JourneyWhereInput = { OR: [{}] }
 
-  const templateUpdate = {
-    template: true
-  }
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(2020, 3, 1))
+  })
 
-  const userJourney = {
-    id: 'userJourneyId',
-    userId: 'userId',
-    journeyId: 'journeyId',
-    role: UserJourneyRole.editor
-  }
-
-  const userRole = {
-    id: 'userRole.id',
-    userId: 'user.id',
-    roles: [Role.publisher]
-  }
-
-  const noUserRole = {
-    id: 'noUserRole.id',
-    userId: 'noUser.id',
-    roles: []
-  }
-
-  const invitedUserJourney = {
-    id: 'invitedUserJourneyId',
-    userId: 'invitedUserId',
-    journeyId: 'journeyId',
-    role: UserJourneyRole.inviteRequested
-  }
-
-  const stepBlock = {
-    id: 'stepId',
-    journeyId: 'journeyId',
-    __typename: 'StepBlock',
-    parentBlockId: null,
-    parentOrder: 0,
-    nextBlockId: null
-  }
-
-  const duplicatedStep = {
-    ...stepBlock,
-    id: 'duplicateStepId',
-    journeyId: 'duplicateJourneyId'
-  }
-
-  const journeyService = {
-    provide: JourneyService,
-    useFactory: () => ({
-      get: jest.fn((id) => {
-        switch (id) {
-          case journey.id:
-            return journey
-          case template.id:
-            return template
-          case draftJourney.id:
-            return draftJourney
-          case archivedJourney.id:
-            return archivedJourney
-          case trashedJourney.id:
-            return trashedJourney
-          case trashedDraftJourney.id:
-            return trashedDraftJourney
-          case draftTemplate.id:
-            return draftTemplate
-          default:
-            return null
-        }
-      }),
-      getBySlug: jest.fn((slug) => {
-        if (slug === journey.slug) return journey
-        if (slug === draftTemplate.slug) return draftTemplate
-        return null
-      }),
-      getAllPublishedJourneys: jest.fn(() => [journey, journey]),
-      getAllByIds: jest.fn((ids) => {
-        switch (ids[0]) {
-          case archivedJourney.id:
-            return [archivedJourney]
-          case trashedJourney.id:
-            return [trashedJourney]
-          case trashedDraftJourney.id:
-            return [trashedDraftJourney]
-          default:
-            return [journey, draftJourney]
-        }
-      }),
-      getAllByRole: jest.fn(() => [journey, journey]),
-      getAllByTitle: jest.fn((title) =>
-        title === journey.title ? [journey] : []
-      ),
-      save: jest.fn((input) => input),
-      update: jest.fn(() => journey),
-      updateAll: jest.fn(() => [journey, draftJourney])
-    })
-  }
-
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      forJourney: jest.fn(() => [block]),
-      get: jest.fn(() => block),
-      getBlocksByType: jest.fn(() => [stepBlock]),
-      getDuplicateChildren: jest.fn(() => [duplicatedStep]),
-      saveAll: jest.fn(() => [duplicatedStep])
-    })
-  }
-
-  const userJourneyService = {
-    provide: UserJourneyService,
-    useFactory: () => ({
-      save: jest.fn((input) => input),
-      forJourney: jest.fn(() => [userJourney, userJourney]),
-      forJourneyUser: jest.fn((journeyId, userId) => {
-        if (userId === invitedUserJourney.userId) return invitedUserJourney
-        if (userId === userJourney.userId) return userJourney
-        return null
-      })
-    })
-  }
-
-  const userRoleService = {
-    provide: UserRoleService,
-    useFactory: () => ({
-      save: jest.fn((userId) => userId),
-      getUserRoleById: jest.fn((userId) => {
-        if (userId === userRole.userId) return userRole
-        if (userId === noUserRole.userId) return noUserRole
-      })
-    })
-  }
-
-  const memberService = {
-    provide: MemberService,
-    useFactory: () => ({
-      save: jest.fn((member) => member),
-      getMemberByTeamId: jest.fn(() => null)
-    })
-  }
+  afterAll(() => {
+    jest.useRealTimers()
+  })
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         JourneyResolver,
-        journeyService,
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         BlockResolver,
-        userJourneyService,
         UserRoleResolver,
-        userRoleService,
-        memberService
+        UserRoleService,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
       ]
     }).compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
-    service = module.get<JourneyService>(JourneyService)
-    ujService = module.get<UserJourneyService>(UserJourneyService)
-    bService = module.get<BlockService>(BlockService)
-    urService = module.get<UserRoleService>(UserRoleService)
-    mService = module.get<MemberService>(MemberService)
+    blockService = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
-  describe('adminJourneysEmbed', () => {
+  describe('adminJourneysReport', () => {
     it('should throw an error', async () => {
       jest.resetModules()
       const OLD_ENV = process.env
@@ -459,289 +298,371 @@ describe('JourneyResolver', () => {
   })
 
   describe('adminJourneys', () => {
-    it('should get published journeys', async () => {
+    const journeysSharedWithMe: Prisma.JourneyWhereInput = {
+      userJourneys: {
+        some: {
+          userId: 'userId',
+          role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
+        }
+      },
+      team: {
+        userTeams: {
+          none: {
+            userId: 'userId'
+          }
+        }
+      }
+    }
+
+    beforeEach(() => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey])
+    })
+
+    it('should get journeys that are shared with me', async () => {
+      expect(
+        await resolver.adminJourneys('userId', accessibleJourneys)
+      ).toEqual([journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [accessibleJourneys, journeysSharedWithMe]
+        }
+      })
+    })
+
+    it('should get filtered journeys', async () => {
       expect(
         await resolver.adminJourneys(
-          'user.id',
-          [JourneyStatus.draft, JourneyStatus.published],
-          undefined
+          'userId',
+          accessibleJourneys,
+          [JourneyStatus.archived],
+          false,
+          'teamId'
         )
-      ).toEqual([journey, journey])
-      expect(urService.getUserRoleById).toHaveBeenCalledWith('user.id')
-      expect(service.getAllByRole).toHaveBeenCalledWith(
-        userRole,
-        [JourneyStatus.draft, JourneyStatus.published],
-        undefined
-      )
+      ).toEqual([journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            accessibleJourneys,
+            {
+              status: { in: [JourneyStatus.archived] },
+              template: false,
+              teamId: 'teamId'
+            }
+          ]
+        }
+      })
     })
-  })
 
-  describe('journeys', () => {
-    it('should get published journeys', async () => {
-      expect(await resolver.journeys()).toEqual([journey, journey])
-      expect(service.getAllPublishedJourneys).toHaveBeenCalledWith(undefined)
+    describe('status', () => {
+      it('should get journeys that are shared with me with status', async () => {
+        expect(
+          await resolver.adminJourneys('userId', accessibleJourneys, [
+            JourneyStatus.draft
+          ])
+        ).toEqual([journey])
+        expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+          where: {
+            AND: [
+              accessibleJourneys,
+              { ...journeysSharedWithMe, status: { in: [JourneyStatus.draft] } }
+            ]
+          }
+        })
+      })
     })
 
-    it('should get published and featured journeys', async () => {
-      expect(await resolver.journeys({ featured: true })).toEqual([
-        journey,
-        journey
-      ])
-      expect(service.getAllPublishedJourneys).toHaveBeenCalledWith({
-        featured: true
+    describe('template', () => {
+      it('should get template journeys', async () => {
+        expect(
+          await resolver.adminJourneys(
+            'userId',
+            accessibleJourneys,
+            undefined,
+            true
+          )
+        ).toEqual([journey])
+        expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+          where: {
+            AND: [accessibleJourneys, { template: true }]
+          }
+        })
+      })
+    })
+
+    describe('teamId', () => {
+      it('should get journeys belonging to team', async () => {
+        expect(
+          await resolver.adminJourneys(
+            'userId',
+            accessibleJourneys,
+            undefined,
+            undefined,
+            'teamId'
+          )
+        ).toEqual([journey])
+        expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+          where: {
+            AND: [accessibleJourneys, { teamId: 'teamId' }]
+          }
+        })
       })
     })
   })
 
   describe('adminJourney', () => {
-    it('returns Journey by slug', async () => {
-      expect(
-        await resolver.adminJourney('userId', 'journey-slug', IdType.slug)
-      ).toEqual(journey)
-      expect(service.getBySlug).toHaveBeenCalledWith('journey-slug')
-      expect(ujService.forJourneyUser).toHaveBeenCalledWith(
-        userJourney.journeyId,
-        userJourney.userId
+    it('returns journey by slug', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
       )
+      expect(
+        await resolver.adminJourney(ability, 'journey-slug', IdType.slug)
+      ).toEqual(journeyWithUserTeam)
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: { slug: 'journey-slug' },
+        include: {
+          userJourneys: true,
+          team: {
+            include: { userTeams: true }
+          }
+        }
+      })
     })
 
-    it('returns Journey by id', async () => {
-      expect(
-        await resolver.adminJourney('userId', 'journeyId', IdType.databaseId)
-      ).toEqual(journey)
-      expect(service.get).toHaveBeenCalledWith('journeyId')
-      expect(ujService.forJourneyUser).toHaveBeenCalledWith(
-        userJourney.journeyId,
-        userJourney.userId
+    it('returns journey by id', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
       )
-    })
-
-    it('returns null if no journey found', async () => {
       expect(
-        await resolver.adminJourney('userId', '404', IdType.databaseId)
-      ).toEqual(null)
-      expect(service.get).toHaveBeenCalledWith('404')
+        await resolver.adminJourney(ability, 'journeyId', IdType.databaseId)
+      ).toEqual(journeyWithUserTeam)
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        include: {
+          userJourneys: true,
+          team: {
+            include: { userTeams: true }
+          }
+        }
+      })
     })
 
-    it('throws error if user is unknown', async () => {
+    it('throws error if not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
       await expect(
-        async () =>
-          await resolver.adminJourney(
-            'unknownUserId',
-            'journeyId',
-            IdType.databaseId
-          )
-      ).rejects.toThrow(
-        'User has not received an invitation to edit this journey.'
-      )
-      expect(service.get).toHaveBeenCalledWith('journeyId')
+        resolver.adminJourney(ability, 'journeyId', IdType.databaseId)
+      ).rejects.toThrow('journey not found')
     })
 
-    it('throws error if user is invited', async () => {
+    it('throws error if not authorized', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
       await expect(
-        async () =>
-          await resolver.adminJourney(
-            'invitedUserId',
-            'journeyId',
-            IdType.databaseId
-          )
-      ).rejects.toThrow('User invitation pending.')
-      expect(service.get).toHaveBeenCalledWith('journeyId')
+        resolver.adminJourney(ability, 'journeyId', IdType.databaseId)
+      ).rejects.toThrow('user is not allowed to view journey')
+    })
+  })
+
+  describe('journeys', () => {
+    it('returns published journeys', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(await resolver.journeys()).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published'
+        }
+      })
     })
 
-    it('return template by slug', async () => {
+    it('returns published journeys where featuredAt', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(await resolver.journeys({ featured: true })).toEqual([
+        journey,
+        journey
+      ])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published',
+          featuredAt: { not: null }
+        }
+      })
+    })
+
+    it('returns published journeys where template', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(await resolver.journeys({ template: true })).toEqual([
+        journey,
+        journey
+      ])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published',
+          template: true
+        }
+      })
+    })
+
+    it('returns a list of journeys', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
       expect(
-        await resolver.adminJourney(
-          'user.id',
-          'draft-template-slug',
-          IdType.slug
-        )
-      ).toEqual(draftTemplate)
-      expect(service.getBySlug).toHaveBeenCalledWith('draft-template-slug')
-      expect(urService.getUserRoleById).toHaveBeenCalledWith(userRole.userId)
-    })
-
-    it('returns template by id', async () => {
-      expect(
-        await resolver.adminJourney(
-          'user.id',
-          'draftTemplate',
-          IdType.databaseId
-        )
-      ).toEqual(draftTemplate)
-      expect(service.get).toHaveBeenCalledWith('draftTemplate')
-      expect(urService.getUserRoleById).toHaveBeenCalledWith(userRole.userId)
-    })
-
-    it('throws error if user is not a publisher', async () => {
-      await expect(
-        async () =>
-          await resolver.adminJourney(
-            'noUser.id',
-            'draftTemplate',
-            IdType.databaseId
-          )
-      ).rejects.toThrow('You do not have access to unpublished templates')
+        await resolver.journeys({ ids: [journey.id, journey.id] })
+      ).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: { id: { in: ['journeyId', 'journeyId'] }, status: 'published' }
+      })
     })
   })
 
   describe('journey', () => {
-    it('returns Journey by slug', async () => {
+    it('returns journey by slug', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
       expect(await resolver.journey('journey-slug', IdType.slug)).toEqual(
         journey
       )
-      expect(service.getBySlug).toHaveBeenCalledWith('journey-slug')
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: { slug: 'journey-slug' }
+      })
     })
 
-    it('returns Journey by id', async () => {
+    it('returns journey by id', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
       expect(await resolver.journey('journeyId', IdType.databaseId)).toEqual(
         journey
       )
-      expect(service.get).toHaveBeenCalledWith('journeyId')
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: { id: 'journeyId' }
+      })
     })
 
-    it('returns null if no journey found', async () => {
-      expect(await resolver.journey('404', IdType.databaseId)).toEqual(null)
-      expect(service.get).toHaveBeenCalledWith('404')
-    })
-  })
-
-  describe('blocks', () => {
-    it('returns blocks', async () => {
-      expect(await resolver.blocks(journey)).toEqual([block])
-    })
-  })
-
-  // need working example to diagnose
-  describe('primaryImageBlock', () => {
-    it('returns primaryImageBlock', async () => {
-      expect(
-        await resolver.primaryImageBlock({
-          ...journey,
-          primaryImageBlockId: 'blockId'
-        })
-      ).toEqual(block)
-    })
-
-    it('should return null', async () => {
-      expect(await resolver.primaryImageBlock(journey)).toEqual(null)
-    })
-
-    it('should return null if primaryImageBlock journeyId is not current journey id ', async () => {
-      const journey2 = {
-        ...journey,
-        id: 'journeyId2'
-      }
-      expect(
-        await resolver.primaryImageBlock({
-          ...journey2,
-          primaryImageBlockId: 'blockId'
-        })
-      ).toEqual(null)
+    it('throws error if not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journey('unknownId', IdType.databaseId)
+      ).rejects.toThrow('journey not found')
     })
   })
 
   describe('journeyCreate', () => {
-    it('creates a Journey', async () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
+    it('creates a journey', async () => {
+      prismaService.journey.create.mockResolvedValueOnce(journey)
+      prismaService.journey.findUnique.mockResolvedValue(journeyWithUserTeam)
       mockUuidv4.mockReturnValueOnce('journeyId')
       expect(
         await resolver.journeyCreate(
+          ability,
           { title: 'Untitled Journey', languageId: '529' },
-          'userId'
+          'userId',
+          'teamId'
         )
-      ).toEqual({
-        id: 'journeyId',
-        themeName: ThemeName.base,
-        themeMode: ThemeMode.light,
-        createdAt: new Date().toISOString(),
-        languageId: '529',
-        status: JourneyStatus.draft,
-        slug: 'untitled-journey',
-        title: 'Untitled Journey',
-        teamId: 'jfp-team'
+      ).toEqual(journeyWithUserTeam)
+      expect(prismaService.journey.create).toHaveBeenCalledWith({
+        data: {
+          id: 'journeyId',
+          languageId: '529',
+          slug: 'untitled-journey',
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
+          team: {
+            connect: {
+              id: 'teamId'
+            }
+          },
+          title: 'Untitled Journey',
+          userJourneys: {
+            create: {
+              role: 'owner',
+              userId: 'userId'
+            }
+          }
+        }
       })
     })
 
-    it('creates a UserJourney', async () => {
-      mockUuidv4.mockReturnValueOnce('journeyId')
-      await resolver.journeyCreate(
-        { title: 'Untitled Journey', languageId: '529' },
-        'userId'
-      )
-      expect(ujService.save).toHaveBeenCalledWith(
-        {
-          userId: 'userId',
-          journeyId: 'journeyId',
-          role: UserJourneyRole.owner
-        },
-        { returnNew: false }
-      )
-    })
-
-    it('creates a Member', async () => {
-      mockUuidv4.mockReturnValueOnce('journeyId')
-      await resolver.journeyCreate(
-        { title: 'Untitled Journey', languageId: '529' },
-        'userId'
-      )
-      expect(mService.save).toHaveBeenCalledWith(
-        {
-          id: 'userId:jfp-team',
-          userId: 'userId',
-          teamId: 'jfp-team'
-        },
-        { overwriteMode: 'ignore', returnNew: false }
-      )
-    })
-
-    it('doesnt create an existing Member', async () => {
-      mockUuidv4.mockReturnValueOnce('journeyId')
-      const member = {
-        id: 'existingId',
-        userId: 'userId',
-        teamId: 'jfp-team'
-      }
-      mService.getMemberByTeamId = jest.fn(
-        async () => await Promise.resolve(member)
-      )
-      await resolver.journeyCreate(
-        { title: 'Untitled Journey', languageId: '529' },
-        'userId'
-      )
-      expect(mService.save).not.toHaveBeenCalled()
-    })
-
     it('adds uuid if slug already taken', async () => {
-      const mockSave = service.save as jest.MockedFunction<typeof service.save>
-      mockSave.mockRejectedValueOnce({ errorNum: 1210 })
-      mockUuidv4.mockReturnValueOnce('journeyId')
+      prismaService.journey.create
+        .mockRejectedValueOnce({
+          code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+        })
+        .mockResolvedValueOnce(journey)
+      prismaService.journey.findUnique.mockResolvedValue(journeyWithUserTeam)
       expect(
         await resolver.journeyCreate(
-          { title: 'Untitled Journey', languageId: '529' },
-          'userId'
+          ability,
+          {
+            id: 'myJourneyId',
+            title: 'Untitled Journey',
+            slug: 'special-journey',
+            languageId: '529'
+          },
+          'userId',
+          'teamId'
         )
-      ).toEqual({
-        id: 'journeyId',
-        themeName: ThemeName.base,
-        themeMode: ThemeMode.light,
-        createdAt: new Date().toISOString(),
-        languageId: '529',
-        status: JourneyStatus.draft,
-        slug: 'untitled-journey-journeyId',
-        title: 'Untitled Journey',
-        teamId: 'jfp-team'
+      ).toEqual(journeyWithUserTeam)
+      expect(prismaService.journey.create).toHaveBeenCalledWith({
+        data: {
+          id: 'myJourneyId',
+          languageId: '529',
+          slug: 'special-journey-myJourneyId',
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
+          team: {
+            connect: {
+              id: 'teamId'
+            }
+          },
+          title: 'Untitled Journey',
+          userJourneys: {
+            create: {
+              role: 'owner',
+              userId: 'userId'
+            }
+          }
+        }
       })
     })
 
     it('throws error and does not get stuck in retry loop', async () => {
-      const mockSave = service.save as jest.MockedFunction<typeof service.save>
-      mockSave.mockRejectedValueOnce(new Error('database error'))
+      prismaService.journey.create.mockRejectedValueOnce(
+        new Error('database error')
+      )
       await expect(
         resolver.journeyCreate(
+          ability,
           { title: 'Untitled Journey', languageId: '529' },
-          'userId'
+          'userId',
+          'teamId'
         )
       ).rejects.toThrow('database error')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.journey.create.mockResolvedValueOnce(journey)
+      prismaService.journey.findUnique.mockResolvedValue(null)
+      await expect(
+        resolver.journeyCreate(
+          ability,
+          { title: 'Untitled Journey', languageId: '529' },
+          'userId',
+          'teamId'
+        )
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.journey.create.mockResolvedValueOnce(journey)
+      prismaService.journey.findUnique.mockResolvedValue(journey)
+      await expect(
+        resolver.journeyCreate(
+          ability,
+          { title: 'Untitled Journey', languageId: '529' },
+          'userId',
+          'teamId'
+        )
+      ).rejects.toThrow('user is not allowed to create journey')
     })
   })
 
@@ -749,13 +670,13 @@ describe('JourneyResolver', () => {
     it('returns the first missing number in an unsorted number list', async () => {
       const array = [0, 1, 1, 2, 4, 5, 7, 8, 1, 0]
       const firstMissing = resolver.getFirstMissingNumber(array)
-      expect(firstMissing).toEqual(3)
+      expect(firstMissing).toBe(3)
     })
 
     it('returns the next number in a sorted number list', async () => {
       const array = [0, 1, 1, 2, 3]
       const firstMissing = resolver.getFirstMissingNumber(array)
-      expect(firstMissing).toEqual(4)
+      expect(firstMissing).toBe(4)
     })
   })
 
@@ -822,230 +743,903 @@ describe('JourneyResolver', () => {
   })
 
   describe('journeyDuplicate', () => {
-    it('duplicates your journey', async () => {
+    const step: Block & { action: Action | null } = {
+      ...block,
+      id: 'stepId',
+      journeyId: 'journeyId',
+      typename: 'StepBlock',
+      parentOrder: 0,
+      action: null
+    }
+    const duplicatedStep = {
+      ...step,
+      journeyId: 'duplicateJourneyId',
+      id: 'duplicateStepId'
+    }
+
+    const button: Block & { action: Action } = {
+      ...block,
+      id: 'buttonId',
+      journeyId: 'journeyId',
+      typename: 'ButtonBlock',
+      action: {
+        gtmEventName: null,
+        journeyId: null,
+        url: null,
+        target: null,
+        email: null,
+        updatedAt: new Date(),
+        parentBlockId: 'stepId',
+        blockId: 'nextStepId'
+      }
+    }
+    const duplicatedButton = {
+      ...button,
+      id: 'duplicateButtonId',
+      journeyId: 'duplicateJourneyId',
+      action: {
+        ...button.action,
+        blockId: 'duplicateNextStepId'
+      }
+    }
+    const nextStep: Block & { action: Action | null } = {
+      ...block,
+      id: 'nextStepId',
+      journeyId: 'journeyId',
+      typename: 'StepBlock',
+      parentOrder: 1,
+      action: null
+    }
+    const duplicatedNextStep = {
+      ...nextStep,
+      id: 'duplicateNextStepId',
+      journeyId: 'duplicateJourneyId'
+    }
+    const primaryImage = {
+      ...block,
+      typename: 'ImageBlock',
+      id: 'primaryImageBlockId',
+      parentOrder: 2,
+      src: 'image.src',
+      width: 100,
+      height: 100,
+      alt: 'primary-image-block',
+      blurhash: 'image.blurhash'
+    }
+    const duplicatedPrimaryImage = {
+      ...primaryImage,
+      id: 'duplicatePrimaryImageId',
+      journeyId: 'duplicateJourneyId'
+    }
+
+    beforeEach(() => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
-      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
-        ...journey,
-        id: 'duplicateJourneyId',
-        createdAt: new Date().toISOString(),
-        status: JourneyStatus.draft,
-        publishedAt: undefined,
-        slug: `${journey.title}-copy`,
-        title: `${journey.title} copy`,
-        template: false
+      prismaService.journey.findUnique
+        // lookup existing journey to duplicate and authorize
+        .mockResolvedValueOnce(journeyWithUserTeam)
+        // lookup duplicate journey once created and authorize
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      // find existing duplicate journeys
+      prismaService.journey.findMany.mockResolvedValueOnce([journey])
+      // find steps connected with existing journey
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+      blockService.getDuplicateChildren.mockResolvedValue([
+        duplicatedStep,
+        duplicatedButton,
+        duplicatedNextStep
+      ])
+    })
+
+    it('duplicates your journey', async () => {
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(prismaService.journey.create).toHaveBeenCalledWith({
+        data: {
+          ...omit(journey, [
+            'parentBlockId',
+            'nextBlockId',
+            'hostId',
+            'primaryImageBlockId',
+            'publishedAt',
+            'teamId',
+            'createdAt'
+          ]),
+          id: 'duplicateJourneyId',
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
+          slug: `${journey.title}-copy`,
+          title: `${journey.title} copy`,
+          template: false,
+          team: {
+            connect: { id: 'teamId' }
+          },
+          userJourneys: {
+            create: {
+              userId: 'userId',
+              role: UserJourneyRole.owner
+            }
+          }
+        }
       })
     })
 
     it('duplicates a template journey', async () => {
-      mockUuidv4.mockReturnValueOnce('templateJourneyId')
-      expect(
-        await resolver.journeyDuplicate('templateJourneyId', 'userId')
-      ).toEqual({
-        ...template,
-        title: 'template',
-        slug: 'template',
-        createdAt: new Date().toISOString(),
-        status: JourneyStatus.draft,
-        publishedAt: undefined,
-        template: false
-      })
-    })
+      prismaService.journey.findUnique
+        .mockReset()
+        // lookup journey to duplicate and authorize
+        .mockResolvedValueOnce({ ...journeyWithUserTeam, template: true })
+        // lookup duplicate journey once created and authorize
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.journey.findMany
+        .mockReset()
+        // lookup existing duplicate active journeys
+        .mockResolvedValueOnce([])
 
-    it('duplicates a UserJourney', async () => {
-      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
-      await resolver.journeyDuplicate('journeyId', 'userId')
-      expect(ujService.save).toHaveBeenCalledWith({
-        userId: 'userId',
-        journeyId: 'duplicateJourneyId',
-        role: UserJourneyRole.owner
+      // Initial duplicate creates slug with journey title only
+      prismaService.journey.create.mockRejectedValueOnce({
+        code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+      })
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      const data = {
+        ...omit(journey, [
+          'parentBlockId',
+          'nextBlockId',
+          'hostId',
+          'primaryImageBlockId',
+          'publishedAt',
+          'teamId',
+          'createdAt'
+        ]),
+        id: 'duplicateJourneyId',
+        status: JourneyStatus.published,
+        publishedAt: new Date(),
+        slug: journey.title,
+        title: journey.title,
+        template: false,
+        team: {
+          connect: { id: 'teamId' }
+        },
+        userJourneys: {
+          create: {
+            userId: 'userId',
+            role: UserJourneyRole.owner
+          }
+        }
+      }
+
+      expect(prismaService.journey.create).toHaveBeenNthCalledWith(1, { data })
+      expect(prismaService.journey.create).toHaveBeenLastCalledWith({
+        data: { ...data, slug: `${journey.title}-duplicateJourneyId` }
       })
     })
 
     it('duplicates blocks in journey', async () => {
-      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
-      mockUuidv4.mockReturnValueOnce('duplicateStepId')
-      const duplicateStepIds = new Map([[stepBlock.id, duplicatedStep.id]])
-      await resolver.journeyDuplicate('journeyId', 'userId')
-      expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
-        [stepBlock],
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
+      const duplicateStepIds = new Map([
+        [step.id, duplicatedStep.id],
+        [nextStep.id, duplicatedNextStep.id]
+      ])
+      prismaService.block.findMany
+        .mockReset()
+        .mockResolvedValueOnce([step, nextStep])
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(blockService.getDuplicateChildren).toHaveBeenCalledWith(
+        [step, nextStep],
         'journeyId',
         null,
         duplicateStepIds,
         'duplicateJourneyId',
         duplicateStepIds
       )
-      expect(bService.saveAll).toHaveBeenCalledWith([duplicatedStep])
+      expect(blockService.saveAll).toHaveBeenCalledWith([
+        {
+          ...omit(duplicatedStep, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedButton, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedNextStep, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        }
+      ])
     })
 
     it('increments copy number on journey if multiple duplicates exist', async () => {
-      mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
-      const mockGetAllByTitle = service.getAllByTitle as jest.MockedFunction<
-        typeof service.getAllByTitle
-      >
-      mockGetAllByTitle.mockImplementationOnce(
-        async () =>
-          await Promise.resolve([
-            journey,
-            { ...journey, title: `${journey.title} copy` },
-            { ...journey, title: `${journey.title} copy other` }
-          ])
+      prismaService.journey.findMany
+        .mockReset()
+        .mockResolvedValueOnce([
+          journey,
+          { ...journey, title: `${journey.title} copy` },
+          { ...journey, title: `${journey.title} copy other` }
+        ])
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(prismaService.journey.create).toHaveBeenCalledWith({
+        data: {
+          ...omit(journey, [
+            'parentBlockId',
+            'nextBlockId',
+            'hostId',
+            'primaryImageBlockId',
+            'publishedAt',
+            'teamId',
+            'createdAt'
+          ]),
+          id: 'duplicateJourneyId',
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
+          slug: `${journey.title}-copy-2`,
+          title: `${journey.title} copy 2`,
+          template: false,
+          team: {
+            connect: { id: 'teamId' }
+          },
+          userJourneys: {
+            create: {
+              userId: 'userId',
+              role: UserJourneyRole.owner
+            }
+          }
+        }
+      })
+    })
+
+    it('should duplicate the primaryImageBlock and add it to the duplicated journey', async () => {
+      prismaService.journey.findUnique
+        .mockReset()
+        // lookup existing journey to duplicate and authorize
+        .mockResolvedValueOnce({
+          ...journeyWithUserTeam,
+          primaryImageBlockId: primaryImage.id
+        })
+        // lookup duplicate journey once created and authorize
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.block.findUnique.mockResolvedValueOnce(primaryImage)
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedPrimaryImage.id)
+      const duplicateStepIds = new Map([
+        [step.id, duplicatedStep.id],
+        [nextStep.id, duplicatedNextStep.id]
+      ])
+      prismaService.block.findMany
+        .mockReset()
+        .mockResolvedValueOnce([step, nextStep])
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(blockService.getDuplicateChildren).toHaveBeenCalledWith(
+        [step, nextStep],
+        'journeyId',
+        null,
+        duplicateStepIds,
+        'duplicateJourneyId',
+        duplicateStepIds
       )
-      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
-        ...journey,
-        id: 'duplicateJourneyId2',
-        createdAt: new Date().toISOString(),
-        status: JourneyStatus.draft,
-        publishedAt: undefined,
-        slug: `${journey.title}-copy-2`,
-        title: `${journey.title} copy 2`,
-        template: false
+      expect(blockService.saveAll).toHaveBeenCalledWith([
+        {
+          ...omit(duplicatedStep, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedButton, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedNextStep, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedPrimaryImage, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        }
+      ])
+    })
+
+    it('should duplicate actions', async () => {
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedButton.id)
+      const duplicateStepIds = new Map([
+        [step.id, duplicatedStep.id],
+        [nextStep.id, duplicatedNextStep.id]
+      ])
+      prismaService.block.findMany
+        .mockReset()
+        .mockResolvedValueOnce([step, nextStep])
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(blockService.getDuplicateChildren).toHaveBeenCalledWith(
+        [step, nextStep],
+        'journeyId',
+        null,
+        duplicateStepIds,
+        'duplicateJourneyId',
+        duplicateStepIds
+      )
+      expect(prismaService.action.create).toHaveBeenCalledWith({
+        data: {
+          ...duplicatedButton.action,
+          blockId: duplicatedNextStep.id,
+          parentBlockId: duplicatedButton.id
+        }
       })
     })
 
     it('throws error and does not get stuck in retry loop', async () => {
-      const mockSave = service.save as jest.MockedFunction<typeof service.save>
-      mockSave.mockRejectedValueOnce(new Error('database error'))
+      prismaService.journey.create.mockRejectedValueOnce(
+        new Error('database error')
+      )
       await expect(
-        resolver.journeyDuplicate('journeyId', 'userId')
+        resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
       ).rejects.toThrow('database error')
+    })
+
+    it('throws error if existing journey not authorized', async () => {
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce(journey)
+      await expect(
+        resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      ).rejects.toThrow('user is not allowed to duplicate journey')
+    })
+
+    it('throws error if existing journey not found', async () => {
+      prismaService.journey.findUnique.mockReset().mockResolvedValueOnce(null)
+      await expect(
+        resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('throws error if duplicate journey not authorized', async () => {
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce(journeyWithUserTeam)
+        .mockResolvedValueOnce(journey)
+      await expect(
+        resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      ).rejects.toThrow('user is not allowed to duplicate journey')
+    })
+
+    it('throws error if duplicate journey not found', async () => {
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce(journeyWithUserTeam)
+        .mockResolvedValueOnce(null)
+      await expect(
+        resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      ).rejects.toThrow('journey not found')
     })
   })
 
   describe('journeyUpdate', () => {
-    it('updates a Journey', async () => {
-      await resolver.journeyUpdate('1', journeyUpdate)
-      expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
+    const host: Host = {
+      id: 'hostId',
+      teamId: 'teamId',
+      title: 'Bob & Sarah Jones',
+      location: 'Dunedin, New Zealand',
+      src1: 'avatar1-id',
+      src2: 'avatar2-id',
+      updatedAt: new Date()
+    }
+
+    it('updates a journey', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        title: 'new title',
+        languageId: '529',
+        slug: 'new-slug'
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: {
+          title: 'new title',
+          languageId: '529',
+          slug: 'new-slug'
+        }
+      })
     })
 
-    it('throws UserInputErrror', async () => {
-      const mockUpdate = service.update as jest.MockedFunction<
-        typeof service.update
-      >
-      mockUpdate.mockRejectedValueOnce({ errorNum: 1210 })
-      await expect(
-        resolver.journeyUpdate('journeyId', { slug: 'untitled-journey' })
-      ).rejects.toThrow('Slug is not unique')
+    it('updates a journey with host', async () => {
+      prismaService.host.findUnique.mockResolvedValueOnce(host)
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyUpdate(ability, 'journeyId', { hostId: 'hostId' })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: { hostId: 'hostId' }
+      })
     })
 
-    it('throws error gracefully', async () => {
-      const mockUpdate = service.update as jest.MockedFunction<
-        typeof service.update
-      >
-      mockUpdate.mockRejectedValueOnce(new Error('database error'))
+    it('updates a journey without title when title is null', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyUpdate(ability, 'journeyId', { title: null })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: { title: undefined }
+      })
+    })
+
+    it('updates a journey without languageId when languageId is null', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyUpdate(ability, 'journeyId', { languageId: null })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: { languageId: undefined }
+      })
+    })
+
+    it('updates a journey without slug when slug is null', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyUpdate(ability, 'journeyId', { slug: null })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: { slug: undefined }
+      })
+    })
+
+    it('throws error if host not found', async () => {
+      prismaService.host.findUnique.mockResolvedValueOnce(null)
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
       await expect(
-        resolver.journeyUpdate('journeyId', { title: 'Untitled Journey' })
+        resolver.journeyUpdate(ability, 'journeyId', { hostId: 'hostId' })
+      ).rejects.toThrow('host not found')
+    })
+
+    it('throws error if host does not belong to same team as journey', async () => {
+      prismaService.host.findUnique.mockResolvedValueOnce({
+        ...host,
+        teamId: 'otherTeamId'
+      })
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await expect(
+        resolver.journeyUpdate(ability, 'journeyId', { hostId: 'hostId' })
+      ).rejects.toThrow(
+        'the team id of host does not not match team id of journey'
+      )
+    })
+
+    it('throws error if slug is not unique', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.journey.update.mockRejectedValueOnce({
+        code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+      })
+      await expect(
+        resolver.journeyUpdate(ability, 'journeyId', {
+          slug: 'untitled-journey'
+        })
+      ).rejects.toThrow('slug is not unique')
+    })
+
+    it('throws error if update fails', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.journey.update.mockRejectedValueOnce(
+        new Error('database error')
+      )
+      await expect(
+        resolver.journeyUpdate(ability, 'journeyId', {
+          slug: 'untitled-journey'
+        })
       ).rejects.toThrow('database error')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      await expect(
+        resolver.journeyUpdate(ability, 'journeyId', { title: 'new title' })
+      ).rejects.toThrow('user is not allowed to update journey')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journeyUpdate(ability, 'journeyId', { title: 'new title' })
+      ).rejects.toThrow('journey not found')
     })
   })
 
   describe('journeyPublish', () => {
-    it('publishes a Journey', async () => {
-      const date = '2021-12-07T03:22:41.135Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeyPublish('1')
-      expect(service.update).toHaveBeenCalledWith('1', {
-        status: JourneyStatus.published,
-        publishedAt: '2021-12-07T03:22:41.135Z'
+    it('publishes a journey', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyPublish(ability, 'journeyId')
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: {
+          status: JourneyStatus.published,
+          publishedAt: new Date()
+        }
       })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journeyPublish(ability, 'journeyId')
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      await expect(
+        resolver.journeyPublish(ability, 'journeyId')
+      ).rejects.toThrow('user is not allowed to publish journey')
     })
   })
 
   describe('journeysArchive', () => {
-    it('archives an array of Journeys', async () => {
-      const date = '2021-12-07T03:22:41.135Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeysArchive([journey.id, draftJourney.id])
-      expect(service.updateAll).toHaveBeenCalledWith([
-        {
-          _key: journey.id,
-          status: JourneyStatus.archived,
-          archivedAt: date
-        },
-        {
-          _key: draftJourney.id,
-          status: JourneyStatus.archived,
-          archivedAt: date
-        }
-      ])
-    })
-  })
-
-  describe('journeysTrash', () => {
-    it('trashes an array of Journeys', async () => {
-      const date = '2021-12-07T03:22:41.135Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeysTrash([journey.id, draftJourney.id])
-      expect(service.updateAll).toHaveBeenCalledWith([
-        {
-          _key: journey.id,
-          status: JourneyStatus.trashed,
-          trashedAt: date
-        },
-        {
-          _key: draftJourney.id,
-          status: JourneyStatus.trashed,
-          trashedAt: date
-        }
-      ])
+    it('archives an array of journeys', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey])
+      expect(
+        await resolver.journeysArchive(accessibleJourneys, ['journeyId'])
+      ).toEqual([journey])
+      expect(prismaService.journey.updateMany).toHaveBeenCalledWith({
+        where: { AND: [accessibleJourneys, { id: { in: ['journeyId'] } }] },
+        data: { status: JourneyStatus.archived, archivedAt: new Date() }
+      })
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: { AND: [accessibleJourneys, { id: { in: ['journeyId'] } }] }
+      })
     })
   })
 
   describe('journeysDelete', () => {
-    it('deletes an array of Journeys', async () => {
-      const date = '2021-12-07T03:22:41.135Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeysDelete([journey.id, draftJourney.id])
-      expect(service.updateAll).toHaveBeenCalledWith([
-        {
-          _key: journey.id,
-          status: JourneyStatus.deleted,
-          deletedAt: date
-        },
-        {
-          _key: draftJourney.id,
-          status: JourneyStatus.deleted,
-          deletedAt: date
-        }
-      ])
+    it('deletes an array of journeys', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey])
+      expect(
+        await resolver.journeysDelete(accessibleJourneys, ['journeyId'])
+      ).toEqual([journey])
+      expect(prismaService.journey.updateMany).toHaveBeenCalledWith({
+        where: { AND: [accessibleJourneys, { id: { in: ['journeyId'] } }] },
+        data: { status: JourneyStatus.deleted, deletedAt: new Date() }
+      })
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: { AND: [accessibleJourneys, { id: { in: ['journeyId'] } }] }
+      })
+    })
+  })
+
+  describe('journeysTrash', () => {
+    it('trashes an array of journeys', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey])
+      expect(
+        await resolver.journeysTrash(accessibleJourneys, ['journeyId'])
+      ).toEqual([journey])
+      expect(prismaService.journey.updateMany).toHaveBeenCalledWith({
+        where: { AND: [accessibleJourneys, { id: { in: ['journeyId'] } }] },
+        data: { status: JourneyStatus.trashed, trashedAt: new Date() }
+      })
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: { AND: [accessibleJourneys, { id: { in: ['journeyId'] } }] }
+      })
     })
   })
 
   describe('journeysRestore', () => {
-    it('resores a published Journey', async () => {
-      await resolver.journeysRestore([trashedJourney.id])
-      expect(service.updateAll).toHaveBeenCalledWith([
-        {
-          _key: trashedJourney.id,
-          status: JourneyStatus.published
+    it('restores a Journey', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey])
+      await resolver.journeysRestore(accessibleJourneys, ['journeyId'])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [accessibleJourneys, { id: { in: ['journeyId'] } }]
         }
-      ])
-    })
-
-    it('restores an draft Journey', async () => {
-      await resolver.journeysRestore([trashedDraftJourney.id])
-      expect(service.updateAll).toHaveBeenCalledWith([
-        {
-          _key: trashedDraftJourney.id,
-          status: JourneyStatus.draft
-        }
-      ])
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: { status: JourneyStatus.published, publishedAt: new Date() }
+      })
     })
   })
 
   describe('journeyTemplate', () => {
-    it('updates template', async () => {
-      await resolver.journeyTemplate('1', templateUpdate)
-      expect(service.update).toHaveBeenCalledWith('1', templateUpdate)
+    it('throws error if not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journeyTemplate(ability, 'journeyId', { template: true })
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      await expect(
+        resolver.journeyTemplate(ability, 'journeyId', { template: true })
+      ).rejects.toThrow(
+        'user is not allowed to change journey to or from a template'
+      )
+    })
+
+    describe('when user is publisher', () => {
+      beforeEach(async () => {
+        ability = await new AppCaslFactory().createAbility({
+          id: 'userId',
+          roles: ['publisher']
+        })
+      })
+
+      it('updates template', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          journeyWithUserTeam
+        )
+        await resolver.journeyTemplate(ability, 'journeyId', { template: true })
+        expect(prismaService.journey.update).toHaveBeenCalledWith({
+          where: { id: 'journeyId' },
+          data: { template: true }
+        })
+      })
+    })
+  })
+
+  describe('blocks', () => {
+    it('returns blocks', async () => {
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(await resolver.blocks(journey)).toEqual([
+        { ...block, __typename: 'ImageBlock', typename: undefined }
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        include: {
+          action: true
+        },
+        orderBy: {
+          parentOrder: 'asc'
+        },
+        where: {
+          journeyId: 'journeyId'
+        }
+      })
+    })
+
+    it('returns blocks without primaryImageBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        primaryImageBlockId: 'primaryImageBlockId'
+      }
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
+        { ...block, __typename: 'ImageBlock', typename: undefined }
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        include: {
+          action: true
+        },
+        orderBy: {
+          parentOrder: 'asc'
+        },
+        where: {
+          journeyId: 'journeyId',
+          id: { not: 'primaryImageBlockId' }
+        }
+      })
+    })
+  })
+
+  describe('chatButtons', () => {
+    it('should return chatButtons', async () => {
+      const chatButton: ChatButton = {
+        id: 'chatButtonId',
+        link: 'm.me/user',
+        platform: 'facebook',
+        journeyId: 'journeyId',
+        updatedAt: new Date()
+      }
+      prismaService.chatButton.findMany.mockResolvedValueOnce([chatButton])
+      expect(await resolver.chatButtons(journey)).toEqual([chatButton])
+      expect(prismaService.chatButton.findMany).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId' }
+      })
+    })
+  })
+
+  describe('host', () => {
+    it('returns host', async () => {
+      const host: Host = {
+        id: 'hostId',
+        teamId: 'teamId',
+        title: 'Bob & Sarah Jones',
+        location: 'Dunedin, New Zealand',
+        src1: 'avatar1-id',
+        src2: 'avatar2-id',
+        updatedAt: new Date()
+      }
+      const journeyWithHost = {
+        ...journeyWithUserTeam,
+        hostId: 'hostId'
+      }
+      prismaService.host.findUnique.mockResolvedValueOnce(host)
+      expect(await resolver.host(journeyWithHost)).toEqual(host)
+    })
+
+    it('returns null if no hostId', async () => {
+      expect(await resolver.host(journey)).toBeNull()
+    })
+  })
+
+  describe('team', () => {
+    it('returns team', async () => {
+      const team: Team = {
+        id: 'teamId',
+        title: 'My Cool Team',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+      const journeyWithTeam = {
+        ...journeyWithUserTeam,
+        teamId: 'teamId'
+      }
+      prismaService.team.findUnique.mockResolvedValueOnce(team)
+      expect(await resolver.team(journeyWithTeam)).toEqual(team)
+      expect(prismaService.team.findUnique).toHaveBeenCalledWith({
+        where: { id: journeyWithTeam.teamId }
+      })
+    })
+  })
+
+  describe('primaryImageBlock', () => {
+    it('returns primaryImageBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        primaryImageBlockId: 'blockId'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      expect(
+        await resolver.primaryImageBlock(journeyWithPrimaryImageBlock)
+      ).toEqual(block)
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+
+    it('returns null if no primaryImageBlockId', async () => {
+      expect(await resolver.primaryImageBlock(journey)).toBeNull()
+    })
+
+    it('returns null if primaryImageBlock journey is not current journey', async () => {
+      const journeyWithPrimaryImageBlockFromDifferentJourney = {
+        ...journey,
+        id: 'differentJourneyId',
+        primaryImageBlockId: 'blockId'
+      }
+      expect(
+        await resolver.primaryImageBlock(
+          journeyWithPrimaryImageBlockFromDifferentJourney
+        )
+      ).toBeNull()
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
     })
   })
 
   describe('userJourneys', () => {
-    it('should get userJourneys', async () => {
-      expect(await resolver.userJourneys(journey)).toEqual([
-        userJourney,
-        userJourney
-      ])
-      expect(ujService.forJourney).toHaveBeenCalledWith(journey)
+    it('returns userJourneys related to current journey', async () => {
+      const userJourney = [
+        {
+          id: 'userJourneyId',
+          userId: 'userId',
+          journeyId: 'journeyId',
+          updatedAt: new Date(),
+          role: 'owner',
+          openedAt: null,
+          journey: {
+            id: 'journeyId',
+            teamId: 'teamId',
+            userJourneys: [
+              {
+                id: 'userJourneyId',
+                userId: 'userId',
+                journeyId: 'journeyId',
+                updatedAt: new Date(),
+                role: 'owner',
+                openedAt: null
+              }
+            ],
+            team: {
+              id: 'teamId',
+              userTeams: [
+                {
+                  userId: 'userId',
+                  role: UserTeamRole.manager,
+                  teamId: 'teamId'
+                }
+              ]
+            }
+          }
+        }
+      ] as unknown as UserJourney
+
+      const userJourneys = jest.fn().mockResolvedValue(userJourney)
+      prismaService.journey.findUnique.mockReturnValue({
+        ...journey,
+        userJourneys
+      } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+
+      expect(await resolver.userJourneys(journey, ability)).toEqual(userJourney)
+    })
+
+    it('returns empty user Journeys array when null', async () => {
+      const userJourneys = jest.fn().mockResolvedValue(null)
+      prismaService.journey.findUnique.mockReturnValue({
+        ...journey,
+        userJourneys
+      } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+
+      expect(await resolver.userJourneys(journey, ability)).toEqual([])
+    })
+
+    it('returns empty user journeys array when ability is undefined', async () => {
+      expect(await resolver.userJourneys(journey, undefined)).toEqual([])
     })
   })
 
@@ -1056,7 +1650,8 @@ describe('JourneyResolver', () => {
         id: 'languageId'
       })
     })
-    it('when no languageId returns object for federation with default', async () => {
+
+    it('returns object for federation with default when no languageId', async () => {
       expect(await resolver.language({})).toEqual({
         __typename: 'Language',
         id: '529'

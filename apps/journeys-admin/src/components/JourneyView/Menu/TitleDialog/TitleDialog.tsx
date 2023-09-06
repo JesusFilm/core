@@ -1,10 +1,13 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloError } from '@apollo/client'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
-import { Dialog } from '@core/shared/ui/Dialog'
+import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
-import { Formik, Form, FormikValues } from 'formik'
+import { ReactElement } from 'react'
+import { object, string } from 'yup'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
 
 export const JOURNEY_TITLE_UPDATE = gql`
@@ -25,6 +28,9 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyTitleUpdate>(JOURNEY_TITLE_UPDATE)
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
+  const titleSchema = object().shape({
+    title: string().required('Required')
+  })
 
   const handleUpdateTitle = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
@@ -75,8 +81,9 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
         <Formik
           initialValues={{ title: journey.title }}
           onSubmit={handleUpdateTitle}
+          validationSchema={titleSchema}
         >
-          {({ values, handleChange, handleSubmit, resetForm }) => (
+          {({ values, errors, handleChange, handleSubmit, resetForm }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
@@ -94,7 +101,9 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
                   fullWidth
                   value={values.title}
                   variant="filled"
+                  error={Boolean(errors.title)}
                   onChange={handleChange}
+                  helperText={errors.title as string}
                 />
               </Form>
             </Dialog>

@@ -1,149 +1,168 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { CurrentUser } from '@core/nest/decorators/CurrentUser'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { UserInputError } from 'apollo-server-errors'
-import { User } from '@core/nest/common/firebaseClient'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
 
 import {
-  IdType,
-  Journey,
+  Prisma,
   UserInvite,
-  UserInviteCreateInput,
   UserJourneyRole
-} from '../../__generated__/graphql'
-import { RoleGuard } from '../../lib/roleGuard/roleGuard'
-import { JourneyService } from '../journey/journey.service'
-import { UserJourneyService } from '../userJourney/userJourney.service'
-import { UserInviteService } from './userInvite.service'
+} from '.prisma/api-journeys-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { User } from '@core/nest/common/firebaseClient'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+
+import { UserInviteCreateInput } from '../../__generated__/graphql'
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('UserInvite')
 export class UserInviteResolver {
-  constructor(
-    private readonly userInviteService: UserInviteService,
-    private readonly userJourneyService: UserJourneyService,
-    private readonly journeyService: JourneyService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  @UseGuards(
-    GqlAuthGuard,
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
-  )
+  @UseGuards(AppCaslGuard)
   async userInvites(
-    @Args('journeyId') journeyId: string
+    @CaslAccessible('UserInvite')
+    accessibleUserInvites: Prisma.UserInviteWhereInput,
+    @Args('journeyId')
+    journeyId: string
   ): Promise<UserInvite[]> {
-    return await this.userInviteService.getAllUserInvitesByJourney(journeyId)
+    return await this.prismaService.userInvite.findMany({
+      where: {
+        AND: [accessibleUserInvites, { journeyId }]
+      }
+    })
   }
 
   @Mutation()
-  @UseGuards(
-    GqlAuthGuard,
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
-  )
+  @UseGuards(AppCaslGuard)
   async userInviteCreate(
+    @CaslAbility() ability: AppAbility,
     @CurrentUserId() senderId: string,
     @Args('journeyId') journeyId: string,
     @Args('input') input: UserInviteCreateInput
-  ): Promise<UserInvite | null> {
-    const userInvite: UserInvite =
-      await this.userInviteService.getUserInviteByJourneyAndEmail(
-        journeyId,
-        input.email
-      )
-
-    // Create invite if doesn't exist.
-    if (userInvite == null) {
-      const journey: Journey = await this.journeyService.get(journeyId)
-
-      if (journey == null) throw new UserInputError('journey does not exist')
-
-      return await this.userInviteService.save({
-        journeyId: journey.id,
-        senderId,
-        email: input.email,
-        acceptedAt: null,
-        removedAt: null
+  ): Promise<UserInvite> {
+    return await this.prismaService.$transaction(async (tx) => {
+      const userInvite = await tx.userInvite.upsert({
+        where: { journeyId_email: { journeyId, email: input.email } },
+        create: {
+          journey: { connect: { id: journeyId } },
+          senderId,
+          email: input.email
+        },
+        update: {
+          senderId,
+          acceptedAt: null,
+          removedAt: null
+        },
+        include: {
+          journey: {
+            include: {
+              team: {
+                include: { userTeams: true }
+              },
+              userJourneys: true
+            }
+          }
+        }
       })
-    }
-
-    // Else re-activate removed invite
-    if (userInvite.removedAt != null) {
-      return await this.userInviteService.update(userInvite.id, {
-        senderId,
-        acceptedAt: null,
-        removedAt: null
-      })
-    }
-
-    return null
+      if (!ability.can(Action.Create, subject('UserInvite', userInvite)))
+        throw new GraphQLError('user is not allowed to create userInvite', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      return userInvite
+    })
   }
 
   @Mutation()
-  @UseGuards(
-    GqlAuthGuard,
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
-  )
+  @UseGuards(AppCaslGuard)
   async userInviteRemove(
-    @Args('id') id: string,
-    // journeyId needed for RoleGuard
-    @Args('journeyId') journeyId: string
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
   ): Promise<UserInvite> {
-    return await this.userInviteService.update(id, {
-      // Remove called on pending invites and on deleting userJourneys. Both need to reset acceptedAt.
-      acceptedAt: null,
-      removedAt: new Date().toISOString()
+    const userInvite = await this.prismaService.userInvite.findUnique({
+      where: { id },
+      include: {
+        journey: {
+          include: {
+            team: {
+              include: { userTeams: true }
+            },
+            userJourneys: true
+          }
+        }
+      }
     })
+    if (userInvite == null)
+      throw new GraphQLError('userInvite not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Manage, subject('UserInvite', userInvite)))
+      throw new GraphQLError('user is not allowed to remove userInvite', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.prismaService.userInvite.update({
+      where: { id },
+      data: {
+        // Remove called on pending invites and on deleting userJourneys.
+        // Both need to reset acceptedAt.
+        acceptedAt: null,
+        removedAt: new Date()
+      }
+    })
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async userInviteAcceptAll(@CurrentUser() user: User): Promise<UserInvite[]> {
+    const userInvites = await this.prismaService.userInvite.findMany({
+      where: {
+        email: user.email,
+        acceptedAt: null,
+        removedAt: null
+      }
+    })
+    const redeemedUserInvites = await Promise.all(
+      userInvites.map(
+        async (userInvite) => await this.redeemInvite(userInvite, user.id)
+      )
+    )
+    return redeemedUserInvites
   }
 
   async redeemInvite(
     userInvite: UserInvite,
     userId: string
   ): Promise<UserInvite> {
-    // Create userJourney for new invites
-    if (userInvite.acceptedAt == null && userInvite.removedAt == null) {
-      const userJourney = await this.userJourneyService.requestAccess(
-        userInvite.journeyId,
-        IdType.databaseId,
-        userId
-      )
-
-      // User already has access to journey, remove invalid invite
-      if (userJourney == null) {
-        return await this.userInviteService.update(userInvite.id, {
-          removedAt: new Date().toISOString()
-        })
-      }
-
-      await this.userJourneyService.approveAccess(
-        userJourney.id,
-        userInvite.senderId
-      )
-
-      return await this.userInviteService.update(userInvite.id, {
-        acceptedAt: new Date().toISOString()
+    const [, redeemedUserInvite] = await this.prismaService.$transaction([
+      this.prismaService.userJourney.upsert({
+        where: {
+          journeyId_userId: {
+            journeyId: userInvite.journeyId,
+            userId
+          }
+        },
+        create: {
+          journey: { connect: { id: userInvite.journeyId } },
+          userId,
+          role: UserJourneyRole.editor
+        },
+        update: {
+          role: UserJourneyRole.editor
+        }
+      }),
+      this.prismaService.userInvite.update({
+        where: {
+          id: userInvite.id
+        },
+        data: {
+          acceptedAt: new Date()
+        }
       })
-    }
-
-    return userInvite
-  }
-
-  @Mutation()
-  @UseGuards(GqlAuthGuard)
-  async userInviteAcceptAll(
-    @CurrentUser() user: User
-  ): Promise<Array<Promise<UserInvite>>> {
-    const userInvites = await this.userInviteService.getAllUserInvitesByEmail(
-      user.email
-    )
-
-    if (userInvites.length === 0) return []
-
-    const invites = userInvites.map(
-      async (userInvite) => await this.redeemInvite(userInvite, user.id)
-    )
-
-    return invites
+    ])
+    return redeemedUserInvite
   }
 }

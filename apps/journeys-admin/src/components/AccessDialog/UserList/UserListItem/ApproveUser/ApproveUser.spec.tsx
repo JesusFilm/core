@@ -1,13 +1,26 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { InMemoryCache } from '@apollo/client'
-import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { GET_USER_INVITES } from '../../../AccessDialog'
+import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
+import { GET_USER_INVITES } from '../../../../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
 import { USER_INVITE_REMOVE } from '../RemoveUser/RemoveUser'
+
 import { USER_JOURNEY_APPROVE } from './ApproveUser'
+
 import { ApproveUser } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 describe('ApproveUser', () => {
   it('should approve user journey', async () => {
@@ -43,7 +56,7 @@ describe('ApproveUser', () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <MockedProvider
@@ -96,6 +109,7 @@ describe('ApproveUser', () => {
             id="userId"
             email="invite@email.com"
             onClick={handleClick}
+            journeyId="journeyId"
           />
         </MockedProvider>
       </JourneyProvider>

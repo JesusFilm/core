@@ -1,5 +1,6 @@
-import { render, fireEvent } from '@testing-library/react'
-import { noop } from 'lodash'
+import { fireEvent, render } from '@testing-library/react'
+import noop from 'lodash/noop'
+
 import { ShareButton } from './ShareButton'
 
 describe('ShareButton', () => {

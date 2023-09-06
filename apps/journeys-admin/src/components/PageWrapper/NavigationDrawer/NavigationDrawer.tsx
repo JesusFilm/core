@@ -1,38 +1,41 @@
-import { ReactElement, useState } from 'react'
-import Drawer from '@mui/material/Drawer'
-import { AuthUser } from 'next-firebase-auth'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { styled, Theme } from '@mui/material/styles'
+import { useQuery } from '@apollo/client'
+import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
+import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
+import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
+import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
+import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
+import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
+import Avatar from '@mui/material/Avatar'
+import Backdrop from '@mui/material/Backdrop'
+import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
+import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import Avatar from '@mui/material/Avatar'
-import Box from '@mui/material/Box'
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
-import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
-import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
-import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
-import Backdrop from '@mui/material/Backdrop'
+import { Theme, styled } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import compact from 'lodash/compact'
 import Image from 'next/image'
-import { NextRouter } from 'next/router'
-import { compact } from 'lodash'
-import { gql, useQuery } from '@apollo/client'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
-import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
+import { useRouter } from 'next/router'
+import { AuthUser } from 'next-firebase-auth'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Role } from '../../../../__generated__/globalTypes'
-import taskbarIcon from '../../../../public/taskbar-icon.svg'
-import nextstepsTitle from '../../../../public/nextsteps-title.svg'
+
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { GetMe } from '../../../../__generated__/GetMe'
-import { GetUserRole } from '../../../../__generated__/GetUserRole'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
-import { useActiveJourneys } from '../../../libs/useActiveJourneys'
+import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
+import nextstepsTitle from '../../../../public/nextsteps-title.svg'
+import taskbarIcon from '../../../../public/taskbar-icon.svg'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
+import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
-import { UserMenu } from './UserMenu'
+
 import { NavigationListItem } from './NavigationListItem'
+import { UserMenu } from './UserMenu'
 
 const DRAWER_WIDTH = '237px'
 
@@ -40,28 +43,13 @@ export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
   authUser?: AuthUser
-  title: string
-  router?: NextRouter
 }
 
-export const GET_ME = gql`
-  query GetMe {
-    me {
-      id
-      firstName
-      lastName
-      email
-      imageUrl
-    }
-  }
-`
-
 const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
-  width: DRAWER_WIDTH,
+  width: '72px',
   display: 'flex',
-  boxSizing: 'border-box',
-  border: 0,
   '& .MuiDrawer-paper': {
+    border: 0,
     backgroundColor: theme.palette.secondary.dark,
     overflowX: 'hidden',
     ...(open === true && {
@@ -102,19 +90,19 @@ export const StyledList = styled(List)({
 export function NavigationDrawer({
   open,
   onClose,
-  authUser,
-  title,
-  router
+  authUser
 }: NavigationDrawerProps): ReactElement {
-  const activeJourneys = useActiveJourneys()
-  const journeys = activeJourneys?.data?.journeys
+  const { data: activeJourneys } = useAdminJourneysQuery({
+    status: [JourneyStatus.draft, JourneyStatus.published]
+  })
+  const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
+  const { globalReports } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
   const selectedPage = router?.pathname?.split('/')[1]
-
-  const { templates } = useFlags()
 
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {
@@ -130,7 +118,7 @@ export function NavigationDrawer({
   }
 
   const { data } = useQuery<GetMe>(GET_ME)
-  const { data: userRoleData } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const { data: userRoleData } = useUserRoleQuery()
 
   const journeyTooltip = getJourneyTooltip(t, journeys, authUser?.id)
 
@@ -143,7 +131,7 @@ export function NavigationDrawer({
     >
       {open && smUp && <Backdrop open={open} onClick={handleClose} />}
       <StyledList>
-        <ListItemButton onClick={handleClose}>
+        <ListItemButton onClick={handleClose} data-testid="toggle-nav-drawer">
           <ListItemIcon
             sx={{
               '> .MuiSvgIcon-root': {
@@ -160,41 +148,40 @@ export function NavigationDrawer({
         <NavigationListItem
           icon={<ViewCarouselRoundedIcon />}
           label="Discover"
-          selected={selectedPage === 'journeys' || selectedPage == null} // null for when page is index. UPDATE when we add the actual index page
+          selected={selectedPage === 'journeys' || selectedPage === ''} // empty string for when page is index. UPDATE when we add the actual index page
           link="/"
           tooltipText={journeyTooltip}
         />
 
-        {templates && (
+        <NavigationListItem
+          icon={<ShopRoundedIcon />}
+          label="Templates"
+          selected={selectedPage === 'templates'}
+          link="/templates"
+        />
+
+        {globalReports && (
           <NavigationListItem
-            icon={<ShopRoundedIcon />}
-            label="Templates"
-            selected={selectedPage === 'templates'}
-            link="/templates"
+            icon={<LeaderboardRoundedIcon />}
+            label="Reports"
+            selected={selectedPage === 'reports'}
+            link="/reports"
           />
         )}
-
-        <NavigationListItem
-          icon={<LeaderboardRoundedIcon />}
-          label="Reports"
-          selected={selectedPage === 'reports'}
-          link="/reports"
-        />
 
         {authUser != null && data?.me != null && (
           <>
             <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
 
             {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
-              true &&
-              templates && (
-                <NavigationListItem
-                  icon={<ShopTwoRoundedIcon />}
-                  label="Publisher"
-                  selected={selectedPage === 'publisher'}
-                  link="/publisher"
-                />
-              )}
+              true && (
+              <NavigationListItem
+                icon={<ShopTwoRoundedIcon />}
+                label="Publisher"
+                selected={selectedPage === 'publisher'}
+                link="/publisher"
+              />
+            )}
 
             <NavigationListItem
               icon={
@@ -226,7 +213,6 @@ export function NavigationDrawer({
               src={taskbarIcon}
               width={32}
               height={32}
-              layout="fixed"
               alt="Next Steps Logo"
             />
           </ListItemIcon>
@@ -235,7 +221,6 @@ export function NavigationDrawer({
               src={nextstepsTitle}
               width={106}
               height={24}
-              layout="fixed"
               alt="Next Steps Title"
             />
           </Box>

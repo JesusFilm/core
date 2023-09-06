@@ -1,52 +1,64 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { Meta, StoryObj } from '@storybook/react'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+
 import { TextResponseFields } from '.'
 
-const TextResponseStory = {
+const TextResponseStory: Meta<typeof TextResponseFields> = {
   ...journeysAdminConfig,
   component: TextResponseFields,
   title:
     'Journeys-Admin/Editor/ControlPanel/Attributes/TextResponse/TextResponseFields'
 }
 
-const Template: Story = ({ ...args }) => {
-  return (
-    <MockedProvider>
-      <JourneyProvider
-        value={{ journey: { id: 'journey.id' } as unknown as Journey }}
-      >
-        <EditorProvider
-          initialState={{
-            selectedBlock: args.block
+const Template: StoryObj<typeof TextResponseFields> = {
+  render: ({ ...args }) => {
+    return (
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            variant: 'admin'
           }}
         >
-          <TextResponseFields />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
-}
-
-export const Default = Template.bind({})
-Default.args = {
-  block: {
-    label: 'Your answer here'
+          <EditorProvider
+            initialState={{
+              selectedBlock: args.block
+            }}
+          >
+            <TextResponseFields />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
   }
 }
 
-export const Complete = Template.bind({})
-Complete.args = {
-  block: {
-    label: 'Label limit 1234',
-    hint: 'Hint limit 12345678910',
-    minRows: 4
+export const Default = {
+  ...Template,
+  args: {
+    block: {
+      label: 'Your answer here'
+    }
   }
 }
 
-export const Loading = Template.bind({})
+export const Complete = {
+  ...Template,
+  args: {
+    block: {
+      label: 'Label limit 1234',
+      hint: 'Hint limit 12345678910',
+      minRows: 4
+    }
+  }
+}
 
-export default TextResponseStory as Meta
+export const Loading = { ...Template }
+
+export default TextResponseStory

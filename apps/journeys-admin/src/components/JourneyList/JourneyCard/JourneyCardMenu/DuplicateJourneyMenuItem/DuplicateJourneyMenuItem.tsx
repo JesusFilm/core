@@ -1,68 +1,55 @@
-import { ReactElement } from 'react'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
-import { gql, useMutation } from '@apollo/client'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useSnackbar } from 'notistack'
-import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
+import { ReactElement } from 'react'
+
+import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../../../MenuItem'
+import { useTeam } from '../../../../Team/TeamProvider'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string
   handleCloseMenu: () => void
 }
 
-export const JOURNEY_DUPLICATE = gql`
-  mutation JourneyDuplicate($id: ID!) {
-    journeyDuplicate(id: $id) {
-      id
-    }
-  }
-`
-
 export function DuplicateJourneyMenuItem({
   id,
   handleCloseMenu
 }: DuplicateJourneyMenuItemProps): ReactElement {
-  const [journeyDuplicate] = useMutation<JourneyDuplicate>(JOURNEY_DUPLICATE)
+  const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
   const { enqueueSnackbar } = useSnackbar()
+  const { activeTeam } = useTeam()
 
   const handleDuplicateJourney = async (): Promise<void> => {
-    if (id == null) return
+    if (id == null || activeTeam?.id == null) return
 
-    await journeyDuplicate({
-      variables: {
-        id
-      },
-      update(cache, { data }) {
-        if (data?.journeyDuplicate != null) {
-          cache.modify({
-            fields: {
-              adminJourneys(existingAdminJourneyRefs = []) {
-                const duplicatedJourneyRef = cache.writeFragment({
-                  data: data.journeyDuplicate,
-                  fragment: gql`
-                    fragment DuplicatedJourney on Journey {
-                      id
-                    }
-                  `
-                })
-                return [...existingAdminJourneyRefs, duplicatedJourneyRef]
-              }
-            }
-          })
-        }
-      }
+    const data = await journeyDuplicate({
+      variables: { id, teamId: activeTeam.id }
     })
-    handleCloseMenu()
-    enqueueSnackbar(`Journey Duplicated`, {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    if (data != null) {
+      handleCloseMenu()
+      enqueueSnackbar(`Journey Duplicated`, {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    }
   }
 
   return (
     <MenuItem
+      disabled={activeTeam?.id == null}
       label="Duplicate"
-      icon={<ContentCopyRounded color="secondary" />}
+      icon={
+        loading ? (
+          <CircularProgress
+            size={24}
+            color="inherit"
+            data-testid="journey-duplicate-loader"
+          />
+        ) : (
+          <ContentCopyRounded color="secondary" />
+        )
+      }
       onClick={handleDuplicateJourney}
     />
   )

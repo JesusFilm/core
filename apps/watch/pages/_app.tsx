@@ -1,15 +1,16 @@
-import { ReactElement, useEffect } from 'react'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
+import { datadogRum } from '@datadog/browser-rum'
+import type { EmotionCache } from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
+import { DefaultSeo } from 'next-seo'
+import { ReactElement, useEffect } from 'react'
+import TagManager from 'react-gtm-module'
+
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
-import TagManager from 'react-gtm-module'
-import { datadogRum } from '@datadog/browser-rum'
-import { DefaultSeo } from 'next-seo'
-import { CacheProvider } from '@emotion/react'
-import type { EmotionCache } from '@emotion/cache'
-import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 import 'swiper/swiper.min.css'
 import '../public/fonts/fonts.css'
@@ -46,7 +47,8 @@ export default function WatchApp({
         service: 'watch',
         env: process.env.NEXT_PUBLIC_VERCEL_ENV,
         version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-        sampleRate: 100,
+        sampleRate: 50,
+        sessionReplaySampleRate: 10,
         trackInteractions: true,
         defaultPrivacyLevel: 'mask-user-input'
       })

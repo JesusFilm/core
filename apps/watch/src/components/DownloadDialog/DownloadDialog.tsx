@@ -1,25 +1,28 @@
-import { ComponentProps, ReactElement, useEffect, useState } from 'react'
-import useDownloader from 'react-use-downloader'
-import { Formik, Form } from 'formik'
-import Image from 'next/image'
-import Box from '@mui/material/Box'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import LanguageIcon from '@mui/icons-material/Language'
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
+import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
-import FormGroup from '@mui/material/FormGroup'
+import CircularProgress from '@mui/material/CircularProgress'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import FormGroup from '@mui/material/FormGroup'
 import Link from '@mui/material/Link'
+import MenuItem from '@mui/material/MenuItem'
+import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import CircularProgress from '@mui/material/CircularProgress'
-import MenuItem from '@mui/material/MenuItem'
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
-import LanguageIcon from '@mui/icons-material/Language'
-import { useTheme } from '@mui/material/styles'
-import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import { Form, Formik } from 'formik'
+import Image from 'next/image'
+import { ComponentProps, ReactElement, useEffect, useState } from 'react'
+import useDownloader from 'react-use-downloader'
+
 import { Dialog } from '@core/shared/ui/Dialog'
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+
 import { useVideo } from '../../libs/videoContext'
+
 import { TermsOfUseDialog } from './TermsOfUseDialog'
 
 interface DownloadDialogProps
@@ -98,8 +101,12 @@ export function DownloadDialog({
                   alt={imageAlt[0].value}
                   width={240}
                   height={115}
-                  objectFit="cover"
-                  style={{ borderRadius: theme.spacing(2) }}
+                  style={{
+                    borderRadius: theme.spacing(2),
+                    maxWidth: '100%',
+                    height: 'auto',
+                    objectFit: 'cover'
+                  }}
                 />
                 <Stack
                   direction="row"

@@ -1,13 +1,15 @@
-import { ReactElement, ReactNode } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-// Used to resolve dynamic viewport height on Safari
+import { ReactElement, ReactNode } from 'react'
 import Div100vh from 'react-div-100vh'
-import { Header } from '../Header'
+
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+// Used to resolve dynamic viewport height on Safari
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { Footer } from '../Footer'
+import { Header } from '../Header'
 
 interface PageWrapperProps {
   hero?: ReactNode

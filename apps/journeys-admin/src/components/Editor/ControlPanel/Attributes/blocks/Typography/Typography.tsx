@@ -1,15 +1,18 @@
-import { ReactElement, useEffect } from 'react'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
+import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
+import { ReactElement, useEffect } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
-import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
-import { Color } from './Color'
+import { Attribute } from '../../Attribute'
+
 import { Align } from './Align'
+import { Color } from './Color'
 import { Variant } from './Variant'
 
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {

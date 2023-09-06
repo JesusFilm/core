@@ -1,16 +1,18 @@
-import { Story, Meta } from '@storybook/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import Box from '@mui/material/Box'
+import { Meta, StoryObj } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../__generated__/GetJourney'
-import { simpleComponentConfig } from '../../../libs/storybook'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../libs/storybook'
+
 import { ImageBlockThumbnail } from './ImageBlockThumbnail'
 
-const ImageEditorStory = {
+const ImageEditorStory: Meta<typeof ImageBlockThumbnail> = {
   ...simpleComponentConfig,
   component: ImageBlockThumbnail,
   title: 'Journeys-Admin/Editor/ImageBlockThumbnail',
@@ -45,38 +47,48 @@ const image: ImageBlock = {
   alt: 'poster'
 }
 
-const Template: Story = ({ ...args }) => (
-  <Box bgcolor="white">
-    <ImageBlockThumbnail
-      selectedBlock={args.selectedBlock}
-      loading={args.loading}
-      error={args.error}
-    />
-  </Box>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  selectedBlock: null,
-  loading: false
+const Template: StoryObj<typeof ImageBlockThumbnail> = {
+  render: ({ ...args }) => (
+    <Box bgcolor="white">
+      <ImageBlockThumbnail
+        selectedBlock={args.selectedBlock}
+        loading={args.loading}
+        error={args.error}
+      />
+    </Box>
+  )
 }
 
-export const Image = Template.bind({})
-Image.args = {
-  selectedBlock: image,
-  loading: false
+export const Default = {
+  ...Template,
+  args: {
+    selectedBlock: null,
+    loading: false
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  selectedBlock: image,
-  loading: true
+export const Image = {
+  ...Template,
+  args: {
+    selectedBlock: image,
+    loading: false
+  }
 }
 
-export const Error = Template.bind({})
-Error.args = {
-  selectedBlock: null,
-  error: true
+export const Loading = {
+  ...Template,
+  args: {
+    selectedBlock: image,
+    loading: true
+  }
 }
 
-export default ImageEditorStory as Meta
+export const Error = {
+  ...Template,
+  args: {
+    selectedBlock: null,
+    error: true
+  }
+}
+
+export default ImageEditorStory

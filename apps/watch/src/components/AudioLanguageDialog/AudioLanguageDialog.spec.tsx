@@ -1,9 +1,12 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
+
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
+
 import { getLanguagesSlugMock } from './testData'
+
 import { AudioLanguageDialog } from '.'
 
 jest.mock('next/router', () => ({
@@ -52,9 +55,11 @@ describe('AudioLanguageDialog', () => {
         </VideoProvider>
       </MockedProvider>
     )
-    await waitFor(() => fireEvent.focus(getByRole('combobox')))
+    fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    expect(queryAllByRole('option')[1]).toHaveTextContent('A-HmaoA-Hmao')
+    await waitFor(() =>
+      expect(queryAllByRole('option')[1]).toHaveTextContent('A-HmaoA-Hmao')
+    )
     fireEvent.click(queryAllByRole('option')[1])
     await waitFor(() => expect(push).toHaveBeenCalled())
     expect(push).toHaveBeenCalledWith('/jesus/a-hmao')
@@ -75,9 +80,11 @@ describe('AudioLanguageDialog', () => {
         </VideoProvider>
       </MockedProvider>
     )
-    await waitFor(() => fireEvent.focus(getByRole('combobox')))
+    fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    expect(queryAllByRole('option')[1]).toHaveTextContent('A-HmaoA-Hmao')
+    await waitFor(() =>
+      expect(queryAllByRole('option')[1]).toHaveTextContent('A-HmaoA-Hmao')
+    )
     fireEvent.click(queryAllByRole('option')[1])
     await waitFor(() => expect(push).toHaveBeenCalled())
     expect(push).toHaveBeenCalledWith('/lumo/jesus/a-hmao')

@@ -1,5 +1,6 @@
-import { ReactElement } from 'react'
 import { render } from '@testing-library/react'
+import { ReactElement } from 'react'
+
 import { FlagsProvider, useFlags } from '.'
 
 describe('FlagsProvider', () => {
@@ -17,8 +18,9 @@ describe('useFlags', () => {
     return <>{JSON.stringify(flags)}</>
   }
 
-  it('should throw error when not in provider', () => {
-    expect(() => render(<FlagsComponent />)).toThrowError()
+  it('should render empty object', () => {
+    const { getByText } = render(<FlagsComponent />)
+    expect(getByText('{}')).toBeInTheDocument()
   })
 
   it('should render flags when in provider', () => {

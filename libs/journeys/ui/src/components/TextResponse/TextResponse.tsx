@@ -1,26 +1,28 @@
-import { ReactElement } from 'react'
-import { Formik, Form } from 'formik'
-import { useRouter } from 'next/router'
-import { useMutation, gql, ApolloError } from '@apollo/client'
-import { SxProps } from '@mui/system/styleFunctionSx'
-import Box from '@mui/material/Box'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import LoadingButton from '@mui/lab/LoadingButton'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { v4 as uuidv4 } from 'uuid'
+import { SxProps } from '@mui/system/styleFunctionSx'
+import { Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
-import type { TreeBlock } from '../../libs/block'
-import { useBlocks } from '../../libs/block'
-import { useEditor } from '../../libs/EditorProvider'
-import { useJourney } from '../../libs/JourneyProvider'
+import { v4 as uuidv4 } from 'uuid'
+
 import { handleAction } from '../../libs/action'
+import { useBlocks } from '../../libs/block'
+import type { TreeBlock } from '../../libs/block'
+import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { TextField } from '../TextField'
+import { useJourney } from '../../libs/JourneyProvider'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
-import { TextResponseSubmissionEventCreate } from './__generated__/TextResponseSubmissionEventCreate'
+import { TextField } from '../TextField'
+
 import { TextResponseFields } from './__generated__/TextResponseFields'
+import { TextResponseSubmissionEventCreate } from './__generated__/TextResponseSubmissionEventCreate'
 
 export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
   mutation TextResponseSubmissionEventCreate(
@@ -60,9 +62,10 @@ export const TextResponse = ({
     | TreeBlock<IconFields>
     | undefined
 
-  const { admin } = useJourney()
+  const { variant } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const { activeBlock, treeBlocks } = useBlocks()
+  const { blockHistory, treeBlocks } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null
@@ -80,7 +83,7 @@ export const TextResponse = ({
   const onSubmitHandler = async (
     values: TextResponseFormValues
   ): Promise<void> => {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       if (values.response.trim() !== '') {
         try {
@@ -142,6 +145,7 @@ export const TextResponse = ({
                 helperText={hint}
                 multiline
                 minRows={minRows ?? 3}
+                onClick={(e) => e.stopPropagation()}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 disabled={selectedBlock !== undefined}
@@ -155,6 +159,7 @@ export const TextResponse = ({
                 startIcon={
                   submitIcon != null ? <Icon {...submitIcon} /> : undefined
                 }
+                onClick={(e) => e.stopPropagation()}
                 sx={{ ...sx, mb: 0 }}
               >
                 {editableSubmitLabel ?? submitLabel ?? t('Submit')}

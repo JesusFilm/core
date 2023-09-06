@@ -1,12 +1,13 @@
-import { ReactElement } from 'react'
 import Container from '@mui/material/Container'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
+import { ReactElement } from 'react'
+
+import { FooterLink } from './FooterLink'
+import { FooterLinks } from './FooterLinks'
 import { FooterLogos } from './FooterLogos'
 import { FooterSocials } from './FooterSocials'
-import { FooterLinks } from './FooterLinks'
-import { FooterLink } from './FooterLink'
 
 export function Footer(): ReactElement {
   return (

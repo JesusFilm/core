@@ -1,1 +1,1 @@
-export { VideoCard } from './VideoCard'
+export { VideoCard, getSlug } from './VideoCard'

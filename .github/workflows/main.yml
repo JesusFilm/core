@@ -1,12 +1,30 @@
 name: Main
 on:
   push:
-    branches: [main]
+    branches: [main, feature/*]
   pull_request:
     branches: [main, feature/*]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
         with:
@@ -16,32 +34,40 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
+      - name: generate prisma imports
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-generate
+          all: true
+          parallel: 1
       - name: NPM apollo and graphql for codegen
-        run: npm i -g apollo graphql
+        run: npm i -g apollo graphql @apollo/rover@0.16.2
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: codegen
           all: true
-      - name: lint and typecheck
+      - name: lint, type-check, extract-translations, subgraph-check
         uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: lint,type-check,extract-translations
+          targets: lint,type-check,extract-translations,subgraph-check
+        env:
+          APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       - name: Prettier
         run: npx prettier --check .
       - name: lint commit messages
-        run: npx commitlint --from f654382 # earliest good commit to main
+        run: npx commitlint --from 9a45682 # earliest good commit to main
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
         run: npx validate-branch-name -t $GITHUB_HEAD_REF
@@ -49,6 +75,21 @@ jobs:
         run: ./tools/scripts/check-git-status.sh
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
         with:
@@ -58,28 +99,36 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
+      - name: generate prisma imports
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-generate
+          all: true
+          parallel: 1
       - name: Install Doppler
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
           curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
           echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
           sudo apt-get update && sudo apt-get -y install doppler
-      - uses: mansagroup/nrwl-nx-action@v3
+      - name: fetch-secrets and build
+        uses: mansagroup/nrwl-nx-action@v3
         env:
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
           DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}
+          DOPPLER_API_TAGS_TOKEN: ${{ secrets.DOPPLER_API_TAGS_TOKEN }}
           DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
           DOPPLER_API_VIDEOS_TOKEN: ${{ secrets.DOPPLER_API_VIDEOS_TOKEN }}
           DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
@@ -88,9 +137,24 @@ jobs:
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
         with:
-          targets: fetch-secrets,generate,build
+          targets: fetch-secrets,build
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
         with:
@@ -100,23 +164,55 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
-      - uses: mansagroup/nrwl-nx-action@v3
+      - name: generate prisma imports
+        uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: generate,test
-          args: --ci
+          targets: prisma-generate
+          all: true
+          parallel: 1
+      - name: run tests
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: test
+          args: --ci --silent
+      - name: download codecov
+        run: |
+          curl -o /usr/local/bin/codecov https://uploader.codecov.io/latest/linux/codecov
+          chmod +x /usr/local/bin/codecov
+      - name: upload coverage to codecov
+        uses: mansagroup/nrwl-nx-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          targets: codecov
   visual-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
         with:
@@ -125,15 +221,15 @@ jobs:
         run: ./tools/scripts/check-git-diff.sh
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - name: nx Install

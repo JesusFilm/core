@@ -15,7 +15,7 @@ export const VIDEO_CHILD_FIELDS = gql`
       value
     }
     slug
-    variant {
+    variant(languageId: $languageId) {
       id
       duration
       hls

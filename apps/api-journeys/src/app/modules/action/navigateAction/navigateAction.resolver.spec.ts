@@ -1,96 +1,115 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
-import { BlockService } from '../../block/block.service'
-import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { UserRoleService } from '../../userRole/userRole.service'
-import { ActionResolver } from '../action.resolver'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Action, Block, Journey } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import {
+  NavigateActionInput,
+  UserTeamRole
+} from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
+import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+
 import { NavigateActionResolver } from './navigateAction.resolver'
 
 describe('NavigateActionResolver', () => {
-  let resolver: NavigateActionResolver, service: BlockService
+  let resolver: NavigateActionResolver,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
-  const block = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
+  const block: Block & { action: Action; journey?: Journey } = {
+    ...({
+      id: '1',
+      journeyId: '2',
+      typename: 'SignUpBlock',
+      parentBlockId: '3',
+      parentOrder: 3,
+      label: 'label',
+      description: 'description',
+      updatedAt: new Date()
+    } as unknown as Block),
     action: {
       parentBlockId: '1',
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      url: 'https://google.com',
+      blockId: null,
+      journeyId: null,
+      target: null,
+      email: null,
+      updatedAt: new Date()
     }
   }
-
-  const navigateActionInput = {
-    gtmEventName: 'gtmEventNameUpdated',
-    blockId: null,
-    journeyId: null,
-    url: null,
-    target: null
+  const blockWithUserTeam = {
+    ...block,
+    journey
+  }
+  const input: NavigateActionInput = {
+    gtmEventName: 'gtmEventNameUpdated'
   }
 
   beforeEach(async () => {
-    const blockService = {
-      provide: BlockService,
-      useFactory: () => ({
-        get: jest.fn().mockResolvedValue(block),
-        update: jest.fn((navigateActionInput) => navigateActionInput)
-      })
-    }
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
         NavigateActionResolver,
-        ActionResolver,
-        UserJourneyService,
-        UserRoleService,
-        JourneyService,
-        MemberService,
         {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
     resolver = module.get<NavigateActionResolver>(NavigateActionResolver)
-    service = await module.resolve(BlockService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
-  it('updates navigate action', async () => {
-    await resolver.blockUpdateNavigateAction(
-      block.id,
-      block.journeyId,
-      navigateActionInput
-    )
-    expect(service.update).toHaveBeenCalledWith(block.id, {
-      action: {
-        ...navigateActionInput,
-        parentBlockId: block.action.parentBlockId
-      }
-    })
-  })
-
-  it('throws an error if typename is wrong', async () => {
-    const wrongBlock = {
-      ...block,
-      __typename: 'WrongBlock'
-    }
-    service.get = jest.fn().mockResolvedValue(wrongBlock)
-    await resolver
-      .blockUpdateNavigateAction(
-        wrongBlock.id,
-        wrongBlock.journeyId,
-        navigateActionInput
-      )
-      .catch((error) => {
-        expect(error.message).toEqual(
-          'This block does not support navigate actions'
-        )
+  describe('blockUpdateNavigateAction', () => {
+    it('updates navigate action', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.blockUpdateNavigateAction(ability, block.id, input)
+      expect(prismaService.action.upsert).toHaveBeenCalledWith({
+        where: { parentBlockId: block.id },
+        create: {
+          ...input,
+          parentBlock: { connect: { id: block.id } }
+        },
+        update: {
+          ...ACTION_UPDATE_RESET,
+          ...input
+        }
       })
+    })
+
+    it('throws an error if typename is wrong', async () => {
+      const wrongBlock = {
+        ...blockWithUserTeam,
+        typename: 'WrongBlock'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(wrongBlock)
+      await expect(
+        resolver.blockUpdateNavigateAction(ability, wrongBlock.id, input)
+      ).rejects.toThrow('This block does not support navigate actions')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.blockUpdateNavigateAction(ability, block.id, input)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.blockUpdateNavigateAction(ability, block.id, input)
+      ).rejects.toThrow('user is not allowed to update block')
+    })
   })
 })

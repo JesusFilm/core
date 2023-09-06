@@ -53,7 +53,10 @@ extend type Mutation {
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(
     id: ID!
-    journeyId: ID!
     input: CardBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): CardBlock!
 }

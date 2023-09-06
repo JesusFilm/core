@@ -1,29 +1,30 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { useState } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ReactNode, useState } from 'react'
+
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
-import {
-  GET_JOURNEY_WITH_USER_JOURNEYS,
-  GET_USER_INVITES
-} from './AccessDialog'
+import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
+
+import { GET_JOURNEY_WITH_PERMISSIONS } from './AccessDialog'
+
 import { AccessDialog } from '.'
 
-const Demo = {
+const Demo: Meta<typeof AccessDialog> = {
   ...journeysAdminConfig,
   component: AccessDialog,
   title: 'Journeys-Admin/AccessDialog'
 }
 
-export const Default: Story = () => {
+const DefaultAccessDialog = (): ReactNode => {
   const [open, setOpen] = useState(true)
   return (
     <MockedProvider
       mocks={[
         {
           request: {
-            query: GET_JOURNEY_WITH_USER_JOURNEYS,
+            query: GET_JOURNEY_WITH_PERMISSIONS,
             variables: {
               id: 'journeyId'
             }
@@ -32,6 +33,52 @@ export const Default: Story = () => {
             data: {
               journey: {
                 id: 'journeyId',
+                team: {
+                  __typename: 'Team',
+                  id: 'teamId',
+                  userTeams: [
+                    {
+                      __typename: 'UserTeam',
+                      id: 'userTeamId',
+                      role: 'manager',
+                      user: {
+                        __typename: 'User',
+                        email: 'kujojotaro@example.com',
+                        firstName: 'Jotaro',
+                        id: 'userId',
+                        imageUrl:
+                          'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c',
+                        lastName: 'Kujo'
+                      }
+                    },
+                    {
+                      __typename: 'UserTeam',
+                      id: 'userTeamId1',
+                      role: 'member',
+                      user: {
+                        __typename: 'User',
+                        email: 'josukehigashikata@example.com',
+                        firstName: 'Josuke',
+                        id: 'userId1',
+                        imageUrl: null,
+                        lastName: 'Higashikata'
+                      }
+                    },
+                    {
+                      __typename: 'UserTeam',
+                      id: 'userTeamId2',
+                      role: 'member',
+                      user: {
+                        __typename: 'User',
+                        email: 'KoichiHirose@example.com',
+                        firstName: 'Koichi',
+                        id: 'userId2',
+                        imageUrl: null,
+                        lastName: 'Hirose'
+                      }
+                    }
+                  ]
+                },
                 userJourneys: [
                   {
                     __typename: 'UserJourney',
@@ -39,7 +86,7 @@ export const Default: Story = () => {
                     role: 'owner',
                     user: {
                       id: 'userId1',
-                      firstName: 'Amin',
+                      firstName: 'Admin',
                       lastName: 'One',
                       imageUrl: 'https://bit.ly/3Gth4Yf',
                       email: 'admin@email.com'
@@ -120,7 +167,11 @@ export const Default: Story = () => {
   )
 }
 
-export const Loading: Story = () => {
+export const Default: StoryObj<typeof AccessDialog> = {
+  render: () => <DefaultAccessDialog />
+}
+
+const LoadingAccessDialog = (): ReactNode => {
   const [open, setOpen] = useState(true)
   return (
     <ApolloLoadingProvider>
@@ -133,4 +184,8 @@ export const Loading: Story = () => {
   )
 }
 
-export default Demo as Meta
+export const Loading: StoryObj<typeof AccessDialog> = {
+  render: () => <LoadingAccessDialog />
+}
+
+export default Demo

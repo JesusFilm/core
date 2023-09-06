@@ -58,7 +58,10 @@ extend type Mutation {
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
   typographyBlockUpdate(
     id: ID!
-    journeyId: ID!
     input: TypographyBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): TypographyBlock!
 }

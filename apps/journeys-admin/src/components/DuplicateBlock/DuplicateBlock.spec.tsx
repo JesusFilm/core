@@ -1,20 +1,23 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { MockedProvider } from '@apollo/client/testing'
+
 import {
-  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey_blocks_TypographyBlock as TypographyBlock
 } from '../../../__generated__/GetJourney'
 import {
-  TypographyVariant,
   TypographyAlign,
-  TypographyColor
+  TypographyColor,
+  TypographyVariant
 } from '../../../__generated__/globalTypes'
-import { DuplicateBlock, BLOCK_DUPLICATE } from './DuplicateBlock'
+
+import { BLOCK_DUPLICATE, DuplicateBlock } from './DuplicateBlock'
 
 describe('DuplicateBlock', () => {
   const block: TreeBlock<TypographyBlock> = {
@@ -83,7 +86,7 @@ describe('DuplicateBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock: block }}>
@@ -128,7 +131,7 @@ describe('DuplicateBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock: block }}>
@@ -171,7 +174,7 @@ describe('DuplicateBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock: step }}>
@@ -216,7 +219,7 @@ describe('DuplicateBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock: step }}>
@@ -228,5 +231,27 @@ describe('DuplicateBlock', () => {
     )
     fireEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should be disabled if nothing is selected', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <DuplicateBlock variant="button" />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button')).toBeDisabled()
+  })
+
+  it('should be disabled if manually disabling button', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <DuplicateBlock variant="button" disabled />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button')).toBeDisabled()
   })
 })

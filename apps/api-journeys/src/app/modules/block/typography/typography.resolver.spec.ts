@@ -1,117 +1,157 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   TypographyAlign,
+  TypographyBlockCreateInput,
+  TypographyBlockUpdateInput,
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { UserRoleService } from '../../userRole/userRole.service'
-import { BlockResolver } from '../block.resolver'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
+
 import { TypographyBlockResolver } from './typography.resolver'
 
 describe('TypographyBlockResolver', () => {
   let resolver: TypographyBlockResolver,
-    blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
   const block = {
-    id: '1',
-    journeyId: '2',
+    id: 'blockId',
+    journeyId: 'journeyId',
     __typename: 'TypographyBlock',
-    parentBlockId: '3',
+    parentBlockId: 'parentBlockId',
     parentOrder: 7,
-    content: 'text',
+    content: 'content',
+    variant: TypographyVariant.h2,
+    color: TypographyColor.primary,
+    align: TypographyAlign.left
+  } as unknown as Block
+  const blockWithUserTeam = {
+    ...block,
+    journey
+  }
+  const blockCreateInput: TypographyBlockCreateInput = {
+    id: 'blockId',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId',
+    content: 'content',
     variant: TypographyVariant.h2,
     color: TypographyColor.primary,
     align: TypographyAlign.left
   }
-
-  const blockUpdate = {
-    __typename: '',
-    journeyId: '2',
-    parentBlockId: '3',
-    parentOrder: 1,
-    content: 'text',
-    variant: TypographyVariant.h2,
-    color: TypographyColor.primary,
-    align: TypographyAlign.left
+  const blockUpdateInput: TypographyBlockUpdateInput = {
+    parentBlockId: 'parentBlockId',
+    content: 'newContent',
+    variant: TypographyVariant.h3,
+    color: TypographyColor.secondary,
+    align: TypographyAlign.right
   }
-
-  const blockCreateResponse = {
-    journeyId: '2',
-    __typename: 'TypographyBlock',
-    parentBlockId: '3',
-    parentOrder: 2,
-    content: 'text',
-    variant: TypographyVariant.h2,
-    color: TypographyColor.primary,
-    align: TypographyAlign.left
-  }
-
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
-      save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        BlockResolver,
         blockService,
         TypographyBlockResolver,
-        UserJourneyService,
-        UserRoleService,
-        JourneyService,
-        MemberService,
         {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<TypographyBlockResolver>(TypographyBlockResolver)
     service = await module.resolve(BlockService)
-  })
-
-  describe('TypographyBlock', () => {
-    it('returns TypographyBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(block)
-      expect(await blockResolver.blocks()).toEqual([block, block])
-    })
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   describe('typographyBlockCreate', () => {
-    it('creates a TypographyBlock', async () => {
-      await resolver.typographyBlockCreate(blockUpdate)
-      expect(service.getSiblings).toHaveBeenCalledWith(
-        blockUpdate.journeyId,
-        blockUpdate.parentBlockId
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
       )
-      expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
+    })
+
+    it('creates a TypographyBlock', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.typographyBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          align: 'left',
+          color: 'primary',
+          id: 'blockId',
+          content: 'content',
+          journey: { connect: { id: 'journeyId' } },
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: 2,
+          typename: 'TypographyBlock',
+          variant: 'h2'
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        blockCreateInput.journeyId,
+        blockCreateInput.parentBlockId
+      )
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.create.mockResolvedValueOnce(block)
+      await expect(
+        resolver.typographyBlockCreate(ability, blockCreateInput)
+      ).rejects.toThrow('user is not allowed to create block')
     })
   })
 
   describe('typographyBlockUpdate', () => {
     it('updates a TypographyBlock', async () => {
-      void resolver.typographyBlockUpdate(
-        block.id,
-        block.journeyId,
-        blockUpdate
-      )
-      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.typographyBlockUpdate(ability, 'blockId', blockUpdateInput)
+      expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.typographyBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.typographyBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('user is not allowed to update block')
     })
   })
 })

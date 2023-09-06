@@ -1,9 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
-
 import { videos } from '../Videos/__generated__/testData'
+
 import { ShareDialog } from './ShareDialog'
 
 const onClose = jest.fn()
@@ -47,12 +48,14 @@ const video: VideoContentFields = {
 
 describe('ShareDialog', () => {
   jest.resetModules()
+
   beforeEach(() => {
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_WATCH_URL: 'http://localhost:4300'
     }
   })
+
   afterEach(() => {
     process.env = originalEnv
   })
@@ -94,12 +97,14 @@ describe('ShareDialog', () => {
 
   describe('development', () => {
     jest.resetModules()
+
     beforeEach(() => {
       process.env = {
         ...originalEnv,
         NEXT_PUBLIC_WATCH_URL: 'http://localhost:4300'
       }
     })
+
     afterEach(() => {
       process.env = originalEnv
     })
@@ -153,12 +158,14 @@ describe('ShareDialog', () => {
 
   describe('production', () => {
     jest.resetModules()
+
     beforeEach(() => {
       process.env = {
         ...originalEnv,
         NEXT_PUBLIC_WATCH_URL: undefined
       }
     })
+
     afterEach(() => {
       process.env = originalEnv
     })
@@ -249,7 +256,7 @@ describe('ShareDialog', () => {
     })
 
     it('should copy embed code', async () => {
-      const code = `<div class="arc-cont"><iframe src="https://api.arclight.org/videoPlayerUrl?refId=1_529-jf-0-0&playerStyle=default" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe><style>.arc-cont{position:relative;display:block;margin:10px auto;width:100%}.arc-cont:after{padding-top:59%;display:block;content:""}.arc-cont>iframe{position:absolute;top:0;bottom:0;right:0;left:0;width:98%;height:98%;border:0}</style></div>`
+      const code = `<div class="arc-cont"><iframe src="https://api.arclight.org/videoPlayerUrl?refId=videoVariantId&playerStyle=default" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe><style>.arc-cont{position:relative;display:block;margin:10px auto;width:100%}.arc-cont:after{padding-top:59%;display:block;content:""}.arc-cont>iframe{position:absolute;top:0;bottom:0;right:0;left:0;width:98%;height:98%;border:0}</style></div>`
 
       const { getByRole, getByText } = render(
         <SnackbarProvider>

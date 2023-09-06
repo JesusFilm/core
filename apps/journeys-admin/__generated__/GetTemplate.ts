@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, ChatPlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetTemplate
@@ -21,6 +21,13 @@ export interface GetTemplate_template_language {
   bcp47: string | null;
   iso3: string | null;
   name: GetTemplate_template_language_name[];
+}
+
+export interface GetTemplate_template_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
 }
 
 export interface GetTemplate_template_blocks_ButtonBlock_action_NavigateAction {
@@ -62,7 +69,14 @@ export interface GetTemplate_template_blocks_ButtonBlock_action_LinkAction {
   url: string;
 }
 
-export type GetTemplate_template_blocks_ButtonBlock_action = GetTemplate_template_blocks_ButtonBlock_action_NavigateAction | GetTemplate_template_blocks_ButtonBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_ButtonBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_ButtonBlock_action_LinkAction;
+export interface GetTemplate_template_blocks_ButtonBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetTemplate_template_blocks_ButtonBlock_action = GetTemplate_template_blocks_ButtonBlock_action_NavigateAction | GetTemplate_template_blocks_ButtonBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_ButtonBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_ButtonBlock_action_LinkAction | GetTemplate_template_blocks_ButtonBlock_action_EmailAction;
 
 export interface GetTemplate_template_blocks_ButtonBlock {
   __typename: "ButtonBlock";
@@ -109,27 +123,6 @@ export interface GetTemplate_template_blocks_CardBlock {
    * background.
    */
   fullscreen: boolean;
-}
-
-export interface GetTemplate_template_blocks_GridContainerBlock {
-  __typename: "GridContainerBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  spacing: number;
-  direction: GridDirection;
-  justifyContent: GridJustifyContent;
-  alignItems: GridAlignItems;
-}
-
-export interface GetTemplate_template_blocks_GridItemBlock {
-  __typename: "GridItemBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  xl: number;
-  lg: number;
-  sm: number;
 }
 
 export interface GetTemplate_template_blocks_IconBlock {
@@ -197,7 +190,14 @@ export interface GetTemplate_template_blocks_RadioOptionBlock_action_LinkAction 
   url: string;
 }
 
-export type GetTemplate_template_blocks_RadioOptionBlock_action = GetTemplate_template_blocks_RadioOptionBlock_action_NavigateAction | GetTemplate_template_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_RadioOptionBlock_action_LinkAction;
+export interface GetTemplate_template_blocks_RadioOptionBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetTemplate_template_blocks_RadioOptionBlock_action = GetTemplate_template_blocks_RadioOptionBlock_action_NavigateAction | GetTemplate_template_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_RadioOptionBlock_action_LinkAction | GetTemplate_template_blocks_RadioOptionBlock_action_EmailAction;
 
 export interface GetTemplate_template_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -254,7 +254,14 @@ export interface GetTemplate_template_blocks_SignUpBlock_action_LinkAction {
   url: string;
 }
 
-export type GetTemplate_template_blocks_SignUpBlock_action = GetTemplate_template_blocks_SignUpBlock_action_NavigateAction | GetTemplate_template_blocks_SignUpBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_SignUpBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_SignUpBlock_action_LinkAction;
+export interface GetTemplate_template_blocks_SignUpBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetTemplate_template_blocks_SignUpBlock_action = GetTemplate_template_blocks_SignUpBlock_action_NavigateAction | GetTemplate_template_blocks_SignUpBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_SignUpBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_SignUpBlock_action_LinkAction | GetTemplate_template_blocks_SignUpBlock_action_EmailAction;
 
 export interface GetTemplate_template_blocks_SignUpBlock {
   __typename: "SignUpBlock";
@@ -324,7 +331,14 @@ export interface GetTemplate_template_blocks_TextResponseBlock_action_LinkAction
   url: string;
 }
 
-export type GetTemplate_template_blocks_TextResponseBlock_action = GetTemplate_template_blocks_TextResponseBlock_action_NavigateAction | GetTemplate_template_blocks_TextResponseBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_TextResponseBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_TextResponseBlock_action_LinkAction;
+export interface GetTemplate_template_blocks_TextResponseBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetTemplate_template_blocks_TextResponseBlock_action = GetTemplate_template_blocks_TextResponseBlock_action_NavigateAction | GetTemplate_template_blocks_TextResponseBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_TextResponseBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_TextResponseBlock_action_LinkAction | GetTemplate_template_blocks_TextResponseBlock_action_EmailAction;
 
 export interface GetTemplate_template_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
@@ -408,7 +422,14 @@ export interface GetTemplate_template_blocks_VideoBlock_action_LinkAction {
   url: string;
 }
 
-export type GetTemplate_template_blocks_VideoBlock_action = GetTemplate_template_blocks_VideoBlock_action_NavigateAction | GetTemplate_template_blocks_VideoBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_VideoBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_VideoBlock_action_LinkAction;
+export interface GetTemplate_template_blocks_VideoBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetTemplate_template_blocks_VideoBlock_action = GetTemplate_template_blocks_VideoBlock_action_NavigateAction | GetTemplate_template_blocks_VideoBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_VideoBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_VideoBlock_action_LinkAction | GetTemplate_template_blocks_VideoBlock_action_EmailAction;
 
 export interface GetTemplate_template_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -528,7 +549,14 @@ export interface GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_Lin
   url: string;
 }
 
-export type GetTemplate_template_blocks_VideoTriggerBlock_triggerAction = GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateAction | GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_LinkAction;
+export interface GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetTemplate_template_blocks_VideoTriggerBlock_triggerAction = GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateAction | GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface GetTemplate_template_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -543,7 +571,7 @@ export interface GetTemplate_template_blocks_VideoTriggerBlock {
   triggerAction: GetTemplate_template_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetTemplate_template_blocks = GetTemplate_template_blocks_ButtonBlock | GetTemplate_template_blocks_CardBlock | GetTemplate_template_blocks_GridContainerBlock | GetTemplate_template_blocks_GridItemBlock | GetTemplate_template_blocks_IconBlock | GetTemplate_template_blocks_ImageBlock | GetTemplate_template_blocks_RadioOptionBlock | GetTemplate_template_blocks_RadioQuestionBlock | GetTemplate_template_blocks_SignUpBlock | GetTemplate_template_blocks_StepBlock | GetTemplate_template_blocks_TextResponseBlock | GetTemplate_template_blocks_TypographyBlock | GetTemplate_template_blocks_VideoBlock | GetTemplate_template_blocks_VideoTriggerBlock;
+export type GetTemplate_template_blocks = GetTemplate_template_blocks_GridContainerBlock | GetTemplate_template_blocks_ButtonBlock | GetTemplate_template_blocks_CardBlock | GetTemplate_template_blocks_IconBlock | GetTemplate_template_blocks_ImageBlock | GetTemplate_template_blocks_RadioOptionBlock | GetTemplate_template_blocks_RadioQuestionBlock | GetTemplate_template_blocks_SignUpBlock | GetTemplate_template_blocks_StepBlock | GetTemplate_template_blocks_TextResponseBlock | GetTemplate_template_blocks_TypographyBlock | GetTemplate_template_blocks_VideoBlock | GetTemplate_template_blocks_VideoTriggerBlock;
 
 export interface GetTemplate_template_primaryImageBlock {
   __typename: "ImageBlock";
@@ -580,6 +608,29 @@ export interface GetTemplate_template_userJourneys {
   user: GetTemplate_template_userJourneys_user | null;
 }
 
+export interface GetTemplate_template_chatButtons {
+  __typename: "ChatButton";
+  id: string;
+  link: string | null;
+  platform: ChatPlatform | null;
+}
+
+export interface GetTemplate_template_host {
+  __typename: "Host";
+  id: string;
+  teamId: string;
+  title: string;
+  location: string | null;
+  src1: string | null;
+  src2: string | null;
+}
+
+export interface GetTemplate_template_team {
+  __typename: "Team";
+  id: string;
+  title: string;
+}
+
 export interface GetTemplate_template {
   __typename: "Journey";
   id: string;
@@ -598,10 +649,13 @@ export interface GetTemplate_template {
   blocks: GetTemplate_template_blocks[] | null;
   primaryImageBlock: GetTemplate_template_primaryImageBlock | null;
   userJourneys: GetTemplate_template_userJourneys[] | null;
+  chatButtons: GetTemplate_template_chatButtons[];
+  host: GetTemplate_template_host | null;
+  team: GetTemplate_template_team | null;
 }
 
 export interface GetTemplate {
-  template: GetTemplate_template | null;
+  template: GetTemplate_template;
 }
 
 export interface GetTemplateVariables {

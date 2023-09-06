@@ -1,15 +1,25 @@
-import { ComponentProps, ReactElement } from 'react'
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithUserJourneys'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { ComponentProps, ReactElement } from 'react'
+
+import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
-import { USER_JOURNEY_PROMOTE } from './PromoteUser/PromoteUser'
+
 import { USER_JOURNEY_APPROVE } from './ApproveUser/ApproveUser'
+import { USER_JOURNEY_PROMOTE } from './PromoteUser/PromoteUser'
 import { USER_INVITE_REMOVE } from './RemoveUser/RemoveUser'
+
 import { UserListItem } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 const owner: UserJourney = {
   __typename: 'UserJourney',
@@ -81,14 +91,22 @@ const UserListItemComponent = ({
   currentUser
 }: ComponentProps<typeof UserListItem>): ReactElement => (
   <MockedProvider mocks={[]}>
-    <UserListItem listItem={listItem} currentUser={currentUser} />
+    <UserListItem
+      listItem={listItem}
+      currentUser={currentUser}
+      journeyId="journeyId"
+    />
   </MockedProvider>
 )
 
 describe('UserListItem', () => {
   it('should display user avatar', () => {
     const { getByRole } = render(
-      <UserListItemComponent listItem={owner} currentUser={owner} />
+      <UserListItemComponent
+        listItem={owner}
+        currentUser={owner}
+        journeyId="journeyId"
+      />
     )
 
     expect(getByRole('img').getAttribute('alt')).toBe(
@@ -97,13 +115,16 @@ describe('UserListItem', () => {
     expect(getByRole('img').getAttribute('src')).toBe('imageSrc')
   })
 
-  // TODO: Update avatar display tests once StatusIndicators PR merged
-  // it('should display invited user avatar', () => {})
+  // TODO: Add display invited user avatar once StatusIndicators PR merged
 
   describe('owner permissions', () => {
     it('should not allow owners to edit their own access', () => {
       const { getByRole } = render(
-        <UserListItemComponent listItem={owner} currentUser={owner} />
+        <UserListItemComponent
+          listItem={owner}
+          currentUser={owner}
+          journeyId="journeyId"
+        />
       )
 
       expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
@@ -111,7 +132,11 @@ describe('UserListItem', () => {
 
     it('should enable all access actions to owners on editors', () => {
       const { getByRole, getAllByRole } = render(
-        <UserListItemComponent listItem={editor} currentUser={owner} />
+        <UserListItemComponent
+          listItem={editor}
+          currentUser={owner}
+          journeyId="journeyId"
+        />
       )
 
       expect(getByRole('button', { name: 'Editor' })).not.toBeDisabled()
@@ -125,7 +150,11 @@ describe('UserListItem', () => {
 
     it('should enable all access actions to owners on requested invites', () => {
       const { getByRole, getAllByRole } = render(
-        <UserListItemComponent listItem={userRequest} currentUser={owner} />
+        <UserListItemComponent
+          listItem={userRequest}
+          currentUser={owner}
+          journeyId="journeyId"
+        />
       )
 
       expect(getByRole('button', { name: 'Manage' })).not.toBeDisabled()
@@ -139,7 +168,11 @@ describe('UserListItem', () => {
 
     it('should enable all access actions to owners on email invites', () => {
       const { getByRole, getAllByRole } = render(
-        <UserListItemComponent listItem={userInvite} currentUser={owner} />
+        <UserListItemComponent
+          listItem={userInvite}
+          currentUser={owner}
+          journeyId="journeyId"
+        />
       )
 
       expect(getByRole('button', { name: 'Pending' })).not.toBeDisabled()
@@ -154,14 +187,23 @@ describe('UserListItem', () => {
   describe('editor permissions', () => {
     it('should block editors from editing owners access', () => {
       const { getByRole } = render(
-        <UserListItemComponent listItem={owner} currentUser={editor} />
+        <UserListItemComponent
+          listItem={owner}
+          currentUser={editor}
+          journeyId="journeyId"
+        />
       )
 
       expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
     })
+
     it('should block editors from editing other editors access', () => {
       const { getByRole } = render(
-        <UserListItemComponent listItem={editor2} currentUser={editor} />
+        <UserListItemComponent
+          listItem={editor2}
+          currentUser={editor}
+          journeyId="journeyId"
+        />
       )
 
       expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
@@ -169,7 +211,11 @@ describe('UserListItem', () => {
 
     it('should not allow editors to remove their own access', () => {
       const { getByRole } = render(
-        <UserListItemComponent listItem={editor} currentUser={editor} />
+        <UserListItemComponent
+          listItem={editor}
+          currentUser={editor}
+          journeyId="journeyId"
+        />
       )
 
       expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
@@ -177,7 +223,11 @@ describe('UserListItem', () => {
 
     it('should allow editors to edit access on requested users', () => {
       const { getByRole, getAllByRole } = render(
-        <UserListItemComponent listItem={userRequest} currentUser={editor} />
+        <UserListItemComponent
+          listItem={userRequest}
+          currentUser={editor}
+          journeyId="journeyId"
+        />
       )
 
       expect(getByRole('button', { name: 'Manage' })).not.toBeDisabled()
@@ -191,7 +241,11 @@ describe('UserListItem', () => {
 
     it('should allow editors to edit access on invited users', () => {
       const { getByRole, getAllByRole } = render(
-        <UserListItemComponent listItem={userInvite} currentUser={editor} />
+        <UserListItemComponent
+          listItem={userInvite}
+          currentUser={editor}
+          journeyId="journeyId"
+        />
       )
 
       expect(getByRole('button', { name: 'Pending' })).not.toBeDisabled()
@@ -205,7 +259,11 @@ describe('UserListItem', () => {
 
   it('should block all other roles from editing users access by default', () => {
     const { getByRole } = render(
-      <UserListItemComponent listItem={userRequest} currentUser={userRequest} />
+      <UserListItemComponent
+        listItem={userRequest}
+        currentUser={userRequest}
+        journeyId="journeyId"
+      />
     )
 
     expect(getByRole('button', { name: 'Manage' })).toBeDisabled()
@@ -248,7 +306,11 @@ describe('UserListItem', () => {
             }
           ]}
         >
-          <UserListItem listItem={editor} currentUser={owner} />
+          <UserListItem
+            listItem={editor}
+            currentUser={owner}
+            journeyId="journeyId"
+          />
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Editor' }))
@@ -282,7 +344,11 @@ describe('UserListItem', () => {
             }
           ]}
         >
-          <UserListItem listItem={userRequest} currentUser={owner} />
+          <UserListItem
+            listItem={userRequest}
+            currentUser={owner}
+            journeyId="journeyId"
+          />
         </MockedProvider>
       )
 
@@ -309,35 +375,36 @@ describe('UserListItem', () => {
       }))
 
       const { getByRole, queryByRole } = render(
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            admin: true
-          }}
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: USER_INVITE_REMOVE,
+                variables: {
+                  id: userInvite.id,
+                  journeyId: userInvite.journeyId
+                }
+              },
+              result
+            }
+          ]}
         >
-          <MockedProvider
-            mocks={[
-              {
-                request: {
-                  query: USER_INVITE_REMOVE,
-                  variables: {
-                    id: userInvite.id,
-                    journeyId: userInvite.journeyId
-                  }
-                },
-                result
-              }
-            ]}
-          >
-            <UserListItem listItem={userInvite} currentUser={owner} />
-          </MockedProvider>
-        </JourneyProvider>
+          <UserListItem
+            listItem={userInvite}
+            currentUser={owner}
+            journeyId="journey.id"
+          />
+        </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'Pending' }))
+      await waitFor(() =>
+        fireEvent.click(getByRole('button', { name: 'Pending' }))
+      )
       expect(getByRole('menu')).toBeInTheDocument()
+      await waitFor(() =>
+        fireEvent.click(getByRole('menuitem', { name: 'Remove' }))
+      )
 
-      fireEvent.click(getByRole('menuitem', { name: 'Remove' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
     })

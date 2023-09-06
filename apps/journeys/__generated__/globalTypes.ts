@@ -7,6 +7,14 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum ButtonAction {
+  EmailAction = "EmailAction",
+  LinkAction = "LinkAction",
+  NavigateAction = "NavigateAction",
+  NavigateToBlockAction = "NavigateToBlockAction",
+  NavigateToJourneyAction = "NavigateToJourneyAction",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",
@@ -25,24 +33,18 @@ export enum ButtonVariant {
   text = "text",
 }
 
-export enum GridAlignItems {
-  baseline = "baseline",
-  center = "center",
-  flexEnd = "flexEnd",
-  flexStart = "flexStart",
-}
-
-export enum GridDirection {
-  column = "column",
-  columnReverse = "columnReverse",
-  row = "row",
-  rowReverse = "rowReverse",
-}
-
-export enum GridJustifyContent {
-  center = "center",
-  flexEnd = "flexEnd",
-  flexStart = "flexStart",
+export enum ChatPlatform {
+  custom = "custom",
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
 }
 
 export enum IconColor {
@@ -94,6 +96,7 @@ export enum JourneyStatus {
 }
 
 export enum MessagePlatform {
+  custom = "custom",
   facebook = "facebook",
   instagram = "instagram",
   line = "line",
@@ -155,8 +158,27 @@ export enum VideoBlockObjectFit {
 }
 
 export enum VideoBlockSource {
+  cloudflare = "cloudflare",
   internal = "internal",
   youTube = "youTube",
+}
+
+/**
+ * The status of a visitor according to team members interacting with the
+ * visitor admin interface. This enum should map to an emoji when displayed
+ * (names here match Apple's emoji name)
+ */
+export enum VisitorStatus {
+  checkMarkSymbol = "checkMarkSymbol",
+  partyPopper = "partyPopper",
+  prohibited = "prohibited",
+  redExclamationMark = "redExclamationMark",
+  redQuestionMark = "redQuestionMark",
+  robotFace = "robotFace",
+  star = "star",
+  thumbsDown = "thumbsDown",
+  thumbsUp = "thumbsUp",
+  warning = "warning",
 }
 
 export interface ButtonClickEventCreateInput {
@@ -165,6 +187,8 @@ export interface ButtonClickEventCreateInput {
   stepId?: string | null;
   label?: string | null;
   value?: string | null;
+  action?: ButtonAction | null;
+  actionValue?: string | null;
 }
 
 export interface ChatOpenEventCreateInput {
@@ -274,6 +298,20 @@ export interface VideoStartEventCreateInput {
   position?: number | null;
   label?: string | null;
   value?: VideoBlockSource | null;
+}
+
+/**
+ * A list of fields to update a visitor when calling the visitorUpdate mutation
+ */
+export interface VisitorUpdateInput {
+  email?: string | null;
+  messagePlatformId?: string | null;
+  messagePlatform?: MessagePlatform | null;
+  name?: string | null;
+  notes?: string | null;
+  status?: VisitorStatus | null;
+  countryCode?: string | null;
+  referrer?: string | null;
 }
 
 //==============================================================

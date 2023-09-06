@@ -10,7 +10,7 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "commonjs",
-    "lib": ["es2017", "dom"],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strictNullChecks": true,
@@ -22,9 +22,9 @@
         "libs/journeys/ui/src/libs/*"
       ],
       "@core/nest/common/*": ["libs/nest/common/src/lib/*"],
-      "@core/nest/database/*": ["libs/nest/database/src/lib/*"],
       "@core/nest/decorators/*": ["libs/nest/decorators/src/lib/*"],
       "@core/nest/gqlAuthGuard/*": ["libs/nest/gqlAuthGuard/src/lib/*"],
+      "@core/nest/health": ["libs/nest/health/src/index.ts"],
       "@core/nest/powerBi/*": ["libs/nest/powerBi/src/lib/*"],
       "@core/shared/ui/*": [
         "libs/shared/ui/src/components/*",

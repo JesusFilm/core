@@ -1,15 +1,16 @@
-import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
-import Typography from '@mui/material/Typography'
-import List from '@mui/material/List'
-import Stack from '@mui/material/Stack'
-import LockRoundedIcon from '@mui/icons-material/LockRounded'
-import Divider from '@mui/material/Divider'
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ContactSupportIcon from '@mui/icons-material/ContactSupport'
-import NextLink from 'next/link'
-import Button from '@mui/material/Button'
+import LockRoundedIcon from '@mui/icons-material/LockRounded'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import List from '@mui/material/List'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import NextLink from 'next/link'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { AccessDeniedListItem } from './AccessDeniedListItem'
 
 interface AccessDeniedProps {
@@ -107,7 +108,7 @@ export function AccessDenied({
           </List>
           <Stack direction="row" justifyContent="space-between" sx={{ mt: 7 }}>
             <Box display={{ xs: 'none', sm: 'flex' }}>
-              <NextLink href="/" passHref>
+              <NextLink href="/" passHref legacyBehavior>
                 <Button
                   sx={{ color: 'primary.main' }}
                   startIcon={<ChevronLeftRoundedIcon />}
@@ -118,7 +119,7 @@ export function AccessDenied({
               </NextLink>
             </Box>
             <Box display={{ xs: 'flex', sm: 'none' }}>
-              <NextLink href="/" passHref>
+              <NextLink href="/" passHref legacyBehavior>
                 <Button
                   sx={{ color: 'primary.main' }}
                   startIcon={<ChevronLeftRoundedIcon />}
@@ -131,6 +132,7 @@ export function AccessDenied({
             <NextLink
               href="mailto:support@nextstep.is?subject=Need%20help%20with%20requesting%20editing%20access%20to%20the%20journey"
               passHref
+              legacyBehavior
             >
               <Button
                 sx={{

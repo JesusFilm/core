@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
+import { LanguageIdType } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { LanguageResolver } from './language.resolver'
-import { LanguageService } from './language.service'
 
 describe('LangaugeResolver', () => {
-  let resolver: LanguageResolver, service: LanguageService
+  let resolver: LanguageResolver, prismaService: PrismaService
 
   const language = {
     id: '20615',
@@ -19,34 +22,49 @@ describe('LangaugeResolver', () => {
         primary: false,
         languageId: '529'
       }
-    ]
+    ],
+    createdAt: new Date('2021-01-01T00:00:00.000Z'),
+    updatedAt: new Date('2021-01-01T00:00:00.000Z')
   }
 
   beforeEach(async () => {
-    const languageService = {
-      provide: LanguageService,
-      useFactory: () => ({
-        load: jest.fn(() => language),
-        getAll: jest.fn(() => [language, language])
-      })
-    }
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LanguageResolver, languageService]
+      providers: [LanguageResolver, PrismaService]
     }).compile()
     resolver = module.get<LanguageResolver>(LanguageResolver)
-    service = await module.resolve(LanguageService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.language.findUnique = jest.fn().mockResolvedValue(language)
+    prismaService.language.findMany = jest
+      .fn()
+      .mockResolvedValue([language, language])
+    prismaService.language.findFirst = jest.fn().mockResolvedValue(language)
   })
 
   describe('languages', () => {
     it('returns Languages', async () => {
       expect(await resolver.languages(1, 2)).toEqual([language, language])
-      expect(service.getAll).toHaveBeenCalledWith(1, 2)
+      expect(prismaService.language.findMany).toHaveBeenCalledWith({
+        skip: 1,
+        take: 2
+      })
     })
   })
 
   describe('language', () => {
     it('should return language', async () => {
       expect(await resolver.language(language.id)).toEqual(language)
+      expect(prismaService.language.findUnique).toHaveBeenCalledWith({
+        where: { id: language.id }
+      })
+    })
+
+    it('should return language by bcp47', async () => {
+      expect(
+        await resolver.language(language.id, LanguageIdType.bcp47)
+      ).toEqual(language)
+      expect(prismaService.language.findFirst).toHaveBeenCalledWith({
+        where: { bcp47: language.id }
+      })
     })
   })
 

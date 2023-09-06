@@ -1,8 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { ThemeProvider } from '../ThemeProvider'
+
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { ThemeProvider } from '../ThemeProvider'
+
 import {
   userJourney1,
   userJourney2,
@@ -11,6 +13,7 @@ import {
   userJourney5,
   userJourney6
 } from './data'
+
 import { AccessAvatars } from '.'
 
 describe('AccessAvatars', () => {
@@ -159,5 +162,55 @@ describe('AccessAvatars', () => {
     )
 
     expect(queryAllByLabelText('Manage Access')).toHaveLength(2)
+  })
+
+  it('should display owner of journey first', async () => {
+    const ownerUser = {
+      ...userJourney2,
+      role: UserJourneyRole.owner
+    }
+    const editorUser1 = {
+      ...userJourney1,
+      role: UserJourneyRole.editor
+    }
+    const editorUser2 = {
+      ...userJourney4,
+      role: UserJourneyRole.editor
+    }
+    const inviteRequestedUser = {
+      ...userJourney3,
+      role: UserJourneyRole.inviteRequested
+    }
+
+    const { getAllByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <AccessAvatars
+              journeyId="journeyId"
+              userJourneys={[
+                editorUser1,
+                editorUser2,
+                inviteRequestedUser,
+                ownerUser
+              ]}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    // expect the owner, Horace Two, to be at the final index for both mobile and desktop, as it is the first index displayed to the user
+    expect(
+      getAllByRole('img').map((element) => element.getAttribute('alt'))
+    ).toEqual([
+      // Mobile
+      'Amin One',
+      'Horace Two',
+      // Desktop
+      'Coral Three',
+      'Effie Four',
+      'Amin One',
+      'Horace Two'
+    ])
   })
 })

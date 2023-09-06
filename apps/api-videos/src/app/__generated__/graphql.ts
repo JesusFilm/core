@@ -8,6 +8,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum CacheControlScope {
+    PUBLIC = "PUBLIC",
+    PRIVATE = "PRIVATE"
+}
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -35,13 +40,6 @@ export class VideosFilter {
     subtitleLanguageIds?: Nullable<string[]>;
 }
 
-export class Translation {
-    __typename?: 'Translation';
-    value: string;
-    language: Language;
-    primary: boolean;
-}
-
 export class LanguageWithSlug {
     __typename?: 'LanguageWithSlug';
     language?: Nullable<Language>;
@@ -53,13 +51,13 @@ export class Video {
     id: string;
     label: VideoLabel;
     primaryLanguageId: string;
-    title: Translation[];
-    seoTitle: Translation[];
-    snippet: Translation[];
-    description: Translation[];
-    studyQuestions: Translation[];
+    title?: Translation[];
+    seoTitle?: Translation[];
+    snippet?: Translation[];
+    description?: Translation[];
+    studyQuestions?: Translation[];
     image?: Nullable<string>;
-    imageAlt: Translation[];
+    imageAlt?: Translation[];
     variantLanguages: Language[];
     variantLanguagesCount: number;
     slug: string;
@@ -92,9 +90,16 @@ export class VideoVariant {
     downloads: VideoVariantDownload[];
     duration: number;
     language: Language;
-    subtitle: Translation[];
+    subtitle?: Translation[];
     subtitleCount: number;
     slug: string;
+}
+
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
 }
 
 export class Language {

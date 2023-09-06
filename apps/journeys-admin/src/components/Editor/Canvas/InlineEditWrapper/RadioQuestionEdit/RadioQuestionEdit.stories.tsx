@@ -1,23 +1,25 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
-import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
-import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
 import {
   ThemeMode,
   ThemeName,
   TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
+import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
+import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { Canvas } from '../../Canvas'
 
-const RadioQuestionEditStory = {
+const RadioQuestionEditStory: Meta<typeof Canvas> = {
   ...simpleComponentConfig,
   component: Canvas,
   title: 'Journeys-Admin/Editor/Canvas/RadioQuestionEdit'
@@ -115,42 +117,47 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = ({ ...args }) => {
-  return (
-    <MockedProvider>
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journeyId',
-            themeMode: ThemeMode.light,
-            themeName: ThemeName.base,
-            language: {
-              __typename: 'Language',
-              id: '529',
-              bcp47: 'en',
-              iso3: 'eng'
-            }
-          } as unknown as Journey,
-          admin: true
-        }}
-      >
-        <EditorProvider
-          initialState={{
-            ...args,
-            steps,
-            activeFab: ActiveFab.Save
+const Template: StoryObj<typeof Canvas> = {
+  render: ({ ...args }) => {
+    return (
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              seoTitle: 'my journey',
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            variant: 'admin'
           }}
         >
-          <Canvas />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
+          <EditorProvider
+            initialState={{
+              ...args,
+              steps,
+              activeFab: ActiveFab.Save
+            }}
+          >
+            <Canvas />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  selectedBlock: block
+export const Default = {
+  ...Template,
+  args: {
+    selectedBlock: block
+  }
 }
 
-export default RadioQuestionEditStory as Meta
+export default RadioQuestionEditStory

@@ -1,9 +1,10 @@
 import {
-  gql,
   LazyQueryExecFunction,
   OperationVariables,
+  gql,
   useLazyQuery
 } from '@apollo/client'
+
 import {
   GetCurrentUser,
   GetCurrentUser_me as User

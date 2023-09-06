@@ -1,9 +1,12 @@
-import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { defaultJourney } from '../../../data'
+
 import { Language } from './Language'
 
 describe('Language', () => {
@@ -31,7 +34,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -61,7 +65,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -91,7 +96,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -126,7 +132,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -161,7 +168,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -172,7 +180,7 @@ describe('Language', () => {
     expect(queryByText('(English)')).toBeNull()
   })
 
-  it('should render language and edit button', () => {
+  it('should render language and edit button', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -199,7 +207,7 @@ describe('Language', () => {
                   ]
                 }
               },
-              admin: true
+              variant: 'admin'
             }}
           >
             <Language isPublisher />
@@ -209,6 +217,6 @@ describe('Language', () => {
     )
     expect(getByText('Belorussian')).toBeInTheDocument()
     fireEvent.click(getByRole('button'))
-    expect(getByText('Edit Language')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Edit Language')).toBeInTheDocument())
   })
 })

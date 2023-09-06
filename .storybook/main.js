@@ -23,22 +23,15 @@ const storiesForProject = {
     '../apps/watch/src/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/watch/src/components/**/*.stories.mdx',
     '../apps/watch/src/components/**/*.stories.@(js|jsx|ts|tsx)'
-  ],
-  'watch-admin': [
-    '../apps/watch-admin/src/**/*.stories.@(js|jsx|ts|tsx)',
-    '../apps/watch-admin/src/components/**/*.stories.mdx',
-    '../apps/watch-admin/src/components/**/*.stories.@(js|jsx|ts|tsx)',
-    '../apps/watch-admin/src/components/**/**/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
 
-const allStories = [
+const stories = [
   ...storiesForProject['journeys'],
   ...storiesForProject['journeys-admin'],
   ...storiesForProject['journeys-ui'],
   ...storiesForProject['watch'],
-  ...storiesForProject['watch-admin'],
   ...storiesForProject['shared-ui']
 ]
 
@@ -47,23 +40,23 @@ module.exports = {
     './static',
     { from: '../apps/watch/public/fonts', to: '/watch/fonts' }
   ],
-  stories: allStories,
+  stories,
   addons: [
-    '@storybook/addon-essentials',
     '@storybook/addon-interactions',
-    '@storybook/addon-a11y'
+    '@storybook/addon-a11y',
+    'storybook-addon-apollo-client'
   ],
+
   features: {
     interactionsDebugger: true
   },
-  core: {
-    builder: 'webpack5'
-  },
+
   resolve: {
     fallback: {
       util: require.resolve('util/')
     }
   },
+
   webpackFinal: async (config) => {
     const tsPaths = new TsconfigPathsPlugin({
       configFile: './tsconfig.base.json'
@@ -84,5 +77,14 @@ module.exports = {
     }
 
     return config
+  },
+
+  framework: {
+    name: '@storybook/nextjs',
+    options: {}
+  },
+
+  docs: {
+    autodocs: false
   }
 }

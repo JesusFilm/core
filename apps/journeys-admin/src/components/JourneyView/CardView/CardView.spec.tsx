@@ -1,11 +1,14 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+
 import { CardView } from './CardView'
-import { steps, oneStep } from './data'
+import { oneStep, steps } from './data'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -37,17 +40,18 @@ describe('JourneyView/CardView', () => {
   it('should render cards', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <CardView id="journeyId" blocks={steps} />
         </JourneyProvider>
       </MockedProvider>
     )
     expect(getByText('5 cards in this journey')).toBeInTheDocument()
   })
+
   it('should render description for 1 card', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <CardView id="journeyId" blocks={oneStep} />
         </JourneyProvider>
       </MockedProvider>
@@ -58,7 +62,7 @@ describe('JourneyView/CardView', () => {
   it('should render description when no cards are present', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <CardView id="journeyId" blocks={[]} />
         </JourneyProvider>
       </MockedProvider>
@@ -71,7 +75,7 @@ describe('JourneyView/CardView', () => {
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     const { getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <CardView id="journeyId" blocks={steps} />
         </JourneyProvider>
       </MockedProvider>
@@ -92,7 +96,10 @@ describe('JourneyView/CardView', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: { ...journey, template: true }, admin: true }}
+          value={{
+            journey: { ...journey, template: true },
+            variant: 'admin'
+          }}
         >
           <CardView id="journeyId" blocks={steps} isPublisher />
         </JourneyProvider>
@@ -102,6 +109,26 @@ describe('JourneyView/CardView', () => {
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
         '/publisher/journeyId/edit?stepId=step0.id',
+        undefined,
+        { shallow: true }
+      )
+    )
+  })
+
+  it('should navigate to journey social preview page when a view is selected', async () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <CardView id="journeyId" blocks={steps} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/journeys/journeyId/edit?view=social',
         undefined,
         { shallow: true }
       )

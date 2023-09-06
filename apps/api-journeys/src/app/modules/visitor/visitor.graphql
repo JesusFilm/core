@@ -61,10 +61,19 @@ type Visitor @key(fields: "id") {
   """
   createdAt: DateTime!
   """
+  Duration between createdAt and lastStepViewedAt in seconds
+  """
+  duration: Int
+  """
   The last time the visitor called the ButtonClickEvent mutation where the url
   is in the format of a recognized chat platform.
   """
   lastChatStartedAt: DateTime
+  """
+  The last message platform the visitor called the ButtonClickEvent where the
+  url is in the format of a recognized chat platform
+  """
+  lastChatPlatform: MessagePlatform
   """
   The user agent of the visitor as poulated by the visitor's user-agent string
   detected in the JourneyViewEventCreate mutation. This field is enriched
@@ -109,6 +118,35 @@ type Visitor @key(fields: "id") {
   Private notes of the visitor as set by VisitorUpdate mutation.
   """
   notes: String
+  """
+  The last time the visitor called StepViewEvent mutation. It is populated when
+  the visitor is first created, and is updated by all event creation mutations.
+  """
+  lastStepViewedAt: DateTime
+  """
+  The label of a link action button of the last time the visitor clicked a
+  link action button. Populated by ButtonClickEvent
+  """
+  lastLinkAction: String
+  """
+  The response of the last text response block the visitor filled out,
+  populated by TextResponseSubmission mutation
+  """
+  lastTextResponse: String
+  """
+  The question of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioQuestion: String
+  """
+  The selected option  of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioOptionSubmission: String
+  """
+  The url visitor was referred from
+  """
+  referrer: String
   events: [Event!]!
 }
 
@@ -166,7 +204,7 @@ extend type Query {
     """
     Returns the visitor items related to a specific team.
     """
-    teamId: String!
+    teamId: String
     """
     Returns the first n elements from the list.
     """
@@ -216,6 +254,14 @@ input VisitorUpdateInput {
   Status of the visitor.
   """
   status: VisitorStatus
+  """
+  The country code of the visitor as poulated by visitor ip address detected
+  """
+  countryCode: String
+  """
+  The referring url of the visitor
+  """
+  referrer: String
 }
 
 extend type Mutation {
@@ -223,4 +269,8 @@ extend type Mutation {
   Update a visitor
   """
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
+  """
+  Allow current user to update specific allowable fields of their visitor record
+  """
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
 }

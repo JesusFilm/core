@@ -1,32 +1,35 @@
-import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
-import Container from '@mui/material/Container'
-import { VideoJsPlayer } from 'video.js'
-import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import Slider from '@mui/material/Slider'
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
+import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
+import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
 import PauseRounded from '@mui/icons-material/PauseRounded'
-import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
+import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
+import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
 import VolumeDownOutlined from '@mui/icons-material/VolumeDownOutlined'
 import VolumeMuteOutlined from '@mui/icons-material/VolumeMuteOutlined'
 import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
-import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
-import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
-import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
+import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
+import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import Container from '@mui/material/Container'
+import Fade from '@mui/material/Fade'
+import IconButton from '@mui/material/IconButton'
+import Slider from '@mui/material/Slider'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import fscreen from 'fscreen'
+import debounce from 'lodash/debounce'
 import dynamic from 'next/dynamic'
+import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
+import Player from 'video.js/dist/types/player'
+
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+
 import { useVideo } from '../../../../../libs/videoContext'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
 const DynamicSubtitleDialog = dynamic<{
   open: boolean
-  player: VideoJsPlayer
+  player: Player
   onClose: () => void
 }>(
   async () =>
@@ -37,7 +40,7 @@ const DynamicSubtitleDialog = dynamic<{
 )
 
 interface VideoControlProps {
-  player: VideoJsPlayer
+  player: Player
   onVisibleChanged?: (active: boolean) => void
 }
 
@@ -46,16 +49,29 @@ function isMobile(): boolean {
   return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
 }
 
-function eventToDataLayer(eventType, title, language, percent): void {
+function evtToDataLayer(
+  eventType,
+  mcId,
+  langId,
+  title,
+  language,
+  seconds,
+  percent
+): void {
   TagManager.dataLayer({
     dataLayer: {
       event: eventType,
+      mcId,
+      langId,
       title,
       language,
-      percent
+      percent,
+      seconds,
+      dateTimeUTC: new Date().toISOString()
     }
   })
 }
+const eventToDataLayer = debounce(evtToDataLayer, 500)
 
 export function VideoControls({
   player,
@@ -66,7 +82,7 @@ export function VideoControls({
   const [currentTime, setCurrentTime] = useState<string>()
   const [progress, setProgress] = useState(0)
   const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
-    useState([10, 25, 50, 75, 95])
+    useState([10, 25, 50, 75, 90])
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
@@ -76,7 +92,7 @@ export function VideoControls({
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
-  const { title, variant } = useVideo()
+  const { id, title, variant } = useVideo()
   const visible = !play || active || loading
 
   useEffect(() => {
@@ -87,33 +103,68 @@ export function VideoControls({
     if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
       eventToDataLayer(
         `video_time_update_${progressPercentNotYetEmitted[0]}`,
+        id,
+        variant?.language.id,
         title[0].value,
-        variant?.language.name[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player.currentTime()),
         Math.round((progress / durationSeconds) * 100)
       )
       const [, ...rest] = progressPercentNotYetEmitted
       setProgressPercentNotYetEmitted(rest)
     }
-  }, [progress, durationSeconds, progressPercentNotYetEmitted, title, variant])
+  }, [
+    id,
+    progress,
+    durationSeconds,
+    progressPercentNotYetEmitted,
+    title,
+    variant,
+    player
+  ])
 
   useEffect(() => {
     setVolume(player.volume() * 100)
     player.on('play', () => {
-      eventToDataLayer(
-        'video_play',
-        title[0].value,
-        variant?.language.name[0].value,
-        Math.round((player.currentTime() / player.duration()) * 100)
-      )
+      if (player.currentTime() < 0.02) {
+        eventToDataLayer(
+          'video_start',
+          id,
+          variant?.language.id,
+          title[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player.currentTime()),
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      } else {
+        eventToDataLayer(
+          'video_play',
+          id,
+          variant?.language.id,
+          title[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player.currentTime()),
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      }
       setPlay(true)
     })
     player.on('pause', () => {
-      eventToDataLayer(
-        'video_pause',
-        title[0].value,
-        variant?.language.name[0].value,
-        Math.round((player.currentTime() / player.duration()) * 100)
-      )
+      if (player.currentTime() > 0.02) {
+        eventToDataLayer(
+          'video_pause',
+          id,
+          variant?.language.id,
+          title[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player.currentTime()),
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      }
       setPlay(false)
     })
     player.on('timeupdate', () => {
@@ -137,8 +188,12 @@ export function VideoControls({
       setLoading(false)
       eventToDataLayer(
         'video_ended',
+        id,
+        variant?.language.id,
         title[0].value,
-        variant?.language.name[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player.currentTime()),
         Math.round((player.currentTime() / player.duration()) * 100)
       )
     })
@@ -148,21 +203,29 @@ export function VideoControls({
       if (fscreen.fullscreenElement != null) {
         eventToDataLayer(
           'video_enter_full_screen',
+          id,
+          variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       } else {
         eventToDataLayer(
           'video_exit_full_screen',
+          id,
+          variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       }
       setFullscreen(fscreen.fullscreenElement != null)
     })
-  }, [player, setFullscreen, loading, title, variant])
+  }, [id, player, setFullscreen, loading, title, variant])
 
   function handlePlay(): void {
     if (!play) {
@@ -178,7 +241,7 @@ export function VideoControls({
       setFullscreen(false)
     } else {
       if (isMobile()) {
-        player.requestFullscreen()
+        void player.requestFullscreen()
       } else {
         await fscreen.requestFullscreen(document.documentElement)
         setFullscreen(true)
@@ -332,6 +395,7 @@ export function VideoControls({
                 alignItems="center"
               >
                 <IconButton
+                  id={play ? 'pause-button' : 'play-button'}
                   onClick={handlePlay}
                   sx={{ display: { xs: 'none', md: 'flex' } }}
                 >

@@ -1,28 +1,26 @@
-import { ReactElement, useRef, useEffect } from 'react'
+import { ApolloQueryResult } from '@apollo/client'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
-import Link from 'next/link'
-import { ApolloQueryResult } from '@apollo/client'
-import { GetActiveJourneys } from '../../../../__generated__/GetActiveJourneys'
-import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourneys'
-import { GetTrashedJourneys } from '../../../../__generated__/GetTrashedJourneys'
-import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
+import CardContent from '@mui/material/CardContent'
+import NextLink from 'next/link'
+import { ReactElement, useEffect, useRef } from 'react'
+
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../__generated__/GetAdminJourneys'
+
+import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
-import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardVariant } from './journeyCardVariant'
 
 interface JourneyCardProps {
   journey?: Journey
   duplicatedJourneyId?: string
   variant?: JourneyCardVariant
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function JourneyCard({
@@ -62,7 +60,11 @@ export function JourneyCard({
       }}
     >
       <>
-        <Link href={journey != null ? `/journeys/${journey.id}` : ''} passHref>
+        <NextLink
+          href={journey != null ? `/journeys/${journey.id}` : ''}
+          passHref
+          legacyBehavior
+        >
           <CardActionArea>
             <CardContent
               sx={{
@@ -73,7 +75,7 @@ export function JourneyCard({
               <JourneyCardText journey={journey} variant={variant} />
             </CardContent>
           </CardActionArea>
-        </Link>
+        </NextLink>
         <CardActions
           sx={{
             px: 6,

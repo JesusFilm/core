@@ -20,6 +20,58 @@
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file"
   },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma",
+    "editor.formatOnSave": true
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "name": "users",
+      "driver": "PostgreSQL",
+      "database": "users",
+      "username": "postgres",
+      "password": "postgres"
+    },
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "tags",
+      "database": "tags",
+      "username": "postgres"
+    },
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "journeys",
+      "database": "journeys",
+      "username": "postgres"
+    },
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "languages",
+      "database": "languages",
+      "username": "postgres"
+    },
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "videos",
+      "database": "videos",
+      "username": "postgres"
+    }
+  ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
@@ -31,5 +83,7 @@
     ]
   },
   "typescript.preferences.importModuleSpecifier": "project-relative",
-  "javascript.preferences.importModuleSpecifier": "project-relative"
+  "javascript.preferences.importModuleSpecifier": "project-relative",
+  "prettier.prettierPath": "./node_modules/prettier",
+  "remote.localPortHost": "allInterfaces"
 }

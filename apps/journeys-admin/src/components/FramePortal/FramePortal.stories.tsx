@@ -1,25 +1,28 @@
-import { Story, Meta } from '@storybook/react'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { journeysAdminConfig } from '../../libs/storybook'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import { BlockFields as Block } from '../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
-  ButtonVariant,
   ButtonColor,
   ButtonSize,
+  ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant,
   ThemeMode,
-  ThemeName
+  ThemeName,
+  TypographyVariant
 } from '../../../__generated__/globalTypes'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { journeysAdminConfig } from '../../libs/storybook'
+
 import { FramePortal } from '.'
 
-const FramePortalStory = {
+const FramePortalStory: Meta<typeof FramePortal> = {
   ...journeysAdminConfig,
   component: FramePortal,
   title: 'Journeys-Admin/FramePortal'
@@ -113,33 +116,35 @@ const block: TreeBlock<Block> = {
   ]
 }
 
-const Template: Story = () => (
-  <MockedProvider>
-    <JourneyProvider
-      value={{
-        journey: {
-          id: 'journeyId',
-          themeMode: ThemeMode.light,
-          themeName: ThemeName.base,
-          language: {
-            __typename: 'Language',
-            id: '529',
-            bcp47: 'en',
-            iso3: 'eng'
-          }
-        } as unknown as Journey,
-        admin: true
-      }}
-    >
-      <FramePortal width={356} height={536} dir="ltr">
-        <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-          <BlockRenderer block={block} />
-        </ThemeProvider>
-      </FramePortal>
-    </JourneyProvider>
-  </MockedProvider>
-)
+const Template: StoryObj<typeof FramePortal> = {
+  render: () => (
+    <MockedProvider>
+      <JourneyProvider
+        value={{
+          journey: {
+            id: 'journeyId',
+            themeMode: ThemeMode.light,
+            themeName: ThemeName.base,
+            language: {
+              __typename: 'Language',
+              id: '529',
+              bcp47: 'en',
+              iso3: 'eng'
+            }
+          } as unknown as Journey,
+          variant: 'admin'
+        }}
+      >
+        <FramePortal width={356} height={536} dir="ltr">
+          <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+            <BlockRenderer block={block} />
+          </ThemeProvider>
+        </FramePortal>
+      </JourneyProvider>
+    </MockedProvider>
+  )
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default FramePortalStory as Meta
+export default FramePortalStory

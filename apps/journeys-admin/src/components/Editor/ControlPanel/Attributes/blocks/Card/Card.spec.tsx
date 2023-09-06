@@ -1,21 +1,24 @@
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+import {
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
-import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock
-} from '../../../../../../../__generated__/GetJourney'
-import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
+import { Drawer } from '../../../../Drawer'
+
 import { Card } from '.'
 
 describe('Card', () => {
@@ -84,11 +87,15 @@ describe('Card', () => {
       userJourneys: [],
       template: null,
       seoTitle: null,
-      seoDescription: null
+      seoDescription: null,
+      chatButtons: [],
+      host: null,
+      team: null
     }
+
     it('shows background color from prop', () => {
       const { getByRole } = render(
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <Card {...card} backgroundColor="#00FFCC" />
         </JourneyProvider>
       )
@@ -98,7 +105,7 @@ describe('Card', () => {
 
     it('shows background color from card theme', () => {
       const { getByRole } = render(
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <Card
             {...card}
             themeName={ThemeName.base}
@@ -112,7 +119,7 @@ describe('Card', () => {
 
     it('shows background color from journey theme', () => {
       const { getByRole } = render(
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <Card {...card} />
         </JourneyProvider>
       )
@@ -124,7 +131,7 @@ describe('Card', () => {
       const { getByText } = render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey, admin: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
               <EditorProvider>
                 <Drawer />
                 <Card {...card} backgroundColor="#00FFCC" />

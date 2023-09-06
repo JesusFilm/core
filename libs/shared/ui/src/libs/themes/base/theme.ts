@@ -1,12 +1,13 @@
+import { Theme, ThemeOptions, createTheme } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
-import { createTheme, Theme, ThemeOptions } from '@mui/material/styles'
-import { baseColorsLight, baseColorsDark } from './tokens/colors'
+
 import { baseBreakpoints } from './tokens/breakpoints'
+import { baseColorsDark, baseColorsLight } from './tokens/colors'
 import { baseComponents } from './tokens/components'
 import { baseSpacing } from './tokens/spacing'
 import {
-  baseTypography as baseTypographyLTR,
   baseTypographyArabic,
+  baseTypography as baseTypographyLTR,
   baseTypographyUrdu
 } from './tokens/typography'
 

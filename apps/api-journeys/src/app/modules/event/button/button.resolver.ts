@@ -2,21 +2,28 @@
 
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
+import { Prisma } from '.prisma/api-journeys-client'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import {
+  ButtonAction,
   ButtonClickEvent,
   ButtonClickEventCreateInput,
-  ChatOpenEventCreateInput,
   ChatOpenEvent,
+  ChatOpenEventCreateInput,
   MessagePlatform
 } from '../../../__generated__/graphql'
+import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
-import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('ButtonClickEvent')
 export class ButtonClickEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -24,19 +31,55 @@ export class ButtonClickEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: ButtonClickEventCreateInput
   ): Promise<ButtonClickEvent> {
-    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
-      userId,
-      input.blockId,
-      input.stepId
-    )
+    const { visitor, journeyVisitor, journeyId } =
+      await this.eventService.validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'ButtonClickEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
-    })
+    const promises = [
+      this.eventService.save({
+        ...input,
+        id: input.id ?? undefined,
+        typename: 'ButtonClickEvent',
+        visitor: { connect: { id: visitor.id } },
+        stepId: input.stepId ?? undefined,
+        journeyId
+      } as unknown as Prisma.EventCreateInput)
+    ]
+
+    if (input.action === ButtonAction.LinkAction) {
+      promises.push(
+        this.prismaService.visitor.update({
+          where: { id: visitor.id },
+          data: {
+            lastLinkAction: input.actionValue ?? undefined
+          }
+        }),
+        this.prismaService.journeyVisitor.update({
+          where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
+          data: {
+            lastLinkAction: input.actionValue ?? undefined,
+            activityCount: journeyVisitor.activityCount + 1
+          }
+        })
+      )
+    }
+
+    if (input.action === ButtonAction.EmailAction) {
+      promises.push(
+        this.prismaService.journeyVisitor.update({
+          where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
+          data: {
+            activityCount: journeyVisitor.activityCount + 1
+          }
+        })
+      )
+    }
+
+    const [buttonClickEvent] = await Promise.all(promises)
+    return buttonClickEvent as ButtonClickEvent
   }
 }
 
@@ -44,7 +87,7 @@ export class ButtonClickEventResolver {
 export class ChatOpenEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly visitorService: VisitorService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Mutation()
@@ -53,25 +96,52 @@ export class ChatOpenEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: ChatOpenEventCreateInput
   ): Promise<ChatOpenEvent> {
-    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
-      userId,
-      input.blockId,
-      input.stepId
+    const { visitor, journeyId, journeyVisitor } =
+      await this.eventService.validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
+
+    const promises = [
+      this.eventService.save({
+        ...input,
+        id: input.id ?? undefined,
+        typename: 'ChatOpenEvent',
+        visitor: { connect: { id: visitor.id } },
+        stepId: input.stepId ?? undefined,
+        journeyId
+      })
+    ]
+
+    const data = {
+      lastChatStartedAt: new Date(),
+      lastChatPlatform: input.value ?? undefined
+    }
+    promises.push(
+      this.prismaService.visitor.update({
+        where: { id: visitor.id },
+        data: {
+          ...data,
+          messagePlatform:
+            visitor?.messagePlatform == null
+              ? input.value
+              : visitor.messagePlatform
+        }
+      })
+    )
+    promises.push(
+      this.prismaService.journeyVisitor.update({
+        where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
+        data: {
+          ...data,
+          activityCount: journeyVisitor.activityCount + 1
+        }
+      })
     )
 
-    if (visitor.messagePlatform == null) {
-      void this.visitorService.update(visitor.id, {
-        messagePlatform: input.value ?? undefined
-      })
-    }
-
-    return await this.eventService.save({
-      ...input,
-      __typename: 'ChatOpenEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
-    })
+    const [chatOpenEvent] = await Promise.all(promises)
+    return chatOpenEvent as ChatOpenEvent
   }
 
   @ResolveField('messagePlatform')

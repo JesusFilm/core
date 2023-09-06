@@ -1,24 +1,24 @@
-import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { gql, useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { gql, useQuery } from '@apollo/client'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/router'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import { JourneyView } from '../../src/components/JourneyView'
+
 import { GetTemplate } from '../../__generated__/GetTemplate'
-import { PageWrapper } from '../../src/components/PageWrapper'
-import i18nConfig from '../../next-i18next.config'
+import { JourneyView } from '../../src/components/JourneyView'
 import { Menu } from '../../src/components/JourneyView/Menu'
-import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
+import { PageWrapper } from '../../src/components/PageWrapper'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
 export const GET_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -36,7 +36,7 @@ function TemplateDetails(): ReactElement {
   const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
-  useTermsRedirect()
+  useInvalidJourneyRedirect(data)
 
   return (
     <>
@@ -45,7 +45,10 @@ function TemplateDetails(): ReactElement {
         description={data?.template?.description ?? undefined}
       />
       <JourneyProvider
-        value={{ journey: data?.template ?? undefined, admin: true }}
+        value={{
+          journey: data?.template ?? undefined,
+          variant: 'admin'
+        }}
       >
         <PageWrapper
           title={t('Journey Template')}
@@ -53,7 +56,6 @@ function TemplateDetails(): ReactElement {
           showDrawer
           backHref="/templates"
           menu={<Menu />}
-          router={router}
         >
           <JourneyView journeyType="Template" />
         </PageWrapper>
@@ -65,23 +67,20 @@ function TemplateDetails(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  if (AuthUser == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
+
+  if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })

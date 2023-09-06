@@ -1,8 +1,11 @@
-import { fireEvent, render } from '@testing-library/react'
-import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
+import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { TeamProvider } from '../../../../Team/TeamProvider'
+
 import { DefaultMenu } from '.'
 
 describe('DefaultMenu', () => {
@@ -10,23 +13,25 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <DefaultMenu
-            id="journeyId"
-            slug="journey-slug"
-            status={JourneyStatus.draft}
-            journeyId="journey-id"
-            published={false}
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            setOpenTrashDialog={noop}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="journeyId"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
@@ -54,9 +59,7 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
-    expect(
-      queryByRole('menuitem', { name: 'Duplicate' })
-    ).not.toBeInTheDocument()
+    expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {
@@ -66,16 +69,18 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <DefaultMenu
-            id="journey-id"
-            slug="journey-slug"
-            status={JourneyStatus.draft}
-            journeyId="journey-id"
-            published={false}
-            setOpenAccessDialog={setOpenAccessDialog}
-            handleCloseMenu={handleCloseMenu}
-            setOpenTrashDialog={noop}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={setOpenAccessDialog}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -89,16 +94,18 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <DefaultMenu
-            id="journey-id"
-            slug="journey-slug"
-            status={JourneyStatus.published}
-            journeyId="journey-id"
-            published
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            setOpenTrashDialog={noop}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.published}
+              journeyId="journey-id"
+              published
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -117,16 +124,18 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <DefaultMenu
-            id="journey-id"
-            slug="journey-slug"
-            status={JourneyStatus.draft}
-            journeyId="journey-id"
-            published={false}
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            setOpenTrashDialog={noop}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -143,16 +152,18 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <DefaultMenu
-            id="journey-id"
-            slug="journey-slug"
-            status={JourneyStatus.draft}
-            journeyId="journey-id"
-            published={false}
-            setOpenAccessDialog={noop}
-            handleCloseMenu={handleCloseMenu}
-            setOpenTrashDialog={setOpenTrashDialog}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={setOpenTrashDialog}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

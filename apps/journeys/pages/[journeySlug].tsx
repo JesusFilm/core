@@ -1,30 +1,33 @@
-import { ReactElement } from 'react'
-import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { transformer } from '@core/journeys/ui/transformer'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { GetStaticPaths, GetStaticProps } from 'next'
+import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { Conductor } from '../src/components/Conductor'
-import { createApolloClient } from '../src/libs/apolloClient'
+import { ReactElement } from 'react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { transformer } from '@core/journeys/ui/transformer'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
 import i18nConfig from '../next-i18next.config'
+import { Conductor } from '../src/components/Conductor'
+import { createApolloClient } from '../src/libs/apolloClient'
 
 interface JourneyPageProps {
   journey: Journey
+  locale: string
+  rtl: boolean
 }
 
-function JourneyPage({ journey }: JourneyPageProps): ReactElement {
+function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   const router = useRouter()
-  const { rtl, locale } = getJourneyRTL(journey)
   const isIframe = typeof window !== 'undefined' && window.self !== window.top
   if (isIframe) {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
@@ -32,6 +35,8 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
     <>
       <NextSeo
+        nofollow
+        noindex
         title={journey.seoTitle ?? undefined}
         description={journey.seoDescription ?? undefined}
         openGraph={{
@@ -95,26 +100,14 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetJourney>({
-    query: GET_JOURNEY,
-    variables: {
-      id: context.params?.journeySlug
-    }
-  })
-
-  if (data.journey === null) {
-    return {
-      props: {
-        ...(await serverSideTranslations(
-          context.locale ?? 'en',
-          ['apps-journeys', 'libs-journeys-ui'],
-          i18nConfig
-        ))
-      },
-      notFound: true,
-      revalidate: 60
-    }
-  } else {
+  try {
+    const { data } = await apolloClient.query<GetJourney>({
+      query: GET_JOURNEY,
+      variables: {
+        id: context.params?.journeySlug
+      }
+    })
+    const { rtl, locale } = getJourneyRTL(data.journey)
     return {
       props: {
         ...(await serverSideTranslations(
@@ -122,10 +115,26 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
           ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),
-        journey: data.journey
+        journey: data.journey,
+        locale,
+        rtl
       },
       revalidate: 60
     }
+  } catch (e) {
+    if (e.message === 'journey not found') {
+      return {
+        props: {
+          ...(await serverSideTranslations(
+            context.locale ?? 'en',
+            ['apps-journeys', 'libs-journeys-ui'],
+            i18nConfig
+          ))
+        },
+        notFound: true
+      }
+    }
+    throw e
   }
 }
 

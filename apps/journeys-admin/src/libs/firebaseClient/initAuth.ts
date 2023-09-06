@@ -1,5 +1,6 @@
-import { init } from 'next-firebase-auth'
 import absoluteUrl from 'next-absolute-url'
+import { init } from 'next-firebase-auth'
+
 import { getFirebasePrivateKey } from '@core/shared/ui/getFirebasePrivateKey'
 
 export function initAuth(): void {
@@ -39,11 +40,11 @@ export function initAuth(): void {
     authPageURL: ({ ctx }) => {
       const isServerSide = typeof window === 'undefined'
       const origin = isServerSide
-        ? absoluteUrl(ctx.req).origin
+        ? absoluteUrl(ctx?.req).origin
         : window.location.origin
       const redirectPath =
-        typeof window === 'undefined' ? ctx.resolvedUrl : window.location.href
-      const redirectUrl = new URL(redirectPath, origin)
+        typeof window === 'undefined' ? ctx?.resolvedUrl : window.location.href
+      const redirectUrl = new URL(redirectPath ?? '', origin)
       return `/users/sign-in?redirect=${encodeURIComponent(
         redirectUrl.toString()
       )}`
@@ -51,10 +52,10 @@ export function initAuth(): void {
     appPageURL: ({ ctx }) => {
       const isServerSide = typeof window === 'undefined'
       const origin = isServerSide
-        ? absoluteUrl(ctx.req).origin
+        ? absoluteUrl(ctx?.req).origin
         : window.location.origin
       const params = isServerSide
-        ? new URL(ctx.req.url ?? '', origin).searchParams
+        ? new URL(ctx?.req.url ?? '', origin).searchParams
         : new URLSearchParams(window.location.search)
       const encodedRedirectUrl = params.get('redirect')
       const redirectUrl =

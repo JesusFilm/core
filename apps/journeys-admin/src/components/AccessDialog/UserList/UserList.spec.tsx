@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react'
-import { UserJourneyRole } from '../../../../__generated__/globalTypes'
-import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
+
+import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
+import { UserJourneyRole } from '../../../../__generated__/globalTypes'
+
 import { UserList } from '.'
 
 describe('UserList', () => {
@@ -49,6 +51,7 @@ describe('UserList', () => {
         users={[userJourney1, userJourney2]}
         invites={[userInvite]}
         currentUser={userJourney1}
+        journeyId="journey.id"
       />
     )
     expect(
@@ -71,6 +74,7 @@ describe('UserList', () => {
         users={[userJourney1]}
         invites={[{ ...userInvite, removedAt: 'dateTime' }]}
         currentUser={userJourney1}
+        journeyId="journey.id"
       />
     )
     expect(
@@ -89,6 +93,7 @@ describe('UserList', () => {
         users={[userJourney1]}
         invites={[{ ...userInvite, acceptedAt: 'dateTime' }]}
         currentUser={userJourney1}
+        journeyId="journey.id"
       />
     )
     expect(

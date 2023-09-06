@@ -1,33 +1,36 @@
-import { ReactElement } from 'react'
+import PlayCircle from '@mui/icons-material/PlayCircle'
+import StopCircle from '@mui/icons-material/StopCircle'
+import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Box from '@mui/material/Box'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { noop } from 'lodash'
+import Typography from '@mui/material/Typography'
 import { useFormik } from 'formik'
+import noop from 'lodash/noop'
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
 import TimeField from 'react-simple-timefield'
-import PlayCircle from '@mui/icons-material/PlayCircle'
-import StopCircle from '@mui/icons-material/StopCircle'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   secondsToTimeFormat,
   timeFormatToSeconds
 } from '@core/shared/ui/timeFormat'
 
 import {
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import {
   VideoBlockObjectFit as ObjectFit,
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
+
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 
 interface VideoBlockEditorSettingsProps {
@@ -41,7 +44,8 @@ export function VideoBlockEditorSettings({
   posterBlock,
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
-  const { values, handleChange, setFieldValue } = useFormik({
+  const { enqueueSnackbar } = useSnackbar()
+  const { values, errors, handleChange, setFieldValue } = useFormik({
     initialValues: {
       autoplay: selectedBlock?.autoplay ?? true,
       muted: selectedBlock?.muted ?? true,
@@ -51,11 +55,45 @@ export function VideoBlockEditorSettings({
     },
     enableReinitialize: true,
     validate: async (values) => {
-      await onChange({
-        ...values,
-        startAt: timeFormatToSeconds(values.startAt),
-        endAt: timeFormatToSeconds(values.endAt)
-      })
+      const convertedStartAt = timeFormatToSeconds(values.startAt)
+      const convertedEndAt = timeFormatToSeconds(values.endAt)
+      if (convertedStartAt > convertedEndAt - 3) {
+        errors.startAt =
+          'Start time has to be at least 3 seconds less than end time'
+        enqueueSnackbar(errors.startAt, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      } else if (
+        selectedBlock?.duration != null &&
+        convertedStartAt > selectedBlock?.duration - 3
+      ) {
+        errors.startAt = `Start time has to be at least 3 seconds less than video duration ${secondsToTimeFormat(
+          selectedBlock?.duration
+        )}`
+        enqueueSnackbar(errors.startAt, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      } else if (
+        selectedBlock?.duration != null &&
+        convertedEndAt > selectedBlock?.duration
+      ) {
+        errors.endAt = `End time has to be no more than video duration ${secondsToTimeFormat(
+          selectedBlock?.duration
+        )}`
+        enqueueSnackbar(errors.endAt, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      } else {
+        await onChange({
+          ...values,
+          startAt: convertedStartAt,
+          endAt: convertedEndAt
+        })
+      }
+      return errors
     },
     onSubmit: noop
   })

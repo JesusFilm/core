@@ -1,21 +1,28 @@
 {
-  "root": "libs/nest/powerBi",
+  "name": "nest/powerBi",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/nest/powerBi/src",
   "projectType": "library",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["libs/nest/powerBi/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/nest/powerBi"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/nest/powerBi"],
       "options": {
-        "jestConfig": "libs/nest/powerBi/jest.config.js",
+        "jestConfig": "libs/nest/powerBi/jest.config.ts",
         "passWithNoTests": true
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/libs/nest/powerBi/cobertura-coverage.xml -F libs.nest.powerBi"
       }
     }
   },

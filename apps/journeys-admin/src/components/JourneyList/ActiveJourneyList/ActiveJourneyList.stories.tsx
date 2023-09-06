@@ -1,17 +1,20 @@
-import { Story, Meta } from '@storybook/react'
-import { MockedProvider } from '@apollo/client/testing'
-import noop from 'lodash/noop'
+import { Meta, StoryObj } from '@storybook/react'
+
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { cache } from '../../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { getDiscoveryJourneysMock } from '../../DiscoveryJourneys/data'
 import {
   defaultJourney,
-  oldJourney,
   descriptiveJourney,
+  oldJourney,
   publishedJourney
 } from '../journeyListData'
-import { GET_ACTIVE_JOURNEYS } from '../../../libs/useActiveJourneys/useActiveJourneys'
+
 import { ActiveJourneyList } from '.'
 
-const ActiveJourneyListStory = {
+const ActiveJourneyListStory: Meta<typeof ActiveJourneyList> = {
   ...journeysAdminConfig,
   component: ActiveJourneyList,
   title: 'Journeys-Admin/JourneyList/StatusTabPanel/ActiveJourneyList',
@@ -21,82 +24,104 @@ const ActiveJourneyListStory = {
   }
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider mocks={args.mocks}>
-    <ActiveJourneyList {...args.props} />
-  </MockedProvider>
-)
+const Template: StoryObj<typeof ActiveJourneyList> = {
+  render: ({ ...args }) => <ActiveJourneyList {...args} />
+}
 
-export const Default = Template.bind({})
-Default.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
-  mocks: [
-    {
-      request: {
-        query: GET_ACTIVE_JOURNEYS
-      },
-      result: {
-        data: {
-          journeys: [
-            defaultJourney,
-            oldJourney,
-            descriptiveJourney,
-            publishedJourney
-          ]
-        }
-      }
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [
+        {
+          request: {
+            query: GET_ADMIN_JOURNEYS,
+            variables: {
+              status: [JourneyStatus.draft, JourneyStatus.published]
+            }
+          },
+          result: {
+            data: {
+              journeys: [
+                defaultJourney,
+                oldJourney,
+                descriptiveJourney,
+                publishedJourney
+              ]
+            }
+          }
+        },
+        getDiscoveryJourneysMock
+      ]
     }
-  ]
+  }
 }
 
-export const NoJourneys = Template.bind({})
-NoJourneys.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
-  mocks: [
-    {
-      request: {
-        query: GET_ACTIVE_JOURNEYS
-      },
-      result: {
-        data: {
-          journeys: []
-        }
-      }
+export const NoJourneys = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [
+        {
+          request: {
+            query: GET_ADMIN_JOURNEYS,
+            variables: {
+              status: [JourneyStatus.draft, JourneyStatus.published]
+            }
+          },
+          result: {
+            data: {
+              journeys: []
+            }
+          }
+        },
+        getDiscoveryJourneysMock
+      ]
     }
-  ]
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  props: {
-    onLoad: noop,
-    event: ''
+export const Loading = {
+  ...Template,
+  args: {
+    mocks: []
   },
-  mocks: []
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [getDiscoveryJourneysMock]
+    }
+  }
 }
 
-export const ArchiveAll = Template.bind({})
-ArchiveAll.args = {
-  props: {
-    onLoad: noop,
-    event: 'archiveAllActive'
+export const ArchiveAll = {
+  ...Template,
+  args: {
+    event: 'archiveAllActive',
+    mocks: []
   },
-  mocks: []
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [getDiscoveryJourneysMock]
+    }
+  }
 }
 
-export const TrashAll = Template.bind({})
-TrashAll.args = {
-  props: {
-    onLoad: noop,
-    event: 'trashAllActive'
+export const TrashAll = {
+  ...Template,
+  args: {
+    event: 'trashAllActive',
+    mocks: []
   },
-  mocks: []
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [getDiscoveryJourneysMock]
+    }
+  }
 }
 
-export default ActiveJourneyListStory as Meta
+export default ActiveJourneyListStory

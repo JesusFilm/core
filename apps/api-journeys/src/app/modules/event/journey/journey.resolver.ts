@@ -2,24 +2,26 @@
 
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { GraphQLError } from 'graphql'
+
 import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
-import { UserInputError } from 'apollo-server-errors'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import {
   JourneyViewEvent,
   JourneyViewEventCreateInput
 } from '../../../__generated__/graphql'
-import { EventService } from '../event.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { VisitorService } from '../../visitor/visitor.service'
-import { JourneyService } from '../../journey/journey.service'
+import { EventService } from '../event.service'
 
 @Resolver('JourneyViewEvent')
 export class JourneyViewEventResolver {
   constructor(
     private readonly eventService: EventService,
     private readonly visitorService: VisitorService,
-    private readonly journeyService: JourneyService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Mutation()
@@ -29,27 +31,41 @@ export class JourneyViewEventResolver {
     @CurrentUserAgent() userAgent: string,
     @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
-    const journey = await this.journeyService.get(input.journeyId)
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id: input.journeyId }
+    })
     if (journey == null) {
-      throw new UserInputError('Journey does not exist')
+      throw new GraphQLError('Journey does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
-    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+    const { visitor } = await this.visitorService.getByUserIdAndJourneyId(
       userId,
       input.journeyId
     )
 
-    if (visitor.userAgent == null) {
-      void this.visitorService.update(visitor.id, {
-        userAgent
+    const promises = [
+      this.eventService.save({
+        ...input,
+        id: input.id ?? undefined,
+        typename: 'JourneyViewEvent',
+        visitor: { connect: { id: visitor.id } }
       })
+    ]
+
+    if (visitor.userAgent == null) {
+      promises.push(
+        this.prismaService.visitor.update({
+          where: { id: visitor.id },
+          data: {
+            userAgent
+          }
+        })
+      )
     }
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'JourneyViewEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString()
-    })
+    const [journeyViewEvent] = await Promise.all(promises)
+    return journeyViewEvent as JourneyViewEvent
   }
 
   @ResolveField('language')

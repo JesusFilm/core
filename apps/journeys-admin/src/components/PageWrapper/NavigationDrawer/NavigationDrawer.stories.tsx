@@ -1,26 +1,29 @@
-import { useState } from 'react'
-import { Meta, Story } from '@storybook/react'
-import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 import { AuthUser } from 'next-firebase-auth'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { NextRouter } from 'next/router'
+import { ReactElement, useState } from 'react'
+
+import {
+  JourneyStatus,
+  Role,
+  UserJourneyRole
+} from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
-import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
-import { GET_ME } from './NavigationDrawer'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
+import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
+
 import { NavigationDrawer } from '.'
 
-const NavigationDrawerStory = {
+const NavigationDrawerStory: Meta<typeof NavigationDrawer> = {
   ...journeysAdminConfig,
   component: NavigationDrawer,
   title: 'Journeys-Admin/PageWrapper/NavigationDrawer'
 }
 
-const Template: Story = ({ ...args }) => {
+const NavigationDrawerComponent = (args): ReactElement => {
   const [open, setOpen] = useState(true)
-
   return (
     <MockedProvider
       mocks={[
@@ -55,67 +58,61 @@ const Template: Story = ({ ...args }) => {
         },
         {
           request: {
-            query: GET_JOURNEYS
+            query: GET_ADMIN_JOURNEYS,
+            variables: {
+              status: [JourneyStatus.draft, JourneyStatus.published]
+            }
           },
           result: args.result
         }
       ]}
     >
-      <FlagsProvider flags={{ templates: args.templates }}>
-        <NavigationDrawer
-          open={open}
-          onClose={() => setOpen(!open)}
-          authUser={
-            {
-              id: 'user.id',
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut: noop
-            } as unknown as AuthUser
-          }
-          title={args.title}
-          router={{ pathname: undefined } as unknown as NextRouter}
-        />
-      </FlagsProvider>
+      <NavigationDrawer
+        open={open}
+        onClose={() => setOpen(!open)}
+        authUser={
+          {
+            id: 'user.id',
+            displayName: 'Amin One',
+            photoURL: 'https://bit.ly/3Gth4Yf',
+            email: 'amin@email.com',
+            signOut: noop
+          } as unknown as AuthUser
+        }
+      />
     </MockedProvider>
   )
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  templates: false,
-  title: 'Active Journeys'
+const Template: StoryObj<typeof NavigationDrawer> = {
+  render: ({ ...args }) => <NavigationDrawerComponent {...args} />
 }
 
-export const Complete = Template.bind({})
-Complete.args = {
-  templates: true,
-  title: 'Journeys'
-}
+export const Default = { ...Template }
 
-export const WithBadge = Template.bind({})
-WithBadge.args = {
-  templates: false,
-  title: 'Active Journeys',
-  result: {
-    data: {
-      journeys: [
-        {
-          id: 'journey.id',
-          userJourneys: [
-            {
-              id: 'journey.userJourney1.id',
-              role: UserJourneyRole.editor,
-              user: {
-                id: 'user.id'
+export const WithBadge = {
+  ...Template,
+  args: {
+    templates: false,
+    result: {
+      data: {
+        journeys: [
+          {
+            id: 'journey.id',
+            userJourneys: [
+              {
+                id: 'journey.userJourney1.id',
+                role: UserJourneyRole.editor,
+                user: {
+                  id: 'user.id'
+                }
               }
-            }
-          ]
-        }
-      ]
+            ]
+          }
+        ]
+      }
     }
   }
 }
 
-export default NavigationDrawerStory as Meta
+export default NavigationDrawerStory

@@ -1,20 +1,20 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
-
+import Close from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import { useRouter } from 'next/router'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import Div100vh from 'react-div-100vh'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { useRouter } from 'next/router'
-import IconButton from '@mui/material/IconButton'
-import Close from '@mui/icons-material/Close'
+import { JourneyProvider, useJourney } from '@core/journeys/ui/JourneyProvider'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
 
-// Used to resolve dynamic viewport height on Safari
-import Div100vh from 'react-div-100vh'
-import useFullscreenStatus from '../../libs/useFullscreenStatus/useFullscreenStatus'
 import { Conductor } from '../Conductor'
 
 import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
-import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
+import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
@@ -23,31 +23,18 @@ interface EmbeddedPreviewProps {
 export function EmbeddedPreview({
   blocks
 }: EmbeddedPreviewProps): ReactElement {
+  const { variant } = useJourney()
   const maximizableElement = useRef(null)
-  const [allowFullscreen, setAllowFullscreen] = useState(true)
-  let isFullscreen: boolean, setIsFullscreen
-  // Safari / iPhone fullscreen check
-  const [isFullContainer, setIsFullContainer] = useState(false)
-  let canFullscreen = true
-  try {
-    // Chrome / Firefox fullscreen check
-    ;[isFullscreen, setIsFullscreen] = useFullscreenStatus(maximizableElement)
-  } catch {
-    isFullscreen = false
-    canFullscreen = false
-  }
+  const [allowFullWindow, setAllowFullWindow] = useState(true)
+  // Use full container / fullWindow mode over fullScreen to avoid video playback issues
+  const [isFullWindow, setIsFullWindow] = useState(false)
 
   const maximizeView = useCallback(
     (value: boolean) => {
-      if (canFullscreen) {
-        setIsFullscreen(value)
-        // TODO: Remove this check once allow="fullscreen" works with Safari 16+
-      } else {
-        setIsFullContainer(value)
-        window.parent.postMessage(value, '*')
-      }
+      setIsFullWindow(value)
+      window.parent.postMessage(value, '*')
     },
-    [canFullscreen, setIsFullscreen, setIsFullContainer]
+    [setIsFullWindow]
   )
 
   // use router internally on this component as it does not function properly when passed as prop
@@ -55,13 +42,13 @@ export function EmbeddedPreview({
   const once = useRef(false)
 
   const handleClick = useCallback((): void => {
-    if (allowFullscreen) maximizeView(true)
-  }, [allowFullscreen, maximizeView])
+    if (allowFullWindow) maximizeView(true)
+  }, [allowFullWindow, maximizeView])
 
   useEffect(() => {
     if (!once.current) {
       if (router?.query?.preview === 'true') {
-        setAllowFullscreen(false)
+        setAllowFullWindow(false)
         once.current = true
       }
       if (router?.query?.autoexpand === 'true') {
@@ -69,7 +56,7 @@ export function EmbeddedPreview({
         once.current = true
       }
     }
-  }, [setAllowFullscreen, handleClick, router?.query])
+  }, [setAllowFullWindow, handleClick, router?.query])
 
   const ClickableCard = (): ReactElement => (
     <Box
@@ -78,7 +65,7 @@ export function EmbeddedPreview({
         flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
-        cursor: allowFullscreen ? 'pointer' : 'default',
+        cursor: allowFullWindow ? 'pointer' : 'default',
         zindex: 10,
         height: '100%'
       }}
@@ -90,7 +77,7 @@ export function EmbeddedPreview({
           mb: 0,
           height: 6.5,
           width: '82.5%',
-          backgroundColor: 'rgba(220,222,229)',
+          backgroundColor: '#AAACBB',
           borderRadius: '16px 16px 0 0',
           opacity: 0.3
         }}
@@ -101,9 +88,9 @@ export function EmbeddedPreview({
           mb: 0,
           height: 6.5,
           width: '90%',
-          backgroundColor: 'rgba(170,172,287)',
+          backgroundColor: '#AAACBB',
           borderRadius: '16px 16px 0 0',
-          opacity: 0.3
+          opacity: 0.6
         }}
       />
       <Box
@@ -111,7 +98,8 @@ export function EmbeddedPreview({
           height: '100%',
           width: '100%',
           borderRadius: '16px',
-          border: '1px solid rgba(186, 186, 187, 0.5)'
+          overflow: 'hidden',
+          position: 'relative'
         }}
       >
         <BlockRenderer
@@ -119,11 +107,11 @@ export function EmbeddedPreview({
           block={blocks?.[0]}
           wrappers={{
             ButtonWrapper,
-            ImageWrapper: NullWrapper,
             RadioOptionWrapper,
             VideoWrapper
           }}
         />
+        <StepFooter />
       </Box>
     </Box>
   )
@@ -141,21 +129,22 @@ export function EmbeddedPreview({
         }
       `}</style>
       <Div100vh data-testid="embedded-preview">
-        {!(isFullscreen || isFullContainer) && <ClickableCard />}
+        {!isFullWindow && <ClickableCard />}
         <Box
+          id="embed-fullscreen-container"
           ref={maximizableElement}
           sx={{
             backgroundColor: 'background.default',
             overflow: 'hidden'
           }}
         >
-          {(isFullscreen || isFullContainer) && (
+          {isFullWindow && (
             <>
               <IconButton
                 sx={{
                   position: 'absolute',
                   top: 0,
-                  right: 0,
+                  left: variant === 'default' ? 'env(safe-area-inset-left)' : 0,
                   zIndex: 1000,
                   color: 'text.primary'
                 }}
@@ -165,15 +154,13 @@ export function EmbeddedPreview({
               >
                 <Close />
               </IconButton>
-              <Conductor blocks={blocks} />
+              <JourneyProvider value={{ variant: 'default' }}>
+                <Conductor blocks={blocks} />
+              </JourneyProvider>
             </>
           )}
         </Box>
       </Div100vh>
     </>
   )
-}
-
-function NullWrapper({ children }): ReactElement {
-  return <fieldset disabled>{children}</fieldset>
 }

@@ -1,29 +1,30 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import useMediaQuery from '@mui/material/useMediaQuery'
+
+import {
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
-
-import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
-} from '../../../../../../../__generated__/GetJourney'
-
 import { createCloudflareUploadByUrlMock } from '../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
+
 import {
+  BLOCK_DELETE_FOR_POSTER_IMAGE,
   POSTER_IMAGE_BLOCK_CREATE,
   POSTER_IMAGE_BLOCK_UPDATE,
-  BLOCK_DELETE_FOR_POSTER_IMAGE,
-  VideoBlockEditorSettingsPosterLibrary,
-  VIDEO_BLOCK_POSTER_IMAGE_UPDATE
+  VIDEO_BLOCK_POSTER_IMAGE_UPDATE,
+  VideoBlockEditorSettingsPosterLibrary
 } from './VideoBlockEditorSettingsPosterLibrary'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -60,7 +61,10 @@ const journey: Journey = {
   template: null,
   userJourneys: [],
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  chatButtons: [],
+  host: null,
+  team: null
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -108,7 +112,7 @@ const image: ImageBlock = {
   __typename: 'ImageBlock',
   parentBlockId: video.id,
   parentOrder: 0,
-  src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId/public',
+  src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
   alt: 'public',
   width: 1920,
   height: 1080,
@@ -119,6 +123,21 @@ const onClose = jest.fn()
 
 describe('VideoBlockEditorSettingsPosterLibrary', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
+  let originalEnv
+
+  beforeEach(() => {
+    originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   describe('No existing Image', () => {
     it('creates a new image poster block', async () => {
       const cache = new InMemoryCache()
@@ -187,7 +206,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={null}
               parentBlockId={video.id}
@@ -214,6 +233,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
       ])
     })
   })
+
   describe('Existing image poster', () => {
     const existingImageBlock: ImageBlock = {
       ...image,
@@ -269,7 +289,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={existingImageBlock}
               parentBlockId={video.id}
@@ -292,6 +312,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         { __ref: `ImageBlock:${image.id}` }
       ])
     })
+
     it('deletes an image block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
@@ -348,7 +369,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={image}
               parentBlockId={video.id}

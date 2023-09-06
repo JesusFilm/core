@@ -1,19 +1,21 @@
-import { ReactElement } from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
+
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import type { TreeBlock } from '../../libs/block'
-import { activeBlockVar, treeBlocksVar } from '../../libs/block'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
+import type { TreeBlock } from '../../libs/block'
+import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import {
-  TextResponse,
-  TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
-} from './TextResponse'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+
 import { TextResponseFields } from './__generated__/TextResponseFields'
+import {
+  TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+  TextResponse
+} from './TextResponse'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -144,7 +146,7 @@ describe('TextResponse', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(handleAction).toBeCalledWith(
+      expect(handleAction).toHaveBeenCalledWith(
         {
           push: expect.any(Function)
         },
@@ -195,13 +197,13 @@ describe('TextResponse', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(result).not.toBeCalled()
-      expect(handleAction).toBeCalled()
+      expect(result).not.toHaveBeenCalled()
+      expect(handleAction).toHaveBeenCalled()
     })
   })
 
   it('should create submission event on click', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const result = jest.fn(() => ({
@@ -223,12 +225,12 @@ describe('TextResponse', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(result).toBeCalled()
+      expect(result).toHaveBeenCalled()
     })
   })
 
   it('should add submission event to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const { getByLabelText, getByRole } = render(

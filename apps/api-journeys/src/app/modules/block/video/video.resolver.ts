@@ -1,26 +1,32 @@
-import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
-import { object, string } from 'yup'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 import fetch from 'node-fetch'
-import { UserInputError } from 'apollo-server-errors'
-import { BlockService } from '../block.service'
+import { object, string } from 'yup'
+
+import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+
 import {
-  Action,
-  CardBlock,
-  Role,
-  UserJourneyRole,
   VideoBlock,
   VideoBlockCreateInput,
-  VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
-import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
+import { Action, AppAbility } from '../../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../../lib/casl/caslGuard'
+import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
 
 const videoBlockYouTubeSchema = object().shape({
   videoId: string().matches(
     /^[-\w]{11}$/,
     'videoId must be a valid YouTube videoId'
   )
+})
+const videoBlockCloudflareSchema = object().shape({
+  videoId: string().nullable()
 })
 const videoBlockInternalSchema = object().shape({
   videoId: string().nullable(),
@@ -41,6 +47,33 @@ export interface YoutubeVideosData {
   }>
 }
 
+// https://developers.cloudflare.com/api/operations/stream-videos-retrieve-video-details
+export interface CloudflareRetrieveVideoDetailsResponse {
+  result: CloudflareRetrieveVideoDetailsResponseResult | null
+  success: boolean
+  errors: Array<{ code: number; message: string }>
+  messages: Array<{ code: number; message: string }>
+}
+
+interface CloudflareRetrieveVideoDetailsResponseResult {
+  uid: string
+  size: number
+  readyToStream: boolean
+  thumbnail: string
+  duration: number
+  preview: string
+  input: {
+    width: number
+    height: number
+  }
+  playback: {
+    hls: string
+  }
+  meta: {
+    [key: string]: string
+  }
+}
+
 function parseISO8601Duration(duration: string): number {
   const match = duration.match(/P(\d+Y)?(\d+W)?(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/)
 
@@ -59,29 +92,17 @@ function parseISO8601Duration(duration: string): number {
 
 @Resolver('VideoBlock')
 export class VideoBlockResolver {
-  constructor(private readonly blockService: BlockService) {}
-
-  @ResolveField()
-  action(@Parent() block: VideoBlock): Action | null {
-    if (block.action == null) return null
-
-    return {
-      ...block.action,
-      parentBlockId: block.id
-    }
-  }
+  constructor(
+    private readonly blockService: BlockService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('input.journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async videoBlockCreate(
+    @CaslAbility() ability: AppAbility,
     @Args('input') input: VideoBlockCreateInput
-  ): Promise<VideoBlock> {
+  ): Promise<Block> {
     switch (input.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate(input)
@@ -91,91 +112,145 @@ export class VideoBlockResolver {
           objectFit: null
         }
         break
+      case VideoBlockSource.cloudflare:
+        await videoBlockInternalSchema.validate(input)
+        input = {
+          ...input,
+          ...(await this.fetchFieldsFromCloudflare(input.videoId as string)),
+          objectFit: null
+        }
+        break
       case VideoBlockSource.internal:
         await videoBlockInternalSchema.validate(input)
         break
     }
-
-    if (input.isCover === true) {
-      const coverBlock: VideoBlock = await this.blockService.save({
-        ...input,
-        __typename: 'VideoBlock',
-        parentOrder: null
-      })
-      const parentBlock: CardBlock = await this.blockService.get(
-        input.parentBlockId
-      )
-
-      await this.blockService.update(input.parentBlockId, {
-        coverBlockId: coverBlock.id
-      })
-
-      if (parentBlock.coverBlockId != null) {
-        await this.blockService.removeBlockAndChildren(
-          parentBlock.coverBlockId,
-          input.journeyId
-        )
+    return await this.prismaService.$transaction(async (tx) => {
+      if (input.isCover === true) {
+        const parentBlock = await tx.block.findUnique({
+          where: { id: input.parentBlockId },
+          include: { coverBlock: true }
+        })
+        if (parentBlock == null)
+          throw new GraphQLError('parent block not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        if (parentBlock.coverBlock != null)
+          await this.blockService.removeBlockAndChildren(
+            parentBlock.coverBlock,
+            tx
+          )
       }
-
-      return coverBlock
-    }
-
-    const siblings = await this.blockService.getSiblings(
-      input.journeyId,
-      input.parentBlockId
-    )
-
-    const block: VideoBlock = await this.blockService.save({
-      ...input,
-      __typename: 'VideoBlock',
-      parentOrder: siblings.length
+      const block = await tx.block.create({
+        data: {
+          ...omit(
+            input,
+            'parentBlockId',
+            'journeyId',
+            'posterBlockId',
+            'isCover'
+          ),
+          id: input.id ?? undefined,
+          typename: 'VideoBlock',
+          journey: { connect: { id: input.journeyId } },
+          parentBlock: { connect: { id: input.parentBlockId } },
+          posterBlock:
+            input.posterBlockId != null
+              ? { connect: { id: input.posterBlockId } }
+              : undefined,
+          parentOrder:
+            input.isCover === true
+              ? null
+              : (
+                  await this.blockService.getSiblings(
+                    input.journeyId,
+                    input.parentBlockId
+                  )
+                ).length,
+          coverBlockParent:
+            input.isCover === true && input.parentBlockId != null
+              ? { connect: { id: input.parentBlockId } }
+              : undefined,
+          action: {
+            create: {
+              gtmEventName: 'NavigateAction'
+            }
+          }
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+      if (!ability.can(Action.Update, subject('Journey', block.journey)))
+        throw new GraphQLError('user is not allowed to create block', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      return block
     })
-
-    const action = {
-      parentBlockId: block.id,
-      gtmEventName: 'NavigateAction',
-      blockId: null,
-      journeyId: null,
-      url: null,
-      target: null
-    }
-
-    return await this.blockService.update(block.id, { ...block, action })
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async videoBlockUpdate(
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
-  ): Promise<VideoBlock> {
-    const block = await this.blockService.get(id)
+  ): Promise<Block> {
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+    if (block == null)
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     switch (input.source ?? block.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate({ ...block, ...input })
         if (input.videoId != null) {
           input = {
             ...input,
-            ...(await this.fetchFieldsFromYouTube(input.videoId)),
-            objectFit: null
+            ...(await this.fetchFieldsFromYouTube(input.videoId))
+          }
+        }
+        break
+      case VideoBlockSource.cloudflare:
+        await videoBlockCloudflareSchema.validate({
+          ...block,
+          ...input
+        })
+        if (input.videoId != null) {
+          input = {
+            ...(await this.fetchFieldsFromCloudflare(input.videoId)),
+            ...input
           }
         }
         break
       case VideoBlockSource.internal:
         input = {
+          duration: null,
           ...input,
           ...{
             title: null,
             description: null,
-            image: null,
-            duration: null
+            image: null
           }
         }
         await videoBlockInternalSchema.validate({ ...block, ...input })
@@ -187,7 +262,7 @@ export class VideoBlockResolver {
   @ResolveField('video')
   video(
     @Parent()
-    block: VideoBlock
+    block: Block
   ): {
     __typename: 'Video'
     id: string
@@ -210,7 +285,7 @@ export class VideoBlockResolver {
   @ResolveField('source')
   source(
     @Parent()
-    block: VideoBlock
+    block: Block
   ): VideoBlockSource {
     return block.source ?? VideoBlockSource.internal
   }
@@ -227,8 +302,8 @@ export class VideoBlockResolver {
       await fetch(`https://www.googleapis.com/youtube/v3/videos?${query}`)
     ).json()
     if (videosData.items[0] == null) {
-      throw new UserInputError('videoId cannot be found on YouTube', {
-        videoId: ['videoId cannot be found on YouTube']
+      throw new GraphQLError('videoId cannot be found on YouTube', {
+        extensions: { code: 'NOT_FOUND' }
       })
     }
     return {
@@ -238,6 +313,35 @@ export class VideoBlockResolver {
       duration: parseISO8601Duration(
         videosData.items[0].contentDetails.duration
       )
+    }
+  }
+
+  private async fetchFieldsFromCloudflare(
+    videoId: string
+  ): Promise<Pick<VideoBlock, 'title' | 'image' | 'duration' | 'endAt'>> {
+    const response: CloudflareRetrieveVideoDetailsResponse = await (
+      await fetch(
+        `https://api.cloudflare.com/client/v4/accounts/${
+          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+        }/stream/${videoId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`
+          }
+        }
+      )
+    ).json()
+
+    if (response.result == null) {
+      throw new GraphQLError('videoId cannot be found on Cloudflare', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+    return {
+      title: response.result.meta.name ?? response.result.uid,
+      image: `${response.result.thumbnail}?time=2s&height=768`,
+      duration: Math.round(response.result.duration),
+      endAt: Math.round(response.result.duration)
     }
   }
 }

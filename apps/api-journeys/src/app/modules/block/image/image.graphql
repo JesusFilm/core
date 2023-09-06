@@ -19,7 +19,7 @@ input ImageBlockCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  parentBlockId: ID!
+  parentBlockId: ID
   journeyId: ID!
   src: String
   alt: String!
@@ -52,8 +52,11 @@ extend type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   imageBlockUpdate(
     id: ID!
-    journeyId: ID!
     input: ImageBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): ImageBlock!
 }
 

@@ -1,10 +1,6 @@
-import { BaseService } from '@core/nest/database/BaseService'
 import { Injectable } from '@nestjs/common'
-import { aql } from 'arangojs'
-import fetch from 'node-fetch'
 import FormData from 'form-data'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
-import { CloudflareImage } from '../../../__generated__/graphql'
+import fetch from 'node-fetch'
 
 interface CloudflareDirectCreatorUploadResponse {
   result: {
@@ -27,8 +23,7 @@ interface CloudflarUrlUploadResponse {
 }
 
 @Injectable()
-export class ImageService extends BaseService {
-  collection = this.db.collection('cloudflareImages')
+export class ImageService {
   async getImageInfoFromCloudflare(): Promise<CloudflareDirectCreatorUploadResponse> {
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${
@@ -79,17 +74,5 @@ export class ImageService extends BaseService {
       }
     )
     return await response.json()
-  }
-
-  @KeyAsId()
-  async getCloudflareImagesForUserId(
-    userId: string
-  ): Promise<CloudflareImage[]> {
-    const res = await this.db.query(aql`
-      FOR item in ${this.collection}
-        FILTER item.userId == ${userId} && item.uploaded == true        
-        RETURN item
-    `)
-    return await res.all()
   }
 }

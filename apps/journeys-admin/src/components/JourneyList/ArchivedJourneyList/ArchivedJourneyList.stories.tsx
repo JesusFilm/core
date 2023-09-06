@@ -1,17 +1,22 @@
-import { Story, Meta } from '@storybook/react'
-import { MockedProvider } from '@apollo/client/testing'
-import noop from 'lodash/noop'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
+
+import { GetAdminJourneys } from '../../../../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { JourneyListProps } from '../JourneyList'
 import {
   defaultJourney,
-  oldJourney,
   descriptiveJourney,
+  oldJourney,
   publishedJourney
 } from '../journeyListData'
-import { GET_ARCHIVED_JOURNEYS } from './ArchivedJourneyList'
+
 import { ArchivedJourneyList } from '.'
 
-const ArchivedJourneyListStory = {
+const ArchivedJourneyListStory: Meta<typeof ArchivedJourneyList> = {
   ...journeysAdminConfig,
   component: ArchivedJourneyList,
   title: 'Journeys-Admin/JourneyList/StatusTabPanel/ArchivedJourneyList',
@@ -21,82 +26,90 @@ const ArchivedJourneyListStory = {
   }
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider mocks={args.mocks}>
-    <ArchivedJourneyList {...args.props} />
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
-  mocks: [
-    {
-      request: {
-        query: GET_ARCHIVED_JOURNEYS
-      },
-      result: {
-        data: {
-          journeys: [
-            defaultJourney,
-            oldJourney,
-            descriptiveJourney,
-            publishedJourney
-          ]
+const Template: StoryObj<
+  ComponentProps<typeof ArchivedJourneyList> & {
+    props: JourneyListProps
+    mocks: [MockedResponse<GetAdminJourneys>]
+  }
+> = {
+  render: ({ ...args }) => (
+    <MockedProvider mocks={args.mocks}>
+      <ArchivedJourneyList {...args.props} />
+    </MockedProvider>
+  )
+}
+export const Default = {
+  ...Template,
+  args: {
+    mocks: [
+      {
+        request: {
+          query: GET_ADMIN_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.archived]
+          }
+        },
+        result: {
+          data: {
+            journeys: [
+              defaultJourney,
+              oldJourney,
+              descriptiveJourney,
+              publishedJourney
+            ]
+          }
         }
       }
-    }
-  ]
+    ]
+  }
 }
 
-export const NoJourneys = Template.bind({})
-NoJourneys.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
-  mocks: [
-    {
-      request: {
-        query: GET_ARCHIVED_JOURNEYS
-      },
-      result: {
-        data: {
-          journeys: []
+export const NoJourneys = {
+  ...Template,
+  args: {
+    mocks: [
+      {
+        request: {
+          query: GET_ADMIN_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.archived]
+          }
+        },
+        result: {
+          data: {
+            journeys: []
+          }
         }
       }
-    }
-  ]
+    ]
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
-  mocks: []
+export const Loading = {
+  ...Template,
+  args: {
+    mocks: []
+  }
 }
 
-export const UnarchiveAll = Template.bind({})
-UnarchiveAll.args = {
-  props: {
-    onLoad: noop,
-    event: 'restoreAllArchived'
-  },
-  mocks: []
+export const UnarchiveAll = {
+  ...Template,
+  args: {
+    props: {
+      event: 'restoreAllArchived'
+    },
+    mocks: []
+  }
 }
 
-export const TrashAll = Template.bind({})
-TrashAll.args = {
-  props: {
-    onLoad: noop,
-    event: 'trashAllArchived'
-  },
-  mocks: []
+export const TrashAll = {
+  ...Template,
+  args: {
+    props: {
+      event: 'trashAllArchived'
+    },
+    mocks: []
+  }
 }
 
-export default ArchivedJourneyListStory as Meta
+export default ArchivedJourneyListStory

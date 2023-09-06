@@ -1,0 +1,154 @@
+{
+  "name": "api-tags",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api-tags/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api-tags",
+        "main": "apps/api-tags/src/main.ts",
+        "tsConfig": "apps/api-tags/tsconfig.app.json",
+        "assets": [
+          "apps/api-tags/src/assets",
+          {
+            "glob": "**/*.graphql",
+            "input": "apps/api-tags/src/app/",
+            "output": "./assets"
+          },
+          {
+            "glob": "**/*.graphql",
+            "input": "libs/nest/common/src/lib/TranslationModule/",
+            "output": "./assets"
+          }
+        ],
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/api-tags/src/environments/environment.ts",
+              "with": "apps/api-tags/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "api-tags:build",
+        "inspect": false
+      }
+    },
+    "watcher": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-tags"
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api-tags/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/api-tags"],
+      "options": {
+        "jestConfig": "apps/api-tags/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rover subgraph introspect http://localhost:4006/graphql > apps/api-tags/schema.graphql"
+          }
+        ]
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_API_TAGS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-tags > apps/api-tags/.env"
+          }
+        ]
+      }
+    },
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma generate --schema apps/api-tags/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "bash -c 'npx prisma migrate dev --schema apps/api-tags/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "npx prisma migrate deploy --schema apps/api-tags/db/schema.prisma"
+          ]
+        }
+      }
+    },
+    "prisma-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma reset --schema apps/api-tags/db/schema.prisma --force"
+        ]
+      }
+    },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npm run ts-node apps/api-tags/db/seed.ts"]
+      }
+    },
+    "prisma-studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma studio --schema apps/api-tags/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma validate --schema apps/api-tags/db/schema.prisma"
+        ]
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-tags/cobertura-coverage.xml -F apps.api-tags"
+      }
+    }
+  },
+  "tags": []
+}

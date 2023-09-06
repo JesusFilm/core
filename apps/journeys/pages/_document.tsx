@@ -1,16 +1,25 @@
-import { ReactElement, FunctionComponent } from 'react'
-import Document, { Html, Head, Main, NextScript } from 'next/document'
-import createEmotionServer from '@emotion/server/create-instance'
 import type { EmotionCache } from '@emotion/cache'
-import type { Enhancer, AppType } from 'next/dist/shared/lib/utils'
-import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import createEmotionServer from '@emotion/server/create-instance'
+import type { AppType, Enhancer } from 'next/dist/shared/lib/utils'
+import Document, { Head, Html, Main, NextScript } from 'next/document'
+import { FunctionComponent, ReactElement } from 'react'
+
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { getTheme } from '@core/shared/ui/themes'
+
+import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
   rtl: boolean
   locale: string
 }> {
+  theme = getTheme({
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light
+  })
+
   render(): ReactElement {
     return (
       <Html lang="en" dir={this.props.rtl ? 'rtl' : ''}>
@@ -18,15 +27,29 @@ export default class MyDocument extends Document<{
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           {this.props.rtl && this.props.locale !== 'ur' ? (
-            <link
-              href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
-              rel="stylesheet"
-            />
+            <>
+              <link
+                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
+                rel="stylesheet"
+              />
+              <link
+                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
+                rel="preload"
+                as="style"
+              />
+            </>
           ) : (
-            <link
-              href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
-              rel="stylesheet"
-            />
+            <>
+              <link
+                href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
+                rel="stylesheet"
+              />
+              <link
+                href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
+                rel="preload"
+                as="style"
+              />
+            </>
           )}
           <link
             rel="apple-touch-icon"
@@ -40,6 +63,10 @@ export default class MyDocument extends Document<{
             href="/favicon-16x16.png"
           />
           <link rel="manifest" href="/site.webmanifest" />
+          <meta
+            name="theme-color"
+            content={this.theme.palette.background.default}
+          />
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {this.props.emotionStyleTags}
         </Head>
@@ -86,8 +113,8 @@ MyDocument.getInitialProps = async (ctx) => {
 
   let pageProps
 
-  ctx.renderPage = () =>
-    originalRenderPage({
+  ctx.renderPage = async () =>
+    await originalRenderPage({
       enhanceApp: ((App: FunctionComponent<{ emotionCache: EmotionCache }>) => {
         return function EnhanceApp(props) {
           pageProps = props.pageProps.journey

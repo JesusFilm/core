@@ -1,4 +1,11 @@
-import fetch, { Response, RequestInfo, RequestInit } from 'node-fetch'
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch'
+
+import {
+  Prisma,
+  VideoLabel,
+  VideoVariantDownloadQuality
+} from '.prisma/api-videos-client'
+
 import { slugify } from '../slugify'
 
 export interface ArclightMediaLanguage {
@@ -56,45 +63,6 @@ export interface ArclightMediaComponentLanguage {
   }
 }
 
-interface Translation {
-  value: string
-  languageId: string
-  primary: boolean
-}
-
-interface Download {
-  quality: string
-  size: number
-  url: string
-}
-
-interface VideoVariant {
-  id: string
-  subtitle: Translation[]
-  hls?: string
-  languageId: string
-  duration: number
-  downloads: Download[]
-  slug: string
-}
-
-export interface Video {
-  _key: string
-  label: string
-  primaryLanguageId: string
-  title: Translation[]
-  seoTitle: Translation[]
-  snippet: Translation[]
-  description: Translation[]
-  studyQuestions: Translation[]
-  image: string
-  imageAlt: Translation[]
-  variants: VideoVariant[]
-  slug: string
-  childIds: string[]
-  noIndex: boolean
-}
-
 async function fetchPlus(
   url: RequestInfo,
   init?: RequestInit,
@@ -125,6 +93,18 @@ export async function getArclightMediaLanguages(): Promise<
   return response._embedded.mediaLanguages
 }
 
+export async function getArclightMediaComponent(
+  id: string
+): Promise<ArclightMediaComponent | null> {
+  return await (
+    await fetchPlus(
+      `https://api.arclight.org/v2/media-components/${id}?apiKey=${
+        process.env.ARCLIGHT_API_KEY ?? ''
+      }`
+    )
+  ).json()
+}
+
 export async function getArclightMediaComponents(
   page: number
 ): Promise<ArclightMediaComponent[]> {
@@ -133,14 +113,14 @@ export async function getArclightMediaComponents(
     message?: string
   } = await (
     await fetchPlus(
-      `https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=${page}&apiKey=${
+      `https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=${page}&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
   ).json()
   if (
     response.message?.match(
-      /Page \[\d\d\] does not exist. Given a limit of \[25\] per page, value must not be greater than \[\d\d\]\./
+      /Page \[\d\d\] does not exist. Given a limit of \[10\] per page, value must not be greater than \[\d\d\]\./
     ) != null
   )
     return []
@@ -151,7 +131,9 @@ export async function getArclightMediaComponentLanguages(
   mediaComponentId: string
 ): Promise<ArclightMediaComponentLanguage[]> {
   const response: {
-    _embedded: { mediaComponentLanguage: ArclightMediaComponentLanguage[] }
+    _embedded: {
+      mediaComponentLanguage: ArclightMediaComponentLanguage[]
+    } | null
   } = await (
     await fetchPlus(
       `https://api.arclight.org/v2/media-components/${mediaComponentId}/languages?platform=android&apiKey=${
@@ -159,7 +141,7 @@ export async function getArclightMediaComponentLanguages(
       }`
     )
   ).json()
-  return response._embedded.mediaComponentLanguage
+  return response._embedded?.mediaComponentLanguage ?? []
 }
 
 export async function getArclightMediaComponentLinks(
@@ -174,14 +156,17 @@ export async function getArclightMediaComponentLinks(
       }`
     )
   ).json()
-  return response.linkedMediaComponentIds.contains ?? []
+  return response.linkedMediaComponentIds?.contains ?? []
 }
 
 export function transformArclightMediaComponentLanguageToVideoVariant(
   mediaComponentLanguage: ArclightMediaComponentLanguage,
   mediaComponent: MediaComponent,
   language: Language
-): VideoVariant {
+): Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
+  downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
+  subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
+} {
   const slug = `${mediaComponent.slug}/${language.slug}`
   if (mediaComponent.subType === 'series') {
     return {
@@ -191,35 +176,40 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
         (mediaComponentLanguage.lengthInMilliseconds ?? 0) * 0.001
       ),
       subtitle: [],
-      downloads: [],
-      slug
+      slug,
+      hls: null,
+      videoId: mediaComponent.mediaComponentId
     }
   }
-  const downloads: Download[] = []
+  const downloads: Prisma.VideoVariantDownloadUncheckedCreateInput[] = []
   for (const [key, value] of Object.entries(
     mediaComponentLanguage.downloadUrls
   )) {
     downloads.push({
-      quality: key,
+      videoVariantId: mediaComponentLanguage.refId,
+      quality: VideoVariantDownloadQuality[key],
       size: value.sizeInBytes,
       url: value.url
     })
   }
+
   return {
     id: mediaComponentLanguage.refId,
     subtitle:
       mediaComponentLanguage.subtitleUrls.vtt?.map(({ languageId, url }) => ({
+        videoVariantId: mediaComponentLanguage.refId,
         languageId: languageId.toString(),
         value: url,
         primary: languageId === mediaComponentLanguage.languageId
       })) ?? [],
-    hls: mediaComponentLanguage.streamingUrls.hls?.[0].url,
+    hls: mediaComponentLanguage.streamingUrls.hls?.[0].url ?? null,
     languageId: mediaComponentLanguage.languageId.toString(),
     duration: Math.round(
       (mediaComponentLanguage.lengthInMilliseconds ?? 0) * 0.001
     ),
     downloads,
-    slug
+    slug,
+    videoId: mediaComponent.mediaComponentId
   }
 }
 
@@ -228,21 +218,39 @@ export function transformArclightMediaComponentToVideo(
   mediaComponentLanguages: ArclightMediaComponentLanguage[],
   mediaComponentLinks: string[],
   languages: Language[],
-  usedSlugs: string[]
-): Video {
+  usedSlugs: Record<string, string>
+): Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
+  title: Prisma.VideoTitleUncheckedCreateInput[]
+  variants: Array<
+    Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
+      downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
+      subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
+    }
+  >
+  childIds: string[]
+} {
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
       ?.languageId.toString() ?? '529' // english by default
 
-  const slug = slugify(mediaComponent.title, usedSlugs)
+  const slug = slugify(
+    mediaComponent.mediaComponentId,
+    mediaComponent.title,
+    usedSlugs
+  )
 
-  const variants: VideoVariant[] = []
+  const variants: Array<
+    Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
+      downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
+      subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
+    }
+  > = []
   for (const mediaComponentLanguage of mediaComponentLanguages) {
     const language = languages.find(
       ({ languageId }) => languageId === mediaComponentLanguage.languageId
     )
-    if (language == null) continue
+    if (language == null || mediaComponentLanguage == null) continue
 
     variants.push(
       transformArclightMediaComponentLanguageToVideoVariant(
@@ -254,11 +262,12 @@ export function transformArclightMediaComponentToVideo(
   }
 
   return {
-    _key: mediaComponent.mediaComponentId,
-    label: mediaComponent.subType,
+    id: mediaComponent.mediaComponentId,
+    label: VideoLabel[mediaComponent.subType],
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
+        videoId: mediaComponent.mediaComponentId,
         value: mediaComponent.title,
         languageId: metadataLanguageId,
         primary: true
@@ -285,13 +294,11 @@ export function transformArclightMediaComponentToVideo(
         primary: true
       }
     ],
-    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => {
-      return {
-        languageId: metadataLanguageId,
-        value: studyQuestion,
-        primary: true
-      }
-    }),
+    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => ({
+      languageId: metadataLanguageId,
+      value: studyQuestion,
+      primary: true
+    })),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     imageAlt: [
       {
@@ -312,9 +319,13 @@ export function transformArclightMediaComponentToVideo(
 
 export function transformArclightMediaLanguageToLanguage(
   mediaLanguage: ArclightMediaLanguage,
-  usedSlugs: string[]
+  usedSlugs: Record<string, string>
 ): Language {
-  const slug = slugify(mediaLanguage.name, usedSlugs)
+  const slug = slugify(
+    mediaLanguage.languageId.toString(),
+    mediaLanguage.name,
+    usedSlugs
+  )
   return {
     ...mediaLanguage,
     slug
@@ -324,7 +335,7 @@ export function transformArclightMediaLanguageToLanguage(
 export async function fetchMediaLanguagesAndTransformToLanguages(): Promise<
   Language[]
 > {
-  const usedLanguageSlugs = []
+  const usedLanguageSlugs: Record<string, string> = {}
   const mediaLanguages = await getArclightMediaLanguages()
   return mediaLanguages.map((mediaLanguage) =>
     transformArclightMediaLanguageToLanguage(mediaLanguage, usedLanguageSlugs)
@@ -333,10 +344,34 @@ export async function fetchMediaLanguagesAndTransformToLanguages(): Promise<
 
 export async function fetchMediaComponentsAndTransformToVideos(
   languages: Language[],
-  usedVideoSlugs: string[],
-  page: number
-): Promise<Video[]> {
-  const mediaComponents = await getArclightMediaComponents(page)
+  usedVideoSlugs: Record<string, string>,
+  page: number,
+  importedVideos: string[]
+): Promise<{
+  count: number
+  videos: Array<
+    Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
+      title: Prisma.VideoTitleUncheckedCreateInput[]
+      variants: Array<
+        Omit<
+          Prisma.VideoVariantUncheckedCreateInput,
+          'downloads' | 'subtitle'
+        > & {
+          downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
+          subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
+        }
+      >
+      childIds: string[]
+    }
+  >
+}> {
+  let mediaComponents = await getArclightMediaComponents(page)
+
+  const mediaComponentsLength = mediaComponents.length
+
+  mediaComponents = mediaComponents.filter(
+    ({ mediaComponentId }) => !importedVideos.includes(mediaComponentId)
+  )
 
   const mediaComponentsAndMetadata = await Promise.all(
     mediaComponents.map(async (mediaComponent) => {
@@ -351,15 +386,18 @@ export async function fetchMediaComponentsAndTransformToVideos(
     })
   )
 
-  return mediaComponentsAndMetadata.map(
-    ({ mediaComponent, mediaComponentLanguages, mediaComponentLinks }) => {
-      return transformArclightMediaComponentToVideo(
-        mediaComponent,
-        mediaComponentLanguages,
-        mediaComponentLinks,
-        languages,
-        usedVideoSlugs
-      )
-    }
-  )
+  return {
+    count: mediaComponentsLength,
+    videos: mediaComponentsAndMetadata.map(
+      ({ mediaComponent, mediaComponentLanguages, mediaComponentLinks }) => {
+        return transformArclightMediaComponentToVideo(
+          mediaComponent,
+          mediaComponentLanguages,
+          mediaComponentLinks,
+          languages,
+          usedVideoSlugs
+        )
+      }
+    )
+  }
 }

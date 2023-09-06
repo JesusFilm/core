@@ -1,5 +1,7 @@
 import { NextRouter } from 'next/dist/client/router'
+
 import { nextActiveBlock } from '../block'
+
 import { handleAction } from '.'
 
 jest.mock('../block', () => {
@@ -18,7 +20,7 @@ describe('action', () => {
     } as unknown as NextRouter
 
     it('should handle empty action', () => {
-      expect(() => handleAction(router)).not.toThrowError()
+      expect(() => handleAction(router)).not.toThrow()
     })
 
     it('should handle NavigateToBlockAction', () => {
@@ -71,7 +73,7 @@ describe('action', () => {
           journey: null,
           gtmEventName: null
         })
-      ).not.toThrowError()
+      ).not.toThrow()
     })
 
     it('should handle NavigateAction', () => {
@@ -81,6 +83,21 @@ describe('action', () => {
         gtmEventName: null
       })
       expect(nextActiveBlock).toHaveBeenCalledWith()
+    })
+
+    it('should handle EmailAction', () => {
+      window.open = jest.fn()
+
+      handleAction(router, {
+        __typename: 'EmailAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        email: 'edmondshen@gmail.com'
+      })
+      expect(window.open).toHaveBeenCalledWith(
+        'mailto:edmondshen@gmail.com',
+        '_blank'
+      )
     })
 
     it('should handle external LinkAction', () => {

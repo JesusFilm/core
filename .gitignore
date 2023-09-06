@@ -35,6 +35,7 @@ testem.log
 /typings
 **/public/locales
 apps/api-gateway/router
+/**/tsconfig.tsbuildinfo
 
 # System Files
 .DS_Store
@@ -55,3 +56,16 @@ migrations.json
 .terraform
 terraform.tfstate
 terraform.tfstate.backup
+
+# vercel
+.vercel
+.vercel-url
+.github/deployment_comment.md
+
+# next.js
+.next
+
+# playwright
+**/test-results/
+**/playwright-report/
+**/playwright/.cache/

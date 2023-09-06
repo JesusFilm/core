@@ -1,20 +1,22 @@
-import { ReactElement, MouseEvent, useState, useEffect, useMemo } from 'react'
-import { compact } from 'lodash'
-import Button from '@mui/material/Button'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import Menu from '@mui/material/Menu'
-import Stack from '@mui/material/Stack'
 import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
-import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithUserJourneys'
+import Menu from '@mui/material/Menu'
+import Stack from '@mui/material/Stack'
+import compact from 'lodash/compact'
+import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
+
+import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
-import { RemoveUser } from './RemoveUser'
+import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
+import { RemoveUser } from './RemoveUser'
 
 interface UserItem {
   id: string
@@ -29,12 +31,14 @@ interface UserItem {
 
 interface UserListItemProps {
   listItem: UserJourney | UserInvite
-  currentUser: UserJourney
+  currentUser?: UserJourney
+  journeyId: string
 }
 
 export function UserListItem({
   listItem,
-  currentUser
+  currentUser,
+  journeyId: journeyIdFromParent
 }: UserListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -71,21 +75,17 @@ export function UserListItem({
     }
   }, [role])
 
-  const { role: userRole } = currentUser
-
   const disableAction = useMemo((): boolean => {
-    switch (userRole) {
-      case UserJourneyRole.owner: {
-        return role === UserJourneyRole.owner
-      }
-      case UserJourneyRole.editor: {
-        return role !== UserJourneyRole.inviteRequested
-      }
-      default: {
-        return true
-      }
-    }
-  }, [userRole, role])
+    if (listItem.__typename === 'UserInvite') return false
+    if (listItem.user?.id === currentUser?.user?.id) return true
+    if (currentUser?.role === UserJourneyRole.owner) return false
+    if (
+      currentUser?.role === UserJourneyRole.editor &&
+      role === UserJourneyRole.inviteRequested
+    )
+      return false
+    return true
+  }, [currentUser, listItem, role])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -152,9 +152,14 @@ export function UserListItem({
       >
         <Stack divider={<Divider />}>
           {role === 'inviteRequested' && !isInvite && (
-            <ApproveUser id={id} email={email} onClick={handleClose} />
+            <ApproveUser
+              id={id}
+              email={email}
+              onClick={handleClose}
+              journeyId={journeyIdFromParent}
+            />
           )}
-          {role === 'editor' && userRole === 'owner' && (
+          {role === 'editor' && currentUser?.role === 'owner' && (
             <PromoteUser id={id} onClick={handleClose} />
           )}
           {!disableAction && (
@@ -162,6 +167,7 @@ export function UserListItem({
               id={id}
               email={isInvite ? undefined : email}
               onClick={handleClose}
+              journeyId={journeyIdFromParent}
             />
           )}
         </Stack>

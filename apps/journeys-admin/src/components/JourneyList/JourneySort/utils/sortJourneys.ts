@@ -1,36 +1,22 @@
 import orderBy from 'lodash/orderBy'
+
+import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { SortOrder } from '../JourneySort'
-import { GetActiveJourneys_journeys as ActiveJourney } from '../../../../../__generated__/GetActiveJourneys'
-import { GetArchivedJourneys_journeys as ArchivedJourney } from '../../../../../__generated__/GetArchivedJourneys'
-import { GetTrashedJourneys_journeys as TrashedJourney } from '../../../../../__generated__/GetTrashedJourneys'
-import { GetActivePublisherTemplates_journeys as ActiveTemplate } from '../../../../../__generated__/GetActivePublisherTemplates'
-import { GetArchivedPublisherTemplates_journeys as ArchivedTemplate } from '../../../../../__generated__/GetArchivedPublisherTemplates'
-import { GetTrashedPublisherTemplates_journeys as TrashedTemplate } from '../../../../../__generated__/GetTrashedPublisherTemplates'
 
 export function sortJourneys(
-  journeys: Array<
-    | ActiveJourney
-    | ArchivedJourney
-    | TrashedJourney
-    | ActiveTemplate
-    | ArchivedTemplate
-    | TrashedTemplate
-  >,
+  journeys: Journey[],
   sortOrder?: SortOrder
-): Array<
-  | ActiveJourney
-  | ArchivedJourney
-  | TrashedJourney
-  | ActiveTemplate
-  | ArchivedTemplate
-  | TrashedTemplate
-> {
+): Journey[] {
   const sortedJourneys =
     sortOrder === SortOrder.TITLE
       ? orderBy(
           journeys,
-          [({ title }) => title.toLowerCase()[0], ({ title }) => title],
-          ['asc', 'asc']
+          [
+            ({ title }) => {
+              return title.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase()
+            }
+          ],
+          ['asc']
         )
       : orderBy(journeys, ({ createdAt }) =>
           new Date(createdAt).getTime()

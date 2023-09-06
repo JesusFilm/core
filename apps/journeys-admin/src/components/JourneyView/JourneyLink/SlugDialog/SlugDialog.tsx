@@ -1,11 +1,14 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloError } from '@apollo/client'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
-import { Dialog } from '@core/shared/ui/Dialog'
+import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
-import { Formik, Form, FormikValues, FormikHelpers } from 'formik'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+import { object, string } from 'yup'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { JourneySlugUpdate } from '../../../../../__generated__/JourneySlugUpdate'
 
 export const JOURNEY_SLUG_UPDATE = gql`
@@ -27,6 +30,9 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
+  const slugSchema = object().shape({
+    slug: string().required('Required')
+  })
 
   const handleUpdateSlug = async (
     values: FormikValues,
@@ -74,8 +80,9 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
         <Formik
           initialValues={{ slug: journey.slug }}
           onSubmit={handleUpdateSlug}
+          validationSchema={slugSchema}
         >
-          {({ values, handleChange, handleSubmit, resetForm }) => (
+          {({ values, errors, handleChange, handleSubmit, resetForm }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
@@ -93,13 +100,18 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
                   fullWidth
                   value={values.slug}
                   variant="filled"
+                  error={Boolean(errors.slug)}
                   onChange={handleChange}
                   helperText={
-                    <>
-                      {process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                        'https://your.nextstep.is'}
-                      /<strong>{values.slug}</strong>
-                    </>
+                    values.slug !== '' ? (
+                      <>
+                        {process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                          'https://your.nextstep.is'}
+                        /<strong>{values.slug}</strong>
+                      </>
+                    ) : (
+                      (errors.slug as string)
+                    )
                   }
                 />
               </Form>

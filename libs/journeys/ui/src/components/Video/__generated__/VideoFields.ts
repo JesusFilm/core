@@ -67,7 +67,14 @@ export interface VideoFields_action_LinkAction {
   url: string;
 }
 
-export type VideoFields_action = VideoFields_action_NavigateAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_NavigateToJourneyAction | VideoFields_action_LinkAction;
+export interface VideoFields_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type VideoFields_action = VideoFields_action_NavigateAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_NavigateToJourneyAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;
 
 export interface VideoFields {
   __typename: "VideoBlock";

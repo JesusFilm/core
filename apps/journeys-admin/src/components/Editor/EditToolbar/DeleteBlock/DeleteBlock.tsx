@@ -1,15 +1,18 @@
-import { ReactElement, useState } from 'react'
-import IconButton from '@mui/material/IconButton'
-import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import { gql, useMutation } from '@apollo/client'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useSnackbar } from 'notistack'
+import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
+import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useState } from 'react'
+
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { MenuItem } from '../../../MenuItem'
+
 import getSelected from './utils/getSelected'
 
 export const BLOCK_DELETE = gql`
@@ -24,11 +27,13 @@ export const BLOCK_DELETE = gql`
 interface DeleteBlockProps {
   variant: 'button' | 'list-item'
   closeMenu?: () => void
+  disabled?: boolean
 }
 
 export function DeleteBlock({
   variant = 'button',
-  closeMenu
+  closeMenu,
+  disabled = false
 }: DeleteBlockProps): ReactElement {
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
@@ -46,6 +51,8 @@ export function DeleteBlock({
     setOpenDialog(false)
     closeMenu?.()
   }
+
+  const disableAction = selectedBlock == null || disabled
 
   const handleDeleteBlock = async (): Promise<void> => {
     if (selectedBlock == null || journey == null || steps == null) return
@@ -113,7 +120,7 @@ export function DeleteBlock({
           aria-controls="delete-block-actions"
           aria-haspopup="true"
           aria-expanded="true"
-          disabled={selectedBlock == null}
+          disabled={disableAction}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         >
           <DeleteOutlineRounded />
@@ -122,7 +129,7 @@ export function DeleteBlock({
         <MenuItem
           label={`Delete ${label}`}
           icon={<DeleteOutlineRounded />}
-          disabled={selectedBlock == null}
+          disabled={disableAction}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />
       )}

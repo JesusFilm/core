@@ -67,7 +67,14 @@ export interface VideoBlockUpdate_videoBlockUpdate_action_LinkAction {
   url: string;
 }
 
-export type VideoBlockUpdate_videoBlockUpdate_action = VideoBlockUpdate_videoBlockUpdate_action_NavigateAction | VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | VideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction | VideoBlockUpdate_videoBlockUpdate_action_LinkAction;
+export interface VideoBlockUpdate_videoBlockUpdate_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type VideoBlockUpdate_videoBlockUpdate_action = VideoBlockUpdate_videoBlockUpdate_action_NavigateAction | VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | VideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction | VideoBlockUpdate_videoBlockUpdate_action_LinkAction | VideoBlockUpdate_videoBlockUpdate_action_EmailAction;
 
 export interface VideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";
