@@ -84,7 +84,7 @@ export function Label(): ReactElement {
                     e.target.value = t('Your answer here')
                     setValues({ textResponseLabel: t('Your answer here') })
                   }
-                  errors.textResponseLabel == null && handleSubmit(e)
+                  if (errors.textResponseLabel == null) void handleSubmit(e)
                 }}
               />
             </Form>

@@ -1,9 +1,10 @@
-export default {
-  displayName: 'journeys-ui',
+import type { Config } from 'jest'
 
+const config: Config = {
+  displayName: 'journeys-ui',
   transform: {
-    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nrwl/react/plugins/jest',
-    '^.+\\.[tj]sx?$': 'babel-jest'
+    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
+    '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }]
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../../coverage/libs/journeys/ui',
@@ -12,3 +13,5 @@ export default {
   coverageReporters: ['cobertura'],
   preset: '../../../jest.preset.js'
 }
+
+export default config

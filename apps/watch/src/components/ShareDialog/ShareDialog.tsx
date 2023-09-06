@@ -119,8 +119,12 @@ export function ShareDialog({
                 alt={title[0].value}
                 width={240}
                 height={115}
-                objectFit="cover"
-                style={{ borderRadius: theme.spacing(2) }}
+                style={{
+                  borderRadius: theme.spacing(2),
+                  maxWidth: '100%',
+                  height: 'auto',
+                  objectFit: 'cover'
+                }}
               />
             </Box>
           )}

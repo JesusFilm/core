@@ -5,9 +5,9 @@ import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetJourney'
 import { Action, actions } from '../../Action/Action'
+import { Attribute } from '../../Attribute'
 
 import { VideoOptions } from './Options/VideoOptions'
 

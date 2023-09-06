@@ -23,7 +23,7 @@ export class Language {
     id: string;
     bcp47?: Nullable<string>;
     iso3?: Nullable<string>;
-    name: Translation[];
+    name?: Translation[];
 }
 
 export abstract class IQuery {

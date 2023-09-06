@@ -31,3 +31,5 @@ Object.defineProperty(window.self, 'crypto', {
 beforeAll(() => mswServer.listen())
 afterEach(() => mswServer.resetHandlers())
 afterAll(() => mswServer.close())
+
+jest.mock('next/router', () => require('next-router-mock'))

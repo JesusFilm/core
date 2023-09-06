@@ -28,7 +28,7 @@ module.exports = {
   "implicitDependencies": ["locales"],
   "targets": {
     "extract-translations": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "@nx/workspace:run-commands",
       "options": {
         "commands": [
           {
