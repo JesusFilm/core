@@ -9,9 +9,6 @@ on:
       env:
         required: true
         type: string
-      seed_repository:
-        required: true
-        type: string
       branch:
         required: true
         type: string
