@@ -1,5 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
@@ -11,7 +11,7 @@ import {
 
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
-const CopyToTeamDialogStory = {
+const CopyToTeamDialogStory: Meta<typeof CopyToTeamDialog> = {
   ...journeysAdminConfig,
   component: CopyToTeamDialog,
   title: 'Journeys-Admin/Team/CopyToTeamDialog',
@@ -43,26 +43,30 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-const Template: Story = () => (
-  <TeamProvider>
-    <SnackbarProvider>
-      <TeamProvider>
-        <CopyToTeamDialog
-          title="Copy to Another Team"
-          open
-          onClose={() => undefined}
-          submitAction={async () => undefined}
-        />
-      </TeamProvider>
-    </SnackbarProvider>
-  </TeamProvider>
-)
+const Template: StoryObj<typeof CopyToTeamDialog> = {
+  render: () => (
+    <TeamProvider>
+      <SnackbarProvider>
+        <TeamProvider>
+          <CopyToTeamDialog
+            title="Copy to Another Team"
+            open
+            onClose={() => undefined}
+            submitAction={async () => undefined}
+          />
+        </TeamProvider>
+      </SnackbarProvider>
+    </TeamProvider>
+  )
+}
 
-export const Default = Template.bind({})
-Default.parameters = {
-  apolloClient: {
-    mocks: [getTeamsMock]
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getTeamsMock]
+    }
   }
 }
 
-export default CopyToTeamDialogStory as Meta
+export default CopyToTeamDialogStory

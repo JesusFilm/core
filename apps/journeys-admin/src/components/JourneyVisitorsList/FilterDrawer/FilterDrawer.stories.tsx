@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
-import { ComponentProps } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
@@ -10,7 +9,7 @@ import { PageWrapper } from '../../NewPageWrapper'
 import { ClearAllButton } from './ClearAllButton'
 import { FilterDrawer } from './FilterDrawer'
 
-const FilterDrawerStory = {
+const FilterDrawerStory: Meta<typeof FilterDrawer> = {
   ...journeysAdminConfig,
   component: FilterDrawer,
   title: 'Journeys-Admin/JourneyVisitorsList/FilterDrawer',
@@ -20,49 +19,55 @@ const FilterDrawerStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof FilterDrawer>> = ({ ...args }) => {
-  return (
-    <MockedProvider>
-      <FlagsProvider>
-        <PageWrapper
-          {...args}
-          title="Visitors"
-          backHref="/"
-          sidePanelTitle="Filters"
-        />
-      </FlagsProvider>
-    </MockedProvider>
-  )
+const Template: StoryObj<typeof FilterDrawer> = {
+  render: ({ ...args }) => {
+    return (
+      <MockedProvider>
+        <FlagsProvider>
+          <PageWrapper
+            {...args}
+            title="Visitors"
+            backHref="/"
+            sidePanelTitle="Filters"
+          />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  titleAction: <ClearAllButton />,
-  sidePanelChildren: (
-    <FilterDrawer
-      sortSetting="date"
-      chatStarted={false}
-      withPollAnswers={false}
-      withSubmittedText={false}
-      withIcon={false}
-      hideInteractive={false}
-    />
-  )
+export const Default = {
+  ...Template,
+  args: {
+    titleAction: <ClearAllButton />,
+    sidePanelChildren: (
+      <FilterDrawer
+        sortSetting="date"
+        chatStarted={false}
+        withPollAnswers={false}
+        withSubmittedText={false}
+        withIcon={false}
+        hideInteractive={false}
+      />
+    )
+  }
 }
 
-export const Complete = Template.bind({})
-Complete.args = {
-  ...Default.args,
-  sidePanelChildren: (
-    <FilterDrawer
-      sortSetting="date"
-      chatStarted
-      withPollAnswers
-      withSubmittedText
-      withIcon
-      hideInteractive
-    />
-  )
+export const Complete = {
+  ...Template,
+  args: {
+    ...Default.args,
+    sidePanelChildren: (
+      <FilterDrawer
+        sortSetting="date"
+        chatStarted
+        withPollAnswers
+        withSubmittedText
+        withIcon
+        hideInteractive
+      />
+    )
+  }
 }
 
-export default FilterDrawerStory as Meta
+export default FilterDrawerStory

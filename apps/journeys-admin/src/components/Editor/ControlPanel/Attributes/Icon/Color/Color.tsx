@@ -77,7 +77,7 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
 
   return (
     <ToggleButtonGroup
-      value={iconColor}
+      value={iconColor ?? IconColor.inherit}
       onChange={handleChange}
       options={options}
     />

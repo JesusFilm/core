@@ -7,8 +7,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
+import { Attribute } from '../../Attribute'
 
 import { NextCard } from './NextCard'
 

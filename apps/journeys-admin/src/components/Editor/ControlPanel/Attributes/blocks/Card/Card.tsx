@@ -12,12 +12,12 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
-import { Attribute } from '../..'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
+import { Attribute } from '../../Attribute'
 
 import { BackgroundColor } from './BackgroundColor'
 import { BackgroundMedia } from './BackgroundMedia'

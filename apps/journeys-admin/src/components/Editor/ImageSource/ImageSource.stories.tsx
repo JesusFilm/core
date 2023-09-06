@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -13,7 +13,7 @@ import { ThemeProvider } from '../../ThemeProvider'
 
 import { ImageSource } from './ImageSource'
 
-const ImageEditorStory = {
+const ImageEditorStory: Meta<typeof ImageSource> = {
   ...simpleComponentConfig,
   component: ImageSource,
   title: 'Journeys-Admin/Editor/ImageSource',
@@ -51,29 +51,35 @@ const image: ImageBlock = {
 const onChange = async (): Promise<void> => await Promise.resolve()
 const onDelete = async (): Promise<void> => await Promise.resolve()
 
-const Template: Story = ({ ...args }) => (
-  <ThemeProvider>
-    <Box width={328} bgcolor="white">
-      <ImageSource
-        selectedBlock={args.selectedBlock}
-        onChange={onChange}
-        onDelete={onDelete}
-        loading={args.loading}
-      />
-    </Box>
-  </ThemeProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  selectedBlock: null,
-  loading: false
+const Template: StoryObj<typeof ImageSource> = {
+  render: ({ ...args }) => (
+    <ThemeProvider>
+      <Box width={328} bgcolor="white">
+        <ImageSource
+          selectedBlock={args.selectedBlock}
+          onChange={onChange}
+          onDelete={onDelete}
+          loading={args.loading}
+        />
+      </Box>
+    </ThemeProvider>
+  )
 }
 
-export const Image = Template.bind({})
-Image.args = {
-  selectedBlock: image,
-  loading: false
+export const Default = {
+  ...Template,
+  args: {
+    selectedBlock: null,
+    loading: false
+  }
 }
 
-export default ImageEditorStory as Meta
+export const Image = {
+  ...Template,
+  args: {
+    selectedBlock: image,
+    loading: false
+  }
+}
+
+export default ImageEditorStory

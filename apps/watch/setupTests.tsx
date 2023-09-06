@@ -23,3 +23,5 @@ Object.defineProperty(
     }
   }))(window.navigator.userAgent)
 )
+
+jest.mock('next/router', () => require('next-router-mock'))

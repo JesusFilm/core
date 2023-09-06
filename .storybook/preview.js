@@ -1,18 +1,7 @@
-const { createElement } = require('react')
-const NextImage = require('next/image')
-const {
-  initialize: mswInitialize,
-  mswDecorator
-} = require('msw-storybook-addon')
+const { initialize: mswInitialize, mswLoader } = require('msw-storybook-addon')
 const { MockedProvider } = require('@apollo/client/testing')
-
-const OriginalNextImage = NextImage.default
-
-Object.defineProperty(NextImage, 'default', {
-  configurable: true,
-  value: (props) =>
-    createElement(OriginalNextImage, { ...props, unoptimized: true })
-})
+require('swiper/swiper.min.css')
+require('swiper/components/pagination/pagination.min.css')
 
 const customViewports = {
   mobileMin: {
@@ -46,7 +35,7 @@ mswInitialize({
 })
 
 module.exports = {
-  decorators: [mswDecorator],
+  loaders: [mswLoader],
   parameters: {
     backgrounds: {
       disable: true,
