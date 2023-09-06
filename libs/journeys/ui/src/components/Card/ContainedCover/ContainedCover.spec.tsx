@@ -173,6 +173,21 @@ describe('ContainedCover', () => {
     expect(posterImage).toHaveAttribute('aria-details', videoBlock.video?.image)
   })
 
+  it('should not show black loading square for background video on embedded card', () => {
+    const { getByRole } = render(
+      <ContainedCover
+        backgroundColor="#DDD"
+        backgroundBlur={blurUrl}
+        videoBlock={{ ...videoBlock, source: VideoBlockSource.cloudflare }}
+      >
+        {children}
+      </ContainedCover>
+    )
+
+    const syledVideoComponent = getByRole('region', { name: 'Video Player' })
+    expect(syledVideoComponent).toHaveClass('vjs-fill')
+  })
+
   it('should render background video with default youtube thumbnail image', () => {
     const { getByTestId, getByRole } = render(
       <ContainedCover
