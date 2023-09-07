@@ -25,6 +25,6 @@ jobs:
           name: journeys-admin-custom-e2e-test
           path: |
             playwright-report/
-            apps/journeys-admin/src/e2e/
+            apps/journeys-admin-e2e/src/e2e/
             test-results
           retention-days: 30
