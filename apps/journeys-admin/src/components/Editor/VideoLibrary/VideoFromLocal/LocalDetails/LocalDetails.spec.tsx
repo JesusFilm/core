@@ -198,4 +198,41 @@ describe('LocalDetails', () => {
       videoVariantLanguageId: '529'
     })
   })
+
+  it('should keep startAt and endAt values if already exist on select click', async () => {
+    const onSelect = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider>
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              id: 'videoId',
+              videoId: '2_Acts7302-0-0',
+              source: VideoBlockSource.internal,
+              duration: 0,
+              startAt: 5,
+              endAt: 41,
+              videoVariantLanguageId: '529'
+            } as unknown as TreeBlock<VideoBlock>
+          }}
+        >
+          <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
+    )
+    fireEvent.click(getByRole('button', { name: 'Select' }))
+    await waitFor(() =>
+      expect(onSelect).toHaveBeenCalledWith({
+        duration: 0,
+        endAt: 41,
+        startAt: 5,
+        source: VideoBlockSource.internal,
+        videoId: '2_Acts7302-0-0',
+        videoVariantLanguageId: '529'
+      })
+    )
+  })
 })
