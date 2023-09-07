@@ -1,9 +1,9 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { expect } from '@storybook/jest'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
@@ -17,7 +17,7 @@ import { TEAM_UPDATE } from './TeamUpdateDialog'
 
 import { TeamUpdateDialog } from '.'
 
-const TeamUpdateDialogStory = {
+const TeamUpdateDialogStory: Meta<typeof TeamUpdateDialog> = {
   ...journeysAdminConfig,
   component: TeamUpdateDialog,
   title: 'Journeys-Admin/Team/TeamUpdateDialog'
@@ -66,7 +66,7 @@ const teamUpdateMock: MockedResponse<TeamUpdate> = {
   }
 }
 
-const Template: Story = () => {
+const TeamUpdateDialogComponent = (): ReactElement => {
   const [open, setOpen] = useState(true)
   return (
     <TeamProvider>
@@ -77,18 +77,25 @@ const Template: Story = () => {
   )
 }
 
-export const Default = Template.bind({})
-Default.parameters = {
-  apolloClient: {
-    mocks: [getTeamsMock, teamUpdateMock]
-  }
-}
-Default.play = async () => {
-  await waitFor(() =>
-    expect(screen.getByRole('textbox')).toHaveValue('My Team')
-  )
-  userEvent.clear(screen.getByRole('textbox'))
-  userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+const Template: StoryObj<typeof TeamUpdateDialog> = {
+  render: () => <TeamUpdateDialogComponent />
 }
 
-export default TeamUpdateDialogStory as Meta
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getTeamsMock, teamUpdateMock]
+    }
+  },
+  play: async () => {
+    await waitFor(
+      async () =>
+        await expect(screen.getByRole('textbox')).toHaveValue('My Team')
+    )
+    await userEvent.clear(screen.getByRole('textbox'))
+    await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+  }
+}
+
+export default TeamUpdateDialogStory

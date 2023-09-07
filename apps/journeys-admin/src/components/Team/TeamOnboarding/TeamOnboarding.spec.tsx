@@ -35,7 +35,7 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('../../libs/useCurrentUser', () => ({
+jest.mock('apps/journeys-admin/src/libs/useCurrentUser', () => ({
   __esModule: true,
   useCurrentUser: jest.fn().mockReturnValue({
     loadUser: jest.fn(),

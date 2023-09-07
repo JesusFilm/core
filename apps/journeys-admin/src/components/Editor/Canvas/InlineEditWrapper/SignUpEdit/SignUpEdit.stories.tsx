@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -17,7 +17,7 @@ import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { Canvas } from '../../Canvas'
 
-const SignUpEditStory = {
+const SignUpEditStory: Meta<typeof Canvas> = {
   ...simpleComponentConfig,
   component: Canvas,
   title: 'Journeys-Admin/Editor/Canvas/SignUpEdit'
@@ -73,41 +73,42 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = ({ ...args }) => {
-  return (
-    <MockedProvider>
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journeyId',
-            themeMode: ThemeMode.light,
-            themeName: ThemeName.base,
-            seoTitle: 'my journey',
-            language: {
-              __typename: 'Language',
-              id: '529',
-              bcp47: 'en',
-              iso3: 'eng'
-            }
-          } as unknown as Journey,
-          variant: 'admin'
-        }}
-      >
-        <EditorProvider
-          initialState={{
-            ...args,
-            steps,
-            activeFab: ActiveFab.Save
+const Template: StoryObj<typeof Canvas> = {
+  render: ({ ...args }) => {
+    return (
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              seoTitle: 'my journey',
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            variant: 'admin'
           }}
         >
-          <Canvas />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
+          <EditorProvider
+            initialState={{
+              ...args,
+              steps,
+              activeFab: ActiveFab.Save
+            }}
+          >
+            <Canvas />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export const Default = Template.bind({})
-Default.args = { selectedBlock }
+export const Default = { ...Template, args: { selectedBlock } }
 
-export default SignUpEditStory as Meta
+export default SignUpEditStory

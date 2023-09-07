@@ -11,8 +11,8 @@ interface FooterLinkProps {
   variant?: ValueOf<Pick<LinkProps, 'variant'>>
   underline?: ValueOf<Pick<LinkProps, 'underline'>>
   src?: string
-  width?: string
-  height?: string
+  width?: number
+  height?: number
   target?: HTMLAttributeAnchorTarget
   noFollow?: boolean
 }
@@ -44,6 +44,10 @@ export function FooterLink({
           width={width ?? 32}
           height={height ?? 32}
           alt={label}
+          style={{
+            maxWidth: '100%',
+            height: 'auto'
+          }}
         />
       )}
     </MuiLink>

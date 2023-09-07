@@ -12,8 +12,8 @@ import { PrismaService } from './app/lib/prisma.service'
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true })
   app.useLogger(app.get(PinoLogger))
-  const prismaService = app.get(PrismaService)
-  await prismaService.enableShutdownHooks(app)
+  app.get(PrismaService)
+  await app.enableShutdownHooks()
   await app.use(
     cors<cors.CorsRequest>({ origin: true }),
     json({ limit: '50mb' })

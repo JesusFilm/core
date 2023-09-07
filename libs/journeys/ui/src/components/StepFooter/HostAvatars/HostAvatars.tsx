@@ -60,7 +60,7 @@ export function HostAvatars({
         />
       )}
       {(src1 == null || src2 == null) &&
-        hasPlaceholder &&
+        hasPlaceholder === true &&
         editableStepFooter &&
         size === 'small' && (
           <Avatar
@@ -86,30 +86,33 @@ export function HostAvatars({
             />
           </Avatar>
         )}
-      {src1 == null && src2 == null && hasPlaceholder && size === 'large' && (
-        <Avatar
-          sx={{
-            color: 'secondary.light',
-            opacity: 0.5,
-            backgroundColor: 'transparent',
-            '&.MuiAvatar-root': {
-              border: (theme) => `2px solid ${theme.palette.grey[700]}`,
-              height: '46px',
-              width: '46px'
-            }
-          }}
-        >
-          <UserProfile3
-            data-testid="host-avatar-placeholder-solid"
+      {src1 == null &&
+        src2 == null &&
+        hasPlaceholder === true &&
+        size === 'large' && (
+          <Avatar
             sx={{
-              pr: rtl ? '4px' : '0px',
-              pl: rtl ? '0px' : '4px',
-              pt: '4px',
-              color: (theme) => theme.palette.grey[700]
+              color: 'secondary.light',
+              opacity: 0.5,
+              backgroundColor: 'transparent',
+              '&.MuiAvatar-root': {
+                border: (theme) => `2px solid ${theme.palette.grey[700]}`,
+                height: '46px',
+                width: '46px'
+              }
             }}
-          />
-        </Avatar>
-      )}
+          >
+            <UserProfile3
+              data-testid="host-avatar-placeholder-solid"
+              sx={{
+                pr: rtl ? '4px' : '0px',
+                pl: rtl ? '0px' : '4px',
+                pt: '4px',
+                color: (theme) => theme.palette.grey[700]
+              }}
+            />
+          </Avatar>
+        )}
     </AvatarGroup>
   )
 }

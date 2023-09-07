@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
@@ -6,7 +6,7 @@ import { StoryCard } from '../StoryCard'
 
 import { Image } from './Image'
 
-const Demo = {
+const Demo: Meta<typeof Image> = {
   ...journeyUiConfig,
   component: Image,
   title: 'Journeys-Ui/Image'
@@ -24,24 +24,31 @@ const emptyImage: Omit<ComponentProps<typeof Image>, 'src'> = {
   children: []
 }
 
-const Template: Story<ComponentProps<typeof Image>> = ({ ...args }) => (
-  <StoryCard>
-    <Image {...args} alt={args.alt} />
-  </StoryCard>
-)
+type Story = StoryObj<ComponentProps<typeof Image>>
+
+const Template: Story = {
+  render: ({ ...args }) => (
+    <StoryCard>
+      <Image {...args} alt={args.alt} />
+    </StoryCard>
+  )
+}
 
 // Throttle network to see loading image
-export const Default = Template.bind({})
-Default.args = {
-  ...emptyImage
+export const Default = {
+  ...Template,
+  args: { ...emptyImage }
 }
 
-export const WebImage = Template.bind({})
-WebImage.args = {
-  ...Default.args,
-  src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
+export const WebImage = {
+  ...Template,
+  args: {
+    ...Default.args,
+    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
+  },
+  parameters: {
+    chromatic: { delay: 300 }
+  }
 }
-WebImage.parameters = {
-  chromatic: { delay: 300 }
-}
-export default Demo as Meta
+
+export default Demo

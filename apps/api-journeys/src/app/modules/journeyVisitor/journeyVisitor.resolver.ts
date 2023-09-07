@@ -34,7 +34,7 @@ export class JourneyVisitorResolver {
   @UseGuards(AppCaslGuard)
   async journeyVisitorCount(
     @CaslAccessible('JourneyVisitor')
-    accessibleJourneyVisitors: Prisma.VisitorWhereInput,
+    accessibleJourneyVisitors: Prisma.JourneyVisitorWhereInput,
     @Args('filter') filter: JourneyVisitorFilter
   ): Promise<number> {
     return await this.journeyVisitorService.getJourneyVisitorCount({
@@ -49,7 +49,7 @@ export class JourneyVisitorResolver {
   @UseGuards(AppCaslGuard)
   async journeyVisitorsConnection(
     @CaslAccessible('JourneyVisitor')
-    accessibleJourneyVisitors: Prisma.VisitorWhereInput,
+    accessibleJourneyVisitors: Prisma.JourneyVisitorWhereInput,
     @Args('filter') filter: JourneyVisitorFilter,
     @Args('sort') sort = JourneyVisitorSort.date,
     @Args('first') first = 50,

@@ -113,8 +113,8 @@ MyDocument.getInitialProps = async (ctx) => {
 
   let pageProps
 
-  ctx.renderPage = () =>
-    originalRenderPage({
+  ctx.renderPage = async () =>
+    await originalRenderPage({
       enhanceApp: ((App: FunctionComponent<{ emotionCache: EmotionCache }>) => {
         return function EnhanceApp(props) {
           pageProps = props.pageProps.journey

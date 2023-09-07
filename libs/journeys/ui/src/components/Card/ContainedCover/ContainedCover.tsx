@@ -145,7 +145,9 @@ export function ContainedCover({
               blurDataURL={backgroundBlur}
               layout="fill"
               objectFit="cover"
-              sx={{ transform: 'scale(2) translate(0px, -25%)' }}
+              sx={{
+                transform: 'scale(2) translate(0px, -25%)'
+              }}
             />
             <Box
               sx={{

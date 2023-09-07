@@ -94,7 +94,7 @@ describe('JourneyResolver', () => {
   const accessibleJourneys: Prisma.JourneyWhereInput = { OR: [{}] }
 
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
     jest.setSystemTime(new Date(2020, 3, 1))
   })
 
