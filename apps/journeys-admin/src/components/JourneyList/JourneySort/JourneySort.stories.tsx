@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement, useState } from 'react'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -12,20 +12,23 @@ const JourneySortMock = ({ ...args }): ReactElement => {
   )
 }
 
-const JourneySortDemo = {
+const JourneySortDemo: Meta<typeof JourneySort> = {
   ...journeysAdminConfig,
   component: JourneySort,
   title: 'Journeys-Admin/JourneyList/JourneySort'
 }
 
-const Template: Story = (args) => <JourneySortMock {...args} />
+const Template: StoryObj<typeof JourneySort> = {
+  render: (args) => <JourneySortMock {...args} />
+}
+export const Default = { ...Template }
 
-export const Default = Template.bind({})
-
-export const Disabled = Template.bind({})
-Disabled.args = {
-  open: false,
-  disabled: true
+export const Disabled = {
+  ...Template,
+  args: {
+    open: false,
+    disabled: true
+  }
 }
 
-export default JourneySortDemo as Meta
+export default JourneySortDemo

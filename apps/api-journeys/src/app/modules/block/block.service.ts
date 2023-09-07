@@ -12,6 +12,18 @@ export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
 
 type BlockWithAction = Block & { action: Action | null }
 
+type PrismaTransation = Omit<
+  PrismaService,
+  | '$connect'
+  | '$disconnect'
+  | '$on'
+  | '$transaction'
+  | '$use'
+  | '$extends'
+  | 'onModuleInit'
+  | 'enableShutdownHooks'
+>
+
 @Injectable()
 export class BlockService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -27,10 +39,7 @@ export class BlockService {
   async getSiblingsInternal(
     journeyId: string,
     parentBlockId?: string | null,
-    tx: Omit<
-      PrismaService,
-      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
-    > = this.prismaService
+    tx: PrismaTransation = this.prismaService
   ): Promise<BlockWithAction[]> {
     // Only StepBlocks should not have parentBlockId
     return parentBlockId != null
@@ -56,10 +65,7 @@ export class BlockService {
 
   async reorderSiblings(
     siblings: BlockWithAction[],
-    tx: Omit<
-      PrismaService,
-      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
-    > = this.prismaService
+    tx: PrismaTransation = this.prismaService
   ): Promise<BlockWithAction[]> {
     const updatedSiblings = siblings.map((block, index) => ({
       ...block,
@@ -269,10 +275,7 @@ export class BlockService {
   @FromPostgresql()
   async removeBlockAndChildren(
     block: Block,
-    tx: Omit<
-      PrismaService,
-      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
-    > = this.prismaService
+    tx: PrismaTransation = this.prismaService
   ): Promise<BlockWithAction[]> {
     await tx.block.delete({
       where: { id: block.id }

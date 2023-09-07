@@ -1,6 +1,7 @@
 import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useAuthUser,
@@ -8,7 +9,6 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -181,29 +181,32 @@ function JourneyVisitorsPage(): ReactElement {
     <>
       <NextSeo title={t('Visitors')} />
       <PageWrapper
-        title={
-          <Stack direction="row" alignItems="center">
-            {t('Visitors')}
+        title={t('Visitors')}
+        authUser={AuthUser}
+        backHref={`/journeys/${journeyId}/reports`}
+        mainHeaderChildren={
+          <Stack
+            direction="row"
+            flexGrow={1}
+            alignItems="center"
+            justifyContent="space-between"
+          >
             {data?.journeyVisitorCount != null && (
               <Typography variant="caption" sx={{ pl: 4 }}>
                 {data?.journeyVisitorCount}
               </Typography>
             )}
+            <VisitorToolbar
+              handleChange={handleChange}
+              sortSetting={sortSetting}
+              chatStarted={chatStarted}
+              withPollAnswers={withPollAnswers}
+              withSubmittedText={withSubmittedText}
+              withIcon={withIcon}
+              hideInteractive={hideInteractive}
+              handleClearAll={handleClearAll}
+            />
           </Stack>
-        }
-        authUser={AuthUser}
-        backHref={`/journeys/${journeyId}/reports`}
-        menu={
-          <VisitorToolbar
-            handleChange={handleChange}
-            sortSetting={sortSetting}
-            chatStarted={chatStarted}
-            withPollAnswers={withPollAnswers}
-            withSubmittedText={withSubmittedText}
-            withIcon={withIcon}
-            hideInteractive={hideInteractive}
-            handleClearAll={handleClearAll}
-          />
         }
         sidePanelTitle={
           <>
@@ -238,6 +241,9 @@ function JourneyVisitorsPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale, query }) => {
+  if (AuthUser == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     AuthUser,
     locale

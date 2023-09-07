@@ -91,6 +91,7 @@ export function MediaListItem({
           <Stack>
             <NextImage
               src={image}
+              alt={title}
               height={79}
               width={79}
               layout="fixed"

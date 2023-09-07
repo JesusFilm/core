@@ -31,7 +31,15 @@ export function ContainerHero({ openDialog }: Props): ReactElement {
       data-testid="ContainerHero"
     >
       {image != null && (
-        <Image src={image} alt="Home Hero" layout="fill" objectFit="cover" />
+        <Image
+          src={image}
+          alt="Home Hero"
+          fill
+          sizes="100vw"
+          style={{
+            objectFit: 'cover'
+          }}
+        />
       )}
       <HeroOverlay />
       <Container

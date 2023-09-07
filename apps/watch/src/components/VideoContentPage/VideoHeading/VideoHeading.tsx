@@ -75,6 +75,7 @@ export function VideoHeading({
                 <NextLink
                   href={`/${container.variant?.slug as string}`}
                   passHref
+                  legacyBehavior
                 >
                   <Link
                     variant="overline1"
@@ -105,7 +106,11 @@ export function VideoHeading({
                   )}
                 </Typography>
               </Stack>
-              <NextLink href={`/${container.variant?.slug as string}`} passHref>
+              <NextLink
+                href={`/${container.variant?.slug as string}`}
+                passHref
+                legacyBehavior
+              >
                 <Button
                   variant="outlined"
                   size="small"

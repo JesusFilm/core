@@ -45,8 +45,11 @@ export function VideoHeroOverlay({
         <Image
           src={image}
           alt={imageAlt[0].value}
-          layout="fill"
-          objectFit="cover"
+          fill
+          sizes="100vw"
+          style={{
+            objectFit: 'cover'
+          }}
         />
       )}
       <HeroOverlay />

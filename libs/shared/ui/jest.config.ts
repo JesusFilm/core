@@ -1,8 +1,10 @@
-export default {
-  displayName: 'shared-ui',
+import type { Config } from 'jest'
 
+const config: Config = {
+  displayName: 'shared-ui',
   transform: {
-    '^.+\\.[tj]sx?$': 'babel-jest'
+    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
+    '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }]
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../../coverage/libs/shared/ui',
@@ -11,3 +13,5 @@ export default {
   coverageReporters: ['cobertura'],
   preset: '../../../jest.preset.js'
 }
+
+export default config

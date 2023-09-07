@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
-import { useState } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps, ReactNode, useState } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -25,7 +25,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 
 import { CardPreview } from '.'
 
-const CardPreviewStory = {
+const CardPreviewStory: Meta<typeof CardPreview> = {
   ...journeysAdminConfig,
   component: CardPreview,
   title: 'Journeys-Admin/CardPreview',
@@ -666,7 +666,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = ({ ...args }) => {
+const CardPreviewComponent = ({ ...args }): ReactNode => {
   const [selected] = useState<TreeBlock<StepBlock>>(args.steps?.[0])
 
   return (
@@ -700,32 +700,37 @@ const Template: Story = ({ ...args }) => {
   )
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  steps
+const Template: StoryObj<
+  ComponentProps<typeof CardPreview> & { steps: Array<TreeBlock<StepBlock>> }
+> = {
+  render: ({ ...args }) => <CardPreviewComponent {...args} />
 }
 
-export const Draggable = Template.bind({})
-Draggable.args = {
-  steps,
-  isDraggable: true
+export const Default = {
+  ...Template,
+  args: {
+    steps
+  }
 }
 
-export const AddButton = Template.bind({})
-AddButton.args = {
-  steps,
-  showAddButton: true
+export const Draggable = { ...Template, args: { steps, isDraggable: true } }
+
+export const AddButton = {
+  ...Template,
+  args: {
+    steps,
+    showAddButton: true
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  steps: undefined
+export const Loading = { ...Template, args: { steps: undefined } }
+
+export const WithNavigationCards = {
+  ...Template,
+  args: {
+    steps,
+    showNavigationCards: true
+  }
 }
 
-export const WithNavigationCards = Template.bind({})
-WithNavigationCards.args = {
-  steps,
-  showNavigationCards: true
-}
-
-export default CardPreviewStory as Meta
+export default CardPreviewStory

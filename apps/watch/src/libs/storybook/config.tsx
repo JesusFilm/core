@@ -1,4 +1,4 @@
-import { Story } from '@storybook/react'
+import { Decorator } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
@@ -9,7 +9,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 export const watchConfig = {
   ...sharedUiConfig,
   decorators: [
-    (Story: Story) => (
+    (Story: Parameters<Decorator>[0]) => (
       <SnackbarProvider>
         <ThemeProvider
           themeName={ThemeName.website}

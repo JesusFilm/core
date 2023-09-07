@@ -2,13 +2,12 @@ process.stdin.resume()
 process.stdin.setEncoding('utf8')
 process.stdin.on('data', (data: string) => {
   const services = data
-    .split(' ')
-    .filter((service) => !service.startsWith('api-'))
+    .split('\n')
+    .filter((value) => value != null && value !== '')
     .join('","')
-    .replace(/\n/g, '')
   if (services === '') {
-    console.log('matrix=[]')
+    console.log('[]')
   } else {
-    console.log(`matrix=["${services}"]`)
+    console.log(`["${services}"]`)
   }
 })

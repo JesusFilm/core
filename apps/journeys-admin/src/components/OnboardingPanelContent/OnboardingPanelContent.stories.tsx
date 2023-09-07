@@ -2,20 +2,21 @@ import { MockedProvider } from '@apollo/client/testing'
 import Drawer from '@mui/material/Drawer'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ReactElement } from 'react'
 
 import { simpleComponentConfig } from '../../libs/storybook'
 
 import { onboardingJourneys } from './data'
 import { OnboardingPanelContent } from './OnboardingPanelContent'
 
-const OnboardingPanelContentStory = {
+const OnboardingPanelContentStory: Meta<typeof OnboardingPanelContent> = {
   ...simpleComponentConfig,
   component: OnboardingPanelContent,
   title: 'Journeys-Admin/OnboardingPanelContent'
 }
 
-const Template: Story = () => {
+const OnboardingPanelContentComponent = (): ReactElement => {
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
   return (
@@ -27,6 +28,10 @@ const Template: Story = () => {
   )
 }
 
-export const Default = Template.bind({})
+const Template: StoryObj<typeof OnboardingPanelContent> = {
+  render: () => <OnboardingPanelContentComponent />
+}
 
-export default OnboardingPanelContentStory as Meta
+export const Default = { ...Template }
+
+export default OnboardingPanelContentStory
