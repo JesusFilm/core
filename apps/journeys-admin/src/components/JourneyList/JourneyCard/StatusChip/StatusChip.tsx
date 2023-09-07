@@ -1,11 +1,11 @@
-import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
-import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
+import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded' // icon-replace: add folder-down-01
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import Circle from '@core/shared/ui/icons/Circle'
 import Edit2 from '@core/shared/ui/icons/Edit2'
+import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
@@ -32,7 +32,7 @@ const options = [
   {
     journeyStatus: JourneyStatus.trashed,
     text: 'Trash',
-    icon: <CancelRoundedIcon color="error" sx={{ fontSize: 13 }} />
+    icon: <XCircleContained color="error" sx={{ fontSize: 13 }} />
   }
 ]
 

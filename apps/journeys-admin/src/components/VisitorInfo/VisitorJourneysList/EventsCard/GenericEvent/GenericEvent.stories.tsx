@@ -1,11 +1,11 @@
 import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded' // icon-replace: no icon serves similar purpose
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded' // icon-replace: no icon serves similar purpose
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 
 import CheckContained from '@core/shared/ui/icons/CheckContained'
 import MessageText1 from '@core/shared/ui/icons/MessageText1'
+import Circle from '@core/shared/ui/icons/Circle'
 
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { EventVariant } from '../../utils'
@@ -28,8 +28,8 @@ export const Default = {
   args: {
     activity: 'Event action:',
     label: 'Default label',
-    value: 'Some contnet related to event',
-    icon: <RadioButtonUncheckedIcon />,
+    value: 'Some content related to event',
+    icon: <Circle />,
     duration: '0.02'
   }
 }

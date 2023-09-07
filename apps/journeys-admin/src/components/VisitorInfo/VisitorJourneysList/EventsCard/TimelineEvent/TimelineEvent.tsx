@@ -1,5 +1,4 @@
 import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded' // icon-replace: no icon serves similar purpose
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded' // icon-replace: no icon serves similar purpose
 import { intlFormat, parseISO } from 'date-fns'
 import { ComponentProps, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +9,7 @@ import Email from '@core/shared/ui/icons/Email'
 import MessageText1 from '@core/shared/ui/icons/MessageText1'
 import Pause2 from '@core/shared/ui/icons/Pause2'
 import Play2 from '@core/shared/ui/icons/Play2'
+import Circle from '@core/shared/ui/icons/Circle'
 
 import {
   EventVariant,
@@ -32,7 +32,7 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   let variant: EventVariant = EventVariant.default
-  let icon = <RadioButtonUncheckedIcon />
+  let icon = <Circle />
   let label: GenericEventProps['label']
   let value: GenericEventProps['value'] = event.value
   let activity: GenericEventProps['activity']
