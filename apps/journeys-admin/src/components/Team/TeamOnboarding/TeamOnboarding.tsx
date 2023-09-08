@@ -194,7 +194,7 @@ export function TeamOnboarding(): ReactElement {
         }}
         href="mailto:support@nextstep.is?subject=A question about the terms and conditions form"
       >
-        {t('Feedback & Support')}
+        {t('Feedback & Help')}
       </Link>
     </Stack>
   )

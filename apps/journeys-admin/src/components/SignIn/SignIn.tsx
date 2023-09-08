@@ -83,7 +83,7 @@ export function SignIn(): ReactElement {
             component="a"
             href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
           >
-            Feedback & Support
+            Feedback & Help
           </Typography>
         </Box>
       ) : null}
