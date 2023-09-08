@@ -111,7 +111,7 @@ export function StepHeader({ sx }: Props): ReactElement {
         </Box>
         <MuiMenuItem disabled>
           <Typography variant="caption" color="primary.light">
-            {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
+            {t('WalkTogether © {{year}}', { year: new Date().getFullYear() })}
           </Typography>
         </MuiMenuItem>
       </Menu>
