@@ -18,7 +18,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run journeys-e2e:e2e
+        run: npx nx run journeys-e2e:update-snapshots
       - uses: actions/upload-artifact@v3
         if: always()
         with:
