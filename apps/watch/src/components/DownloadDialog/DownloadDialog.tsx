@@ -214,12 +214,12 @@ export function DownloadDialog({
               </Stack>
               <TermsOfUseDialog
                 open={openTerms}
-                onClose={() => {
-                  setFieldValue('terms', false)
+                onClose={async () => {
+                  await setFieldValue('terms', false)
                   setOpenTerms(false)
                 }}
-                onSubmit={() => {
-                  setFieldValue('terms', true)
+                onSubmit={async () => {
+                  await setFieldValue('terms', true)
                   setOpenTerms(false)
                 }}
               />
