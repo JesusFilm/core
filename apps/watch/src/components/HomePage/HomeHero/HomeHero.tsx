@@ -67,7 +67,7 @@ export function HomeHero(): ReactElement {
             color="secondary.contrastText"
             sx={{ opacity: 0.7 }}
           >
-            Watch, learn and share the gospel in over 2000 languages
+            Watch, learn and share the gospel in over 2000 languages.
           </Typography>
         </Stack>
       </Container>
