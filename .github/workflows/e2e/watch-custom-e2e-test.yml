@@ -1,4 +1,4 @@
-name: journeys-admin-custom-e2e-test
+name: watch-custom-e2e-test
 on:
   push:
     branches: [main, master]
@@ -18,13 +18,13 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run journeys-admin:e2e
+        run: npx nx run watch-e2e:e2e
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: journeys-admin-custom-e2e-test
+          name: watch-custom-e2e-test
           path: |
             playwright-report/
-            apps/journeys-admin/src/e2e/
+            apps/watch-e2e/src/e2e/
             test-results
           retention-days: 30
