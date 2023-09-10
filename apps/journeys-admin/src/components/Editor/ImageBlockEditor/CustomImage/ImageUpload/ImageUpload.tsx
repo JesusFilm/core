@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined' // icon-replace: no icon serves similar purpose
-import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined' // icon-replace: no icon serves similar purpose
-import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded' // icon-replace: no icon serves similar purpose
+import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined' // icon-replace: add upload-01
+import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded' // icon-replace: add alert-triangle
 import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded' // icon-replace: add alert-triangle
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -11,6 +10,8 @@ import type FormDataType from 'form-data'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+
+import CheckBroken from '@core/shared/ui/icons/CheckBroken'
 
 import { CreateCloudflareUploadByFile } from '../../../../../../__generated__/CreateCloudflareUploadByFile'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
@@ -122,9 +123,7 @@ export function ImageUpload({
         }}
       >
         {uploadSuccess ? (
-          <CloudDoneOutlinedIcon
-            sx={{ fontSize: 48, color: 'success.main', mb: 1 }}
-          />
+          <CheckBroken sx={{ fontSize: 48, color: 'success.main', mb: 1 }} />
         ) : uploadError ? (
           <CloudOffRoundedIcon
             sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}

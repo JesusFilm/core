@@ -1,4 +1,4 @@
-import DragHandleRounded from '@mui/icons-material/DragHandleRounded' // icon-replace: no icon serves similar purpose
+import DragHandleRounded from '@mui/icons-material/DragHandleRounded' // icon-replace: add drag
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'

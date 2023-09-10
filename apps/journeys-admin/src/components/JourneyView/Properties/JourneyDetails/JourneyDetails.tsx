@@ -1,4 +1,3 @@
-import TranslateRounded from '@mui/icons-material/TranslateRounded' // icon-replace: no icon serves similar purpose
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
@@ -7,6 +6,7 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Calendar1 from '@core/shared/ui/icons/Calendar1'
+import Globe from '@core/shared/ui/icons/Globe'
 
 import type { JourneyType } from '../../JourneyView'
 
@@ -56,7 +56,7 @@ export function JourneyDetails({
               mt: 2
             }}
           >
-            <TranslateRounded fontSize="small" />
+            <Globe fontSize="small" />
             <Language />
           </Box>
         </>

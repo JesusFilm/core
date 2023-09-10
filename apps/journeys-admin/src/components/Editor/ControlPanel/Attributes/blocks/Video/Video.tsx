@@ -1,4 +1,4 @@
-import VideoLibrary from '@mui/icons-material/VideoLibrary' // icon-replace: no icon serves similar purpose
+import VideoLibrary from '@mui/icons-material/VideoLibrary' // icon-replace: add play-01
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

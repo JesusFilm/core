@@ -1,4 +1,4 @@
-import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded' // icon-replace: no icon serves similar purpose
+import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded' // icon-replace: add journey
 import { Meta, StoryObj } from '@storybook/react'
 
 import { simpleComponentConfig } from '../../../../libs/storybook'

@@ -1,5 +1,5 @@
 import Archive from '@mui/icons-material/Archive' // icon-replace: add folder-down-01
-import DeleteForever from '@mui/icons-material/DeleteForever' // icon-replace: no icon serves similar purpose
+import DeleteForever from '@mui/icons-material/DeleteForever' // icon-replace: add file-shred
 import MoreVert from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
 import Unarchive from '@mui/icons-material/Unarchive' // icon-replace: add folder-up-01
 import IconButton from '@mui/material/IconButton'

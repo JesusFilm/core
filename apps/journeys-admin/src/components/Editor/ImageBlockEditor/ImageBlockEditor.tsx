@@ -1,5 +1,4 @@
-import BrushRounded from '@mui/icons-material/BrushRounded' // icon-replace: no icon serves similar purpose
-import DashboardRounded from '@mui/icons-material/DashboardRounded' // icon-replace: no icon serves similar purpose
+import DashboardRounded from '@mui/icons-material/DashboardRounded' // icon-replace: add grid-01
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -7,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
+import Image3 from '@core/shared/ui/icons/Image3'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
@@ -119,7 +119,7 @@ export function ImageBlockEditor({
             {...tabA11yProps('gallery', 0)}
           />
           <Tab
-            icon={<BrushRounded />}
+            icon={<Image3 />}
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />

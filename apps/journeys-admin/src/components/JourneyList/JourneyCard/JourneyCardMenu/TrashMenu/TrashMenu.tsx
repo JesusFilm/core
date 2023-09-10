@@ -1,4 +1,4 @@
-import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded' // icon-replace: no icon serves similar purpose
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded' // icon-replace: add file-shred
 import { ReactElement } from 'react'
 
 import CheckContained from '@core/shared/ui/icons/CheckContained'

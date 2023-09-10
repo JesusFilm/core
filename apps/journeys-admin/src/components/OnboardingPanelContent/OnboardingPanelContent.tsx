@@ -1,5 +1,5 @@
-import DashboardRounded from '@mui/icons-material/DashboardRounded' // icon-replace: no icon serves similar purpose
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel' // icon-replace: no icon serves similar purpose
+import DashboardRounded from '@mui/icons-material/DashboardRounded' // icon-replace: add grid-01
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel' // icon-replace: add journey
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'

@@ -1,15 +1,15 @@
-import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded' // icon-replace: no icon serves similar purpose
 import { intlFormat, parseISO } from 'date-fns'
 import { ComponentProps, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import ArrowRightContained1 from '@core/shared/ui/icons/ArrowRightContained1'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
+import Circle from '@core/shared/ui/icons/Circle'
 import Email from '@core/shared/ui/icons/Email'
+import Marker1 from '@core/shared/ui/icons/Marker1'
 import MessageText1 from '@core/shared/ui/icons/MessageText1'
 import Pause2 from '@core/shared/ui/icons/Pause2'
 import Play2 from '@core/shared/ui/icons/Play2'
-import Circle from '@core/shared/ui/icons/Circle'
 
 import {
   EventVariant,
@@ -41,7 +41,7 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
   switch (event.__typename) {
     // Featured
     case 'JourneyViewEvent':
-      icon = <EmojiFlagsRoundedIcon />
+      icon = <Marker1 />
       value = t('Journey Started')
       createdAt = event.createdAt
       variant = EventVariant.start

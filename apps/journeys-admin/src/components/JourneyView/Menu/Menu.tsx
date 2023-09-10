@@ -2,8 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded' // icon-replace: add bar-chart-square-03
 import DescriptionIcon from '@mui/icons-material/Description' // icon-replace: add file-05
 import MoreVert from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
-import TranslateIcon from '@mui/icons-material/Translate' // icon-replace: no icon serves similar purpose
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel' // icon-replace: no icon serves similar purpose
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel' // icon-replace: add journey
 import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
@@ -19,6 +18,7 @@ import CheckContained from '@core/shared/ui/icons/CheckContained'
 import CopyLeft from '@core/shared/ui/icons/CopyLeft'
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+import Globe from '@core/shared/ui/icons/Globe'
 
 import { GetRole } from '../../../../__generated__/GetRole'
 import { Role } from '../../../../__generated__/globalTypes'
@@ -230,7 +230,7 @@ export function Menu(): ReactElement {
             {(journey.template !== true || isPublisher === true) && (
               <MenuItem
                 label="Language"
-                icon={<TranslateIcon />}
+                icon={<Globe />}
                 onClick={handleUpdateLanguage}
               />
             )}

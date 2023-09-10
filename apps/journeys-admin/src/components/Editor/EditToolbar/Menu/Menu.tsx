@@ -1,6 +1,5 @@
 import MoreVert from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
 import SettingsIcon from '@mui/icons-material/Settings' // icon-replace: add settings
-import ShareRoundedIcon from '@mui/icons-material/ShareRounded' // icon-replace: no icon serves similar purpose
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -12,6 +11,7 @@ import { ReactElement, useState } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+import Share from '@core/shared/ui/icons/Share'
 
 import { DuplicateBlock } from '../../../DuplicateBlock'
 import { MenuItem } from '../../../MenuItem'
@@ -58,7 +58,7 @@ export function Menu(): ReactElement {
         {!smUp && (
           <MenuItem
             label="Social Settings"
-            icon={<ShareRoundedIcon />}
+            icon={<Share />}
             onClick={handleOpenSocial}
           />
         )}
@@ -95,7 +95,7 @@ export function Menu(): ReactElement {
         {!smUp && (
           <MenuItem
             label="Social Settings"
-            icon={<ShareRoundedIcon />}
+            icon={<Share />}
             onClick={handleOpenSocial}
           />
         )}

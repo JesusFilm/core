@@ -1,11 +1,11 @@
-import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded' // icon-replace: no icon serves similar purpose
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 
 import CheckContained from '@core/shared/ui/icons/CheckContained'
-import MessageText1 from '@core/shared/ui/icons/MessageText1'
 import Circle from '@core/shared/ui/icons/Circle'
+import Marker1 from '@core/shared/ui/icons/Marker1'
+import MessageText1 from '@core/shared/ui/icons/MessageText1'
 
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { EventVariant } from '../../utils'
@@ -39,7 +39,7 @@ export const Start = {
   args: {
     createdAt: '2021-02-18T00:00:00.000Z',
     value: 'Journey Started',
-    icon: <EmojiFlagsRoundedIcon />,
+    icon: <Marker1 />,
     showCreatedAt: true,
     variant: EventVariant.start
   }

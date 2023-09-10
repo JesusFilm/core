@@ -1,4 +1,4 @@
-import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded' // icon-replace: no icon serves similar purpose
+import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded' // icon-replace: add text-input-01
 import Divider from '@mui/material/Divider'
 import { ReactElement } from 'react'
 

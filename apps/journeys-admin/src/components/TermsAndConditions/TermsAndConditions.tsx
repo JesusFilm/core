@@ -1,7 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded' // icon-replace: no icon serves similar purpose
-import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded' // icon-replace: no icon serves similar purpose
-import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded' // icon-replace: no icon serves similar purpose
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
@@ -17,7 +14,10 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
+import AlertCircle from '@core/shared/ui/icons/AlertCircle'
 import ArrowRightSm from '@core/shared/ui/icons/ArrowRightSm'
+import CheckSquareBroken from '@core/shared/ui/icons/CheckSquareBroken'
+import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
 
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
@@ -83,21 +83,19 @@ export function TermsAndConditions(): ReactElement {
         >
           <TermsListItem
             link="https://your.nextstep.is/terms-of-use"
-            icon={<NewReleasesRoundedIcon sx={{ color: 'secondary.light' }} />}
+            icon={<AlertCircle sx={{ color: 'secondary.light' }} />}
             text="Terms of Use"
           />
           <Divider component="li" />
           <TermsListItem
             link="https://your.nextstep.is/end-user-license-agreement"
-            icon={
-              <SupervisorAccountRoundedIcon sx={{ color: 'secondary.light' }} />
-            }
+            icon={<UsersProfiles2 sx={{ color: 'secondary.light' }} />}
             text="End User License Agreement"
           />
           <Divider component="li" />
           <TermsListItem
             link="https://your.nextstep.is/community-guidelines"
-            icon={<BeenhereRoundedIcon sx={{ color: 'secondary.light' }} />}
+            icon={<CheckSquareBroken sx={{ color: 'secondary.light' }} />}
             text="Community Guidelines"
           />
           <Divider component="li" />

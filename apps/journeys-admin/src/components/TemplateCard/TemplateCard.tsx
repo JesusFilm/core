@@ -1,6 +1,5 @@
 import { ApolloQueryResult } from '@apollo/client'
 import MoreVertIcon from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
-import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded' // icon-replace: no icon serves similar purpose
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -15,6 +14,7 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
+import Globe from '@core/shared/ui/icons/Globe'
 import Image3 from '@core/shared/ui/icons/Image3'
 
 import {
@@ -165,14 +165,14 @@ export function TemplateCard({
           >
             {journey != null ? (
               <>
-                <TranslateRoundedIcon sx={{ fontSize: 13, pl: 0 }} />
+                <Globe sx={{ fontSize: 13, pl: 0 }} />
                 <Typography variant="body2" noWrap sx={{ ml: 1 }}>
                   {displayLanguage}
                 </Typography>
               </>
             ) : (
               <>
-                <TranslateRoundedIcon sx={{ fontSize: 13, p: 0 }} />
+                <Globe sx={{ fontSize: 13, p: 0 }} />
                 <Skeleton
                   variant="text"
                   width={50}

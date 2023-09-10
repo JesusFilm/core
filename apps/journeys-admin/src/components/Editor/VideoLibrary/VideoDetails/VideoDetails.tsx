@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded' // icon-replace: no icon serves similar purpose
+import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded' // icon-replace: add grid-01
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'

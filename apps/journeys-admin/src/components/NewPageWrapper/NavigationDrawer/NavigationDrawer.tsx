@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
-import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded' // icon-replace: no icon serves similar purpose
-import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded' // icon-replace: no icon serves similar purpose
+import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded' // icon-replace: add box
+import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded' // icon-replace: add journey
 import Avatar from '@mui/material/Avatar'
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
