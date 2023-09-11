@@ -1,4 +1,3 @@
-import DashboardRounded from '@mui/icons-material/DashboardRounded' // icon-replace: add grid-01
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -6,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
+import Grid1 from '@core/shared/ui/icons/Grid1'
 import Image3 from '@core/shared/ui/icons/Image3'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
@@ -114,7 +114,7 @@ export function ImageBlockEditor({
           variant="fullWidth"
         >
           <Tab
-            icon={<DashboardRounded />}
+            icon={<Grid1 />}
             label={<Typography variant="subtitle2">Gallery</Typography>}
             {...tabA11yProps('gallery', 0)}
           />

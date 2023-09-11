@@ -1,4 +1,3 @@
-import DeveloperModeRoundedIcon from '@mui/icons-material/DeveloperModeRounded' // icon-replace: add code-01
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -9,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
+import Code1 from '@core/shared/ui/icons/Code1'
 import Edit2 from '@core/shared/ui/icons/Edit2'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
@@ -60,7 +60,7 @@ export function JourneyLink(): ReactElement {
         <Button
           onClick={() => setShowEmbedDialog(true)}
           size="small"
-          startIcon={<DeveloperModeRoundedIcon />}
+          startIcon={<Code1 />}
           disabled={journey == null}
         >
           {t('Embed Journey')}

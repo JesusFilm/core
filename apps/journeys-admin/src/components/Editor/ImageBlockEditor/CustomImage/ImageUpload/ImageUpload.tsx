@@ -1,7 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined' // icon-replace: add upload-01
-import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded' // icon-replace: add alert-triangle
-import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded' // icon-replace: add alert-triangle
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -11,7 +8,9 @@ import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
+import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
 import CheckBroken from '@core/shared/ui/icons/CheckBroken'
+import Upload1 from '@core/shared/ui/icons/Upload1'
 
 import { CreateCloudflareUploadByFile } from '../../../../../../__generated__/CreateCloudflareUploadByFile'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
@@ -125,13 +124,9 @@ export function ImageUpload({
         {uploadSuccess ? (
           <CheckBroken sx={{ fontSize: 48, color: 'success.main', mb: 1 }} />
         ) : uploadError ? (
-          <CloudOffRoundedIcon
-            sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
-          />
+          <AlertTriangle sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
         ) : (
-          <BackupOutlinedIcon
-            sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }}
-          />
+          <Upload1 sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
         )}
         <Typography
           variant="body1"
@@ -158,7 +153,7 @@ export function ImageUpload({
         spacing={1}
         color={uploadError ? 'error.main' : 'secondary.light'}
       >
-        <WarningAmberRounded
+        <AlertTriangle
           fontSize="small"
           sx={{
             display: uploadError ? 'flex' : 'none'

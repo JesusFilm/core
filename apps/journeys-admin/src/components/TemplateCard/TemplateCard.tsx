@@ -1,5 +1,4 @@
 import { ApolloQueryResult } from '@apollo/client'
-import MoreVertIcon from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -14,6 +13,7 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
+import DotVertical from '@core/shared/ui/icons/DotVertical'
 import Globe from '@core/shared/ui/icons/Globe'
 import Image3 from '@core/shared/ui/icons/Image3'
 
@@ -196,7 +196,7 @@ export function TemplateCard({
                 ) : (
                   <>
                     <IconButton disabled>
-                      <MoreVertIcon />
+                      <DotVertical />
                     </IconButton>
                   </>
                 )}

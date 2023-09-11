@@ -1,5 +1,3 @@
-import MoreVert from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
-import SettingsIcon from '@mui/icons-material/Settings' // icon-replace: add settings
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -10,7 +8,9 @@ import { ReactElement, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import DotVertical from '@core/shared/ui/icons/DotVertical'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+import Settings from '@core/shared/ui/icons/Settings'
 import Share from '@core/shared/ui/icons/Share'
 
 import { DuplicateBlock } from '../../../DuplicateBlock'
@@ -111,7 +111,7 @@ export function Menu(): ReactElement {
                 ? 'Publisher Settings'
                 : 'Journey Settings'
             }
-            icon={<SettingsIcon />}
+            icon={<Settings />}
           />
         </NextLink>
       </>
@@ -138,7 +138,7 @@ export function Menu(): ReactElement {
         onClick={handleShowMenu}
         disabled={journey == null}
       >
-        <MoreVert />
+        <DotVertical />
       </IconButton>
       <MuiMenu
         id="edit-journey-actions"

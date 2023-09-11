@@ -1,6 +1,3 @@
-import UploadIcon from '@mui/icons-material/Upload' // icon-replace: add upload-02
-import VideocamIcon from '@mui/icons-material/Videocam' // icon-replace: add video-on
-import YouTubeIcon from '@mui/icons-material/YouTube' // icon-replace: add youtube
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
@@ -15,7 +12,10 @@ import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Upload2 from '@core/shared/ui/icons/Upload2'
+import VideoOn from '@core/shared/ui/icons/VideoOn'
 import X2 from '@core/shared/ui/icons/X2'
+import Youtube from '@core/shared/ui/icons/Youtube'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
@@ -125,20 +125,20 @@ export function VideoLibrary({
             aria-label="video library tabs"
           >
             <Tab
-              icon={<VideocamIcon />}
+              icon={<VideoOn />}
               label="Library"
               {...tabA11yProps('video-from-local', 0)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
-              icon={<YouTubeIcon />}
+              icon={<Youtube />}
               label="YouTube"
               {...tabA11yProps('video-from-youtube', 1)}
               sx={{ flexGrow: 1 }}
             />
             {videoFromCloudflare && (
               <Tab
-                icon={<UploadIcon />}
+                icon={<Upload2 />}
                 label="Upload"
                 {...tabA11yProps('video-from-cloudflare', 2)}
                 sx={{ flexGrow: 1 }}

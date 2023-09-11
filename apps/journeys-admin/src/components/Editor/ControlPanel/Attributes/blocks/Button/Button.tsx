@@ -1,4 +1,3 @@
-import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded' // icon-replace: add transform
 import capitalize from 'lodash/capitalize'
 import { ReactElement, useEffect } from 'react'
 
@@ -7,6 +6,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import AlertCircle from '@core/shared/ui/icons/AlertCircle'
 import Link from '@core/shared/ui/icons/Link'
 import SpaceHorizontal from '@core/shared/ui/icons/SpaceHorizontal'
+import Transform from '@core/shared/ui/icons/Transform'
 
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
@@ -110,7 +110,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-variant`}
-        icon={<FormatShapesRoundedIcon />}
+        icon={<Transform />}
         name="Variant"
         value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
         description="Button Variant"

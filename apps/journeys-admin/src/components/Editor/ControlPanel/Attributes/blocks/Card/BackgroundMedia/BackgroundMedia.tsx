@@ -1,4 +1,3 @@
-import Videocam from '@mui/icons-material/Videocam' // icon-replace: add video-on
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
@@ -9,6 +8,7 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Image3 from '@core/shared/ui/icons/Image3'
+import VideoOn from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
@@ -74,7 +74,7 @@ export function BackgroundMedia(): ReactElement {
             data-testid="bgvideo-video-tab"
           >
             <Stack direction="row" spacing="8px">
-              <Videocam />
+              <VideoOn />
               <span>Video</span>
             </Stack>
           </ToggleButton>

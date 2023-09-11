@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded' // icon-replace: add grid-01
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -15,6 +14,7 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Grid1 from '@core/shared/ui/icons/Grid1'
 import Trash2 from '@core/shared/ui/icons/Trash2'
 import X2 from '@core/shared/ui/icons/X2'
 
@@ -177,7 +177,7 @@ export function VideoDetails({
               }}
             >
               <Button
-                startIcon={<SubscriptionsRoundedIcon />}
+                startIcon={<Grid1 />}
                 size="small"
                 onClick={() => onClose(false)}
               >

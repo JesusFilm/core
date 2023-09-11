@@ -1,5 +1,3 @@
-import DashboardRounded from '@mui/icons-material/DashboardRounded' // icon-replace: add grid-01
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel' // icon-replace: add journey
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
@@ -11,6 +9,8 @@ import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ChevronRight from '@core/shared/ui/icons/ChevronRight'
+import Grid1 from '@core/shared/ui/icons/Grid1'
+import Journey from '@core/shared/ui/icons/Journey'
 
 import { GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys } from '../../../__generated__/GetOnboardingJourneys'
 import { useJourneyCreate } from '../../libs/useJourneyCreate/useJourneyCreate'
@@ -66,7 +66,7 @@ export function OnboardingPanelContent({
         <SidePanelContainer>
           <ContainedIconButton
             label={t('Create Custom Journey')}
-            thumbnailIcon={<ViewCarouselIcon />}
+            thumbnailIcon={<Journey />}
             onClick={handleCreateJourneyClick}
             loading={loading}
           />
@@ -106,7 +106,7 @@ export function OnboardingPanelContent({
         <NextLink href="/templates" passHref legacyBehavior>
           <Button
             variant="outlined"
-            startIcon={<DashboardRounded />}
+            startIcon={<Grid1 />}
             sx={{ width: 'max-content', alignSelf: 'center' }}
           >
             {t('See all templates')}

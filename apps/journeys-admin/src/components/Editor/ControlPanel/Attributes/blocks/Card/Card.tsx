@@ -1,5 +1,3 @@
-import VerticalSplit from '@mui/icons-material/VerticalSplit' // icon-replace: add layout-02
-import Videocam from '@mui/icons-material/Videocam' // icon-replace: add video-on
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { ReactElement } from 'react'
@@ -9,7 +7,9 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import Image3 from '@core/shared/ui/icons/Image3'
+import Layout2 from '@core/shared/ui/icons/Layout2'
 import Palette from '@core/shared/ui/icons/Palette'
+import VideoOn from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import {
@@ -105,7 +105,7 @@ export function Card({
       {coverBlock?.__typename === 'VideoBlock' && (
         <Attribute
           id={`${id}-cover-block`}
-          icon={<Videocam />}
+          icon={<VideoOn />}
           name="Background"
           value={coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''}
           description="Background Video"
@@ -144,7 +144,7 @@ export function Card({
         }}
       />
       <Attribute
-        icon={<VerticalSplit />}
+        icon={<Layout2 />}
         id={`${id}-fullscreen`}
         name="Layout"
         value={fullscreen ? 'Expanded' : 'Contained'}

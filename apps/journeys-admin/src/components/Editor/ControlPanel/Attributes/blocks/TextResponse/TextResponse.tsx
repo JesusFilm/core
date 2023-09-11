@@ -1,4 +1,3 @@
-import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded' // icon-replace: add text-input-01
 import Divider from '@mui/material/Divider'
 import { ReactElement } from 'react'
 
@@ -6,6 +5,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
 import Link from '@core/shared/ui/icons/Link'
+import TextInput1 from '@core/shared/ui/icons/TextInput1'
 
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
@@ -31,7 +31,7 @@ export function TextResponse({
     <>
       <Attribute
         id={`${id}-text-field-options`}
-        icon={<Crop169RoundedIcon />}
+        icon={<TextInput1 />}
         name="Feedback"
         value={label}
         description="Feedback Properties"

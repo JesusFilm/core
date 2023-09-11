@@ -1,13 +1,12 @@
-import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded' // icon-replace: add filter
 import { fireEvent, render } from '@testing-library/react'
+
+import Filter from '@core/shared/ui/icons/Filter'
 
 describe('Visitor Toolbar', () => {
   const handleOpen = jest.fn()
 
   it('should open drawer on click', () => {
-    const { getByTestId } = render(
-      <FilterListRoundedIcon onClick={handleOpen} />
-    )
+    const { getByTestId } = render(<Filter onClick={handleOpen} />)
 
     fireEvent.click(getByTestId('FilterListRoundedIcon'))
     expect(handleOpen).toHaveBeenCalled()

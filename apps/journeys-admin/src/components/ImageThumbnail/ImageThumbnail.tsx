@@ -1,9 +1,10 @@
-import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined' // icon-replace: add image-x
 import NoteAddIcon from '@mui/icons-material/NoteAdd' // icon-replace: could use file-plus-01
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Icon from '@mui/material/Icon'
 import { ReactElement, ReactNode } from 'react'
+
+import ImageX from '@core/shared/ui/icons/ImageX'
 
 interface ImageThumbnailProps {
   imageSrc?: string | null
@@ -37,7 +38,7 @@ export function ImageThumbnail({
       {loading === true ? (
         <CircularProgress size={20} />
       ) : error === true ? (
-        <BrokenImageOutlined sx={{ color: 'error.main' }} />
+        <ImageX sx={{ color: 'error.main' }} />
       ) : imageSrc != null ? (
         <Box
           component="img"

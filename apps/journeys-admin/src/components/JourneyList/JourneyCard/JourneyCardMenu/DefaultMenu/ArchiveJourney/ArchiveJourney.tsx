@@ -1,8 +1,9 @@
 import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
-import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded' // icon-replace: add folder-down-01
-import UnarchiveRoundedIcon from '@mui/icons-material/UnarchiveRounded' // icon-replace: add folder-up-01
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+
+import FolderDown1 from '@core/shared/ui/icons/FolderDown1'
+import FolderUp1 from '@core/shared/ui/icons/FolderUp1'
 
 import { GetAdminJourneys } from '../../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
@@ -107,13 +108,13 @@ export function ArchiveJourney({
       {status !== JourneyStatus.archived ? (
         <MenuItem
           label="Archive"
-          icon={<ArchiveRoundedIcon color="secondary" />}
+          icon={<FolderUp1 color="secondary" />}
           onClick={handleClick}
         />
       ) : (
         <MenuItem
           label="Unarchive"
-          icon={<UnarchiveRoundedIcon color="secondary" />}
+          icon={<FolderDown1 color="secondary" />}
           onClick={handleClick}
         />
       )}

@@ -1,11 +1,11 @@
 import { gql, useQuery } from '@apollo/client'
-import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded' // icon-replace: add video-on
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Edit2 from '@core/shared/ui/icons/Edit2'
+import VideoOn from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages } from '../../../../../../__generated__/GetVideoVariantLanguages'
@@ -69,7 +69,7 @@ export function SourceFromLocal({
             src: selectedBlock?.video?.image ?? '',
             alt: selectedBlock?.video?.title?.[0]?.value ?? ''
           }}
-          Icon={VideocamRoundedIcon}
+          Icon={VideoOn}
         />
       </Box>
       <Box flexGrow={1} minWidth={0}>

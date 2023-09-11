@@ -1,10 +1,10 @@
 import { gql, useQuery } from '@apollo/client'
-import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined' // icon-replace: add phone-01
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement } from 'react'
 
+import Iphone1 from '@core/shared/ui/icons/Iphone1'
 import Marker2 from '@core/shared/ui/icons/Marker2'
 import MessageText1 from '@core/shared/ui/icons/MessageText1'
 import UserProfile2 from '@core/shared/ui/icons/UserProfile2'
@@ -71,7 +71,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
 
       {data?.visitor.userAgent?.os.name != null && (
         <Stack direction="row" alignItems="center" spacing={2}>
-          <PhoneIphoneOutlinedIcon />
+          <Iphone1 />
           <Typography>{data?.visitor.userAgent?.os.name}</Typography>
         </Stack>
       )}

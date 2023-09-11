@@ -1,6 +1,7 @@
-import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded' // icon-replace: add filter
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement, useState } from 'react'
+
+import Filter from '@core/shared/ui/icons/Filter'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
 
@@ -18,7 +19,7 @@ const VisitorToolbarStory: Meta<typeof VisitorToolbar> = {
 
 const VisitorToolBarComponent = (): ReactElement => {
   const [open, setOpen] = useState(false)
-  return <FilterListRoundedIcon onClick={() => setOpen(!open)} />
+  return <Filter onClick={() => setOpen(!open)} />
 }
 
 const Template: StoryObj<typeof VisitorToolbar> = {

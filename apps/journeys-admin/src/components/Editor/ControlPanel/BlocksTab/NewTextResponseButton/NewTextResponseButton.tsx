@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded' // icon-replace: add text-input-01
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -8,6 +7,7 @@ import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
+import TextInput1 from '@core/shared/ui/icons/TextInput1'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { TextResponseBlockCreate } from '../../../../../../__generated__/TextResponseBlockCreate'
@@ -131,11 +131,5 @@ export function NewTextResponseButton(): ReactElement {
       }
     }
   }
-  return (
-    <Button
-      icon={<Crop169RoundedIcon />}
-      value="Feedback"
-      onClick={handleClick}
-    />
-  )
+  return <Button icon={<TextInput1 />} value="Feedback" onClick={handleClick} />
 }

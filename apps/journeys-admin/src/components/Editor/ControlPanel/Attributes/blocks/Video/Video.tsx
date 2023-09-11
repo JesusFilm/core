@@ -1,9 +1,9 @@
-import VideoLibrary from '@mui/icons-material/VideoLibrary' // icon-replace: add play-01
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Link from '@core/shared/ui/icons/Link'
+import Play1 from '@core/shared/ui/icons/Play1'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetJourney'
 import { Action, actions } from '../../Action/Action'
@@ -60,7 +60,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
 
       <Attribute
         id={`${id}-video-options`}
-        icon={<VideoLibrary />}
+        icon={<Play1 />}
         name="Video Source"
         value={block.video?.title?.[0]?.value ?? block.title ?? ''}
         description="Video Options"

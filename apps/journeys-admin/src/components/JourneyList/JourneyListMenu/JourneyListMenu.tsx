@@ -1,7 +1,3 @@
-import Archive from '@mui/icons-material/Archive' // icon-replace: add folder-down-01
-import DeleteForever from '@mui/icons-material/DeleteForever' // icon-replace: add file-shred
-import MoreVert from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
-import Unarchive from '@mui/icons-material/Unarchive' // icon-replace: add folder-up-01
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import { useRouter } from 'next/router'
@@ -9,6 +5,10 @@ import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import CheckContained from '@core/shared/ui/icons/CheckContained'
+import DotVertical from '@core/shared/ui/icons/DotVertical'
+import FileShred from '@core/shared/ui/icons/FileShred'
+import FolderDown1 from '@core/shared/ui/icons/FolderDown1'
+import FolderUp1 from '@core/shared/ui/icons/FolderUp1'
 import Trash2 from '@core/shared/ui/icons/Trash2'
 
 import { MenuItem } from '../../MenuItem'
@@ -46,7 +46,7 @@ export function JourneyListMenu({
             sx={{ mx: 1 }}
             onClick={handleShowMenu}
           >
-            <MoreVert />
+            <DotVertical />
           </IconButton>
           <Menu
             id="edit-journey-actions"
@@ -68,7 +68,7 @@ export function JourneyListMenu({
             {activeTab === 'active' && [
               <MenuItem
                 label={t('Archive All')}
-                icon={<Archive />}
+                icon={<FolderUp1 />}
                 onClick={() => handleEvent('archiveAllActive')}
                 key="archiveAllActive"
               />,
@@ -82,7 +82,7 @@ export function JourneyListMenu({
             {activeTab === 'archived' && [
               <MenuItem
                 label={t('Unarchive All')}
-                icon={<Unarchive />}
+                icon={<FolderDown1 />}
                 onClick={() => handleEvent('restoreAllArchived')}
                 key="restoreAllArchived"
               />,
@@ -102,7 +102,7 @@ export function JourneyListMenu({
               />,
               <MenuItem
                 label={t('Delete All Forever')}
-                icon={<DeleteForever />}
+                icon={<FileShred />}
                 onClick={() => handleEvent('deleteAllTrashed')}
                 key="deleteAllTrashed"
               />

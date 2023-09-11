@@ -1,11 +1,11 @@
 import { gql, useMutation } from '@apollo/client'
-import VideocamRounded from '@mui/icons-material/VideocamRounded' // icon-replace: add video-on
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
+import VideoOn from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { VideoBlockCreate } from '../../../../../../__generated__/VideoBlockCreate'
@@ -77,7 +77,5 @@ export function NewVideoButton(): ReactElement {
     }
   }
 
-  return (
-    <Button icon={<VideocamRounded />} value="Video" onClick={handleClick} />
-  )
+  return <Button icon={<VideoOn />} value="Video" onClick={handleClick} />
 }

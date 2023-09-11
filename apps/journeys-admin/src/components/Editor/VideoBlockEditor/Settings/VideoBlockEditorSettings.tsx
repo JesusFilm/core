@@ -1,4 +1,3 @@
-import StopCircle from '@mui/icons-material/StopCircle' // icon-replace: add stop-circle-contained
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -16,6 +15,7 @@ import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Play2 from '@core/shared/ui/icons/Play2'
+import StopCircleContained from '@core/shared/ui/icons/StopCircleContained'
 import {
   secondsToTimeFormat,
   timeFormatToSeconds
@@ -151,7 +151,7 @@ export function VideoBlockEditorSettings({
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <StopCircle />
+                        <StopCircleContained />
                       </InputAdornment>
                     )
                   }}

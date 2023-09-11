@@ -1,10 +1,10 @@
-import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded' // icon-replace: add folder-down-01
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import Circle from '@core/shared/ui/icons/Circle'
 import Edit2 from '@core/shared/ui/icons/Edit2'
+import FolderDown1 from '@core/shared/ui/icons/FolderDown1'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
@@ -27,7 +27,7 @@ const options = [
   {
     journeyStatus: JourneyStatus.archived,
     text: 'Archived',
-    icon: <ArchiveRoundedIcon color="disabled" sx={{ fontSize: 13 }} />
+    icon: <FolderDown1 color="disabled" sx={{ fontSize: 13 }} />
   },
   {
     journeyStatus: JourneyStatus.trashed,

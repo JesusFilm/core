@@ -1,10 +1,10 @@
-import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined' // icon-replace: add image-x
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import SvgIcon from '@mui/material/SvgIcon'
 import { ReactElement } from 'react'
 
 import Image3 from '@core/shared/ui/icons/Image3'
+import ImageX from '@core/shared/ui/icons/ImageX'
 
 interface ImageBlockThumbnailProps {
   selectedBlock?: { src: string | null; alt: string } | null
@@ -36,7 +36,7 @@ export function ImageBlockThumbnail({
       {loading === true ? (
         <CircularProgress size={20} />
       ) : error === true ? (
-        <BrokenImageOutlined sx={{ color: 'error.main' }} />
+        <ImageX sx={{ color: 'error.main' }} />
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"

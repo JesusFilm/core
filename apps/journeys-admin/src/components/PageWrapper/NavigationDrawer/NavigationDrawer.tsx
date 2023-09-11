@@ -1,6 +1,4 @@
 import { useQuery } from '@apollo/client'
-import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded' // icon-replace: add box
-import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded' // icon-replace: add journey
 import Avatar from '@mui/material/Avatar'
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
@@ -22,8 +20,10 @@ import { useTranslation } from 'react-i18next'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Bag5 from '@core/shared/ui/icons/Bag5'
 import BarGroup3 from '@core/shared/ui/icons/BarGroup3'
+import BoxIcon from '@core/shared/ui/icons/Box'
 import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRight from '@core/shared/ui/icons/ChevronRight'
+import Journey from '@core/shared/ui/icons/Journey'
 
 import { GetMe } from '../../../../__generated__/GetMe'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
@@ -146,7 +146,7 @@ export function NavigationDrawer({
         </ListItemButton>
 
         <NavigationListItem
-          icon={<ViewCarouselRoundedIcon />}
+          icon={<Journey />}
           label="Discover"
           selected={selectedPage === 'journeys' || selectedPage === ''} // empty string for when page is index. UPDATE when we add the actual index page
           link="/"
@@ -176,7 +176,7 @@ export function NavigationDrawer({
             {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
               true && (
               <NavigationListItem
-                icon={<ShopTwoRoundedIcon />}
+                icon={<BoxIcon />}
                 label="Publisher"
                 selected={selectedPage === 'publisher'}
                 link="/publisher"

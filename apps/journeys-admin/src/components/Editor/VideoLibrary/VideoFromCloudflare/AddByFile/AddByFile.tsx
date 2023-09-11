@@ -1,9 +1,6 @@
 import type { ReadStream } from 'fs'
 
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined' // icon-replace: add upload-01
-import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded' // icon-replace: add alert-triangle
-import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded' // icon-replace: add alert-triangle
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
@@ -18,6 +15,9 @@ import {
   HttpStack,
   Upload
 } from 'tus-js-client'
+
+import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
+import Upload1 from '@core/shared/ui/icons/Upload1'
 
 import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
 import { GetMyCloudflareVideoQuery } from '../../../../../../__generated__/GetMyCloudflareVideoQuery'
@@ -214,13 +214,9 @@ export function AddByFile({
       >
         <input {...getInputProps()} />
         {error != null || fileRejected ? (
-          <CloudOffRoundedIcon
-            sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
-          />
+          <AlertTriangle sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
         ) : (
-          <BackupOutlinedIcon
-            sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }}
-          />
+          <Upload1 sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
         )}
         <Typography
           variant="body1"
@@ -245,7 +241,7 @@ export function AddByFile({
         color={error != null || fileRejected ? 'error.main' : 'secondary.light'}
         sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
-        <WarningAmberRounded
+        <AlertTriangle
           fontSize="small"
           sx={{
             display: error != null || fileRejected ? 'flex' : 'none'

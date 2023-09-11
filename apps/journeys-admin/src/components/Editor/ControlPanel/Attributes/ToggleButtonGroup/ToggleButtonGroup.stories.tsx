@@ -1,4 +1,3 @@
-import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded' // icon-replace: add dash
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactNode, useState } from 'react'
@@ -6,6 +5,7 @@ import { ReactNode, useState } from 'react'
 import AlignCenter from '@core/shared/ui/icons/AlignCenter'
 import AlignLeft from '@core/shared/ui/icons/AlignLeft'
 import AlignRight from '@core/shared/ui/icons/AlignRight'
+import Dash from '@core/shared/ui/icons/Dash'
 
 import {
   TypographyAlign,
@@ -78,14 +78,14 @@ export const CustomOptions = {
         label: (
           <Typography variant={TypographyVariant.h1}>Heading 1</Typography>
         ),
-        icon: <HorizontalRuleRoundedIcon />
+        icon: <Dash />
       },
       {
         value: TypographyVariant.h2,
         label: (
           <Typography variant={TypographyVariant.h2}>Heading 2</Typography>
         ),
-        icon: <HorizontalRuleRoundedIcon />
+        icon: <Dash />
       }
     ]
   }

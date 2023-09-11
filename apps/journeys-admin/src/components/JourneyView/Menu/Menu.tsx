@@ -1,8 +1,4 @@
 import { gql, useQuery } from '@apollo/client'
-import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded' // icon-replace: add bar-chart-square-03
-import DescriptionIcon from '@mui/icons-material/Description' // icon-replace: add file-05
-import MoreVert from '@mui/icons-material/MoreVert' // icon-replace: add dot-vertical
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel' // icon-replace: add journey
 import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
@@ -14,11 +10,15 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import BarChartSquare3 from '@core/shared/ui/icons/BarChartSquare3'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
 import CopyLeft from '@core/shared/ui/icons/CopyLeft'
+import DotVertical from '@core/shared/ui/icons/DotVertical'
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+import File5 from '@core/shared/ui/icons/File5'
 import Globe from '@core/shared/ui/icons/Globe'
+import Journey from '@core/shared/ui/icons/Journey'
 
 import { GetRole } from '../../../../__generated__/GetRole'
 import { Role } from '../../../../__generated__/globalTypes'
@@ -176,7 +176,7 @@ export function Menu(): ReactElement {
             aria-expanded={openMenu ? 'true' : undefined}
             onClick={handleShowMenu}
           >
-            <MoreVert />
+            <DotVertical />
           </IconButton>
           <MuiMenu
             id="single-journey-actions"
@@ -222,7 +222,7 @@ export function Menu(): ReactElement {
                 />
                 <MenuItem
                   label="Description"
-                  icon={<DescriptionIcon />}
+                  icon={<File5 />}
                   onClick={handleUpdateDescription}
                 />
               </>
@@ -240,7 +240,7 @@ export function Menu(): ReactElement {
                 passHref
                 legacyBehavior
               >
-                <MenuItem label="Report" icon={<AssessmentRoundedIcon />} />
+                <MenuItem label="Report" icon={<BarChartSquare3 />} />
               </NextLink>
             )}
             {journey.template !== true && isPublisher === true && (
@@ -254,7 +254,7 @@ export function Menu(): ReactElement {
                   passHref
                   legacyBehavior
                 >
-                  <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
+                  <MenuItem label="Edit Cards" icon={<Journey />} />
                 </NextLink>
               </>
             )}
@@ -297,7 +297,7 @@ export function Menu(): ReactElement {
         </>
       ) : (
         <IconButton edge="end" disabled>
-          <MoreVert />
+          <DotVertical />
         </IconButton>
       )}
     </>

@@ -1,4 +1,3 @@
-import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded' // icon-replace: add type-02
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import { ReactElement, useEffect } from 'react'
@@ -6,6 +5,7 @@ import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import AlignLeft from '@core/shared/ui/icons/AlignLeft'
+import Type2 from '@core/shared/ui/icons/Type2'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
@@ -36,7 +36,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
     <>
       <Attribute
         id={`${id}-typography-variant`}
-        icon={<TextFieldsRoundedIcon />}
+        icon={<Type2 />}
         name="Text Variant"
         value={capitalize(
           lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')

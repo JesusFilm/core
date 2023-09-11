@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import VerticalSplit from '@mui/icons-material/VerticalSplit' // icon-replace: add layout-02
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
@@ -10,6 +9,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Layout2 from '@core/shared/ui/icons/Layout2'
 
 import { CardBlockLayoutUpdate } from '../../../../../../../../__generated__/CardBlockLayoutUpdate'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
@@ -81,7 +81,7 @@ export function CardLayout(): ReactElement {
               textAlign: 'center'
             }}
           >
-            <VerticalSplit fontSize="large" />
+            <Layout2 fontSize="large" />
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">

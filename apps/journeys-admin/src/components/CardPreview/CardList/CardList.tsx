@@ -1,4 +1,3 @@
-import DragHandleRounded from '@mui/icons-material/DragHandleRounded' // icon-replace: add drag
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -20,6 +19,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import Drag from '@core/shared/ui/icons/Drag'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 import Target from '@core/shared/ui/icons/Target'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
@@ -258,7 +258,7 @@ const CardItem = ({
             justifyContent: 'center'
           }}
         >
-          <DragHandleRounded
+          <Drag
             sx={{
               opacity: snapshot.isDragging === true ? 1 : 0.5
             }}

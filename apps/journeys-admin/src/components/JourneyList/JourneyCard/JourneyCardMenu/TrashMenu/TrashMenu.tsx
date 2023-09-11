@@ -1,7 +1,7 @@
-import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded' // icon-replace: add file-shred
 import { ReactElement } from 'react'
 
 import CheckContained from '@core/shared/ui/icons/CheckContained'
+import FileShred from '@core/shared/ui/icons/FileShred'
 
 import { MenuItem } from '../../../../MenuItem'
 
@@ -29,7 +29,7 @@ export function TrashMenu({
 
       <MenuItem
         label="Delete Forever"
-        icon={<DeleteForeverRoundedIcon color="secondary" />}
+        icon={<FileShred color="secondary" />}
         onClick={() => {
           setOpenDeleteDialog()
           handleCloseMenu()

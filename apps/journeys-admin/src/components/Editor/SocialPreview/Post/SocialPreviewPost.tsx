@@ -1,4 +1,3 @@
-import ChatBubble from '@mui/icons-material/ChatBubble' // icon-replace: add message-circle
 import Avatar from '@mui/material/Avatar'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -11,6 +10,7 @@ import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
+import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import Share from '@core/shared/ui/icons/Share'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import UserProfile2 from '@core/shared/ui/icons/UserProfile2'
@@ -170,7 +170,7 @@ export function SocialPreviewPost({
                 my={2}
               >
                 <ThumbsUp sx={{ fontSize: 12 }} />
-                <ChatBubble sx={{ fontSize: 12 }} />
+                <MessageCircle sx={{ fontSize: 12 }} />
                 <Share sx={{ fontSize: 12 }} />
               </Stack>
             </CardContent>
