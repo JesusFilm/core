@@ -91,7 +91,7 @@
     "next-absolute-url": "^1.2.2",
     "next-firebase-auth": "1.0.0-canary.25",
     "next-i18next": "^11.0.0",
-    "next-seo": "^5.0.0",
+    "next-seo": "^6.1.0",
     "notistack": "^2.0.3",
     "pino-http": "^8.5.0",
     "powerbi-client-react": "^1.4.0",
