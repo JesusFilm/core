@@ -5,7 +5,7 @@ This is just a sample test
 Test that 'journeys-admin' part of the URL
 */
 test('sample journeys-admin e2e test', async ({ page }) => {
-  await page.goto('https://admin.nextstep.is/')
+  await page.goto('/')
 
   // Get and log the current URL
   const url = page.url()
