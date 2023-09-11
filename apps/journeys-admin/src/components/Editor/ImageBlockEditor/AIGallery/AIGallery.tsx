@@ -44,16 +44,15 @@ export function AIGallery({
         const src = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${data?.createImageBySegmindPrompt?.id}/public`
-        onChange(src)
+        await onChange(src)
       }
-      setUploading?.(false)
     } catch (error) {
-      setUploading?.(false)
       enqueueSnackbar(error.message, {
         variant: 'error',
         preventDuplicate: true
       })
     }
+    setUploading?.(false)
   }
 
   const handleChange = (e): void => {
