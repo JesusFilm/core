@@ -4,8 +4,8 @@ import Menu from '@mui/material/Menu'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import DotVertical from '@core/shared/ui/icons/DotVertical'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import More from '@core/shared/ui/icons/More'
 import Plus1Icon from '@core/shared/ui/icons/Plus1'
 import UsersProfiles3Icon from '@core/shared/ui/icons/UsersProfiles3'
 
@@ -65,7 +65,7 @@ export function TeamMenu(): ReactElement {
         </Box>
       )}
       <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
-        <DotVertical />
+        <More />
       </IconButton>
       <Menu
         id="edit-journey-actions"

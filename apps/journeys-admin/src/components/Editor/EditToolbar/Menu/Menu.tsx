@@ -8,8 +8,8 @@ import { ReactElement, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import DotVertical from '@core/shared/ui/icons/DotVertical'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+import More from '@core/shared/ui/icons/More'
 import Settings from '@core/shared/ui/icons/Settings'
 import Share from '@core/shared/ui/icons/Share'
 
@@ -138,7 +138,7 @@ export function Menu(): ReactElement {
         onClick={handleShowMenu}
         disabled={journey == null}
       >
-        <DotVertical />
+        <More />
       </IconButton>
       <MuiMenu
         id="edit-journey-actions"

@@ -13,9 +13,9 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-import DotVertical from '@core/shared/ui/icons/DotVertical'
 import Globe from '@core/shared/ui/icons/Globe'
 import Image3 from '@core/shared/ui/icons/Image3'
+import More from '@core/shared/ui/icons/More'
 
 import {
   GetAdminJourneys_journeys as AdminJourney,
@@ -196,7 +196,7 @@ export function TemplateCard({
                 ) : (
                   <>
                     <IconButton disabled>
-                      <DotVertical />
+                      <More />
                     </IconButton>
                   </>
                 )}

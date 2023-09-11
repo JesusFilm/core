@@ -13,12 +13,12 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import BarChartSquare3 from '@core/shared/ui/icons/BarChartSquare3'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
 import CopyLeft from '@core/shared/ui/icons/CopyLeft'
-import DotVertical from '@core/shared/ui/icons/DotVertical'
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
 import File5 from '@core/shared/ui/icons/File5'
 import Globe from '@core/shared/ui/icons/Globe'
 import Journey from '@core/shared/ui/icons/Journey'
+import More from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../__generated__/GetRole'
 import { Role } from '../../../../__generated__/globalTypes'
@@ -176,7 +176,7 @@ export function Menu(): ReactElement {
             aria-expanded={openMenu ? 'true' : undefined}
             onClick={handleShowMenu}
           >
-            <DotVertical />
+            <More />
           </IconButton>
           <MuiMenu
             id="single-journey-actions"
@@ -297,7 +297,7 @@ export function Menu(): ReactElement {
         </>
       ) : (
         <IconButton edge="end" disabled>
-          <DotVertical />
+          <More />
         </IconButton>
       )}
     </>

@@ -5,10 +5,10 @@ import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import CheckContained from '@core/shared/ui/icons/CheckContained'
-import DotVertical from '@core/shared/ui/icons/DotVertical'
 import FileShred from '@core/shared/ui/icons/FileShred'
 import FolderDown1 from '@core/shared/ui/icons/FolderDown1'
 import FolderUp1 from '@core/shared/ui/icons/FolderUp1'
+import More from '@core/shared/ui/icons/More'
 import Trash2 from '@core/shared/ui/icons/Trash2'
 
 import { MenuItem } from '../../MenuItem'
@@ -46,7 +46,7 @@ export function JourneyListMenu({
             sx={{ mx: 1 }}
             onClick={handleShowMenu}
           >
-            <DotVertical />
+            <More />
           </IconButton>
           <Menu
             id="edit-journey-actions"
