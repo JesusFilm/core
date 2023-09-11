@@ -70,6 +70,7 @@ import Facebook from './Facebook'
 import FacebookLogo from './FacebookLogo'
 import Favourite from './Favourite'
 import File5 from './File5'
+import FilePlus1 from './FilePlus1'
 import FileShred from './FileShred'
 import Filter from './Filter'
 import Flame from './Flame'
@@ -248,6 +249,7 @@ type IconNames =
   | 'FacebookLogo'
   | 'Favourite'
   | 'File5'
+  | 'FilePlus1'
   | 'FileShred'
   | 'Filter'
   | 'Flame'
@@ -430,6 +432,7 @@ const iconComponents: IconComponents = {
   FacebookLogo,
   Favourite,
   File5,
+  FilePlus1,
   FileShred,
   Filter,
   Flame,

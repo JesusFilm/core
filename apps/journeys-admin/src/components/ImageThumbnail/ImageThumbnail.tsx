@@ -1,9 +1,9 @@
-import NoteAddIcon from '@mui/icons-material/NoteAdd' // icon-replace: could use file-plus-01
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Icon from '@mui/material/Icon'
 import { ReactElement, ReactNode } from 'react'
 
+import FilePlus1 from '@core/shared/ui/icons/FilePlus1'
 import ImageX from '@core/shared/ui/icons/ImageX'
 
 interface ImageThumbnailProps {
@@ -18,7 +18,7 @@ export function ImageThumbnail({
   imageSrc,
   imageAlt,
   loading,
-  icon = <NoteAddIcon />,
+  icon = <FilePlus1 />,
   error
 }: ImageThumbnailProps): ReactElement {
   return (

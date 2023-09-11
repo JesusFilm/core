@@ -1,9 +1,9 @@
-import NoteAddIcon from '@mui/icons-material/NoteAdd' // icon-replace: could use file-plus-01
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
 import Edit2 from '@core/shared/ui/icons/Edit2'
+import FilePlus1 from '@core/shared/ui/icons/FilePlus1'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { simpleComponentConfig } from '../../libs/storybook'
@@ -35,7 +35,7 @@ export const Default = {
 export const Complete = {
   ...Template,
   args: {
-    thumbnailIcon: <NoteAddIcon />,
+    thumbnailIcon: <FilePlus1 />,
     actionIcon: <Edit2 />,
     label: 'Video Title',
     description: 'description',
@@ -50,7 +50,7 @@ export const Complete = {
 export const Loading = {
   ...Template,
   args: {
-    thumbnailIcon: <NoteAddIcon />,
+    thumbnailIcon: <FilePlus1 />,
     actionIcon: <Plus2 />,
     label: 'label',
     loading: true,

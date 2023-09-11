@@ -1,8 +1,8 @@
-import NoteAddIcon from '@mui/icons-material/NoteAdd' // icon-replace: could use file-plus-01
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import FilePlus1 from '@core/shared/ui/icons/FilePlus1'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -83,7 +83,7 @@ export const Icon = {
   ...Template,
   args: {
     imageSrc: null,
-    icon: <NoteAddIcon />,
+    icon: <FilePlus1 />,
     loading: false
   }
 }

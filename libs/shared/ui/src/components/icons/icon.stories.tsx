@@ -77,6 +77,7 @@ const iconNames = [
   'FacebookLogo',
   'Favourite',
   'File5',
+  'FilePlus1',
   'FileShred',
   'Filter',
   'Flame',
