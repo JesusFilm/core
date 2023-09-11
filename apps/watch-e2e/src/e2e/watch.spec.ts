@@ -23,7 +23,7 @@ test('Test single video', async ({ page }) => {
 
   // Screenshot test are not stable - so give a hard wait and try
   // eslint-disable-next-line
-  await page.waitForTimeout(1 * 60 * 1000)  
+  await page.waitForTimeout(1 * 60 * 1000)
   // Note: all video tiles are not fully loading
   await expect(page).toHaveScreenshot('home-page.png', {
     animations: 'disabled',
@@ -39,7 +39,7 @@ test('Test single video', async ({ page }) => {
 
   // Screenshot test are not stable - so give a hard wait and try
   // eslint-disable-next-line
-  await page.waitForTimeout(1 * 60 * 1000)    
+  await page.waitForTimeout(1 * 60 * 1000)
   await expect(page).toHaveScreenshot('before-video.png', {
     animations: 'disabled',
     fullPage: true
