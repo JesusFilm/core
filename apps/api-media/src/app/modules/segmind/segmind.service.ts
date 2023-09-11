@@ -23,28 +23,17 @@ export class SegmindService {
     const body = new FormData()
     let path: string
     switch (model) {
-      case SegmindModel.kandinsky2__2_txt2img:
-        path = 'kandinsky2.2-txt2img'
-        break
-      case SegmindModel.sd1__5_paragon:
-        path = 'sd1.5-paragon'
-        break
       case SegmindModel.sdxl1__0_txt2img:
         path = 'sdxl1.0-txt2img'
         body.append('num_inference_steps', 20)
         body.append('samples', 1)
         body.append('scheduler', 'UniPC')
         break
-      case SegmindModel.tinysd1__5_txt2img:
-        path = 'tinysd1.5-txt2img'
-        break
     }
     body.append('prompt', prompt)
     const res0 = await fetch(`https://api.segmind.com/v1/${path}`, {
       method: 'POST',
-      headers: {
-        'x-api-key': 'SG_af1efec064571acf'
-      },
+      headers: { 'x-api-key': process.env.SEGMIND_API_KEY ?? '' },
       body
     })
 
