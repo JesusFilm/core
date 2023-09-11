@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { CreateAiImage } from '../../../../../__generated__/CreateAiImage'
@@ -26,18 +27,16 @@ export function AIGallery({
   setUploading,
   loading
 }: AIGalleryProps): ReactElement {
-  const somePrompt =
-    'picture of a Maori man with glasses and a beard and he is wearing a shirt that says Jesus Film. Make him be sitting in front of a computer like a really cool nerd'
-  const [textValue, setTextvalue] = useState<string | null>(somePrompt)
-
+  const [textValue, setTextvalue] = useState<string | null>()
+  const { enqueueSnackbar } = useSnackbar()
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
 
-  const handleSubmit = async (): Promise<void> => {
+  const handleSubmit = async ({ prompt }): Promise<void> => {
     setUploading?.(true)
     try {
       const { data } = await createAiImage({
         variables: {
-          prompt: textValue,
+          prompt,
           model: SegmindModel.sdxl1__0_txt2img
         }
       })
@@ -48,8 +47,12 @@ export function AIGallery({
         onChange(src)
       }
       setUploading?.(false)
-    } catch {
+    } catch (error) {
       setUploading?.(false)
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
   }
 
