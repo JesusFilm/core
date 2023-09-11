@@ -202,7 +202,7 @@ export const Complete = {
     },
     menu: (
       <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
-        <MenuRounded />
+        <Menu1 />
       </IconButton>
     ),
     templates: true
