@@ -36,7 +36,7 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(npx nx show projects --affected --withTarget deploy --projects apps/* --exclude api-* | npx ts-node tools/scripts/affected-apps.ts)" >> $GITHUB_OUTPUT
+          echo "matrix=$(npx ts-node tools/scripts/affected-apps.ts --withTarget deploy --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   deploy-preview:
     name: Deploy Preview and Test
