@@ -129,7 +129,7 @@
     "ua-parser-js": "^1.0.33",
     "util": "^0.12.4",
     "vercel": "^31.0.1",
-    "video.js": "^8.3.0",
+    "video.js": "^8.5.2",
     "videojs-youtube": "^3.0.1",
     "yup": "^1.0.0"
   },

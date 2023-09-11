@@ -50,12 +50,13 @@ export function VideoControls({
   const [active, setActive] = useState(true)
   const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
-  const [volume, setVolume] = useState(player.volume() * 100)
+  const initialVolume = player.volume() ?? 0
+  const [volume, setVolume] = useState(initialVolume * 100)
   // Explicit muted state since player.muted state lags when video paused
   const [muted, setMuted] = useState(mute)
   // Explicit fullscreen state since player.fullscreen state lags when video paused
   const [fullscreen, setFullscreen] = useState(
-    fscreen.fullscreenElement != null || player.isFullscreen()
+    (fscreen.fullscreenElement != null || player.isFullscreen()) ?? false
   )
   const {
     showHeaderFooter,
@@ -84,7 +85,8 @@ export function VideoControls({
   useEffect(() => {
     const handleVideoPlay = (): void => {
       setPlaying(true)
-      if (startAt > 0 && player.currentTime() < startAt) {
+      const currentTime = player.currentTime() ?? 0
+      if (startAt > 0 && currentTime < startAt) {
         setProgress(startAt)
       }
       if (isYoutube) {
@@ -107,7 +109,8 @@ export function VideoControls({
     const handleVideoPause = (): void => {
       setPlaying(false)
 
-      const videoHasClashingUI = isYoutube && player.userActive()
+      const isUserActive = player.userActive() ?? false
+      const videoHasClashingUI = isYoutube && isUserActive
       if (videoHasClashingUI) {
         setShowHeaderFooter(false)
       }
@@ -122,18 +125,19 @@ export function VideoControls({
   useEffect(() => {
     // Recalculate for startAt/endAt snippet
     const handleVideoTimeChange = (): void => {
-      if (endAt > 0 && player.currentTime() > endAt) {
+      const currentTime = player.currentTime() ?? 0
+      if (endAt > 0 && currentTime > endAt) {
         // 1) Trigger pause, we get an error if trying to update time here
         player.pause()
       }
-      if (player.currentTime() >= startAt) {
+      if (currentTime >= startAt) {
         setDisplayTime(
-          secondsToTimeFormat(player.currentTime() - startAt, {
+          secondsToTimeFormat(currentTime - startAt, {
             trimZeroes: true
           })
         )
       }
-      setProgress(player.currentTime())
+      setProgress(currentTime)
     }
     player.on('timeupdate', handleVideoTimeChange)
     return () => {
@@ -160,7 +164,8 @@ export function VideoControls({
 
   // Handle volume change event
   useEffect(() => {
-    const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
+    const initialVolume = player.volume() ?? 0
+    const handleVideoVolumeChange = (): void => setVolume(initialVolume * 100)
 
     player.on('volumechange', handleVideoVolumeChange)
     return () => {
@@ -172,10 +177,11 @@ export function VideoControls({
   useEffect(() => {
     const handleFullscreenChange = (): void => {
       const fullscreen =
-        fscreen.fullscreenElement != null || player.isFullscreen()
+        fscreen.fullscreenElement != null || (player.isFullscreen() ?? false)
       setFullscreen(fullscreen)
 
-      const videoHasClashingUI = isYoutube && !playing && player.userActive()
+      const isUserActive = player.userActive() ?? false
+      const videoHasClashingUI = isYoutube && !playing && isUserActive
       if (videoHasClashingUI) {
         setShowHeaderFooter(false)
       } else {
@@ -291,7 +297,8 @@ export function VideoControls({
       onMouseMove={() => player.userActive(true)}
       onTouchEnd={(e) => {
         const target = e.target as Element
-        const controlsHidden = !player.userActive()
+        const isUserActive = player.userActive() ?? false
+        const controlsHidden = !isUserActive
         const videoControlsNotClicked =
           !target.classList.contains('MuiSlider-root') &&
           !target.classList.contains('MuiSlider-rail') &&
@@ -450,7 +457,7 @@ export function VideoControls({
                   }}
                 >
                   <IconButton onClick={handleMute} sx={{ p: 0 }}>
-                    {player.muted() || volume === 0 ? (
+                    {(player.muted() ?? false) || volume === 0 ? (
                       <VolumeOffOutlined />
                     ) : volume > 60 ? (
                       <VolumeUpOutlined />
@@ -464,7 +471,7 @@ export function VideoControls({
                     aria-label="volume-control"
                     min={0}
                     max={100}
-                    value={player.muted() ? 0 : volume}
+                    value={player.muted() ?? false ? 0 : volume}
                     valueLabelFormat={(value) => {
                       return `${Math.round(value)}%`
                     }}
