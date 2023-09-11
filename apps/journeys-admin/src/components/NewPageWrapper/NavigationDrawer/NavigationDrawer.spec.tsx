@@ -1,13 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { AuthUser } from 'next-firebase-auth'
 import { NextRouter } from 'next/router'
+import { AuthUser } from 'next-firebase-auth'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { Role } from '../../../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 
 import { GET_ME } from './NavigationDrawer'
 

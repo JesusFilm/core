@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -21,7 +21,7 @@ import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction'
 
 import { NavigateToJourneyAction } from '.'
 
-const NavigateToJourneyActionStory = {
+const NavigateToJourneyActionStory: Meta<typeof NavigateToJourneyAction> = {
   ...simpleComponentConfig,
   component: NavigateToJourneyAction,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
@@ -61,42 +61,44 @@ const journey: Journey = {
   team: null
 }
 
-export const NavigateToJourney: Story = () => {
-  const selectedBlock = steps[0].children[0].children[3]
-  return (
-    <Stack spacing={10}>
-      <Box>
-        <Typography>Default</Typography>
-        <MockedProvider>
-          <NavigateToJourneyAction />
-        </MockedProvider>
-      </Box>
+export const NavigateToJourney: StoryObj<typeof NavigateToJourneyAction> = {
+  render: () => {
+    const selectedBlock = steps[0].children[0].children[3]
+    return (
+      <Stack spacing={10}>
+        <Box>
+          <Typography>Default</Typography>
+          <MockedProvider>
+            <NavigateToJourneyAction />
+          </MockedProvider>
+        </Box>
 
-      <Box>
-        <Typography>Selected Journey</Typography>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_JOURNEY_NAMES
-              },
-              result: {
-                data: {
-                  journeys: [journey]
+        <Box>
+          <Typography>Selected Journey</Typography>
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_JOURNEY_NAMES
+                },
+                result: {
+                  data: {
+                    journeys: [journey]
+                  }
                 }
               }
-            }
-          ]}
-        >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <EditorProvider initialState={{ selectedBlock }}>
-              <NavigateToJourneyAction />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </Box>
-    </Stack>
-  )
+            ]}
+          >
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock }}>
+                <NavigateToJourneyAction />
+              </EditorProvider>
+            </JourneyProvider>
+          </MockedProvider>
+        </Box>
+      </Stack>
+    )
+  }
 }
 
-export default NavigateToJourneyActionStory as Meta
+export default NavigateToJourneyActionStory

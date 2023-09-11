@@ -37,7 +37,11 @@ export function Menu(): ReactElement {
   function BlockMenu(): ReactElement {
     return (
       <>
-        <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
+        <NextLink
+          href={`/api/preview?slug=${journey?.slug ?? ''}`}
+          passHref
+          legacyBehavior
+        >
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
@@ -74,7 +78,11 @@ export function Menu(): ReactElement {
 
     return (
       <>
-        <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
+        <NextLink
+          href={`/api/preview?slug=${journey?.slug ?? ''}`}
+          passHref
+          legacyBehavior
+        >
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
@@ -92,7 +100,11 @@ export function Menu(): ReactElement {
           />
         )}
         <Divider />
-        <NextLink href={settingsLink != null ? settingsLink : ''} passHref>
+        <NextLink
+          href={settingsLink != null ? settingsLink : ''}
+          passHref
+          legacyBehavior
+        >
           <MenuItem
             label={
               journey?.template === true

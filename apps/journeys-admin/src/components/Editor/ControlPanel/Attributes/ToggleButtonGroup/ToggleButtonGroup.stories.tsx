@@ -3,8 +3,8 @@ import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRound
 import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
 import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded'
 import Typography from '@mui/material/Typography'
-import { Meta, Story } from '@storybook/react'
-import { useState } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ReactNode, useState } from 'react'
 
 import {
   TypographyAlign,
@@ -14,14 +14,16 @@ import { simpleComponentConfig } from '../../../../../libs/storybook'
 
 import { ToggleButtonGroup } from '.'
 
-const ToggleButtonGroupStory = {
+const ToggleButtonGroupStory: Meta<typeof ToggleButtonGroup> = {
   ...simpleComponentConfig,
   component: ToggleButtonGroup,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/ToggleButtonGroup',
-  layout: 'fullscreen'
+  parameters: {
+    layout: 'fullscreen'
+  }
 }
 
-const Template: Story = ({ ...args }) => {
+const ToggleButtonGroupComponent = ({ ...args }): ReactNode => {
   const [value, setValue] = useState(args.initialValue ?? TypographyAlign.left)
 
   const options = [
@@ -52,28 +54,40 @@ const Template: Story = ({ ...args }) => {
   )
 }
 
-export const Default = Template.bind({})
-
-export const CustomLabel = Template.bind({})
-CustomLabel.args = {
-  label: 'Typography Alignment'
+const Template: StoryObj<typeof ToggleButtonGroup> = {
+  render: ({ ...args }) => <ToggleButtonGroupComponent {...args} />
 }
 
-export const CustomOptions = Template.bind({})
-CustomOptions.args = {
-  initialValue: TypographyVariant.h1,
-  options: [
-    {
-      value: TypographyVariant.h1,
-      label: <Typography variant={TypographyVariant.h1}>Heading 1</Typography>,
-      icon: <HorizontalRuleRoundedIcon />
-    },
-    {
-      value: TypographyVariant.h2,
-      label: <Typography variant={TypographyVariant.h2}>Heading 2</Typography>,
-      icon: <HorizontalRuleRoundedIcon />
-    }
-  ]
+export const Default = { ...Template }
+
+export const CustomLabel = {
+  ...Template,
+  args: {
+    label: 'Typography Alignment'
+  }
 }
 
-export default ToggleButtonGroupStory as Meta
+export const CustomOptions = {
+  ...Template,
+  args: {
+    initialValue: TypographyVariant.h1,
+    options: [
+      {
+        value: TypographyVariant.h1,
+        label: (
+          <Typography variant={TypographyVariant.h1}>Heading 1</Typography>
+        ),
+        icon: <HorizontalRuleRoundedIcon />
+      },
+      {
+        value: TypographyVariant.h2,
+        label: (
+          <Typography variant={TypographyVariant.h2}>Heading 2</Typography>
+        ),
+        icon: <HorizontalRuleRoundedIcon />
+      }
+    ]
+  }
+}
+
+export default ToggleButtonGroupStory

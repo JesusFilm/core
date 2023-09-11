@@ -71,8 +71,8 @@ export function ExpandedCover({
           justifyContent="center"
           sx={{
             flexGrow: 1,
-            pt: { xs: 10, lg: 8 },
-            pb: { xs: 28, sm: 16, lg: 8 },
+            pt: { xs: 10, sm: 8 },
+            pb: { xs: 28, sm: 16 },
             ...enableVerticalScroll
           }}
         >
@@ -85,9 +85,10 @@ export function ExpandedCover({
                   variant === 'default'
                     ? 'calc(100% - 48px - env(safe-area-inset-left) - env(safe-area-inset-right))'
                     : 'calc(100% - 48px)',
-                lg: 500
+                sm: 360,
+                md: 500
               },
-              py: { xs: 4 }
+              pb: 4
             }}
           >
             {children}

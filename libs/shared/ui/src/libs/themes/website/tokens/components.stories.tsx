@@ -8,9 +8,9 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
-import { ComponentProps, SyntheticEvent, useState } from 'react'
+import { ReactElement, SyntheticEvent, useState } from 'react'
 
 import { ThemeName } from '../..'
 import {
@@ -20,7 +20,7 @@ import {
 import { TabPanel, tabA11yProps } from '../../../../components/TabPanel'
 import { simpleComponentConfig } from '../../../simpleComponentConfig'
 
-const ComponentsDemo = {
+const ComponentsDemo: Meta<typeof Button> = {
   ...simpleComponentConfig,
   component: Button,
   title: 'Website Theme',
@@ -31,7 +31,9 @@ const ComponentsDemo = {
   }
 }
 
-const Template: Story<ComponentProps<typeof Button>> = (args) => {
+// StoryObj<ComponentProps<typeof Button>>
+
+const ComponentStories = (): ReactElement => {
   const [value, setValue] = useState(0)
 
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
@@ -197,6 +199,10 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
   )
 }
 
-export const Components = Template.bind({})
+const Template: StoryObj<typeof Button> = {
+  render: () => <ComponentStories />
+}
 
-export default ComponentsDemo as Meta
+export const Components = { ...Template }
+
+export default ComponentsDemo

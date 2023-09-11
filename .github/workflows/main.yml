@@ -10,6 +10,9 @@ concurrency:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     services:
       postgres:
         image: postgres
@@ -31,15 +34,15 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -47,6 +50,7 @@ jobs:
         with:
           targets: prisma-generate
           all: true
+          parallel: 1
       - name: NPM apollo and graphql for codegen
         run: npm i -g apollo graphql @apollo/rover@0.16.2
       - name: Codegen
@@ -71,6 +75,9 @@ jobs:
         run: ./tools/scripts/check-git-status.sh
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     services:
       postgres:
         image: postgres
@@ -92,15 +99,15 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -108,6 +115,7 @@ jobs:
         with:
           targets: prisma-generate
           all: true
+          parallel: 1
       - name: Install Doppler
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
@@ -132,6 +140,9 @@ jobs:
           targets: fetch-secrets,build
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     services:
       postgres:
         image: postgres
@@ -153,15 +164,15 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -169,6 +180,7 @@ jobs:
         with:
           targets: prisma-generate
           all: true
+          parallel: 1
       - name: run tests
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -186,6 +198,9 @@ jobs:
           targets: codecov
   visual-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     services:
       postgres:
         image: postgres
@@ -206,15 +221,15 @@ jobs:
         run: ./tools/scripts/check-git-diff.sh
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v3

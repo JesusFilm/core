@@ -14,7 +14,7 @@ describe('JourneyVisitorService', () => {
   let service: JourneyVisitorService, prismaService: PrismaService
 
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
     jest.setSystemTime(new Date('2021-02-18'))
   })
 
