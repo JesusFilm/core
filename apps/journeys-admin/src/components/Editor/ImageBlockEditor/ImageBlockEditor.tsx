@@ -8,14 +8,14 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
-// TODO: remove generative ai flags when ready
+// TODO: remove segmind ai flags when ready
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
-import { AIGallery } from './AIGallery/AIGallery'
+import { AIGallery } from './AIGallery'
 import { CustomImage } from './CustomImage'
 import { UnsplashAuthor, UnsplashGallery } from './UnsplashGallery'
 
@@ -39,8 +39,8 @@ export function ImageBlockEditor({
   const [tabValue, setTabValue] = useState(0)
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
   const [uploading, setUploading] = useState<boolean>()
-  // TODO: remove generative ai flags when ready
-  const { generativeAi } = useFlags()
+  // TODO: remove segmind ai flags when ready
+  const { segmind } = useFlags()
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -129,8 +129,8 @@ export function ImageBlockEditor({
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />
-          {/*  // TODO: remove generative ai flags when ready */}
-          {generativeAi && (
+          {/*  // TODO: remove segmind ai flags when ready */}
+          {segmind && (
             <Tab
               icon={<SmartToyOutlinedIcon />}
               label={<Typography variant="subtitle2">AI</Typography>}
@@ -151,8 +151,8 @@ export function ImageBlockEditor({
           error={error}
         />
       </TabPanel>
-      {/*  // TODO: remove generative ai flags when ready */}
-      {generativeAi && (
+      {/*  // TODO: remove segmind ai flags when ready */}
+      {segmind && (
         <TabPanel name="generative" value={tabValue} index={2}>
           <AIGallery
             onChange={handleSrcChange}
