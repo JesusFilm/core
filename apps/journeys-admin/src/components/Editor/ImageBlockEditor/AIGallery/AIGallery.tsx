@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { CreateAiImage } from '../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../__generated__/globalTypes'
@@ -27,7 +27,6 @@ export function AIGallery({
   setUploading,
   loading
 }: AIGalleryProps): ReactElement {
-  const [textValue, setTextvalue] = useState<string | null>()
   const { enqueueSnackbar } = useSnackbar()
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
 
@@ -40,11 +39,17 @@ export function AIGallery({
           model: SegmindModel.sdxl1__0_txt2img
         }
       })
+
       if (data?.createImageBySegmindPrompt?.id != null) {
         const src = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${data?.createImageBySegmindPrompt?.id}/public`
         await onChange(src)
+      } else {
+        enqueueSnackbar('Something went wrong, please try again!', {
+          variant: 'error',
+          preventDuplicate: true
+        })
       }
     } catch (error) {
       enqueueSnackbar(error.message, {
@@ -55,17 +60,9 @@ export function AIGallery({
     setUploading?.(false)
   }
 
-  const handleChange = (e): void => {
-    setTextvalue(e.target.value)
-  }
   return (
     <Box>
-      <AIPrompt
-        handleChange={handleChange}
-        handleSubmit={handleSubmit}
-        textValue={textValue}
-        loading={loading}
-      />
+      <AIPrompt handleSubmit={handleSubmit} loading={loading} />
     </Box>
   )
 }

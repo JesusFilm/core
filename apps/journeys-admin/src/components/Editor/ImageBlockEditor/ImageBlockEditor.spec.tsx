@@ -1,7 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
-
 // TODO: remove generative ai flags when ready
+import { SnackbarProvider } from 'notistack'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
@@ -24,9 +25,11 @@ describe('ImageBlockEditor', () => {
   it('should render the ImageBlockEditor', () => {
     const { getByText, getByRole } = render(
       <FlagsProvider flags={{ generativeAi: true }}>
-        <MockedProvider>
-          <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
-        </MockedProvider>
+        <SnackbarProvider>
+          <MockedProvider>
+            <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+          </MockedProvider>
+        </SnackbarProvider>
       </FlagsProvider>
     )
     expect(getByText('Selected Image')).toBeInTheDocument()
@@ -38,9 +41,11 @@ describe('ImageBlockEditor', () => {
   it('should switch tabs', async () => {
     const { getByText, getByRole } = render(
       <FlagsProvider flags={{ generativeAi: true }}>
-        <MockedProvider>
-          <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
-        </MockedProvider>
+        <SnackbarProvider>
+          <MockedProvider>
+            <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+          </MockedProvider>
+        </SnackbarProvider>
       </FlagsProvider>
     )
     expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()

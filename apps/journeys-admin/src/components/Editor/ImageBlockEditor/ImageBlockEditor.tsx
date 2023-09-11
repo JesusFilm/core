@@ -130,7 +130,7 @@ export function ImageBlockEditor({
             {...tabA11yProps('custom', 1)}
           />
           {/*  // TODO: remove generative ai flags when ready */}
-          {!generativeAi && (
+          {generativeAi && (
             <Tab
               icon={<SmartToyOutlinedIcon />}
               label={<Typography variant="subtitle2">AI</Typography>}
@@ -152,7 +152,7 @@ export function ImageBlockEditor({
         />
       </TabPanel>
       {/*  // TODO: remove generative ai flags when ready */}
-      {!generativeAi && (
+      {generativeAi && (
         <TabPanel name="generative" value={tabValue} index={2}>
           <AIGallery
             onChange={handleSrcChange}

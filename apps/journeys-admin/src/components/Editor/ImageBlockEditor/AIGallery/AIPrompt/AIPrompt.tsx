@@ -8,8 +8,6 @@ import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 interface AIPromptProps {
-  textValue: string | null | undefined
-  handleChange: (e) => void
   handleSubmit: ({ prompt }) => void
   loading?: boolean
 }
@@ -19,8 +17,6 @@ interface AIPromptInput {
 }
 
 export function AIPrompt({
-  textValue,
-  handleChange,
   handleSubmit,
   loading
 }: AIPromptProps): ReactElement {
