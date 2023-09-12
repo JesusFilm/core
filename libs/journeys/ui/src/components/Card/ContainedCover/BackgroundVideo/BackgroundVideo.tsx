@@ -72,7 +72,7 @@ export function BackgroundVideo({
       })
       player.on('pause', () => {
         // 2) Loop video if at end
-        const currentTime = player.currentTime()
+        const currentTime = player.currentTime() ?? 0
         if (
           currentTime < (startAt ?? 0) ||
           (endAt != null && currentTime >= endAt)
@@ -82,7 +82,7 @@ export function BackgroundVideo({
         }
       })
       player.on('timeupdate', () => {
-        const currentTime = player?.currentTime()
+        const currentTime = player?.currentTime() ?? 0
         if (
           currentTime < (startAt ?? 0) ||
           (endAt != null && currentTime >= endAt)
