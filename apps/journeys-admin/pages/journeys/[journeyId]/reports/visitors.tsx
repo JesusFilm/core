@@ -181,29 +181,32 @@ function JourneyVisitorsPage(): ReactElement {
     <>
       <NextSeo title={t('Visitors')} />
       <PageWrapper
-        title={
-          <Stack direction="row" alignItems="center">
-            {t('Visitors')}
+        title={t('Visitors')}
+        authUser={AuthUser}
+        backHref={`/journeys/${journeyId}/reports`}
+        mainHeaderChildren={
+          <Stack
+            direction="row"
+            flexGrow={1}
+            alignItems="center"
+            justifyContent="space-between"
+          >
             {data?.journeyVisitorCount != null && (
               <Typography variant="caption" sx={{ pl: 4 }}>
                 {data?.journeyVisitorCount}
               </Typography>
             )}
+            <VisitorToolbar
+              handleChange={handleChange}
+              sortSetting={sortSetting}
+              chatStarted={chatStarted}
+              withPollAnswers={withPollAnswers}
+              withSubmittedText={withSubmittedText}
+              withIcon={withIcon}
+              hideInteractive={hideInteractive}
+              handleClearAll={handleClearAll}
+            />
           </Stack>
-        }
-        authUser={AuthUser}
-        backHref={`/journeys/${journeyId}/reports`}
-        menu={
-          <VisitorToolbar
-            handleChange={handleChange}
-            sortSetting={sortSetting}
-            chatStarted={chatStarted}
-            withPollAnswers={withPollAnswers}
-            withSubmittedText={withSubmittedText}
-            withIcon={withIcon}
-            hideInteractive={hideInteractive}
-            handleClearAll={handleClearAll}
-          />
         }
         sidePanelTitle={
           <>
