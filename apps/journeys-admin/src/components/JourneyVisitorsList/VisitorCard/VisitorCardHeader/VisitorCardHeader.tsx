@@ -5,7 +5,7 @@ import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
+import UserProfile2 from '@core/shared/ui/icons/UserProfile2'
 
 import { VisitorStatus } from '../../../../../__generated__/globalTypes'
 import { getStatusIcon, transformDuration } from '../utils'
@@ -56,7 +56,7 @@ export function VisitorCardHeader({
             {status}
           </Typography>
         ) : (
-          <UsersProfiles2
+          <UserProfile2
             sx={{
               mr: 3,
               minWidth: '24px',
@@ -132,7 +132,7 @@ export function VisitorCardHeader({
             {status}
           </Typography>
         ) : (
-          <UsersProfiles2 sx={{ mr: 3, mt: 6, minWidth: '24px' }} />
+          <UserProfile2 sx={{ mr: 3, mt: 6, minWidth: '24px' }} />
         )}
         <Stack direction="column">
           <Stack direction="row">

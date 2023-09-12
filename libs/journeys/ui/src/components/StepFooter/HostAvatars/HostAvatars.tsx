@@ -78,9 +78,9 @@ export function HostAvatars({
             <UserProfile3
               data-testid="host-avatar-placeholder"
               sx={{
-                pr: rtl ? '4px' : '0px',
-                pl: rtl ? '0px' : '4px',
-                pt: '4px',
+                // pr: rtl ? '4px' : '0px',
+                // pl: rtl ? '0px' : '4px',
+                // pt: '4px',
                 color: (theme) => theme.palette.grey[700]
               }}
             />
@@ -105,9 +105,9 @@ export function HostAvatars({
             <UserProfile3
               data-testid="host-avatar-placeholder-solid"
               sx={{
-                pr: rtl ? '4px' : '0px',
-                pl: rtl ? '0px' : '4px',
-                pt: '4px',
+                // pr: rtl ? '4px' : '0px',
+                // pl: rtl ? '0px' : '4px',
+                // pt: '4px',
                 color: (theme) => theme.palette.grey[700]
               }}
             />

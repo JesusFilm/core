@@ -2,7 +2,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import Circle from '@core/shared/ui/icons/Circle'
+import CheckBroken from '@core/shared/ui/icons/CheckBroken'
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import FolderDown1 from '@core/shared/ui/icons/FolderDown1'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
@@ -22,7 +22,7 @@ const options = [
   {
     journeyStatus: JourneyStatus.published,
     text: 'Published',
-    icon: <Circle color="success" sx={{ fontSize: 13 }} />
+    icon: <CheckBroken color="success" sx={{ fontSize: 13 }} />
   },
   {
     journeyStatus: JourneyStatus.archived,
