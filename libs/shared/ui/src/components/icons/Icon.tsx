@@ -179,7 +179,7 @@ import XCircleContained from './XCircleContained'
 import XSquareContained from './XSquareContained'
 import Youtube from './Youtube'
 
-type IconNames =
+export type IconName =
   | 'AddSquare2'
   | 'AddSquare4'
   | 'AlertCircle'
@@ -359,7 +359,7 @@ type IconNames =
   | 'Youtube'
 
 type IconComponents = {
-  [key in IconNames]: React.ComponentType<SvgIconProps>
+  [key in IconName]: React.ComponentType<SvgIconProps>
 }
 
 const iconComponents: IconComponents = {
@@ -543,7 +543,7 @@ const iconComponents: IconComponents = {
 }
 
 interface IconProps extends Pick<SvgIconProps, 'color' | 'fontSize' | 'sx'> {
-  name: IconNames
+  name: IconName
 }
 
 export function Icon({ name, color, fontSize, sx }: IconProps): ReactElement {

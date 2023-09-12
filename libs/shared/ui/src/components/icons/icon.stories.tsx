@@ -5,9 +5,10 @@ import { Meta, StoryObj } from '@storybook/react'
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 
-import { Icon } from './Icon'
+import { CenterCheck } from './CenterCheck'
+import { Icon, IconName } from './Icon'
 
-const iconNames = [
+const iconNames: IconName[] = [
   'AddSquare2',
   'AddSquare4',
   'AlertCircle',
@@ -185,7 +186,7 @@ const iconNames = [
   'XCircleContained',
   'XSquareContained',
   'Youtube'
-] as const
+]
 
 const IconDemo: Meta<typeof Icon> = {
   ...simpleComponentConfig,
@@ -267,6 +268,8 @@ const Template: StoryObj<typeof Icon> = {
               <Typography variant="body2">
                 {<Icon name={name} /> != null ? name : null}
               </Typography>
+              {/* Use to test icon centering */}
+              <CenterCheck name={name} />
               {/* Use to test loading state locally */}
               {/* <CircularProgress size="16px" /> */}
               <Icon name={name} fontSize="small" />
