@@ -7,21 +7,14 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { Role } from '../../../../__generated__/globalTypes'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
+import { GET_ROLE } from '../../Editor/EditToolbar/Menu/Menu'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../Team/TeamProvider'
 import { defaultJourney } from '../data'
 
-import { GET_ROLE } from './Menu'
-
 import { Menu } from '.'
-
-Object.assign(navigator, {
-  clipboard: {
-    writeText: jest.fn()
-  }
-})
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -31,8 +24,6 @@ jest.mock('next/router', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('JourneyView/Menu', () => {
-  const originalEnv = process.env
-
   it('should open menu on click', () => {
     const { getByRole } = render(
       <SnackbarProvider>
@@ -54,6 +45,101 @@ describe('JourneyView/Menu', () => {
     const menu = getByRole('button')
     fireEvent.click(menu)
     expect(menu).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('should render menu items', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <TeamProvider>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Edit Cards' })).toBeInTheDocument()
+  })
+
+  it('should render menu items for a template', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <TeamProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...defaultJourney,
+                  template: true
+                },
+                variant: 'admin'
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Use Template' })).toBeInTheDocument()
+  })
+
+  it('should render menu items for a Publisher', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userRoleId',
+                    userId: '1',
+                    roles: [Role.publisher]
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <TeamProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...defaultJourney,
+                  template: true
+                },
+                variant: 'admin'
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Use Template' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Edit Cards' })).toBeInTheDocument()
+    )
   })
 
   it('should preview journey', () => {
@@ -164,126 +250,6 @@ describe('JourneyView/Menu', () => {
     })
   })
 
-  it('should handle edit journey title and description if user is publisher', async () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_ROLE
-              },
-              result: {
-                data: {
-                  getUserRole: {
-                    id: 'userRoleId',
-                    userId: '1',
-                    roles: [Role.publisher]
-                  }
-                }
-              }
-            }
-          ]}
-        >
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: { ...defaultJourney, template: true },
-                variant: 'admin'
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </TeamProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    await waitFor(() => {
-      fireEvent.click(getByRole('menuitem', { name: 'Description' }))
-    })
-    expect(getByRole('dialog')).toBeInTheDocument()
-    expect(menu).not.toHaveAttribute('aria-expanded')
-  })
-
-  it('should handle edit journey title', () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </TeamProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    fireEvent.click(getByRole('menuitem', { name: 'Title' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
-    expect(menu).not.toHaveAttribute('aria-expanded')
-  })
-
-  it('should handle edit journey description', () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </TeamProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    fireEvent.click(getByRole('menuitem', { name: 'Description' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
-    expect(menu).not.toHaveAttribute('aria-expanded')
-  })
-
-  it('should handle edit journey language', async () => {
-    const { getByRole, getByText } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </TeamProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    fireEvent.click(getByRole('menuitem', { name: 'Language' }))
-    await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument())
-    expect(getByText('Edit Language')).toBeInTheDocument()
-    expect(menu).not.toHaveAttribute('aria-expanded')
-  })
-
   it('should handle edit cards for journey', () => {
     const { getByRole } = render(
       <SnackbarProvider>
@@ -353,112 +319,6 @@ describe('JourneyView/Menu', () => {
         '/publisher/journey-id/edit'
       )
     })
-  })
-
-  it('should handle copy url in development', async () => {
-    jest.resetModules()
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
-    }
-
-    jest.spyOn(navigator.clipboard, 'writeText')
-
-    const { getByRole, getByText } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </TeamProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    fireEvent.click(getByRole('menuitem', { name: 'Copy Link' }))
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      `${process.env.NEXT_PUBLIC_JOURNEYS_URL as string}/${defaultJourney.slug}`
-    )
-    await waitFor(() => {
-      expect(getByText('Link Copied')).toBeInTheDocument()
-    })
-    expect(menu).not.toHaveAttribute('aria-expanded')
-
-    process.env = originalEnv
-  })
-
-  it('should handle copy url in production', async () => {
-    jest.resetModules()
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_JOURNEYS_URL: undefined
-    }
-
-    jest.spyOn(navigator.clipboard, 'writeText')
-
-    const { getByRole, getByText } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </TeamProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    fireEvent.click(getByRole('menuitem', { name: 'Copy Link' }))
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      `https://your.nextstep.is/${defaultJourney.slug}`
-    )
-    await waitFor(() => {
-      expect(getByText('Link Copied')).toBeInTheDocument()
-    })
-    expect(menu).not.toHaveAttribute('aria-expanded')
-
-    process.env = originalEnv
-  })
-
-  it('should handle reports', () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </TeamProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    expect(getByRole('menuitem', { name: 'Report' })).toHaveAttribute(
-      'href',
-      '/journeys/journey-id/reports'
-    )
   })
 
   it('should enable publishers to use template', async () => {
