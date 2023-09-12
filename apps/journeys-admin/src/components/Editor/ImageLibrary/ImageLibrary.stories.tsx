@@ -55,6 +55,7 @@ export const Default = {
 export const WithSegmind = {
   ...Default,
   args: {
+    ...Default.args,
     segmind: true
   }
 }
