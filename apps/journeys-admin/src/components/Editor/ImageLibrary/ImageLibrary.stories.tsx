@@ -1,5 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+import { waitFor } from '@testing-library/dom'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -57,6 +60,12 @@ export const WithSegmind = {
   args: {
     ...Default.args,
     segmind: true
+  },
+  play: async () => {
+    await waitFor(
+      async () => await expect(screen.getByText('AI')).toBeInTheDocument()
+    )
+    await waitFor(async () => await userEvent.click(screen.getByText('AI')))
   }
 }
 

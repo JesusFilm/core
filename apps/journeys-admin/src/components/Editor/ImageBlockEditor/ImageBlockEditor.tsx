@@ -134,7 +134,7 @@ export function ImageBlockEditor({
             <Tab
               icon={<SmartToyOutlinedIcon />}
               label={<Typography variant="subtitle2">AI</Typography>}
-              {...tabA11yProps('custom', 2)}
+              {...tabA11yProps('custom', 3)}
             />
           )}
         </Tabs>
