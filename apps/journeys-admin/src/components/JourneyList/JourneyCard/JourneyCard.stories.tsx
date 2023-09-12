@@ -95,7 +95,7 @@ export const New = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitFor(async () => {
-      await userEvent.hover(canvas.getByTestId('CircleRoundedIcon'))
+      await userEvent.hover(canvas.getByTestId('CircleIcon'))
     })
   }
 }
