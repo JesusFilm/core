@@ -24,7 +24,7 @@ import ArrowRotateRight2 from './ArrowRotateRight2'
 import ArrowUp from './ArrowUp'
 import ArrowUpContained1 from './ArrowUpContained1'
 import ArrowUpSm from './ArrowUpSm'
-import Attatchment1 from './Attatchment1'
+import Attachment1 from './Attachment1'
 import Bag5 from './Bag5'
 import BarChartSquare3 from './BarChartSquare3'
 import BarGroup3 from './BarGroup3'
@@ -203,7 +203,7 @@ export type IconName =
   | 'ArrowUpContained1'
   | 'ArrowUpSm'
   | 'ArrowUp'
-  | 'Attatchment1'
+  | 'Attachment1'
   | 'Bag5'
   | 'BarChartSquare3'
   | 'BarGroup3'
@@ -386,7 +386,7 @@ const iconComponents: IconComponents = {
   ArrowUpContained1,
   ArrowUpSm,
   ArrowUp,
-  Attatchment1,
+  Attachment1,
   Bag5,
   BarChartSquare3,
   BarGroup3,

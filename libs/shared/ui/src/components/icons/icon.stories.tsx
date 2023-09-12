@@ -32,7 +32,7 @@ const iconNames: IconName[] = [
   'ArrowUpContained1',
   'ArrowUpSm',
   'ArrowUp',
-  'Attatchment1',
+  'Attachment1',
   'Bag5',
   'BarChartSquare3',
   'BarGroup3',
