@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -63,15 +64,21 @@ function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper
-        title={
-          teams ? (
-            <TeamSelect onboarding={router.query.onboarding === 'true'} />
-          ) : (
-            t('Journeys')
+        title={!teams ? t('Journeys') : undefined}
+        authUser={AuthUser}
+        mainHeaderChildren={
+          teams && (
+            <Stack
+              direction="row"
+              flexGrow={1}
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <TeamSelect onboarding={router.query.onboarding === 'true'} />
+              <TeamMenu />
+            </Stack>
           )
         }
-        authUser={AuthUser}
-        menu={teams && <TeamMenu />}
         sidePanelChildren={
           <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
         }

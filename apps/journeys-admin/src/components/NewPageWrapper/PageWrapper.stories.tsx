@@ -129,14 +129,7 @@ export const Default = {
 export const SidePanel = {
   ...Template,
   args: {
-    title: (
-      <Stack direction="row" alignItems="center">
-        Main Content
-        <Typography variant="caption" sx={{ pl: 4 }}>
-          custom content
-        </Typography>
-      </Stack>
-    ),
+    ...Default.args,
     children: (
       <>
         <Typography variant="h3" gutterBottom>
@@ -193,10 +186,20 @@ export const Complete = {
       email: 'amin@email.com',
       signOut: noop
     },
-    menu: (
-      <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
-        <MenuRounded />
-      </IconButton>
+    mainHeaderChildren: (
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="flex-end"
+        flexGrow={1}
+      >
+        <Typography variant="caption" sx={{ pl: 4 }}>
+          custom content
+        </Typography>
+        <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
+          <MenuRounded />
+        </IconButton>
+      </Stack>
     ),
     templates: true
   }
