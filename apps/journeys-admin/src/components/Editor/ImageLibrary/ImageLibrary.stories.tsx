@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
-import { ReactElement, useState } from 'react'
+import { ComponentProps, ReactElement, useState } from 'react'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { listUnsplashCollectionMock } from '../ImageBlockEditor/UnsplashGallery/data'
@@ -17,13 +19,17 @@ const ImageLibraryComponent = (args): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
-    <MockedProvider mocks={[listUnsplashCollectionMock]}>
-      <ImageLibrary open={open} onClose={() => setOpen(false)} {...args} />
-    </MockedProvider>
+    <FlagsProvider flags={{ segmind: args.segmind }}>
+      <MockedProvider mocks={[listUnsplashCollectionMock]}>
+        <ImageLibrary open={open} onClose={() => setOpen(false)} {...args} />
+      </MockedProvider>
+    </FlagsProvider>
   )
 }
 
-const Template: StoryObj<typeof ImageLibrary> = {
+const Template: StoryObj<
+  ComponentProps<typeof ImageLibrary> & { segmind: boolean }
+> = {
   render: ({ ...args }) => <ImageLibraryComponent {...args} />
 }
 
@@ -41,7 +47,15 @@ export const Default = {
       parentBlockId: 'card',
       parentOrder: 0,
       children: []
-    }
+    },
+    segmind: false
+  }
+}
+
+export const WithSegmind = {
+  ...Default,
+  args: {
+    segmind: true
   }
 }
 
