@@ -5,22 +5,31 @@ import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelBodyProps {
   children: ReactNode
+  mainBodyPadding: boolean
   bottomPanelChildren?: ReactNode
 }
 
 export function MainPanelBody({
   children,
+  mainBodyPadding,
   bottomPanelChildren
 }: MainPanelBodyProps): ReactElement {
   const { navbar, bottomPanel } = usePageWrapperStyles()
+
+  const padding = mainBodyPadding
+    ? {
+        px: { xs: 6, sm: 8 },
+        py: { xs: 6, sm: 9 }
+      }
+    : {}
 
   return (
     <Stack
       flexGrow={1}
       border="hidden"
       sx={{
-        overflow: 'none',
-        overflowY: { md: 'auto' },
+        overflow: 'hidden',
+        overflowY: { xs: 'scroll', md: 'auto' },
         width: 'inherit'
       }}
     >
@@ -29,10 +38,7 @@ export function MainPanelBody({
         data-testid="main-body"
         flexGrow={1}
         sx={{
-          // Make optional or remove during cooldown
-          // backgroundColor: 'background.paper',
-          px: { xs: 6, md: 8 },
-          py: { xs: 6, md: 9 },
+          ...padding,
           mb: {
             xs: 0,
             md: bottomPanelChildren != null ? bottomPanel.height : 0
@@ -55,7 +61,8 @@ export function MainPanelBody({
             left: { xs: 0, md: navbar.width },
             backgroundColor: 'background.paper',
             borderTop: '1px solid',
-            borderColor: 'divider'
+            borderColor: 'divider',
+            zIndex: 1
           }}
         >
           {bottomPanelChildren}

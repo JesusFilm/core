@@ -17,31 +17,37 @@ import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
 
 interface PageWrapperProps {
   showAppHeader?: boolean
+  backHrefHistory?: boolean
+  backHref?: string
   title?: string
   mainHeaderChildren?: ReactNode
-  backHref?: string
-  backHrefHistory?: boolean
+  mainBodyPadding?: boolean
   children?: ReactNode
   bottomPanelChildren?: ReactNode
-  sidePanelTitle?: string | ReactNode
+  sidePanelTitle?: string
   /**
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */
   sidePanelChildren?: ReactNode
+  // Either render default SidePanel with sidePanelChildren
+  // Or render customSidePanel
+  customSidePanel?: ReactNode
   authUser?: AuthUser
   initialState?: Partial<PageState>
 }
 
 export function PageWrapper({
   showAppHeader = true,
+  backHrefHistory,
+  backHref,
   title,
   mainHeaderChildren,
-  backHref,
-  backHrefHistory,
+  mainBodyPadding = true,
   children,
   bottomPanelChildren,
-  sidePanelTitle,
+  sidePanelTitle = '',
   sidePanelChildren,
+  customSidePanel,
   authUser,
   initialState
 }: PageWrapperProps): ReactElement {
@@ -69,11 +75,12 @@ export function PageWrapper({
           />
 
           <Stack
+            flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
               backgroundColor: 'background.default',
               width: { xs: '100vw', md: `calc(100vw - ${navbar.width})` },
-              pt: { xs: `${toolbar.height}px`, md: 0 },
+              pt: { xs: toolbar.height, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0
@@ -84,11 +91,12 @@ export function PageWrapper({
 
             <Stack
               component="main"
+              flexGrow={1}
               sx={{
                 width: {
                   xs: 'inherit',
                   md:
-                    sidePanelChildren != null
+                    sidePanelChildren != null || customSidePanel != null
                       ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
                       : 'inherit'
                 }
@@ -101,13 +109,17 @@ export function PageWrapper({
               >
                 {mainHeaderChildren}
               </MainPanelHeader>
-              <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
+              <MainPanelBody
+                mainBodyPadding={mainBodyPadding}
+                bottomPanelChildren={bottomPanelChildren}
+              >
                 {children}
               </MainPanelBody>
             </Stack>
             {sidePanelChildren != null && (
               <SidePanel title={sidePanelTitle}>{sidePanelChildren}</SidePanel>
             )}
+            {customSidePanel != null && customSidePanel}
           </Stack>
         </Stack>
       </Box>

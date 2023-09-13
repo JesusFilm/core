@@ -20,9 +20,11 @@ import {
 } from '../../../__generated__/GetJourney'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { Editor } from '../../../src/components/Editor'
+import { ControlPanel } from '../../../src/components/Editor/ControlPanel'
+import { Drawer } from '../../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
-import { PageWrapper } from '../../../src/components/PageWrapper'
+import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
@@ -53,10 +55,12 @@ function JourneyEditPage(): ReactElement {
       >
         <PageWrapper
           title={data?.journey?.title ?? t('Edit Journey')}
-          showDrawer
-          backHref={`/journeys/${router.query.journeyId as string}`}
-          menu={<EditToolbar />}
           authUser={AuthUser}
+          mainHeaderChildren={<EditToolbar />}
+          backHref={`/journeys/${router.query.journeyId as string}`}
+          mainBodyPadding={false}
+          bottomPanelChildren={<ControlPanel />}
+          customSidePanel={<Drawer />}
         >
           <JourneyEdit />
         </PageWrapper>
