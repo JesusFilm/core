@@ -78,11 +78,13 @@ export function Label(): ReactElement {
                 placeholder={t('Your answer here')}
                 inputProps={{ maxLength: 250 }}
                 onChange={handleChange}
-                onBlur={(e) => {
+                onBlur={async (e) => {
                   handleBlur(e)
                   if (values.textResponseLabel.trim() === '') {
                     e.target.value = t('Your answer here')
-                    setValues({ textResponseLabel: t('Your answer here') })
+                    await setValues({
+                      textResponseLabel: t('Your answer here')
+                    })
                   }
                   if (errors.textResponseLabel == null) void handleSubmit(e)
                 }}

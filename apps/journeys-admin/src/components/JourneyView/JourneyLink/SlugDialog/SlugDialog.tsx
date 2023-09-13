@@ -44,7 +44,7 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
       const response = await journeyUpdate({
         variables: { id: journey.id, input: { slug: values.slug } }
       })
-      setValues({ slug: response?.data?.journeyUpdate.slug })
+      await setValues({ slug: response?.data?.journeyUpdate.slug })
       onClose()
     } catch (error) {
       if (error instanceof ApolloError) {
