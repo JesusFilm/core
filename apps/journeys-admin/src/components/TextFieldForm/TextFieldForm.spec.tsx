@@ -28,7 +28,7 @@ describe('TextFieldForm', () => {
     expect(textField).toHaveAttribute('placeholder', 'Placeholder Value')
     expect(textField).toHaveAttribute('aria-label', 'Search')
     expect(getByTestId('TextField form')).toBeInTheDocument()
-    expect(getByTestId('SearchIcon')).toBeInTheDocument()
+    expect(getByTestId('Search1Icon')).toBeInTheDocument()
   })
 
   it('should show helper text', () => {

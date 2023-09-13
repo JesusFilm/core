@@ -76,6 +76,6 @@ describe('ToggleButtonGroup', () => {
     const { getAllByTestId } = render(
       <ToggleButtonGroup options={options} value="abc" onChange={jest.fn()} />
     )
-    expect(getAllByTestId('Clock1')).toHaveLength(2)
+    expect(getAllByTestId('Clock1Icon')).toHaveLength(2)
   })
 })

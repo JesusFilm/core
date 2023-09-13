@@ -11,7 +11,7 @@ describe('MenuItem', () => {
     )
 
     expect(getByText('Preview')).toBeInTheDocument()
-    expect(getByTestId('EyeOpen')).toBeInTheDocument()
+    expect(getByTestId('EyeOpenIcon')).toBeInTheDocument()
   })
 
   it('should render menu item as disabled', async () => {

@@ -65,7 +65,7 @@ describe('ImageEdit', () => {
         </SocialProvider>
       </MockedProvider>
     )
-    expect(getAllByTestId('EditIcon')).toHaveLength(1)
+    expect(getAllByTestId('Edit2Icon')).toHaveLength(1)
   })
 
   it('should display the primaryImage', () => {

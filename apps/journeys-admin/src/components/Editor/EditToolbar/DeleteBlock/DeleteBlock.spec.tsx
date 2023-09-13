@@ -127,9 +127,7 @@ describe('DeleteBlock', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(
-      getByTestId('DeleteOutlineRoundedIcon')
-    )
+    expect(getByRole('button')).toContainElement(getByTestId('Trash2Icon'))
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
@@ -269,7 +267,7 @@ describe('DeleteBlock', () => {
     )
 
     expect(getByRole('button')).toContainElement(
-      getByTestId('DeleteOutlineRoundedIcon')
+      getByTestId('Trash2Icon')
     )
     fireEvent.click(getByRole('button'))
 

@@ -8,7 +8,7 @@ describe('Visitor Toolbar', () => {
   it('should open drawer on click', () => {
     const { getByTestId } = render(<Filter onClick={handleOpen} />)
 
-    fireEvent.click(getByTestId('FilterListRoundedIcon'))
+    fireEvent.click(getByTestId('FilterIcon'))
     expect(handleOpen).toHaveBeenCalled()
   })
 })

@@ -45,7 +45,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     expect(getAllByRole('button')[0]).toContainElement(
-      getByTestId('ChevronLeftRoundedIcon')
+      getByTestId('ChevronLeftIcon')
     )
     expect(getByText('Discover')).toBeInTheDocument()
   })
@@ -281,7 +281,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     const button = getAllByRole('button')[0]
-    expect(button).toContainElement(getByTestId('ChevronLeftRoundedIcon'))
+    expect(button).toContainElement(getByTestId('ChevronLeftIcon'))
     fireEvent.click(button)
     expect(onClose).toHaveBeenCalled()
   })
@@ -296,7 +296,7 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
-    expect(getByTestId('ViewCarouselRoundedIcon').parentElement).toHaveStyle(
+    expect(getByTestId('JourneyIcon').parentElement).toHaveStyle(
       'color: #FFFFFF'
     )
   })
