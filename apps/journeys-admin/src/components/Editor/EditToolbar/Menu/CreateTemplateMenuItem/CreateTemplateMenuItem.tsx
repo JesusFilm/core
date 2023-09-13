@@ -5,10 +5,10 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Bag5 from '@core/shared/ui/icons/Bag5'
 
-import { CreateTemplate } from '../../../../../__generated__/CreateTemplate'
-import { RemoveUserJourney } from '../../../../../__generated__/RemoveUserJourney'
-import { useJourneyDuplicateMutation } from '../../../../libs/useJourneyDuplicateMutation'
-import { MenuItem } from '../../../MenuItem'
+import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
+import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
+import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
+import { MenuItem } from '../../../../MenuItem'
 
 export const REMOVE_USER_JOURNEY = gql`
   mutation RemoveUserJourney($id: ID!) {

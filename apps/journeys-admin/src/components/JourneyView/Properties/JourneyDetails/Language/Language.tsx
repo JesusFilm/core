@@ -16,7 +16,7 @@ const DynamicLanguageDialog = dynamic<{
   async () =>
     await import(
       /* webpackChunkName: "PropertiesLanguageDialog" */
-      '../../../Menu/LanguageDialog'
+      '../../../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
     ).then((mod) => mod.LanguageDialog)
 )
 
