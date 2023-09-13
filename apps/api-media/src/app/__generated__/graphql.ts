@@ -8,6 +8,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum SegmindModel {
+    sdxl1__0_txt2img = "sdxl1__0_txt2img"
+}
+
 export enum UnsplashPhotoOrientation {
     landscape = "landscape",
     portrait = "portrait",
@@ -173,6 +177,8 @@ export abstract class IMutation {
     abstract createCloudflareVideoUploadByUrl(url: string): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
 
     abstract deleteCloudflareVideo(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract createImageBySegmindPrompt(prompt: string, model: SegmindModel): Nullable<CloudflareImage> | Promise<Nullable<CloudflareImage>>;
 
     abstract triggerUnsplashDownload(url: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
