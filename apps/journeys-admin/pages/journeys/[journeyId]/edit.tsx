@@ -2,9 +2,9 @@ import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -30,7 +30,7 @@ import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const { data } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
@@ -56,7 +56,7 @@ function JourneyEditPage(): ReactElement {
           showDrawer
           backHref={`/journeys/${router.query.journeyId as string}`}
           menu={<EditToolbar />}
-          authUser={AuthUser}
+          user={user}
         >
           <JourneyEdit />
         </PageWrapper>
@@ -65,14 +65,14 @@ function JourneyEditPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale, query }) => {
-  if (AuthUser == null)
+})(async ({ user, locale, query }) => {
+  if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
+    user,
     locale
   })
 
@@ -123,6 +123,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(JourneyEditPage)

@@ -4,9 +4,9 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
@@ -79,7 +79,7 @@ export const GET_JOURNEY_VISITORS_COUNT = gql`
 
 function JourneyVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const router = useRouter()
   const journeyId = router.query.journeyId as string
 
@@ -182,7 +182,7 @@ function JourneyVisitorsPage(): ReactElement {
       <NextSeo title={t('Visitors')} />
       <PageWrapper
         title={t('Visitors')}
-        authUser={AuthUser}
+        user={user}
         backHref={`/journeys/${journeyId}/reports`}
         mainHeaderChildren={
           <Stack
@@ -238,14 +238,14 @@ function JourneyVisitorsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale, query }) => {
-  if (AuthUser == null)
+})(async ({ user, locale, query }) => {
+  if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
+    user,
     locale
   })
 
@@ -284,6 +284,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(JourneyVisitorsPage)

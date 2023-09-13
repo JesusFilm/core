@@ -19,7 +19,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import compact from 'lodash/compact'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -42,7 +42,7 @@ const DRAWER_WIDTH = '237px'
 export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
-  authUser?: AuthUser
+  user?: User
 }
 
 const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
@@ -90,7 +90,7 @@ export const StyledList = styled(List)({
 export function NavigationDrawer({
   open,
   onClose,
-  authUser
+  user
 }: NavigationDrawerProps): ReactElement {
   const { data: activeJourneys } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published]
@@ -120,7 +120,7 @@ export function NavigationDrawer({
   const { data } = useQuery<GetMe>(GET_ME)
   const { data: userRoleData } = useUserRoleQuery()
 
-  const journeyTooltip = getJourneyTooltip(t, journeys, authUser?.id)
+  const journeyTooltip = getJourneyTooltip(t, journeys, user?.id)
 
   return (
     <StyledNavigationDrawer
@@ -169,7 +169,7 @@ export function NavigationDrawer({
           />
         )}
 
-        {authUser != null && data?.me != null && (
+        {user != null && data?.me != null && (
           <>
             <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
 
@@ -196,11 +196,11 @@ export function NavigationDrawer({
               handleClick={handleProfileClick}
             />
             <UserMenu
-              user={data.me}
+              apiUser={data.me}
               profileOpen={profileOpen}
               profileAnchorEl={profileAnchorEl}
               handleProfileClose={handleProfileClose}
-              authUser={authUser}
+              user={user}
             />
           </>
         )}

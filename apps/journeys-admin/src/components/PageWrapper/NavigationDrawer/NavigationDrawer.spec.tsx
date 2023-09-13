@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
@@ -89,13 +89,13 @@ describe('NavigationDrawer', () => {
           <NavigationDrawer
             open
             onClose={onClose}
-            authUser={
+            user={
               {
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
                 signOut
-              } as unknown as AuthUser
+              } as unknown as User
             }
           />
         </FlagsProvider>
@@ -193,13 +193,13 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer
           open
           onClose={onClose}
-          authUser={
+          user={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
               signOut
-            } as unknown as AuthUser
+            } as unknown as User
           }
         />
       </MockedProvider>
@@ -250,13 +250,13 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer
           open
           onClose={onClose}
-          authUser={
+          user={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
               signOut
-            } as unknown as AuthUser
+            } as unknown as User
           }
         />
       </MockedProvider>

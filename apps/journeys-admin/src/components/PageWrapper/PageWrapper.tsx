@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 
 import taskbarIcon from '../../../public/taskbar-icon.svg'
@@ -22,7 +22,7 @@ export interface PageWrapperProps {
   title: string
   menu?: ReactNode
   children?: ReactNode
-  authUser?: AuthUser
+  user?: User
 }
 
 export function PageWrapper({
@@ -31,7 +31,7 @@ export function PageWrapper({
   title,
   menu: customMenu,
   children,
-  authUser
+  user
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -112,7 +112,7 @@ export function PageWrapper({
           {customMenu != null && customMenu}
         </Toolbar>
       </AppBar>
-      <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} />
+      <NavigationDrawer open={open} onClose={setOpen} user={user} />
       <Box
         sx={{
           ml: { sm: '72px' }
