@@ -18,6 +18,10 @@ export function CloudflareDetails({
       playerRef.current = videojs(videoRef.current, {
         fluid: true,
         controls: true,
+        hls: {
+          limitRenditionByPlayerDimensions: true,
+          useDevicePixelRatio: true
+        },
         poster: `https://customer-${
           process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
         }.cloudflarestream.com/${id ?? ''}/thumbnails/thumbnail.jpg?time=2s`

@@ -48,7 +48,11 @@ export function VideoWrapper({
         muted: true,
 
         // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
-        poster: blurBackground
+        poster: blurBackground,
+        hls: {
+          limitRenditionByPlayerDimensions: true,
+          useDevicePixelRatio: true
+        }
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(block.startAt ?? 0)

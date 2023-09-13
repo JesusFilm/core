@@ -30,7 +30,11 @@ describe('VideoControls', () => {
       },
       responsive: true,
       muted: false,
-      loop: true
+      loop: true,
+      hls: {
+        limitRenditionByPlayerDimensions: true,
+        useDevicePixelRatio: true
+      }
     })
     act(() => {
       player.duration(250)

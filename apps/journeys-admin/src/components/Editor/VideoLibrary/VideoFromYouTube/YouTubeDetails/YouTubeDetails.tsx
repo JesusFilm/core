@@ -66,7 +66,11 @@ export function YouTubeDetails({
       playerRef.current = videojs(videoRef.current, {
         fluid: true,
         controls: true,
-        poster: data?.snippet?.thumbnails?.default?.url ?? undefined
+        poster: data?.snippet?.thumbnails?.default?.url ?? undefined,
+        hls: {
+          limitRenditionByPlayerDimensions: true,
+          useDevicePixelRatio: true
+        }
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)

@@ -52,7 +52,11 @@ export function BackgroundVideo({
         },
         muted: true,
         loop: true,
-        responsive: true
+        responsive: true,
+        hls: {
+          limitRenditionByPlayerDimensions: true,
+          useDevicePixelRatio: true
+        }
         // Don't use poster prop as image isn't optimised
       })
     }

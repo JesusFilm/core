@@ -140,7 +140,11 @@ export function LocalDetails({
       playerRef.current = videojs(videoRef.current, {
         fluid: true,
         controls: true,
-        poster: data.video?.image ?? undefined
+        poster: data.video?.image ?? undefined,
+        hls: {
+          limitRenditionByPlayerDimensions: true,
+          useDevicePixelRatio: true
+        }
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)

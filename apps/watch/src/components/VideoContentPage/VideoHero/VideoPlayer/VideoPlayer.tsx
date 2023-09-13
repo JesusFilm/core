@@ -29,7 +29,11 @@ export function VideoPlayer({
             hotkeys: true,
             doubleClick: true
           },
-          responsive: true
+          responsive: true,
+          hls: {
+            limitRenditionByPlayerDimensions: true,
+            useDevicePixelRatio: true
+          }
         })
       )
     }

@@ -114,7 +114,11 @@ export function Video({
           },
           responsive: true,
           muted: muted === true,
-          autoplay
+          autoplay,
+          hls: {
+            limitRenditionByPlayerDimensions: true,
+            useDevicePixelRatio: true
+          }
         })
       )
     }
