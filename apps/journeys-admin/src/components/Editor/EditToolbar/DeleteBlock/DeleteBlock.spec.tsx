@@ -266,9 +266,7 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
 
-    expect(getByRole('button')).toContainElement(
-      getByTestId('Trash2Icon')
-    )
+    expect(getByRole('button')).toContainElement(getByTestId('Trash2Icon'))
     fireEvent.click(getByRole('button'))
 
     expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
