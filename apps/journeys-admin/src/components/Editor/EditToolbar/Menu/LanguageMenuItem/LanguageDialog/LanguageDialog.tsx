@@ -133,7 +133,9 @@ export function LanguageDialog({
             >
               <Form>
                 <LanguageAutocomplete
-                  onChange={(value) => setFieldValue('language', value)}
+                  onChange={async (value) =>
+                    await setFieldValue('language', value)
+                  }
                   value={values.language}
                   languages={data?.languages}
                   loading={loading}
