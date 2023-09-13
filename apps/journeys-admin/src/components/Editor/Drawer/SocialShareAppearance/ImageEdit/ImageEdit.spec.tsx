@@ -1,6 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -54,14 +55,16 @@ describe('ImageEdit', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
         <SocialProvider>
-          <JourneyProvider
-            value={{
-              journey: { primaryImageBlockId: null } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <ImageEdit />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { primaryImageBlockId: null } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <ImageEdit />
+            </JourneyProvider>
+          </SnackbarProvider>
         </SocialProvider>
       </MockedProvider>
     )
@@ -72,19 +75,21 @@ describe('ImageEdit', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SocialProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                primaryImageBlock: {
-                  src: 'img.src',
-                  alt: 'image.alt'
-                }
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <ImageEdit />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  primaryImageBlock: {
+                    src: 'img.src',
+                    alt: 'image.alt'
+                  }
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <ImageEdit />
+            </JourneyProvider>
+          </SnackbarProvider>
         </SocialProvider>
       </MockedProvider>
     )
@@ -161,14 +166,16 @@ describe('ImageEdit', () => {
         ]}
       >
         <SocialProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <ImageEdit />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { id: 'journey.id' } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <ImageEdit />
+            </JourneyProvider>
+          </SnackbarProvider>
         </SocialProvider>
       </MockedProvider>
     )
@@ -252,17 +259,19 @@ describe('ImageEdit', () => {
         ]}
       >
         <SocialProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journey.id',
-                primaryImageBlock: { ...image }
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <ImageEdit />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journey.id',
+                  primaryImageBlock: { ...image }
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <ImageEdit />
+            </JourneyProvider>
+          </SnackbarProvider>
         </SocialProvider>
       </MockedProvider>
     )
