@@ -10,9 +10,12 @@ import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ReactElement } from 'react'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { Role } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
+import { Drawer } from '../Editor/Drawer'
 
 import { GET_ME } from './NavigationDrawer'
 import { SidePanelContainer } from './SidePanelContainer'
@@ -93,7 +96,14 @@ const Template: StoryObj<typeof PageWrapper> = {
           }
         ]}
       >
-        <PageWrapper {...args} />
+        <EditorProvider
+          initialState={{
+            drawerTitle: 'Custom drawer',
+            drawerChildren: 'Custom drawer content'
+          }}
+        >
+          <PageWrapper {...args} />
+        </EditorProvider>
       </MockedProvider>
     )
   }
@@ -161,11 +171,30 @@ export const MobileSidePanel = {
   ...Template,
   args: {
     ...SidePanel.args,
-    initialState: { mobileDrawerOpen: true }
+    initialState: {
+      mobileDrawerOpen: true
+    }
   },
   parameters: {
     chromatic: {
       viewports: [360]
+    }
+  }
+}
+
+export const CustomSidePanel = {
+  ...Template,
+  args: {
+    ...SidePanel.args,
+    children:
+      'Custom page specific side panel can go in side panel space on the right',
+    sidePanelTitle: null,
+    sidePanelChildren: null,
+    customSidePanel: <Drawer />
+  },
+  parameters: {
+    chromatic: {
+      viewports: [1200]
     }
   }
 }

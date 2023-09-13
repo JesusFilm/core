@@ -95,6 +95,20 @@ describe('PageWrapper', () => {
       expect(getByTestId('side-header')).toHaveTextContent('Side Panel')
       expect(getByTestId('side-body')).toHaveTextContent('Drawer')
     })
+
+    it('should show the custom side panel', () => {
+      const { getByText } = render(
+        <MockedProvider>
+          <FlagsProvider>
+            <PageWrapper
+              title="Page title"
+              customSidePanel={<div>Custom Drawer</div>}
+            />
+          </FlagsProvider>
+        </MockedProvider>
+      )
+      expect(getByText('Custom Drawer')).toBeInTheDocument()
+    })
   })
 
   describe('Navigation', () => {

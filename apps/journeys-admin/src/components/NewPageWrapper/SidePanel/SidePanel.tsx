@@ -12,25 +12,20 @@ import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 interface SidePanelProps {
   children: ReactNode
-  title?: string | ReactNode
-  sidePanelTitleAction?: ReactNode
-  // TODO: Refactor to open via usePage state, combine with mobileDrawerOpen
-  open?: boolean
-  // TODO: Remove once admin edit page is refactored to use new PageWrapper
-  edit?: boolean
+  title?: string
   onClose?: () => void
 }
 
 interface DrawerContentProps {
-  title?: string | ReactNode
-  children: ReactNode
-  action?: ReactNode
+  title?: string
+  children?: ReactNode
+  onClose?: () => void
 }
 
 function DrawerContent({
   title,
   children,
-  action
+  onClose
 }: DrawerContentProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   return (
@@ -50,7 +45,16 @@ function DrawerContent({
               {title}
             </Typography>
           )}
-          {action}
+          {onClose != null && (
+            <IconButton
+              data-testid="close-side-drawer"
+              onClick={onClose}
+              sx={{ display: 'inline-flex' }}
+              edge="end"
+            >
+              <Close />
+            </IconButton>
+          )}
         </Toolbar>
       </AppBar>
       <Stack
@@ -70,21 +74,43 @@ function DrawerContent({
 export function SidePanel({
   children,
   title,
-  open = true,
-  edit = false,
   onClose
 }: SidePanelProps): ReactElement {
   const { toolbar, sidePanel } = usePageWrapperStyles()
+
   const {
     state: { mobileDrawerOpen },
     dispatch
   } = usePage()
+
+  const desktopStyle = {
+    display: { xs: 'none', md: 'flex' },
+    width: sidePanel.width,
+    flexShrink: 1,
+    '& .MuiDrawer-paper': {
+      overflowX: 'hidden',
+      boxSizing: 'border-box',
+      width: sidePanel.width,
+      height: '100%'
+    }
+  }
+  const mobileStyle = {
+    display: { xs: 'flex', md: 'none' },
+    width: '100%',
+    flexShrink: 1,
+    '& .MuiDrawer-paper': {
+      boxSizing: 'border-box',
+      width: '100%',
+      height: `calc(100% - ${toolbar.height})`
+    }
+  }
 
   const handleClose = (): void => {
     dispatch({
       type: 'SetMobileDrawerOpenAction',
       mobileDrawerOpen: false
     })
+    onClose?.()
   }
 
   return (
@@ -92,77 +118,26 @@ export function SidePanel({
       <Drawer
         anchor="right"
         variant="persistent"
-        open={onClose != null ? open : true}
+        open
         hideBackdrop
-        data-testid="side-drawer"
-        sx={{
-          display: edit
-            ? { xs: 'none', sm: 'flex' }
-            : { xs: 'none', md: 'flex' },
-          width: sidePanel.width,
-          flexShrink: 1,
-          '& .MuiDrawer-paper': {
-            overflowX: 'hidden',
-            boxSizing: 'border-box',
-            width: sidePanel.width,
-            height: '100%'
-          }
-        }}
+        data-testid="side-panel"
+        sx={desktopStyle}
       >
-        <DrawerContent
-          title={title}
-          action={
-            onClose != null && (
-              <IconButton
-                onClick={onClose}
-                sx={{ display: 'inline-flex' }}
-                edge="end"
-              >
-                <Close />
-              </IconButton>
-            )
-          }
-        >
+        <DrawerContent title={title}>{children}</DrawerContent>
+      </Drawer>
+      <Drawer
+        anchor="bottom"
+        variant="temporary"
+        open={mobileDrawerOpen}
+        hideBackdrop
+        transitionDuration={300}
+        data-testid="mobile-side-panel"
+        sx={mobileStyle}
+      >
+        <DrawerContent title={title} onClose={handleClose}>
           {children}
         </DrawerContent>
       </Drawer>
-      {edit ? (
-        <Stack sx={{ display: { xs: 'flex', sm: 'none' } }}>{children}</Stack>
-      ) : (
-        <Drawer
-          anchor="bottom"
-          variant="temporary"
-          open={mobileDrawerOpen}
-          hideBackdrop
-          transitionDuration={300}
-          data-testid="mobile-side-drawer"
-          sx={{
-            display: { xs: 'flex', md: 'none' },
-            width: '100%',
-            flexShrink: 1,
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: '100%',
-              height: `calc(100% - ${toolbar.height}px)`
-            }
-          }}
-        >
-          <DrawerContent
-            title={title}
-            action={
-              <IconButton
-                onClick={handleClose}
-                sx={{ display: 'inline-flex' }}
-                edge="end"
-              >
-                <Close />
-              </IconButton>
-            }
-          >
-            {children}
-          </DrawerContent>
-        </Drawer>
-      )}
     </>
   )
 }
