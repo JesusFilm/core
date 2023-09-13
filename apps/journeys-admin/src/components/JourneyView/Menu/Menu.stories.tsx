@@ -6,10 +6,10 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { simpleComponentConfig } from '../../../libs/storybook'
+import { GET_LANGUAGES } from '../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
 import { TeamProvider } from '../../Team/TeamProvider'
 import { defaultJourney } from '../data'
 
-import { GET_LANGUAGES } from './LanguageDialog'
 import { Menu } from './Menu'
 
 const MenuStory: Meta<typeof Menu> = {

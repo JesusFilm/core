@@ -7,8 +7,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetLanguages } from '../../../../../__generated__/GetLanguages'
-import { JourneyLanguageUpdate } from '../../../../../__generated__/JourneyLanguageUpdate'
+import { GetLanguages } from '../../../../../../../__generated__/GetLanguages'
+import { JourneyLanguageUpdate } from '../../../../../../../__generated__/JourneyLanguageUpdate'
 
 export const JOURNEY_LANGUAGE_UPDATE = gql`
   mutation JourneyLanguageUpdate($id: ID!, $input: JourneyUpdateInput!) {
