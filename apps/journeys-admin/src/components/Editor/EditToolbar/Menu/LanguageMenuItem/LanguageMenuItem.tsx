@@ -1,6 +1,7 @@
-import TranslateIcon from '@mui/icons-material/Translate'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
+
+import Globe from '@core/shared/ui/icons/Globe'
 
 import { MenuItem } from '../../../../MenuItem'
 
@@ -35,7 +36,7 @@ export function LanguageMenuItem({ onClose }: Props): ReactElement {
     <>
       <MenuItem
         label="Language"
-        icon={<TranslateIcon />}
+        icon={<Globe />}
         onClick={handleUpdateLanguage}
       />
       {showLanguageDialog && (
