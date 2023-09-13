@@ -20,7 +20,7 @@ export function createApolloClient(
   const authLink = setContext(async (_, { headers }) => {
     const firebaseToken = isSsrMode
       ? token
-      : await getAuth().currentUser?.getIdToken()
+      : (await getAuth().currentUser?.getIdToken()) ?? token
 
     return {
       headers: {
