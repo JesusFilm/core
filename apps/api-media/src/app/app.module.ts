@@ -13,12 +13,14 @@ import { NestHealthModule } from '@core/nest/health'
 
 import { CloudflareImageModule } from './modules/cloudflare/image/image.module'
 import { CloudflareVideoModule } from './modules/cloudflare/video/video.module'
+import { SegmindModule } from './modules/segmind/segmind.module'
 import { UnsplashImageModule } from './modules/unsplash/image/image.module'
 
 @Module({
   imports: [
     CloudflareImageModule,
     CloudflareVideoModule,
+    SegmindModule,
     NestHealthModule,
     UnsplashImageModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({

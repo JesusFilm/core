@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -53,14 +54,16 @@ describe('HostAvatarsButton', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: { ...journey, host: null },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatarsButton />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...journey, host: null },
+                variant: 'admin'
+              }}
+            >
+              <HostAvatarsButton />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -79,17 +82,23 @@ describe('HostAvatarsButton', () => {
     const { getByAltText } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...journey,
-                host: { ...defaultHost, src1: 'avatar1Src', src2: 'avatar2Src' }
-              },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatarsButton />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...journey,
+                  host: {
+                    ...defaultHost,
+                    src1: 'avatar1Src',
+                    src2: 'avatar2Src'
+                  }
+                },
+                variant: 'admin'
+              }}
+            >
+              <HostAvatarsButton />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -102,9 +111,11 @@ describe('HostAvatarsButton', () => {
     const { getByTestId, queryByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostAvatarsButton disabled />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <HostAvatarsButton disabled />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -117,17 +128,19 @@ describe('HostAvatarsButton', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...journey,
-                host: { ...defaultHost, src1: 'avatar1Src' }
-              },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatarsButton />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...journey,
+                  host: { ...defaultHost, src1: 'avatar1Src' }
+                },
+                variant: 'admin'
+              }}
+            >
+              <HostAvatarsButton />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -176,21 +189,23 @@ describe('HostAvatarsButton', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...journey,
-                host: {
-                  ...defaultHost,
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...journey,
+                  host: {
+                    ...defaultHost,
 
-                  src1: 'avatar1Src'
-                }
-              },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatarsButton />
-          </JourneyProvider>
+                    src1: 'avatar1Src'
+                  }
+                },
+                variant: 'admin'
+              }}
+            >
+              <HostAvatarsButton />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -270,21 +285,23 @@ describe('HostAvatarsButton', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...journey,
-                host: {
-                  ...defaultHost,
-                  src1: 'avatar1Src',
-                  src2: 'avatar2Src'
-                }
-              },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatarsButton />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...journey,
+                  host: {
+                    ...defaultHost,
+                    src1: 'avatar1Src',
+                    src2: 'avatar2Src'
+                  }
+                },
+                variant: 'admin'
+              }}
+            >
+              <HostAvatarsButton />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
