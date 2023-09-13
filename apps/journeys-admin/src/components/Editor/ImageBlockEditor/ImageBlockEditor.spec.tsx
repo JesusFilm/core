@@ -1,5 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
+// TODO: remove segmind ai flags when ready
+import { SnackbarProvider } from 'notistack'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
@@ -20,24 +24,35 @@ describe('ImageBlockEditor', () => {
 
   it('should render the ImageBlockEditor', () => {
     const { getByText, getByRole } = render(
-      <MockedProvider>
-        <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
-      </MockedProvider>
+      <FlagsProvider flags={{ segmind: true }}>
+        <SnackbarProvider>
+          <MockedProvider>
+            <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+          </MockedProvider>
+        </SnackbarProvider>
+      </FlagsProvider>
     )
     expect(getByText('Selected Image')).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Custom' })).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'AI' })).toBeInTheDocument()
   })
 
-  it('should switch tabs', () => {
+  it('should switch tabs', async () => {
     const { getByText, getByRole } = render(
-      <MockedProvider>
-        <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
-      </MockedProvider>
+      <FlagsProvider flags={{ segmind: true }}>
+        <SnackbarProvider>
+          <MockedProvider>
+            <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+          </MockedProvider>
+        </SnackbarProvider>
+      </FlagsProvider>
     )
     expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
     expect(getByText('Unsplash')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Custom' }))
     expect(getByText('Add image by URL')).toBeInTheDocument()
+    await fireEvent.click(getByRole('tab', { name: 'AI' }))
+    expect(getByRole('button', { name: 'Prompt' })).toBeInTheDocument()
   })
 })

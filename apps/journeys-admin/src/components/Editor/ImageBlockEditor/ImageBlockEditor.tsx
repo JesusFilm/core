@@ -1,3 +1,4 @@
+import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -5,6 +6,8 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
+// TODO: remove segmind ai flags when ready
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Grid1 from '@core/shared/ui/icons/Grid1'
 import Image3 from '@core/shared/ui/icons/Image3'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
@@ -12,6 +15,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
+import { AIGallery } from './AIGallery'
 import { CustomImage } from './CustomImage'
 import { UnsplashAuthor, UnsplashGallery } from './UnsplashGallery'
 
@@ -35,6 +39,8 @@ export function ImageBlockEditor({
   const [tabValue, setTabValue] = useState(0)
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
   const [uploading, setUploading] = useState<boolean>()
+  // TODO: remove segmind ai flags when ready
+  const { segmind } = useFlags()
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -123,6 +129,14 @@ export function ImageBlockEditor({
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />
+          {/*  // TODO: remove segmind ai flags when ready */}
+          {segmind && (
+            <Tab
+              icon={<SmartToyOutlinedIcon />}
+              label={<Typography variant="subtitle2">AI</Typography>}
+              {...tabA11yProps('custom', 3)}
+            />
+          )}
         </Tabs>
       </Box>
       <TabPanel name="gallery" value={tabValue} index={0}>
@@ -137,6 +151,16 @@ export function ImageBlockEditor({
           error={error}
         />
       </TabPanel>
+      {/*  // TODO: remove segmind ai flags when ready */}
+      {segmind && (
+        <TabPanel name="generative" value={tabValue} index={2}>
+          <AIGallery
+            onChange={handleSrcChange}
+            setUploading={setUploading}
+            loading={uploading != null ? uploading : loading}
+          />
+        </TabPanel>
+      )}
     </>
   )
 }
