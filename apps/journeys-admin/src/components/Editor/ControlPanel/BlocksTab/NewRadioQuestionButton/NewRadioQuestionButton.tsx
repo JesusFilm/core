@@ -133,10 +133,6 @@ export function NewRadioQuestionButton(): ReactElement {
   }
 
   return (
-    <Button
-      icon={<HelpCircleContained />}
-      value="Poll"
-      onClick={handleClick}
-    />
+    <Button icon={<HelpCircleContained />} value="Poll" onClick={handleClick} />
   )
 }
