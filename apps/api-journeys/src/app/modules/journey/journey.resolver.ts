@@ -666,14 +666,15 @@ export class JourneyResolver {
       where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
     return await Promise.all(
-      results.map((journey) =>
-        this.prismaService.journey.update({
-          where: { id: journey.id },
-          data: {
-            status: JourneyStatus.published,
-            publishedAt: new Date()
-          }
-        })
+      results.map(
+        async (journey) =>
+          await this.prismaService.journey.update({
+            where: { id: journey.id },
+            data: {
+              status: JourneyStatus.published,
+              publishedAt: new Date()
+            }
+          })
       )
     )
   }
@@ -760,9 +761,10 @@ export class JourneyResolver {
 
   @ResolveField()
   async userJourneys(
-    @CaslAbility() ability: AppAbility,
-    @Parent() journey: Journey
+    @Parent() journey: Journey,
+    @CaslAbility({ optional: true }) ability?: AppAbility
   ): Promise<UserJourney[]> {
+    if (ability == null) return []
     const userJourneys = await this.prismaService.journey
       .findUnique({
         where: { id: journey.id }

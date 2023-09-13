@@ -76,7 +76,7 @@ export function CopyToTeamDialog({
               select
               error={Boolean(errors.teamSelect)}
               helperText={
-                errors.teamSelect ??
+                (errors.teamSelect as string) ??
                 t('Journey will be copied to selected team.')
               }
               variant="filled"

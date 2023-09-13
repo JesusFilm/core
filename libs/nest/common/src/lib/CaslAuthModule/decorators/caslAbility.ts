@@ -14,10 +14,10 @@ import { GqlExecutionContext } from '@nestjs/graphql'
  * ```
  */
 export const CaslAbility = createParamDecorator(
-  (data: unknown, context: ExecutionContext) => {
+  (data: { optional?: boolean } | undefined, context: ExecutionContext) => {
     const ability = GqlExecutionContext.create(context).getContext().req.ability
 
-    if (ability == null)
+    if (ability == null && data?.optional !== true)
       throw new UnauthorizedException('No ability found for request')
 
     return ability

@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -11,7 +11,7 @@ import {
 
 import { TeamSelect } from '.'
 
-const TeamSelectStory = {
+const TeamSelectStory: Meta<typeof TeamSelect> = {
   ...journeysAdminConfig,
   component: TeamSelect,
   title: 'Journeys-Admin/Team/TeamSelect',
@@ -66,43 +66,53 @@ const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-const Template: Story = (args) => (
-  <TeamProvider>
-    <Box sx={{ height: 300 }}>
-      <TeamSelect {...args} />
-    </Box>
-  </TeamProvider>
-)
+const Template: StoryObj<typeof TeamSelect> = {
+  render: (args) => (
+    <TeamProvider>
+      <Box sx={{ height: 300 }}>
+        <TeamSelect {...args} />
+      </Box>
+    </TeamProvider>
+  )
+}
 
-export const Default = Template.bind({})
-Default.parameters = {
-  apolloClient: {
-    mocks: [getTeamsMock]
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getTeamsMock]
+    }
   }
 }
 
-export const Onboarding = Template.bind({})
-Onboarding.parameters = {
-  apolloClient: {
-    mocks: [getTeamsMock]
-  }
-}
-Onboarding.args = {
-  onboarding: true
-}
-
-export const Loading = Template.bind({})
-Loading.parameters = {
-  apolloClient: {
-    mocks: [{ ...getTeamsMock, delay: 100000000000000 }]
+export const Onboarding = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getTeamsMock]
+    }
+  },
+  args: {
+    onboarding: true
   }
 }
 
-export const EmptyTeams = Template.bind({})
-EmptyTeams.parameters = {
-  apolloClient: {
-    mocks: [getEmptyTeamsMock]
+export const Loading = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [{ ...getTeamsMock, delay: 100000000000000 }]
+    }
   }
 }
 
-export default TeamSelectStory as Meta
+export const EmptyTeams = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getEmptyTeamsMock]
+    }
+  }
+}
+
+export default TeamSelectStory

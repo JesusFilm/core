@@ -17,21 +17,20 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import compact from 'lodash/compact'
-import { AuthUser } from 'next-firebase-auth'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { AuthUser } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { GetMe } from '../../../../__generated__/GetMe'
-import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 
@@ -119,7 +118,7 @@ export function NavigationDrawer({
   }
 
   const { data } = useQuery<GetMe>(GET_ME)
-  const { data: userRoleData } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const { data: userRoleData } = useUserRoleQuery()
 
   const journeyTooltip = getJourneyTooltip(t, journeys, authUser?.id)
 
@@ -214,7 +213,6 @@ export function NavigationDrawer({
               src={taskbarIcon}
               width={32}
               height={32}
-              layout="fixed"
               alt="Next Steps Logo"
             />
           </ListItemIcon>
@@ -223,7 +221,6 @@ export function NavigationDrawer({
               src={nextstepsTitle}
               width={106}
               height={24}
-              layout="fixed"
               alt="Next Steps Title"
             />
           </Box>

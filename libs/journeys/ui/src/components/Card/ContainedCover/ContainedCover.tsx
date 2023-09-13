@@ -1,7 +1,14 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  RefObject,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
@@ -37,7 +44,7 @@ const StyledSoftBlurBackground = styled(Stack)(({ theme }) => ({
   width: '100%',
   WebkitBackdropFilter: 'blur(1px)',
   backdropFilter: 'blur(1px)',
-  [theme.breakpoints.up('lg')]: {
+  [theme.breakpoints.up('sm')]: {
     height: '100%'
   }
 }))
@@ -47,7 +54,7 @@ const StyledBlurBackground = styled(Stack)(({ theme }) => ({
   width: '100%',
   WebkitBackdropFilter: 'blur(2px)',
   backdropFilter: 'blur(2px)',
-  [theme.breakpoints.up('lg')]: {
+  [theme.breakpoints.up('sm')]: {
     height: '100%'
   }
 }))
@@ -64,7 +71,7 @@ export function ContainedCover({
   const [contentHeight, setContentHeight] = useState(0)
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const contentRef = useRef()
+  const contentRef = useRef() as RefObject<HTMLDivElement>
 
   const posterImage =
     videoBlock?.source !== VideoBlockSource.youTube
@@ -82,9 +89,9 @@ export function ContainedCover({
         videoBlock?.image
 
   useEffect(() => {
-    if (contentRef.current != null) {
+    if (contentRef?.current != null) {
       setContentHeight(
-        (contentRef.current as unknown as HTMLDivElement).clientHeight ?? 0
+        (contentRef?.current as unknown as HTMLDivElement).clientHeight ?? 0
       )
     }
   }, [contentRef])
@@ -106,7 +113,11 @@ export function ContainedCover({
         }}
       >
         {videoBlock?.videoId != null && (
-          <BackgroundVideo {...videoBlock} setLoading={setLoading} />
+          <BackgroundVideo
+            {...videoBlock}
+            setLoading={setLoading}
+            cardColor={backgroundColor}
+          />
         )}
         {/* NextImage poster image causes longer LCP loading times, but still faster since using optimized image */}
         {posterImage != null && videoBlock != null && loading && (
@@ -137,7 +148,9 @@ export function ContainedCover({
               blurDataURL={backgroundBlur}
               layout="fill"
               objectFit="cover"
-              sx={{ transform: 'scale(2) translate(0px, -25%)' }}
+              sx={{
+                transform: 'scale(2) translate(0px, -25%)'
+              }}
             />
             <Box
               sx={{
@@ -160,9 +173,9 @@ export function ContainedCover({
           flexGrow: 1,
           zIndex: 1,
           top: 0,
-          position: { xs: 'relative', lg: 'absolute' },
-          WebkitMask: { xs: overlayImageMask, lg: 'unset' },
-          mask: { xs: overlayImageMask, lg: 'unset' }
+          position: { xs: 'relative', sm: 'absolute' },
+          WebkitMask: { xs: overlayImageMask, sm: 'unset' },
+          mask: { xs: overlayImageMask, sm: 'unset' }
         }}
       >
         {imageBlock != null && backgroundBlur != null && (
@@ -183,9 +196,9 @@ export function ContainedCover({
           position: 'relative',
           zIndex: 1,
           width: '100%',
-          height: { xs: hasFullscreenVideo ? '100%' : undefined, lg: '100%' },
-          justifyContent: { xs: 'flex-end', lg: 'center' },
-          alignItems: { lg: rtl ? 'flex-start' : 'flex-end' }
+          height: { xs: hasFullscreenVideo ? '100%' : undefined, sm: '100%' },
+          justifyContent: { xs: 'flex-end', sm: 'center' },
+          alignItems: { sm: rtl ? 'flex-start' : 'flex-end' }
         }}
       >
         {children.length !== 0 ? (
@@ -193,35 +206,35 @@ export function ContainedCover({
             <Stack
               data-testid="overlay-blur"
               sx={{
-                width: { xs: videoBlock != null ? '100%' : '0%', lg: 380 },
-                height: { xs: videoBlock != null ? '85%' : '0%', lg: '100%' },
+                width: { xs: videoBlock != null ? '100%' : '0%', sm: 380 },
+                height: { xs: videoBlock != null ? '85%' : '0%', sm: '100%' },
                 flexDirection: {
                   xs: 'column-reverse',
-                  lg: rtl ? 'row' : 'row-reverse'
+                  sm: rtl ? 'row' : 'row-reverse'
                 },
                 position: 'absolute'
               }}
             >
               <StyledSoftBlurBackground
-                sx={{ width: { lg: 500 }, height: contentHeight - 40 }}
+                sx={{ width: { sm: 500 }, height: contentHeight - 40 }}
               />
               <StyledSoftBlurBackground
-                sx={{ width: { lg: 450 }, height: contentHeight - 80 }}
+                sx={{ width: { sm: 450 }, height: contentHeight - 80 }}
               />
               <StyledSoftBlurBackground
-                sx={{ width: { lg: 400 }, height: contentHeight * 0.9 - 80 }}
+                sx={{ width: { sm: 400 }, height: contentHeight * 0.9 - 80 }}
               />
               <StyledBlurBackground
-                sx={{ width: { lg: 350 }, height: contentHeight * 0.8 - 80 }}
+                sx={{ width: { sm: 350 }, height: contentHeight * 0.8 - 80 }}
               />
               <StyledBlurBackground
-                sx={{ width: { lg: 325 }, height: contentHeight * 0.7 - 80 }}
+                sx={{ width: { sm: 325 }, height: contentHeight * 0.7 - 80 }}
               />
               <StyledBlurBackground
-                sx={{ width: { lg: 275 }, height: contentHeight * 0.6 - 80 }}
+                sx={{ width: { sm: 275 }, height: contentHeight * 0.6 - 80 }}
               />
               <StyledBlurBackground
-                sx={{ width: { lg: 250 }, height: contentHeight * 0.5 - 80 }}
+                sx={{ width: { sm: 250 }, height: contentHeight * 0.5 - 80 }}
               />
             </Stack>
 
@@ -233,18 +246,18 @@ export function ContainedCover({
               sx={{
                 position: 'absolute',
                 width: '100%',
-                height: { xs: '100%', lg: '100%' },
-                maxWidth: { xs: '100%', lg: '380px' },
-                pt: { xs: videoBlock != null ? 40 : 5, lg: 0 },
-                pb: { xs: 10, lg: 0 },
-                pl: { lg: 50 },
+                height: { xs: '100%', sm: '100%' },
+                maxWidth: { xs: '100%', sm: '380px' },
+                pt: { xs: videoBlock != null ? 40 : 5, sm: 0 },
+                pb: { xs: 10, sm: 0 },
+                pl: { sm: 50 },
                 WebkitMask: {
                   xs: overlayGradient('bottom'),
-                  lg: overlayGradient(rtl ? 'left' : 'right')
+                  sm: overlayGradient(rtl ? 'left' : 'right')
                 },
                 mask: {
                   xs: overlayGradient('bottom'),
-                  lg: overlayGradient(rtl ? 'left' : 'right')
+                  sm: overlayGradient(rtl ? 'left' : 'right')
                 },
                 backgroundColor: `${backgroundColor}d9`
               }}
@@ -253,9 +266,9 @@ export function ContainedCover({
               hasFullscreenVideo={hasFullscreenVideo}
               sx={{
                 // This should match width of journey card content in admin
-                width: { lg: '312px' },
-                maxHeight: { xs: '55vh', lg: '100%' },
-                mb: { xs: 28, sm: 16, lg: 0 }
+                width: { sm: '312px' },
+                maxHeight: { xs: '55vh', sm: '65%', md: '100%' },
+                mb: { xs: 28, sm: 10 }
               }}
             >
               {children}
@@ -269,7 +282,7 @@ export function ContainedCover({
                 xs: `linear-gradient(to top,  ${backgroundColor}ff ${
                   rtl ? 100 : 0
                 }%, ${backgroundColor}33 60%, ${backgroundColor}00 100%)`,
-                lg: 'unset'
+                sm: 'unset'
               }
             }}
           />

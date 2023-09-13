@@ -9,6 +9,7 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
+import { parseISO8601Duration } from '../../../../libs/parseISO8601Duration'
 import { VideoList } from '../VideoList'
 import { VideoListProps } from '../VideoList/VideoList'
 import { VideoSearch } from '../VideoSearch'
@@ -50,22 +51,6 @@ export interface YoutubeVideosData {
 interface Data {
   items: Required<VideoListProps>['videos']
   nextPageToken?: string
-}
-
-export function parseISO8601Duration(duration: string): number {
-  const match = duration.match(/P(\d+Y)?(\d+W)?(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/)
-
-  if (match == null) {
-    console.error(`Invalid duration: ${duration}`)
-    return 0
-  }
-  const [years, weeks, days, hours, minutes, seconds] = match
-    .slice(1)
-    .map((period) => (period != null ? parseInt(period.replace(/\D/, '')) : 0))
-  return (
-    (((years * 365 + weeks * 7 + days) * 24 + hours) * 60 + minutes) * 60 +
-    seconds
-  )
 }
 
 const fetcher = async (query: string): Promise<Data> => {
@@ -119,7 +104,7 @@ export function VideoFromYouTube({
 
   const loading = Boolean(
     (data == null && error == null) ||
-      (size > 0 && data && typeof data[size - 1] === 'undefined')
+      (size > 0 && data != null && typeof data[size - 1] === 'undefined')
   )
 
   const videos = reduce(

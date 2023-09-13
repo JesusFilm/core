@@ -94,7 +94,7 @@ describe('JourneyResolver', () => {
   const accessibleJourneys: Prisma.JourneyWhereInput = { OR: [{}] }
 
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
     jest.setSystemTime(new Date(2020, 3, 1))
   })
 
@@ -1625,7 +1625,7 @@ describe('JourneyResolver', () => {
         userJourneys
       } as unknown as Prisma.Prisma__JourneyClient<Journey>)
 
-      expect(await resolver.userJourneys(ability, journey)).toEqual(userJourney)
+      expect(await resolver.userJourneys(journey, ability)).toEqual(userJourney)
     })
 
     it('returns empty user Journeys array when null', async () => {
@@ -1635,7 +1635,11 @@ describe('JourneyResolver', () => {
         userJourneys
       } as unknown as Prisma.Prisma__JourneyClient<Journey>)
 
-      expect(await resolver.userJourneys(ability, journey)).toEqual([])
+      expect(await resolver.userJourneys(journey, ability)).toEqual([])
+    })
+
+    it('returns empty user journeys array when ability is undefined', async () => {
+      expect(await resolver.userJourneys(journey, undefined)).toEqual([])
     })
   })
 

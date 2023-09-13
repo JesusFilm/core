@@ -1,0 +1,10 @@
+enum SegmindModel {
+  sdxl1__0_txt2img
+}
+
+extend type Mutation {
+  createImageBySegmindPrompt(
+    prompt: String!
+    model: SegmindModel!
+  ): CloudflareImage
+}

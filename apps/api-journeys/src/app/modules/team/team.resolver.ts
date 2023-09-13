@@ -96,9 +96,10 @@ export class TeamResolver {
 
   @ResolveField()
   async userTeams(
-    @CaslAbility() ability: AppAbility,
-    @Parent() team: Team
+    @Parent() team: Team,
+    @CaslAbility({ optional: true }) ability?: AppAbility
   ): Promise<UserTeam[]> {
+    if (ability == null) return []
     const userTeams = await this.prismaService.team
       .findUnique({
         where: { id: team.id }

@@ -165,7 +165,7 @@ describe('TeamResolver', () => {
         ...team,
         userTeams
       } as unknown as Prisma.Prisma__TeamClient<Team>)
-      expect(await resolver.userTeams(ability, team)).toEqual(team.userTeams)
+      expect(await resolver.userTeams(team, ability)).toEqual(team.userTeams)
     })
 
     it('returns userTeams from database', async () => {
@@ -175,7 +175,7 @@ describe('TeamResolver', () => {
         userTeams
       } as unknown as Prisma.Prisma__TeamClient<Team>)
       await expect(
-        resolver.userTeams(ability, { ...teamWithNoUserTeam })
+        resolver.userTeams({ ...teamWithNoUserTeam }, ability)
       ).resolves.toEqual(team.userTeams)
     })
 
@@ -186,8 +186,12 @@ describe('TeamResolver', () => {
         userTeams
       } as unknown as Prisma.Prisma__TeamClient<Team>)
       await expect(
-        resolver.userTeams(ability, { ...teamWithNoUserTeam })
+        resolver.userTeams({ ...teamWithNoUserTeam }, ability)
       ).resolves.toEqual([])
+    })
+
+    it('returns empty userTeams array when ability is undefined', async () => {
+      expect(await resolver.userTeams(team, undefined)).toEqual([])
     })
   })
 })
