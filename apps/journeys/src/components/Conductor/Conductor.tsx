@@ -111,8 +111,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             .then(
               (data: { city?: string; country?: string; region?: string }) => {
                 const countryCodes: string[] = []
-                if (data.city != null)
-                  countryCodes.push(decodeURI(data.city))
+                if (data.city != null) countryCodes.push(decodeURI(data.city))
                 if (data.region != null) countryCodes.push(data.region)
                 if (data.country != null) countryCodes.push(data.country)
 
