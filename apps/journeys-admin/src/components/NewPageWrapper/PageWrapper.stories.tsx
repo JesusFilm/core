@@ -97,10 +97,14 @@ const Template: StoryObj<typeof PageWrapper> = {
         ]}
       >
         <EditorProvider
-          initialState={{
-            drawerTitle: 'Custom drawer',
-            drawerChildren: 'Custom drawer content'
-          }}
+          initialState={
+            args.sidePanelChildren === null
+              ? {
+                  drawerTitle: 'Custom drawer',
+                  drawerChildren: 'Custom drawer content'
+                }
+              : {}
+          }
         >
           <PageWrapper {...args} />
         </EditorProvider>

@@ -50,7 +50,7 @@ function DrawerContent({
                   {title}
                 </Typography>
               ) : (
-                { title }
+                title
               ))}
             {onClose != null && (
               <IconButton
