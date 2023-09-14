@@ -36,6 +36,10 @@ describe('SidePanel', () => {
       desktopDrawer.queryByTestId('close-side-drawer')
     ).not.toBeInTheDocument()
 
+    fireEvent.click(desktopDrawer.getByTestId('close-side-drawer'))
+
+    expect(onClose).toHaveBeenCalled()
+
     expect(mobileDrawer.getByTestId('side-header')).toHaveTextContent(
       'Side Panel Title'
     )

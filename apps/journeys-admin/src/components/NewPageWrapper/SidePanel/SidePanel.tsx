@@ -13,6 +13,9 @@ import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 interface SidePanelProps {
   children: ReactNode
   title?: string
+  open?: boolean
+  // TODO: Remove if admin edit page uses SidePanel instead of Drawer
+  withAdminDrawer?: boolean
   onClose?: () => void
 }
 
@@ -74,6 +77,8 @@ function DrawerContent({
 export function SidePanel({
   children,
   title,
+  open = true,
+  withAdminDrawer = false,
   onClose
 }: SidePanelProps): ReactElement {
   const { toolbar, sidePanel } = usePageWrapperStyles()
@@ -116,28 +121,38 @@ export function SidePanel({
   return (
     <>
       <Drawer
+        elevation={1}
         anchor="right"
         variant="persistent"
-        open
+        open={onClose != null ? open : true}
         hideBackdrop
         data-testid="side-panel"
         sx={desktopStyle}
       >
-        <DrawerContent title={title}>{children}</DrawerContent>
-      </Drawer>
-      <Drawer
-        anchor="bottom"
-        variant="temporary"
-        open={mobileDrawerOpen}
-        hideBackdrop
-        transitionDuration={300}
-        data-testid="mobile-side-panel"
-        sx={mobileStyle}
-      >
-        <DrawerContent title={title} onClose={handleClose}>
+        <DrawerContent
+          title={title}
+          onClose={onClose != null ? handleClose : undefined}
+        >
           {children}
         </DrawerContent>
       </Drawer>
+      {withAdminDrawer ? (
+        <Stack sx={{ display: { xs: 'flex', sm: 'none' } }}>{children}</Stack>
+      ) : (
+        <Drawer
+          anchor="bottom"
+          variant="temporary"
+          open={mobileDrawerOpen}
+          hideBackdrop
+          transitionDuration={300}
+          data-testid="mobile-side-panel"
+          sx={mobileStyle}
+        >
+          <DrawerContent title={title} onClose={handleClose}>
+            {children}
+          </DrawerContent>
+        </Drawer>
+      )}
     </>
   )
 }

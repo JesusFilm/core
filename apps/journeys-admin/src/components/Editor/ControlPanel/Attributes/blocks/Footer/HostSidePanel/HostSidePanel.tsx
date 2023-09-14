@@ -96,7 +96,7 @@ export function HostSidePanel(): ReactElement {
   return (
     <>
       {/* DefaultHostPanel - no host */}
-      <SidePanel title={t('Hosted By')} open edit>
+      <SidePanel title={t('Hosted By')} open withAdminDrawer>
         {!openSelect && (selectedHost == null || !userInTeam) && (
           <>
             <SidePanelContainer border={!userInTeam}>
@@ -129,7 +129,7 @@ export function HostSidePanel(): ReactElement {
       <SidePanel
         title={t('Select a Host')}
         open={openSelect}
-        edit
+        withAdminDrawer
         onClose={() => setOpenSelect(false)}
       >
         {openSelect && !openCreateHost && !openInfo && (
@@ -170,7 +170,7 @@ export function HostSidePanel(): ReactElement {
       <SidePanel
         title={t('Information')}
         open={openInfo}
-        edit
+        withAdminDrawer
         onClose={() => setOpenInfo(false)}
       >
         {openInfo && (
@@ -197,9 +197,10 @@ export function HostSidePanel(): ReactElement {
 
       {/* Create / EditHostPanel */}
       {userInTeam && (openCreateHost || selectedHost != null) && (
-        <SidePanel title={t('Hosted By')} edit>
-          <HostForm onClear={handleClear} />
-        </SidePanel>
+        <HostForm
+          onClear={handleClear}
+          onClose={() => setOpenCreateHost(false)}
+        />
       )}
     </>
   )

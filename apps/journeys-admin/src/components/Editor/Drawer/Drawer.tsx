@@ -70,8 +70,6 @@ export function Drawer(): ReactElement {
     })
   }
 
-  console.log(mobileOpen)
-
   return smUp ? (
     <Paper
       elevation={0}
