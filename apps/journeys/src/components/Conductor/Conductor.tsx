@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { SxProps, styled, useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useEffect, useState } from 'react'
 import Div100vh from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
@@ -45,25 +46,30 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
 
 const StyledSwiperContainer = styled(Swiper)<{
   cardBlock: CardBlock
-}>(({ theme, cardBlock }) => ({
-  background: theme.palette.grey[900],
-  height: 'inherit',
-  '.swiper-pagination': {
-    height: 16,
-    top: 16,
-    width: '84px !important'
-  },
-  '.swiper-pagination-bullet': {
-    background:
-      cardBlock?.themeMode === ThemeMode.dark
+}>(({ theme, cardBlock }) => {
+  const desktopScreen = useMediaQuery(theme.breakpoints.up('md'))
+
+  return {
+    background: theme.palette.grey[900],
+    height: 'inherit',
+    '.swiper-pagination': {
+      height: 16,
+      top: 16,
+      width: '84px !important'
+    },
+    '.swiper-pagination-bullet': {
+      background: desktopScreen
+        ? theme.palette.grey[100] // in desktop view, make the pagination dots white, else set colour based on theme
+        : cardBlock?.themeMode === ThemeMode.dark
         ? theme.palette.grey[100]
         : theme.palette.grey[800],
-    opacity: '60%'
-  },
-  '.swiper-pagination-bullet-active': {
-    opacity: '100%'
+      opacity: '60%'
+    },
+    '.swiper-pagination-bullet-active': {
+      opacity: '100%'
+    }
   }
-}))
+})
 export const JOURNEY_VISITOR_UPDATE = gql`
   mutation VisitorUpdateForCurrentUser($input: VisitorUpdateInput!) {
     visitorUpdateForCurrentUser(input: $input) {
