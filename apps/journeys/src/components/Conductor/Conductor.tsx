@@ -112,7 +112,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               (data: { city?: string; country?: string; region?: string }) => {
                 const countryCodes: string[] = []
                 if (data.city != null)
-                  countryCodes.push(decodeURIComponent(data.city))
+                  countryCodes.push(data.city.replace(/%20/g, ' '))
                 if (data.region != null) countryCodes.push(data.region)
                 if (data.country != null) countryCodes.push(data.country)
 
