@@ -640,10 +640,12 @@ export class JourneyVisitorFilter {
 
 export class TeamCreateInput {
     title: string;
+    publicTitle?: Nullable<string>;
 }
 
 export class TeamUpdateInput {
     title: string;
+    publicTitle?: Nullable<string>;
 }
 
 export class UserInviteCreateInput {
@@ -1206,6 +1208,7 @@ export class Team {
     __typename?: 'Team';
     id: string;
     title: string;
+    publicTitle?: Nullable<string>;
     createdAt: DateTime;
     updatedAt: DateTime;
     userTeams: UserTeam[];
