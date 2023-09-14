@@ -1529,6 +1529,7 @@ describe('JourneyResolver', () => {
       const team: Team = {
         id: 'teamId',
         title: 'My Cool Team',
+        publicTitle: null,
         createdAt: new Date(),
         updatedAt: new Date()
       }

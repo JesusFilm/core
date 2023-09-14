@@ -87,11 +87,15 @@ describe('TeamResolver', () => {
     it('creates team with userTeam', async () => {
       prismaService.team.create.mockResolvedValue(team)
       await expect(
-        resolver.teamCreate('userId', { name: 'team' })
+        resolver.teamCreate('userId', {
+          name: 'team',
+          publicName: 'public team name'
+        })
       ).resolves.toEqual(team)
       expect(prismaService.team.create).toHaveBeenCalledWith({
         data: {
           name: 'team',
+          publicName: 'public team name',
           userTeams: {
             create: {
               userId: 'userId',
@@ -108,12 +112,16 @@ describe('TeamResolver', () => {
       prismaService.team.findUnique.mockResolvedValue(teamWithUserTeam)
       prismaService.team.update.mockResolvedValue(teamWithUserTeam)
       await expect(
-        resolver.teamUpdate(ability, 'teamId', { name: 'team' })
+        resolver.teamUpdate(ability, 'teamId', {
+          name: 'team',
+          publicName: 'public team name'
+        })
       ).resolves.toEqual(teamWithUserTeam)
       expect(prismaService.team.update).toHaveBeenCalledWith({
         where: { id: 'teamId' },
         data: {
-          name: 'team'
+          name: 'team',
+          publicName: 'public team name'
         }
       })
     })

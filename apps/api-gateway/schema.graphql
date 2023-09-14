@@ -1671,6 +1671,7 @@ type Team
 {
   id: ID!
   title: String!
+  publicTitle: String
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
@@ -1680,12 +1681,14 @@ input TeamCreateInput
   @join__type(graph: JOURNEYS)
 {
   title: String!
+  publicTitle: String
 }
 
 input TeamUpdateInput
   @join__type(graph: JOURNEYS)
 {
   title: String!
+  publicTitle: String
 }
 
 type TextResponseBlock implements Block

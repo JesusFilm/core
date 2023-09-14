@@ -1980,6 +1980,7 @@ type Team
 {
   id: ID!
   title: String!
+  publicTitle: String
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
@@ -1987,10 +1988,12 @@ type Team
 
 input TeamCreateInput {
   title: String!
+  publicTitle: String
 }
 
 input TeamUpdateInput {
   title: String!
+  publicTitle: String
 }
 
 type UserInvite

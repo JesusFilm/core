@@ -447,10 +447,12 @@ export interface StepViewEventCreateInput {
 
 export interface TeamCreateInput {
   title: string;
+  publicTitle?: string | null;
 }
 
 export interface TeamUpdateInput {
   title: string;
+  publicTitle?: string | null;
 }
 
 export interface TextResponseBlockCreateInput {
