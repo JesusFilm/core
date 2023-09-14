@@ -108,7 +108,7 @@ describe('Conductor', () => {
       variables: {
         input: {
           countryCode: 'Blenheim, Marlborough, New Zealand',
-          referrer: ''
+          referrer: undefined
         }
       }
     },
