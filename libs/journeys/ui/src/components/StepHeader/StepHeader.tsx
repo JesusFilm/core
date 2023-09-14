@@ -53,7 +53,7 @@ export function StepHeader({ sx }: Props): ReactElement {
         sx={{ mx: 2, mt: 1 }}
         onClick={handleClick}
       >
-        <InfoOutlinedIcon />
+        <InfoOutlinedIcon sx={{ color: { md: 'white' } }} />
       </IconButton>
       <Menu
         id="basic-menu"
