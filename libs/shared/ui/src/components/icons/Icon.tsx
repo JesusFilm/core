@@ -29,6 +29,7 @@ import Bag5 from './Bag5'
 import BarChartSquare3 from './BarChartSquare3'
 import BarGroup3 from './BarGroup3'
 import Bell2 from './Bell2'
+import Bible from './Bible'
 import Book from './Book'
 import Box from './Box'
 import Calendar1 from './Calendar1'
@@ -50,7 +51,9 @@ import Colors2 from './Colors2'
 import Computer from './Computer'
 import CopyLeft from './CopyLeft'
 import CopyRight from './CopyRight'
+import CopyTo from './CopyTo'
 import Crop1 from './Crop1'
+import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
 import Dash from './Dash'
 import DotVertical from './DotVertical'
@@ -81,6 +84,7 @@ import Globe1 from './Globe1'
 import Globe2 from './Globe2'
 import Globe3 from './Globe3'
 import Grid1 from './Grid1'
+import GridEmpty from './GridEmpty'
 import Hash1 from './Hash1'
 import Hash2 from './Hash2'
 import HelpCircleContained from './HelpCircleContained'
@@ -115,6 +119,7 @@ import Marker1 from './Marker1'
 import Marker2 from './Marker2'
 import Maximise1 from './Maximise1'
 import Maximise2 from './Maximise2'
+import MediaStrip1 from './MediaStrip1'
 import Menu1 from './Menu1'
 import MessageChat1 from './MessageChat1'
 import MessageCircle from './MessageCircle'
@@ -147,6 +152,7 @@ import SpaceHorizontal from './SpaceHorizontal'
 import SpaceVertical from './SpaceVertical'
 import Square from './Square'
 import Star2 from './Star2'
+import Stars from './Stars'
 import StopCircleContained from './StopCircleContained'
 import Target from './Target'
 import Target2 from './Target2'
@@ -208,6 +214,7 @@ export type IconName =
   | 'BarChartSquare3'
   | 'BarGroup3'
   | 'Bell2'
+  | 'Bible'
   | 'Book'
   | 'Box'
   | 'Calendar1'
@@ -229,7 +236,9 @@ export type IconName =
   | 'Computer'
   | 'CopyLeft'
   | 'CopyRight'
+  | 'CopyTo'
   | 'Crop1'
+  | 'Cursor6'
   | 'CursorPointer'
   | 'Dash'
   | 'DotVertical'
@@ -260,6 +269,7 @@ export type IconName =
   | 'Globe2'
   | 'Globe3'
   | 'Grid1'
+  | 'GridEmpty'
   | 'Hash1'
   | 'Hash2'
   | 'HelpCircleContained'
@@ -294,6 +304,7 @@ export type IconName =
   | 'Marker2'
   | 'Maximise1'
   | 'Maximise2'
+  | 'MediaStrip1'
   | 'Menu1'
   | 'MessageChat1'
   | 'MessageCircle'
@@ -326,6 +337,7 @@ export type IconName =
   | 'SpaceVertical'
   | 'Square'
   | 'Star2'
+  | 'Stars'
   | 'StopCircleContained'
   | 'Target'
   | 'Target2'
@@ -391,6 +403,7 @@ const iconComponents: IconComponents = {
   BarChartSquare3,
   BarGroup3,
   Bell2,
+  Bible,
   Book,
   Box,
   Calendar1,
@@ -412,7 +425,9 @@ const iconComponents: IconComponents = {
   Computer,
   CopyLeft,
   CopyRight,
+  CopyTo,
   Crop1,
+  Cursor6,
   CursorPointer,
   Dash,
   DotVertical,
@@ -443,6 +458,7 @@ const iconComponents: IconComponents = {
   Globe2,
   Globe3,
   Grid1,
+  GridEmpty,
   Hash1,
   Hash2,
   HelpCircleContained,
@@ -484,6 +500,7 @@ const iconComponents: IconComponents = {
   MessageTyping,
   Minimise1,
   Minimise2,
+  MediaStrip1,
   MinusCircleContained,
   More,
   Palette,
@@ -509,6 +526,7 @@ const iconComponents: IconComponents = {
   SpaceVertical,
   Square,
   Star2,
+  Stars,
   StopCircleContained,
   Target,
   Target2,
