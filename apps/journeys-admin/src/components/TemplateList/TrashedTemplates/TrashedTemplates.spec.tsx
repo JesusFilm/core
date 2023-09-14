@@ -52,7 +52,7 @@ const noJourneysMock = {
 
 describe('TrashedTemplatesTab', () => {
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
     jest.setSystemTime(new Date('2021-12-11'))
   })
 

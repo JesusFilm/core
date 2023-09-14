@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import { AuthUser } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
+import { AuthUser } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
@@ -16,34 +16,34 @@ import { SidePanel } from './SidePanel'
 import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
 
 interface PageWrapperProps {
-  backHref?: string
-  title: string | ReactNode
-  menu?: ReactNode
-  children?: ReactNode
   showAppHeader?: boolean
+  title?: string
+  mainHeaderChildren?: ReactNode
+  backHref?: string
+  backHrefHistory?: boolean
+  children?: ReactNode
+  bottomPanelChildren?: ReactNode
   sidePanelTitle?: string | ReactNode
   /**
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */
   sidePanelChildren?: ReactNode
-  bottomPanelChildren?: ReactNode
   authUser?: AuthUser
   initialState?: Partial<PageState>
-  backHrefHistory?: boolean
 }
 
 export function PageWrapper({
-  backHref,
   showAppHeader = true,
   title,
-  menu: customMenu,
+  mainHeaderChildren,
+  backHref,
+  backHrefHistory,
+  children,
+  bottomPanelChildren,
   sidePanelTitle,
   sidePanelChildren,
-  bottomPanelChildren,
-  children,
   authUser,
-  initialState,
-  backHrefHistory
+  initialState
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -97,9 +97,10 @@ export function PageWrapper({
               <MainPanelHeader
                 title={title}
                 backHref={backHref}
-                menu={customMenu}
                 backHrefHistory={backHrefHistory}
-              />
+              >
+                {mainHeaderChildren}
+              </MainPanelHeader>
               <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
                 {children}
               </MainPanelBody>

@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -9,7 +9,7 @@ import { simpleComponentConfig } from '../../../../../libs/storybook/config'
 
 import { MoveBlockButtons } from '.'
 
-const AttributeStory = {
+const AttributeStory: Meta<typeof MoveBlockButtons> = {
   ...simpleComponentConfig,
   component: MoveBlockButtons,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/MoveBlockButtons'
@@ -63,24 +63,26 @@ const step: TreeBlock = {
   ]
 }
 
-export const Default: Story = () => {
-  return (
-    <MockedProvider>
-      <EditorProvider>
-        <Stack
-          direction="row"
-          spacing={4}
-          sx={{
-            overflowX: 'auto',
-            py: 5,
-            px: 6
-          }}
-        >
-          <MoveBlockButtons selectedBlock={block} selectedStep={step} />
-        </Stack>
-      </EditorProvider>
-    </MockedProvider>
-  )
+export const Default: StoryObj<typeof MoveBlockButtons> = {
+  render: () => {
+    return (
+      <MockedProvider>
+        <EditorProvider>
+          <Stack
+            direction="row"
+            spacing={4}
+            sx={{
+              overflowX: 'auto',
+              py: 5,
+              px: 6
+            }}
+          >
+            <MoveBlockButtons selectedBlock={block} selectedStep={step} />
+          </Stack>
+        </EditorProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export default AttributeStory as Meta
+export default AttributeStory

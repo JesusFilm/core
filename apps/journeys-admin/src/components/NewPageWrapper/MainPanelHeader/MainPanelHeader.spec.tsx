@@ -12,20 +12,22 @@ const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('MainPanelHeader', () => {
   it('should show back button with correct link', () => {
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <MainPanelHeader title="Page title" backHref="/" />
     )
     expect(getByRole('link')).toHaveAttribute('href', '/')
+    expect(getByText('Page title')).toBeInTheDocument()
   })
 
   it('should show back button with backHrefHistory', async () => {
     const back = jest.fn()
     mockUseRouter.mockReturnValue({ back } as unknown as NextRouter)
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <MainPanelHeader title="Page title" backHrefHistory />
     )
     fireEvent.click(getByTestId('backHref-history-button'))
 
     await waitFor(() => expect(back).toHaveBeenCalled())
+    expect(getByText('Page title')).toBeInTheDocument()
   })
 })

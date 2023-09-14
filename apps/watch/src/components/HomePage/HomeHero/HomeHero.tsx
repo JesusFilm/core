@@ -21,10 +21,13 @@ export function HomeHero(): ReactElement {
       <Image
         src={JesusHeader}
         alt="Jesus Film Project"
-        layout="fill"
-        objectFit="cover"
         placeholder="blur"
         priority
+        fill
+        sizes="100vw"
+        style={{
+          objectFit: 'cover'
+        }}
       />
       <HeroOverlay
         sx={{

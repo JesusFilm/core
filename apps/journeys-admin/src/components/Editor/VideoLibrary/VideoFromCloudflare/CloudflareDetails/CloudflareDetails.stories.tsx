@@ -1,10 +1,10 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 
 import { CloudflareDetails } from '.'
 
-const CloudflareDetailsStory = {
+const CloudflareDetailsStory: Meta<typeof CloudflareDetails> = {
   ...journeysAdminConfig,
   component: CloudflareDetails,
   title:
@@ -12,13 +12,17 @@ const CloudflareDetailsStory = {
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const Template: Story = ({ id, onSelect }) => {
-  return <CloudflareDetails id={id} open onSelect={onSelect} />
+const Template: StoryObj<typeof CloudflareDetails> = {
+  render: ({ id, onSelect }) => {
+    return <CloudflareDetails id={id} open onSelect={onSelect} />
+  }
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  id: 'videoId'
+export const Default = {
+  ...Template,
+  args: {
+    id: 'videoId'
+  }
 }
 
-export default CloudflareDetailsStory as Meta
+export default CloudflareDetailsStory
