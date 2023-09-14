@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -19,7 +19,7 @@ import { Drawer } from '../../../../../Drawer'
 
 import { CardStyling } from '.'
 
-const CardStylingStory = {
+const CardStylingStory: Meta<typeof CardStyling> = {
   ...journeysAdminConfig,
   component: CardStyling,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/CardStyling',
@@ -64,100 +64,106 @@ const journey: Journey = {
   team: null
 }
 
-export const Default: Story = () => {
-  const block: TreeBlock<CardBlock> = {
-    id: 'card1.id',
-    __typename: 'CardBlock',
-    parentBlockId: 'step1.id',
-    parentOrder: 0,
-    coverBlockId: null,
-    backgroundColor: null,
-    themeMode: null,
-    themeName: null,
-    fullscreen: false,
-    children: []
-  }
+export const Default: StoryObj<typeof CardStyling> = {
+  render: () => {
+    const block: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
 
-  return (
-    <MockedProvider>
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: block,
-            drawerChildren: <CardStyling />,
-            drawerTitle: 'Card Style Property',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
+    return (
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: block,
+              drawerChildren: <CardStyling />,
+              drawerTitle: 'Card Style Property',
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export const Light: Story = () => {
-  const block: TreeBlock<CardBlock> = {
-    id: 'card1.id',
-    __typename: 'CardBlock',
-    parentBlockId: 'step1.id',
-    parentOrder: 0,
-    coverBlockId: null,
-    backgroundColor: null,
-    themeMode: ThemeMode.light,
-    themeName: null,
-    fullscreen: false,
-    children: []
-  }
+export const Light: StoryObj<typeof CardStyling> = {
+  render: () => {
+    const block: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: ThemeMode.light,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
 
-  return (
-    <MockedProvider>
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: block,
-            drawerChildren: <CardStyling />,
-            drawerTitle: 'Card Style Property',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
+    return (
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: block,
+              drawerChildren: <CardStyling />,
+              drawerTitle: 'Card Style Property',
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export const Dark: Story = () => {
-  const block: TreeBlock<CardBlock> = {
-    id: 'card1.id',
-    __typename: 'CardBlock',
-    parentBlockId: 'step1.id',
-    parentOrder: 0,
-    coverBlockId: null,
-    backgroundColor: null,
-    themeMode: ThemeMode.dark,
-    themeName: null,
-    fullscreen: false,
-    children: []
-  }
+export const Dark: StoryObj<typeof CardStyling> = {
+  render: () => {
+    const block: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: ThemeMode.dark,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
 
-  return (
-    <MockedProvider>
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: block,
-            drawerChildren: <CardStyling />,
-            drawerTitle: 'Card Style Property',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
+    return (
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: block,
+              drawerChildren: <CardStyling />,
+              drawerTitle: 'Card Style Property',
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export default CardStylingStory as Meta
+export default CardStylingStory

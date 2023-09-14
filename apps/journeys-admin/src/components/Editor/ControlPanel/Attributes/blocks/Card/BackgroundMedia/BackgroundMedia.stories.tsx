@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -25,7 +25,7 @@ import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/Sou
 
 import { BackgroundMedia } from '.'
 
-const BackgroundMediaStory = {
+const BackgroundMediaStory: Meta<typeof BackgroundMedia> = {
   ...journeysAdminConfig,
   component: BackgroundMedia,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundMedia',
@@ -167,57 +167,63 @@ const videoLanguages: GetVideoVariantLanguages_video = {
   ]
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_VIDEO_VARIANT_LANGUAGES,
-          variables: {
-            id: videoLanguages.id
-          }
-        },
-        result: {
-          data: {
-            video: videoLanguages
+const Template: StoryObj<typeof BackgroundMedia> = {
+  render: ({ ...args }) => (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_VIDEO_VARIANT_LANGUAGES,
+            variables: {
+              id: videoLanguages.id
+            }
+          },
+          result: {
+            data: {
+              video: videoLanguages
+            }
           }
         }
-      }
-    ]}
-  >
-    <ThemeProvider>
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <EditorProvider
-          initialState={{
-            ...args,
-            drawerChildren: <BackgroundMedia />,
-            drawerTitle: 'Background Media',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </ThemeProvider>
-  </MockedProvider>
-)
+      ]}
+    >
+      <ThemeProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider
+            initialState={{
+              ...args,
+              drawerChildren: <BackgroundMedia />,
+              drawerTitle: 'Background Media',
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </ThemeProvider>
+    </MockedProvider>
+  )
+}
 
-export const Video = Template.bind({})
-Video.args = {
-  selectedBlock: {
-    ...card,
-    children: [{ ...video, posterBlockId: poster.id, children: [poster] }],
-    coverBlockId: video.id
+export const Video = {
+  ...Template,
+  args: {
+    selectedBlock: {
+      ...card,
+      children: [{ ...video, posterBlockId: poster.id, children: [poster] }],
+      coverBlockId: video.id
+    }
   }
 }
 
-export const Image = Template.bind({})
-Image.args = {
-  selectedBlock: {
-    ...card,
-    coverBlockId: image.id,
-    children: [image]
+export const Image = {
+  ...Template,
+  args: {
+    selectedBlock: {
+      ...card,
+      coverBlockId: image.id,
+      children: [image]
+    }
   }
 }
 
-export default BackgroundMediaStory as Meta
+export default BackgroundMediaStory

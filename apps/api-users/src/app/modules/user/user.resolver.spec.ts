@@ -15,8 +15,19 @@ jest.mock('@core/nest/common/firebaseClient', () => ({
         email: 'tho@no.co',
         photoURL: 'p'
       })
-    })
+    }),
+    getOrInitService: jest.fn()
   }
+}))
+
+jest.mock('firebase-admin/auth', () => ({
+  getAuth: jest.fn().mockReturnValue({
+    getUser: jest.fn().mockResolvedValue({
+      displayName: 'fo sho',
+      email: 'tho@no.co',
+      photoURL: 'p'
+    })
+  })
 }))
 
 describe('UserResolver', () => {

@@ -15,6 +15,7 @@ import 'video.js/dist/video-js.css'
 
 interface BackgroundVideoProps extends TreeBlock<VideoFields> {
   setLoading: (loading: boolean) => void
+  cardColor: string
 }
 
 const StyledVideo = styled('video')(() => ({}))
@@ -27,11 +28,11 @@ export function BackgroundVideo({
   startAt,
   endAt,
   objectFit,
-  setLoading
+  setLoading,
+  cardColor
 }: BackgroundVideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
-
   const isYouTube = source === VideoBlockSource.youTube
 
   // Initiate Video
@@ -111,9 +112,10 @@ export function BackgroundVideo({
     <StyledVideo
       ref={videoRef}
       data-testid="background-video"
-      className="video-js"
+      className="vjs-fill video-js"
       playsInline
       sx={{
+        '&.vjs-fill': { backgroundColor: cardColor },
         '&.video-js.vjs-fill:not(.vjs-audio-only-mode)': {
           height: isYouTube ? 'inherit' : '100%',
           transform: isYouTube

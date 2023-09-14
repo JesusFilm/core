@@ -113,7 +113,11 @@ export function ContainedCover({
         }}
       >
         {videoBlock?.videoId != null && (
-          <BackgroundVideo {...videoBlock} setLoading={setLoading} />
+          <BackgroundVideo
+            {...videoBlock}
+            setLoading={setLoading}
+            cardColor={backgroundColor}
+          />
         )}
         {/* NextImage poster image causes longer LCP loading times, but still faster since using optimized image */}
         {posterImage != null && videoBlock != null && loading && (
@@ -144,7 +148,9 @@ export function ContainedCover({
               blurDataURL={backgroundBlur}
               layout="fill"
               objectFit="cover"
-              sx={{ transform: 'scale(2) translate(0px, -25%)' }}
+              sx={{
+                transform: 'scale(2) translate(0px, -25%)'
+              }}
             />
             <Box
               sx={{

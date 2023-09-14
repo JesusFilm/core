@@ -16,7 +16,7 @@ const DynamicLanguageDialog = dynamic<{
   async () =>
     await import(
       /* webpackChunkName: "PropertiesLanguageDialog" */
-      '../../../Menu/LanguageDialog'
+      '../../../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
     ).then((mod) => mod.LanguageDialog)
 )
 
@@ -61,7 +61,9 @@ export function Language({ isPublisher }: LanguageProps): ReactElement {
               {localLanguage ?? nativeLanguage}
               {localLanguage != null &&
                 localLanguage !== nativeLanguage &&
-                nativeLanguage && <span>&nbsp;({nativeLanguage})</span>}
+                nativeLanguage !== null && (
+                  <span>&nbsp;({nativeLanguage})</span>
+                )}
             </span>
           </Typography>
         ) : (

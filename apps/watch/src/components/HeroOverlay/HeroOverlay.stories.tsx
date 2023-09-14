@@ -1,28 +1,30 @@
 import Box from '@mui/material/Box'
-import { ComponentStory, Meta } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { watchConfig } from '../../libs/storybook'
 
 import { HeroOverlay } from '.'
 
-const HeroOverlayStory = {
+const HeroOverlayStory: Meta<typeof HeroOverlay> = {
   ...watchConfig,
   component: HeroOverlay,
   title: 'Watch/HeroOverlay'
 }
 
-const Template: ComponentStory<typeof HeroOverlay> = () => (
-  <Box
-    sx={{
-      height: '300px',
-      width: '300px',
-      position: 'relative'
-    }}
-  >
-    <HeroOverlay />
-  </Box>
-)
+const Template: StoryObj<typeof HeroOverlay> = {
+  render: () => (
+    <Box
+      sx={{
+        height: '300px',
+        width: '300px',
+        position: 'relative'
+      }}
+    >
+      <HeroOverlay />
+    </Box>
+  )
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default HeroOverlayStory as Meta
+export default HeroOverlayStory

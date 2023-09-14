@@ -10,6 +10,9 @@ concurrency:
 jobs:
   affected:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -18,31 +21,33 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v3
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "$(npx nx affected:apps --plain | npx ts-node tools/scripts/affected-frontend-apps.ts)" >> $GITHUB_OUTPUT
+          echo "matrix=$(npx ts-node tools/scripts/affected-apps.ts --withTarget deploy --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
   deploy-preview:
     name: Deploy Preview and Test
     needs: affected
     # feature branch, stage branch, or pull request
-    if: ${{ needs.affected.outputs.matrix != '[]' && (github.ref != 'refs/heads/main' || github.event_name == 'pull_request') }}
+    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && (github.ref != 'refs/heads/main' || github.event_name == 'pull_request') }}
     strategy:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
+        node-version: [18]
     runs-on: ubuntu-latest
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
@@ -62,15 +67,15 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v3
@@ -140,12 +145,13 @@ jobs:
   deploy-production:
     name: Deploy Production
     # main branch and not a pull request
-    if: ${{ needs.affected.outputs.matrix != '[]' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
     needs: affected
     strategy:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
+        node-version: [18]
     runs-on: ubuntu-latest
     permissions:
       deployments: write
@@ -164,15 +170,15 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v3
