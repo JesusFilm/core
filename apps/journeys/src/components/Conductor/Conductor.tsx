@@ -59,9 +59,9 @@ const StyledSwiperContainer = styled(Swiper)<{
     },
     '.swiper-pagination-bullet': {
       background: desktopScreen
-        ? theme.palette.grey[100] // in desktop view, make the pagination dots white, else set colour based on theme
+        ? theme.palette.common.white // in desktop view, make the pagination dots white, else set colour based on theme
         : cardBlock?.themeMode === ThemeMode.dark
-        ? theme.palette.grey[100]
+        ? theme.palette.common.white
         : theme.palette.grey[800],
       opacity: '60%'
     },
