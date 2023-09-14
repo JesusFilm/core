@@ -5,13 +5,13 @@ import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelBodyProps {
   children: ReactNode
-  mainBodyPadding: boolean
+  mainBodyPadding?: boolean
   bottomPanelChildren?: ReactNode
 }
 
 export function MainPanelBody({
   children,
-  mainBodyPadding,
+  mainBodyPadding = true,
   bottomPanelChildren
 }: MainPanelBodyProps): ReactElement {
   const { navbar, bottomPanel } = usePageWrapperStyles()

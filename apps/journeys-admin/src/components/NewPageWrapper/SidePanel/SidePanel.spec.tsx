@@ -7,14 +7,13 @@ import { SidePanel } from '.'
 
 describe('SidePanel', () => {
   it('should render side panel props', () => {
-    const onClose = jest.fn()
     const { getByTestId } = render(
       <PageProvider
         initialState={{
           mobileDrawerOpen: true
         }}
       >
-        <SidePanel title="Side Panel Title" onClose={onClose}>
+        <SidePanel title="Side Panel Title">
           <Typography variant="h1">Side Panel</Typography>
         </SidePanel>
       </PageProvider>
@@ -36,10 +35,6 @@ describe('SidePanel', () => {
       desktopDrawer.queryByTestId('close-side-drawer')
     ).not.toBeInTheDocument()
 
-    fireEvent.click(desktopDrawer.getByTestId('close-side-drawer'))
-
-    expect(onClose).toHaveBeenCalled()
-
     expect(mobileDrawer.getByTestId('side-header')).toHaveTextContent(
       'Side Panel Title'
     )
@@ -47,6 +42,28 @@ describe('SidePanel', () => {
       'Side Panel'
     )
     expect(mobileDrawer.getByTestId('close-side-drawer')).toBeInTheDocument()
+  })
+
+  it('should call onClose', () => {
+    const onClose = jest.fn()
+    const { getByTestId } = render(
+      <PageProvider
+        initialState={{
+          mobileDrawerOpen: true
+        }}
+      >
+        <SidePanel title="Side Panel Title" onClose={onClose}>
+          <Typography variant="h1">Side Panel</Typography>
+        </SidePanel>
+      </PageProvider>
+    )
+
+    const desktopDrawer = within(getByTestId('side-panel'))
+    const mobileDrawer = within(getByTestId('mobile-side-panel'))
+
+    fireEvent.click(desktopDrawer.getByTestId('close-side-drawer'))
+
+    expect(onClose).toHaveBeenCalled()
 
     fireEvent.click(mobileDrawer.getByTestId('close-side-drawer'))
 

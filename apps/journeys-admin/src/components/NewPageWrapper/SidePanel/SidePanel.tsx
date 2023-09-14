@@ -12,7 +12,7 @@ import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 interface SidePanelProps {
   children: ReactNode
-  title?: string
+  title?: ReactNode
   open?: boolean
   // TODO: Remove if admin edit page uses SidePanel instead of Drawer
   withAdminDrawer?: boolean
@@ -20,7 +20,7 @@ interface SidePanelProps {
 }
 
 interface DrawerContentProps {
-  title?: string
+  title?: ReactNode
   children?: ReactNode
   onClose?: () => void
 }
@@ -43,21 +43,26 @@ function DrawerContent({
           variant={toolbar.variant}
           sx={{ justifyContent: 'space-between' }}
         >
-          {title != null && (
-            <Typography variant="subtitle1" component="div" noWrap>
-              {title}
-            </Typography>
-          )}
-          {onClose != null && (
-            <IconButton
-              data-testid="close-side-drawer"
-              onClick={onClose}
-              sx={{ display: 'inline-flex' }}
-              edge="end"
-            >
-              <Close />
-            </IconButton>
-          )}
+          <>
+            {title != null &&
+              (typeof title === 'string' ? (
+                <Typography variant="subtitle1" component="div" noWrap>
+                  {title}
+                </Typography>
+              ) : (
+                { title }
+              ))}
+            {onClose != null && (
+              <IconButton
+                data-testid="close-side-drawer"
+                onClick={onClose}
+                sx={{ display: 'inline-flex' }}
+                edge="end"
+              >
+                <Close />
+              </IconButton>
+            )}
+          </>
         </Toolbar>
       </AppBar>
       <Stack

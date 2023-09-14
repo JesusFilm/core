@@ -79,7 +79,7 @@ export function Canvas(): ReactElement {
 
     window.addEventListener('resize', setSpaceBetweenOnResize)
     return () => window.removeEventListener('resize', setSpaceBetweenOnResize)
-  }, [mdUp])
+  }, [mdUp, sidePanel.width])
 
   const handleSelectCard = (): void => {
     // Prevent losing focus on empty input
@@ -117,7 +117,7 @@ export function Canvas(): ReactElement {
   }
 
   return (
-    <Box>
+    <Box onClick={handleSelectCard}>
       <StyledSwiperContainer
         data-testid="step-container"
         slidesPerView="auto"
@@ -125,7 +125,6 @@ export function Canvas(): ReactElement {
         centeredSlides
         shortSwipes={false}
         slideToClickedSlide={steps != null}
-        onClick={handleSelectCard}
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={(swiper) => {
           if (steps == null) return

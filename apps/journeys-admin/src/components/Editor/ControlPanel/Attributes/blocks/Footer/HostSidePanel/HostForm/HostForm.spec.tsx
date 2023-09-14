@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -43,7 +43,7 @@ describe('HostForm', () => {
   } as unknown as Journey
 
   it('should render an create host form', async () => {
-    const { getByRole, getByTestId } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
@@ -52,52 +52,58 @@ describe('HostForm', () => {
               variant: 'admin'
             }}
           >
-            <HostForm onClear={jest.fn()} />
+            <HostForm onClear={jest.fn()} onClose={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
-    expect(getByRole('textbox', { name: 'Host Name' })).toHaveAttribute(
-      'value',
-      ''
-    )
-    expect(getByRole('textbox', { name: 'Location' })).toHaveAttribute(
-      'value',
-      ''
-    )
-    expect(getByTestId('avatar1').firstChild).toHaveAttribute(
+    const sidePanel = within(getByTestId('side-panel'))
+
+    expect(
+      sidePanel.getByRole('textbox', { name: 'Host Name Host Name' })
+    ).toHaveAttribute('value', '')
+    expect(
+      sidePanel.getByRole('textbox', { name: 'Location Location' })
+    ).toHaveAttribute('value', '')
+    expect(sidePanel.getByTestId('avatar1').firstChild).toHaveAttribute(
       'data-testid',
       'UserProfileAddIcon'
     )
-    expect(getByTestId('avatar2').firstChild).toHaveAttribute(
+    expect(sidePanel.getByTestId('avatar2').firstChild).toHaveAttribute(
       'data-testid',
       'UserProfileAddIcon'
     )
   })
 
   it('should render an edit host form', async () => {
-    const { getByRole, getByAltText } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostForm onClear={jest.fn()} />
+            <HostForm onClear={jest.fn()} onClose={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
-    expect(getByRole('button', { name: 'Clear' })).toBeInTheDocument()
-    expect(getByRole('textbox', { name: 'Host Name' })).toHaveAttribute(
-      'value',
-      defaultHost.title
+    const sidePanel = within(getByTestId('side-panel'))
+
+    expect(sidePanel.getByRole('button', { name: 'Clear' })).toBeInTheDocument()
+    expect(
+      sidePanel.getByRole('textbox', { name: 'Host Name Host Name' })
+    ).toHaveAttribute('value', defaultHost.title)
+    expect(
+      sidePanel.getByRole('textbox', { name: 'Location Location' })
+    ).toHaveAttribute('value', defaultHost.location)
+    expect(sidePanel.getByAltText('avatar1')).toHaveAttribute(
+      'src',
+      defaultHost.src1
     )
-    expect(getByRole('textbox', { name: 'Location' })).toHaveAttribute(
-      'value',
-      defaultHost.location
+    expect(sidePanel.getByAltText('avatar2')).toHaveAttribute(
+      'src',
+      defaultHost.src2
     )
-    expect(getByAltText('avatar1')).toHaveAttribute('src', defaultHost.src1)
-    expect(getByAltText('avatar2')).toHaveAttribute('src', defaultHost.src2)
   })
 
   it('should delete and update journey host on clear button click', async () => {
@@ -121,7 +127,7 @@ describe('HostForm', () => {
       }
     }))
 
-    const { getByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -150,13 +156,15 @@ describe('HostForm', () => {
       >
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostForm onClear={onClear} />
+            <HostForm onClear={onClear} onClose={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Clear' }))
+    const sidePanel = within(getByTestId('side-panel'))
+
+    fireEvent.click(sidePanel.getByRole('button', { name: 'Clear' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdate).toHaveBeenCalled())
