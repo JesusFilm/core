@@ -59,7 +59,9 @@ export function TeamAvatars({
               backgroundColor: 'secondary.contrastText'
             }}
           >
-            <UserProfile2Icon sx={{ color: 'secondary.light', width: '18px' }} />
+            <UserProfile2Icon
+              sx={{ color: 'secondary.light', width: '18px' }}
+            />
           </MuiAvatar>
         )}
       </AvatarGroup>
