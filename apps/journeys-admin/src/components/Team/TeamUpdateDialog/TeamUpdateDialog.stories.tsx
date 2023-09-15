@@ -92,10 +92,13 @@ export const Default = {
   play: async () => {
     await waitFor(
       async () =>
-        await expect(screen.getByRole('textbox')).toHaveValue('My Team')
+        await expect(screen.getAllByRole('textbox')[0]).toHaveValue('My Team')
     )
-    await userEvent.clear(screen.getByRole('textbox'))
-    await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+    await userEvent.clear(screen.getAllByRole('textbox')[0])
+    await userEvent.type(
+      screen.getAllByRole('textbox')[0],
+      'Jesus Film Project'
+    )
   }
 }
 

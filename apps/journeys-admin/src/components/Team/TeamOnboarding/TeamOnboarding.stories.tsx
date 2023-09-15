@@ -124,7 +124,10 @@ export const Default = {
     }
   },
   play: async () => {
-    await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+    await userEvent.type(
+      screen.getAllByRole('textbox')[0],
+      'Jesus Film Project'
+    )
   }
 }
 
