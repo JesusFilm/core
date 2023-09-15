@@ -33,7 +33,7 @@ jobs:
         with:
           status: ${{ job.status }}
           channel: '#apps-monitoring'
-          message: Monitoring is '${{ job.status }}'
+          message: Journeys monitoring is '${{ job.status }}'
         if: always()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
