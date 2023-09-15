@@ -128,7 +128,7 @@ export function DeleteBlock({
       ) : (
         <MenuItem
           label={`Delete ${label}`}
-          icon={<Trash2Icon/>}
+          icon={<Trash2Icon />}
           disabled={disableAction}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />
