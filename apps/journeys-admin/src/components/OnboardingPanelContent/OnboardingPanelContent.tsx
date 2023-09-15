@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
-import JourneyIcon from '@core/shared/ui/icons/Journey'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
 
 import { GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys } from '../../../__generated__/GetOnboardingJourneys'
 import { useJourneyCreate } from '../../libs/useJourneyCreate/useJourneyCreate'
@@ -66,7 +66,7 @@ export function OnboardingPanelContent({
         <SidePanelContainer>
           <ContainedIconButton
             label={t('Create Custom Journey')}
-            thumbnailIcon={<JourneyIcon />}
+            thumbnailIcon={<JourneysIcon />}
             onClick={handleCreateJourneyClick}
             loading={loading}
           />

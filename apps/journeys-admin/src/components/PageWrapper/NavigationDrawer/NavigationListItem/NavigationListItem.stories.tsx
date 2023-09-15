@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import JourneyIcon from '@core/shared/ui/icons/Journey'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
 
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { StyledList } from '../NavigationDrawer'
@@ -24,7 +24,7 @@ const Template: StoryObj<typeof NavigationListItem> = {
 export const Default = {
   ...Template,
   args: {
-    icon: <JourneyIcon />,
+    icon: <JourneysIcon />,
     label: 'Discover',
     selected: false
   }
@@ -33,7 +33,7 @@ export const Default = {
 export const Selected = {
   ...Template,
   args: {
-    icon: <JourneyIcon />,
+    icon: <JourneysIcon />,
     label: 'Discover',
     selected: true
   }
@@ -42,7 +42,7 @@ export const Selected = {
 export const WithBadge = {
   ...Template,
   args: {
-    icon: <JourneyIcon />,
+    icon: <JourneysIcon />,
     label: 'Discover',
     tooltipText: 'tool tip text'
   }

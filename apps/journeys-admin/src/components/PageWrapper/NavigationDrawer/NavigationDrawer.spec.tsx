@@ -296,7 +296,7 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
-    expect(getByTestId('JourneyIcon').parentElement).toHaveStyle(
+    expect(getByTestId('JourneysIcon').parentElement).toHaveStyle(
       'color: #FFFFFF'
     )
   })

@@ -23,7 +23,7 @@ import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import BoxIcon from '@core/shared/ui/icons/Box'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
-import JourneyIcon from '@core/shared/ui/icons/Journey'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
 
 import { GetMe } from '../../../../__generated__/GetMe'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
@@ -158,7 +158,7 @@ export function NavigationDrawer({
         </ListItemButton>
 
         <NavigationListItem
-          icon={<JourneyIcon />}
+          icon={<JourneysIcon />}
           label="Discover"
           selected={selectedPage === 'journeys' || selectedPage === ''} // empty for when page is index. UPDATE when we add the actual index page
           link="/"
