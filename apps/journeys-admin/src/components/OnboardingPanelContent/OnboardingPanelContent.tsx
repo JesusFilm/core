@@ -8,9 +8,9 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ChevronRight from '@core/shared/ui/icons/ChevronRight'
-import Grid1 from '@core/shared/ui/icons/Grid1'
-import Journey from '@core/shared/ui/icons/Journey'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
+import Grid1Icon from '@core/shared/ui/icons/Grid1'
+import JourneyIcon from '@core/shared/ui/icons/Journey'
 
 import { GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys } from '../../../__generated__/GetOnboardingJourneys'
 import { useJourneyCreate } from '../../libs/useJourneyCreate/useJourneyCreate'
@@ -66,7 +66,7 @@ export function OnboardingPanelContent({
         <SidePanelContainer>
           <ContainedIconButton
             label={t('Create Custom Journey')}
-            thumbnailIcon={<Journey />}
+            thumbnailIcon={<JourneyIcon />}
             onClick={handleCreateJourneyClick}
             loading={loading}
           />
@@ -82,7 +82,7 @@ export function OnboardingPanelContent({
               sx={{ display: 'flex', alignItems: 'center' }}
             >
               {t('See all')}
-              <ChevronRight />
+              <ChevronRightIcon />
             </Link>
           </NextLink>
         </Stack>
@@ -106,7 +106,7 @@ export function OnboardingPanelContent({
         <NextLink href="/templates" passHref legacyBehavior>
           <Button
             variant="outlined"
-            startIcon={<Grid1 />}
+            startIcon={<Grid1Icon />}
             sx={{ width: 'max-content', alignSelf: 'center' }}
           >
             {t('See all templates')}

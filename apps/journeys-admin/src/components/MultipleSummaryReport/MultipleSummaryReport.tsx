@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-import ChevronRight from '@core/shared/ui/icons/ChevronRight'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
@@ -28,7 +28,7 @@ export function MultipleSummaryReport(): ReactElement {
             <Button
               size="small"
               variant="text"
-              endIcon={<ChevronRight sx={{ fontSize: 1 }} />}
+              endIcon={<ChevronRightIcon sx={{ fontSize: 1 }} />}
             >
               See all
             </Button>

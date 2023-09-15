@@ -8,7 +8,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
-import CopyLeft from '@core/shared/ui/icons/CopyLeft'
+import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
 import {
@@ -130,12 +130,12 @@ export function DuplicateBlock({
           disabled={disableAction}
           onClick={handleDuplicateBlock}
         >
-          <CopyLeft />
+          <CopyLeftIcon />
         </IconButton>
       ) : (
         <MenuItem
           label={`Duplicate ${blockLabel}`}
-          icon={<CopyLeft color="inherit" />}
+          icon={<CopyLeftIcon color="inherit" />}
           disabled={disableAction}
           onClick={handleDuplicateBlock}
         />

@@ -8,7 +8,7 @@ import compact from 'lodash/compact'
 import { AuthUser } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
-import Logout2 from '@core/shared/ui/icons/Logout2'
+import Logout2Icon from '@core/shared/ui/icons/Logout2'
 
 import { GetMe_me as User } from '../../../../../__generated__/GetMe'
 import { MenuItem } from '../../../MenuItem'
@@ -68,7 +68,7 @@ export function UserMenu({
       <Divider />
       <MenuItem
         label="Logout"
-        icon={<Logout2 fontSize="small" />}
+        icon={<Logout2Icon fontSize="small" />}
         onClick={async () => {
           handleProfileClose()
           await authUser.signOut()

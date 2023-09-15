@@ -9,7 +9,7 @@ import useSWR from 'swr'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-import Check from '@core/shared/ui/icons/Check'
+import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { parseISO8601Duration } from '../../../../../libs/parseISO8601Duration'
@@ -148,7 +148,7 @@ export function YouTubeDetails({
       >
         <Button
           variant="contained"
-          startIcon={<Check />}
+          startIcon={<CheckIcon />}
           onClick={handleSelect}
           size="small"
           disabled={loading}

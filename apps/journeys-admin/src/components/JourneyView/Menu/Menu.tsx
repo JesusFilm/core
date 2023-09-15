@@ -8,10 +8,10 @@ import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import CheckContained from '@core/shared/ui/icons/CheckContained'
-import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
-import More from '@core/shared/ui/icons/More'
+import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../__generated__/GetRole'
 import { Role } from '../../../../__generated__/globalTypes'
@@ -69,7 +69,7 @@ export function Menu(): ReactElement {
           {journey.template !== true && (
             <>
               <Chip
-                icon={<EyeOpen />}
+                icon={<EyeOpenIcon />}
                 label="Preview"
                 component="a"
                 href={`/api/preview?slug=${journey.slug}`}
@@ -94,7 +94,7 @@ export function Menu(): ReactElement {
                   }
                 }}
               >
-                <EyeOpen />
+                <EyeOpenIcon />
               </IconButton>
             </>
           )}
@@ -106,7 +106,7 @@ export function Menu(): ReactElement {
             aria-expanded={openMenu ? 'true' : undefined}
             onClick={handleShowMenu}
           >
-            <More />
+            <MoreIcon />
           </IconButton>
           <MuiMenu
             id="single-journey-actions"
@@ -124,7 +124,7 @@ export function Menu(): ReactElement {
             >
               <MenuItem
                 label="Preview"
-                icon={<EyeOpen />}
+                icon={<EyeOpenIcon />}
                 openInNew
                 onClick={handleCloseMenu}
               />
@@ -132,7 +132,7 @@ export function Menu(): ReactElement {
             {journey.template === true && (
               <MenuItem
                 label="Use Template"
-                icon={<CheckContained />}
+                icon={<CheckContainedIcon />}
                 onClick={() => setDuplicateTeamDialogOpen(true)}
               />
             )}
@@ -159,7 +159,7 @@ export function Menu(): ReactElement {
         </>
       ) : (
         <IconButton edge="end" disabled>
-          <More />
+          <MoreIcon />
         </IconButton>
       )}
     </>

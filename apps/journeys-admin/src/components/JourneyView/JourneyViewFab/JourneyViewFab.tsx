@@ -6,8 +6,8 @@ import { ReactElement, useState } from 'react'
 import TagManager from 'react-gtm-module'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Check from '@core/shared/ui/icons/Check'
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import CheckIcon from '@core/shared/ui/icons/Check'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
@@ -72,7 +72,7 @@ export function JourneyViewFab({
           disabled={journey == null}
           onClick={() => setDuplicateTeamDialogOpen(true)}
         >
-          <Check sx={{ mr: 3 }} />
+          <CheckIcon sx={{ mr: 3 }} />
           <Typography
             variant="subtitle2"
             sx={{ display: { xs: 'none', sm: 'flex' } }}
@@ -103,7 +103,7 @@ export function JourneyViewFab({
             color="primary"
             disabled={journey == null}
           >
-            <Edit2 sx={{ mr: 3 }} />
+            <Edit2Icon sx={{ mr: 3 }} />
             Edit
           </Fab>
         </NextLink>

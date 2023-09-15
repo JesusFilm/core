@@ -7,7 +7,7 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
 export function DatePreview(): ReactElement {
   const { journey } = useJourney()
@@ -35,7 +35,7 @@ export function DatePreview(): ReactElement {
         legacyBehavior
       >
         <Button
-          startIcon={<EyeOpen />}
+          startIcon={<EyeOpenIcon />}
           variant="outlined"
           size="small"
           color="secondary"

@@ -4,8 +4,8 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
-import ChevronRight from '@core/shared/ui/icons/ChevronRight'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 interface UnsplashCollectionsProps {
   onClick: (collectionId: string, query: string) => void
@@ -117,7 +117,7 @@ export function UnsplashCollections({
             }
           }}
         >
-          {variant === 'Left' ? <ChevronLeft /> : <ChevronRight />}
+          {variant === 'Left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </>
     )

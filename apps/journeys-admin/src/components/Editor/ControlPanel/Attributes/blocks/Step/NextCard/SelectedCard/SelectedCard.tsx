@@ -11,7 +11,7 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import Lock1 from '@core/shared/ui/icons/Lock1'
+import Lock1Icon from '@core/shared/ui/icons/Lock1'
 import MinusCircleContained from '@core/shared/ui/icons/MinusCircleContained'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
@@ -136,7 +136,7 @@ export function SelectedCard(): ReactElement {
           <Typography variant="subtitle2">Selected Step</Typography>
           {locked && (
             <Stack direction="row" spacing={1}>
-              <Lock1 sx={{ fontSize: '18px', color: 'secondary.light' }} />
+              <Lock1Icon sx={{ fontSize: '18px', color: 'secondary.light' }} />
               <Typography variant="caption" sx={{ color: 'secondary.light' }}>
                 Locked With Interaction
               </Typography>

@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import Globe1 from '@core/shared/ui/icons/Globe1'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import {
   GetAdminJourneys_journeys as Journey,
@@ -76,7 +76,7 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
         <>
           {journey != null ? (
             <Stack direction="row" alignItems="center" spacing={1.5}>
-              <Globe1 sx={{ fontSize: 13 }} />
+              <Globe1Icon sx={{ fontSize: 13 }} />
               <Typography variant="caption">
                 {journey.language.name.find(({ primary }) => primary)?.value}
               </Typography>

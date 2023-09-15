@@ -8,7 +8,7 @@ import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StyledRadioOption } from '@core/journeys/ui/RadioOption'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
-import AddSquare4 from '@core/shared/ui/icons/AddSquare4'
+import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 
 import { RadioOptionBlockCreate } from '../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
@@ -82,7 +82,9 @@ export function RadioQuestionEdit({
         variant="contained"
         fullWidth
         disableRipple
-        startIcon={<AddSquare4 sx={{ color: `${adminPrimaryColor.main}` }} />}
+        startIcon={
+          <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
+        }
         onClick={handleCreateOption}
         sx={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}
       >

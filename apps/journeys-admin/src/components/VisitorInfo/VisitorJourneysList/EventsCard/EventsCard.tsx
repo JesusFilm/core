@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement, useState } from 'react'
 
-import AlertCircle from '@core/shared/ui/icons/AlertCircle'
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
 import { EventVariant, JourneyWithEvents, transformEvents } from '../utils'
 
@@ -102,7 +102,7 @@ export function EventsCard({ journey }: Props): ReactElement {
                 {array.length === 1 &&
                   timelineItem.event.__typename === 'JourneyViewEvent' && (
                     <GenericEvent
-                      icon={<AlertCircle />}
+                      icon={<AlertCircleIcon />}
                       value="User left journey with no actions"
                     />
                   )}

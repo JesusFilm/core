@@ -3,7 +3,7 @@ import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement, useState } from 'react'
 
-import Filter from '@core/shared/ui/icons/Filter'
+import FilterIcon from '@core/shared/ui/icons/Filter'
 
 import { FilterDrawer } from '../FilterDrawer/FilterDrawer'
 
@@ -39,7 +39,7 @@ export function VisitorToolbar({
   return (
     <Box sx={{ display: { sm: 'block', md: 'none' } }}>
       <IconButton>
-        <Filter onClick={handleOpen} />
+        <FilterIcon onClick={handleOpen} />
       </IconButton>
       <Drawer
         anchor="bottom"

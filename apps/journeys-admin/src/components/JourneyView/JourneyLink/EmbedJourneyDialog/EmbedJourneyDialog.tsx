@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { EmbedCardPreview } from './EmbedCardPreview'
 
@@ -94,7 +94,7 @@ iframe.style.zIndex="auto"
             }}
           >
             <AccordionSummary
-              expandIcon={<ChevronDown color="secondary" />}
+              expandIcon={<ChevronDownIcon color="secondary" />}
               aria-controls="panel-content"
               sx={{
                 flexDirection: 'row-reverse'

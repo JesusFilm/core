@@ -6,10 +6,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import Image3 from '@core/shared/ui/icons/Image3'
-import Layout2 from '@core/shared/ui/icons/Layout2'
-import Palette from '@core/shared/ui/icons/Palette'
-import VideoOn from '@core/shared/ui/icons/VideoOn'
+import Image3Icon from '@core/shared/ui/icons/Image3'
+import Layout2Icon from '@core/shared/ui/icons/Layout2'
+import PaletteIcon from '@core/shared/ui/icons/Palette'
+import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import {
@@ -92,7 +92,7 @@ export function Card({
       {coverBlock?.__typename === 'ImageBlock' && coverBlock.src != null && (
         <Attribute
           id={`${id}-cover-block`}
-          icon={<Image3 />}
+          icon={<Image3Icon />}
           name="Background"
           value={coverBlock.src.substring(
             coverBlock.src.lastIndexOf('/') + 1,
@@ -105,7 +105,7 @@ export function Card({
       {coverBlock?.__typename === 'VideoBlock' && (
         <Attribute
           id={`${id}-cover-block`}
-          icon={<VideoOn />}
+          icon={<VideoOnIcon />}
           name="Background"
           value={coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''}
           description="Background Video"
@@ -115,7 +115,7 @@ export function Card({
       {coverBlock == null && (
         <Attribute
           id={`${id}-cover-block`}
-          icon={<Image3 />}
+          icon={<Image3Icon />}
           name="Background"
           value="None"
           description="Background Media"
@@ -123,7 +123,7 @@ export function Card({
         />
       )}
       <Attribute
-        icon={<Palette />}
+        icon={<PaletteIcon />}
         id={`${id}-theme-mode`}
         name="Style"
         value={
@@ -144,7 +144,7 @@ export function Card({
         }}
       />
       <Attribute
-        icon={<Layout2 />}
+        icon={<Layout2Icon />}
         id={`${id}-fullscreen`}
         name="Layout"
         value={fullscreen ? 'Expanded' : 'Contained'}

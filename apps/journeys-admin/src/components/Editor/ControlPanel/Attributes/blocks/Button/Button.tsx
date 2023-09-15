@@ -3,10 +3,10 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import AlertCircle from '@core/shared/ui/icons/AlertCircle'
-import Link from '@core/shared/ui/icons/Link'
-import SpaceHorizontal from '@core/shared/ui/icons/SpaceHorizontal'
-import Transform from '@core/shared/ui/icons/Transform'
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+import LinkIcon from '@core/shared/ui/icons/Link'
+import SpaceHorizontalIcon from '@core/shared/ui/icons/SpaceHorizontal'
+import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
@@ -62,7 +62,7 @@ export function Button({
     <>
       <Attribute
         id={`${id}-button-action`}
-        icon={<Link />}
+        icon={<LinkIcon />}
         name="Action"
         value={selectedAction?.label ?? 'None'}
         description="Action"
@@ -94,7 +94,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-size`}
-        icon={<SpaceHorizontal />}
+        icon={<SpaceHorizontalIcon />}
         name="Button Size"
         value={capitalize(size?.toString() ?? ButtonSize.medium)}
         description="Button Size"
@@ -110,7 +110,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-variant`}
-        icon={<Transform />}
+        icon={<TransformIcon />}
         name="Variant"
         value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
         description="Button Variant"
@@ -126,7 +126,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-leading-icon`}
-        icon={<AlertCircle />}
+        icon={<AlertCircleIcon />}
         name="Leading Icon"
         value={
           icons.find(({ value }) => value === startIcon?.iconName)?.label ??
@@ -145,7 +145,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-trailing-icon`}
-        icon={<AlertCircle />}
+        icon={<AlertCircleIcon />}
         name="Trailing Icon"
         value={
           icons.find(({ value }) => value === endIcon?.iconName)?.label ??

@@ -6,7 +6,7 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import EmailIcon from '@core/shared/ui/icons/Email'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
@@ -69,7 +69,7 @@ export function AddUserSection({
               />
             )
           }
-          endIcon={<ChevronDown />}
+          endIcon={<ChevronDownIcon />}
           aria-controls={menuOpen ? 'menu' : undefined}
           sx={{
             borderRadius: '16px',

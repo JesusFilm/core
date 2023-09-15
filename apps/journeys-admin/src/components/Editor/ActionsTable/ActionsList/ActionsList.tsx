@@ -11,8 +11,8 @@ import Box from '@mui/system/Box'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
-import X2 from '@core/shared/ui/icons/X2'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
+import X2Icon from '@core/shared/ui/icons/X2'
 
 import { ActionDetails } from '../../ActionDetails'
 import { ActionInformation } from '../../ActionDetails/ActionInformation'
@@ -98,7 +98,9 @@ export function ActionsList({
             <Button
               variant="outlined"
               startIcon={
-                <InformationCircleContained sx={{ color: 'secondary.light' }} />
+                <InformationCircleContainedIcon
+                  sx={{ color: 'secondary.light' }}
+                />
               }
               sx={{
                 display: 'flex',
@@ -158,7 +160,7 @@ export function ActionsList({
               sx={{ display: 'inline-flex' }}
               edge="end"
             >
-              <X2 />
+              <X2Icon />
             </IconButton>
           </Toolbar>
         </AppBar>

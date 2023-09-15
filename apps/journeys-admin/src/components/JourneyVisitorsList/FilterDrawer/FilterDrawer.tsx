@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import X2 from '@core/shared/ui/icons/X2'
+import X2Icon from '@core/shared/ui/icons/X2'
 
 import { ClearAllButton } from './ClearAllButton'
 
@@ -45,7 +45,7 @@ export function FilterDrawer({
             Filters <ClearAllButton handleClearAll={handleClearAll} />
           </Typography>
           <IconButton sx={{ ml: 'auto' }}>
-            <X2 onClick={handleClose} />
+            <X2Icon onClick={handleClose} />
           </IconButton>
         </Stack>
         <Divider />

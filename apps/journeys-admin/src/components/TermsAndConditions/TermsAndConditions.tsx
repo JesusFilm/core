@@ -14,10 +14,10 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
-import AlertCircle from '@core/shared/ui/icons/AlertCircle'
-import ArrowRightSm from '@core/shared/ui/icons/ArrowRightSm'
-import CheckSquareBroken from '@core/shared/ui/icons/CheckSquareBroken'
-import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+import ArrowRightSmIcon from '@core/shared/ui/icons/ArrowRightSm'
+import CheckSquareBrokenIcon from '@core/shared/ui/icons/CheckSquareBroken'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
@@ -83,19 +83,19 @@ export function TermsAndConditions(): ReactElement {
         >
           <TermsListItem
             link="https://your.nextstep.is/terms-of-use"
-            icon={<AlertCircle sx={{ color: 'secondary.light' }} />}
+            icon={<AlertCircleIcon sx={{ color: 'secondary.light' }} />}
             text="Terms of Use"
           />
           <Divider component="li" />
           <TermsListItem
             link="https://your.nextstep.is/end-user-license-agreement"
-            icon={<UsersProfiles2 sx={{ color: 'secondary.light' }} />}
+            icon={<UsersProfiles2Icon sx={{ color: 'secondary.light' }} />}
             text="End User License Agreement"
           />
           <Divider component="li" />
           <TermsListItem
             link="https://your.nextstep.is/community-guidelines"
-            icon={<CheckSquareBroken sx={{ color: 'secondary.light' }} />}
+            icon={<CheckSquareBrokenIcon sx={{ color: 'secondary.light' }} />}
             text="Community Guidelines"
           />
           <Divider component="li" />
@@ -135,7 +135,7 @@ export function TermsAndConditions(): ReactElement {
               bgcolor: 'secondary.dark'
             }
           }}
-          endIcon={<ArrowRightSm />}
+          endIcon={<ArrowRightSmIcon />}
         >
           Next
         </Button>

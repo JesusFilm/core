@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
 import { simpleComponentConfig } from '../../libs/storybook'
 
@@ -22,7 +22,7 @@ export const Default = {
   ...Template,
   args: {
     label: 'Preview',
-    icon: <EyeOpen />
+    icon: <EyeOpenIcon />
   }
 }
 
@@ -30,7 +30,7 @@ export const Disabled = {
   ...Template,
   args: {
     label: 'Preview',
-    icon: <EyeOpen />,
+    icon: <EyeOpenIcon />,
     disabled: true
   }
 }

@@ -6,7 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import Dash from '@core/shared/ui/icons/Dash'
+import DashIcon from '@core/shared/ui/icons/Dash'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
@@ -60,42 +60,42 @@ export function Variant(): ReactElement {
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h1}>Header 1</Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.h2,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h2}>Header 2</Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.h3,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h3}>Header 3</Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.h4,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h4}>Header 4</Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.h5,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h5}>Header 5</Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.h6,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h6}>Header 6</Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.subtitle1,
@@ -104,7 +104,7 @@ export function Variant(): ReactElement {
           Subtitle 1
         </Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.subtitle2,
@@ -113,35 +113,35 @@ export function Variant(): ReactElement {
           Subtitle 2
         </Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.body1,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.body1}>Body 1</Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.body2,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.body2}>Body 2</Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.caption,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.caption}>Caption</Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     },
     {
       value: TypographyVariant.overline,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.overline}>Overline</Typography>
       ),
-      icon: <Dash />
+      icon: <DashIcon />
     }
   ]
 

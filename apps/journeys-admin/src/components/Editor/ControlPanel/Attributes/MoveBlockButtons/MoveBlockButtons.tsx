@@ -9,8 +9,8 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
-import ChevronUp from '@core/shared/ui/icons/ChevronUp'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
 import { BlockOrderUpdate } from '../../../../../../__generated__/BlockOrderUpdate'
 
@@ -103,7 +103,7 @@ export function MoveBlockButtons({
           onClick={handleMove('up')}
           onMouseDown={(e) => e.preventDefault()}
         >
-          <ChevronUp />
+          <ChevronUpIcon />
         </StyledMoveButton>
         <StyledMoveButton
           aria-label="move-block-down"
@@ -111,7 +111,7 @@ export function MoveBlockButtons({
           onClick={handleMove('down')}
           onMouseDown={(e) => e.preventDefault()}
         >
-          <ChevronDown />
+          <ChevronDownIcon />
         </StyledMoveButton>
       </ButtonGroup>
       <Box sx={{ height: 24 }}>

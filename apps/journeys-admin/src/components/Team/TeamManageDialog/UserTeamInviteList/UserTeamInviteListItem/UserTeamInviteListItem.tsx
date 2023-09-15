@@ -8,7 +8,7 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import { MouseEvent, ReactElement, useState } from 'react'
 
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetUserTeamsAndInvites_userTeamInvites as UserTeamInvite } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamInviteRemoveMenuItem } from '../../UserTeamInviteRemoveMenuItem'
@@ -51,7 +51,7 @@ export function UserTeamInviteListItem({
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
             disabled={disabled}
-            endIcon={<ChevronDown />}
+            endIcon={<ChevronDownIcon />}
             sx={{
               color: 'text.primary',
               typography: 'body2'

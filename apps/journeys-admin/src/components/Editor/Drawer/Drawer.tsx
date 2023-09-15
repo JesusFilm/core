@@ -9,7 +9,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import X2 from '@core/shared/ui/icons/X2'
+import X2Icon from '@core/shared/ui/icons/X2'
 
 export const DRAWER_WIDTH = 328
 
@@ -42,7 +42,7 @@ function DrawerContent({
             sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
             edge="end"
           >
-            <X2 />
+            <X2Icon />
           </IconButton>
         </Toolbar>
       </AppBar>

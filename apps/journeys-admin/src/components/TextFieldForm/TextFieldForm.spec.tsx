@@ -1,7 +1,7 @@
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { object, string } from 'yup'
 
-import Search1 from '@core/shared/ui/icons/Search1'
+import Search1Icon from '@core/shared/ui/icons/Search1'
 
 import { TextFieldForm } from './TextFieldForm'
 
@@ -18,7 +18,7 @@ describe('TextFieldForm', () => {
           'aria-label': 'Search'
         }}
         onSubmit={jest.fn()}
-        endIcon={<Search1 />}
+        endIcon={<Search1Icon />}
       />
     )
     const textField = getByRole('textbox')

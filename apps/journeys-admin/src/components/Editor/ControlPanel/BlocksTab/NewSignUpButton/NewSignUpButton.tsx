@@ -7,7 +7,7 @@ import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { SIGN_UP_FIELDS } from '@core/journeys/ui/SignUp/signUpFields'
-import Mail2 from '@core/shared/ui/icons/Mail2'
+import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { SignUpBlockCreate } from '../../../../../../__generated__/SignUpBlockCreate'
@@ -119,5 +119,5 @@ export function NewSignUpButton(): ReactElement {
     }
   }
 
-  return <Button icon={<Mail2 />} value="Subscribe" onClick={handleClick} />
+  return <Button icon={<Mail2Icon />} value="Subscribe" onClick={handleClick} />
 }

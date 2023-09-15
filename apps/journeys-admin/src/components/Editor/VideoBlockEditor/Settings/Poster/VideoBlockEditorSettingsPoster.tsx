@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
@@ -69,7 +69,7 @@ export function VideoBlockEditorSettingsPoster({
               disabled={disabled}
               data-testid="posterCreateButton"
             >
-              <Edit2
+              <Edit2Icon
                 sx={{
                   color: disabled
                     ? theme.palette.action.disabled

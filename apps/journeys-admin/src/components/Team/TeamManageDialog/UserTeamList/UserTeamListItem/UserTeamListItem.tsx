@@ -12,7 +12,7 @@ import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
@@ -92,7 +92,7 @@ export function UserTeamListItem({
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
             disabled={disabled}
-            endIcon={<ChevronDown />}
+            endIcon={<ChevronDownIcon />}
             sx={{
               color: 'text.primary',
               typography: 'body2',

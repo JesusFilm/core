@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { ReactElement, useEffect } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import goal from '../../../../../public/goal.svg'
 import { ActionDetails } from '../../ActionDetails'
@@ -88,7 +88,9 @@ export function ActionsBanner(): ReactElement {
           <Button
             variant="outlined"
             startIcon={
-              <InformationCircleContained sx={{ color: 'secondary.light' }} />
+              <InformationCircleContainedIcon
+                sx={{ color: 'secondary.light' }}
+              />
             }
             sx={{
               [theme.breakpoints.up('md')]: { display: 'none' },

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { useTeam } from '../TeamProvider'
 
@@ -88,7 +88,7 @@ export function CopyToTeamDialog({
                 handleChange(e)
               }}
               SelectProps={{
-                IconComponent: ChevronDown
+                IconComponent: ChevronDownIcon
               }}
               sx={{
                 '& >.MuiFormHelperText-contained': {

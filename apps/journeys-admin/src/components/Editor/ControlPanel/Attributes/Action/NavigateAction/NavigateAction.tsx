@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { CardPreview } from '../../../../../CardPreview'
 import { getNextStep } from '../utils/getNextStep'
@@ -37,7 +37,7 @@ export function NavigateAction(): ReactElement {
         sx={{ pt: 8 }}
         color="text.secondary"
       >
-        <InformationCircleContained />
+        <InformationCircleContainedIcon />
         <Typography variant="caption">
           Default Next Step defined in the current card settings.
         </Typography>

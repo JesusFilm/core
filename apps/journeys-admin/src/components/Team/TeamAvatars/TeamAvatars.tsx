@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import take from 'lodash/take'
 import { ReactElement } from 'react'
 
-import UserProfileAdd from '@core/shared/ui/icons/UserProfileAdd'
+import UserProfileAddIcon from '@core/shared/ui/icons/UserProfileAdd'
 
 import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeam } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { Avatar } from '../../Avatar'
@@ -59,7 +59,9 @@ export function TeamAvatars({
               backgroundColor: 'secondary.contrastText'
             }}
           >
-            <UserProfileAdd sx={{ color: 'secondary.light', width: '18px' }} />
+            <UserProfileAddIcon
+              sx={{ color: 'secondary.light', width: '18px' }}
+            />
           </MuiAvatar>
         )}
       </AvatarGroup>

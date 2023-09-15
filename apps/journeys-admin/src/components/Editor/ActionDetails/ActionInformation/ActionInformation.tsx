@@ -4,7 +4,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
-import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
+import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 
 interface GoalDescriptionProps {
   label: string
@@ -43,7 +43,7 @@ export function ActionInformation(): ReactElement {
       <GoalDescription
         label="Start a Conversation"
         description="If the goal is to go any chat platform"
-        icon={<MessageChat1 />}
+        icon={<MessageChat1Icon />}
       />
       <GoalDescription
         label="Visit a Website"

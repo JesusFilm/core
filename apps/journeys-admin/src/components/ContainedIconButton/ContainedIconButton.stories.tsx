@@ -2,9 +2,9 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import Edit2 from '@core/shared/ui/icons/Edit2'
-import FilePlus1 from '@core/shared/ui/icons/FilePlus1'
-import Plus2 from '@core/shared/ui/icons/Plus2'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import FilePlus1Icon from '@core/shared/ui/icons/FilePlus1'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { simpleComponentConfig } from '../../libs/storybook'
 
@@ -35,8 +35,8 @@ export const Default = {
 export const Complete = {
   ...Template,
   args: {
-    thumbnailIcon: <FilePlus1 />,
-    actionIcon: <Edit2 />,
+    thumbnailIcon: <FilePlus1Icon />,
+    actionIcon: <Edit2Icon />,
     label: 'Video Title',
     description: 'description',
     imageSrc:
@@ -50,8 +50,8 @@ export const Complete = {
 export const Loading = {
   ...Template,
   args: {
-    thumbnailIcon: <FilePlus1 />,
-    actionIcon: <Plus2 />,
+    thumbnailIcon: <FilePlus1Icon />,
+    actionIcon: <Plus2Icon />,
     label: 'label',
     loading: true,
     onClick: noop

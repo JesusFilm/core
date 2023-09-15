@@ -7,7 +7,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
 import { DuplicateBlock } from '../../DuplicateBlock'
 
@@ -23,7 +23,7 @@ export function EditToolbar(): ReactElement {
       {journey != null && (
         <>
           <Chip
-            icon={<EyeOpen />}
+            icon={<EyeOpenIcon />}
             label="Preview"
             component="a"
             href={`/api/preview?slug=${journey.slug}`}
@@ -48,7 +48,7 @@ export function EditToolbar(): ReactElement {
               }
             }}
           >
-            <EyeOpen />
+            <EyeOpenIcon />
           </IconButton>
         </>
       )}

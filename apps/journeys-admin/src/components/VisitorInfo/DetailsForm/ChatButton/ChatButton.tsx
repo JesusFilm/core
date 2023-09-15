@@ -2,7 +2,7 @@ import Button from '@mui/material/Button'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import MessageText1 from '@core/shared/ui/icons/MessageText1'
+import MessageText1Icon from '@core/shared/ui/icons/MessageText1'
 
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 
@@ -66,7 +66,7 @@ export function ChatButton({
 
   return (
     <Button
-      startIcon={<MessageText1 />}
+      startIcon={<MessageText1Icon />}
       disabled={messagePlatform == null || messagePlatformId == null}
       onClick={handleClick}
     >

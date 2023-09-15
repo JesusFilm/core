@@ -13,9 +13,9 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-import Globe1 from '@core/shared/ui/icons/Globe1'
-import Image3 from '@core/shared/ui/icons/Image3'
-import More from '@core/shared/ui/icons/More'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import Image3Icon from '@core/shared/ui/icons/Image3'
+import MoreIcon from '@core/shared/ui/icons/More'
 
 import {
   GetAdminJourneys_journeys as AdminJourney,
@@ -106,7 +106,7 @@ export function TemplateCard({
             backgroundColor: 'background.default'
           }}
         >
-          <Image3 />
+          <Image3Icon />
         </CardMedia>
       )}
 
@@ -165,14 +165,14 @@ export function TemplateCard({
           >
             {journey != null ? (
               <>
-                <Globe1 sx={{ fontSize: 13, pl: 0 }} />
+                <Globe1Icon sx={{ fontSize: 13, pl: 0 }} />
                 <Typography variant="body2" noWrap sx={{ ml: 1 }}>
                   {displayLanguage}
                 </Typography>
               </>
             ) : (
               <>
-                <Globe1 sx={{ fontSize: 13, p: 0 }} />
+                <Globe1Icon sx={{ fontSize: 13, p: 0 }} />
                 <Skeleton
                   variant="text"
                   width={50}
@@ -196,7 +196,7 @@ export function TemplateCard({
                 ) : (
                   <>
                     <IconButton disabled>
-                      <More />
+                      <MoreIcon />
                     </IconButton>
                   </>
                 )}

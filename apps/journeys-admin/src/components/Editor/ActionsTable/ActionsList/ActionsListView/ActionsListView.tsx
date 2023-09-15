@@ -12,9 +12,9 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
-import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
+import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 
 import type { Actions } from '../../ActionsTable'
 
@@ -38,7 +38,7 @@ export function ActionsListView({
     const color = selectedAction === url ? 'primary.main' : 'secondary.light'
     switch (goalLabel(url)) {
       case 'Start a Conversation':
-        return <MessageChat1 sx={{ color }} />
+        return <MessageChat1Icon sx={{ color }} />
       case 'Link to Bible':
         return <BibleIcon sx={{ color }} />
       case 'Visit a Website':
@@ -117,7 +117,7 @@ export function ActionsListView({
                   </Typography>
                 </TableCell>
                 <TableCell width={40} sx={{ pl: 0, pr: 5 }}>
-                  <Edit2
+                  <Edit2Icon
                     sx={{
                       color:
                         selectedAction === url

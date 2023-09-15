@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 const DynamicLanguageDialog = dynamic<{
   open: boolean
@@ -71,7 +71,7 @@ export function Language({ isPublisher }: LanguageProps): ReactElement {
         )}
         {isPublisher === true && (
           <IconButton size="small" onClick={() => setShowLanguageDialog(true)}>
-            <Edit2 sx={{ m: 1 }} />
+            <Edit2Icon sx={{ m: 1 }} />
           </IconButton>
         )}
       </Box>

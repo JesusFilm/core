@@ -2,8 +2,8 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import Target from '@core/shared/ui/icons/Target'
-import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+import TargetIcon from '@core/shared/ui/icons/Target'
+import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import { simpleComponentConfig } from '../../../libs/storybook'
 
@@ -22,7 +22,7 @@ const Template: StoryObj<typeof NavigationCard> = {
         id={args.id}
         title={args.title}
         destination={ActiveJourneyEditContent.Canvas}
-        header={args.header ?? <ThumbsUp />}
+        header={args.header ?? <ThumbsUpIcon />}
         loading={args.loading ?? false}
       />
     )
@@ -59,7 +59,7 @@ export const Goals = {
         justifyContent="center"
         alignItems="center"
       >
-        <Target color="error" />
+        <TargetIcon color="error" />
       </Box>
     )
   }

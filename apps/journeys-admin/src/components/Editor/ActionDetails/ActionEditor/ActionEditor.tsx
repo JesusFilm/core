@@ -8,7 +8,7 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import BibleIcon from '@core/shared/ui/icons/Bible'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
-import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
+import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 
 import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generated__/BlockFields'
@@ -107,7 +107,7 @@ export function ActionEditor({
   let icon: ReactNode
   switch (goalLabel?.(url)) {
     case 'Start a Conversation':
-      icon = <MessageChat1 sx={{ color: 'secondary.light' }} />
+      icon = <MessageChat1Icon sx={{ color: 'secondary.light' }} />
       break
     case 'Link to Bible':
       icon = <BibleIcon sx={{ color: 'secondary.light' }} />

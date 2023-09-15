@@ -7,7 +7,7 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
 
-import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
@@ -46,7 +46,7 @@ export function MainPanelHeader({
                 color="inherit"
                 sx={{ mr: 2 }}
               >
-                <ChevronLeft />
+                <ChevronLeftIcon />
               </IconButton>
             </Box>
           ) : (
@@ -58,7 +58,7 @@ export function MainPanelHeader({
                   color="inherit"
                   sx={{ mr: 2 }}
                 >
-                  <ChevronLeft />
+                  <ChevronLeftIcon />
                 </IconButton>
               </NextLink>
             )

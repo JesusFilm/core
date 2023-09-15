@@ -3,9 +3,9 @@ import Zoom from '@mui/material/Zoom'
 import { ReactElement } from 'react'
 
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
-import CheckContained from '@core/shared/ui/icons/CheckContained'
-import Edit2 from '@core/shared/ui/icons/Edit2'
-import Plus2 from '@core/shared/ui/icons/Plus2'
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 interface FabProp {
   visible?: boolean
@@ -37,7 +37,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
           onClick={onAddClick}
           disabled={disabled}
         >
-          <Plus2 sx={{ mr: 3 }} />
+          <Plus2Icon sx={{ mr: 3 }} />
           Add
         </MuiFab>
       ) : activeFab === ActiveFab.Edit ? (
@@ -48,7 +48,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
           onClick={handleEditFab}
           disabled={disabled}
         >
-          <Edit2 sx={{ mr: 3 }} />
+          <Edit2Icon sx={{ mr: 3 }} />
           Edit
         </MuiFab>
       ) : (
@@ -59,7 +59,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
           onClick={handleSaveFab}
           disabled={disabled}
         >
-          <CheckContained sx={{ mr: 3 }} />
+          <CheckContainedIcon sx={{ mr: 3 }} />
           Done
         </MuiFab>
       )}

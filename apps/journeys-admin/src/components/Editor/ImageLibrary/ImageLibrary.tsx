@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
-import X2 from '@core/shared/ui/icons/X2'
+import X2Icon from '@core/shared/ui/icons/X2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '../ImageBlockEditor'
@@ -72,7 +72,7 @@ export function ImageLibrary({
             sx={{ display: 'inline-flex' }}
             edge="end"
           >
-            <X2 />
+            <X2Icon />
           </IconButton>
         </Toolbar>
       </AppBar>

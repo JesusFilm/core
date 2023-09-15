@@ -7,8 +7,8 @@ import { object, string } from 'yup'
 
 // TODO: remove segmind ai flags when ready
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import Grid1 from '@core/shared/ui/icons/Grid1'
-import Image3 from '@core/shared/ui/icons/Image3'
+import Grid1Icon from '@core/shared/ui/icons/Grid1'
+import Image3Icon from '@core/shared/ui/icons/Image3'
 import StarsIcon from '@core/shared/ui/icons/Stars'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
@@ -120,12 +120,12 @@ export function ImageBlockEditor({
           variant="fullWidth"
         >
           <Tab
-            icon={<Grid1 />}
+            icon={<Grid1Icon />}
             label={<Typography variant="subtitle2">Gallery</Typography>}
             {...tabA11yProps('gallery', 0)}
           />
           <Tab
-            icon={<Image3 />}
+            icon={<Image3Icon />}
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />

@@ -7,7 +7,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 import { BlockDeletePrimaryImage } from '../../../../../../__generated__/BlockDeletePrimaryImage'
@@ -253,7 +253,7 @@ export function ImageEdit(): ReactElement {
               backgroundColor: 'background.paper'
             }}
             startIcon={
-              <Edit2 fontSize="small" sx={{ color: 'secondary.dark' }} />
+              <Edit2Icon fontSize="small" sx={{ color: 'secondary.dark' }} />
             }
             onClick={handleOpen}
           >
@@ -289,7 +289,7 @@ export function ImageEdit(): ReactElement {
               backgroundColor: 'background.paper'
             }}
             startIcon={
-              <Edit2 fontSize="small" sx={{ color: 'secondary.dark' }} />
+              <Edit2Icon fontSize="small" sx={{ color: 'secondary.dark' }} />
             }
             onClick={handleOpen}
             disabled

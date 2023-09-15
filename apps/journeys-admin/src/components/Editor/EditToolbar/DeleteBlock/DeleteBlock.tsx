@@ -7,7 +7,7 @@ import { ReactElement, useState } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
-import Trash2 from '@core/shared/ui/icons/Trash2'
+import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
@@ -123,12 +123,12 @@ export function DeleteBlock({
           disabled={disableAction}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         >
-          <Trash2 />
+          <Trash2Icon />
         </IconButton>
       ) : (
         <MenuItem
           label={`Delete ${label}`}
-          icon={<Trash2 />}
+          icon={<Trash2Icon/>}
           disabled={disableAction}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />

@@ -8,9 +8,9 @@ import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
-import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
-import CheckBroken from '@core/shared/ui/icons/CheckBroken'
-import Upload1Icon from '@core/shared/ui/icons/Upload1'
+import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
+import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
+import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 
 import { CreateCloudflareUploadByFile } from '../../../../../../__generated__/CreateCloudflareUploadByFile'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
@@ -122,11 +122,17 @@ export function ImageUpload({
         }}
       >
         {uploadSuccess ? (
-          <CheckBroken sx={{ fontSize: 48, color: 'success.main', mb: 1 }} />
+          <CheckBrokenIcon
+            sx={{ fontSize: 48, color: 'success.main', mb: 1 }}
+          />
         ) : uploadError ? (
-          <AlertTriangle sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
+          <AlertTriangleIcon
+            sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
+          />
         ) : (
-          <Upload1Icon sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
+          <Upload1IconIcon
+            sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }}
+          />
         )}
         <Typography
           variant="body1"
@@ -153,7 +159,7 @@ export function ImageUpload({
         spacing={1}
         color={uploadError ? 'error.main' : 'secondary.light'}
       >
-        <AlertTriangle
+        <AlertTriangleIcon
           fontSize="small"
           sx={{
             display: uploadError ? 'flex' : 'none'

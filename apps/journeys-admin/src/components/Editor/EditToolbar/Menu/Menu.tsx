@@ -7,11 +7,11 @@ import { ReactElement, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Edit2 from '@core/shared/ui/icons/Edit2'
-import EyeOpen from '@core/shared/ui/icons/EyeOpen'
-import File5 from '@core/shared/ui/icons/File5'
-import More from '@core/shared/ui/icons/More'
-import Settings from '@core/shared/ui/icons/Settings'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import File5Icon from '@core/shared/ui/icons/File5'
+import MoreIcon from '@core/shared/ui/icons/More'
+import SettingsIcon from '@core/shared/ui/icons/Settings'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
@@ -97,7 +97,7 @@ export function Menu(): ReactElement {
         >
           <MenuItem
             label="Preview"
-            icon={<EyeOpen />}
+            icon={<EyeOpenIcon />}
             openInNew
             onClick={handleCloseMenu}
           />
@@ -132,7 +132,7 @@ export function Menu(): ReactElement {
         >
           <MenuItem
             label="Preview"
-            icon={<EyeOpen />}
+            icon={<EyeOpenIcon />}
             openInNew
             onClick={handleCloseMenu}
           />
@@ -151,7 +151,7 @@ export function Menu(): ReactElement {
                 ? 'Publisher Settings'
                 : 'Journey Settings'
             }
-            icon={<Settings />}
+            icon={<SettingsIcon />}
           />
         </NextLink>
       </>
@@ -170,7 +170,7 @@ export function Menu(): ReactElement {
         onClick={handleShowMenu}
         disabled={journey == null}
       >
-        <More />
+        <MoreIcon />
       </IconButton>
       <MuiMenu
         id="edit-journey-actions"
@@ -189,7 +189,7 @@ export function Menu(): ReactElement {
         {journey?.template === true && isPublisher != null && (
           <MenuItem
             label="Description"
-            icon={<Edit2 />}
+            icon={<Edit2Icon />}
             onClick={handleUpdateTitleDescription}
           />
         )}
@@ -197,12 +197,12 @@ export function Menu(): ReactElement {
           <>
             <MenuItem
               label="Title"
-              icon={<Edit2 />}
+              icon={<Edit2Icon />}
               onClick={handleUpdateTitle}
             />
             <MenuItem
               label="Description"
-              icon={<File5 />}
+              icon={<File5Icon />}
               onClick={handleUpdateDescription}
             />
           </>

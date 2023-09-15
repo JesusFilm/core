@@ -2,7 +2,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import CopyLeft from '@core/shared/ui/icons/CopyLeft'
+import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../MenuItem'
@@ -46,7 +46,7 @@ export function CopyToTeamMenuItem({
     <>
       <MenuItem
         label={t('Copy to ...')}
-        icon={<CopyLeft color="secondary" />}
+        icon={<CopyLeftIcon color="secondary" />}
         onClick={() => {
           setDuplicateTeamDialogOpen(true)
         }}

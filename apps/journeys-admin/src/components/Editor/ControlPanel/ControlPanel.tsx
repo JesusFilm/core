@@ -12,7 +12,7 @@ import {
   ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
@@ -115,7 +115,7 @@ export function ControlPanel(): ReactElement {
               p: 2.5
             }}
           >
-            <Edit2 />
+            <Edit2Icon />
           </MuiFab>
         )}
         {journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&

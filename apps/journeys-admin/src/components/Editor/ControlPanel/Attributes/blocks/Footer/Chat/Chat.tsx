@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
 
@@ -75,7 +75,7 @@ export function Chat(): ReactElement {
           mt: 5
         }}
       >
-        <InformationCircleContained sx={{ mr: 3 }} />
+        <InformationCircleContainedIcon sx={{ mr: 3 }} />
         <Typography variant="caption">
           {t('You can add no more than two chat platforms')}
         </Typography>

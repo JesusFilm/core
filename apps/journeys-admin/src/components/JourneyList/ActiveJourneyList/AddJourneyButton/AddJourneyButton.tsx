@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import Plus2 from '@core/shared/ui/icons/Plus2'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { useJourneyCreate } from '../../../../libs/useJourneyCreate'
 import { useTeam } from '../../../Team/TeamProvider'
@@ -30,7 +30,7 @@ export function AddJourneyButton(): ReactElement {
       {(!teams || activeTeam != null) && (
         <Button
           variant="contained"
-          startIcon={<Plus2 />}
+          startIcon={<Plus2Icon />}
           size="medium"
           onClick={handleClick}
           sx={{ mt: 3, alignSelf: 'center' }}

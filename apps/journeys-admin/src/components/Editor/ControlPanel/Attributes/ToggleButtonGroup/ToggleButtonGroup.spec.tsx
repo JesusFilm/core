@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 
-import Clock1 from '@core/shared/ui/icons/Clock1'
+import Clock1Icon from '@core/shared/ui/icons/Clock1'
 
 import { ToggleButtonGroup } from '.'
 
@@ -65,12 +65,12 @@ describe('ToggleButtonGroup', () => {
       {
         value: 'abc',
         label: 'ABC',
-        icon: <Clock1 />
+        icon: <Clock1Icon />
       },
       {
         value: 'def',
         label: 'DEF',
-        icon: <Clock1 />
+        icon: <Clock1Icon />
       }
     ]
     const { getAllByTestId } = render(

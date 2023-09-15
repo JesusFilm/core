@@ -8,9 +8,9 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
-import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
-import Lock1 from '@core/shared/ui/icons/Lock1'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import HelpCircleContainedIcon from '@core/shared/ui/icons/HelpCircleContained'
+import Lock1Icon from '@core/shared/ui/icons/Lock1'
 
 import { AccessDeniedListItem } from './AccessDeniedListItem'
 
@@ -39,7 +39,7 @@ export function AccessDenied({
             display={{ xs: 'none', sm: 'flex' }}
             sx={{ mb: 8 }}
           >
-            <Lock1
+            <Lock1Icon
               sx={{ width: '40px', ml: 5, mr: 3, color: 'secondary.light' }}
             />
             <Typography variant="h3" color="text.primary">
@@ -51,7 +51,7 @@ export function AccessDenied({
             display={{ xs: 'flex', sm: 'none' }}
             sx={{ mb: 7 }}
           >
-            <Lock1
+            <Lock1Icon
               sx={{
                 width: '40px',
                 ml: 5,
@@ -112,7 +112,7 @@ export function AccessDenied({
               <NextLink href="/" passHref legacyBehavior>
                 <Button
                   sx={{ color: 'primary.main' }}
-                  startIcon={<ChevronLeft />}
+                  startIcon={<ChevronLeftIcon />}
                   size="small"
                 >
                   {t('Back to my journeys')}
@@ -123,7 +123,7 @@ export function AccessDenied({
               <NextLink href="/" passHref legacyBehavior>
                 <Button
                   sx={{ color: 'primary.main' }}
-                  startIcon={<ChevronLeft />}
+                  startIcon={<ChevronLeftIcon />}
                   size="small"
                 >
                   {t('All journeys')}
@@ -144,7 +144,7 @@ export function AccessDenied({
                   }
                 }}
                 startIcon={
-                  <HelpCircleContained sx={{ color: 'secondary.dark' }} />
+                  <HelpCircleContainedIcon sx={{ color: 'secondary.dark' }} />
                 }
                 size="small"
                 variant="outlined"

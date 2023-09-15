@@ -7,8 +7,8 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import CheckContained from '@core/shared/ui/icons/CheckContained'
-import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 interface AccessDeniedCardProps {
   stepNumber: number
@@ -63,7 +63,7 @@ export function AccessDeniedCard({
       {handleRequestAccess != null &&
         (requestAccess ? (
           <Stack direction="row" sx={{ color: 'success.main' }}>
-            <CheckContained />
+            <CheckContainedIcon />
             <Typography>{t('Request Sent')}</Typography>
           </Stack>
         ) : (
@@ -71,7 +71,7 @@ export function AccessDeniedCard({
             <Button
               variant="contained"
               onClick={handleRequestAccess}
-              startIcon={<UsersProfiles2 />}
+              startIcon={<UsersProfiles2Icon />}
             >
               {t('Request Now')}
             </Button>

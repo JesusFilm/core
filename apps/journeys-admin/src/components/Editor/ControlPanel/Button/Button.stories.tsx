@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import Palette from '@core/shared/ui/icons/Palette'
+import PaletteIcon from '@core/shared/ui/icons/Palette'
 
 import { journeysAdminConfig } from '../../../../libs/storybook'
 
@@ -16,7 +16,7 @@ export const Default: StoryObj<typeof Button> = {
   render: () => {
     return (
       <Button
-        icon={<Palette />}
+        icon={<PaletteIcon />}
         name="Style"
         value="Dark"
         description="Card Styling"
@@ -29,7 +29,7 @@ export const Empty: StoryObj<typeof Button> = {
   render: () => {
     return (
       <Button
-        icon={<Palette />}
+        icon={<PaletteIcon />}
         name="Style"
         value=""
         description="Card Styling"
@@ -42,7 +42,7 @@ export const Selected: StoryObj<typeof Button> = {
   render: () => {
     return (
       <Button
-        icon={<Palette />}
+        icon={<PaletteIcon />}
         name="Style"
         value="Dark"
         description="Card Styling"
@@ -54,7 +54,7 @@ export const Selected: StoryObj<typeof Button> = {
 
 export const Minimal: StoryObj<typeof Button> = {
   render: () => {
-    return <Button icon={<Palette />} value="Palette" selected />
+    return <Button icon={<PaletteIcon />} value="Palette" selected />
   }
 }
 

@@ -10,7 +10,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
 import {
@@ -181,7 +181,7 @@ export function Action(): ReactElement {
           <Select
             onChange={handleChange}
             value={action}
-            IconComponent={ChevronDown}
+            IconComponent={ChevronDownIcon}
           >
             {actions.map((action) => {
               return (

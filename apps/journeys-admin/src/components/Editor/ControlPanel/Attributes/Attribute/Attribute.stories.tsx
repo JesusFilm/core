@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import Palette from '@core/shared/ui/icons/Palette'
+import PaletteIcon from '@core/shared/ui/icons/Palette'
 
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 
@@ -19,7 +19,7 @@ export const Default: StoryObj<typeof Attribute> = {
       <EditorProvider>
         <Attribute
           id="custom-id"
-          icon={<Palette />}
+          icon={<PaletteIcon />}
           name="Style"
           value="Dark"
           description="Card Styling"

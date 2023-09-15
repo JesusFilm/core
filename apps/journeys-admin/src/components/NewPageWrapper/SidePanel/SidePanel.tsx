@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
-import X2 from '@core/shared/ui/icons/X2'
+import X2Icon from '@core/shared/ui/icons/X2'
 
 import { usePage } from '../../../libs/PageWrapperProvider'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
@@ -119,7 +119,7 @@ export function SidePanel({
                 sx={{ display: 'inline-flex' }}
                 edge="end"
               >
-                <X2 />
+                <X2Icon />
               </IconButton>
             )
           }
@@ -156,7 +156,7 @@ export function SidePanel({
                 sx={{ display: 'inline-flex' }}
                 edge="end"
               >
-                <X2 />
+                <X2Icon />
               </IconButton>
             }
           >

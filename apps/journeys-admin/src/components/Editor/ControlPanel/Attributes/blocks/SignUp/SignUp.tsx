@@ -3,7 +3,7 @@ import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
-import Link from '@core/shared/ui/icons/Link'
+import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
@@ -38,7 +38,7 @@ export function SignUp({
     <>
       <Attribute
         id={`${id}-signup-action`}
-        icon={<Link />}
+        icon={<LinkIcon />}
         name="Action"
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??

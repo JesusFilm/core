@@ -9,7 +9,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ReactElement } from 'react'
 
-import Menu1 from '@core/shared/ui/icons/Menu1'
+import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import { Role } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
@@ -153,7 +153,7 @@ export const SidePanel = {
   },
   menu: (
     <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
-      <Menu1 />
+      <Menu1Icon />
     </IconButton>
   ),
   templates: true,
@@ -204,7 +204,7 @@ export const Complete = {
           custom content
         </Typography>
         <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
-          <Menu1 />
+          <Menu1Icon />
         </IconButton>
       </Stack>
     ),

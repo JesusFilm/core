@@ -5,7 +5,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import noop from 'lodash/noop'
 import { object, string } from 'yup'
 
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { simpleComponentConfig } from '../../libs/storybook'
 
@@ -54,7 +54,7 @@ const Template: StoryObj<typeof TextFieldForm> = {
         onSubmit={noop}
         startIcon={
           <InputAdornment position="start">
-            <Edit2 />
+            <Edit2Icon />
           </InputAdornment>
         }
       />
@@ -62,7 +62,7 @@ const Template: StoryObj<typeof TextFieldForm> = {
         id="End Icon"
         label="End Icon"
         onSubmit={noop}
-        endIcon={<Edit2 />}
+        endIcon={<Edit2Icon />}
         hiddenLabel
       />
       <TextFieldForm id="Disabled" label="Disabled" onSubmit={noop} disabled />

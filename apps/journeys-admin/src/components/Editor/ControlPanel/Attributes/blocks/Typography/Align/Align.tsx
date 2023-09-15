@@ -4,9 +4,9 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import AlignCenter from '@core/shared/ui/icons/AlignCenter'
-import AlignLeft from '@core/shared/ui/icons/AlignLeft'
-import AlignRight from '@core/shared/ui/icons/AlignRight'
+import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
+import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
+import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
@@ -40,17 +40,17 @@ export function Align(): ReactElement {
     {
       value: TypographyAlign.left,
       label: 'Left',
-      icon: <AlignLeft />
+      icon: <AlignLeftIcon />
     },
     {
       value: TypographyAlign.center,
       label: 'Center',
-      icon: <AlignCenter />
+      icon: <AlignCenterIcon />
     },
     {
       value: TypographyAlign.right,
       label: 'Right',
-      icon: <AlignRight />
+      icon: <AlignRightIcon />
     }
   ]
 

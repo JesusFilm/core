@@ -4,12 +4,12 @@ import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import CheckContained from '@core/shared/ui/icons/CheckContained'
-import FileShred from '@core/shared/ui/icons/FileShred'
-import FolderDown1 from '@core/shared/ui/icons/FolderDown1'
-import FolderUp1 from '@core/shared/ui/icons/FolderUp1'
-import More from '@core/shared/ui/icons/More'
-import Trash2 from '@core/shared/ui/icons/Trash2'
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import FileShredIcon from '@core/shared/ui/icons/FileShred'
+import FolderDown1Icon from '@core/shared/ui/icons/FolderDown1'
+import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
+import MoreIcon from '@core/shared/ui/icons/More'
+import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { MenuItem } from '../../MenuItem'
 
@@ -46,7 +46,7 @@ export function JourneyListMenu({
             sx={{ mx: 1 }}
             onClick={handleShowMenu}
           >
-            <More />
+            <MoreIcon />
           </IconButton>
           <Menu
             id="edit-journey-actions"
@@ -68,13 +68,13 @@ export function JourneyListMenu({
             {activeTab === 'active' && [
               <MenuItem
                 label={t('Archive All')}
-                icon={<FolderUp1 />}
+                icon={<FolderUp1Icon />}
                 onClick={() => handleEvent('archiveAllActive')}
                 key="archiveAllActive"
               />,
               <MenuItem
                 label={t('Trash All')}
-                icon={<Trash2 />}
+                icon={<Trash2Icon />}
                 onClick={() => handleEvent('trashAllActive')}
                 key="trashAllActive"
               />
@@ -82,13 +82,13 @@ export function JourneyListMenu({
             {activeTab === 'archived' && [
               <MenuItem
                 label={t('Unarchive All')}
-                icon={<FolderDown1 />}
+                icon={<FolderDown1Icon />}
                 onClick={() => handleEvent('restoreAllArchived')}
                 key="restoreAllArchived"
               />,
               <MenuItem
                 label={t('Trash All')}
-                icon={<Trash2 />}
+                icon={<Trash2Icon />}
                 onClick={() => handleEvent('trashAllArchived')}
                 key="trashAllArchived"
               />
@@ -96,13 +96,13 @@ export function JourneyListMenu({
             {activeTab === 'trashed' && [
               <MenuItem
                 label={t('Restore All')}
-                icon={<CheckContained />}
+                icon={<CheckContainedIcon />}
                 onClick={() => handleEvent('restoreAllTrashed')}
                 key="restoreAllTrashed"
               />,
               <MenuItem
                 label={t('Delete All Forever')}
-                icon={<FileShred />}
+                icon={<FileShredIcon />}
                 onClick={() => handleEvent('deleteAllTrashed')}
                 key="deleteAllTrashed"
               />

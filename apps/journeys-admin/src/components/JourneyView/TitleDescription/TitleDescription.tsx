@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { TitleDescriptionDialog } from './TitleDescriptionDialog'
 
@@ -48,7 +48,7 @@ export function TitleDescription({
               size="small"
               onClick={handleUpdateTitleDescription}
             >
-              <Edit2 />
+              <Edit2Icon />
             </IconButton>
           )}
         </Stack>

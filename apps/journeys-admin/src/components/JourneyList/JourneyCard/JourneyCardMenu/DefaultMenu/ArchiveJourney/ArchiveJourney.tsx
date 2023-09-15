@@ -2,8 +2,8 @@ import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import FolderDown1 from '@core/shared/ui/icons/FolderDown1'
-import FolderUp1 from '@core/shared/ui/icons/FolderUp1'
+import FolderDown1Icon from '@core/shared/ui/icons/FolderDown1'
+import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
 
 import { GetAdminJourneys } from '../../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
@@ -108,13 +108,13 @@ export function ArchiveJourney({
       {status !== JourneyStatus.archived ? (
         <MenuItem
           label="Archive"
-          icon={<FolderUp1 color="secondary" />}
+          icon={<FolderUp1Icon color="secondary" />}
           onClick={handleClick}
         />
       ) : (
         <MenuItem
           label="Unarchive"
-          icon={<FolderDown1 color="secondary" />}
+          icon={<FolderDown1Icon color="secondary" />}
           onClick={handleClick}
         />
       )}

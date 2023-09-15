@@ -12,7 +12,7 @@ import sortBy from 'lodash/sortBy'
 import { ReactElement, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
@@ -100,7 +100,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 horizontal: 'left'
               }
             }}
-            IconComponent={ChevronDown}
+            IconComponent={ChevronDownIcon}
           >
             {(query?.data?.teams != null
               ? sortBy(query.data?.teams, 'title')

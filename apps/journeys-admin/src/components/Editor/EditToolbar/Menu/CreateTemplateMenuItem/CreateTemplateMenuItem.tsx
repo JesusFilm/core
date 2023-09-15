@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Bag5 from '@core/shared/ui/icons/Bag5'
+import Bag5Icon from '@core/shared/ui/icons/Bag5'
 
 import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
@@ -93,7 +93,7 @@ export function CreateTemplateMenuItem(): ReactElement {
   return (
     <MenuItem
       label="Create Template"
-      icon={<Bag5 />}
+      icon={<Bag5Icon />}
       onClick={handleCreateTemplate}
     />
   )

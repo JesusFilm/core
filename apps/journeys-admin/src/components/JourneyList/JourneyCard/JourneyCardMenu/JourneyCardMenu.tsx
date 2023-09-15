@@ -3,7 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import { ReactElement, useState } from 'react'
 
-import More from '@core/shared/ui/icons/More'
+import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetAdminJourneys } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
@@ -56,7 +56,7 @@ export function JourneyCardMenu({
         aria-expanded={open ? 'true' : 'false'}
         onClick={handleOpenMenu}
       >
-        <More />
+        <MoreIcon />
       </IconButton>
       <Menu
         id="journey-actions"

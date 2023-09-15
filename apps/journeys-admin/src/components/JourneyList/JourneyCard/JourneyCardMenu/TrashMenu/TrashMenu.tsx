@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
-import CheckContained from '@core/shared/ui/icons/CheckContained'
-import FileShred from '@core/shared/ui/icons/FileShred'
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import FileShredIcon from '@core/shared/ui/icons/FileShred'
 
 import { MenuItem } from '../../../../MenuItem'
 
@@ -20,7 +20,7 @@ export function TrashMenu({
     <>
       <MenuItem
         label="Restore"
-        icon={<CheckContained color="secondary" />}
+        icon={<CheckContainedIcon color="secondary" />}
         onClick={() => {
           setOpenRestoreDialog()
           handleCloseMenu()
@@ -29,7 +29,7 @@ export function TrashMenu({
 
       <MenuItem
         label="Delete Forever"
-        icon={<FileShred color="secondary" />}
+        icon={<FileShredIcon color="secondary" />}
         onClick={() => {
           setOpenDeleteDialog()
           handleCloseMenu()

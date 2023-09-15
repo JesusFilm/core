@@ -10,8 +10,8 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ObjectSchema, object, string } from 'yup'
 
-import AddSquare4 from '@core/shared/ui/icons/AddSquare4'
-import AlertCircle from '@core/shared/ui/icons/AlertCircle'
+import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
 import {
   UserTeamInviteCreateInput,
@@ -134,7 +134,7 @@ export function UserTeamInviteForm({
                       color="primary"
                       disabled={values.email === ''}
                     >
-                      <AddSquare4
+                      <AddSquare4Icon
                         sx={{
                           color:
                             values.email !== '' && errors.email == null
@@ -156,7 +156,7 @@ export function UserTeamInviteForm({
             }}
           >
             <Box sx={{ pr: 3 }}>
-              <AlertCircle sx={{ color: 'secondary.light' }} />
+              <AlertCircleIcon sx={{ color: 'secondary.light' }} />
             </Box>
             <Typography sx={{ color: 'secondary.light' }} variant="body2">
               {t(

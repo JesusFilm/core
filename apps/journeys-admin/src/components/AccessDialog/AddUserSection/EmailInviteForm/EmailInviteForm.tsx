@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
-import AddSquare4 from '@core/shared/ui/icons/AddSquare4'
+import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 
 import { UserInviteCreate } from '../../../../../__generated__/UserInviteCreate'
 
@@ -124,7 +124,7 @@ export function EmailInviteForm({
                     color="primary"
                     disabled={values.email === ''}
                   >
-                    <AddSquare4
+                    <AddSquare4Icon
                       sx={{
                         color:
                           values.email !== '' && errors.email == null

@@ -14,9 +14,9 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Grid1 from '@core/shared/ui/icons/Grid1'
-import Trash2 from '@core/shared/ui/icons/Trash2'
-import X2 from '@core/shared/ui/icons/X2'
+import Grid1Icon from '@core/shared/ui/icons/Grid1'
+import Trash2Icon from '@core/shared/ui/icons/Trash2'
+import X2Icon from '@core/shared/ui/icons/X2'
 
 import { BlockDeleteForCoverImage } from '../../../../../__generated__/BlockDeleteForCoverImage'
 import {
@@ -161,7 +161,7 @@ export function VideoDetails({
               edge="end"
               aria-label="Close"
             >
-              <X2 />
+              <X2Icon />
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -177,7 +177,7 @@ export function VideoDetails({
               }}
             >
               <Button
-                startIcon={<Grid1 />}
+                startIcon={<Grid1Icon />}
                 size="small"
                 onClick={() => onClose(false)}
               >
@@ -188,7 +188,7 @@ export function VideoDetails({
                 size="small"
                 aria-label="clear-video"
               >
-                <Trash2 />
+                <Trash2Icon />
               </IconButton>
             </Stack>
           )}

@@ -3,9 +3,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import SvgIcon from '@mui/material/SvgIcon'
 import { ReactElement } from 'react'
 
-// import Image3 from '@core/shared/ui/icons/Image3'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
-import ImageX from '@core/shared/ui/icons/ImageX'
+import ImageXIcon from '@core/shared/ui/icons/ImageX'
 
 interface ImageBlockThumbnailProps {
   selectedBlock?: { src: string | null; alt: string } | null
@@ -37,7 +36,7 @@ export function ImageBlockThumbnail({
       {loading === true ? (
         <CircularProgress size={20} />
       ) : error === true ? (
-        <ImageX sx={{ color: 'error.main' }} />
+        <ImageXIcon sx={{ color: 'error.main' }} />
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"

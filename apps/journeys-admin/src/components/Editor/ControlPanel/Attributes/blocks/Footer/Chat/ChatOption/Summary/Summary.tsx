@@ -6,7 +6,7 @@ import { useSnackbar } from 'notistack'
 import { ChangeEvent, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonCreate } from '../../../../../../../../../../__generated__/JourneyChatButtonCreate'
@@ -142,7 +142,7 @@ export function Summary({
   }
 
   return (
-    <AccordionSummary expandIcon={<ChevronDown />} sx={{ px: 6, py: 2 }}>
+    <AccordionSummary expandIcon={<ChevronDownIcon />} sx={{ px: 6, py: 2 }}>
       <Checkbox
         data-testid={`checkbox-${currentPlatform as string}`}
         checked={active}

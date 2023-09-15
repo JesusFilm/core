@@ -3,9 +3,9 @@ import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
-import Link from '@core/shared/ui/icons/Link'
-import TextInput1 from '@core/shared/ui/icons/TextInput1'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
+import LinkIcon from '@core/shared/ui/icons/Link'
+import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
@@ -31,7 +31,7 @@ export function TextResponse({
     <>
       <Attribute
         id={`${id}-text-field-options`}
-        icon={<TextInput1 />}
+        icon={<TextInput1Icon />}
         name="Feedback"
         value={label}
         description="Feedback Properties"
@@ -49,7 +49,7 @@ export function TextResponse({
 
       <Attribute
         id={`${id}-text-field-action`}
-        icon={<Link />}
+        icon={<LinkIcon />}
         name="Action"
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
@@ -68,7 +68,7 @@ export function TextResponse({
 
       <Attribute
         id={`${id}-text-field-icon`}
-        icon={<InformationCircleContained />}
+        icon={<InformationCircleContainedIcon />}
         name="Button Icon"
         value={
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??

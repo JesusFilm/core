@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { GetJourneyNames } from '../../../../../../../__generated__/GetJourneyNames'
@@ -95,7 +95,7 @@ export function NavigateToJourneyAction(): ReactElement {
         displayEmpty
         onChange={handleChange}
         value={currentActionJourneyId}
-        IconComponent={ChevronDown}
+        IconComponent={ChevronDownIcon}
         inputProps={{ 'aria-label': 'journey' }}
       >
         <MenuItem value="">Select the Journey...</MenuItem>

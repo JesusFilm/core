@@ -10,10 +10,10 @@ import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import MessageCircle from '@core/shared/ui/icons/MessageCircle'
-import Share from '@core/shared/ui/icons/Share'
-import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
-import UserProfile2 from '@core/shared/ui/icons/UserProfile2'
+import MessageCircleIcon from '@core/shared/ui/icons/MessageCircle'
+import ShareIcon from '@core/shared/ui/icons/Share'
+import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
+import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 import { useSocialPreview } from '../../SocialProvider'
@@ -65,7 +65,7 @@ export function SocialPreviewPost({
                   color: (theme) => theme.palette.background.paper
                 }}
               >
-                <UserProfile2 />
+                <UserProfile2Icon />
               </Avatar>
               <Box flexGrow={1}>
                 <Box
@@ -169,9 +169,9 @@ export function SocialPreviewPost({
                 color="#EFEFEF"
                 my={2}
               >
-                <ThumbsUp sx={{ fontSize: 12 }} />
-                <MessageCircle sx={{ fontSize: 12 }} />
-                <Share sx={{ fontSize: 12 }} />
+                <ThumbsUpIcon sx={{ fontSize: 12 }} />
+                <MessageCircleIcon sx={{ fontSize: 12 }} />
+                <ShareIcon sx={{ fontSize: 12 }} />
               </Stack>
             </CardContent>
             <CardActionArea />

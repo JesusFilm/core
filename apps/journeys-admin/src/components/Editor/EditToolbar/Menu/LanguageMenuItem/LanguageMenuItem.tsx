@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
-import Globe1 from '@core/shared/ui/icons/Globe1'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import { MenuItem } from '../../../../MenuItem'
 
@@ -36,7 +36,7 @@ export function LanguageMenuItem({ onClose }: Props): ReactElement {
     <>
       <MenuItem
         label="Language"
-        icon={<Globe1 />}
+        icon={<Globe1Icon />}
         onClick={handleUpdateLanguage}
       />
       {showLanguageDialog && (

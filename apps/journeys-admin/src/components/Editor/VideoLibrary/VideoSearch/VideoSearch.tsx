@@ -4,8 +4,8 @@ import TextField from '@mui/material/TextField'
 import debounce from 'lodash/debounce'
 import { ChangeEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 
-import Link from '@core/shared/ui/icons/Link'
-import Search1 from '@core/shared/ui/icons/Search1'
+import LinkIcon from '@core/shared/ui/icons/Link'
+import Search1Icon from '@core/shared/ui/icons/Search1'
 
 interface VideoSearchProps {
   label?: string
@@ -56,8 +56,8 @@ export function VideoSearch({
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              {icon === 'search' && <Search1 />}
-              {icon === 'link' && <Link />}
+              {icon === 'search' && <Search1Icon />}
+              {icon === 'link' && <LinkIcon />}
             </InputAdornment>
           )
         }}

@@ -10,8 +10,8 @@ import NextLink from 'next/link'
 import { AuthUser } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 
-import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
-import Menu1 from '@core/shared/ui/icons/Menu1'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 
@@ -82,7 +82,7 @@ export function PageWrapper({
                 left: '25px'
               }}
             >
-              <Menu1 sx={{ color: 'background.paper' }} />
+              <Menu1Icon sx={{ color: 'background.paper' }} />
             </IconButton>
             <Image src={taskbarIcon} width={32} height={32} alt="Next Steps" />
           </Toolbar>
@@ -98,7 +98,7 @@ export function PageWrapper({
                 color="inherit"
                 sx={{ mr: 2 }}
               >
-                <ChevronLeft />
+                <ChevronLeftIcon />
               </IconButton>
             </NextLink>
           )}

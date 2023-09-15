@@ -19,10 +19,10 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import Drag from '@core/shared/ui/icons/Drag'
-import Plus2 from '@core/shared/ui/icons/Plus2'
-import Target from '@core/shared/ui/icons/Target'
-import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+import DragIcon from '@core/shared/ui/icons/Drag'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
+import TargetIcon from '@core/shared/ui/icons/Target'
+import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
@@ -94,7 +94,7 @@ export function CardList({
           }}
           onClick={handleClick}
         >
-          <Plus2 color="primary" />
+          <Plus2Icon color="primary" />
         </CardActionArea>
       </Card>
     )
@@ -131,7 +131,7 @@ export function CardList({
               justifyContent="center"
               alignItems="center"
             >
-              <Target color="error" />
+              <TargetIcon color="error" />
             </Box>
           }
           loading={journey == null}
@@ -165,7 +165,7 @@ export function CardList({
                 justifyContent="center"
                 alignItems="center"
               >
-                <ThumbsUp color="error" />
+                <ThumbsUpIcon color="error" />
               </Box>
             ) : (
               <Image
@@ -258,7 +258,7 @@ const CardItem = ({
             justifyContent: 'center'
           }}
         >
-          <Drag
+          <DragIcon
             sx={{
               opacity: snapshot.isDragging === true ? 1 : 0.5
             }}

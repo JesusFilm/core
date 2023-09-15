@@ -5,9 +5,9 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import Edit2 from '@core/shared/ui/icons/Edit2'
-import Plus2 from '@core/shared/ui/icons/Plus2'
-import Trash2 from '@core/shared/ui/icons/Trash2'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
+import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import type { UnsplashAuthor } from '../ImageBlockEditor/UnsplashGallery'
@@ -104,11 +104,11 @@ export function ImageBlockHeader({
         }}
       >
         {showAdd && selectedBlock?.src != null ? (
-          <Edit2 color="primary" />
+          <Edit2Icon color="primary" />
         ) : showAdd ? (
-          <Plus2 color="primary" />
+          <Plus2Icon color="primary" />
         ) : selectedBlock?.src != null ? (
-          <Trash2 color="primary" data-testid="imageBlockHeaderDelete" />
+          <Trash2Icon color="primary" data-testid="imageBlockHeaderDelete" />
         ) : (
           <></>
         )}

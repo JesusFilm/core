@@ -3,8 +3,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Icon from '@mui/material/Icon'
 import { ReactElement, ReactNode } from 'react'
 
-import FilePlus1 from '@core/shared/ui/icons/FilePlus1'
-import ImageX from '@core/shared/ui/icons/ImageX'
+import FilePlus1Icon from '@core/shared/ui/icons/FilePlus1'
+import ImageXIcon from '@core/shared/ui/icons/ImageX'
 
 interface ImageThumbnailProps {
   imageSrc?: string | null
@@ -18,7 +18,7 @@ export function ImageThumbnail({
   imageSrc,
   imageAlt,
   loading,
-  icon = <FilePlus1 />,
+  icon = <FilePlus1Icon />,
   error
 }: ImageThumbnailProps): ReactElement {
   return (
@@ -38,7 +38,7 @@ export function ImageThumbnail({
       {loading === true ? (
         <CircularProgress size={20} />
       ) : error === true ? (
-        <ImageX sx={{ color: 'error.main' }} />
+        <ImageXIcon sx={{ color: 'error.main' }} />
       ) : imageSrc != null ? (
         <Box
           component="img"

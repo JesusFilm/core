@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 
-import Globe1 from '@core/shared/ui/icons/Globe1'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import { NavigationListItem } from './NavigationListItem'
 
@@ -17,7 +17,7 @@ describe('NavigationListItem', () => {
   it('renders menu item', () => {
     const { getByRole } = render(
       <NavigationListItem
-        icon={<Globe1 />}
+        icon={<Globe1Icon />}
         label="menu item"
         selected={false}
       />
@@ -31,7 +31,7 @@ describe('NavigationListItem', () => {
   it('renders menuitem with link', () => {
     const { getByRole } = render(
       <NavigationListItem
-        icon={<Globe1 />}
+        icon={<Globe1Icon />}
         label="menu item"
         selected
         link="/"
@@ -46,7 +46,7 @@ describe('NavigationListItem', () => {
   it('should render menu item with tool tip and badge', () => {
     const { getByTestId, getByLabelText } = render(
       <NavigationListItem
-        icon={<Globe1 />}
+        icon={<Globe1Icon />}
         label="menu item"
         selected
         tooltipText="item label"
@@ -59,7 +59,7 @@ describe('NavigationListItem', () => {
   it('should render menu item with link, tool tip and badge', () => {
     const { getByRole, getByTestId, getByLabelText } = render(
       <NavigationListItem
-        icon={<Globe1 />}
+        icon={<Globe1Icon />}
         label="menu item"
         selected
         link="/"
@@ -75,7 +75,7 @@ describe('NavigationListItem', () => {
     const onClick = jest.fn()
     const { getByRole } = render(
       <NavigationListItem
-        icon={<Globe1 />}
+        icon={<Globe1Icon />}
         label="menu item"
         selected
         handleClick={onClick}
@@ -87,7 +87,7 @@ describe('NavigationListItem', () => {
 
   it('should be selected', () => {
     const { getByRole } = render(
-      <NavigationListItem icon={<Globe1 />} label="menu item" selected />
+      <NavigationListItem icon={<Globe1Icon />} label="menu item" selected />
     )
     expect(getByRole('button')).toHaveAttribute('aria-selected', 'true')
   })

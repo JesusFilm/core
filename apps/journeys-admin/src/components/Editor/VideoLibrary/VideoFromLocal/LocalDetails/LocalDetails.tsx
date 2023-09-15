@@ -10,8 +10,8 @@ import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import Check from '@core/shared/ui/icons/Check'
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import CheckIcon from '@core/shared/ui/icons/Check'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
@@ -227,7 +227,7 @@ export function LocalDetails({
         <Chip
           label={selectedLanguage?.localName ?? selectedLanguage?.nativeName}
           onClick={() => setOpenLanguage(true)}
-          avatar={<ChevronDown />}
+          avatar={<ChevronDownIcon />}
           disabled={loading}
           sx={{
             whiteSpace: 'nowrap',
@@ -237,7 +237,7 @@ export function LocalDetails({
         />
         <Button
           variant="contained"
-          startIcon={<Check />}
+          startIcon={<CheckIcon />}
           onClick={handleSelect}
           size="small"
           sx={{ backgroundColor: 'secondary.dark' }}

@@ -4,10 +4,10 @@ import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement } from 'react'
 
-import Iphone1 from '@core/shared/ui/icons/Iphone1'
-import Marker2 from '@core/shared/ui/icons/Marker2'
-import MessageText1 from '@core/shared/ui/icons/MessageText1'
-import UserProfile2 from '@core/shared/ui/icons/UserProfile2'
+import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
+import Marker2Icon from '@core/shared/ui/icons/Marker2'
+import MessageText1Icon from '@core/shared/ui/icons/MessageText1'
+import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 import { GetVisitorForDetails } from '../../../../__generated__/GetVisitorForDetails'
 
@@ -49,7 +49,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
           spacing={2}
           sx={{ flexGrow: 1 }}
         >
-          <MessageText1 />
+          <MessageText1Icon />
           <Typography>
             {intlFormat(parseISO(data?.visitor.lastChatStartedAt), {
               hour: 'numeric',
@@ -64,14 +64,14 @@ export function VisitorDetails({ id }: Props): ReactElement {
 
       {data?.visitor.countryCode != null && (
         <Stack direction="row" alignItems="center" spacing={2}>
-          <Marker2 />
+          <Marker2Icon />
           <Typography>{data?.visitor.countryCode}</Typography>
         </Stack>
       )}
 
       {data?.visitor.userAgent?.os.name != null && (
         <Stack direction="row" alignItems="center" spacing={2}>
-          <Iphone1 />
+          <Iphone1Icon />
           <Typography>{data?.visitor.userAgent?.os.name}</Typography>
         </Stack>
       )}
@@ -83,7 +83,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
           spacing={2}
           sx={{ display: { xs: 'none', md: 'flex' } }}
         >
-          <UserProfile2 />
+          <UserProfile2Icon />
           <Typography>{`#${data?.visitor.id.slice(-12)}`}</Typography>
         </Stack>
       )}

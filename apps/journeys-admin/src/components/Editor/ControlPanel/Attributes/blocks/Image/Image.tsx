@@ -2,7 +2,7 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import Image3 from '@core/shared/ui/icons/Image3'
+import Image3Icon from '@core/shared/ui/icons/Image3'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../../Attribute'
@@ -39,7 +39,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
     <>
       <Attribute
         id={`${id}-image-options`}
-        icon={<Image3 />}
+        icon={<Image3Icon />}
         name="Image Source"
         value={block?.alt ?? ''}
         description="Image Options"

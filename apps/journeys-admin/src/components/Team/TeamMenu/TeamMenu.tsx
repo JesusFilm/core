@@ -5,7 +5,7 @@ import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-import More from '@core/shared/ui/icons/More'
+import MoreIcon from '@core/shared/ui/icons/More'
 import Plus1Icon from '@core/shared/ui/icons/Plus1'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
@@ -65,7 +65,7 @@ export function TeamMenu(): ReactElement {
         </Box>
       )}
       <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
-        <More />
+        <MoreIcon />
       </IconButton>
       <Menu
         id="edit-journey-actions"

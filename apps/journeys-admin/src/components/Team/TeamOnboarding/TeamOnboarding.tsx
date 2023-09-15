@@ -16,7 +16,7 @@ import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
@@ -87,7 +87,7 @@ export function TeamOnboarding(): ReactElement {
                   alignItems="center"
                   sx={{ mt: 4, mx: 6 }}
                 >
-                  <UsersProfiles2 />
+                  <UsersProfiles2Icon />
                   <Typography variant="subtitle1" sx={{ ml: 3 }}>
                     {t('Invite team members')}
                   </Typography>

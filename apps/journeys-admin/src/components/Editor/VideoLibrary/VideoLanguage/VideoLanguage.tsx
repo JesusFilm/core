@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
-import X2 from '@core/shared/ui/icons/X2'
+import X2Icon from '@core/shared/ui/icons/X2'
 import {
   LanguageAutocomplete,
   LanguageOption
@@ -69,7 +69,7 @@ export function VideoLanguage({
             Available Languages
           </Typography>
           <IconButton onClick={handleClose} edge="end" aria-label="Close">
-            <X2 />
+            <X2Icon />
           </IconButton>
         </Toolbar>
       </AppBar>

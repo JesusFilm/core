@@ -3,8 +3,8 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import Edit2 from '@core/shared/ui/icons/Edit2'
-import VideoOn from '@core/shared/ui/icons/VideoOn'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
@@ -24,7 +24,7 @@ export function SourceFromYouTube({
             src: selectedBlock.image ?? '',
             alt: selectedBlock.title ?? ''
           }}
-          Icon={VideoOn}
+          Icon={VideoOnIcon}
         />
       </Box>
       <Box flexGrow={1} minWidth={0}>
@@ -50,7 +50,7 @@ export function SourceFromYouTube({
           YouTube &nbsp;
         </Typography>
       </Box>
-      <Edit2 color="primary" />
+      <Edit2Icon color="primary" />
     </>
   )
 }

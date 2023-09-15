@@ -8,8 +8,8 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
-import Code1 from '@core/shared/ui/icons/Code1'
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import Code1Icon from '@core/shared/ui/icons/Code1'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 import { SlugDialog } from './SlugDialog'
@@ -52,7 +52,7 @@ export function JourneyLink(): ReactElement {
         <Button
           onClick={() => setShowSlugDialog(true)}
           size="small"
-          startIcon={<Edit2 />}
+          startIcon={<Edit2Icon />}
           disabled={journey == null}
         >
           {t('Edit URL')}
@@ -60,7 +60,7 @@ export function JourneyLink(): ReactElement {
         <Button
           onClick={() => setShowEmbedDialog(true)}
           size="small"
-          startIcon={<Code1 />}
+          startIcon={<Code1Icon />}
           disabled={journey == null}
         >
           {t('Embed Journey')}

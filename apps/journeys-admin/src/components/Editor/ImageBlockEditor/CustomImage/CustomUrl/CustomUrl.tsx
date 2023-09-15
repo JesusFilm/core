@@ -8,9 +8,9 @@ import Typography from '@mui/material/Typography'
 import { ClipboardEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
-import ChevronUp from '@core/shared/ui/icons/ChevronUp'
-import Link from '@core/shared/ui/icons/Link'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
+import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { CreateCloudflareUploadByUrl } from '../../../../../../__generated__/CreateCloudflareUploadByUrl'
 import { TextFieldForm } from '../../../../TextFieldForm'
@@ -68,14 +68,14 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
           }
         }}
       >
-        <Link />
+        <LinkIcon />
         <Typography variant="subtitle2" sx={{ pl: 2, pr: 1 }}>
           Add image by URL
         </Typography>
         {open ? (
-          <ChevronUp sx={{ ml: 'auto' }} />
+          <ChevronUpIcon sx={{ ml: 'auto' }} />
         ) : (
-          <ChevronDown sx={{ ml: 'auto' }} />
+          <ChevronDownIcon sx={{ ml: 'auto' }} />
         )}
       </Button>
       <Collapse in={open}>
@@ -90,7 +90,7 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
               helperText={t('Make sure image address is permanent')}
               startIcon={
                 <InputAdornment position="start">
-                  <Link />
+                  <LinkIcon />
                 </InputAdornment>
               }
             />

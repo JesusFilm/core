@@ -1,7 +1,7 @@
 import Fab from '@mui/material/Fab'
 import { ReactElement } from 'react'
 
-import Plus2 from '@core/shared/ui/icons/Plus2'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { usePage } from '../../../libs/PageWrapperProvider'
 
@@ -30,7 +30,7 @@ export function AddJourneyFab(): ReactElement {
         display: { xs: 'flex', md: 'none' }
       }}
     >
-      <Plus2 sx={{ mr: 3 }} />
+      <Plus2Icon sx={{ mr: 3 }} />
       Add
     </Fab>
   )

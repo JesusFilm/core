@@ -15,7 +15,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
@@ -173,7 +173,7 @@ export function BackgroundColor(): ReactElement {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Edit2
+                <Edit2Icon
                   onClick={(e) => handleTabChange(e, 1)}
                   style={{ cursor: 'pointer' }}
                 />

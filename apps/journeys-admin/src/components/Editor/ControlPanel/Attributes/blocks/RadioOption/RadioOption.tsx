@@ -2,7 +2,7 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import Link from '@core/shared/ui/icons/Link'
+import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
 import { Action, actions } from '../../Action/Action'
@@ -30,7 +30,7 @@ export function RadioOption({
     <>
       <Attribute
         id={`${id}-radio-option-action`}
-        icon={<Link />}
+        icon={<LinkIcon />}
         name="Action"
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??

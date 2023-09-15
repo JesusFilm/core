@@ -2,10 +2,10 @@ import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactNode, useState } from 'react'
 
-import AlignCenter from '@core/shared/ui/icons/AlignCenter'
-import AlignLeft from '@core/shared/ui/icons/AlignLeft'
-import AlignRight from '@core/shared/ui/icons/AlignRight'
-import Dash from '@core/shared/ui/icons/Dash'
+import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
+import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
+import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
+import DashIcon from '@core/shared/ui/icons/Dash'
 
 import {
   TypographyAlign,
@@ -31,17 +31,17 @@ const ToggleButtonGroupComponent = ({ ...args }): ReactNode => {
     {
       value: TypographyAlign.left,
       label: 'Left',
-      icon: <AlignLeft />
+      icon: <AlignLeftIcon />
     },
     {
       value: TypographyAlign.center,
       label: 'Center',
-      icon: <AlignCenter />
+      icon: <AlignCenterIcon />
     },
     {
       value: TypographyAlign.right,
       label: 'Right',
-      icon: <AlignRight />
+      icon: <AlignRightIcon />
     }
   ]
 
@@ -78,14 +78,14 @@ export const CustomOptions = {
         label: (
           <Typography variant={TypographyVariant.h1}>Heading 1</Typography>
         ),
-        icon: <Dash />
+        icon: <DashIcon />
       },
       {
         value: TypographyVariant.h2,
         label: (
           <Typography variant={TypographyVariant.h2}>Heading 2</Typography>
         ),
-        icon: <Dash />
+        icon: <DashIcon />
       }
     ]
   }

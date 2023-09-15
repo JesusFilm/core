@@ -9,7 +9,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Palette from '@core/shared/ui/icons/Palette'
+import PaletteIcon from '@core/shared/ui/icons/Palette'
 
 import { CardBlockThemeModeUpdate } from '../../../../../../../../__generated__/CardBlockThemeModeUpdate'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
@@ -92,7 +92,7 @@ export function CardStyling(): ReactElement {
               borderRadius: 2
             }}
           >
-            <Palette fontSize="large" />
+            <PaletteIcon fontSize="large" />
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">
