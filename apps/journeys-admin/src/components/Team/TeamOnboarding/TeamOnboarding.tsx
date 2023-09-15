@@ -169,6 +169,23 @@ export function TeamOnboarding(): ReactElement {
                           'Create a team to hold your NextStep journeys and collaborate with others.'
                         )}
                       </Typography>
+
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        hiddenLabel
+                        id="publict=Title"
+                        name="publicTitle"
+                        value={values.publicTitle}
+                        error={Boolean(errors.publicTitle)}
+                        onChange={handleChange}
+                        helperText={errors.publicTitle}
+                      />
+                      <Typography gutterBottom>
+                        {t(
+                          "Users will see this when the information (i) icon is clicked. It could be a mission name, the name of a website, or any other public detail you're willing to share."
+                        )}
+                      </Typography>
                     </Stack>
                   </CardContent>
                   <CardActions sx={{ justifyContent: 'flex-end', px: 4 }}>
