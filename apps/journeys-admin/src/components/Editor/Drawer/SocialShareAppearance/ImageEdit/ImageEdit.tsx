@@ -8,7 +8,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2 from '@core/shared/ui/icons/Edit2'
-import Image3 from '@core/shared/ui/icons/Image3'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 import { BlockDeletePrimaryImage } from '../../../../../../__generated__/BlockDeletePrimaryImage'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
@@ -239,7 +239,7 @@ export function ImageEdit(): ReactElement {
               }}
             />
           ) : (
-            <Image3 fontSize="large" />
+            <GridEmptyIcon fontSize="large" />
           )}
 
           <Button

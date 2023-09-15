@@ -97,6 +97,7 @@ import InformationSquareContained from './InformationSquareContained'
 import Instagram from './Instagram'
 import Iphone1 from './Iphone1'
 import Journey from './Journey'
+import Journeys from './Journeys'
 import Key1 from './Key1'
 import Key2 from './Key2'
 import Laptop1 from './Laptop1'
@@ -282,6 +283,7 @@ export type IconName =
   | 'Instagram'
   | 'Iphone1'
   | 'Journey'
+  | 'Journeys'
   | 'Key1'
   | 'Key2'
   | 'Laptop1'
@@ -471,6 +473,7 @@ const iconComponents: IconComponents = {
   Instagram,
   Iphone1,
   Journey,
+  Journeys,
   Key1,
   Key2,
   Laptop1,

@@ -3,7 +3,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import SvgIcon from '@mui/material/SvgIcon'
 import { ReactElement } from 'react'
 
-import Image3 from '@core/shared/ui/icons/Image3'
+// import Image3 from '@core/shared/ui/icons/Image3'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import ImageX from '@core/shared/ui/icons/ImageX'
 
 interface ImageBlockThumbnailProps {
@@ -16,7 +17,7 @@ interface ImageBlockThumbnailProps {
 export function ImageBlockThumbnail({
   selectedBlock,
   loading,
-  Icon = Image3,
+  Icon = GridEmptyIcon,
   error
 }: ImageBlockThumbnailProps): ReactElement {
   return (

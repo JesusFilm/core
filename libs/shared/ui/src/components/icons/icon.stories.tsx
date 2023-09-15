@@ -105,6 +105,7 @@ const iconNames: IconName[] = [
   'Instagram',
   'Iphone1',
   'Journey',
+  'Journeys',
   'Key1',
   'Key2',
   'Laptop1',

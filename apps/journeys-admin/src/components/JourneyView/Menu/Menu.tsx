@@ -10,7 +10,7 @@ import { ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
-import Journey from '@core/shared/ui/icons/Journey'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
 import More from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../__generated__/GetRole'
@@ -144,7 +144,7 @@ export function Menu(): ReactElement {
                   passHref
                   legacyBehavior
                 >
-                  <MenuItem label="Edit Cards" icon={<Journey />} />
+                  <MenuItem label="Edit Cards" icon={<JourneysIcon />} />
                 </NextLink>
               </>
             )}
