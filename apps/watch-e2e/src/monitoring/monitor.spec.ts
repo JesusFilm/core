@@ -10,8 +10,9 @@ test('Homepage checks', async ({ page }) => {
   expect(response?.status()).toEqual(200)
   await expect(page).toHaveTitle(/Watch | Jesus Film Project/)
   const videoTitle = await page
-  .getByRole('button', {
-    name: 'Jesus Calms the Storm Jesus Calms the Storm Chapter 1:59'
-  }).textContent()
+    .getByRole('button', {
+      name: 'Jesus Calms the Storm Jesus Calms the Storm Chapter 1:59'
+    })
+    .textContent()
   expect(videoTitle).toEqual('Jesus Calms the StormChapter1:59')
 })
