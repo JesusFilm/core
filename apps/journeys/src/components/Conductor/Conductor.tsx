@@ -22,11 +22,7 @@ import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 // Used to resolve dynamic viewport height on Safari
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../__generated__/GetJourney'
-import {
-  ThemeMode,
-  VisitorUpdateInput
-} from '../../../__generated__/globalTypes'
+import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
@@ -44,10 +40,8 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
   }
 `
 
-const StyledSwiperContainer = styled(Swiper)<{
-  cardBlock: CardBlock
-}>(({ theme, cardBlock }) => {
-  const desktopScreen = useMediaQuery(theme.breakpoints.up('md'))
+const StyledSwiperContainer = styled(Swiper)(({ theme }) => {
+  const lgUp = useMediaQuery(theme.breakpoints.up('lg'))
 
   return {
     background: theme.palette.grey[900],
@@ -58,11 +52,9 @@ const StyledSwiperContainer = styled(Swiper)<{
       width: '84px !important'
     },
     '.swiper-pagination-bullet': {
-      background: desktopScreen
-        ? theme.palette.common.white // in desktop view, make the pagination dots white, else set colour based on theme
-        : cardBlock?.themeMode === ThemeMode.dark
+      background: lgUp
         ? theme.palette.common.white
-        : theme.palette.grey[800],
+        : theme.palette.primary.main,
       opacity: '60%'
     },
     '.swiper-pagination-bullet-active': {
@@ -105,9 +97,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
     JOURNEY_VISITOR_UPDATE
   )
-
-  const cardBlock = blockHistory[0]?.children[0] as CardBlock
-  // console.log(cardBlock.themeMode)
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
@@ -195,6 +184,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
 
+  const currentTheme = getStepTheme(activeBlock, journey)
+
   return (
     <Div100vh style={{ overflow: 'hidden' }}>
       <Stack
@@ -205,34 +196,35 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }}
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
-          <StyledSwiperContainer
-            dir={!rtl ? 'ltr' : 'rtl'}
-            pagination={{ dynamicBullets: true }}
-            slidesPerView="auto"
-            centeredSlides
-            centeredSlidesBounds
-            resizeObserver
-            cardBlock={cardBlock}
-            onSwiper={(swiper) => setSwiper(swiper)}
-            allowTouchMove={false}
-            onSlideChange={() => setShowHeaderFooter(true)}
-            sx={{
-              '.swiper-pagination': {
-                display: showHeaderFooter ? 'block' : 'none'
-              }
-            }}
+          <ThemeProvider
+            themeMode={currentTheme.themeMode}
+            themeName={currentTheme.themeName}
+            locale={locale}
+            rtl={rtl}
+            nested
           >
-            {treeBlocks.map((block) => {
-              const theme = getStepTheme(
-                block as TreeBlock<StepFields>,
-                journey
-              )
-              return (
-                <SwiperSlide
-                  key={block.id}
-                  onClick={() => setShowNavigation(true)}
-                >
-                  <ThemeProvider {...theme} locale={locale} rtl={rtl} nested>
+            <StyledSwiperContainer
+              dir={!rtl ? 'ltr' : 'rtl'}
+              pagination={{ dynamicBullets: true }}
+              slidesPerView="auto"
+              centeredSlides
+              centeredSlidesBounds
+              resizeObserver
+              onSwiper={(swiper) => setSwiper(swiper)}
+              allowTouchMove={false}
+              onSlideChange={() => setShowHeaderFooter(true)}
+              sx={{
+                '.swiper-pagination': {
+                  display: showHeaderFooter ? 'block' : 'none'
+                }
+              }}
+            >
+              {treeBlocks.map((block) => {
+                return (
+                  <SwiperSlide
+                    key={block.id}
+                    onClick={() => setShowNavigation(true)}
+                  >
                     <Fade
                       in={activeBlock?.id === block.id}
                       mountOnEnter
@@ -261,19 +253,19 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                         />
                       </Stack>
                     </Fade>
-                  </ThemeProvider>
-                </SwiperSlide>
-              )
-            })}
-            <NavigationButton
-              variant={rtl ? 'next' : 'prev'}
-              alignment="left"
-            />
-            <NavigationButton
-              variant={rtl ? 'prev' : 'next'}
-              alignment="right"
-            />
-          </StyledSwiperContainer>
+                  </SwiperSlide>
+                )
+              })}
+              <NavigationButton
+                variant={rtl ? 'next' : 'prev'}
+                alignment="left"
+              />
+              <NavigationButton
+                variant={rtl ? 'prev' : 'next'}
+                alignment="right"
+              />
+            </StyledSwiperContainer>
+          </ThemeProvider>
         </Box>
       </Stack>
     </Div100vh>
