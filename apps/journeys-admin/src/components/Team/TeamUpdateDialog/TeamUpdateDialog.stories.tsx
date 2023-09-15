@@ -33,6 +33,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
         {
           id: 'teamId',
           title: 'My Team',
+          publicTitle: null,
           __typename: 'Team',
           userTeams: []
         }

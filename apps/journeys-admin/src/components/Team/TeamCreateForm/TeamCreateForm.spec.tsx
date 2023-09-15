@@ -59,6 +59,7 @@ describe('TeamCreateForm', () => {
           {
             id: 'teamId',
             title: 'Team 1 Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }
