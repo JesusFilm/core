@@ -61,9 +61,10 @@ export function StepHeader({ sx }: Props): ReactElement {
       >
         <InfoOutlinedIcon
           sx={{
-            color: lgUp
-              ? theme.palette.common.white
-              : theme.palette.primary.main
+            color:
+              lgUp && variant !== 'admin'
+                ? theme.palette.common.white
+                : theme.palette.primary.main
           }}
         />
       </IconButton>
