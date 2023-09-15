@@ -13,7 +13,7 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-import Globe from '@core/shared/ui/icons/Globe'
+import Globe1 from '@core/shared/ui/icons/Globe1'
 import Image3 from '@core/shared/ui/icons/Image3'
 import More from '@core/shared/ui/icons/More'
 
@@ -165,14 +165,14 @@ export function TemplateCard({
           >
             {journey != null ? (
               <>
-                <Globe sx={{ fontSize: 13, pl: 0 }} />
+                <Globe1 sx={{ fontSize: 13, pl: 0 }} />
                 <Typography variant="body2" noWrap sx={{ ml: 1 }}>
                   {displayLanguage}
                 </Typography>
               </>
             ) : (
               <>
-                <Globe sx={{ fontSize: 13, p: 0 }} />
+                <Globe1 sx={{ fontSize: 13, p: 0 }} />
                 <Skeleton
                   variant="text"
                   width={50}

@@ -1,4 +1,3 @@
-import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -10,6 +9,7 @@ import { object, string } from 'yup'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Grid1 from '@core/shared/ui/icons/Grid1'
 import Image3 from '@core/shared/ui/icons/Image3'
+import StarsIcon from '@core/shared/ui/icons/Stars'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
@@ -132,7 +132,7 @@ export function ImageBlockEditor({
           {/*  // TODO: remove segmind ai flags when ready */}
           {segmind && (
             <Tab
-              icon={<SmartToyOutlinedIcon />}
+              icon={<StarsIcon />}
               label={<Typography variant="subtitle2">AI</Typography>}
               {...tabA11yProps('custom', 3)}
             />

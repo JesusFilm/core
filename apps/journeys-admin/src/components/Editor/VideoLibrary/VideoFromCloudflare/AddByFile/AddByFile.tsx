@@ -17,7 +17,7 @@ import {
 } from 'tus-js-client'
 
 import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
-import Upload1 from '@core/shared/ui/icons/Upload1'
+import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
 import { GetMyCloudflareVideoQuery } from '../../../../../../__generated__/GetMyCloudflareVideoQuery'
@@ -217,7 +217,7 @@ export function AddByFile({
         {error != null || fileRejected ? (
           <AlertTriangle sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
         ) : (
-          <Upload1 sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
+          <Upload1Icon sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
         )}
         <Typography
           variant="body1"

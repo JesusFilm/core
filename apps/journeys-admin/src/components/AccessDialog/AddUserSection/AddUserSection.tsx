@@ -9,7 +9,7 @@ import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import EmailIcon from '@core/shared/ui/icons/Email'
 import LinkIcon from '@core/shared/ui/icons/Link'
-import UserProfileAdd from '@core/shared/ui/icons/UserProfileAdd'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { MenuItem } from '../../MenuItem'
 
@@ -43,7 +43,7 @@ export function AddUserSection({
   return (
     <Stack flexGrow={1} sx={{ m: 4, mt: 2 }}>
       <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
-        <UserProfileAdd sx={{ transform: 'scaleX(-1)' }} />
+        <UsersProfiles2Icon />
         <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>
           {t('Add editor by')}
         </Typography>

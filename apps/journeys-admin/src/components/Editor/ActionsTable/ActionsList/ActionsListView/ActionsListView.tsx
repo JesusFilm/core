@@ -11,10 +11,10 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
-import Book from '@core/shared/ui/icons/Book'
+import BibleIcon from '@core/shared/ui/icons/Bible'
 import Edit2 from '@core/shared/ui/icons/Edit2'
+import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
-import Web from '@core/shared/ui/icons/Web'
 
 import type { Actions } from '../../ActionsTable'
 
@@ -40,9 +40,9 @@ export function ActionsListView({
       case 'Start a Conversation':
         return <MessageChat1 sx={{ color }} />
       case 'Link to Bible':
-        return <Book sx={{ color }} />
+        return <BibleIcon sx={{ color }} />
       case 'Visit a Website':
-        return <Web sx={{ color }} />
+        return <LinkAngledIcon sx={{ color }} />
       default:
         return <></>
     }

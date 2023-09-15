@@ -2,7 +2,7 @@ import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
 import { ReactElement } from 'react'
 
-import UserProfileAdd from '@core/shared/ui/icons/UserProfileAdd'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 export interface ManageAccessAvatarProps {
   diameter: number
@@ -30,7 +30,10 @@ export function ManageAccessAvatar({
           }
         }}
       >
-        <UserProfileAdd sx={{ color: 'secondary.light' }} fontSize={fontSize} />
+        <UsersProfiles2Icon
+          sx={{ color: 'secondary.light' }}
+          fontSize={fontSize}
+        />
       </Avatar>
     </Tooltip>
   )

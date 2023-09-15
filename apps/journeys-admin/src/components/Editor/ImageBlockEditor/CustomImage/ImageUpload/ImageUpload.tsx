@@ -10,7 +10,7 @@ import { useDropzone } from 'react-dropzone'
 
 import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
 import CheckBroken from '@core/shared/ui/icons/CheckBroken'
-import Upload1 from '@core/shared/ui/icons/Upload1'
+import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { CreateCloudflareUploadByFile } from '../../../../../../__generated__/CreateCloudflareUploadByFile'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
@@ -126,7 +126,7 @@ export function ImageUpload({
         ) : uploadError ? (
           <AlertTriangle sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
         ) : (
-          <Upload1 sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
+          <Upload1Icon sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
         )}
         <Typography
           variant="body1"

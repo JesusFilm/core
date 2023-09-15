@@ -6,7 +6,7 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Calendar1 from '@core/shared/ui/icons/Calendar1'
-import Globe from '@core/shared/ui/icons/Globe'
+import Globe1 from '@core/shared/ui/icons/Globe1'
 
 import type { JourneyType } from '../../JourneyView'
 
@@ -56,7 +56,7 @@ export function JourneyDetails({
               mt: 2
             }}
           >
-            <Globe fontSize="small" />
+            <Globe1 fontSize="small" />
             <Language />
           </Box>
         </>

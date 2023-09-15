@@ -7,7 +7,7 @@ import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFields'
 import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQuestionFields'
-import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
@@ -133,6 +133,6 @@ export function NewRadioQuestionButton(): ReactElement {
   }
 
   return (
-    <Button icon={<HelpCircleContained />} value="Poll" onClick={handleClick} />
+    <Button icon={<CheckContainedIcon />} value="Poll" onClick={handleClick} />
   )
 }

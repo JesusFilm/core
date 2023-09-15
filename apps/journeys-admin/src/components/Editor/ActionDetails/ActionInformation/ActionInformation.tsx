@@ -2,9 +2,9 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
-import Book from '@core/shared/ui/icons/Book'
+import BibleIcon from '@core/shared/ui/icons/Bible'
+import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
-import Web from '@core/shared/ui/icons/Web'
 
 interface GoalDescriptionProps {
   label: string
@@ -48,12 +48,12 @@ export function ActionInformation(): ReactElement {
       <GoalDescription
         label="Visit a Website"
         description="This could be your church or ministry website, or whatever you want to redirect the viewer to."
-        icon={<Web />}
+        icon={<LinkAngledIcon />}
       />
       <GoalDescription
         label="Link to Bible"
         description="If the target of the journey is to download the Bible"
-        icon={<Book />}
+        icon={<BibleIcon />}
       />
     </Stack>
   )

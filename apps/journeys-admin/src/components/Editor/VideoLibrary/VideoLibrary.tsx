@@ -12,8 +12,9 @@ import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import Upload2 from '@core/shared/ui/icons/Upload2'
-import VideoOn from '@core/shared/ui/icons/VideoOn'
+import MediaStrip1Icon from '@core/shared/ui/icons/MediaStrip1'
+import Upload1Icon from '@core/shared/ui/icons/Upload1'
+// import VideoOn from '@core/shared/ui/icons/VideoOn'
 import X2 from '@core/shared/ui/icons/X2'
 import Youtube from '@core/shared/ui/icons/Youtube'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
@@ -125,7 +126,7 @@ export function VideoLibrary({
             aria-label="video library tabs"
           >
             <Tab
-              icon={<VideoOn />}
+              icon={<MediaStrip1Icon />}
               label="Library"
               {...tabA11yProps('video-from-local', 0)}
               sx={{ flexGrow: 1 }}
@@ -138,7 +139,7 @@ export function VideoLibrary({
             />
             {videoFromCloudflare && (
               <Tab
-                icon={<Upload2 />}
+                icon={<Upload1Icon />}
                 label="Upload"
                 {...tabA11yProps('video-from-cloudflare', 2)}
                 sx={{ flexGrow: 1 }}

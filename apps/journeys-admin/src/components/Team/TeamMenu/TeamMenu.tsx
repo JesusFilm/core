@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import More from '@core/shared/ui/icons/More'
 import Plus1Icon from '@core/shared/ui/icons/Plus1'
-import UsersProfiles3Icon from '@core/shared/ui/icons/UsersProfiles3'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { MenuItem } from '../../MenuItem'
 import { TeamAvatars } from '../TeamAvatars'
@@ -88,7 +88,7 @@ export function TeamMenu(): ReactElement {
           disabled={activeTeam == null}
           key="manage-team"
           label={t('Members')}
-          icon={<UsersProfiles3Icon />}
+          icon={<UsersProfiles2Icon />}
           onClick={() => {
             setTeamManageOpen(true)
             setAnchorEl(null)

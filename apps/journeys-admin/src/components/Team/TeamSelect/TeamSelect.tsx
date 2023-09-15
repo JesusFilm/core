@@ -13,7 +13,7 @@ import { ReactElement, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
-import UsersProfiles3Icon from '@core/shared/ui/icons/UsersProfiles3'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { TeamAvatars } from '../TeamAvatars'
@@ -63,7 +63,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         sx={{ overflow: 'hidden', flexGrow: 1 }}
         ref={anchorRef}
       >
-        <UsersProfiles3Icon sx={{ mr: 1, ml: '3px' }} />
+        <UsersProfiles2Icon sx={{ mr: 1, ml: '3px' }} />
         <FormControl variant="standard" sx={{ minWidth: 100 }}>
           <Select
             defaultValue={activeTeam?.id}

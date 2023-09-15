@@ -3,7 +3,7 @@ import AvatarGroup from '@mui/material/AvatarGroup'
 import { ReactElement } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import UserProfile3 from '@core/shared/ui/icons/UserProfile3'
+import UserProfile2 from '@core/shared/ui/icons/UserProfile2'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
@@ -75,7 +75,7 @@ export function HostAvatars({
               }
             }}
           >
-            <UserProfile3
+            <UserProfile2
               data-testid="host-avatar-placeholder"
               sx={{ color: (theme) => theme.palette.grey[700] }}
             />
@@ -97,7 +97,7 @@ export function HostAvatars({
               }
             }}
           >
-            <UserProfile3
+            <UserProfile2
               data-testid="host-avatar-placeholder-solid"
               sx={{ color: (theme) => theme.palette.grey[700] }}
             />

@@ -1,7 +1,7 @@
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import CopyLeft from '@core/shared/ui/icons/CopyLeft'
+import LingAngledIcon from '@core/shared/ui/icons/LinkAngled'
 
 import { JourneyFields as Journey } from '../../../../../../__generated__/JourneyFields'
 import { MenuItem } from '../../../../MenuItem'
@@ -30,6 +30,10 @@ export function CopyMenuItem({ journey, onClose }: Props): ReactElement {
   }
 
   return (
-    <MenuItem label="Copy Link" icon={<CopyLeft />} onClick={handleCopyLink} />
+    <MenuItem
+      label="Copy Link"
+      icon={<LingAngledIcon />}
+      onClick={handleCopyLink}
+    />
   )
 }

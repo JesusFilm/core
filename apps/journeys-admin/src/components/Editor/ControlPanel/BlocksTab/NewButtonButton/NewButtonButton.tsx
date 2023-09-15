@@ -11,7 +11,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import CursorPointer from '@core/shared/ui/icons/CursorPointer'
+import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
 import { ButtonBlockCreate } from '../../../../../../__generated__/ButtonBlockCreate'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
@@ -154,7 +154,5 @@ export function NewButtonButton(): ReactElement {
     }
   }
 
-  return (
-    <Button icon={<CursorPointer />} value="Button" onClick={handleClick} />
-  )
+  return <Button icon={<Cursor6Icon />} value="Button" onClick={handleClick} />
 }

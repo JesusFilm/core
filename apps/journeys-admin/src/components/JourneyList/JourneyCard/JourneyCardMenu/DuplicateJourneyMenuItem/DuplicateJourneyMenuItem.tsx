@@ -2,7 +2,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import CopyLeft from '@core/shared/ui/icons/CopyLeft'
+import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
 import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../../../MenuItem'
@@ -48,7 +48,7 @@ export function DuplicateJourneyMenuItem({
             data-testid="journey-duplicate-loader"
           />
         ) : (
-          <CopyLeft color="secondary" />
+          <CopyToIcon color="secondary" />
         )
       }
       onClick={handleDuplicateJourney}
