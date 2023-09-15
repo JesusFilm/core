@@ -1,5 +1,7 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -36,7 +38,11 @@ export function TeamUpdateDialog({
   const teamSchema = object({
     title: string()
       .required(t('Team Name must be at least one character.'))
-      .max(40, t('Max {{ count }} Characters', { count: 40 }))
+      .max(40, t('Max {{ count }} Characters', { count: 40 })),
+    publicTitle: string().max(
+      40,
+      t('Max {{ count }} Characters', { count: 40 })
+    )
   })
 
   async function handleSubmit(
@@ -99,17 +105,38 @@ export function TeamUpdateDialog({
           }}
         >
           <Form>
-            <TextField
-              id="title"
-              name="title"
-              fullWidth
-              value={values.title}
-              variant="filled"
-              error={Boolean(errors.title)}
-              onChange={handleChange}
-              helperText={errors.title as string}
-              label="Team Name"
-            />
+            <Stack spacing={4}>
+              <TextField
+                id="title"
+                name="title"
+                fullWidth
+                value={values.title}
+                variant="filled"
+                error={Boolean(errors.title)}
+                onChange={handleChange}
+                helperText={errors.title as string}
+                label="Team Name"
+              />
+
+              <TextField
+                id="publicTitle"
+                name="publicTitle"
+                fullWidth
+                value={values.publicTitle}
+                variant="filled"
+                error={Boolean(errors.publicTitle)}
+                onChange={handleChange}
+                helperText={errors.publicTitle as string}
+                hiddenLabel
+                placeholder={values.title}
+              />
+
+              <Typography>
+                {t(
+                  "Users will see this when the information (i) icon is clicked. It could be a mission name, the name of a website, or any other public detail you're willing to share."
+                )}
+              </Typography>
+            </Stack>
           </Form>
         </Dialog>
       )}

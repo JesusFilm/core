@@ -40,6 +40,7 @@ describe('TeamCreateDialog', () => {
         teamCreate: {
           id: 'teamId',
           title: 'Team Title',
+          publicTitle: null,
           __typename: 'Team',
           userTeams: []
         }
@@ -65,6 +66,7 @@ describe('TeamCreateDialog', () => {
           {
             id: 'teamId1',
             title: 'Team 1 Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }

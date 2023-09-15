@@ -14,6 +14,15 @@ import { TEAM_UPDATE } from './TeamUpdateDialog'
 
 import { TeamUpdateDialog } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('TeamUpdateDialog', () => {
   const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
@@ -25,6 +34,7 @@ describe('TeamUpdateDialog', () => {
           {
             id: 'teamId',
             title: 'Jesus Film Project',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }
@@ -72,7 +82,7 @@ describe('TeamUpdateDialog', () => {
   it('updates active team and sets it as active', async () => {
     const handleClose = jest.fn()
     const cache = new InMemoryCache()
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, getAllByRole } = render(
       <MockedProvider mocks={[getTeamsMock, teamUpdateMock]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
@@ -82,16 +92,22 @@ describe('TeamUpdateDialog', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('textbox')).toHaveValue('Jesus Film Project')
+      expect(getAllByRole('textbox')[0]).toHaveValue('Jesus Film Project')
     )
-    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
+    expect(getAllByRole('textbox')[1]).toHaveAttribute(
+      'placeholder',
+      'Jesus Film Project'
+    )
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'Team Title' }
+    })
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(handleClose).toHaveBeenCalled())
     expect(getByText('Team Title updated.')).toBeInTheDocument()
   })
 
-  it('validates form', async () => {
-    const { getByText, getByRole } = render(
+  it('validates team field', async () => {
+    const { getByText, getByRole, getAllByRole } = render(
       <MockedProvider mocks={[getTeamsMock, teamUpdateErrorMock]}>
         <SnackbarProvider>
           <TeamProvider>
@@ -101,27 +117,48 @@ describe('TeamUpdateDialog', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('textbox')).toHaveValue('Jesus Film Project')
+      expect(getAllByRole('textbox')[0]).toHaveValue('Jesus Film Project')
     )
-    fireEvent.change(getByRole('textbox'), { target: { value: '' } })
+    fireEvent.change(getAllByRole('textbox')[0], { target: { value: '' } })
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(
         getByText('Team Name must be at least one character.')
       ).toBeInTheDocument()
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(getAllByRole('textbox')[0], {
       target: { value: '12345678901234567890123456789012345678901' }
     })
     await waitFor(() =>
       expect(getByText('Max {{ count }} Characters')).toBeInTheDocument()
     )
-    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'Team Title' }
+    })
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(
         getByText('Failed to update the team. Reload the page or try again.')
       ).toBeInTheDocument()
+    )
+  })
+
+  it('validates public name field', async () => {
+    const { getByText, getAllByRole } = render(
+      <MockedProvider mocks={[getTeamsMock]}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamUpdateDialog open onClose={jest.fn()} />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getAllByRole('textbox')[1], {
+      target: { value: '12345678901234567890123456789012345678901' }
+    })
+    await waitFor(() =>
+      expect(getByText('Max {{ count }} Characters')).toBeInTheDocument()
     )
   })
 })
