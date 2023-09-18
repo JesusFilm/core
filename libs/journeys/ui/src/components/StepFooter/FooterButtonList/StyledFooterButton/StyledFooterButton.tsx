@@ -5,8 +5,9 @@ import { ReactElement, ReactNode } from 'react'
 
 const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
   ({ theme, clicked }) => ({
-    minWidth: 56,
-    borderRadius: 20,
+    minWidth: 46,
+    minHeight: 30,
+    borderRadius: 100,
     backgroundColor: theme.palette.grey[800],
     color: theme.palette.grey[100],
     [theme.breakpoints.down('lg')]: {
@@ -55,7 +56,7 @@ export function StyledFooterButton({
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   return (
-    <StyledButton onClick={onClick} disableRipple={lgUp} clicked={clicked}>
+    <StyledButton onClick={onClick} disableRipple={lgUp} clicked={clicked} sx = {{ px: 3.5, py: 1 }}>
       {children}
     </StyledButton>
   )
