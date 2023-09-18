@@ -852,6 +852,7 @@ describe('JourneyResolver', () => {
           slug: `${journey.title}-copy`,
           title: `${journey.title} copy`,
           template: false,
+          featuredAt: null,
           team: {
             connect: { id: 'teamId' }
           },
@@ -899,6 +900,7 @@ describe('JourneyResolver', () => {
         publishedAt: new Date(),
         slug: journey.title,
         title: journey.title,
+        featuredAt: null,
         template: false,
         team: {
           connect: { id: 'teamId' }
@@ -998,6 +1000,7 @@ describe('JourneyResolver', () => {
           publishedAt: new Date(),
           slug: `${journey.title}-copy-2`,
           title: `${journey.title} copy 2`,
+          featuredAt: null,
           template: false,
           team: {
             connect: { id: 'teamId' }
@@ -1177,20 +1180,25 @@ describe('JourneyResolver', () => {
     }
 
     it('updates a journey', async () => {
+      const input = {
+        title: 'new title',
+        languageId: '529',
+        slug: 'new-slug',
+        featuredAt: new Date().toString()
+      }
+
       prismaService.journey.findUnique.mockResolvedValueOnce(
         journeyWithUserTeam
       )
-      await resolver.journeyUpdate(ability, 'journeyId', {
-        title: 'new title',
-        languageId: '529',
-        slug: 'new-slug'
-      })
+
+      await resolver.journeyUpdate(ability, 'journeyId', input)
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
         data: {
           title: 'new title',
           languageId: '529',
-          slug: 'new-slug'
+          slug: 'new-slug',
+          featuredAt: input.featuredAt
         }
       })
     })
@@ -1203,7 +1211,7 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', { hostId: 'hostId' })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { hostId: 'hostId' }
+        data: { hostId: 'hostId', featuredAt: journeyWithUserTeam.featuredAt }
       })
     })
 
@@ -1214,7 +1222,7 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', { title: null })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { title: undefined }
+        data: { title: undefined, featuredAt: journeyWithUserTeam.featuredAt }
       })
     })
 
@@ -1225,7 +1233,10 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', { languageId: null })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { languageId: undefined }
+        data: {
+          languageId: undefined,
+          featuredAt: journeyWithUserTeam.featuredAt
+        }
       })
     })
 
@@ -1236,7 +1247,7 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', { slug: null })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { slug: undefined }
+        data: { slug: undefined, featuredAt: journeyWithUserTeam.featuredAt }
       })
     })
 

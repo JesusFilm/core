@@ -1828,6 +1828,7 @@ input JourneyUpdateInput {
   seoTitle: String
   seoDescription: String
   hostId: String
+  featuredAt: DateTime
 }
 
 type UserJourney

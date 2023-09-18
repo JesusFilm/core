@@ -412,6 +412,7 @@ export class JourneyResolver {
                 title: duplicateTitle,
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
+                featuredAt: null,
                 template: false,
                 team: { connect: { id: teamId } },
                 userJourneys: {
@@ -563,7 +564,8 @@ export class JourneyResolver {
           ...input,
           title: input.title ?? undefined,
           languageId: input.languageId ?? undefined,
-          slug: input.slug ?? undefined
+          slug: input.slug ?? undefined,
+          featuredAt: input.featuredAt?.toString() ?? journey.featuredAt
         }
       })
     } catch (err) {
