@@ -126,10 +126,25 @@ function Header(props: any): ReactElement {
 }
 
 function SubmitButton(props: JSX.IntrinsicElements['button']): ReactElement {
-  console.log(props)
   return (
     <Button variant="contained" {...props}>
       Submit
+    </Button>
+  )
+}
+
+function NextButton(props: JSX.IntrinsicElements['button']): ReactElement {
+  return (
+    <Button variant="contained" {...props}>
+      Next
+    </Button>
+  )
+}
+
+function PreviousButton(props: JSX.IntrinsicElements['button']): ReactElement {
+  return (
+    <Button variant="contained" {...props}>
+      Previous
     </Button>
   )
 }
@@ -145,7 +160,9 @@ const myComponents: FormiumComponents = {
   PageWrapper,
   FooterWrapper,
   Header,
-  SubmitButton
+  SubmitButton,
+  NextButton,
+  PreviousButton
 }
 
 interface Props {
