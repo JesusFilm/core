@@ -311,6 +311,7 @@ export function VideoControls({
         void handleFullscreen()
       })}
       onMouseMove={() => player.userActive(true)}
+      data-testid="VideoControls"
     >
       <Fade
         in={visible}

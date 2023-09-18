@@ -19,10 +19,10 @@ export function ShareButton({
       size="medium"
       color="secondary"
       onClick={onClick}
-      data-testid="share"
       sx={{
         minWidth: '200px'
       }}
+      data-testid="ShareButton"
     >
       Share
     </Button>

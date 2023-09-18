@@ -79,6 +79,7 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
               width: '100%'
             }
           }}
+          data-testid="VideoHero"
         >
           {hasPlayed === true ? (
             <DynamicVideoPlayer setControlsVisible={setControlsVisible} />
