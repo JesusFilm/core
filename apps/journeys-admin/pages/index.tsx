@@ -19,8 +19,6 @@ import {
   GetOnboardingJourneys,
   GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
 } from '../__generated__/GetOnboardingJourneys'
-import { formium } from '../lib/formium'
-import { AATestForm } from '../src/components/AATestForm'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/NewPageWrapper'
 import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
@@ -88,7 +86,6 @@ function IndexPage({ onboardingJourneys, form }: IndexPageProps): ReactElement {
         }
         sidePanelTitle={t('Create a New Journey')}
       >
-        <AATestForm form={form} />
         <JourneyList authUser={AuthUser} />
       </PageWrapper>
     </>
@@ -127,14 +124,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
     }
   })
 
-  const form = await formium.getFormBySlug('ns-test')
-
   return {
     props: {
       flags,
       onboardingJourneys: data?.onboardingJourneys,
-      ...translations,
-      form
+      ...translations
     }
   }
 })
