@@ -29,7 +29,7 @@ export function VideoBlockEditor({
 
   return (
     <>
-      <Box sx={{ px: 6, pb: 6 }}>
+      <Box sx={{ p: 6 }}>
         <Source selectedBlock={selectedBlock} onChange={onChange} />
       </Box>
       {videoBlock?.videoId != null && (
