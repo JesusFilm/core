@@ -40,6 +40,7 @@ export const NavButton = forwardRef<HTMLDivElement, NavButtonProps>(
               0
             )} 0%, ${alpha(theme.palette.background.default, 1)} 100%)`
         }}
+        data-testid="NavButton"
       >
         {variant === 'prev' ? (
           <NavigateBeforeIcon fontSize="large" />

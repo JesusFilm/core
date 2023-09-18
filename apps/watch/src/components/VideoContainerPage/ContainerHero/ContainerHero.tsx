@@ -28,6 +28,7 @@ export function ContainerHero({ openDialog }: Props): ReactElement {
         alignItems: 'flex-end',
         position: 'relative'
       }}
+      data-testid="ContainerHero"
     >
       {image != null && (
         <Image
