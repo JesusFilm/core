@@ -1206,8 +1206,8 @@ describe('JourneyResolver', () => {
         strategySlug: 'https://docs.google.com/presentation/d/e/slidesId'
       })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
-        where: { id: 'journeyId'},
-        data: { 
+        where: { id: 'journeyId' },
+        data: {
           strategySlug: 'https://docs.google.com/presentation/d/e/slidesId'
         }
       })
