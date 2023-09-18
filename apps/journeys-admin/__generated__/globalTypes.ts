@@ -348,6 +348,7 @@ export interface JourneyUpdateInput {
   seoTitle?: string | null;
   seoDescription?: string | null;
   hostId?: string | null;
+  strategySlug?: string | null;
 }
 
 export interface JourneyVisitorFilter {
