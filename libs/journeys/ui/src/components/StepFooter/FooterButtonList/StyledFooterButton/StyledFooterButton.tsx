@@ -56,7 +56,12 @@ export function StyledFooterButton({
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   return (
-    <StyledButton onClick={onClick} disableRipple={lgUp} clicked={clicked} sx = {{ px: 3.5, py: 1 }}>
+    <StyledButton
+      onClick={onClick}
+      disableRipple={lgUp}
+      clicked={clicked}
+      sx={{ px: 3.5, py: 1 }}
+    >
       {children}
     </StyledButton>
   )
