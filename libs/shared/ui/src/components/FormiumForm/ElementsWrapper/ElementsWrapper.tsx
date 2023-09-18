@@ -1,6 +1,8 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
+/** Wraps around the all of the field elements */
+
 export function ElementsWrapper({
   children
 }: {

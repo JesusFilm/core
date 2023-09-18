@@ -3,6 +3,8 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
+/** Contains information for the page and renders the header */
+
 interface HeaderProps {
   form: Form
   page: Page
@@ -35,8 +37,7 @@ interface PageChild {
   type: FormElementType
 }
 
-export function Header(props: HeaderProps): ReactElement {
-  const title = props.page.title ?? 'default'
+export function Header({ page: { title } }: HeaderProps): ReactElement {
   return (
     <Box
       sx={{

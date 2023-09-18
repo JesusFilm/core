@@ -20,6 +20,7 @@ import { SubmitButton } from './SubmitButton'
 import { Textarea } from './Textarea'
 import { TextInput } from './TextInput'
 
+// declared outside of the component to save on rerenders
 const myComponents: FormiumComponents = {
   ...defaultComponents,
   TextInput,
@@ -39,6 +40,8 @@ const myComponents: FormiumComponents = {
 interface Props {
   formiumClient: FormiumClient
   form: Form
+  // userId?: string
+  // email?: string
 }
 
 export function FormiumForm({ formiumClient, form }: Props): ReactElement {

@@ -1,6 +1,8 @@
 import Paper from '@mui/material/Paper'
 import { ReactElement } from 'react'
 
+/** wraps around the entire formium component */
+
 export function PageWrapper({
   children
 }: {
