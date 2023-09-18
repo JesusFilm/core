@@ -40,7 +40,7 @@ const myComponents: FormiumComponents = {
 interface Props {
   formiumClient: FormiumClient
   form: Form
-  userId?: string
+  userId: string | undefined
 }
 
 export function FormiumForm({

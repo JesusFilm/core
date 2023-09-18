@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client'
-import { Form } from '@formium/types'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
@@ -53,10 +52,9 @@ export const GET_ONBOARDING_JOURNEYS = gql`
 
 interface IndexPageProps {
   onboardingJourneys: OnboardingJourneys[]
-  form: Form
 }
 
-function IndexPage({ onboardingJourneys, form }: IndexPageProps): ReactElement {
+function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const { teams } = useFlags()
