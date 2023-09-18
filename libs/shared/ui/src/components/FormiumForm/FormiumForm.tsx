@@ -168,14 +168,9 @@ const myComponents: FormiumComponents = {
 interface Props {
   formiumClient: FormiumClient
   form: Form
-  userId: string | undefined
 }
 
-export function FormiumForm({
-  formiumClient,
-  form,
-  userId
-}: Props): ReactElement {
+export function FormiumForm({ formiumClient, form }: Props): ReactElement {
   return (
     <Formium
       data={form}

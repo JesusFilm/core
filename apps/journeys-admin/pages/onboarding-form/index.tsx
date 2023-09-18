@@ -3,7 +3,6 @@ import { Form } from '@formium/types'
 import Box from '@mui/material/Box'
 import {
   AuthAction,
-  useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
@@ -19,9 +18,6 @@ interface Props {
 }
 
 function OnboardingFormPage({ form }: Props): ReactElement {
-  const AuthUser = useAuthUser()
-  // const router = useRouter()
-
   return (
     <Box
       sx={{
@@ -29,11 +25,7 @@ function OnboardingFormPage({ form }: Props): ReactElement {
         justifyContent: 'center'
       }}
     >
-      <FormiumForm
-        formiumClient={formiumClient}
-        form={form}
-        userId={AuthUser.id}
-      />
+      <FormiumForm formiumClient={formiumClient} form={form} />
     </Box>
   )
 }
