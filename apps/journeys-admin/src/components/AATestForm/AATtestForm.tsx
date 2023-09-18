@@ -1,11 +1,11 @@
 import {
+  FormControlProps,
   FormiumComponents,
   FormiumForm,
   defaultComponents
 } from '@formium/react'
 import { TextInputProps } from '@formium/react/dist/inputs'
 import { Form } from '@formium/types'
-import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { ReactElement } from 'react'
 
@@ -20,9 +20,27 @@ function TextInput(props: TextInputProps): ReactElement {
   return <TextField label="Outlined" variant="outlined" {...props} />
 }
 
+function FormControl({
+  children,
+  description,
+  error,
+  label,
+  labelFor
+}: FormControlProps): ReactElement {
+  return (
+    <div>
+      {/* {label && <label htmlFor={labelFor}>{label}</label>} */}
+      {/* {description && <div>{description}</div>} */}
+      {children}
+      {/* {error && <div>{error}</div>} */}
+    </div>
+  )
+}
+
 const myComponents: FormiumComponents = {
   ...defaultComponents,
-  TextInput
+  TextInput,
+  FormControl
   // PageWrapper,
   // ElementsWrapper,
   // FieldWrapper
