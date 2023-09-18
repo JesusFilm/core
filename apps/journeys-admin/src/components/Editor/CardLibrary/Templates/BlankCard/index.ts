@@ -1,0 +1,1 @@
+export { BlankCard } from './BlankCard'
