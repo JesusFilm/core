@@ -127,7 +127,7 @@ export function VideoControls({
   ])
 
   useEffect(() => {
-    setVolume(player.volume() ?? 1 * 100)
+    setVolume(player.volume() ?? 0 * 100)
     player.on('play', () => {
       const currentTime = player.currentTime() ?? 0
       if (currentTime < 0.02) {

@@ -91,18 +91,23 @@ describe('VideoControls', () => {
     expect(pauseStub).toHaveBeenCalled()
   })
 
-  it('mutes the video on mute icon click', () => {
+  it('mutes the video on mute icon click', async () => {
     const mutedStub = jest.spyOn(player, 'muted').mockImplementation(() => ({
       muted: jest.fn()
     }))
-    const { getByTestId } = render(
+    const { getAllByRole } = render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <VideoControls player={player} />
         </VideoProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
+
+    let muteButton
+    await waitFor(() => {
+      muteButton = getAllByRole('button')[5]
+    })
+    fireEvent.click(muteButton)
     expect(mutedStub).toHaveBeenCalled()
   })
 
