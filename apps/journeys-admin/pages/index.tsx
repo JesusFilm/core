@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import { Form } from '@formium/types'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
@@ -18,6 +19,8 @@ import {
   GetOnboardingJourneys,
   GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
 } from '../__generated__/GetOnboardingJourneys'
+import { formium } from '../lib/formium'
+import { AATestForm } from '../src/components/AATestForm'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/NewPageWrapper'
 import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
@@ -52,9 +55,10 @@ export const GET_ONBOARDING_JOURNEYS = gql`
 
 interface IndexPageProps {
   onboardingJourneys: OnboardingJourneys[]
+  form: Form
 }
 
-function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
+function IndexPage({ onboardingJourneys, form }: IndexPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const { teams } = useFlags()
@@ -84,6 +88,7 @@ function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
         }
         sidePanelTitle={t('Create a New Journey')}
       >
+        <AATestForm form={form} />
         <JourneyList authUser={AuthUser} />
       </PageWrapper>
     </>
@@ -122,11 +127,14 @@ export const getServerSideProps = withAuthUserTokenSSR({
     }
   })
 
+  const form = await formium.getFormBySlug('ns-test')
+
   return {
     props: {
       flags,
       onboardingJourneys: data?.onboardingJourneys,
-      ...translations
+      ...translations,
+      form
     }
   }
 })
