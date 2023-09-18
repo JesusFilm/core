@@ -22,6 +22,7 @@ type Journey @key(fields: "id") {
   template: Boolean
   host: Host
   team: Team
+  strategySlug: String
 }
 
 enum IdType {
@@ -123,6 +124,7 @@ input JourneyUpdateInput {
   seoTitle: String
   seoDescription: String
   hostId: String
+  strategySlug: String
 }
 
 extend type UserJourney {

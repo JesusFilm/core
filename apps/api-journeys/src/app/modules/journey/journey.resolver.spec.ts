@@ -80,7 +80,8 @@ describe('JourneyResolver', () => {
     seoTitle: null,
     seoDescription: null,
     template: false,
-    hostId: null
+    hostId: null,
+    strategySlug: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -852,6 +853,7 @@ describe('JourneyResolver', () => {
           slug: `${journey.title}-copy`,
           title: `${journey.title} copy`,
           template: false,
+          strategySlug: null,
           team: {
             connect: { id: 'teamId' }
           },
@@ -900,6 +902,7 @@ describe('JourneyResolver', () => {
         slug: journey.title,
         title: journey.title,
         template: false,
+        strategySlug: null,
         team: {
           connect: { id: 'teamId' }
         },
@@ -1191,6 +1194,21 @@ describe('JourneyResolver', () => {
           title: 'new title',
           languageId: '529',
           slug: 'new-slug'
+        }
+      })
+    })
+
+    it('updates a journey with strategySlug', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        strategySlug: 'https://docs.google.com/presentation/d/e/slidesId'
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId'},
+        data: { 
+          strategySlug: 'https://docs.google.com/presentation/d/e/slidesId'
         }
       })
     })

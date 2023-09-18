@@ -413,6 +413,7 @@ export class JourneyResolver {
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
                 template: false,
+                strategySlug: null,
                 team: { connect: { id: teamId } },
                 userJourneys: {
                   create: {
