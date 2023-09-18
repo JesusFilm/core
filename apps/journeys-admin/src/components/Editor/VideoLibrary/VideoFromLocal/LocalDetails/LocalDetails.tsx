@@ -13,6 +13,7 @@ import Player from 'video.js/dist/types/player'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
@@ -138,13 +139,10 @@ export function LocalDetails({
   useEffect(() => {
     if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...videoJsOptions,
         fluid: true,
         controls: true,
-        poster: data.video?.image ?? undefined,
-        hls: {
-          limitRenditionByPlayerDimensions: true,
-          useDevicePixelRatio: true
-        }
+        poster: data.video?.image ?? undefined
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)

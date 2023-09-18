@@ -3,6 +3,8 @@ import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
+
 import {
   VideoBlockObjectFit,
   VideoBlockSource
@@ -39,6 +41,7 @@ export function BackgroundVideo({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...videoJsOptions,
         autoplay: true,
         controls: false,
         controlBar: false,
@@ -46,17 +49,14 @@ export function BackgroundVideo({
         preload: 'metadata',
         // Make video fill container instead of set aspect ratio
         fill: true,
+        fluid: true,
         userActions: {
           hotkeys: false,
           doubleClick: false
         },
         muted: true,
         loop: true,
-        responsive: true,
-        hls: {
-          limitRenditionByPlayerDimensions: true,
-          useDevicePixelRatio: true
-        }
+        responsive: true
         // Don't use poster prop as image isn't optimised
       })
     }

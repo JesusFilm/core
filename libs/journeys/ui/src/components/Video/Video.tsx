@@ -14,6 +14,7 @@ import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { NextImage } from '@core/shared/ui/NextImage'
+import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
 
 import {
   VideoBlockObjectFit,
@@ -102,6 +103,7 @@ export function Video({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
+          ...videoJsOptions,
           controls: false,
           controlBar: false,
           bigPlayButton: false,
@@ -114,11 +116,7 @@ export function Video({
           },
           responsive: true,
           muted: muted === true,
-          autoplay,
-          hls: {
-            limitRenditionByPlayerDimensions: true,
-            useDevicePixelRatio: true
-          }
+          autoplay
         })
       )
     }

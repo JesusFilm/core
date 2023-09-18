@@ -2,6 +2,8 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
+
 import { useVideo } from '../../../../libs/videoContext'
 
 import { VideoControls } from './VideoControls'
@@ -21,6 +23,7 @@ export function VideoPlayer({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
+          ...videoJsOptions,
           autoplay: true,
           controls: false,
           controlBar: false,
@@ -29,11 +32,7 @@ export function VideoPlayer({
             hotkeys: true,
             doubleClick: true
           },
-          responsive: true,
-          hls: {
-            limitRenditionByPlayerDimensions: true,
-            useDevicePixelRatio: true
-          }
+          responsive: true
         })
       )
     }

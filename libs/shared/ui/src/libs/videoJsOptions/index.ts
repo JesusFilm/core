@@ -1,0 +1,1 @@
+export { videoJsOptions } from './videoJsOptions'

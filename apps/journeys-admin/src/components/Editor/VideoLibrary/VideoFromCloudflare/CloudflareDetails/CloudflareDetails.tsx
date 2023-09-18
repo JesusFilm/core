@@ -4,6 +4,8 @@ import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
+
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import 'video.js/dist/video-js.css'
 
@@ -16,12 +18,9 @@ export function CloudflareDetails({
   useEffect(() => {
     if (videoRef.current != null && id != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...videoJsOptions,
         fluid: true,
         controls: true,
-        hls: {
-          limitRenditionByPlayerDimensions: true,
-          useDevicePixelRatio: true
-        },
         poster: `https://customer-${
           process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
         }.cloudflarestream.com/${id ?? ''}/thumbnails/thumbnail.jpg?time=2s`

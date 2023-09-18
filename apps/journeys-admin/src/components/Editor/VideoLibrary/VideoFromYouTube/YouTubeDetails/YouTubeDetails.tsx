@@ -10,6 +10,8 @@ import useSWR from 'swr'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
+
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { parseISO8601Duration } from '../../../../../libs/parseISO8601Duration'
 import { VideoDescription } from '../../VideoDescription'
@@ -64,13 +66,10 @@ export function YouTubeDetails({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...videoJsOptions,
         fluid: true,
         controls: true,
-        poster: data?.snippet?.thumbnails?.default?.url ?? undefined,
-        hls: {
-          limitRenditionByPlayerDimensions: true,
-          useDevicePixelRatio: true
-        }
+        poster: data?.snippet?.thumbnails?.default?.url ?? undefined
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)

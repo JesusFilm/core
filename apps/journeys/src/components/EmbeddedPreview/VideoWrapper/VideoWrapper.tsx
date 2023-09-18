@@ -9,6 +9,7 @@ import Player from 'video.js/dist/types/player'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { blurImage } from '@core/journeys/ui/blurImage'
 import { NextImage } from '@core/shared/ui/NextImage'
+import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -42,17 +43,14 @@ export function VideoWrapper({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...videoJsOptions,
         autoplay: false,
         controls: false,
         responsive: true,
         muted: true,
 
         // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
-        poster: blurBackground,
-        hls: {
-          limitRenditionByPlayerDimensions: true,
-          useDevicePixelRatio: true
-        }
+        poster: blurBackground
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(block.startAt ?? 0)
