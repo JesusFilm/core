@@ -6,11 +6,10 @@ export function FormControl({
   children,
   description,
   error,
-  label,
-  labelFor
+  label
 }: FormControlProps): ReactElement {
   return (
-    <div>
+    <>
       {label != null && <Typography variant="subtitle1">{label}</Typography>}
       {description != null && (
         <Typography variant="body1">{description}</Typography>
@@ -21,6 +20,6 @@ export function FormControl({
           {error}
         </Typography>
       )}
-    </div>
+    </>
   )
 }

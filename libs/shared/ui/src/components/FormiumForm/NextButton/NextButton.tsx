@@ -1,12 +1,14 @@
 import Button from '@mui/material/Button'
 import { ReactElement } from 'react'
 
-export function NextButton(
-  props: JSX.IntrinsicElements['button']
-): ReactElement {
+export function NextButton({
+  type,
+  disabled,
+  children
+}: JSX.IntrinsicElements['button']): ReactElement {
   return (
-    <Button variant="contained" {...props}>
-      Next
+    <Button variant="contained" type={type} disabled={disabled}>
+      {children}
     </Button>
   )
 }

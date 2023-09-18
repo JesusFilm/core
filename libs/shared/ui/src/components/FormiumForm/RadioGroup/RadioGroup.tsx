@@ -19,7 +19,7 @@ export function RadioGroup({
       <FormLabel id={id}>{name}</FormLabel>
       <MuiRadioGroup name={name} onChange={onChange} onBlur={onBlur}>
         {options.map((option) => (
-          <FormControlLabel {...option} control={<Radio />} />
+          <FormControlLabel key={option.id} {...option} control={<Radio />} />
         ))}
       </MuiRadioGroup>
     </FormControl>

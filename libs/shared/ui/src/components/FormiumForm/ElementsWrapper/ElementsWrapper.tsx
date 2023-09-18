@@ -7,12 +7,7 @@ export function ElementsWrapper({
   children: ReactElement
 }): ReactElement {
   return (
-    <Stack
-      spacing={10}
-      sx={{
-        m: 4
-      }}
-    >
+    <Stack spacing={10} sx={{ m: 4 }}>
       {children}
     </Stack>
   )
