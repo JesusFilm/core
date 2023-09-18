@@ -4,10 +4,7 @@ import { SeeAllVideos } from './SeeAllVideos'
 
 describe('SeeAllVideos', () => {
   it('button should have correct link', () => {
-    const { getByLabelText } = render(<SeeAllVideos />)
-    expect(getByLabelText('all-videos-button')).toHaveAttribute(
-      'href',
-      '/videos'
-    )
+    const { getByTestId } = render(<SeeAllVideos />)
+    expect(getByTestId('SeeAllVideos')).toHaveAttribute('href', '/videos')
   })
 })

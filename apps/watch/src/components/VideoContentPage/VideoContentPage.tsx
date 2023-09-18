@@ -122,6 +122,7 @@ export function VideoContentPage(): ReactElement {
             </Stack>
           </>
         }
+        testId="VideoContentPage"
       >
         <Container maxWidth="xxl" sx={{ mb: 24 }}>
           <Stack
