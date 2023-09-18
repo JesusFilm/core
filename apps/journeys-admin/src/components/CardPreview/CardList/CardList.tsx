@@ -26,6 +26,7 @@ import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import {
   Role,
   ThemeMode,
@@ -231,6 +232,9 @@ const CardItem = ({
 }: CardItemProps): ReactElement => {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
+  const cardProps = step.children.find(
+    (child) => child.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
 
   return (
     <Box
@@ -283,8 +287,8 @@ const CardItem = ({
         />
         <FramePortal width={380} height={560} dir={rtl ? 'rtl' : 'ltr'}>
           <ThemeProvider
-            themeName={journey?.themeName ?? ThemeName.base}
-            themeMode={journey?.themeMode ?? ThemeMode.light}
+            themeName={cardProps.themeName ?? ThemeName.base}
+            themeMode={cardProps.themeMode ?? ThemeMode.light}
             rtl={rtl}
             locale={locale}
           >
