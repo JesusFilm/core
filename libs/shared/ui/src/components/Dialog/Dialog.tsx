@@ -21,6 +21,7 @@ interface DialogProps {
   children?: ReactChild
   container?: HTMLElement
   loading?: boolean
+  testId?: string
 }
 
 interface DialogAction {
@@ -78,7 +79,8 @@ export function Dialog({
   fullscreen,
   children,
   container,
-  loading = false
+  loading = false,
+  testId
 }: DialogProps): ReactElement {
   return (
     <StyledDialog
@@ -88,6 +90,7 @@ export function Dialog({
       fullWidth
       onClose={onClose}
       container={container}
+      data-testid={testId}
     >
       {dialogTitle != null && (
         <MuiDialogTitle>

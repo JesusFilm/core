@@ -20,7 +20,7 @@ describe('VideoGrid', () => {
   })
 
   it('should render correct number of videos', () => {
-    const { getAllByTestId } = render(<VideoGrid videos={videos} />)
-    expect(getAllByTestId('VideoCard')).toHaveLength(videos.length)
+    const { getAllByLabelText } = render(<VideoGrid videos={videos} />)
+    expect(getAllByLabelText('VideoCard')).toHaveLength(videos.length)
   })
 })
