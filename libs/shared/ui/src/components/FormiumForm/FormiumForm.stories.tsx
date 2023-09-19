@@ -8,7 +8,6 @@ import {
 } from '@formium/react/dist/inputs'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
-import { ReactElement } from 'react'
 
 import { sharedUiConfig } from '../../libs/sharedUiConfig'
 
@@ -42,9 +41,6 @@ interface FormStoryProps {
   previousButtonProps: JSX.IntrinsicElements['button']
   nextButtonProps: JSX.IntrinsicElements['button']
   submitButtonProps: JSX.IntrinsicElements['button']
-  elementsWrapperProps: ReactElement
-  footerWrapperProps: ReactElement
-  pageWrapperProps: ReactElement
 }
 
 const defaultFormStoryArgs: FormStoryProps = {
@@ -129,19 +125,16 @@ const defaultFormStoryArgs: FormStoryProps = {
     type: 'submit',
     disabled: false,
     children: 'Submit Button'
-  },
-  elementsWrapperProps: {} as unknown as ReactElement,
-  footerWrapperProps: {} as unknown as ReactElement,
-  pageWrapperProps: {} as unknown as ReactElement
+  }
 }
 
 const Template: StoryObj<FormStoryProps> = {
   render: ({ ...args }) => (
-    <PageWrapper {...args.pageWrapperProps}>
+    <PageWrapper>
       <>
         <Header {...args.headerProps} />
         <FormControl {...args.formControlProps} />
-        <ElementsWrapper {...args.elementsWrapperProps}>
+        <ElementsWrapper>
           <>
             <TextInput {...args.textInputProps} />
             <Textarea {...args.textAreaProps} />
@@ -149,7 +142,7 @@ const Template: StoryObj<FormStoryProps> = {
             <RadioGroup {...args.radioGroupProps} />
           </>
         </ElementsWrapper>
-        <FooterWrapper {...args.footerWrapperProps}>
+        <FooterWrapper>
           <>
             <PreviousButton {...args.previousButtonProps} />
             <SubmitButton {...args.submitButtonProps} />
