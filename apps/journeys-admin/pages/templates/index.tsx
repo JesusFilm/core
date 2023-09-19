@@ -8,6 +8,8 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
@@ -16,14 +18,13 @@ import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
-  // get someone with access to define a flag for us
-  const temporaryFlag = true
+  const { templates } = useFlags()
 
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
       <PageWrapper title={t('Journey Templates')} authUser={AuthUser}>
-        {temporaryFlag ? <TemplateGallery /> : <TemplateLibrary />}
+        {templates ? <TemplateGallery /> : <TemplateLibrary />}
       </PageWrapper>
     </>
   )
