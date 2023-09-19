@@ -57,7 +57,8 @@ describe('JourneyResolver', () => {
   let resolver: JourneyResolver,
     blockService: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
-    ability: AppAbility
+    ability: AppAbility,
+    abilityWithPublisher: AppAbility
 
   const journey: Journey = {
     id: 'journeyId',
@@ -127,7 +128,13 @@ describe('JourneyResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
-    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    ability = await new AppCaslFactory().createAbility({
+      id: 'userId'
+    })
+    abilityWithPublisher = await new AppCaslFactory().createAbility({
+      id: 'userId',
+      roles: ['publisher']
+    })
   })
 
   describe('adminJourneysReport', () => {
@@ -852,6 +859,7 @@ describe('JourneyResolver', () => {
           slug: `${journey.title}-copy`,
           title: `${journey.title} copy`,
           template: false,
+          featuredAt: null,
           team: {
             connect: { id: 'teamId' }
           },
@@ -899,6 +907,7 @@ describe('JourneyResolver', () => {
         publishedAt: new Date(),
         slug: journey.title,
         title: journey.title,
+        featuredAt: null,
         template: false,
         team: {
           connect: { id: 'teamId' }
@@ -998,6 +1007,7 @@ describe('JourneyResolver', () => {
           publishedAt: new Date(),
           slug: `${journey.title}-copy-2`,
           title: `${journey.title} copy 2`,
+          featuredAt: null,
           template: false,
           team: {
             connect: { id: 'teamId' }
@@ -1225,7 +1235,9 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', { languageId: null })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { languageId: undefined }
+        data: {
+          languageId: undefined
+        }
       })
     })
 
@@ -1335,6 +1347,35 @@ describe('JourneyResolver', () => {
       await expect(
         resolver.journeyPublish(ability, 'journeyId')
       ).rejects.toThrow('user is not allowed to publish journey')
+    })
+  })
+
+  describe('journeyFeatured', () => {
+    it('updated featured date for journey', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyFeatured(abilityWithPublisher, 'journeyId')
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: {
+          featuredAt: new Date()
+        }
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journeyFeatured(abilityWithPublisher, 'journeyId')
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      await expect(
+        resolver.journeyFeatured(ability, 'journeyId')
+      ).rejects.toThrow('user is not allowed to update featured date')
     })
   })
 
