@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 /** Contains information for the page and renders the header */
 
-interface HeaderProps {
+export interface HeaderProps {
   form: Form
   page: Page
   pageIndex: number

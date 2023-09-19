@@ -8,7 +8,6 @@ export function FooterWrapper({
 }: {
   children: ReactElement
 }): ReactElement {
-  console.log(children)
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>{children}</Box>
   )
