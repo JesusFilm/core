@@ -179,6 +179,7 @@ export class JourneyResolver {
     if (where?.template === true) filter.template = true
     if (where?.featured === true) filter.featuredAt = { not: null }
     if (where?.ids != null) filter.id = { in: where?.ids }
+    if (where?.tagIds != null) filter.tagIds = { hasEvery: where?.tagIds }
     return await this.prismaService.journey.findMany({
       where: filter
     })
@@ -228,6 +229,7 @@ export class JourneyResolver {
               status: JourneyStatus.published,
               publishedAt: new Date(),
               team: { connect: { id: teamId } },
+              tagIds: [],
               userJourneys: {
                 create: {
                   userId,
@@ -414,6 +416,7 @@ export class JourneyResolver {
                 publishedAt: new Date(),
                 template: false,
                 team: { connect: { id: teamId } },
+                tagIds: journey.template === true ? journey.tagIds : [],
                 userJourneys: {
                   create: {
                     userId,
@@ -563,7 +566,8 @@ export class JourneyResolver {
           ...input,
           title: input.title ?? undefined,
           languageId: input.languageId ?? undefined,
-          slug: input.slug ?? undefined
+          slug: input.slug ?? undefined,
+          tagIds: input.tagIds ?? []
         }
       })
     } catch (err) {
@@ -790,5 +794,12 @@ export class JourneyResolver {
   ): Promise<{ __typename: 'Language'; id: string }> {
     // 529 (english) is default if not set
     return { __typename: 'Language', id: journey.languageId ?? '529' }
+  }
+
+  @ResolveField('tags')
+  async tags(@Parent() journey): Promise<[{ __typename: 'Tag'; id: string }]> {
+    return journey.tagIds.map((tagId) => {
+      return { __typename: 'Tag', id: tagId }
+    })
   }
 }
