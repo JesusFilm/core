@@ -565,7 +565,8 @@ export class JourneyResolver {
           title: input.title ?? undefined,
           languageId: input.languageId ?? undefined,
           slug: input.slug ?? undefined,
-          featuredAt: input.featuredAt?.toString() ?? journey.featuredAt
+          featuredAt:
+            (input.featuredAt as unknown as Date) ?? journey.featuredAt
         }
       })
     } catch (err) {
@@ -605,6 +606,37 @@ export class JourneyResolver {
       data: {
         status: JourneyStatus.published,
         publishedAt: new Date()
+      }
+    })
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async journeyFeatured(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
+  ): Promise<Journey> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id },
+      include: {
+        userJourneys: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
+    })
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+      throw new GraphQLError('user is not allowed to update featured date', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.prismaService.journey.update({
+      where: { id },
+      data: {
+        featuredAt: new Date()
       }
     })
   }
