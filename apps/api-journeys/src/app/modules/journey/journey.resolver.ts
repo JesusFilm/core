@@ -610,7 +610,7 @@ export class JourneyResolver {
 
   @Mutation()
   @UseGuards(AppCaslGuard)
-  async journeyFeatured(
+  async journeyFeature(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string
   ): Promise<Journey> {
@@ -820,7 +820,7 @@ export class JourneyResolver {
   async language(
     @Parent() journey
   ): Promise<{ __typename: 'Language'; id: string }> {
-    // 529 (english) is default if not set
+    //  529 (english) is default if not set
     return { __typename: 'Language', id: journey.languageId ?? '529' }
   }
 }

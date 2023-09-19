@@ -1350,12 +1350,12 @@ describe('JourneyResolver', () => {
     })
   })
 
-  describe('journeyFeatured', () => {
+  describe('journeyFeature', () => {
     it('updated featured date for journey', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(
         journeyWithUserTeam
       )
-      await resolver.journeyFeatured(abilityWithPublisher, 'journeyId')
+      await resolver.journeyFeature(abilityWithPublisher, 'journeyId')
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
         data: {
@@ -1367,14 +1367,14 @@ describe('JourneyResolver', () => {
     it('throws error if not found', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(null)
       await expect(
-        resolver.journeyFeatured(abilityWithPublisher, 'journeyId')
+        resolver.journeyFeature(abilityWithPublisher, 'journeyId')
       ).rejects.toThrow('journey not found')
     })
 
     it('throws error if not authorized', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(journey)
       await expect(
-        resolver.journeyFeatured(ability, 'journeyId')
+        resolver.journeyFeature(ability, 'journeyId')
       ).rejects.toThrow('user is not allowed to update featured date')
     })
   })
