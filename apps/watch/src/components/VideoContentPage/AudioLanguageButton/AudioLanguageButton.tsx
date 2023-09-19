@@ -51,6 +51,7 @@ export function AudioLanguageButton({
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
       {componentVariant === 'button' ? (
         <Button
+          data-testid="AudioLanguageButton"
           size="small"
           onClick={handleClick}
           sx={{

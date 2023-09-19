@@ -63,6 +63,7 @@ export function AddByFile({
   const [getMyCloudflareVideo, { stopPolling }] =
     useLazyQuery<GetMyCloudflareVideoQuery>(GET_MY_CLOUDFLARE_VIDEO_QUERY, {
       pollInterval: 1000,
+      notifyOnNetworkStatusChange: true,
       onCompleted: (data) => {
         if (
           data.getMyCloudflareVideo?.readyToStream === true &&

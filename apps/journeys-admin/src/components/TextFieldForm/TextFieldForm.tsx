@@ -79,12 +79,12 @@ export function TextFieldForm({
               endAdornment: endIcon
             }}
             onPaste={onPaste}
-            onBlur={(e) => {
+            onBlur={async (e) => {
               handleBlur(e)
               if (errors[id] == null) {
                 onSubmit(e.target.value)
               } else if (isRequired) {
-                setFieldValue(id, initialValue)
+                await setFieldValue(id, initialValue)
               }
             }}
             onChange={(e) => {

@@ -1203,6 +1203,7 @@ type Mutation
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo @join__field(graph: MEDIA)
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo @join__field(graph: MEDIA)
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
+  createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
 }
 
@@ -1467,6 +1468,15 @@ enum Role
   publisher @join__enumValue(graph: JOURNEYS)
 }
 
+enum SegmindModel
+  @join__type(graph: MEDIA)
+{
+  sdxl1__0_txt2img @join__enumValue(graph: MEDIA)
+  kandinsky2__2_txt2img @join__enumValue(graph: MEDIA)
+  sd1__5_paragon @join__enumValue(graph: MEDIA)
+  tinysd1__5_txt2img @join__enumValue(graph: MEDIA)
+}
+
 type SignUpBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -1661,6 +1671,7 @@ type Team
 {
   id: ID!
   title: String!
+  publicTitle: String
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
@@ -1670,12 +1681,14 @@ input TeamCreateInput
   @join__type(graph: JOURNEYS)
 {
   title: String!
+  publicTitle: String
 }
 
 input TeamUpdateInput
   @join__type(graph: JOURNEYS)
 {
   title: String!
+  publicTitle: String
 }
 
 type TextResponseBlock implements Block

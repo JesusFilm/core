@@ -43,8 +43,8 @@ jobs:
 
       - name: Get affected apps
         run: |
-          echo "apps=$(npx nx show projects --affected --projects apps/api-* | npx ts-node tools/scripts/affected-apps.ts)" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
+          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apps/api-*)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
         id: affected-apps
 
       #ECS Deployment
