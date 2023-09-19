@@ -17,6 +17,7 @@ export function Footer(): ReactElement {
         component="footer"
         maxWidth="xxl"
         sx={{ backgroundColor: 'background.default', py: 8 }}
+        data-testid="Footer"
       >
         {/* desktop view */}
         <Stack spacing={21} sx={{ display: { xs: 'none', sm: 'block' } }}>
