@@ -242,6 +242,9 @@ extend type Mutation {
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey
 
+  """Sets journey status to featured"""
+  journeyFeature(id: ID!): Journey
+
   """Sets journeys statuses to archived"""
   journeysArchive(ids: [ID!]!): [Journey]
 
