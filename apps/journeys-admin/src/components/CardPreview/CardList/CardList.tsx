@@ -232,7 +232,7 @@ const CardItem = ({
 }: CardItemProps): ReactElement => {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
-  const cardProps = step.children.find(
+  const cardBlock = step.children.find(
     (child) => child.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
@@ -287,8 +287,8 @@ const CardItem = ({
         />
         <FramePortal width={380} height={560} dir={rtl ? 'rtl' : 'ltr'}>
           <ThemeProvider
-            themeName={cardProps.themeName ?? ThemeName.base}
-            themeMode={cardProps.themeMode ?? ThemeMode.light}
+            themeName={cardBlock.themeName ?? ThemeName.base}
+            themeMode={cardBlock.themeMode ?? ThemeMode.light}
             rtl={rtl}
             locale={locale}
           >
