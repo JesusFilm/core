@@ -412,6 +412,7 @@ export class JourneyResolver {
                 title: duplicateTitle,
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
+                featuredAt: null,
                 template: false,
                 team: { connect: { id: teamId } },
                 userJourneys: {
@@ -603,6 +604,37 @@ export class JourneyResolver {
       data: {
         status: JourneyStatus.published,
         publishedAt: new Date()
+      }
+    })
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async journeyFeatured(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
+  ): Promise<Journey> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id },
+      include: {
+        userJourneys: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
+    })
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+      throw new GraphQLError('user is not allowed to update featured date', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.prismaService.journey.update({
+      where: { id },
+      data: {
+        featuredAt: new Date()
       }
     })
   }

@@ -104,6 +104,7 @@ export function ShareDialog({
         closeButton: true
       }}
       divider
+      testId="ShareDialog"
     >
       <>
         <Stack

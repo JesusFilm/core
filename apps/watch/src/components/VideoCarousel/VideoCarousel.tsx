@@ -57,7 +57,7 @@ export function VideoCarousel({
   }
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ position: 'relative' }} data-testid="VideoCarousel">
       {loading === true && (
         <Swiper
           spaceBetween={12}
