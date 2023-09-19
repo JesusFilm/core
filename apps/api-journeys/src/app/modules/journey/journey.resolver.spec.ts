@@ -1190,7 +1190,6 @@ describe('JourneyResolver', () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(
         journeyWithUserTeam
       )
-
       await resolver.journeyUpdate(ability, 'journeyId', {
         title: 'new title',
         languageId: '529',
