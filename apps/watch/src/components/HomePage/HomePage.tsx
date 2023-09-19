@@ -26,7 +26,10 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
         themeMode={ThemeMode.dark}
         nested
       >
-        <Box sx={{ backgroundColor: 'background.default' }}>
+        <Box
+          sx={{ backgroundColor: 'background.default' }}
+          data-testid="HomePage"
+        >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
             <VideoGrid videos={videos} variant="contained" />
             <SeeAllVideos />
