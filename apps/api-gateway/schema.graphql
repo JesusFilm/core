@@ -711,7 +711,7 @@ input JourneysFilter
   featured: Boolean
   template: Boolean
   ids: [ID!]
-  tags: [ID!]
+  tagIds: [ID!]
 }
 
 enum JourneysReportType
@@ -752,7 +752,7 @@ input JourneyUpdateInput
   seoTitle: String
   seoDescription: String
   hostId: String
-  tags: [ID!]
+  tagIds: [ID!]
 }
 
 type JourneyViewEvent implements Event
