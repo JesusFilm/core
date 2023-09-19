@@ -29,7 +29,7 @@ export function VideoGrid({
       container
       spacing={4}
       rowSpacing={variant === 'expanded' ? 8 : 4}
-      data-testid="videos-grid"
+      data-testid="VideoGrid"
     >
       {(videos?.length ?? 0) > 0 &&
         videos?.map((video, index) => (

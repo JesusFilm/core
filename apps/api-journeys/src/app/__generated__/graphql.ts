@@ -595,6 +595,7 @@ export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
     ids?: Nullable<string[]>;
+    tagIds?: Nullable<string[]>;
 }
 
 export class JourneyCreateInput {
@@ -618,6 +619,7 @@ export class JourneyUpdateInput {
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     hostId?: Nullable<string>;
+    tagIds?: Nullable<string[]>;
 }
 
 export class JourneyTemplateInput {
@@ -755,6 +757,7 @@ export class Journey {
     template?: Nullable<boolean>;
     host?: Nullable<Host>;
     team?: Nullable<Team>;
+    tags: Tag[];
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1493,6 +1496,10 @@ export class Video {
 }
 
 export class Language {
+    id: string;
+}
+
+export class Tag {
     id: string;
 }
 
