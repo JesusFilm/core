@@ -1187,25 +1187,21 @@ describe('JourneyResolver', () => {
     }
 
     it('updates a journey', async () => {
-      const input = {
-        title: 'new title',
-        languageId: '529',
-        slug: 'new-slug',
-        featuredAt: new Date().toString()
-      }
-
       prismaService.journey.findUnique.mockResolvedValueOnce(
         journeyWithUserTeam
       )
 
-      await resolver.journeyUpdate(ability, 'journeyId', input)
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        title: 'new title',
+        languageId: '529',
+        slug: 'new-slug'
+      })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
         data: {
           title: 'new title',
           languageId: '529',
-          slug: 'new-slug',
-          featuredAt: input.featuredAt
+          slug: 'new-slug'
         }
       })
     })
@@ -1218,7 +1214,7 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', { hostId: 'hostId' })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { hostId: 'hostId', featuredAt: journeyWithUserTeam.featuredAt }
+        data: { hostId: 'hostId' }
       })
     })
 
@@ -1229,7 +1225,7 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', { title: null })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { title: undefined, featuredAt: journeyWithUserTeam.featuredAt }
+        data: { title: undefined }
       })
     })
 
@@ -1241,8 +1237,7 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
         data: {
-          languageId: undefined,
-          featuredAt: journeyWithUserTeam.featuredAt
+          languageId: undefined
         }
       })
     })
@@ -1254,7 +1249,7 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', { slug: null })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { slug: undefined, featuredAt: journeyWithUserTeam.featuredAt }
+        data: { slug: undefined }
       })
     })
 

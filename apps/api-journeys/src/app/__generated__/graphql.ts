@@ -618,7 +618,6 @@ export class JourneyUpdateInput {
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     hostId?: Nullable<string>;
-    featuredAt?: Nullable<DateTime>;
 }
 
 export class JourneyTemplateInput {

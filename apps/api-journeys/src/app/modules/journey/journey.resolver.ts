@@ -564,9 +564,7 @@ export class JourneyResolver {
           ...input,
           title: input.title ?? undefined,
           languageId: input.languageId ?? undefined,
-          slug: input.slug ?? undefined,
-          featuredAt:
-            (input.featuredAt as unknown as Date) ?? journey.featuredAt
+          slug: input.slug ?? undefined
         }
       })
     } catch (err) {

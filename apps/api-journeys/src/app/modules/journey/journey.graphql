@@ -123,7 +123,6 @@ input JourneyUpdateInput {
   seoTitle: String
   seoDescription: String
   hostId: String
-  featuredAt: DateTime
 }
 
 extend type UserJourney {
