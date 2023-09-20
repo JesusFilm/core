@@ -77,6 +77,7 @@ import FilePlus1 from './FilePlus1'
 import FileShred from './FileShred'
 import Filter from './Filter'
 import Flame from './Flame'
+import FlexAlignBottom1 from './FlexAlignBottom1'
 import FolderDown1 from './FolderDown1'
 import FolderUp1 from './FolderUp1'
 import Globe from './Globe'
@@ -166,6 +167,7 @@ import Transform from './Transform'
 import Trash2 from './Trash2'
 import TwitterLogo from './TwitterLogo'
 import Type2 from './Type2'
+import Type3 from './Type3'
 import Upload1 from './Upload1'
 import Upload2 from './Upload2'
 import UserProfile2 from './UserProfile2'
@@ -263,6 +265,7 @@ export type IconName =
   | 'FileShred'
   | 'Filter'
   | 'Flame'
+  | 'FlexAlignBottom1'
   | 'FolderDown1'
   | 'FolderUp1'
   | 'Globe'
@@ -352,6 +355,7 @@ export type IconName =
   | 'Transform'
   | 'TwitterLogo'
   | 'Type2'
+  | 'Type3'
   | 'Upload1'
   | 'Upload2'
   | 'UserProfile2'
@@ -453,6 +457,7 @@ const iconComponents: IconComponents = {
   FileShred,
   Filter,
   Flame,
+  FlexAlignBottom1,
   FolderDown1,
   FolderUp1,
   Globe,
@@ -542,6 +547,7 @@ const iconComponents: IconComponents = {
   Transform,
   TwitterLogo,
   Type2,
+  Type3,
   Upload1,
   Upload2,
   UserProfile2,
