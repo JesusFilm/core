@@ -1153,7 +1153,7 @@ type Mutation
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
 
   """Sets journey status to featured"""
-  journeyFeature(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journeyFeature(id: ID!, feature: Boolean!): Journey @join__field(graph: JOURNEYS)
 
   """Sets journeys statuses to archived"""
   journeysArchive(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
