@@ -132,6 +132,6 @@ describe('ActionsTable', () => {
     )
     expect(getByText('The Journey Goals')).toBeInTheDocument()
     expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
-    expect(getByTestId('EditRoundedIcon')).toBeInTheDocument()
+    expect(getByTestId('Edit2Icon')).toBeInTheDocument()
   })
 })

@@ -10,7 +10,7 @@ describe('StatusChip', () => {
       <StatusChip status={JourneyStatus.draft} />
     )
     expect(getByText('Draft')).toBeInTheDocument()
-    expect(getByTestId('EditIcon')).toBeInTheDocument()
+    expect(getByTestId('Edit2Icon')).toBeInTheDocument()
   })
 
   it('should return chip for published', () => {
@@ -18,7 +18,7 @@ describe('StatusChip', () => {
       <StatusChip status={JourneyStatus.published} />
     )
     expect(getByText('Published')).toBeInTheDocument()
-    expect(getByTestId('CheckCircleRoundedIcon')).toBeInTheDocument()
+    expect(getByTestId('CheckBrokenIcon')).toBeInTheDocument()
   })
 
   it('should return chip for archived', () => {
@@ -26,7 +26,7 @@ describe('StatusChip', () => {
       <StatusChip status={JourneyStatus.archived} />
     )
     expect(getByText('Archived')).toBeInTheDocument()
-    expect(getByTestId('ArchiveRoundedIcon')).toBeInTheDocument()
+    expect(getByTestId('FolderDown1Icon')).toBeInTheDocument()
   })
 
   it('should return chip for trashed', () => {
@@ -34,7 +34,7 @@ describe('StatusChip', () => {
       <StatusChip status={JourneyStatus.trashed} />
     )
     expect(getByText('Trash')).toBeInTheDocument()
-    expect(getByTestId('CancelRoundedIcon')).toBeInTheDocument()
+    expect(getByTestId('XCircleContainedIcon')).toBeInTheDocument()
   })
 
   it('should return empty fragment if status is deleted', () => {

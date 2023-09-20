@@ -31,6 +31,7 @@ export function LanguagesFilter(
           </>
         )
       }}
+      data-testid="LanguagesFilter"
     />
   )
 

@@ -121,6 +121,7 @@ export function AudioLanguageDialog({
                 closeButton: true
               }}
               divider
+              testId="AudioLanguageDialog"
             >
               <Form>
                 <LanguageAutocomplete

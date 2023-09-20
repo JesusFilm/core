@@ -246,7 +246,7 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    const dragHandle = getAllByTestId('DragHandleRoundedIcon')
+    const dragHandle = getAllByTestId('DragIcon')
     expect(dragHandle[0]).toHaveClass('MuiSvgIcon-root')
   })
 

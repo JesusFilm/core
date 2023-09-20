@@ -1,8 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
-import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded'
-import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
@@ -17,6 +13,11 @@ import Box from '@mui/system/Box'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
+
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+import ArrowRightSmIcon from '@core/shared/ui/icons/ArrowRightSm'
+import CheckSquareBrokenIcon from '@core/shared/ui/icons/CheckSquareBroken'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
@@ -82,21 +83,19 @@ export function TermsAndConditions(): ReactElement {
         >
           <TermsListItem
             link="https://your.nextstep.is/terms-of-use"
-            icon={<NewReleasesRoundedIcon sx={{ color: 'secondary.light' }} />}
+            icon={<AlertCircleIcon sx={{ color: 'secondary.light' }} />}
             text="Terms of Use"
           />
           <Divider component="li" />
           <TermsListItem
             link="https://your.nextstep.is/end-user-license-agreement"
-            icon={
-              <SupervisorAccountRoundedIcon sx={{ color: 'secondary.light' }} />
-            }
+            icon={<UsersProfiles2Icon sx={{ color: 'secondary.light' }} />}
             text="End User License Agreement"
           />
           <Divider component="li" />
           <TermsListItem
             link="https://your.nextstep.is/community-guidelines"
-            icon={<BeenhereRoundedIcon sx={{ color: 'secondary.light' }} />}
+            icon={<CheckSquareBrokenIcon sx={{ color: 'secondary.light' }} />}
             text="Community Guidelines"
           />
           <Divider component="li" />
@@ -136,7 +135,7 @@ export function TermsAndConditions(): ReactElement {
               bgcolor: 'secondary.dark'
             }
           }}
-          endIcon={<ArrowForwardIcon />}
+          endIcon={<ArrowRightSmIcon />}
         >
           Next
         </Button>

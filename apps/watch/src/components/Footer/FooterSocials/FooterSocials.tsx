@@ -10,7 +10,7 @@ import Youtube from './assets/youtube.svg'
 
 export function FooterSocials(): ReactElement {
   return (
-    <Stack direction="row" spacing={6}>
+    <Stack direction="row" spacing={6} data-testid="FooterSocials">
       <FooterLink
         url="https://www.facebook.com/jesusfilm"
         label="Facebook"
