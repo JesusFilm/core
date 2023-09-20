@@ -1247,8 +1247,7 @@ describe('JourneyResolver', () => {
         title: null,
         languageId: null,
         slug: null,
-        tagIds: null,
-        strategySlug: null
+        tagIds: null
       })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
@@ -1256,8 +1255,7 @@ describe('JourneyResolver', () => {
           title: undefined,
           languageId: undefined,
           slug: undefined,
-          tagIds: [],
-          strategySlug: null
+          tagIds: []
         }
       })
     })
