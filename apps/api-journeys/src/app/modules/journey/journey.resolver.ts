@@ -176,7 +176,7 @@ export class JourneyResolver {
   @Query()
   async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
-    if (where?.template === true) filter.template = true
+    if (where?.template != null) filter.template = where.template
     if (where?.featured === true) filter.featuredAt = { not: null }
     if (where?.ids != null) filter.id = { in: where?.ids }
     if (where?.tagIds != null) filter.tagIds = { hasEvery: where?.tagIds }
@@ -614,9 +614,10 @@ export class JourneyResolver {
 
   @Mutation()
   @UseGuards(AppCaslGuard)
-  async journeyFeatured(
+  async journeyFeature(
     @CaslAbility() ability: AppAbility,
-    @Args('id') id: string
+    @Args('id') id: string,
+    @Args('feature') feature: boolean
   ): Promise<Journey> {
     const journey = await this.prismaService.journey.findUnique({
       where: { id },
@@ -638,7 +639,7 @@ export class JourneyResolver {
     return await this.prismaService.journey.update({
       where: { id },
       data: {
-        featuredAt: new Date()
+        featuredAt: feature ? new Date() : null
       }
     })
   }
@@ -824,7 +825,7 @@ export class JourneyResolver {
   async language(
     @Parent() journey
   ): Promise<{ __typename: 'Language'; id: string }> {
-    // 529 (english) is default if not set
+    //  529 (english) is default if not set
     return { __typename: 'Language', id: journey.languageId ?? '529' }
   }
 
