@@ -326,6 +326,7 @@ type Journey
   template: Boolean
   host: Host
   team: Team
+  tags: [Tag!]!
   userJourneys: [UserJourney!]
 }
 
@@ -1755,6 +1756,12 @@ input HostCreateInput {
   src2: String
 }
 
+extend type Tag
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
 enum IdType {
   databaseId
   slug
@@ -1772,6 +1779,7 @@ input JourneysFilter {
   featured: Boolean
   template: Boolean
   ids: [ID!]
+  tagIds: [ID!]
 }
 
 enum JourneysReportType {
@@ -1831,6 +1839,7 @@ input JourneyUpdateInput {
   seoTitle: String
   seoDescription: String
   hostId: String
+  tagIds: [ID!]
 }
 
 type UserJourney
@@ -2326,4 +2335,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor

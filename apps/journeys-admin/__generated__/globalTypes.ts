@@ -348,6 +348,7 @@ export interface JourneyUpdateInput {
   seoTitle?: string | null;
   seoDescription?: string | null;
   hostId?: string | null;
+  tagIds?: string[] | null;
 }
 
 export interface JourneyVisitorFilter {
@@ -364,6 +365,7 @@ export interface JourneysFilter {
   featured?: boolean | null;
   template?: boolean | null;
   ids?: string[] | null;
+  tagIds?: string[] | null;
 }
 
 export interface LinkActionInput {
