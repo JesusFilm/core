@@ -6,8 +6,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
-import Layout2Icon from '@core/shared/ui/icons/Layout2'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
@@ -144,7 +144,7 @@ export function Card({
         }}
       />
       <Attribute
-        icon={<Layout2Icon />}
+        icon={<FlexAlignBottom1Icon />}
         id={`${id}-fullscreen`}
         name="Layout"
         value={fullscreen ? 'Expanded' : 'Contained'}

@@ -9,7 +9,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
-import Type2Icon from '@core/shared/ui/icons/Type2'
+import Type3Icon from '@core/shared/ui/icons/Type3'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
@@ -91,5 +91,5 @@ export function NewTypographyButton(): ReactElement {
     }
   }
 
-  return <Button icon={<Type2Icon />} value="Text" onClick={handleClick} />
+  return <Button icon={<Type3Icon />} value="Text" onClick={handleClick} />
 }
