@@ -113,6 +113,7 @@ export function SubtitleDialog({
           closeButton: true
         }}
         divider
+        testId="SubtitleDialog"
       >
         <LanguageAutocomplete
           onChange={handleChange}

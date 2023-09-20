@@ -19,10 +19,10 @@ export function DownloadButton({
       size="medium"
       color="secondary"
       onClick={onClick}
-      data-testid="download"
       sx={{
         minWidth: '200px'
       }}
+      data-testid="DownloadButton"
     >
       Download
     </Button>

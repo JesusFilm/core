@@ -114,15 +114,6 @@ export function Menu(): ReactElement {
   }
 
   function CardMenu(): ReactElement {
-    let settingsLink
-    if (journey != null) {
-      if (journey.template === true) {
-        settingsLink = `/publisher/${journey.id}`
-      } else {
-        settingsLink = `/journeys/${journey.id}`
-      }
-    }
-
     return (
       <>
         <NextLink
@@ -140,20 +131,11 @@ export function Menu(): ReactElement {
         <DuplicateBlock variant="list-item" />
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         <Divider />
-        <NextLink
-          href={settingsLink != null ? settingsLink : ''}
-          passHref
-          legacyBehavior
-        >
-          <MenuItem
-            label={
-              journey?.template === true
-                ? 'Publisher Settings'
-                : 'Journey Settings'
-            }
-            icon={<SettingsIcon />}
-          />
-        </NextLink>
+        {journey != null && journey.template === true && (
+          <NextLink href={`/publisher/${journey.id}`} passHref legacyBehavior>
+            <MenuItem label="Publisher Settings" icon={<SettingsIcon />} />
+          </NextLink>
+        )}
       </>
     )
   }
