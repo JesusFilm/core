@@ -28,19 +28,21 @@ title: Running and Debugging Tests
   />
 </div>
 
-1. Run all playwright tests (e.g journeys)
+1. Install 'Playwright Test for VSCode' extension
+
+2. Run all playwright tests (e.g journeys)
 
 ```shell
     npx nx run journeys-e2e:e2e
 ```
 
-2. Run just one playwright tests
+3. Run just one playwright tests
 
 ```shell
     npx playwright test apps/journeys-e2e/src/e2e/journeys.spec.ts
 ```
 
-3. Devcontainer's HTML results can be found at the root level in playwright-report/index.html.
+4. Devcontainer's HTML results can be found at the root level in playwright-report/index.html.
    Copy entire directory to local and open the html report.
 
 More resources on running tests: https://playwright.dev/docs/running-tests
