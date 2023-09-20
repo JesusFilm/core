@@ -25,7 +25,6 @@ function LibraryIndex(): ReactElement {
     <>
       <NextSeo title={t('Journey Templates')} />
       <PageWrapper title={t('Journey Templates')} authUser={AuthUser}>
-        <FeaturedCheckbox />
         {templates ? <TemplateGallery /> : <TemplateLibrary />}
       </PageWrapper>
     </>
