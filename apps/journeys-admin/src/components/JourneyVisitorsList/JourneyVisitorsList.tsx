@@ -1,4 +1,3 @@
-import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -7,6 +6,8 @@ import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 
 import { GetJourneyVisitors_visitors_edges as VisitorEdge } from '../../../__generated__/GetJourneyVisitors'
 import VisitorsPlaceholder from '../../../public/VisitorsPlaceholder.svg'
@@ -77,7 +78,7 @@ export function JourneyVisitorsList({
         )}
 
         <LoadingButton
-          startIcon={<AddCircleOutlineRoundedIcon />}
+          startIcon={<AddSquare4Icon />}
           variant="outlined"
           onClick={fetchNext}
           disabled={!hasNextPage}

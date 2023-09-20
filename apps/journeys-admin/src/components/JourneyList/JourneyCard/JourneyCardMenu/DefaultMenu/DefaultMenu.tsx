@@ -1,11 +1,12 @@
 import { ApolloQueryResult } from '@apollo/client'
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
-import EditIcon from '@mui/icons-material/Edit'
-import PeopleIcon from '@mui/icons-material/People'
-import VisibilityIcon from '@mui/icons-material/Visibility'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import Trash2Icon from '@core/shared/ui/icons/Trash2'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
@@ -51,12 +52,12 @@ export function DefaultMenu({
         passHref
         legacyBehavior
       >
-        <MenuItem label="Edit" icon={<EditIcon color="secondary" />} />
+        <MenuItem label="Edit" icon={<Edit2Icon color="secondary" />} />
       </NextLink>
       {template !== true && (
         <MenuItem
           label="Access"
-          icon={<PeopleIcon color="secondary" />}
+          icon={<UsersProfiles2Icon color="secondary" />}
           onClick={() => {
             setOpenAccessDialog()
             handleCloseMenu()
@@ -66,7 +67,7 @@ export function DefaultMenu({
       <NextLink href={`/api/preview?slug=${slug}`} passHref legacyBehavior>
         <MenuItem
           label="Preview"
-          icon={<VisibilityIcon color="secondary" />}
+          icon={<EyeOpenIcon color="secondary" />}
           disabled={!published}
           openInNew
         />
@@ -85,7 +86,7 @@ export function DefaultMenu({
       />
       <MenuItem
         label="Trash"
-        icon={<DeleteOutlineRoundedIcon color="secondary" />}
+        icon={<Trash2Icon color="secondary" />}
         onClick={() => {
           setOpenTrashDialog()
           handleCloseMenu()

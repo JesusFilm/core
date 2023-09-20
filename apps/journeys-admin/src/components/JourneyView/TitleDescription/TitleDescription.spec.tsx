@@ -56,7 +56,7 @@ describe('TitleDescription', () => {
 
       expect(getByText('Journey Heading')).toBeInTheDocument()
       expect(getByText('Description')).toBeInTheDocument()
-      expect(getByTestId('CreateRoundedIcon')).toBeInTheDocument()
+      expect(getByTestId('Edit2Icon')).toBeInTheDocument()
     })
 
     it('should open TitleDescriptionDialog', () => {

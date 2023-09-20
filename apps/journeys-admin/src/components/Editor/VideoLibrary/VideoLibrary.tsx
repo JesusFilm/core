@@ -1,7 +1,3 @@
-import Close from '@mui/icons-material/Close'
-import UploadIcon from '@mui/icons-material/Upload'
-import VideocamIcon from '@mui/icons-material/Videocam'
-import YouTubeIcon from '@mui/icons-material/YouTube'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
@@ -16,6 +12,10 @@ import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import MediaStrip1Icon from '@core/shared/ui/icons/MediaStrip1'
+import Upload1Icon from '@core/shared/ui/icons/Upload1'
+import X2Icon from '@core/shared/ui/icons/X2'
+import YoutubeIcon from '@core/shared/ui/icons/Youtube'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
@@ -107,7 +107,7 @@ export function VideoLibrary({
               sx={{ display: 'inline-flex' }}
               edge="end"
             >
-              <Close />
+              <X2Icon />
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -125,20 +125,20 @@ export function VideoLibrary({
             aria-label="video library tabs"
           >
             <Tab
-              icon={<VideocamIcon />}
+              icon={<MediaStrip1Icon />}
               label="Library"
               {...tabA11yProps('video-from-local', 0)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
-              icon={<YouTubeIcon />}
+              icon={<YoutubeIcon />}
               label="YouTube"
               {...tabA11yProps('video-from-youtube', 1)}
               sx={{ flexGrow: 1 }}
             />
             {videoFromCloudflare && (
               <Tab
-                icon={<UploadIcon />}
+                icon={<Upload1Icon />}
                 label="Upload"
                 {...tabA11yProps('video-from-cloudflare', 2)}
                 sx={{ flexGrow: 1 }}

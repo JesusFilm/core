@@ -71,7 +71,7 @@ export const Archived = {
     slug: 'archived-journey'
   },
   play: async () => {
-    const menuButton = screen.getByTestId('MoreVertIcon')
+    const menuButton = screen.getByTestId('MoreIcon')
     await userEvent.click(menuButton)
   }
 }
@@ -83,7 +83,7 @@ export const Trashed = {
     slug: 'trashed-journey'
   },
   play: async () => {
-    const menuButton = screen.getByTestId('MoreVertIcon')
+    const menuButton = screen.getByTestId('MoreIcon')
     await userEvent.click(menuButton)
   }
 }
@@ -98,7 +98,7 @@ export const Template = {
     template: true
   },
   play: async () => {
-    const menuButton = screen.getByTestId('MoreVertIcon')
+    const menuButton = screen.getByTestId('MoreIcon')
     await userEvent.click(menuButton)
   }
 }
