@@ -39,6 +39,11 @@ const nextConfig = {
         source: '/reports',
         destination: '/reports/journeys',
         permanent: true
+      },
+      {
+        source: '/journeys/:slug/edit',
+        destination: '/journeys/:slug',
+        permanent: true
       }
     ]
   },
