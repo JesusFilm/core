@@ -243,7 +243,7 @@ extend type Mutation {
   journeyPublish(id: ID!): Journey
 
   """Sets journey status to featured"""
-  journeyFeature(id: ID!): Journey
+  journeyFeature(id: ID!, feature: Boolean!): Journey
 
   """Sets journeys statuses to archived"""
   journeysArchive(ids: [ID!]!): [Journey]

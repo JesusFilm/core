@@ -176,7 +176,7 @@ export class JourneyResolver {
   @Query()
   async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
-    if (where?.template === true) filter.template = true
+    if (where?.template != null) filter.template = where.template
     if (where?.featured === true) filter.featuredAt = { not: null }
     if (where?.ids != null) filter.id = { in: where?.ids }
     return await this.prismaService.journey.findMany({
@@ -612,7 +612,8 @@ export class JourneyResolver {
   @UseGuards(AppCaslGuard)
   async journeyFeature(
     @CaslAbility() ability: AppAbility,
-    @Args('id') id: string
+    @Args('id') id: string,
+    @Args('feature') feature: boolean
   ): Promise<Journey> {
     const journey = await this.prismaService.journey.findUnique({
       where: { id },
@@ -634,7 +635,7 @@ export class JourneyResolver {
     return await this.prismaService.journey.update({
       where: { id },
       data: {
-        featuredAt: new Date()
+        featuredAt: feature ? new Date() : null
       }
     })
   }

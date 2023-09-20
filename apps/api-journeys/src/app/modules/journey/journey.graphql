@@ -144,7 +144,7 @@ extend type Mutation {
   """
   Sets journey status to featured
   """
-  journeyFeature(id: ID!): Journey
+  journeyFeature(id: ID!, feature: Boolean!): Journey
   """
   Sets journeys statuses to archived
   """
