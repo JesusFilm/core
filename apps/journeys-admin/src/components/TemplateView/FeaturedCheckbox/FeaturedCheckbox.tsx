@@ -17,7 +17,7 @@ export const JOURNEY_FEATURE_UPDATE = gql`
 
 interface FeaturedCheckboxProps {
   journeyId: string
-  featuredAt: string
+  featuredAt: string | null
 }
 
 export function FeaturedCheckbox({
