@@ -57,7 +57,8 @@ describe('JourneyResolver', () => {
   let resolver: JourneyResolver,
     blockService: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
-    ability: AppAbility
+    ability: AppAbility,
+    abilityWithPublisher: AppAbility
 
   const journey: Journey = {
     id: 'journeyId',
@@ -80,12 +81,19 @@ describe('JourneyResolver', () => {
     seoTitle: null,
     seoDescription: null,
     template: false,
-    hostId: null
+    hostId: null,
+    tagIds: []
   }
   const journeyWithUserTeam = {
     ...journey,
     team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
   }
+
+  const journeyWithTemplate = {
+    ...journey,
+    template: true
+  }
+
   const block = {
     id: 'blockId',
     typename: 'ImageBlock',
@@ -127,7 +135,13 @@ describe('JourneyResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
-    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    ability = await new AppCaslFactory().createAbility({
+      id: 'userId'
+    })
+    abilityWithPublisher = await new AppCaslFactory().createAbility({
+      id: 'userId',
+      roles: ['publisher']
+    })
   })
 
   describe('adminJourneysReport', () => {
@@ -487,10 +501,14 @@ describe('JourneyResolver', () => {
     })
 
     it('returns published journeys where template', async () => {
-      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
-      expect(await resolver.journeys({ template: true })).toEqual([
-        journey,
-        journey
+      prismaService.journey.findMany.mockResolvedValueOnce([
+        journeyWithTemplate,
+        journeyWithTemplate
+      ])
+      const fetchedJourneys = await resolver.journeys({ template: true })
+      expect(fetchedJourneys).toEqual([
+        journeyWithTemplate,
+        journeyWithTemplate
       ])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
@@ -498,6 +516,22 @@ describe('JourneyResolver', () => {
           template: true
         }
       })
+      expect(fetchedJourneys[0].template).toBe(true)
+      expect(fetchedJourneys[1].template).toBe(true)
+    })
+
+    it('returns published journeys where template is false', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      const fetchedJourneys = await resolver.journeys({ template: false })
+      expect(fetchedJourneys).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published',
+          template: false
+        }
+      })
+      expect(fetchedJourneys[0].template).toBe(false)
+      expect(fetchedJourneys[1].template).toBe(false)
     })
 
     it('returns a list of journeys', async () => {
@@ -507,6 +541,18 @@ describe('JourneyResolver', () => {
       ).toEqual([journey, journey])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: { id: { in: ['journeyId', 'journeyId'] }, status: 'published' }
+      })
+    })
+
+    it('returns a list of journeys filtered by tags', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([])
+      await resolver.journeys({ tagIds: ['tagId1', 'tagId2'] })
+
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          tagIds: { hasEvery: ['tagId1', 'tagId2'] },
+          status: 'published'
+        }
       })
     })
   })
@@ -577,7 +623,8 @@ describe('JourneyResolver', () => {
               role: 'owner',
               userId: 'userId'
             }
-          }
+          },
+          tagIds: []
         }
       })
     })
@@ -620,7 +667,8 @@ describe('JourneyResolver', () => {
               role: 'owner',
               userId: 'userId'
             }
-          }
+          },
+          tagIds: []
         }
       })
     })
@@ -852,6 +900,7 @@ describe('JourneyResolver', () => {
           slug: `${journey.title}-copy`,
           title: `${journey.title} copy`,
           template: false,
+          featuredAt: null,
           team: {
             connect: { id: 'teamId' }
           },
@@ -860,7 +909,8 @@ describe('JourneyResolver', () => {
               userId: 'userId',
               role: UserJourneyRole.owner
             }
-          }
+          },
+          tagIds: []
         }
       })
     })
@@ -869,7 +919,11 @@ describe('JourneyResolver', () => {
       prismaService.journey.findUnique
         .mockReset()
         // lookup journey to duplicate and authorize
-        .mockResolvedValueOnce({ ...journeyWithUserTeam, template: true })
+        .mockResolvedValueOnce({
+          ...journeyWithUserTeam,
+          template: true,
+          tagIds: ['tagId1']
+        })
         // lookup duplicate journey once created and authorize
         .mockResolvedValueOnce(journeyWithUserTeam)
       prismaService.journey.findMany
@@ -899,6 +953,7 @@ describe('JourneyResolver', () => {
         publishedAt: new Date(),
         slug: journey.title,
         title: journey.title,
+        featuredAt: null,
         template: false,
         team: {
           connect: { id: 'teamId' }
@@ -908,7 +963,8 @@ describe('JourneyResolver', () => {
             userId: 'userId',
             role: UserJourneyRole.owner
           }
-        }
+        },
+        tagIds: ['tagId1']
       }
 
       expect(prismaService.journey.create).toHaveBeenNthCalledWith(1, { data })
@@ -998,6 +1054,7 @@ describe('JourneyResolver', () => {
           publishedAt: new Date(),
           slug: `${journey.title}-copy-2`,
           title: `${journey.title} copy 2`,
+          featuredAt: null,
           template: false,
           team: {
             connect: { id: 'teamId' }
@@ -1177,66 +1234,49 @@ describe('JourneyResolver', () => {
     }
 
     it('updates a journey', async () => {
+      prismaService.host.findUnique.mockResolvedValueOnce(host)
+
       prismaService.journey.findUnique.mockResolvedValueOnce(
         journeyWithUserTeam
       )
       await resolver.journeyUpdate(ability, 'journeyId', {
         title: 'new title',
         languageId: '529',
-        slug: 'new-slug'
+        slug: 'new-slug',
+        hostId: 'hostId',
+        tagIds: ['tagId1']
       })
+
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
         data: {
           title: 'new title',
           languageId: '529',
-          slug: 'new-slug'
+          slug: 'new-slug',
+          hostId: 'hostId',
+          tagIds: ['tagId1']
         }
       })
     })
 
-    it('updates a journey with host', async () => {
-      prismaService.host.findUnique.mockResolvedValueOnce(host)
+    it('updates a journey with empty fields when not passed in', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(
         journeyWithUserTeam
       )
-      await resolver.journeyUpdate(ability, 'journeyId', { hostId: 'hostId' })
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        where: { id: 'journeyId' },
-        data: { hostId: 'hostId' }
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        title: null,
+        languageId: null,
+        slug: null,
+        tagIds: null
       })
-    })
-
-    it('updates a journey without title when title is null', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        journeyWithUserTeam
-      )
-      await resolver.journeyUpdate(ability, 'journeyId', { title: null })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { title: undefined }
-      })
-    })
-
-    it('updates a journey without languageId when languageId is null', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        journeyWithUserTeam
-      )
-      await resolver.journeyUpdate(ability, 'journeyId', { languageId: null })
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        where: { id: 'journeyId' },
-        data: { languageId: undefined }
-      })
-    })
-
-    it('updates a journey without slug when slug is null', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        journeyWithUserTeam
-      )
-      await resolver.journeyUpdate(ability, 'journeyId', { slug: null })
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        where: { id: 'journeyId' },
-        data: { slug: undefined }
+        data: {
+          title: undefined,
+          languageId: undefined,
+          slug: undefined,
+          tagIds: []
+        }
       })
     })
 
@@ -1335,6 +1375,48 @@ describe('JourneyResolver', () => {
       await expect(
         resolver.journeyPublish(ability, 'journeyId')
       ).rejects.toThrow('user is not allowed to publish journey')
+    })
+  })
+
+  describe('journeyFeature', () => {
+    it('updates featured date for journey', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyFeature(abilityWithPublisher, 'journeyId', true)
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: {
+          featuredAt: new Date()
+        }
+      })
+    })
+
+    it('updates featured date to null', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyFeature(abilityWithPublisher, 'journeyId', false)
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: {
+          featuredAt: null
+        }
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journeyFeature(abilityWithPublisher, 'journeyId', true)
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      await expect(
+        resolver.journeyFeature(ability, 'journeyId', true)
+      ).rejects.toThrow('user is not allowed to update featured date')
     })
   })
 
@@ -1529,6 +1611,7 @@ describe('JourneyResolver', () => {
       const team: Team = {
         id: 'teamId',
         title: 'My Cool Team',
+        publicTitle: null,
         createdAt: new Date(),
         updatedAt: new Date()
       }

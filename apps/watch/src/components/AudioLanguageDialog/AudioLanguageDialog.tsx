@@ -121,11 +121,12 @@ export function AudioLanguageDialog({
                 closeButton: true
               }}
               divider
+              testId="AudioLanguageDialog"
             >
               <Form>
                 <LanguageAutocomplete
-                  onChange={(value) => {
-                    setFieldValue('language', value)
+                  onChange={async (value) => {
+                    await setFieldValue('language', value)
                     if (value != null) handleSubmit(value)
                   }}
                   value={values.language}

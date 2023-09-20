@@ -126,6 +126,13 @@ export enum Role {
   publisher = "publisher",
 }
 
+export enum SegmindModel {
+  kandinsky2__2_txt2img = "kandinsky2__2_txt2img",
+  sd1__5_paragon = "sd1__5_paragon",
+  sdxl1__0_txt2img = "sdxl1__0_txt2img",
+  tinysd1__5_txt2img = "tinysd1__5_txt2img",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
@@ -341,6 +348,7 @@ export interface JourneyUpdateInput {
   seoTitle?: string | null;
   seoDescription?: string | null;
   hostId?: string | null;
+  tagIds?: string[] | null;
 }
 
 export interface JourneyVisitorFilter {
@@ -357,6 +365,7 @@ export interface JourneysFilter {
   featured?: boolean | null;
   template?: boolean | null;
   ids?: string[] | null;
+  tagIds?: string[] | null;
 }
 
 export interface LinkActionInput {
@@ -440,10 +449,12 @@ export interface StepViewEventCreateInput {
 
 export interface TeamCreateInput {
   title: string;
+  publicTitle?: string | null;
 }
 
 export interface TeamUpdateInput {
   title: string;
+  publicTitle?: string | null;
 }
 
 export interface TextResponseBlockCreateInput {
