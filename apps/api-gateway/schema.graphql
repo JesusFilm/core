@@ -663,6 +663,7 @@ type Journey
   host: Host
   team: Team
   strategySlug: String
+  tags: [Tag!]!
   userJourneys: [UserJourney!]
 }
 
@@ -711,6 +712,7 @@ input JourneysFilter
   featured: Boolean
   template: Boolean
   ids: [ID!]
+  tagIds: [ID!]
 }
 
 enum JourneysReportType
@@ -752,6 +754,7 @@ input JourneyUpdateInput
   seoDescription: String
   hostId: String
   strategySlug: String
+  tagIds: [ID!]
 }
 
 type JourneyViewEvent implements Event
@@ -1661,11 +1664,12 @@ input StepViewEventCreateInput
 }
 
 type Tag
+  @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: TAGS, key: "id")
 {
   id: ID!
-  name: [Translation!]!
-  parentId: ID
+  name: [Translation!]! @join__field(graph: TAGS)
+  parentId: ID @join__field(graph: TAGS)
 }
 
 type Team
