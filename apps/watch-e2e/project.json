@@ -11,6 +11,13 @@
         "cwd": "apps/watch-e2e"
       }
     },
+    "update-snapshots": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test --update-snapshots"],
+        "cwd": "apps/watch-e2e"
+      }
+    },
     "debug": {
       "executor": "nx:run-commands",
       "options": {

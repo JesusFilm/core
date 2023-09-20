@@ -289,6 +289,7 @@ model Journey {
   blocks              Block[]
   chatButtons         ChatButton[]
   host                Host?            @relation(fields: [hostId], references: [id])
+  tagIds              String[]
   actions             Action[]
   primaryImageBlock   Block?           @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
   journeyVisitors     JourneyVisitor[]
