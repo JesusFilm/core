@@ -70,11 +70,11 @@ describe('HostAvatarsButton', () => {
 
     expect(getByTestId('avatar1').firstChild).toHaveAttribute(
       'data-testid',
-      'UserProfileAddIcon'
+      'UserProfile2Icon'
     )
     expect(getByTestId('avatar2').firstChild).toHaveAttribute(
       'data-testid',
-      'UserProfileAddIcon'
+      'Plus2Icon'
     )
   })
 

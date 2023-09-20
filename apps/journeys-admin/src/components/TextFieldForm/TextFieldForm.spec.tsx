@@ -1,6 +1,7 @@
-import Search from '@mui/icons-material/Search'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { object, string } from 'yup'
+
+import Search1Icon from '@core/shared/ui/icons/Search1'
 
 import { TextFieldForm } from './TextFieldForm'
 
@@ -17,7 +18,7 @@ describe('TextFieldForm', () => {
           'aria-label': 'Search'
         }}
         onSubmit={jest.fn()}
-        endIcon={<Search />}
+        endIcon={<Search1Icon />}
       />
     )
     const textField = getByRole('textbox')
@@ -27,7 +28,7 @@ describe('TextFieldForm', () => {
     expect(textField).toHaveAttribute('placeholder', 'Placeholder Value')
     expect(textField).toHaveAttribute('aria-label', 'Search')
     expect(getByTestId('TextField form')).toBeInTheDocument()
-    expect(getByTestId('SearchIcon')).toBeInTheDocument()
+    expect(getByTestId('Search1Icon')).toBeInTheDocument()
   })
 
   it('should show helper text', () => {

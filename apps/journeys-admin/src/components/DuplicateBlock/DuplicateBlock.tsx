@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import IconButton from '@mui/material/IconButton'
 import last from 'lodash/last'
 import { useSnackbar } from 'notistack'
@@ -9,6 +8,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
+import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
 import {
@@ -130,12 +130,12 @@ export function DuplicateBlock({
           disabled={disableAction}
           onClick={handleDuplicateBlock}
         >
-          <ContentCopyRounded />
+          <CopyLeftIcon />
         </IconButton>
       ) : (
         <MenuItem
           label={`Duplicate ${blockLabel}`}
-          icon={<ContentCopyRounded color="inherit" />}
+          icon={<CopyLeftIcon color="inherit" />}
           disabled={disableAction}
           onClick={handleDuplicateBlock}
         />

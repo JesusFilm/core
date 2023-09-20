@@ -1,5 +1,4 @@
 import { useMutation } from '@apollo/client'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
@@ -16,6 +15,8 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
@@ -86,7 +87,7 @@ export function TeamOnboarding(): ReactElement {
                   alignItems="center"
                   sx={{ mt: 4, mx: 6 }}
                 >
-                  <GroupAddIcon />
+                  <UsersProfiles2Icon />
                   <Typography variant="subtitle1" sx={{ ml: 3 }}>
                     {t('Invite team members')}
                   </Typography>

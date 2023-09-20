@@ -1,10 +1,4 @@
 import { useQuery } from '@apollo/client'
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
-import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
-import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
-import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
-import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
-import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import Avatar from '@mui/material/Avatar'
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
@@ -24,6 +18,12 @@ import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Bag5Icon from '@core/shared/ui/icons/Bag5'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
+import BoxIcon from '@core/shared/ui/icons/Box'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
 
 import { GetMe } from '../../../../__generated__/GetMe'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
@@ -141,12 +141,12 @@ export function NavigationDrawer({
               }
             }}
           >
-            {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
+            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </ListItemIcon>
         </ListItemButton>
 
         <NavigationListItem
-          icon={<ViewCarouselRoundedIcon />}
+          icon={<JourneysIcon />}
           label="Discover"
           selected={selectedPage === 'journeys' || selectedPage === ''} // empty string for when page is index. UPDATE when we add the actual index page
           link="/"
@@ -154,7 +154,7 @@ export function NavigationDrawer({
         />
 
         <NavigationListItem
-          icon={<ShopRoundedIcon />}
+          icon={<Bag5Icon />}
           label="Templates"
           selected={selectedPage === 'templates'}
           link="/templates"
@@ -162,7 +162,7 @@ export function NavigationDrawer({
 
         {globalReports && (
           <NavigationListItem
-            icon={<LeaderboardRoundedIcon />}
+            icon={<BarGroup3Icon />}
             label="Reports"
             selected={selectedPage === 'reports'}
             link="/reports"
@@ -176,7 +176,7 @@ export function NavigationDrawer({
             {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
               true && (
               <NavigationListItem
-                icon={<ShopTwoRoundedIcon />}
+                icon={<BoxIcon />}
                 label="Publisher"
                 selected={selectedPage === 'publisher'}
                 link="/publisher"

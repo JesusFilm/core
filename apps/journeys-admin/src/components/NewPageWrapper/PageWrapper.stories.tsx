@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import MenuRounded from '@mui/icons-material/MenuRounded'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -9,6 +8,8 @@ import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ReactElement } from 'react'
+
+import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import { Role } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
@@ -150,6 +151,12 @@ export const SidePanel = {
     ),
     sidePanelChildren: <SidePanelContainers />
   },
+  menu: (
+    <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
+      <Menu1Icon />
+    </IconButton>
+  ),
+  templates: true,
   parameters: {
     chromatic: {
       viewports: [1200]
@@ -197,7 +204,7 @@ export const Complete = {
           custom content
         </Typography>
         <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
-          <MenuRounded />
+          <Menu1Icon />
         </IconButton>
       </Stack>
     ),
