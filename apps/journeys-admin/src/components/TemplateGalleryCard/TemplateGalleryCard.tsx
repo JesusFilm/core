@@ -1,16 +1,11 @@
 import { ApolloQueryResult } from '@apollo/client'
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
-import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import NextLink from 'next/link'
@@ -21,7 +16,6 @@ import {
   GetAdminJourneys
 } from '../../../__generated__/GetAdminJourneys'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
-import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
 
 export interface TemplateGalleryCardProps {
   journey?: AdminJourney | Journey
@@ -55,155 +49,81 @@ export function TemplateGalleryCard({
 
   return (
     <Card
-      aria-label="template-card"
+      aria-label="template-gallery-card"
       variant="outlined"
-      sx={{
-        borderRadius: 0,
-        borderColor: 'divider',
-        borderBottom: 'none',
-        height: '129px',
-        display: 'flex',
-        '&:last-of-type': {
-          borderBottomLeftRadius: { xs: 0, sm: 12 },
-          borderBottomRightRadius: { xs: 0, sm: 12 },
-          borderBottom: '1px solid',
-          borderColor: 'divider'
-        },
-        '&:first-of-type':
-          isPublisher !== true
-            ? {
-                borderTopLeftRadius: { xs: 0, sm: 12 },
-                borderTopRightRadius: { xs: 0, sm: 12 }
-              }
-            : undefined
-      }}
+      sx={{ width: 180, height: 306, border: 'none', cursor: 'pointer' }}
     >
-      {journey?.primaryImageBlock?.src != null ? (
-        <CardMedia
-          component="img"
-          image={journey.primaryImageBlock.src}
-          height="129px"
-          alt={journey.title}
-          sx={{
-            maxWidth: '129px',
-            minWidth: '129px'
-          }}
-        />
-      ) : (
-        <CardMedia
-          component="div"
-          sx={{
-            height: '129px',
-            width: '129px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            maxWidth: '129px',
-            minWidth: '129px',
-            borderRight: '1px solid',
-            borderColor: 'divider',
-            backgroundColor: 'background.default'
-          }}
-        >
-          <InsertPhotoRoundedIcon />
-        </CardMedia>
-      )}
-
-      <Stack
-        direction="column"
-        sx={{
-          width: `calc(100% - 129px)`,
-          display: 'flex'
-        }}
+      <NextLink
+        href={
+          journey != null
+            ? `/${isPublisher === true ? 'publisher' : 'templates'}/${
+                journey.id
+              }`
+            : ''
+        }
+        passHref
+        legacyBehavior
       >
-        <NextLink
-          href={
-            journey != null
-              ? `/${isPublisher === true ? 'publisher' : 'templates'}/${
-                  journey.id
-                }`
-              : ''
-          }
-          passHref
-          legacyBehavior
-        >
-          <CardActionArea>
-            <CardContent>
-              {journey != null ? (
-                <>
-                  <Typography variant="subtitle1" noWrap>
-                    {journey.title}
-                  </Typography>
-                  <Typography variant="body2" noWrap sx={{ fontSize: 12 }}>
-                    {date}
-                    {journey?.description != null
-                      ? ` - ${journey.description}`
-                      : ''}
-                  </Typography>
-                </>
-              ) : (
-                <Box sx={{ height: '44px' }}>
-                  <Skeleton variant="text" width={120} />
-                  <Skeleton variant="text" width={150} />
-                </Box>
-              )}
-            </CardContent>
-          </CardActionArea>
-        </NextLink>
-
-        <CardActions sx={{ px: 4, py: 2 }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            sx={{
-              mt: isPublisher !== true ? 2 : 0,
-              display: 'flex',
-              justifyContent: 'flex-start',
-              width: '100%'
-            }}
-          >
+        <CardActionArea>
+          {journey?.primaryImageBlock?.src != null ? (
+            <CardMedia
+              component="img"
+              image={journey.primaryImageBlock.src}
+              height="180px"
+              alt={journey.title}
+              sx={{
+                maxWidth: 180,
+                minWidth: 180,
+                borderRadius: 2
+              }}
+            />
+          ) : (
+            <CardMedia
+              component="div"
+              sx={{
+                height: 180,
+                width: 180,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderColor: 'divider',
+                backgroundColor: 'background.default'
+              }}
+            >
+              <InsertPhotoRoundedIcon />
+            </CardMedia>
+          )}
+          <CardContent sx={{ px: 0 }}>
             {journey != null ? (
               <>
-                <TranslateRoundedIcon sx={{ fontSize: 13, pl: 0 }} />
-                <Typography variant="body2" noWrap sx={{ ml: 1 }}>
-                  {displayLanguage}
+                <Typography variant="caption">
+                  {date} ● {displayLanguage}
+                </Typography>
+                <Typography variant="subtitle2" sx={{ my: 1 }}>
+                  {journey.title}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: 12,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  {journey?.description != null ? `${journey.description}` : ''}
                 </Typography>
               </>
             ) : (
-              <>
-                <TranslateRoundedIcon sx={{ fontSize: 13, p: 0 }} />
-                <Skeleton
-                  variant="text"
-                  width={50}
-                  height={20}
-                  sx={{ ml: 1, p: 0 }}
-                />
-              </>
-            )}
-
-            {isPublisher === true && (
-              <Box sx={{ display: 'flex', ml: 'auto' }}>
-                {journey != null ? (
-                  <JourneyCardMenu
-                    id={journey.id}
-                    status={journey.status}
-                    slug={journey.slug}
-                    published={journey.publishedAt != null}
-                    template
-                    refetch={refetch}
-                  />
-                ) : (
-                  <>
-                    <IconButton disabled>
-                      <MoreVertIcon />
-                    </IconButton>
-                  </>
-                )}
+              <Box sx={{ height: '44px' }}>
+                <Skeleton variant="text" width={120} />
+                <Skeleton variant="text" width={120} />
+                <Skeleton variant="text" width={150} />
               </Box>
             )}
-          </Stack>
-        </CardActions>
-      </Stack>
+          </CardContent>
+        </CardActionArea>
+      </NextLink>
     </Card>
   )
 }

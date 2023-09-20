@@ -6,7 +6,7 @@ import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/Get
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   defaultTemplate,
-  descriptiveTemplate
+  publishedTemplate
 } from '../TemplateLibrary/TemplateListData'
 
 import { TemplateGalleryCard } from '.'
@@ -49,15 +49,10 @@ export const Loading = {
 export const Complete = {
   ...Template,
   args: {
-    template: descriptiveTemplate,
-    isPublisher: true
-  }
-}
-
-export const CompleteLoading = {
-  ...Template,
-  args: {
-    template: undefined,
+    template: {
+      ...publishedTemplate,
+      title: 'Template Journey'
+    },
     isPublisher: true
   }
 }
