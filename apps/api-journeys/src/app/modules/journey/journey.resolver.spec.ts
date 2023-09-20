@@ -1222,7 +1222,8 @@ describe('JourneyResolver', () => {
         languageId: '529',
         slug: 'new-slug',
         hostId: 'hostId',
-        tagIds: ['tagId1']
+        tagIds: ['tagId1'],
+        strategySlug: 'https://docs.google.com/presentation/slidesId'
       })
 
       expect(prismaService.journey.update).toHaveBeenCalledWith({
@@ -1232,7 +1233,8 @@ describe('JourneyResolver', () => {
           languageId: '529',
           slug: 'new-slug',
           hostId: 'hostId',
-          tagIds: ['tagId1']
+          tagIds: ['tagId1'],
+          strategySlug: 'https://docs.google.com/presentation/slidesId'
         }
       })
     })
@@ -1245,7 +1247,8 @@ describe('JourneyResolver', () => {
         title: null,
         languageId: null,
         slug: null,
-        tagIds: null
+        tagIds: null,
+        strategySlug: null
       })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
@@ -1253,7 +1256,8 @@ describe('JourneyResolver', () => {
           title: undefined,
           languageId: undefined,
           slug: undefined,
-          tagIds: []
+          tagIds: [],
+          strategySlug: null
         }
       })
     })
