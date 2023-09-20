@@ -14,6 +14,7 @@ import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { FeaturedCheckbox } from '../../src/components/TemplateView/FeaturedCheckbox/FeaturedCheckbox'
 
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -24,6 +25,7 @@ function LibraryIndex(): ReactElement {
     <>
       <NextSeo title={t('Journey Templates')} />
       <PageWrapper title={t('Journey Templates')} authUser={AuthUser}>
+        <FeaturedCheckbox />
         {templates ? <TemplateGallery /> : <TemplateLibrary />}
       </PageWrapper>
     </>
