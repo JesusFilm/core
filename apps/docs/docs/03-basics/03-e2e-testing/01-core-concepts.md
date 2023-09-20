@@ -10,9 +10,8 @@ Tests automatically run upon PR creation against dynamically created vercel envi
 
 ## Waits
 
-We don't want to use wait unless necessary. We add a comment - if at all we have to use it.
-And add //eslint-disable-next-line to it.
+We don't want to use wait unless necessary. We add a comment to explain why, if at all we have to use it then add //eslint-disable-next-line to it.
 
 ## Videos Testing
 
-At the moment there isn't seems to be event when video started or ended. So, we've used wait for the video to be completed. These waits can be removed once videos are integrated with events. 
+At the moment there isn't seems to be event when video started or ended. So, we've used wait for the video to be completed. These waits can be removed once videos are integrated with events.
