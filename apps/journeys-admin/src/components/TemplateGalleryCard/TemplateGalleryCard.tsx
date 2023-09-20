@@ -1,4 +1,3 @@
-import { ApolloQueryResult } from '@apollo/client'
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
@@ -11,22 +10,17 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-import {
-  GetAdminJourneys_journeys as AdminJourney,
-  GetAdminJourneys
-} from '../../../__generated__/GetAdminJourneys'
+import { GetAdminJourneys_journeys as AdminJourney } from '../../../__generated__/GetAdminJourneys'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 
 export interface TemplateGalleryCardProps {
   journey?: AdminJourney | Journey
   isPublisher?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function TemplateGalleryCard({
   journey,
-  isPublisher,
-  refetch
+  isPublisher
 }: TemplateGalleryCardProps): ReactElement {
   const nativeLanguage =
     journey?.language.name.find(({ primary }) => primary)?.value ?? ''
@@ -51,7 +45,14 @@ export function TemplateGalleryCard({
     <Card
       aria-label="template-gallery-card"
       variant="outlined"
-      sx={{ width: 180, height: 306, border: 'none', cursor: 'pointer' }}
+      sx={{
+        width: 180,
+        height: 306,
+        border: 'none',
+        borderRadius: 0,
+        backgroundColor: 'background.default',
+        cursor: 'pointer'
+      }}
     >
       <NextLink
         href={
@@ -87,6 +88,7 @@ export function TemplateGalleryCard({
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderColor: 'divider',
+                borderRadius: 2,
                 backgroundColor: 'background.default'
               }}
             >
