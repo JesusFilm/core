@@ -2,6 +2,10 @@ extend type Language @key(fields: "id") {
   id: ID! @external
 }
 
+extend type Tag @key(fields: "id") {
+  id: ID! @external
+}
+
 type Journey @key(fields: "id") {
   id: ID!
   title: String!
@@ -22,6 +26,7 @@ type Journey @key(fields: "id") {
   template: Boolean
   host: Host
   team: Team
+  tags: [Tag!]!
 }
 
 enum IdType {
@@ -41,6 +46,7 @@ input JourneysFilter {
   featured: Boolean
   template: Boolean
   ids: [ID!]
+  tagIds: [ID!]
 }
 
 enum JourneysReportType {
@@ -123,6 +129,7 @@ input JourneyUpdateInput {
   seoTitle: String
   seoDescription: String
   hostId: String
+  tagIds: [ID!]
 }
 
 extend type UserJourney {
