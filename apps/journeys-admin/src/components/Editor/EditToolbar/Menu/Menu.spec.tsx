@@ -85,9 +85,6 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Duplicate Card' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Journey Settings' })
-    ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
@@ -146,9 +143,6 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Duplicate Card' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Journey Settings' })
-    ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
