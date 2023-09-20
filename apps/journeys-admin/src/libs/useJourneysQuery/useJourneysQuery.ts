@@ -56,6 +56,17 @@ export const GET_JOURNEYS = gql`
         height
         blurhash
       }
+      tags {
+        id
+        parentId
+        name {
+          value
+          language {
+            id
+          }
+          primary
+        }
+      }
     }
   }
 `
