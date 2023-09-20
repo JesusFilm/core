@@ -407,7 +407,8 @@ export class JourneyResolver {
                   'publishedAt',
                   'hostId',
                   'teamId',
-                  'createdAt'
+                  'createdAt',
+                  'strategySlug'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -416,7 +417,6 @@ export class JourneyResolver {
                 publishedAt: new Date(),
                 featuredAt: null,
                 template: false,
-                strategySlug: null,
                 team: { connect: { id: teamId } },
                 tagIds: journey.template === true ? journey.tagIds : [],
                 userJourneys: {

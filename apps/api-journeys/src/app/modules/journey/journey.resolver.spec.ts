@@ -867,7 +867,8 @@ describe('JourneyResolver', () => {
             'primaryImageBlockId',
             'publishedAt',
             'teamId',
-            'createdAt'
+            'createdAt',
+            'strategySlug'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -921,7 +922,8 @@ describe('JourneyResolver', () => {
           'primaryImageBlockId',
           'publishedAt',
           'teamId',
-          'createdAt'
+          'createdAt',
+          'strategySlug'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1022,7 +1024,8 @@ describe('JourneyResolver', () => {
             'primaryImageBlockId',
             'publishedAt',
             'teamId',
-            'createdAt'
+            'createdAt',
+            'strategySlug'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
