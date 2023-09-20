@@ -249,7 +249,7 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(getByTestId('MoreVertIcon'))
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
     fireEvent.click(getByRole('button'))
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
@@ -285,7 +285,7 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(getByTestId('MoreVertIcon'))
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
     fireEvent.click(getByRole('button'))
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
