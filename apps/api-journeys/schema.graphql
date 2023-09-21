@@ -326,6 +326,7 @@ type Journey
   template: Boolean
   host: Host
   team: Team
+  strategySlug: String
   tags: [Tag!]!
   userJourneys: [UserJourney!]
 }
@@ -1839,6 +1840,7 @@ input JourneyUpdateInput {
   seoTitle: String
   seoDescription: String
   hostId: String
+  strategySlug: String
   tagIds: [ID!]
 }
 

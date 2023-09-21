@@ -241,6 +241,7 @@ describe('HostResolver', () => {
       template: false,
       teamId: 'teamId',
       updatedAt: new Date(),
+      strategySlug: null,
       tagIds: []
     }
 
