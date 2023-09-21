@@ -1,13 +1,19 @@
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+
+import { GetJourneys_journeys } from '../../../__generated__/GetJourneys'
+import { TemplateSection } from '../TemplateSection'
+import { journeys } from '../TemplateSection/data'
+
+// properly call the journeys data
 
 export function TemplateGallery(): ReactElement {
   return (
     <Box>
-      <Typography variant="h1">
-        I AM THE TEMPLATE GALLERY MWHAHAHAHAHAHAH
-      </Typography>
+      <TemplateSection
+        category="Featured & New"
+        journeys={journeys as unknown as GetJourneys_journeys[]}
+      />
     </Box>
   )
 }
