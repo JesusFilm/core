@@ -3,46 +3,31 @@ import Box from '@mui/material/Box'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { v4 as uuidv4 } from 'uuid'
 
-import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 
 import {
-  CardFormCreate,
-  CardFormCreateVariables
-} from '../../../../../../__generated__/CardFormCreate'
+  CardQuoteCreate,
+  CardQuoteCreateVariables
+} from '../../../../../../__generated__/CardQuoteCreate'
 import {
-  IconName,
   TypographyColor,
   TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
 
-import cardFormImage from './cardForm.svg'
+import cardQuoteImage from './cardQuote.svg'
 
-export const CARD_FORM_CREATE = gql`
+export const CARD_QUOTE_CREATE = gql`
   ${IMAGE_FIELDS}
   ${TYPOGRAPHY_FIELDS}
-  ${TEXT_RESPONSE_FIELDS}
-  ${ICON_FIELDS}
-  ${CARD_FIELDS}
-  mutation CardFormCreate(
+  mutation CardQuoteCreate(
     $imageInput: ImageBlockCreateInput!
     $subtitleInput: TypographyBlockCreateInput!
     $titleInput: TypographyBlockCreateInput!
-    $textResponseInput: TextResponseBlockCreateInput!
-    $submitIconInput: IconBlockCreateInput!
-    $textResponseId: ID!
-    $textResponseUpdateInput: TextResponseBlockUpdateInput!
     $bodyInput: TypographyBlockCreateInput!
-    $journeyId: ID!
-    $cardId: ID!
-    $cardInput: CardBlockUpdateInput!
   ) {
     image: imageBlockCreate(input: $imageInput) {
       ...ImageFields
@@ -53,97 +38,60 @@ export const CARD_FORM_CREATE = gql`
     title: typographyBlockCreate(input: $titleInput) {
       ...TypographyFields
     }
-    textResponse: textResponseBlockCreate(input: $textResponseInput) {
-      ...TextResponseFields
-    }
-    submitIcon: iconBlockCreate(input: $submitIconInput) {
-      ...IconFields
-    }
-    textResponseBlockUpdate(
-      id: $textResponseId
-      journeyId: $journeyId
-      input: $textResponseUpdateInput
-    ) {
-      ...TextResponseFields
-    }
     body: typographyBlockCreate(input: $bodyInput) {
       ...TypographyFields
-    }
-    cardBlockUpdate(id: $cardId, journeyId: $journeyId, input: $cardInput) {
-      ...CardFields
     }
   }
 `
 
-export function CardForm(): ReactElement {
+export function CardQuote(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
 
-  const [cardFormCreate] = useMutation<CardFormCreate, CardFormCreateVariables>(
-    CARD_FORM_CREATE
-  )
+  const [cardQuoteCreate] = useMutation<
+    CardQuoteCreate,
+    CardQuoteCreateVariables
+  >(CARD_QUOTE_CREATE)
 
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null) return
-    const textResponseId = uuidv4()
-    const submitIconId = uuidv4()
-    await cardFormCreate({
+    await cardQuoteCreate({
       variables: {
         imageInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          alt: 'photo-1488048924544-c818a467dacd',
-          blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
-          height: 3456,
-          src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
-          width: 5184,
+          alt: 'photo-1552423310-ba74b8de5e6f',
+          blurhash: 'L99*0;01IAtk5R%MRie;t8D%-pa$',
+          height: 3396,
+          src: 'https://images.unsplash.com/photo-1552423310-ba74b8de5e6f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyOXx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDg5M3ww&ixlib=rb-4.0.3&q=80&w=1080',
+          width: 5094,
           isCover: true
         },
         subtitleInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          content: t('PRAYER REQUEST'),
+          content: t('BIBLE SAYS:'),
           variant: TypographyVariant.h6
         },
         titleInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          content: t('How can we pray for you?'),
-          variant: TypographyVariant.h1
-        },
-        textResponseInput: {
-          id: textResponseId,
-          journeyId: journey.id,
-          parentBlockId: cardId,
-          label: t('Your answer here'),
-          submitLabel: t('Submit')
-        },
-        submitIconInput: {
-          id: submitIconId,
-          journeyId: journey.id,
-          parentBlockId: textResponseId,
-          name: IconName.ArrowForwardRounded
-        },
-        textResponseId,
-        textResponseUpdateInput: {
-          submitIconId
+          content: t(
+            'Blessed are the peacemakers, for they shall be called sons of God.'
+          ),
+          variant: TypographyVariant.h3
         },
         bodyInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          content: t(
-            "Each day, we pray for those in our city. We'd be grateful to include your personal needs."
-          ),
-          variant: TypographyVariant.caption,
+          content: t('– Jesus Christ'),
+          variant: TypographyVariant.body1,
           color: TypographyColor.secondary
-        },
-        journeyId: journey.id,
-        cardId,
-        cardInput: { fullscreen: true }
+        }
       },
       update(cache, { data }) {
         if (data != null) {
@@ -171,19 +119,20 @@ export function CardForm(): ReactElement {
                     fragment: NEW_BLOCK_FRAGMENT
                   }),
                   cache.writeFragment({
-                    data: data.textResponseBlockUpdate,
-                    fragment: NEW_BLOCK_FRAGMENT
-                  }),
-                  cache.writeFragment({
-                    data: data.submitIcon,
-                    fragment: NEW_BLOCK_FRAGMENT
-                  }),
-                  cache.writeFragment({
                     data: data.body,
                     fragment: NEW_BLOCK_FRAGMENT
                   })
                 ]
               }
+            }
+          })
+          cache.modify({
+            id: cache.identify({
+              __typename: 'CardBlock',
+              id: cardId
+            }),
+            fields: {
+              coverBlockId: () => data.image.id
             }
           })
         }
@@ -196,8 +145,8 @@ export function CardForm(): ReactElement {
       <Image
         width={128}
         height={195}
-        src={cardFormImage}
-        alt="Card Form Template"
+        src={cardQuoteImage}
+        alt="Card Quote Template"
         onClick={handleClick}
         style={{
           cursor: 'pointer'

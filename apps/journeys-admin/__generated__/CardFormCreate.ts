@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, TextResponseBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, IconBlockCreateInput, TextResponseBlockUpdateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardFormCreate
@@ -239,9 +239,9 @@ export interface CardFormCreateVariables {
   subtitleInput: TypographyBlockCreateInput;
   titleInput: TypographyBlockCreateInput;
   textResponseInput: TextResponseBlockCreateInput;
+  submitIconInput: IconBlockCreateInput;
   textResponseId: string;
   textResponseUpdateInput: TextResponseBlockUpdateInput;
-  submitIconInput: IconBlockCreateInput;
   bodyInput: TypographyBlockCreateInput;
   journeyId: string;
   cardId: string;
