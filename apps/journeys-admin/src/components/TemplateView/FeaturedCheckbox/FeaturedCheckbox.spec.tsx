@@ -1,8 +1,9 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { FeaturedCheckbox, JOURNEY_FEATURE_UPDATE } from './FeaturedCheckbox'
 import { JourneyFeature } from '../../../../__generated__/JourneyFeature'
+
+import { FeaturedCheckbox, JOURNEY_FEATURE_UPDATE } from './FeaturedCheckbox'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -61,7 +62,9 @@ describe('FeaturedCheckbox', () => {
     await waitFor(() => fireEvent.click(getByRole('checkbox')))
     expect(getByRole('checkbox')).not.toBeChecked()
     await expect(getByRole('checkbox')).toBeDisabled()
-    await waitFor(() => expect(journeyFeatureNullMock.result).toBeCalled())
+    await waitFor(() =>
+      expect(journeyFeatureNullMock.result).toHaveBeenCalled()
+    )
     await expect(getByRole('checkbox')).not.toBeDisabled()
   })
 
@@ -75,7 +78,7 @@ describe('FeaturedCheckbox', () => {
     await waitFor(() => fireEvent.click(getByRole('checkbox')))
     expect(getByRole('checkbox')).toBeChecked()
     await expect(getByRole('checkbox')).toBeDisabled()
-    await waitFor(() => expect(journeyFeatureMock.result).toBeCalled())
+    await waitFor(() => expect(journeyFeatureMock.result).toHaveBeenCalled())
     await expect(getByRole('checkbox')).not.toBeDisabled()
   })
 })

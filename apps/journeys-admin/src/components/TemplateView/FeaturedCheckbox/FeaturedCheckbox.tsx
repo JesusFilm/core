@@ -1,10 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Checkbox from '@mui/material/Checkbox'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { JourneyFeature } from '../../../../__generated__/JourneyFeature'
 
 export const JOURNEY_FEATURE_UPDATE = gql`
