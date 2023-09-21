@@ -713,6 +713,8 @@ input JourneysFilter
   template: Boolean
   ids: [ID!]
   tagIds: [ID!]
+  limit: Int
+  orderByRecent: Boolean
 }
 
 enum JourneysReportType

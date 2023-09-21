@@ -596,6 +596,8 @@ export class JourneysFilter {
     template?: Nullable<boolean>;
     ids?: Nullable<string[]>;
     tagIds?: Nullable<string[]>;
+    limit?: Nullable<number>;
+    orderByRecent?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {

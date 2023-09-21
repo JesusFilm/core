@@ -556,6 +556,31 @@ describe('JourneyResolver', () => {
         }
       })
     })
+
+    it('returns limited number of published journeys', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(await resolver.journeys({ limit: 2 })).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published'
+        },
+        take: 2
+      })
+    })
+
+    it('returns published journeys ordered by recent', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(await resolver.journeys({ orderByRecent: true })).toEqual([
+        journey,
+        journey
+      ])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published'
+        },
+        orderBy: { createdAt: 'desc' }
+      })
+    })
   })
 
   describe('journey', () => {
