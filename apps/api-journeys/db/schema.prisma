@@ -293,6 +293,7 @@ model Journey {
   actions             Action[]
   primaryImageBlock   Block?           @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
   journeyVisitors     JourneyVisitor[]
+  strategySlug        String?
 
   @@index([title])
 }

@@ -619,6 +619,7 @@ export class JourneyUpdateInput {
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     hostId?: Nullable<string>;
+    strategySlug?: Nullable<string>;
     tagIds?: Nullable<string[]>;
 }
 
@@ -757,6 +758,7 @@ export class Journey {
     template?: Nullable<boolean>;
     host?: Nullable<Host>;
     team?: Nullable<Team>;
+    strategySlug?: Nullable<string>;
     tags: Tag[];
     userJourneys?: Nullable<UserJourney[]>;
 }

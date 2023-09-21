@@ -82,6 +82,7 @@ describe('JourneyResolver', () => {
     seoDescription: null,
     template: false,
     hostId: null,
+    strategySlug: null,
     tagIds: []
   }
   const journeyWithUserTeam = {
@@ -892,7 +893,8 @@ describe('JourneyResolver', () => {
             'primaryImageBlockId',
             'publishedAt',
             'teamId',
-            'createdAt'
+            'createdAt',
+            'strategySlug'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -946,7 +948,8 @@ describe('JourneyResolver', () => {
           'primaryImageBlockId',
           'publishedAt',
           'teamId',
-          'createdAt'
+          'createdAt',
+          'strategySlug'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1047,7 +1050,8 @@ describe('JourneyResolver', () => {
             'primaryImageBlockId',
             'publishedAt',
             'teamId',
-            'createdAt'
+            'createdAt',
+            'strategySlug'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1244,7 +1248,8 @@ describe('JourneyResolver', () => {
         languageId: '529',
         slug: 'new-slug',
         hostId: 'hostId',
-        tagIds: ['tagId1']
+        tagIds: ['tagId1'],
+        strategySlug: 'https://docs.google.com/presentation/slidesId'
       })
 
       expect(prismaService.journey.update).toHaveBeenCalledWith({
@@ -1254,7 +1259,8 @@ describe('JourneyResolver', () => {
           languageId: '529',
           slug: 'new-slug',
           hostId: 'hostId',
-          tagIds: ['tagId1']
+          tagIds: ['tagId1'],
+          strategySlug: 'https://docs.google.com/presentation/slidesId'
         }
       })
     })
