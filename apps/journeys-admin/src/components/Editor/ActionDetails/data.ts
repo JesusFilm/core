@@ -14,7 +14,7 @@ export const journey: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   title: 'my journey',
-  strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
+  strategySlug: null,
   slug: 'my-journey',
   language: {
     __typename: 'Language',
