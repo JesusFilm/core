@@ -33,6 +33,7 @@ describe('JourneyView', () => {
     __typename: 'Journey',
     id: 'journeyId',
     slug: 'my-journey',
+    strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
     title: 'title',
     description: 'description',
     createdAt: '2021-11-19T12:34:56.647Z',

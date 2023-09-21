@@ -27,6 +27,7 @@ const journey: Journey = {
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
   title: 'my journey',
   slug: 'my-journey',
   language: {

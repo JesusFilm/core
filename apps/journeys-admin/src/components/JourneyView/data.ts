@@ -17,6 +17,7 @@ export const defaultJourney: Journey = {
   id: 'journey-id',
   title: 'Journey Heading',
   description: 'Description',
+  strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
   slug: 'default',
   language: {
     __typename: 'Language',
