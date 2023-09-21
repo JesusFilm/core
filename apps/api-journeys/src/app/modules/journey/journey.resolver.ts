@@ -407,7 +407,8 @@ export class JourneyResolver {
                   'publishedAt',
                   'hostId',
                   'teamId',
-                  'createdAt'
+                  'createdAt',
+                  'strategySlug'
                 ]),
                 id: duplicateJourneyId,
                 slug,
