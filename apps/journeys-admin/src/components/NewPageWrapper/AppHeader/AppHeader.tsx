@@ -1,4 +1,3 @@
-import MenuIcon from '@mui/icons-material/Menu'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
@@ -6,6 +5,8 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Image from 'next/image'
 import { ReactElement } from 'react'
+
+import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
@@ -36,7 +37,7 @@ export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
               aria-label="open drawer"
               onClick={onClick}
             >
-              <MenuIcon sx={{ color: 'background.paper' }} />
+              <Menu1Icon sx={{ color: 'background.paper' }} />
             </IconButton>
             <Stack
               direction="row"

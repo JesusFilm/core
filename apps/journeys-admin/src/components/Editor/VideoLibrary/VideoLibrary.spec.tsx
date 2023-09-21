@@ -47,9 +47,7 @@ describe('VideoLibrary', () => {
           </FlagsProvider>
         </MockedProvider>
       )
-      expect(getAllByRole('button')[0]).toContainElement(
-        getByTestId('CloseIcon')
-      )
+      expect(getAllByRole('button')[0]).toContainElement(getByTestId('X2Icon'))
       fireEvent.click(getAllByRole('button')[0])
       expect(onClose).toHaveBeenCalled()
     })

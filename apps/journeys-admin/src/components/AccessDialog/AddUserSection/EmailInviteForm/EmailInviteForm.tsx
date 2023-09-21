@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
@@ -7,6 +6,8 @@ import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
+
+import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 
 import { UserInviteCreate } from '../../../../../__generated__/UserInviteCreate'
 
@@ -123,7 +124,7 @@ export function EmailInviteForm({
                     color="primary"
                     disabled={values.email === ''}
                   >
-                    <AddCircleOutlineIcon
+                    <AddSquare4Icon
                       sx={{
                         color:
                           values.email !== '' && errors.email == null

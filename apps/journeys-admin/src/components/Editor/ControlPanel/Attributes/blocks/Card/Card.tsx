@@ -1,7 +1,3 @@
-import ImageIcon from '@mui/icons-material/Image'
-import Palette from '@mui/icons-material/Palette'
-import VerticalSplit from '@mui/icons-material/VerticalSplit'
-import Videocam from '@mui/icons-material/Videocam'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { ReactElement } from 'react'
@@ -10,6 +6,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
+import Image3Icon from '@core/shared/ui/icons/Image3'
+import PaletteIcon from '@core/shared/ui/icons/Palette'
+import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import {
@@ -92,7 +92,7 @@ export function Card({
       {coverBlock?.__typename === 'ImageBlock' && coverBlock.src != null && (
         <Attribute
           id={`${id}-cover-block`}
-          icon={<ImageIcon />}
+          icon={<Image3Icon />}
           name="Background"
           value={coverBlock.src.substring(
             coverBlock.src.lastIndexOf('/') + 1,
@@ -105,7 +105,7 @@ export function Card({
       {coverBlock?.__typename === 'VideoBlock' && (
         <Attribute
           id={`${id}-cover-block`}
-          icon={<Videocam />}
+          icon={<VideoOnIcon />}
           name="Background"
           value={coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''}
           description="Background Video"
@@ -115,7 +115,7 @@ export function Card({
       {coverBlock == null && (
         <Attribute
           id={`${id}-cover-block`}
-          icon={<ImageIcon />}
+          icon={<Image3Icon />}
           name="Background"
           value="None"
           description="Background Media"
@@ -123,7 +123,7 @@ export function Card({
         />
       )}
       <Attribute
-        icon={<Palette />}
+        icon={<PaletteIcon />}
         id={`${id}-theme-mode`}
         name="Style"
         value={
@@ -144,7 +144,7 @@ export function Card({
         }}
       />
       <Attribute
-        icon={<VerticalSplit />}
+        icon={<FlexAlignBottom1Icon />}
         id={`${id}-fullscreen`}
         name="Layout"
         value={fullscreen ? 'Expanded' : 'Contained'}

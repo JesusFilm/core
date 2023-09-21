@@ -140,12 +140,12 @@ describe('ImageUpload', () => {
         <ImageUpload onChange={jest.fn()} loading selectedBlock={imageBlock} />
       </MockedProvider>
     )
-    expect(getByTestId('BackupOutlinedIcon')).toBeInTheDocument()
+    expect(getByTestId('Upload1Icon')).toBeInTheDocument()
     expect(getByText('Uploading...')).toBeInTheDocument()
   })
 
   it('should render error state', () => {
-    const { getByTestId, getByText } = render(
+    const { getAllByTestId, getByText } = render(
       <MockedProvider>
         <ImageUpload
           onChange={jest.fn()}
@@ -155,7 +155,7 @@ describe('ImageUpload', () => {
         />
       </MockedProvider>
     )
-    expect(getByTestId('CloudOffRoundedIcon')).toBeInTheDocument()
+    expect(getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
     expect(getByText('Upload Failed!')).toBeInTheDocument()
   })
 
