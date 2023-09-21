@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react'
 
-import { GetJourneys_journeys as Journeys } from '../../../__generated__/GetJourneys'
+import { GetJourneys_journeys as Journeys } from '../../../../__generated__/GetJourneys'
+import { journeys } from '../data'
 
-import { journeys } from './data'
 import { TemplateSection } from './TemplateSection'
 
 describe('TemplateSection', () => {

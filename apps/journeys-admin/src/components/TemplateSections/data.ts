@@ -20,7 +20,8 @@ export const journeys = [
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public'
     },
-    createdAt: '2023-08-14T04:24:24.392Z'
+    createdAt: '2023-08-14T04:24:24.392Z',
+    template: true
   },
   {
     id: '5149f417-1dfb-4808-a241-a836efc1e985',
@@ -39,7 +40,8 @@ export const journeys = [
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public'
     },
-    createdAt: '2023-09-03T22:08:26.499Z'
+    createdAt: '2023-09-03T22:08:26.499Z',
+    template: true
   },
   {
     id: '7a327920-8b1e-47f4-a48c-e9d958627f46',
@@ -75,7 +77,8 @@ export const journeys = [
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public'
     },
-    createdAt: '2023-08-24T21:23:25.881Z'
+    createdAt: '2023-08-24T21:23:25.881Z',
+    template: true
   },
   {
     id: 'd51ab100-c8ec-434b-93e6-ff3730c6e903',
@@ -94,7 +97,8 @@ export const journeys = [
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public'
     },
-    createdAt: '2023-09-18T23:09:27.032Z'
+    createdAt: '2023-09-18T23:09:27.032Z',
+    template: true
   },
   {
     id: '7a327920-8b1e-47f4-a48c-e9d958627f46',
@@ -130,6 +134,7 @@ export const journeys = [
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public'
     },
-    createdAt: '2023-08-24T21:23:25.881Z'
+    createdAt: '2023-08-24T21:23:25.881Z',
+    template: true
   }
 ]

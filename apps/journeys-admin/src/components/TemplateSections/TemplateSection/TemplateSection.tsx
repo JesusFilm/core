@@ -3,8 +3,8 @@ import Typography from '@mui/material/Typography'
 import Stack from '@mui/system/Stack'
 import { ReactElement } from 'react'
 
-import { GetJourneys_journeys as Journeys } from '../../../__generated__/GetJourneys'
-import { TemplateGalleryCard } from '../TemplateGalleryCard'
+import { GetJourneys_journeys as Journeys } from '../../../../__generated__/GetJourneys'
+import { TemplateGalleryCard } from '../../TemplateGalleryCard'
 
 interface TemplateSectionProps {
   journeys?: Journeys[]
