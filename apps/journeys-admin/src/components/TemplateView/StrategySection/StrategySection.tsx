@@ -4,16 +4,19 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+interface StrategySectionProps {
+  strategySlug: string
+}
 
-export function StrategySection(): ReactElement {
+export function StrategySection({
+  strategySlug
+}: StrategySectionProps): ReactElement {
   const { t } = useTranslation()
-  const { journey } = useJourney()
 
-  const isCanvaLink = journey?.strategySlug.includes('canva') as boolean
+  const isCanvaLink = strategySlug.includes('canva')
   const embedURL = isCanvaLink
-    ? journey?.strategySlug + '?embed'
-    : journey?.strategySlug.replace('pub?start', 'embed?start')
+    ? strategySlug + '?embed'
+    : strategySlug.replace('pub?start', 'embed?start')
 
   return (
     <Box>
