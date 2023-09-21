@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput, ImageBlockCreateInput, TypographyBlockCreateInput, RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardPollCreate
@@ -340,9 +340,6 @@ export interface CardPollCreate {
 }
 
 export interface CardPollCreateVariables {
-  journeyId: string;
-  cardId: string;
-  cardInput: CardBlockUpdateInput;
   imageInput: ImageBlockCreateInput;
   subtitleInput: TypographyBlockCreateInput;
   titleInput: TypographyBlockCreateInput;
@@ -352,4 +349,7 @@ export interface CardPollCreateVariables {
   radioOptionInput3: RadioOptionBlockCreateInput;
   radioOptionInput4: RadioOptionBlockCreateInput;
   bodyInput: TypographyBlockCreateInput;
+  journeyId: string;
+  cardId: string;
+  cardInput: CardBlockUpdateInput;
 }

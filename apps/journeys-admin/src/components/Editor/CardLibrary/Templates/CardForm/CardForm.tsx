@@ -5,148 +5,145 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
-import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
+import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
+import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
-import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
 import {
-  CardIntroCreate,
-  CardIntroCreateVariables
-} from '../../../../../../__generated__/CardIntroCreate'
+  CardFormCreate,
+  CardFormCreateVariables
+} from '../../../../../../__generated__/CardFormCreate'
 import {
-  ButtonVariant,
   IconName,
-  TypographyVariant,
-  VideoBlockSource
+  TypographyColor,
+  TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
 
-import cardIntroImage from './cardIntro.svg'
+import cardFormImage from './cardForm.svg'
 
-export const CARD_INTRO_CREATE = gql`
+export const CARD_POLL_CREATE = gql`
+  ${IMAGE_FIELDS}
   ${TYPOGRAPHY_FIELDS}
-  ${BUTTON_FIELDS}
-  ${VIDEO_FIELDS}
+  ${TEXT_RESPONSE_FIELDS}
   ${ICON_FIELDS}
-  mutation CardIntroCreate(
-    $journeyId: ID!
+  ${CARD_FIELDS}
+  mutation CardFormCreate(
+    $imageInput: ImageBlockCreateInput!
     $subtitleInput: TypographyBlockCreateInput!
     $titleInput: TypographyBlockCreateInput!
+    $textResponseInput: TextResponseBlockCreateInput!
+    $submitIconInput: IconBlockCreateInput!
+    $textResponseId: ID!
+    $textResponseUpdateInput: TextResponseBlockUpdateInput!
     $bodyInput: TypographyBlockCreateInput!
-    $buttonInput: ButtonBlockCreateInput!
-    $buttonId: ID!
-    $buttonUpdateInput: ButtonBlockUpdateInput!
-    $startIconInput: IconBlockCreateInput!
-    $endIconInput: IconBlockCreateInput!
-    $videoInput: VideoBlockCreateInput!
+    $journeyId: ID!
+    $cardId: ID!
+    $cardInput: CardBlockUpdateInput!
   ) {
+    image: imageBlockCreate(input: $imageInput) {
+      ...ImageFields
+    }
     subtitle: typographyBlockCreate(input: $subtitleInput) {
       ...TypographyFields
     }
     title: typographyBlockCreate(input: $titleInput) {
       ...TypographyFields
     }
+    textResponse: textResponseBlockCreate(input: $textResponseInput) {
+      ...TextResponseFields
+    }
+    submitIcon: iconBlockCreate(input: $submitIconInput) {
+      ...IconFields
+    }
+    textResponseBlockUpdate(
+      id: $textResponseId
+      journeyId: $journeyId
+      input: $textResponseUpdateInput
+    ) {
+      ...TextResponseFields
+    }
     body: typographyBlockCreate(input: $bodyInput) {
       ...TypographyFields
     }
-    button: buttonBlockCreate(input: $buttonInput) {
-      ...ButtonFields
-    }
-    startIcon: iconBlockCreate(input: $startIconInput) {
-      ...IconFields
-    }
-    endIcon: iconBlockCreate(input: $endIconInput) {
-      ...IconFields
-    }
-    buttonBlockUpdate(
-      id: $buttonId
-      journeyId: $journeyId
-      input: $buttonUpdateInput
-    ) {
-      ...ButtonFields
-    }
-    video: videoBlockCreate(input: $videoInput) {
-      ...VideoFields
+    cardBlockUpdate(id: $cardId, journeyId: $journeyId, input: $cardInput) {
+      ...CardFields
     }
   }
 `
 
-export function CardIntro(): ReactElement {
+export function CardForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
 
-  const [cardIntroCreate] = useMutation<
-    CardIntroCreate,
-    CardIntroCreateVariables
-  >(CARD_INTRO_CREATE)
+  const [cardFormCreate] = useMutation<CardFormCreate, CardFormCreateVariables>(
+    CARD_POLL_CREATE
+  )
 
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null) return
-    const buttonId = uuidv4()
-    const startIconId = uuidv4()
-    const endIconId = uuidv4()
-    await cardIntroCreate({
+    const textResponseId = uuidv4()
+    const submitIconId = uuidv4()
+    await cardFormCreate({
       variables: {
-        journeyId: journey.id,
-        buttonId,
+        imageInput: {
+          journeyId: journey.id,
+          parentBlockId: cardId,
+          alt: 'photo-1488048924544-c818a467dacd',
+          blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
+          height: 3456,
+          src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
+          width: 5184,
+          isCover: true
+        },
         subtitleInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          content: t('INTERACTIVE VIDEO'),
+          content: t('PRAYER REQUEST'),
           variant: TypographyVariant.h6
         },
         titleInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          content: t("Jesus: History's Most Influential Figure?"),
+          content: t('How can we pray for you?'),
           variant: TypographyVariant.h1
+        },
+        textResponseInput: {
+          id: textResponseId,
+          journeyId: journey.id,
+          parentBlockId: cardId,
+          label: t('Your answer here'),
+          submitLabel: t('Submit')
+        },
+        submitIconInput: {
+          id: submitIconId,
+          journeyId: journey.id,
+          parentBlockId: textResponseId,
+          name: IconName.ArrowForwardRounded
+        },
+        textResponseId,
+        textResponseUpdateInput: {
+          submitIconId
         },
         bodyInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
           content: t(
-            'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.'
+            "Each day, we pray for those in our city. We'd be grateful to include your personal needs."
           ),
-          variant: TypographyVariant.body1
+          variant: TypographyVariant.caption,
+          color: TypographyColor.secondary
         },
-        buttonInput: {
-          id: buttonId,
-          journeyId: journey.id,
-          parentBlockId: cardId,
-          label: t('Begin the Journey'),
-          variant: ButtonVariant.contained
-        },
-        startIconInput: {
-          id: startIconId,
-          journeyId: journey.id,
-          parentBlockId: buttonId
-        },
-        endIconInput: {
-          id: endIconId,
-          journeyId: journey.id,
-          parentBlockId: buttonId,
-          name: IconName.ArrowForwardRounded
-        },
-        buttonUpdateInput: {
-          startIconId,
-          endIconId
-        },
-        videoInput: {
-          journeyId: journey.id,
-          parentBlockId: cardId,
-          videoId: '1_jf-0-0',
-          videoVariantLanguageId: '529',
-          startAt: 2048,
-          endAt: 2058,
-          isCover: true,
-          source: VideoBlockSource.internal
-        }
+        journeyId: journey.id,
+        cardId,
+        cardInput: { fullscreen: true }
       },
       update(cache, { data }) {
         if (data != null) {
@@ -162,6 +159,10 @@ export function CardIntro(): ReactElement {
                 return [
                   ...existingBlockRefs,
                   cache.writeFragment({
+                    data: data.image,
+                    fragment: NEW_BLOCK_FRAGMENT
+                  }),
+                  cache.writeFragment({
                     data: data.subtitle,
                     fragment: NEW_BLOCK_FRAGMENT
                   }),
@@ -170,36 +171,19 @@ export function CardIntro(): ReactElement {
                     fragment: NEW_BLOCK_FRAGMENT
                   }),
                   cache.writeFragment({
+                    data: data.textResponseBlockUpdate,
+                    fragment: NEW_BLOCK_FRAGMENT
+                  }),
+                  cache.writeFragment({
+                    data: data.submitIcon,
+                    fragment: NEW_BLOCK_FRAGMENT
+                  }),
+                  cache.writeFragment({
                     data: data.body,
-                    fragment: NEW_BLOCK_FRAGMENT
-                  }),
-                  cache.writeFragment({
-                    data: data.buttonBlockUpdate,
-                    fragment: NEW_BLOCK_FRAGMENT
-                  }),
-                  cache.writeFragment({
-                    data: data.startIcon,
-                    fragment: NEW_BLOCK_FRAGMENT
-                  }),
-                  cache.writeFragment({
-                    data: data.endIcon,
-                    fragment: NEW_BLOCK_FRAGMENT
-                  }),
-                  cache.writeFragment({
-                    data: data.video,
                     fragment: NEW_BLOCK_FRAGMENT
                   })
                 ]
               }
-            }
-          })
-          cache.modify({
-            id: cache.identify({
-              __typename: 'CardBlock',
-              id: cardId
-            }),
-            fields: {
-              coverBlockId: () => data.video.id
             }
           })
         }
@@ -212,8 +196,8 @@ export function CardIntro(): ReactElement {
       <Image
         width={128}
         height={195}
-        src={cardIntroImage}
-        alt="Card Intro Template"
+        src={cardFormImage}
+        alt="Card Poll Template"
         onClick={handleClick}
         style={{
           cursor: 'pointer'

@@ -84,16 +84,15 @@ export function CardPoll(): ReactElement {
     state: { selectedStep }
   } = useEditor()
 
-  const [introBlocksCreate] = useMutation<
-    CardPollCreate,
-    CardPollCreateVariables
-  >(CARD_POLL_CREATE)
+  const [cardPollCreate] = useMutation<CardPollCreate, CardPollCreateVariables>(
+    CARD_POLL_CREATE
+  )
 
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null) return
     const radioQuestionId = uuidv4()
-    await introBlocksCreate({
+    await cardPollCreate({
       variables: {
         imageInput: {
           journeyId: journey.id,
