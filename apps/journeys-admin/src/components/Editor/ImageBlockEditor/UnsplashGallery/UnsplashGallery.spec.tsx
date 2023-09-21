@@ -157,9 +157,11 @@ describe('UnsplashGallery', () => {
     fireEvent.change(textbox, { target: { value: 'Jesus' } })
     fireEvent.submit(textbox, { target: { value: 'Jesus' } })
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
-    expect(
-      getAllByAltText('white dome building during daytime')[0]
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getAllByAltText('white dome building during daytime')[0]
+      ).toBeInTheDocument()
+    )
     const chip = getByRole('button', { name: 'Church' })
     fireEvent.click(chip)
     expect(getByRole('textbox', { name: 'UnsplashSearch' })).toHaveValue(
