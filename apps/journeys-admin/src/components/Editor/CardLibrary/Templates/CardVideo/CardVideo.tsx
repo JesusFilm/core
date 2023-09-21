@@ -84,7 +84,7 @@ export function CardVideo(): ReactElement {
         width={128}
         height={195}
         src={cardVideoImage}
-        alt="Expanded"
+        alt="Card Video Template"
         onClick={handleClick}
         style={{
           cursor: 'pointer'

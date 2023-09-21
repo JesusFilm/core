@@ -213,7 +213,7 @@ export function CardIntro(): ReactElement {
         width={128}
         height={195}
         src={cardIntroImage}
-        alt="Expanded"
+        alt="Card Intro Template"
         onClick={handleClick}
         style={{
           cursor: 'pointer'
