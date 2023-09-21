@@ -1,8 +1,9 @@
-import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement, useState } from 'react'
+
+import FilterIcon from '@core/shared/ui/icons/Filter'
 
 import { FilterDrawer } from '../FilterDrawer/FilterDrawer'
 
@@ -38,7 +39,7 @@ export function VisitorToolbar({
   return (
     <Box sx={{ display: { sm: 'block', md: 'none' } }}>
       <IconButton>
-        <FilterListRoundedIcon onClick={handleOpen} />
+        <FilterIcon onClick={handleOpen} />
       </IconButton>
       <Drawer
         anchor="bottom"

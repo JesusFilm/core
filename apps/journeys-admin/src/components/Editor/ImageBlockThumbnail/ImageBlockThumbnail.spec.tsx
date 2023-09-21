@@ -48,6 +48,6 @@ describe('ImageBlockThumbnail', () => {
     const { getByTestId } = render(
       <ImageBlockThumbnail selectedBlock={image} error />
     )
-    expect(getByTestId('BrokenImageOutlinedIcon')).toBeInTheDocument()
+    expect(getByTestId('ImageXIcon')).toBeInTheDocument()
   })
 })

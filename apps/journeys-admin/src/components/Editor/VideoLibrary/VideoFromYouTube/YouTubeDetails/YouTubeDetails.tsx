@@ -1,4 +1,3 @@
-import Check from '@mui/icons-material/Check'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -10,6 +9,7 @@ import useSWR from 'swr'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import CheckIcon from '@core/shared/ui/icons/Check'
 import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
 
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
@@ -150,7 +150,7 @@ export function YouTubeDetails({
       >
         <Button
           variant="contained"
-          startIcon={<Check />}
+          startIcon={<CheckIcon />}
           onClick={handleSelect}
           size="small"
           disabled={loading}

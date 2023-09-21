@@ -39,6 +39,7 @@ describe('useJourneysQuery', () => {
             status: JourneyStatus.draft,
             seoTitle: null,
             seoDescription: null,
+            tags: [],
             userJourneys: [
               {
                 __typename: 'UserJourney',

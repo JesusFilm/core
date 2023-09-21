@@ -1,9 +1,4 @@
 import { gql, useQuery } from '@apollo/client'
-import DescriptionIcon from '@mui/icons-material/Description'
-import EditIcon from '@mui/icons-material/Edit'
-import MoreVert from '@mui/icons-material/MoreVert'
-import SettingsIcon from '@mui/icons-material/Settings'
-import VisibilityIcon from '@mui/icons-material/Visibility'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -12,6 +7,11 @@ import { ReactElement, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import File5Icon from '@core/shared/ui/icons/File5'
+import MoreIcon from '@core/shared/ui/icons/More'
+import SettingsIcon from '@core/shared/ui/icons/Settings'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
@@ -97,7 +97,7 @@ export function Menu(): ReactElement {
         >
           <MenuItem
             label="Preview"
-            icon={<VisibilityIcon />}
+            icon={<EyeOpenIcon />}
             openInNew
             onClick={handleCloseMenu}
           />
@@ -114,15 +114,6 @@ export function Menu(): ReactElement {
   }
 
   function CardMenu(): ReactElement {
-    let settingsLink
-    if (journey != null) {
-      if (journey.template === true) {
-        settingsLink = `/publisher/${journey.id}`
-      } else {
-        settingsLink = `/journeys/${journey.id}`
-      }
-    }
-
     return (
       <>
         <NextLink
@@ -132,7 +123,7 @@ export function Menu(): ReactElement {
         >
           <MenuItem
             label="Preview"
-            icon={<VisibilityIcon />}
+            icon={<EyeOpenIcon />}
             openInNew
             onClick={handleCloseMenu}
           />
@@ -140,20 +131,11 @@ export function Menu(): ReactElement {
         <DuplicateBlock variant="list-item" />
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         <Divider />
-        <NextLink
-          href={settingsLink != null ? settingsLink : ''}
-          passHref
-          legacyBehavior
-        >
-          <MenuItem
-            label={
-              journey?.template === true
-                ? 'Publisher Settings'
-                : 'Journey Settings'
-            }
-            icon={<SettingsIcon />}
-          />
-        </NextLink>
+        {journey != null && journey.template === true && (
+          <NextLink href={`/publisher/${journey.id}`} passHref legacyBehavior>
+            <MenuItem label="Publisher Settings" icon={<SettingsIcon />} />
+          </NextLink>
+        )}
       </>
     )
   }
@@ -170,7 +152,7 @@ export function Menu(): ReactElement {
         onClick={handleShowMenu}
         disabled={journey == null}
       >
-        <MoreVert />
+        <MoreIcon />
       </IconButton>
       <MuiMenu
         id="edit-journey-actions"
@@ -189,7 +171,7 @@ export function Menu(): ReactElement {
         {journey?.template === true && isPublisher != null && (
           <MenuItem
             label="Description"
-            icon={<EditIcon />}
+            icon={<Edit2Icon />}
             onClick={handleUpdateTitleDescription}
           />
         )}
@@ -197,12 +179,12 @@ export function Menu(): ReactElement {
           <>
             <MenuItem
               label="Title"
-              icon={<EditIcon />}
+              icon={<Edit2Icon />}
               onClick={handleUpdateTitle}
             />
             <MenuItem
               label="Description"
-              icon={<DescriptionIcon />}
+              icon={<File5Icon />}
               onClick={handleUpdateDescription}
             />
           </>

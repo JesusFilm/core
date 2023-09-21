@@ -348,6 +348,8 @@ export interface JourneyUpdateInput {
   seoTitle?: string | null;
   seoDescription?: string | null;
   hostId?: string | null;
+  strategySlug?: string | null;
+  tagIds?: string[] | null;
 }
 
 export interface JourneyVisitorFilter {
@@ -364,6 +366,7 @@ export interface JourneysFilter {
   featured?: boolean | null;
   template?: boolean | null;
   ids?: string[] | null;
+  tagIds?: string[] | null;
 }
 
 export interface LinkActionInput {
@@ -447,10 +450,12 @@ export interface StepViewEventCreateInput {
 
 export interface TeamCreateInput {
   title: string;
+  publicTitle?: string | null;
 }
 
 export interface TeamUpdateInput {
   title: string;
+  publicTitle?: string | null;
 }
 
 export interface TextResponseBlockCreateInput {

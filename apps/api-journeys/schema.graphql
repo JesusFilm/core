@@ -242,6 +242,9 @@ extend type Mutation {
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey
 
+  """Sets journey status to featured"""
+  journeyFeature(id: ID!, feature: Boolean!): Journey
+
   """Sets journeys statuses to archived"""
   journeysArchive(ids: [ID!]!): [Journey]
 
@@ -323,6 +326,8 @@ type Journey
   template: Boolean
   host: Host
   team: Team
+  strategySlug: String
+  tags: [Tag!]!
   userJourneys: [UserJourney!]
 }
 
@@ -1752,6 +1757,12 @@ input HostCreateInput {
   src2: String
 }
 
+extend type Tag
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
 enum IdType {
   databaseId
   slug
@@ -1769,6 +1780,7 @@ input JourneysFilter {
   featured: Boolean
   template: Boolean
   ids: [ID!]
+  tagIds: [ID!]
 }
 
 enum JourneysReportType {
@@ -1828,6 +1840,8 @@ input JourneyUpdateInput {
   seoTitle: String
   seoDescription: String
   hostId: String
+  strategySlug: String
+  tagIds: [ID!]
 }
 
 type UserJourney
@@ -1980,6 +1994,7 @@ type Team
 {
   id: ID!
   title: String!
+  publicTitle: String
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
@@ -1987,10 +2002,12 @@ type Team
 
 input TeamCreateInput {
   title: String!
+  publicTitle: String
 }
 
 input TeamUpdateInput {
   title: String!
+  publicTitle: String
 }
 
 type UserInvite
@@ -2320,4 +2337,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor

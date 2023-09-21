@@ -85,9 +85,6 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Duplicate Card' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Journey Settings' })
-    ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
@@ -146,9 +143,6 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Duplicate Card' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Journey Settings' })
-    ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
@@ -255,7 +249,7 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(getByTestId('MoreVertIcon'))
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
     fireEvent.click(getByRole('button'))
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
@@ -291,49 +285,11 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(getByTestId('MoreVertIcon'))
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
     fireEvent.click(getByRole('button'))
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-  })
-
-  it('should link back to journey on click', () => {
-    const selectedBlock: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'stepId',
-      parentBlockId: 'journeyId',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
-
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journeyId',
-                slug: 'my-journey'
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock }}>
-              <Menu />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Journey Settings' })).toHaveAttribute(
-      'href',
-      '/journeys/journeyId'
-    )
   })
 
   it('should link back to publisher page on click', () => {
