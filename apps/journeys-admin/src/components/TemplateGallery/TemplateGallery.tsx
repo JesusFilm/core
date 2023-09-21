@@ -5,8 +5,11 @@ import { ReactElement } from 'react'
 export function TemplateGallery(): ReactElement {
   return (
     <Box>
-      <Typography variant="h1">
-        I AM THE TEMPLATE GALLERY MWHAHAHAHAHAHAH
+      <Typography variant="h3">
+        This is a placeholder for the new template gallery
+      </Typography>
+      <Typography variant="h3">
+        Your email is currently under a launch darkly flag
       </Typography>
     </Box>
   )
