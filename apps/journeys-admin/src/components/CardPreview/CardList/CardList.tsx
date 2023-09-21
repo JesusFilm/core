@@ -32,12 +32,13 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { useSocialPreview } from '../../Editor/SocialProvider'
 import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
+
+import { CardWrapper } from './CardWrapper'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>

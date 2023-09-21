@@ -35,7 +35,7 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
         return <Footer />
       }
       default:
-        return <></>
+        return <Box sx={{ height: 87 }} />
     }
   } else {
     const withMoveButtons = (block: ReactElement): ReactElement => {
