@@ -29,8 +29,6 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Delete existing snapshots
-      run: rm -rf apps/${{ inputs.TargetTests }}/src/e2e/snapshots/
     - name: Run Playwright tests
       run: npx nx run ${{ inputs.TargetTests }}:update-snapshots
       env:
@@ -41,6 +39,6 @@ jobs:
         name: playwright-report
         path: |
             playwright-report/
-            apps/${{ inputs.TargetTests }}/src/e2e/snapshots/
+            apps/${{ inputs.TargetTests }}/src/e2e/
             test-results
         retention-days: 30
