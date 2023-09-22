@@ -24,7 +24,6 @@ export function TemplateSections(): ReactElement {
         category="Featured & New"
         journeys={featuredAndNewTemplates}
       />
-      {/* Add more template categories */}
     </Stack>
   )
 }
