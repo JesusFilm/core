@@ -26,7 +26,7 @@ function LibraryIndex(): ReactElement {
       <NextSeo title={t('Journey Templates')} />
       <PageWrapper title={t('Journey Templates')} authUser={AuthUser}>
         {templates ? <TemplateGallery /> : <TemplateLibrary />}
-        <StrategySection />
+        <StrategySection strategySlug="https://www.canva.com/design/DAFvCrg6dMw/watch" />
       </PageWrapper>
     </>
   )

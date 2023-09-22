@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { StrategySection } from './StrategySection'
 
 const StrategySectionStory: Meta<typeof StrategySection> = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: StrategySection,
   title: 'Journeys-Admin/StrategySection'
 }
