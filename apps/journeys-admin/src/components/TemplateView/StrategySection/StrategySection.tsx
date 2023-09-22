@@ -38,6 +38,7 @@ export function StrategySection({
         >
           <iframe
             loading="lazy"
+            data-testid="strategy-iframe"
             onLoad={(event) =>
               ((event.target as HTMLIFrameElement).style.opacity = '1')
             }
