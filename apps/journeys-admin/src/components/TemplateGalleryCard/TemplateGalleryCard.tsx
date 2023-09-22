@@ -50,7 +50,7 @@ export function TemplateGalleryCard({
         height: 306,
         border: 'none',
         borderRadius: 0,
-        backgroundColor: 'background.default',
+        backgroundColor: 'transparent',
         cursor: 'pointer'
       }}
     >
@@ -65,7 +65,7 @@ export function TemplateGalleryCard({
         passHref
         legacyBehavior
       >
-        <CardActionArea>
+        <CardActionArea sx={{ height: 'inherit' }}>
           {journey?.primaryImageBlock?.src != null ? (
             <CardMedia
               component="img"
@@ -95,7 +95,7 @@ export function TemplateGalleryCard({
               <InsertPhotoRoundedIcon />
             </CardMedia>
           )}
-          <CardContent sx={{ px: 0 }}>
+          <CardContent sx={{ display: 'flex', flexDirection: 'column', px: 0 }}>
             {journey != null ? (
               <>
                 <Typography variant="caption">

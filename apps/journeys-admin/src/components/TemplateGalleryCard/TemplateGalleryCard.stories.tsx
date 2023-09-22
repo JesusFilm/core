@@ -51,7 +51,8 @@ export const Complete = {
   args: {
     template: {
       ...publishedTemplate,
-      title: 'Template Journey'
+      title: 'Where did Jesus body go',
+      description: 'This is a description of a template'
     },
     isPublisher: true
   }

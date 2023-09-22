@@ -9,11 +9,6 @@ import {
 
 import { TemplateGalleryCard } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
 describe('TemplateGalleryCard', () => {
   it('should render Template Gallery Card', () => {
     const { getByText } = render(<TemplateGalleryCard journey={oldTemplate} />)
