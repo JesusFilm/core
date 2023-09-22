@@ -184,7 +184,8 @@ export class JourneyResolver {
     return await this.prismaService.journey.findMany({
       where: filter,
       take: where?.limit ?? undefined,
-      orderBy: where?.orderByRecent === true ? { createdAt: 'desc' } : undefined
+      orderBy:
+        where?.orderByRecent === true ? { publishedAt: 'desc' } : undefined
     })
   }
 

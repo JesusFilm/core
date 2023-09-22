@@ -578,7 +578,7 @@ describe('JourneyResolver', () => {
         where: {
           status: 'published'
         },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { publishedAt: 'desc' }
       })
     })
   })
