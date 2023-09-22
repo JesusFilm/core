@@ -114,7 +114,13 @@ export function BackgroundVideo({
   }
 
   return (
-    <Box height="100vh" width="calc(100vh * 16 / 9)" overflow="hidden">
+    <Box
+      height={{ xs: '100vh', sm: '100%' }}
+      width={{ xs: 'calc(100vh * 16 / 9)', sm: '100%' }}
+      overflow="hidden"
+      marginLeft={{ xs: 'calc((100vh * 16 / 9) * -0.355)', sm: 0 }}
+      position="absolute"
+    >
       <StyledVideo
         ref={videoRef}
         data-testid="background-video"
