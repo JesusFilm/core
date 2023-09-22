@@ -11,6 +11,8 @@ import { defineConfig, devices } from '@playwright/test'
  */
 export default defineConfig({
   testDir: './src/e2e',
+  /* Save screenshots to this folder */
+  snapshotPathTemplate: '{testDir}/screenshots/{testFilePath}/{arg}{ext}',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -40,27 +42,27 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-    {
-      name: 'chrome-desktop',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' }
-    },
+    // {
+    //   name: 'chrome-desktop',
+    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' }
+    // },
 
-    // /* Test against mobile viewports. */
-    // // By default it's using chromium channel, changed it to chrome so it can play the video
-    {
-      name: 'chrome-mobile',
-      use: { ...devices['Pixel 5'], channel: 'chrome' }
-    }
+    // // /* Test against mobile viewports. */
+    // // // By default it's using chromium channel, changed it to chrome so it can play the video
+    // {
+    //   name: 'chrome-mobile',
+    //   use: { ...devices['Pixel 5'], channel: 'chrome' }
+    // }
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },
     // },
 
     /* Others. */
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
 
     // {
     //   name: 'webkit',
