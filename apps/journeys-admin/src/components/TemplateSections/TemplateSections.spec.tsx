@@ -17,7 +17,8 @@ describe('TemplateSections', () => {
               variables: {
                 where: {
                   featured: true,
-                  template: false
+                  template: true,
+                  orderByRecent: true
                 }
               }
             },
@@ -26,10 +27,10 @@ describe('TemplateSections', () => {
                 journeys: [
                   {
                     id: '1',
-                    title: 'Fact or Fiction',
+                    title: 'Featured Template 1',
                     description: null,
                     slug: 'default',
-                    template: false,
+                    template: true,
                     language: {
                       __typename: 'Language',
                       id: '529',
@@ -43,15 +44,16 @@ describe('TemplateSections', () => {
                     },
                     tags: [],
                     primaryImageBlock: null,
+                    publishedAt: '2023-08-14T04:24:24.392Z',
                     createdAt: '2023-08-14T04:24:24.392Z',
                     featuredAt: '2023-08-14T04:24:24.392Z'
                   },
                   {
                     id: '2',
-                    title: 'Decision',
+                    title: 'Featured Template 2',
                     description: null,
                     slug: 'default',
-                    template: false,
+                    template: true,
                     language: {
                       __typename: 'Language',
                       id: '529',
@@ -65,15 +67,16 @@ describe('TemplateSections', () => {
                     },
                     tags: [],
                     primaryImageBlock: null,
-                    createdAt: '2023-08-14T04:24:24.392Z',
-                    featuredAt: '2023-08-14T04:24:24.392Z'
+                    publishedAt: '2023-08-14T04:24:24.292Z',
+                    createdAt: '2023-08-14T04:24:24.292Z',
+                    featuredAt: '2023-08-14T04:24:24.292Z'
                   },
                   {
                     id: '3',
-                    title: 'What about the ressurection',
+                    title: 'Featured Template 3',
                     description: null,
                     slug: 'default',
-                    template: false,
+                    template: true,
                     language: {
                       __typename: 'Language',
                       id: '529',
@@ -87,8 +90,9 @@ describe('TemplateSections', () => {
                     },
                     tags: [],
                     primaryImageBlock: null,
-                    createdAt: '2023-08-14T04:24:24.392Z',
-                    featuredAt: '2023-08-14T04:24:24.392Z'
+                    publishedAt: '2023-08-14T04:24:24.192Z',
+                    createdAt: '2023-08-14T04:24:24.192Z',
+                    featuredAt: '2023-08-14T04:24:24.192Z'
                   }
                 ]
               }
@@ -99,7 +103,9 @@ describe('TemplateSections', () => {
               query: GET_JOURNEYS,
               variables: {
                 where: {
-                  template: true
+                  template: true,
+                  limit: 10,
+                  orderByRecent: true
                 }
               }
             },
@@ -117,9 +123,9 @@ describe('TemplateSections', () => {
     expect(getByText('Featured & New')).toBeInTheDocument()
     // featured templates
     await waitFor(() =>
-      expect(getByText('Fact or Fiction')).toBeInTheDocument()
+      expect(getByText('Featured Template 1')).toBeInTheDocument()
     )
-    expect(getByText('Decision')).toBeInTheDocument()
+    expect(getByText('Featured Template 2')).toBeInTheDocument()
     // new templates
     expect(getByText('I think I just sorted the problem')).toBeInTheDocument()
     expect(getByText('Dev Onboarding Journey')).toBeInTheDocument()

@@ -6,15 +6,14 @@ import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { TemplateSection } from './TemplateSection'
 
 export function TemplateSections(): ReactElement {
-  // featuredData, replace once journeys have been decided
   const { data: featuredData } = useJourneysQuery({
-    where: { featured: true, template: false }
+    where: { featured: true, template: true, orderByRecent: true }
   })
   const { data: newData } = useJourneysQuery({
-    where: { template: true }
+    where: { template: true, limit: 10, orderByRecent: true }
   })
 
-  const featuredAndNewJourneys = [
+  const featuredAndNewTemplates = [
     ...(featuredData?.journeys ?? []),
     ...(newData?.journeys ?? [])
   ]
@@ -23,7 +22,7 @@ export function TemplateSections(): ReactElement {
     <Stack spacing={8}>
       <TemplateSection
         category="Featured & New"
-        journeys={featuredAndNewJourneys}
+        journeys={featuredAndNewTemplates}
       />
       {/* Add more template categories */}
     </Stack>
