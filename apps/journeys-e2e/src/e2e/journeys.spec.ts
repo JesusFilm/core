@@ -7,7 +7,7 @@ test('journeys', async ({ page }) => {
   // 10 mins timeout for this test as it got videos (later we can use 10 seconds videos)
   test.setTimeout(600000)
 
-  await page.goto('https://your-stage.nextstep.is/')
+  await page.goto('/')
 
   // fact or fiction page - click on on fact or fiction
   await page.click('a[href="/fact-or-fiction"]')
