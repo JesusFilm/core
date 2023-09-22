@@ -18,7 +18,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Update snapshots
-      run: npx nx run journeys-e2e:update-snapshots
+      run: npx nx run journeys-e2e:e2e
       env:
         PLAYWRIGHT_TEST_BASE_URL: "https://your-stage.nextstep.is"
     - uses: actions/upload-artifact@v3
@@ -27,6 +27,5 @@ jobs:
         name: playwright-report
         path: |
             playwright-report/
-            apps/journeys-e2e/src/e2e/
             test-results
         retention-days: 30
