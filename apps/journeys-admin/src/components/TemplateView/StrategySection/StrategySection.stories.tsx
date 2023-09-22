@@ -32,7 +32,7 @@ export const GoogleSlides = {
   ...Template,
   args: {
     strategySlug:
-      'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
+      'https://docs.google.com/presentation/d/e/2PACX-1vRjI5K0O2Zsx7aVlqHnGre23faBzTQNcYRNVhstdpv8z3vLyUQ3ile3PVZj72Mk7S4pMtm5S1P8oHpY/pub?start=false&loop=false&delayms=3000'
   }
 }
 
