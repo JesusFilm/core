@@ -27,6 +27,6 @@ jobs:
         name: playwright-report
         path: |
             playwright-report/
-            apps/journeys-e2e/src/e2e/snapshots/
+            apps/journeys-e2e/src/e2e/
             test-results
         retention-days: 30
