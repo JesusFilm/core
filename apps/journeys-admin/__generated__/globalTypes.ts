@@ -367,6 +367,8 @@ export interface JourneysFilter {
   template?: boolean | null;
   ids?: string[] | null;
   tagIds?: string[] | null;
+  limit?: number | null;
+  orderByRecent?: boolean | null;
 }
 
 export interface LinkActionInput {
