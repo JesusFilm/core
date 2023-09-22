@@ -13,7 +13,6 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
-import { StrategySection } from '../../src/components/TemplateView/StrategySection'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function LibraryIndex(): ReactElement {
