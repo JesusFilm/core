@@ -9,7 +9,7 @@ on:
         required: true
         options:
           - 'e2e'
-          - 'update-snapshots'     
+          - 'update-snapshots'
       TargetTests:
         description: 'Pick the tests you want to run'
         type: choice
