@@ -276,4 +276,18 @@ describe('TextResponse', () => {
       )
     ).toBeInTheDocument()
   })
+
+  it('should not allow selection in editor', () => {
+    const { getAllByRole } = render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponseMock />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    const response = getAllByRole('textbox')[0]
+    fireEvent.click(response)
+    expect(response.matches(':focus')).not.toBeTruthy()
+  })
 })
