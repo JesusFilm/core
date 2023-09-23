@@ -1,7 +1,15 @@
-name: Update E2E Snapshots
+name: E2E Tests
 on:
   workflow_dispatch:
     inputs:
+      TargetAction:
+        description: 'Pick e2e to run e2e tests or update-snapshots'
+        type: choice
+        default: 'e2e'
+        required: true
+        options:
+          - 'e2e'
+          - 'update-snapshots'     
       TargetTests:
         description: 'Pick the tests you want to run'
         type: choice
@@ -17,7 +25,7 @@ on:
         type: string
         required: true
 jobs:
-  test:
+  E2E_Tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -30,7 +38,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ inputs.TargetTests }}:update-snapshots
+        run: npx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
         env:
           DEPLOYMENT_URL: ${{ inputs.TargetAppUrl }}
       - uses: actions/upload-artifact@v3
