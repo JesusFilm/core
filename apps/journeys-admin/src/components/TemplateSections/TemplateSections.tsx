@@ -10,7 +10,7 @@ export function TemplateSections(): ReactElement {
     where: { featured: true, template: true, orderByRecent: true }
   })
   const { data: newData } = useJourneysQuery({
-    where: { template: true, limit: 10, orderByRecent: true }
+    where: { featured: false, template: true, limit: 10, orderByRecent: true }
   })
 
   const featuredAndNewTemplates = [

@@ -48,6 +48,7 @@ describe('TemplateSections', () => {
                 query: GET_JOURNEYS,
                 variables: {
                   where: {
+                    featured: false,
                     template: true,
                     limit: 10,
                     orderByRecent: true
@@ -61,12 +62,14 @@ describe('TemplateSections', () => {
                       id: 'nw1',
                       title: 'New Template 1',
                       publishedAt: '2023-09-05T23:27:45.596Z',
+                      featuredAt: null,
                       template: true
                     },
                     {
                       id: 'nw2',
                       title: 'New Template 2',
                       publishedAt: '2023-09-05T23:27:45.596Z',
+                      featuredAt: null,
                       template: true
                     }
                   ]
