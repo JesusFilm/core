@@ -33,6 +33,7 @@ describe('StepFooter', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     title: 'my journey',
+    strategySlug: null,
     slug: 'my-journey',
     language: {
       __typename: 'Language',
