@@ -177,7 +177,8 @@ export class JourneyResolver {
   async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
     if (where?.template != null) filter.template = where.template
-    if (where?.featured === true) filter.featuredAt = { not: null }
+    if (where?.featured != null)
+      filter.featuredAt = where?.featured ? { not: null } : null
     if (where?.ids != null) filter.id = { in: where?.ids }
     if (where?.tagIds != null) filter.tagIds = { hasEvery: where?.tagIds }
 
