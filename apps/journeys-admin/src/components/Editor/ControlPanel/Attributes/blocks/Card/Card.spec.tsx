@@ -63,6 +63,7 @@ describe('Card', () => {
       id: 'journeyId',
       themeName: ThemeName.base,
       themeMode: ThemeMode.dark,
+      strategySlug: null,
       title: 'my journey',
       slug: 'my-journey',
       language: {
