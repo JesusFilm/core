@@ -643,6 +643,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  strategySlug: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
