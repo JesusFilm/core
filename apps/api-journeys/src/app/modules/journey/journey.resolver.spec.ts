@@ -501,6 +501,20 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('returns published journeys where featuredAt is false', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(await resolver.journeys({ featured: false })).toEqual([
+        journey,
+        journey
+      ])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published',
+          featuredAt: null
+        }
+      })
+    })
+
     it('returns published journeys where template', async () => {
       prismaService.journey.findMany.mockResolvedValueOnce([
         journeyWithTemplate,
