@@ -1,5 +1,3 @@
-import ImageIcon from '@mui/icons-material/Image'
-import Videocam from '@mui/icons-material/Videocam'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
@@ -9,6 +7,8 @@ import { MouseEvent, ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Image3Icon from '@core/shared/ui/icons/Image3'
+import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
@@ -74,7 +74,7 @@ export function BackgroundMedia(): ReactElement {
             data-testid="bgvideo-video-tab"
           >
             <Stack direction="row" spacing="8px">
-              <Videocam />
+              <VideoOnIcon />
               <span>Video</span>
             </Stack>
           </ToggleButton>
@@ -84,7 +84,7 @@ export function BackgroundMedia(): ReactElement {
             data-testid="bgvideo-image-tab"
           >
             <Stack direction="row" spacing="8px">
-              <ImageIcon />
+              <Image3Icon />
               <span>Image</span>
             </Stack>
           </ToggleButton>

@@ -1,7 +1,8 @@
-import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../MenuItem'
@@ -45,7 +46,7 @@ export function CopyToTeamMenuItem({
     <>
       <MenuItem
         label={t('Copy to ...')}
-        icon={<ContentCopyRounded color="secondary" />}
+        icon={<CopyToIcon color="secondary" />}
         onClick={() => {
           setDuplicateTeamDialogOpen(true)
         }}

@@ -1,10 +1,10 @@
-import AddIcon from '@mui/icons-material/Add'
 import Button from '@mui/material/Button'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { useJourneyCreate } from '../../../../libs/useJourneyCreate'
 import { useTeam } from '../../../Team/TeamProvider'
@@ -30,7 +30,7 @@ export function AddJourneyButton(): ReactElement {
       {(!teams || activeTeam != null) && (
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          startIcon={<Plus2Icon />}
           size="medium"
           onClick={handleClick}
           sx={{ mt: 3, alignSelf: 'center' }}

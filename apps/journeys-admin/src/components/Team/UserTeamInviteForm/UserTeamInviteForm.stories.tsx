@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
+
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -20,7 +21,7 @@ const Template: StoryObj<typeof UserTeamInviteForm> = {
     <MockedProvider>
       <Stack flexGrow={1} sx={{ m: 4, mt: 2 }}>
         <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
-          <GroupAddIcon />
+          <UsersProfiles2Icon />
           <Typography variant="subtitle1" sx={{ ml: 3 }}>
             Add team member by Email
           </Typography>

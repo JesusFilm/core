@@ -157,7 +157,12 @@ export const SignUp = ({
               onClick={(e) => e.stopPropagation()}
               onChange={handleChange}
               onBlur={handleBlur}
-              disabled={selectedBlock !== undefined}
+              InputProps={{
+                readOnly: selectedBlock !== undefined,
+                sx: {
+                  pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                }
+              }}
             />
             <TextField
               value={values.email}
@@ -167,7 +172,12 @@ export const SignUp = ({
               name="email"
               label={t('Email')}
               onClick={(e) => e.stopPropagation()}
-              disabled={selectedBlock !== undefined}
+              InputProps={{
+                readOnly: selectedBlock !== undefined,
+                sx: {
+                  pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                }
+              }}
             />
             <LoadingButton
               type="submit"

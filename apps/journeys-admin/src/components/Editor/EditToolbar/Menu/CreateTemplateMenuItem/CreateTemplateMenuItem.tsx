@@ -1,9 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
-import ShopRounded from '@mui/icons-material/ShopRounded'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Bag5Icon from '@core/shared/ui/icons/Bag5'
 
 import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
@@ -93,7 +93,7 @@ export function CreateTemplateMenuItem(): ReactElement {
   return (
     <MenuItem
       label="Create Template"
-      icon={<ShopRounded />}
+      icon={<Bag5Icon />}
       onClick={handleCreateTemplate}
     />
   )
