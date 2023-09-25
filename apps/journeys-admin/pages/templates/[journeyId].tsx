@@ -1,7 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
-  AuthAction,
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
