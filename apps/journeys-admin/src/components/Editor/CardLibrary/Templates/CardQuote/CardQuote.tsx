@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -23,11 +24,14 @@ import cardQuoteImage from './cardQuote.svg'
 export const CARD_QUOTE_CREATE = gql`
   ${IMAGE_FIELDS}
   ${TYPOGRAPHY_FIELDS}
+  ${CARD_FIELDS}
   mutation CardQuoteCreate(
     $imageInput: ImageBlockCreateInput!
     $subtitleInput: TypographyBlockCreateInput!
     $titleInput: TypographyBlockCreateInput!
     $bodyInput: TypographyBlockCreateInput!
+    $cardId: ID!
+    $cardInput: CardBlockUpdateInput!
   ) {
     image: imageBlockCreate(input: $imageInput) {
       ...ImageFields
@@ -41,10 +45,17 @@ export const CARD_QUOTE_CREATE = gql`
     body: typographyBlockCreate(input: $bodyInput) {
       ...TypographyFields
     }
+    cardBlockUpdate(id: $cardId, input: $cardInput) {
+      ...CardFields
+    }
   }
 `
 
-export function CardQuote(): ReactElement {
+interface CardQuoteProps {
+  onClick: () => void
+}
+
+export function CardQuote({ onClick }: CardQuoteProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -91,6 +102,10 @@ export function CardQuote(): ReactElement {
           content: t('– Jesus Christ'),
           variant: TypographyVariant.body1,
           color: TypographyColor.secondary
+        },
+        cardId,
+        cardInput: {
+          backgroundColor: '#0E1412'
         }
       },
       update(cache, { data }) {
@@ -126,18 +141,10 @@ export function CardQuote(): ReactElement {
               }
             }
           })
-          cache.modify({
-            id: cache.identify({
-              __typename: 'CardBlock',
-              id: cardId
-            }),
-            fields: {
-              coverBlockId: () => data.image.id
-            }
-          })
         }
       }
     })
+    onClick()
   }
 
   return (

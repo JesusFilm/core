@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
 import { MouseEvent, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -12,7 +12,7 @@ import { CardLibrary } from '../../CardLibrary'
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { selectedStep, drawerTitle },
+    state: { selectedStep, smUp },
     dispatch
   } = useEditor()
   const openCardLibrary = (e: MouseEvent): void => {
@@ -63,27 +63,26 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
             {...{ ...block, children: blocks }}
             wrappers={children.props.wrappers}
           />
-          {blocks.length === 0 && (
+          {blocks.length === 0 && !smUp && (
             <Box
-              onClick={openCardLibrary}
               sx={{
                 position: 'absolute',
                 top: 60,
                 bottom: 130,
                 right: 20,
                 left: 20,
-                border: () =>
-                  drawerTitle === t('Card Templates')
-                    ? `2px dashed #C52D3A`
-                    : '2px dashed #CCC',
-                borderRadius: 5,
-                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                cursor: 'pointer'
+                display: 'flex'
               }}
             >
-              <Typography>add content from template library</Typography>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={openCardLibrary}
+              >
+                {t('open card template library')}
+              </Button>
             </Box>
           )}
         </Box>

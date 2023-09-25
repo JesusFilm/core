@@ -1,3 +1,5 @@
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   Dispatch,
   ReactElement,
@@ -43,6 +45,7 @@ export interface EditorState {
   activeTab: ActiveTab
   activeFab: ActiveFab
   journeyEditContentComponent: ActiveJourneyEditContent
+  smUp: boolean
 }
 
 export interface SetSelectedStepAction {
@@ -101,6 +104,11 @@ interface SetStepsAction {
   steps: Array<TreeBlock<StepBlock>>
 }
 
+interface SetSmUpAction {
+  type: 'SetSmUpAction'
+  smUp: boolean
+}
+
 type EditorAction =
   | SetSelectedStepAction
   | SetSelectedComponentAction
@@ -113,6 +121,7 @@ type EditorAction =
   | SetActiveFabAction
   | SetStepsAction
   | SetActiveJourneyEditContentAction
+  | SetSmUpAction
 
 export const reducer = (
   state: EditorState,
@@ -193,6 +202,11 @@ export const reducer = (
         ...state,
         journeyEditContentComponent: action.component
       }
+    case 'SetSmUpAction':
+      return {
+        ...state,
+        smUp: action.smUp
+      }
   }
 }
 
@@ -205,7 +219,8 @@ export const EditorContext = createContext<{
     drawerMobileOpen: false,
     activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
+    smUp: false
   },
   dispatch: () => null
 })
@@ -219,6 +234,7 @@ export function EditorProvider({
   children,
   initialState
 }: EditorProviderProps): ReactElement {
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [state, dispatch] = useReducer(reducer, {
     steps: [],
     selectedStep: initialState?.steps?.[0],
@@ -227,9 +243,11 @@ export function EditorProvider({
     activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
+    smUp,
     ...initialState
   })
 
+  useEffect(() => dispatch({ type: 'SetSmUpAction', smUp }), [smUp])
   useEffect(() => {
     if (initialState?.steps != null)
       dispatch({ type: 'SetStepsAction', steps: initialState.steps })

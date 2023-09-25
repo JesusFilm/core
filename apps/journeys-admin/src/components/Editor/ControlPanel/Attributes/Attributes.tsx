@@ -131,12 +131,12 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
     ) {
       dispatch({
         type: 'SetDrawerPropsAction',
-        title: 'Properties',
+        title: t('Properties'),
         children: <Properties journeyType="Journey" isPublisher={false} />,
         mobileOpen: false
       })
     }
-  }, [activeTab, dispatch, journeyEditContentComponent])
+  }, [activeTab, dispatch, journeyEditContentComponent, t])
 
   // Map typename to labels when we have translation keys
   const blockLabel =

@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
 import { ReactElement, SyntheticEvent, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -17,6 +18,8 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
+import { Properties } from '../../JourneyView/Properties'
+import { CardLibrary } from '../CardLibrary'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 
 import { Attributes } from './Attributes'
@@ -24,6 +27,7 @@ import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
 
 export function ControlPanel(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: {
       steps,
@@ -62,6 +66,25 @@ export function ControlPanel(): ReactElement {
     if (step != null) {
       dispatch({ type: 'SetSelectedStepAction', step })
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: undefined
+      })
+      if (step.children[0].children.length === 0) {
+        dispatch({
+          type: 'SetDrawerPropsAction',
+          mobileOpen: false,
+          title: t('Card Templates'),
+          children: <CardLibrary />
+        })
+      } else {
+        dispatch({
+          type: 'SetDrawerPropsAction',
+          mobileOpen: false,
+          title: t('Properties'),
+          children: <Properties journeyType="Journey" isPublisher={false} />
+        })
+      }
     } else if (view === ActiveJourneyEditContent.Action) {
       dispatch({
         type: 'SetJourneyEditContentAction',
@@ -74,7 +97,7 @@ export function ControlPanel(): ReactElement {
       })
       dispatch({
         type: 'SetDrawerPropsAction',
-        title: 'Social Share Preview',
+        title: t('Social Share Preview'),
         mobileOpen: false,
         children: <SocialShareAppearance />
       })
@@ -140,12 +163,12 @@ export function ControlPanel(): ReactElement {
           aria-label="`editor` tabs"
         >
           <Tab
-            label="Journey"
+            label={t('Journey')}
             {...tabA11yProps('control-panel', 0)}
             sx={{ flexGrow: 1 }}
           />
           <Tab
-            label="Properties"
+            label={t('Properties')}
             {...tabA11yProps('control-panel', 1)}
             sx={{ flexGrow: 1 }}
             disabled={
@@ -156,17 +179,17 @@ export function ControlPanel(): ReactElement {
           />
           {hasVideoBlock ? (
             <Tooltip
-              title="Blocks cannot be placed on top of Video Block"
+              title={t('Blocks cannot be placed on top of Video Block')}
               arrow
               placement="top"
             >
               <Box sx={{ flexGrow: 1, display: 'flex' }}>
-                <Tab label="Blocks" sx={{ flexGrow: 1 }} disabled />
+                <Tab label={t('Blocks')} sx={{ flexGrow: 1 }} disabled />
               </Box>
             </Tooltip>
           ) : (
             <Tab
-              label="Blocks"
+              label={t('Blocks')}
               {...tabA11yProps('control-panel', 2)}
               sx={{ flexGrow: 1 }}
               disabled={

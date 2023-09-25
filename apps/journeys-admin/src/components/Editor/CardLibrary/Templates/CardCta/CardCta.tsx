@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
+import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
@@ -31,6 +32,7 @@ export const CARD_CTA_CREATE = gql`
   ${TYPOGRAPHY_FIELDS}
   ${BUTTON_FIELDS}
   ${ICON_FIELDS}
+  ${CARD_FIELDS}
   mutation CardCtaCreate(
     $journeyId: ID!
     $imageInput: ImageBlockCreateInput!
@@ -51,6 +53,8 @@ export const CARD_CTA_CREATE = gql`
     $button3UpdateInput: ButtonBlockUpdateInput!
     $startIcon3Input: IconBlockCreateInput!
     $endIcon3Input: IconBlockCreateInput!
+    $cardId: ID!
+    $cardInput: CardBlockUpdateInput!
   ) {
     image: imageBlockCreate(input: $imageInput) {
       ...ImageFields
@@ -109,10 +113,17 @@ export const CARD_CTA_CREATE = gql`
     ) {
       ...ButtonFields
     }
+    cardBlockUpdate(id: $cardId, input: $cardInput) {
+      ...CardFields
+    }
   }
 `
 
-export function CardCta(): ReactElement {
+interface CardCtaProps {
+  onClick: () => void
+}
+
+export function CardCta({ onClick }: CardCtaProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -232,6 +243,10 @@ export function CardCta(): ReactElement {
         button3UpdateInput: {
           startIconId: startIcon3Id,
           endIconId: endIcon3Id
+        },
+        cardId,
+        cardInput: {
+          backgroundColor: '#0E1412'
         }
       },
       update(cache, { data }) {
@@ -299,18 +314,10 @@ export function CardCta(): ReactElement {
               }
             }
           })
-          cache.modify({
-            id: cache.identify({
-              __typename: 'CardBlock',
-              id: cardId
-            }),
-            fields: {
-              coverBlockId: () => data.image.id
-            }
-          })
         }
       }
     })
+    onClick()
   }
 
   return (

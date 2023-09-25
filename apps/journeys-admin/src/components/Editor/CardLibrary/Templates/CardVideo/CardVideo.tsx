@@ -24,7 +24,11 @@ export const CARD_VIDEO_CREATE = gql`
   }
 `
 
-export function CardVideo(): ReactElement {
+interface CardVideoProps {
+  onClick: () => void
+}
+
+export function CardVideo({ onClick }: CardVideoProps): ReactElement {
   const { journey } = useJourney()
   const {
     state: { selectedStep }
@@ -76,6 +80,7 @@ export function CardVideo(): ReactElement {
         }
       }
     })
+    onClick()
   }
 
   return (

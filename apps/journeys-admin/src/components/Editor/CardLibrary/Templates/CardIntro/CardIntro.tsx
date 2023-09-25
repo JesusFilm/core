@@ -73,7 +73,11 @@ export const CARD_INTRO_CREATE = gql`
   }
 `
 
-export function CardIntro(): ReactElement {
+interface CardIntroProps {
+  onClick: () => void
+}
+
+export function CardIntro({ onClick }: CardIntroProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -205,6 +209,7 @@ export function CardIntro(): ReactElement {
         }
       }
     })
+    onClick()
   }
 
   return (

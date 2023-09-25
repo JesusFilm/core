@@ -75,7 +75,11 @@ export const CARD_FORM_CREATE = gql`
   }
 `
 
-export function CardForm(): ReactElement {
+interface CardFormProps {
+  onClick: () => void
+}
+
+export function CardForm({ onClick }: CardFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -189,6 +193,7 @@ export function CardForm(): ReactElement {
         }
       }
     })
+    onClick()
   }
 
   return (

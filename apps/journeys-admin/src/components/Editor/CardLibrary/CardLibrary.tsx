@@ -1,5 +1,10 @@
 import Grid from '@mui/material/Grid'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
+import { Properties } from '../../JourneyView/Properties'
 
 import { CardCta } from './Templates/CardCta'
 import { CardForm } from './Templates/CardForm'
@@ -9,25 +14,35 @@ import { CardQuote } from './Templates/CardQuote'
 import { CardVideo } from './Templates/CardVideo'
 
 export function CardLibrary(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const { dispatch } = useEditor()
+  function handleClick(): void {
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      mobileOpen: false,
+      title: t('Properties'),
+      children: <Properties journeyType="Journey" isPublisher={false} />
+    })
+  }
   return (
     <Grid container spacing={5} sx={{ p: 5 }}>
       <Grid item xs={6}>
-        <CardVideo />
+        <CardVideo onClick={handleClick} />
       </Grid>
       <Grid item xs={6}>
-        <CardIntro />
+        <CardIntro onClick={handleClick} />
       </Grid>
       <Grid item xs={6}>
-        <CardPoll />
+        <CardPoll onClick={handleClick} />
       </Grid>
       <Grid item xs={6}>
-        <CardForm />
+        <CardForm onClick={handleClick} />
       </Grid>
       <Grid item xs={6}>
-        <CardQuote />
+        <CardQuote onClick={handleClick} />
       </Grid>
       <Grid item xs={6}>
-        <CardCta />
+        <CardCta onClick={handleClick} />
       </Grid>
     </Grid>
   )
