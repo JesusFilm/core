@@ -43,7 +43,7 @@ export function EmailInviteForm({
         variables: {
           journeyId,
           input: {
-            email: values.email.toLowerCase()
+            email: values.email.trim().toLowerCase()
           }
         },
         update(cache, { data }) {
