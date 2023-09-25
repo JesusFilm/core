@@ -2,11 +2,20 @@ import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
 import { FeaturedAndNewTemplates } from './FeaturedAndNewTemplates'
+import { MostRelevantTemplates } from './MostRelevantTemplates'
 
-export function TemplateSections(): ReactElement {
+interface Props {
+  tags?: string[]
+}
+
+export function TemplateSections({ tags }: Props): ReactElement {
   return (
     <Stack spacing={8}>
-      <FeaturedAndNewTemplates />
+      {tags != null ? (
+        <MostRelevantTemplates tags={tags} />
+      ) : (
+        <FeaturedAndNewTemplates />
+      )}
     </Stack>
   )
 }
