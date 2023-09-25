@@ -8,11 +8,9 @@ import { StrategySlugUpdateForm } from '../Editor/StrategySlugUpdateForm'
 
 export function TemplateView(): ReactElement {
   const { journey } = useJourney()
-  console.log(journey)
   return (
     <Box>
       <Typography variant="h1">Template View</Typography>
-      <StrategySlugUpdateForm />
     </Box>
   )
 }

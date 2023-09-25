@@ -46,13 +46,13 @@ export function StrategySlugUpdateForm(): ReactElement {
       })
   })
 
-  async function handleSubmit(e): Promise<void> {
+  async function handleSubmit(src: string): Promise<void> {
     if (journey == null) return
     try {
       await journeyUpdate({
         variables: {
           id: journey.id,
-          input: { strategySlug: e === '' ? null : e }
+          input: { strategySlug: src === '' ? null : src }
         },
         onCompleted: () =>
           enqueueSnackbar(t('Embedded URL has been updated'), {
