@@ -3,6 +3,7 @@ import { Redirect } from 'next'
 import { AuthUser } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { v4 as uuidv4 } from 'uuid'
 
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 
@@ -11,7 +12,7 @@ import { createApolloClient } from '../apolloClient'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
 interface props {
-  AuthUser: AuthUser
+  AuthUser?: AuthUser
   locale: string | undefined
 }
 
@@ -28,11 +29,17 @@ export async function initAndAuthApp({
   AuthUser,
   locale
 }: props): Promise<initAndAuth> {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
+  const ldUser =
+    AuthUser?.id != null
+      ? {
+          key: AuthUser.id,
+          firstName: AuthUser.displayName ?? undefined,
+          email: AuthUser.email ?? undefined
+        }
+      : {
+          key: uuidv4(),
+          anonymous: true
+        }
 
   // run independent tasks (getting LaunchDarkly client, user's ID token, and server-side translations) concurrently
   const [translations, launchDarklyClient, token] = await Promise.all([
@@ -42,7 +49,7 @@ export async function initAndAuthApp({
       i18nConfig
     ),
     getLaunchDarklyClient(ldUser),
-    AuthUser.getIdToken()
+    AuthUser?.id != null ? AuthUser.getIdToken() : null
   ])
 
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
