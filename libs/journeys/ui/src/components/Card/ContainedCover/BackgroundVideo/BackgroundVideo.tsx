@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
@@ -109,56 +110,67 @@ export function BackgroundVideo({
   }
 
   return (
-    <StyledVideo
-      ref={videoRef}
-      data-testid="background-video"
-      className="vjs-fill video-js"
-      playsInline
-      sx={{
-        '&.vjs-fill': { backgroundColor: cardColor },
-        '&.video-js.vjs-fill:not(.vjs-audio-only-mode)': {
-          height: isYouTube ? 'inherit' : '100%',
-          transform: isYouTube
-            ? {
-                xs: 'scale(4)',
-                sm: 'scale(1.3)',
-                md: 'scale(2.65)',
-                lg: 'scale(1.2)'
-              }
-            : 'unset',
-          bottom: { xs: children.length !== 0 ? 50 : 0, lg: 0 }
-        },
-        '> .vjs-tech': {
-          objectFit: videoFit,
-          transform:
-            objectFit === VideoBlockObjectFit.zoomed ? 'scale(1.33)' : undefined
-        },
-        '> .vjs-loading-spinner': {
-          zIndex: 1,
-          display: isYouTube ? 'none' : 'block'
-        },
-        pointerEvents: 'none'
-      }}
+    <Box
+      height={{ xs: '100vh', sm: '100%' }}
+      width={{ xs: 'calc(100vh * 16 / 9)', sm: '100%' }}
+      overflow="hidden"
+      marginLeft={{ xs: 'calc((100vh * 16 / 9) * -0.355)', sm: 0 }}
+      position="absolute"
     >
-      {source === VideoBlockSource.cloudflare && videoId != null && (
-        <source
-          src={`https://customer-${
-            process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-          }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
-          type="application/x-mpegURL"
-        />
-      )}
-      {source === VideoBlockSource.internal && video?.variant?.hls != null && (
-        <source src={video.variant.hls} type="application/x-mpegURL" />
-      )}
-      {source === VideoBlockSource.youTube && videoId != null && (
-        <source
-          src={`https://www.youtube.com/embed/${videoId}?start=${
-            startAt ?? 0
-          }&end=${endAt ?? 0}`}
-          type="video/youtube"
-        />
-      )}
-    </StyledVideo>
+      <StyledVideo
+        ref={videoRef}
+        data-testid="background-video"
+        className="vjs-fill video-js"
+        playsInline
+        sx={{
+          '&.vjs-fill': { backgroundColor: cardColor },
+          '&.video-js.vjs-fill:not(.vjs-audio-only-mode)': {
+            height: isYouTube ? 'inherit' : '100%',
+            transform: isYouTube
+              ? {
+                  xs: 'scale(4)',
+                  sm: 'scale(1.3)',
+                  md: 'scale(2.65)',
+                  lg: 'scale(1.2)'
+                }
+              : 'unset',
+            bottom: { xs: children.length !== 0 ? 50 : 0, lg: 0 }
+          },
+          '> .vjs-tech': {
+            objectFit: videoFit,
+            transform:
+              objectFit === VideoBlockObjectFit.zoomed
+                ? 'scale(1.33)'
+                : undefined
+          },
+          '> .vjs-loading-spinner': {
+            zIndex: 1,
+            display: isYouTube ? 'none' : 'block'
+          },
+          pointerEvents: 'none'
+        }}
+      >
+        {source === VideoBlockSource.cloudflare && videoId != null && (
+          <source
+            src={`https://customer-${
+              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+            }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
+            type="application/x-mpegURL"
+          />
+        )}
+        {source === VideoBlockSource.internal &&
+          video?.variant?.hls != null && (
+            <source src={video.variant.hls} type="application/x-mpegURL" />
+          )}
+        {source === VideoBlockSource.youTube && videoId != null && (
+          <source
+            src={`https://www.youtube.com/embed/${videoId}?start=${
+              startAt ?? 0
+            }&end=${endAt ?? 0}`}
+            type="video/youtube"
+          />
+        )}
+      </StyledVideo>
+    </Box>
   )
 }
