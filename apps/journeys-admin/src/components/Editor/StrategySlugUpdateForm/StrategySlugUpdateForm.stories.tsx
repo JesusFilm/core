@@ -11,7 +11,7 @@ import { defaultJourney } from '../../JourneyView/data'
 const StrategySlugUpdateFormStory: Meta<typeof StrategySlugUpdateForm> = {
   ...simpleComponentConfig,
   component: StrategySlugUpdateForm,
-  title: 'Journeys-Admin/Editor/StrategySlugUpdateFormStory'
+  title: 'Journeys-Admin/Editor/StrategySlugUpdateForm'
 }
 
 const Template: StoryObj<
