@@ -135,7 +135,7 @@ export const WithContent = {
     await userEvent.click(nextButton)
     await waitFor(async () => {
       await expect(
-        screen.getAllByTestId('prevNavContainer')[1]
+        screen.getAllByTestId('NavigationContainerPrev')[1]
       ).toBeInTheDocument()
     })
   }

@@ -100,7 +100,7 @@ export function NavigationButton({
 
   return (
     <NavigationContainer
-      data-testid={`NavigationContainer-${variant}`}
+      data-testid={`NavigationContainer${variant}`}
       onMouseOver={() => setShowNavigation(true)}
       sx={{
         ...alignSx,
