@@ -71,7 +71,7 @@ describe('VideoWrapper', () => {
 
   it('should render internal video', async () => {
     const { getByTestId } = render(<VideoWrapper block={videoBlock} />)
-    const sourceTag = getByTestId('VideoWrapper-video0.id').querySelector(
+    const sourceTag = getByTestId('EmbedVideoWrapper-video0.id').querySelector(
       '.vjs-tech source'
     )
     expect(sourceTag?.getAttribute('src')).toBe(
@@ -90,7 +90,7 @@ describe('VideoWrapper', () => {
         }}
       />
     )
-    const sourceTag = getByTestId('VideoWrapper-video0.id').querySelector(
+    const sourceTag = getByTestId('EmbedVideoWrapper-video0.id').querySelector(
       '.vjs-tech source'
     )
     expect(sourceTag?.getAttribute('src')).toBe(
@@ -109,7 +109,7 @@ describe('VideoWrapper', () => {
         }}
       />
     )
-    const sourceTag = getByTestId('VideoWrapper-video0.id').querySelector(
+    const sourceTag = getByTestId('EmbedVideoWrapper-video0.id').querySelector(
       '.vjs-tech source'
     )
     expect(sourceTag?.getAttribute('src')).toBe(

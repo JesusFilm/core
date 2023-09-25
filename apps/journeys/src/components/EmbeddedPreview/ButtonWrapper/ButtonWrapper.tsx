@@ -36,7 +36,7 @@ export function ButtonWrapper({
             ? 4
             : 5
       }}
-      data-testid="ButtonWrapper"
+      data-testid="EmbedButtonWrapper"
     >
       <MuiButton
         variant={block.buttonVariant ?? ButtonVariant.contained}

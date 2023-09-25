@@ -36,7 +36,7 @@ export function RadioOptionWrapper({
       sx={{
         '&.MuiButtonBase-root': { pointerEvents: 'none' }
       }}
-      data-testid="RadioOptionWrapper"
+      data-testid="EmbedRadioOptionWrapper"
     >
       {block.label}
     </StyledRadioOption>

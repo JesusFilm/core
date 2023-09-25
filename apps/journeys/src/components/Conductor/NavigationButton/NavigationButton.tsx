@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
+import capitalize from 'lodash/capitalize'
 import last from 'lodash/last'
 import { ReactElement, useEffect } from 'react'
 
@@ -100,9 +101,7 @@ export function NavigationButton({
 
   return (
     <NavigationContainer
-      data-testid={`NavigationContainer${variant
-        .charAt(0)
-        .toUpperCase()}${variant.slice(1)}`}
+      data-testid={`ContainerNavigationContainer${capitalize(variant)}`}
       onMouseOver={() => setShowNavigation(true)}
       sx={{
         ...alignSx,
@@ -126,9 +125,7 @@ export function NavigationButton({
         timeout={{ appear: 300, exit: 1000 }}
       >
         <IconButton
-          data-testid={`NavigationButton${variant
-            .charAt(0)
-            .toUpperCase()}${variant.slice(1)}`}
+          data-testid={`ButtonNavigationButton${capitalize(variant)}`}
           size="small"
           onClick={() => handleNav(variant)}
           disableRipple
