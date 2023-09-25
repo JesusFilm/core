@@ -57,7 +57,10 @@ export async function initAndAuthApp({
   }
 
   const apolloClient = createApolloClient(token != null ? token : '')
-  const redirect = await checkConditionalRedirect(apolloClient, flags)
+  const redirect =
+    token != null
+      ? await checkConditionalRedirect(apolloClient, flags)
+      : undefined
 
   return { apolloClient, flags, redirect, translations }
 }

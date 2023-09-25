@@ -71,27 +71,20 @@ function TemplateDetails(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  if (AuthUser == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = withAuthUserTokenSSR()(
+  async ({ AuthUser, locale }) => {
+    const { flags, translations } = await initAndAuthApp({
+      AuthUser,
+      locale
+    })
 
-  const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
-  })
-
-  if (redirect != null) return { redirect }
-
-  return {
-    props: {
-      flags,
-      ...translations
+    return {
+      props: {
+        flags,
+        ...translations
+      }
     }
   }
-})
+)
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateDetails)
+export default withAuthUser()(TemplateDetails)
