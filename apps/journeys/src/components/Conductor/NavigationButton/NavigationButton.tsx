@@ -100,7 +100,7 @@ export function NavigationButton({
 
   return (
     <NavigationContainer
-      data-testid={`${variant}NavContainer`}
+      data-testid={`NavigationContainer-${variant}`}
       onMouseOver={() => setShowNavigation(true)}
       sx={{
         ...alignSx,
@@ -124,9 +124,9 @@ export function NavigationButton({
         timeout={{ appear: 300, exit: 1000 }}
       >
         <IconButton
-          data-testid={`conductor${variant
+          data-testid={`NavigationButton${variant
             .charAt(0)
-            .toUpperCase()}${variant.slice(1)}Button`}
+            .toUpperCase()}${variant.slice(1)}`}
           size="small"
           onClick={() => handleNav(variant)}
           disableRipple
