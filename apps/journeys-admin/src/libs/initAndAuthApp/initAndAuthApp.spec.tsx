@@ -75,7 +75,7 @@ describe('initAndAuthApp', () => {
     })
   })
 
-  it('should return with apolloClient, flags, redirect, and translations with auth user', async () => {
+  it('should return with apolloClient, flags, redirect, and translations when auth user', async () => {
     const result = await initAndAuthApp({
       AuthUser: mockAuthUser,
       locale: 'en'
@@ -92,7 +92,7 @@ describe('initAndAuthApp', () => {
     })
   })
 
-  it('should return with apolloClient, flags, redirect, and translations with anonymous user', async () => {
+  it('should return with apolloClient, flags, redirect, and translations when anonymous user', async () => {
     const result = await initAndAuthApp({
       AuthUser: {
         id: null
