@@ -19,7 +19,7 @@ export function TemplateSection({
       <Typography variant="h2">{category}</Typography>
       <Stack direction="row" spacing={16} sx={{ overflowX: 'auto' }}>
         {journeys?.map((journey) => (
-          <Box key={journey?.id}>
+          <Box key={journey?.id} data-testId={`journey-${journey.id}`}>
             <Typography variant="h4">{journey?.title}</Typography>
           </Box>
         ))}

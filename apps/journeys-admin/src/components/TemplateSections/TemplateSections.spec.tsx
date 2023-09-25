@@ -6,6 +6,14 @@ import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { TemplateSections } from './TemplateSections'
 
 describe('TemplateSections', () => {
+  const newTemplate = {
+    id: 'nw1',
+    title: 'New Template 1',
+    publishedAt: '2023-09-05T23:27:45.596Z',
+    featuredAt: null,
+    template: true
+  }
+
   describe('Featured And New', () => {
     it('should render Featured & New Section', async () => {
       const { getByText } = render(
@@ -58,19 +66,12 @@ describe('TemplateSections', () => {
               result: {
                 data: {
                   journeys: [
+                    newTemplate,
                     {
-                      id: 'nw1',
-                      title: 'New Template 1',
-                      publishedAt: '2023-09-05T23:27:45.596Z',
-                      featuredAt: null,
-                      template: true
-                    },
-                    {
+                      ...newTemplate,
                       id: 'nw2',
                       title: 'New Template 2',
-                      publishedAt: '2023-09-05T23:27:45.596Z',
-                      featuredAt: null,
-                      template: true
+                      publishedAt: '2023-09-05T23:27:45.496Z'
                     }
                   ]
                 }
@@ -90,6 +91,49 @@ describe('TemplateSections', () => {
       // new templates
       expect(getByText('New Template 1')).toBeInTheDocument()
       expect(getByText('New Template 2')).toBeInTheDocument()
+    })
+  })
+
+  it('should only return 10 new templates', async () => {
+    const { getAllByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_JOURNEYS,
+              variables: {
+                where: {
+                  featured: false,
+                  template: true,
+                  limit: 10,
+                  orderByRecent: true
+                }
+              }
+            },
+            result: {
+              data: {
+                journeys: [
+                  newTemplate,
+                  newTemplate,
+                  newTemplate,
+                  newTemplate,
+                  newTemplate,
+                  newTemplate,
+                  newTemplate,
+                  newTemplate,
+                  newTemplate,
+                  newTemplate
+                ]
+              }
+            }
+          }
+        ]}
+      >
+        <TemplateSections />
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(getAllByTestId(/journey-/)).toHaveLength(10)
     })
   })
 })
