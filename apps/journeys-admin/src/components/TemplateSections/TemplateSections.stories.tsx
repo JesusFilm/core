@@ -16,7 +16,7 @@ const TemplateSectionsStory: Meta<typeof TemplateSections> = {
 
 const defaultTemplate = {
   id: '1',
-  title: 'Featured Template 1',
+  title: 'New Template 1',
   description: null,
   slug: 'default',
   template: true,
@@ -59,8 +59,8 @@ export const Default = {
           query: GET_JOURNEYS,
           variables: {
             where: {
+              featured: true,
               template: true,
-              limit: 10,
               orderByRecent: true
             }
           }
@@ -71,15 +71,44 @@ export const Default = {
               {
                 ...defaultTemplate,
                 id: '1',
-                title: 'New Template 1',
+                title: 'Featured Template 1',
                 publishedAt: '2023-09-05T23:27:45.596Z'
               },
               {
                 ...defaultTemplate,
                 id: '2',
-                title: 'New Template 2',
+                title: 'Featured Template 2',
                 publishedAt: '2023-09-05T23:27:45.596Z'
               }
+            ]
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_JOURNEYS,
+          variables: {
+            where: {
+              featured: false,
+              template: true,
+              limit: 10,
+              orderByRecent: true
+            }
+          }
+        },
+        result: {
+          data: {
+            journeys: [
+              defaultTemplate,
+              defaultTemplate,
+              defaultTemplate,
+              defaultTemplate,
+              defaultTemplate,
+              defaultTemplate,
+              defaultTemplate,
+              defaultTemplate,
+              defaultTemplate,
+              defaultTemplate
             ]
           }
         }
