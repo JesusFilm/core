@@ -43,7 +43,7 @@ describe('TemplateSection', () => {
   }
 
   it('should render TemplateSection', () => {
-    const { getByText } = render(
+    const { getAllByTestId, getByRole } = render(
       <TemplateSection
         category="Easter"
         journeys={[
@@ -52,10 +52,10 @@ describe('TemplateSection', () => {
         ]}
       />
     )
-    expect(getByText('Easter')).toBeInTheDocument()
-    // 1st card
-    expect(getByText('Featured Template 1')).toBeInTheDocument()
-    // 2nd card
-    expect(getByText('Featured Template 2')).toBeInTheDocument()
+    expect(getByRole('heading', { name: 'Easter' })).toBeInTheDocument()
+    // if possible: update test to check via MUI card(s) role instead of data-testId
+    const cards = getAllByTestId(/journey-/)
+    expect(cards[0]).toHaveTextContent('Featured Template 1')
+    expect(cards[1]).toHaveTextContent('Featured Template 2')
   })
 })

@@ -5,18 +5,27 @@ import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 
 import { TemplateSections } from './TemplateSections'
 
-describe('TemplateSections', () => {
-  const newTemplate = {
-    id: 'nw1',
-    title: 'New Template 1',
-    publishedAt: '2023-09-05T23:27:45.596Z',
-    featuredAt: null,
-    template: true
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
   }
+}))
 
+describe('TemplateSections', () => {
   describe('Featured And New', () => {
+    const newTemplate = {
+      id: 'nw',
+      title: 'New Template',
+      publishedAt: '2023-09-05T23:27:45.596Z',
+      featuredAt: null,
+      template: true
+    }
+
     it('should render Featured & New Section', async () => {
-      const { getByText } = render(
+      const { getByRole, getAllByTestId } = render(
         <MockedProvider
           mocks={[
             {
@@ -66,13 +75,26 @@ describe('TemplateSections', () => {
               result: {
                 data: {
                   journeys: [
-                    newTemplate,
+                    {
+                      ...newTemplate,
+                      id: 'nw1',
+                      title: 'New Template 1',
+                      publishedAt: '2023-09-05T23:27:45.796Z'
+                    },
                     {
                       ...newTemplate,
                       id: 'nw2',
                       title: 'New Template 2',
-                      publishedAt: '2023-09-05T23:27:45.496Z'
-                    }
+                      publishedAt: '2023-09-05T23:27:45.696Z'
+                    },
+                    newTemplate,
+                    newTemplate,
+                    newTemplate,
+                    newTemplate,
+                    newTemplate,
+                    newTemplate,
+                    newTemplate,
+                    newTemplate
                   ]
                 }
               }
@@ -82,58 +104,20 @@ describe('TemplateSections', () => {
           <TemplateSections />
         </MockedProvider>
       )
-      expect(getByText('Featured & New')).toBeInTheDocument()
-      // featured templates
-      await waitFor(() =>
-        expect(getByText('Featured Template 1')).toBeInTheDocument()
-      )
-      expect(getByText('Featured Template 2')).toBeInTheDocument()
-      // new templates
-      expect(getByText('New Template 1')).toBeInTheDocument()
-      expect(getByText('New Template 2')).toBeInTheDocument()
-    })
-  })
+      expect(
+        getByRole('heading', { name: 'Featured & New' })
+      ).toBeInTheDocument()
 
-  it('should only return 10 new templates', async () => {
-    const { getAllByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_JOURNEYS,
-              variables: {
-                where: {
-                  featured: false,
-                  template: true,
-                  limit: 10,
-                  orderByRecent: true
-                }
-              }
-            },
-            result: {
-              data: {
-                journeys: [
-                  newTemplate,
-                  newTemplate,
-                  newTemplate,
-                  newTemplate,
-                  newTemplate,
-                  newTemplate,
-                  newTemplate,
-                  newTemplate,
-                  newTemplate,
-                  newTemplate
-                ]
-              }
-            }
-          }
-        ]}
-      >
-        <TemplateSections />
-      </MockedProvider>
-    )
-    await waitFor(() => {
-      expect(getAllByTestId(/journey-/)).toHaveLength(10)
+      await waitFor(() => {
+        const cards = getAllByTestId(/journey-/)
+        // featured templates
+        expect(cards[0]).toHaveTextContent('Featured Template 1')
+        expect(cards[1]).toHaveTextContent('Featured Template 2')
+        // new templates
+        expect(cards[2]).toHaveTextContent('New Template 1')
+        expect(cards[3]).toHaveTextContent('New Template 2')
+        expect(cards[11]).toHaveTextContent('New Template')
+      })
     })
   })
 })

@@ -1,11 +1,14 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 
 import { TemplateSection } from './TemplateSection'
 
 export function TemplateSections(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const { data: featuredData } = useJourneysQuery({
     where: { featured: true, template: true, orderByRecent: true }
   })
@@ -21,7 +24,7 @@ export function TemplateSections(): ReactElement {
   return (
     <Stack spacing={8}>
       <TemplateSection
-        category="Featured & New"
+        category={t('Featured & New')}
         journeys={featuredAndNewTemplates}
       />
     </Stack>
