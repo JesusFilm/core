@@ -98,7 +98,7 @@ export function CardIntro(): ReactElement {
         subtitleInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          content: t('INTERACTIVE VIDEO'),
+          content: t('Interactive Video'),
           variant: TypographyVariant.h6
         },
         titleInput: {

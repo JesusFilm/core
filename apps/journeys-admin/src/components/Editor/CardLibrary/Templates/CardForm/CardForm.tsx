@@ -106,7 +106,7 @@ export function CardForm(): ReactElement {
         subtitleInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          content: t('PRAYER REQUEST'),
+          content: t('Prayer Request'),
           variant: TypographyVariant.h6
         },
         titleInput: {

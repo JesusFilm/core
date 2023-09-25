@@ -74,7 +74,7 @@ export function CardQuote(): ReactElement {
         subtitleInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          content: t('BIBLE SAYS:'),
+          content: t('The Bible Says:'),
           variant: TypographyVariant.h6
         },
         titleInput: {

@@ -107,7 +107,7 @@ export function CardPoll(): ReactElement {
         subtitleInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          content: t('GOT AN OPINION?'),
+          content: t('Got an Opinion`?'),
           variant: TypographyVariant.h6
         },
         titleInput: {
