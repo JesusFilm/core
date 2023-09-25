@@ -58,7 +58,7 @@ export function VideoWrapper({
 
   return (
     <Box
-      data-testid={`video-${block.id}`}
+      data-testid={`VideoWrapper-${block.id}`}
       sx={{
         display: 'flex',
         width: '100%',

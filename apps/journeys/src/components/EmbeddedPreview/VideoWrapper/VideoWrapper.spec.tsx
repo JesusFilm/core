@@ -72,7 +72,7 @@ describe('VideoWrapper', () => {
   it('should render internal video', async () => {
     const { getByTestId } = render(<VideoWrapper block={videoBlock} />)
     const sourceTag =
-      getByTestId('video-video0.id').querySelector('.vjs-tech source')
+      getByTestId('VideoWrapper-video0.id').querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
@@ -90,7 +90,7 @@ describe('VideoWrapper', () => {
       />
     )
     const sourceTag =
-      getByTestId('video-video0.id').querySelector('.vjs-tech source')
+      getByTestId('VideoWrapper-video0.id').querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8'
     )
@@ -108,7 +108,7 @@ describe('VideoWrapper', () => {
       />
     )
     const sourceTag =
-      getByTestId('video-video0.id').querySelector('.vjs-tech source')
+      getByTestId('VideoWrapper-video0.id').querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://www.youtube.com/embed/F7k5pqBVinA?start=10&end=0'
     )

@@ -270,8 +270,8 @@ describe('Conductor', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      const leftButton = getByTestId('conductorPrevButton')
-      const rightButton = getByTestId('conductorNextButton')
+      const leftButton = getByTestId('NavigationButtonPrev')
+      const rightButton = getByTestId('NavigationButtonNext')
 
       expect(treeBlocksVar()).toBe(basic)
       expect(blockHistoryVar()[0].id).toBe('step1.id')
@@ -304,8 +304,8 @@ describe('Conductor', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      const leftButton = getByTestId('conductorNextButton')
-      const rightButton = getByTestId('conductorPrevButton')
+      const leftButton = getByTestId('NavigationButtonNext')
+      const rightButton = getByTestId('NavigationButtonPrev')
 
       expect(treeBlocksVar()).toBe(basic)
       expect(blockHistoryVar()[0].id).toBe('step1.id')
