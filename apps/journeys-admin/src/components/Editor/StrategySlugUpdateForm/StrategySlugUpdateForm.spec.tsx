@@ -4,14 +4,13 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { StrategySlugUpdate } from '../../../../__generated__/StrategySlugUpdate'
+import { defaultJourney } from '../../JourneyView/data'
+
 import {
   STRATEGY_SLUG_UPDATE,
   StrategySlugUpdateForm
 } from './StrategySlugUpdateForm'
-
-import { StrategySlugUpdate } from '../../../../__generated__/StrategySlugUpdate'
-
-import { defaultJourney } from '../../JourneyView/data'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -89,6 +88,7 @@ describe('StrategySlugUpdateForm', () => {
   }
 
   afterEach(() => jest.clearAllMocks())
+
   it('should validate on invalid embed url', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
