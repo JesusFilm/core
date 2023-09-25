@@ -1,8 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { simpleComponentConfig } from '../../../libs/storybook'
-
 import { FeaturedCheckbox } from './FeaturedCheckbox'
+import { simpleComponentConfig } from '../../../../libs/storybook'
 
 const FeaturedCheckboxStory: Meta<typeof FeaturedCheckbox> = {
   ...simpleComponentConfig,

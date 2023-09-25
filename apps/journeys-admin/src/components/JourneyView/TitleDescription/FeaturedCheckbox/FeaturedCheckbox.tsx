@@ -5,11 +5,11 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { JourneyFeature } from '../../../../__generated__/JourneyFeature'
+import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
 
 export const JOURNEY_FEATURE_UPDATE = gql`
-  mutation JourneyFeature($journeyFeatureId: ID!, $feature: Boolean!) {
-    journeyFeature(id: $journeyFeatureId, feature: $feature) {
+  mutation JourneyFeature($id: ID!, $feature: Boolean!) {
+    journeyFeature(id: $id, feature: $feature) {
       featuredAt
     }
   }
@@ -38,7 +38,7 @@ export function FeaturedCheckbox({
   return (
     <Stack direction="row" alignItems="center">
       <Checkbox
-        sx={{ mr: 3 }}
+        sx={{ mr: 3, ml: -2 }}
         color="secondary"
         defaultChecked={featuredAt != null}
         onChange={(e) => handleChecked(e.target.checked)}
