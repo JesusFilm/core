@@ -9,6 +9,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
 import { TextFieldForm } from '../../TextFieldForm'
+import { StrategySlugUpdate } from '../../../../__generated__/StrategySlugUpdate'
 
 export const STRATEGY_SLUG_UPDATE = gql`
   mutation StrategySlugUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -22,7 +23,7 @@ export const STRATEGY_SLUG_UPDATE = gql`
 export function StrategySlugUpdateForm(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation()
-  const [journeyUpdate] = useMutation(STRATEGY_SLUG_UPDATE)
+  const [journeyUpdate] = useMutation<StrategySlugUpdate>(STRATEGY_SLUG_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
 
   const strategySlugSchema = object({
@@ -49,7 +50,10 @@ export function StrategySlugUpdateForm(): ReactElement {
     if (journey == null) return
     try {
       await journeyUpdate({
-        variables: { id: journey.id, input: { strategySlug: e } },
+        variables: {
+          id: journey.id,
+          input: { strategySlug: e === '' ? null : e }
+        },
         onCompleted: () =>
           enqueueSnackbar(t('Embedded URL has been updated'), {
             variant: 'success',
@@ -60,7 +64,7 @@ export function StrategySlugUpdateForm(): ReactElement {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
-            t('Field update failed. Reload the page or try again.'),
+            t('Strategy slug update failed. Reload the page or try again.'),
             {
               variant: 'error',
               preventDuplicate: true
