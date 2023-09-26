@@ -46,7 +46,7 @@ describe('VisitorCardHeader', () => {
     }
 
     const { getAllByTestId } = render(<VisitorCardHeader {...props} />)
-    expect(getAllByTestId('PersonOutlineRoundedIcon')).toHaveLength(2)
+    expect(getAllByTestId('UserProfile2Icon')).toHaveLength(2)
   })
 
   it('should show skeleton while loading', () => {

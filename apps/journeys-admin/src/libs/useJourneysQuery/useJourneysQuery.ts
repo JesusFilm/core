@@ -12,6 +12,7 @@ export const GET_JOURNEYS = gql`
       title
       createdAt
       publishedAt
+      featuredAt
       trashedAt
       description
       slug
@@ -55,6 +56,17 @@ export const GET_JOURNEYS = gql`
         width
         height
         blurhash
+      }
+      tags {
+        id
+        parentId
+        name {
+          value
+          language {
+            id
+          }
+          primary
+        }
       }
     }
   }

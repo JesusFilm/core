@@ -1,5 +1,6 @@
-import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled'
 import { fireEvent, render } from '@testing-library/react'
+
+import Clock1Icon from '@core/shared/ui/icons/Clock1'
 
 import { ToggleButtonGroup } from '.'
 
@@ -64,17 +65,17 @@ describe('ToggleButtonGroup', () => {
       {
         value: 'abc',
         label: 'ABC',
-        icon: <AccessTimeFilledIcon />
+        icon: <Clock1Icon />
       },
       {
         value: 'def',
         label: 'DEF',
-        icon: <AccessTimeFilledIcon />
+        icon: <Clock1Icon />
       }
     ]
     const { getAllByTestId } = render(
       <ToggleButtonGroup options={options} value="abc" onChange={jest.fn()} />
     )
-    expect(getAllByTestId('AccessTimeFilledIcon')).toHaveLength(2)
+    expect(getAllByTestId('Clock1Icon')).toHaveLength(2)
   })
 })

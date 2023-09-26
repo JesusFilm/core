@@ -1,10 +1,11 @@
-import EditRounded from '@mui/icons-material/EditRounded'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import noop from 'lodash/noop'
 import { object, string } from 'yup'
+
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { simpleComponentConfig } from '../../libs/storybook'
 
@@ -53,7 +54,7 @@ const Template: StoryObj<typeof TextFieldForm> = {
         onSubmit={noop}
         startIcon={
           <InputAdornment position="start">
-            <EditRounded />
+            <Edit2Icon />
           </InputAdornment>
         }
       />
@@ -61,7 +62,7 @@ const Template: StoryObj<typeof TextFieldForm> = {
         id="End Icon"
         label="End Icon"
         onSubmit={noop}
-        endIcon={<EditRounded />}
+        endIcon={<Edit2Icon />}
         hiddenLabel
       />
       <TextFieldForm id="Disabled" label="Disabled" onSubmit={noop} disabled />

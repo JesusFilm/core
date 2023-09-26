@@ -662,6 +662,8 @@ type Journey
   template: Boolean
   host: Host
   team: Team
+  strategySlug: String
+  tags: [Tag!]!
   userJourneys: [UserJourney!]
 }
 
@@ -710,6 +712,9 @@ input JourneysFilter
   featured: Boolean
   template: Boolean
   ids: [ID!]
+  tagIds: [ID!]
+  limit: Int
+  orderByRecent: Boolean
 }
 
 enum JourneysReportType
@@ -750,6 +755,8 @@ input JourneyUpdateInput
   seoTitle: String
   seoDescription: String
   hostId: String
+  strategySlug: String
+  tagIds: [ID!]
 }
 
 type JourneyViewEvent implements Event
@@ -1148,6 +1155,9 @@ type Mutation
 
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
+
+  """Sets journey status to featured"""
+  journeyFeature(id: ID!, feature: Boolean!): Journey @join__field(graph: JOURNEYS)
 
   """Sets journeys statuses to archived"""
   journeysArchive(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
@@ -1659,11 +1669,12 @@ input StepViewEventCreateInput
 }
 
 type Tag
+  @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: TAGS, key: "id")
 {
   id: ID!
-  name: [Translation!]!
-  parentId: ID
+  name: [Translation!]! @join__field(graph: TAGS)
+  parentId: ID @join__field(graph: TAGS)
 }
 
 type Team

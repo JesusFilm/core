@@ -149,7 +149,7 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
   const { data } = await apolloClient.query<GetJourneys>({
     query: gql`
       query GetJourneys {
-        journeys(where: { featured: true }) {
+        journeys(where: { featured: true, template: false }) {
           id
           title
           slug

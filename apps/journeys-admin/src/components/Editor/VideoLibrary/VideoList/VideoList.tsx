@@ -1,4 +1,3 @@
-import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -7,6 +6,8 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Skeleton from '@mui/material/Skeleton'
 import { Fragment, ReactElement } from 'react'
+
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 
@@ -89,7 +90,7 @@ export function VideoList({
           variant="outlined"
           onClick={fetchMore}
           loading={loading}
-          startIcon={<AddRounded />}
+          startIcon={<Plus2Icon />}
           size="medium"
           disabled={(videos?.length === 0 && !loading) || !hasMore}
         >
