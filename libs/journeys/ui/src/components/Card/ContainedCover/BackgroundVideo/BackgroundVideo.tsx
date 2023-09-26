@@ -116,6 +116,7 @@ export function BackgroundVideo({
       overflow="hidden"
       marginLeft={{ xs: 'calc((100vh * 16 / 9) * -0.355)', sm: 0 }}
       position="absolute"
+      data-testid="background-video-container"
     >
       <StyledVideo
         ref={videoRef}
