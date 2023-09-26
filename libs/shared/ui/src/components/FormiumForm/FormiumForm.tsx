@@ -8,16 +8,14 @@ import { ReactElement } from 'react'
 
 import { formiumClient } from '../../libs/formiumClient'
 
+import { Button } from './Button'
 import { Checkbox } from './Checkbox'
 import { ElementsWrapper } from './ElementsWrapper'
 import { FooterWrapper } from './FooterWrapper'
 import { FormControl } from './FormControl'
 import { Header } from './Header'
-import { NextButton } from './NextButton'
 import { PageWrapper } from './PageWrapper'
-import { PreviousButton } from './PreviousButton'
 import { RadioGroup } from './RadioGroup'
-import { SubmitButton } from './SubmitButton'
 import { Textarea } from './Textarea'
 import { TextInput } from './TextInput'
 
@@ -33,9 +31,9 @@ const myComponents: FormiumComponents = {
   PageWrapper,
   FooterWrapper,
   Header,
-  SubmitButton,
-  NextButton,
-  PreviousButton
+  SubmitButton: Button,
+  NextButton: Button,
+  PreviousButton: Button
 }
 
 interface FormiumFormProps {

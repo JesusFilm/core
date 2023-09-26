@@ -11,17 +11,15 @@ import noop from 'lodash/noop'
 
 import { sharedUiConfig } from '../../libs/sharedUiConfig'
 
+import { Button } from './Button'
 import { Checkbox } from './Checkbox'
 import { ElementsWrapper } from './ElementsWrapper'
 import { FooterWrapper } from './FooterWrapper'
 import { FormControl } from './FormControl'
 import { FormiumForm } from './FormiumForm'
 import { Header, HeaderProps } from './Header'
-import { NextButton } from './NextButton'
 import { PageWrapper } from './PageWrapper'
-import { PreviousButton } from './PreviousButton'
 import { RadioGroup } from './RadioGroup'
-import { SubmitButton } from './SubmitButton'
 import { Textarea } from './Textarea'
 import { TextInput } from './TextInput'
 
@@ -144,9 +142,9 @@ const Template: StoryObj<FormStoryProps> = {
         </ElementsWrapper>
         <FooterWrapper>
           <>
-            <PreviousButton {...args.previousButtonProps} />
-            <SubmitButton {...args.submitButtonProps} />
-            <NextButton {...args.nextButtonProps} />
+            <Button {...args.previousButtonProps} />
+            <Button {...args.submitButtonProps} />
+            <Button {...args.nextButtonProps} />
           </>
         </FooterWrapper>
       </>
