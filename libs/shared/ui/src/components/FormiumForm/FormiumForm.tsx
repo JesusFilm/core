@@ -1,4 +1,3 @@
-import { FormiumClient } from '@formium/client'
 import {
   FormiumForm as Formium,
   FormiumComponents,
@@ -6,6 +5,8 @@ import {
 } from '@formium/react'
 import { Form } from '@formium/types'
 import { ReactElement } from 'react'
+
+import { formiumClient } from '../../libs/formiumClient'
 
 import { Checkbox } from './Checkbox'
 import { ElementsWrapper } from './ElementsWrapper'
@@ -37,12 +38,11 @@ const myComponents: FormiumComponents = {
   PreviousButton
 }
 
-interface Props {
-  formiumClient: FormiumClient
+interface FormiumFormProps {
   form: Form
 }
 
-export function FormiumForm({ formiumClient, form }: Props): ReactElement {
+export function FormiumForm({ form }: FormiumFormProps): ReactElement {
   return (
     <Formium
       data={form}

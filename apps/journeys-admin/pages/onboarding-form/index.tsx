@@ -7,9 +7,9 @@ import {
 } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
+import { formiumClient } from '@core/shared/ui/formiumClient'
 import { FormiumForm } from '@core/shared/ui/FormiumForm'
 
-import { formiumClient } from '../../src/libs/formiumClient'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 interface Props {
@@ -24,7 +24,7 @@ function OnboardingFormPage({ form }: Props): ReactElement {
         justifyContent: 'center'
       }}
     >
-      <FormiumForm formiumClient={formiumClient} form={form} />
+      <FormiumForm form={form} />
     </Box>
   )
 }
