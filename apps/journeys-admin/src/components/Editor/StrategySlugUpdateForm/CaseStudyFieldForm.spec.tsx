@@ -7,10 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { StrategySlugUpdate } from '../../../../__generated__/StrategySlugUpdate'
 import { defaultJourney } from '../../JourneyView/data'
 
-import {
-  STRATEGY_SLUG_UPDATE,
-  StrategySlugUpdateForm
-} from './StrategySlugUpdateForm'
+import { CaseStudyFieldForm, STRATEGY_SLUG_UPDATE } from './CaseStudyFieldForm'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -21,7 +18,7 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-describe('StrategySlugUpdateForm', () => {
+describe('CaseStudyFieldForm', () => {
   const strategySlugUpdateNull: MockedResponse<StrategySlugUpdate> = {
     request: {
       query: STRATEGY_SLUG_UPDATE,
@@ -94,7 +91,7 @@ describe('StrategySlugUpdateForm', () => {
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider>
-            <StrategySlugUpdateForm />
+            <CaseStudyFieldForm />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -119,7 +116,7 @@ describe('StrategySlugUpdateForm', () => {
               variant: 'admin'
             }}
           >
-            <StrategySlugUpdateForm />
+            <CaseStudyFieldForm />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -147,7 +144,7 @@ describe('StrategySlugUpdateForm', () => {
               variant: 'admin'
             }}
           >
-            <StrategySlugUpdateForm />
+            <CaseStudyFieldForm />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -178,7 +175,7 @@ describe('StrategySlugUpdateForm', () => {
               variant: 'admin'
             }}
           >
-            <StrategySlugUpdateForm />
+            <CaseStudyFieldForm />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -208,7 +205,7 @@ describe('StrategySlugUpdateForm', () => {
               variant: 'admin'
             }}
           >
-            <StrategySlugUpdateForm />
+            <CaseStudyFieldForm />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -222,7 +219,7 @@ describe('StrategySlugUpdateForm', () => {
 
     await waitFor(() =>
       expect(
-        getByText('Strategy slug update failed. Reload the page or try again.')
+        getByText('Case Study update failed. Reload the page or try again.')
       ).toBeInTheDocument()
     )
   })

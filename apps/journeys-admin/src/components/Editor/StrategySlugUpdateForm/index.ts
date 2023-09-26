@@ -1,1 +1,1 @@
-export { StrategySlugUpdateForm } from './StrategySlugUpdateForm'
+export { CaseStudyFieldForm } from './CaseStudyFieldForm'

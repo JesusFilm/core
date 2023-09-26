@@ -19,7 +19,7 @@ export const STRATEGY_SLUG_UPDATE = gql`
   }
 `
 
-export function StrategySlugUpdateForm(): ReactElement {
+export function CaseStudyFieldForm(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation()
   const [journeyUpdate] = useMutation<StrategySlugUpdate>(STRATEGY_SLUG_UPDATE)
@@ -63,7 +63,7 @@ export function StrategySlugUpdateForm(): ReactElement {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
-            t('Strategy slug update failed. Reload the page or try again.'),
+            t('Case Study update failed. Reload the page or try again.'),
             {
               variant: 'error',
               preventDuplicate: true
