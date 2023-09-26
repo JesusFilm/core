@@ -186,6 +186,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           height: '100%',
           background: theme.palette.grey[900]
         }}
+        data-testid="Conductor"
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
           <StyledSwiperContainer
