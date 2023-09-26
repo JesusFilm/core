@@ -4,6 +4,7 @@ import {
   defaultComponents
 } from '@formium/react'
 import { Form } from '@formium/types'
+import { FormikValues } from 'formik'
 import { ReactElement } from 'react'
 
 import { formiumClient } from '../../libs/formiumClient'
@@ -41,13 +42,10 @@ interface FormiumFormProps {
 }
 
 export function FormiumForm({ form }: FormiumFormProps): ReactElement {
+  async function handleSubmit(values: FormikValues): Promise<void> {
+    await formiumClient.submitForm('ns-test', values)
+  }
   return (
-    <Formium
-      data={form}
-      components={myComponents}
-      onSubmit={async (values) => {
-        await formiumClient.submitForm('ns-test', values)
-      }}
-    />
+    <Formium data={form} components={myComponents} onSubmit={handleSubmit} />
   )
 }
