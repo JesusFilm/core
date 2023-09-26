@@ -42,12 +42,12 @@ describe('NavigationButton', () => {
     const { getByTestId } = render(
       <NavigationButton variant="next" alignment="right" />
     )
-    expect(getByTestId('ButtonNavigationButtonNext')).not.toBeVisible()
+    expect(getByTestId('ConductorNavigationButtonNext')).not.toBeVisible()
 
-    fireEvent.mouseOver(getByTestId('ButtonNavigationButtonNext'))
+    fireEvent.mouseOver(getByTestId('ConductorNavigationButtonNext'))
 
     await waitFor(() => {
-      expect(getByTestId('ButtonNavigationButtonNext')).toBeVisible()
+      expect(getByTestId('ConductorNavigationButtonNext')).toBeVisible()
     })
   })
 
@@ -59,11 +59,11 @@ describe('NavigationButton', () => {
     const { getByTestId } = render(
       <NavigationButton variant="next" alignment="right" />
     )
-    expect(getByTestId('ButtonNavigationButtonNext')).toBeVisible()
+    expect(getByTestId('ConductorNavigationButtonNext')).toBeVisible()
 
     await waitFor(
       () => {
-        expect(getByTestId('ButtonNavigationButtonNext')).not.toBeVisible()
+        expect(getByTestId('ConductorNavigationButtonNext')).not.toBeVisible()
       },
       { timeout: 3000 }
     )
@@ -77,7 +77,7 @@ describe('NavigationButton', () => {
       const { getByTestId } = render(
         <NavigationButton variant="next" alignment="right" />
       )
-      fireEvent.click(getByTestId('ButtonNavigationButtonNext'))
+      fireEvent.click(getByTestId('ConductorNavigationButtonNext'))
 
       expect(blockHistoryVar()[1].id).toBe('step3.id')
     })
@@ -90,7 +90,7 @@ describe('NavigationButton', () => {
       )
       expect(blockHistoryVar()[1].id).toBe('step2.id')
 
-      fireEvent.click(getByTestId('ButtonNavigationButtonPrev'))
+      fireEvent.click(getByTestId('ConductorNavigationButtonPrev'))
 
       expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
@@ -102,7 +102,7 @@ describe('NavigationButton', () => {
         <NavigationButton variant="prev" alignment="left" />
       )
 
-      expect(getByTestId('ButtonNavigationButtonPrev')).not.toBeVisible()
+      expect(getByTestId('ConductorNavigationButtonPrev')).not.toBeVisible()
     })
 
     it('should hide right button if next step is locked', () => {
@@ -111,7 +111,7 @@ describe('NavigationButton', () => {
       const { getByTestId } = render(
         <NavigationButton variant="next" alignment="right" />
       )
-      expect(getByTestId('ButtonNavigationButtonNext')).not.toBeVisible()
+      expect(getByTestId('ConductorNavigationButtonNext')).not.toBeVisible()
     })
 
     it('should hide right button if on last card', () => {
@@ -121,7 +121,7 @@ describe('NavigationButton', () => {
         <NavigationButton variant="next" alignment="right" />
       )
 
-      expect(getByTestId('ButtonNavigationButtonNext')).not.toBeVisible()
+      expect(getByTestId('ConductorNavigationButtonNext')).not.toBeVisible()
     })
 
     it('should show right button if on last card but set to navigate to another card', async () => {
@@ -131,10 +131,10 @@ describe('NavigationButton', () => {
         <NavigationButton variant="next" alignment="right" />
       )
 
-      fireEvent.mouseOver(getByTestId('ButtonNavigationButtonNext'))
+      fireEvent.mouseOver(getByTestId('ConductorNavigationButtonNext'))
 
       await waitFor(() => {
-        expect(getByTestId('ButtonNavigationButtonNext')).toBeVisible()
+        expect(getByTestId('ConductorNavigationButtonNext')).toBeVisible()
       })
     })
   })
@@ -147,7 +147,7 @@ describe('NavigationButton', () => {
       const { getByTestId } = render(
         <NavigationButton variant="next" alignment="left" />
       )
-      fireEvent.click(getByTestId('ButtonNavigationButtonNext'))
+      fireEvent.click(getByTestId('ConductorNavigationButtonNext'))
 
       expect(blockHistoryVar()[1].id).toBe('step3.id')
     })
@@ -160,7 +160,7 @@ describe('NavigationButton', () => {
       )
       expect(blockHistoryVar()[1].id).toBe('step2.id')
 
-      fireEvent.click(getByTestId('ButtonNavigationButtonPrev'))
+      fireEvent.click(getByTestId('ConductorNavigationButtonPrev'))
 
       expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
@@ -172,7 +172,7 @@ describe('NavigationButton', () => {
         <NavigationButton variant="prev" alignment="right" />
       )
 
-      expect(getByTestId('ButtonNavigationButtonPrev')).not.toBeVisible()
+      expect(getByTestId('ConductorNavigationButtonPrev')).not.toBeVisible()
     })
 
     it('should hide left button if next step is locked', () => {
@@ -181,7 +181,7 @@ describe('NavigationButton', () => {
       const { getByTestId } = render(
         <NavigationButton variant="next" alignment="left" />
       )
-      expect(getByTestId('ButtonNavigationButtonNext')).not.toBeVisible()
+      expect(getByTestId('ConductorNavigationButtonNext')).not.toBeVisible()
     })
 
     it('should hide left button if on last card', () => {
@@ -191,7 +191,7 @@ describe('NavigationButton', () => {
         <NavigationButton variant="next" alignment="left" />
       )
 
-      expect(getByTestId('ButtonNavigationButtonNext')).not.toBeVisible()
+      expect(getByTestId('ConductorNavigationButtonNext')).not.toBeVisible()
     })
 
     it('should show left button if on last card but set to navigate to another card', async () => {
@@ -201,10 +201,10 @@ describe('NavigationButton', () => {
         <NavigationButton variant="next" alignment="left" />
       )
 
-      fireEvent.mouseOver(getByTestId('ButtonNavigationButtonNext'))
+      fireEvent.mouseOver(getByTestId('ConductorNavigationButtonNext'))
 
       await waitFor(() => {
-        expect(getByTestId('ButtonNavigationButtonNext')).toBeVisible()
+        expect(getByTestId('ConductorNavigationButtonNext')).toBeVisible()
       })
     })
   })

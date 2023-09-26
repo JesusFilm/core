@@ -131,11 +131,11 @@ export const WithContent = {
     blocks: imageBlocks
   },
   play: async () => {
-    const nextButton = screen.getAllByTestId('ButtonNavigationButtonNext')[0]
+    const nextButton = screen.getAllByTestId('ConductorNavigationButtonNext')[0]
     await userEvent.click(nextButton)
     await waitFor(async () => {
       await expect(
-        screen.getAllByTestId('NavigationContainerPrev')[1]
+        screen.getAllByTestId('ConductorNavigationContainer')[1]
       ).toBeInTheDocument()
     })
   }
