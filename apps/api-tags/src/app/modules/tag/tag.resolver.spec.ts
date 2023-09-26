@@ -14,6 +14,7 @@ describe('TagResolver', () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     name: 'Audience',
+    service: 'journeys',
     nameTranslations: [
       {
         value: 'Audience',
