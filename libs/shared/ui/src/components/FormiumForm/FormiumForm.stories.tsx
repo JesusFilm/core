@@ -8,6 +8,7 @@ import {
 } from '@formium/react/dist/inputs'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
+import { ComponentProps } from 'react'
 
 import { sharedUiConfig } from '../../libs/sharedUiConfig'
 
@@ -17,7 +18,7 @@ import { ElementsWrapper } from './ElementsWrapper'
 import { FooterWrapper } from './FooterWrapper'
 import { FormControl } from './FormControl'
 import { FormiumForm } from './FormiumForm'
-import { Header, HeaderProps } from './Header'
+import { Header } from './Header'
 import { PageWrapper } from './PageWrapper'
 import { RadioGroup } from './RadioGroup'
 import { Textarea } from './Textarea'
@@ -34,7 +35,7 @@ interface FormStoryProps {
   textAreaProps: TextareaProps
   checkboxProps: CheckboxProps
   radioGroupProps: RadioGroupProps
-  headerProps: HeaderProps
+  headerProps: ComponentProps<typeof Header>
   formControlProps: FormControlProps
   previousButtonProps: JSX.IntrinsicElements['button']
   nextButtonProps: JSX.IntrinsicElements['button']
@@ -101,7 +102,7 @@ const defaultFormStoryArgs: FormStoryProps = {
     page: {
       title: 'Page Title'
     }
-  } as unknown as HeaderProps,
+  } as unknown as ComponentProps<typeof Header>,
   formControlProps: {
     label: 'Form Control Label',
     description: 'Form Control Description',
