@@ -45,7 +45,7 @@ export interface EditorState {
   activeTab: ActiveTab
   activeFab: ActiveFab
   journeyEditContentComponent: ActiveJourneyEditContent
-  smUp: boolean
+  smUp?: boolean
 }
 
 export interface SetSelectedStepAction {
@@ -219,8 +219,7 @@ export const EditorContext = createContext<{
     drawerMobileOpen: false,
     activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
-    smUp: false
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   },
   dispatch: () => null
 })
