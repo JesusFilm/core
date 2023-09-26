@@ -23,6 +23,7 @@ function LibraryIndex(): ReactElement {
 
   useEffect(() => {
     // call in it's own event handler
+    // remove to see FeaturedAndNew templates
     void router.push({
       pathname: '/templates',
       query: {
