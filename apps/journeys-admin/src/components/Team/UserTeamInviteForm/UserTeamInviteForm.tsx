@@ -90,6 +90,7 @@ export function UserTeamInviteForm({
   const userTeamInviteCreateSchema: ObjectSchema<UserTeamInviteCreateInput> =
     object({
       email: string()
+        .trim()
         .lowercase()
         .email(t('Please enter a valid email address'))
         .required(t('Required'))
