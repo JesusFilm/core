@@ -40,7 +40,7 @@ describe('TemplateView', () => {
   })
 
   it('should not render Strategy section if journey strategy slug is null', () => {
-    const journeyWithStrategySlug: JourneyFields = {
+    const journeyWithoutStrategySlug: JourneyFields = {
       ...defaultJourney,
       strategySlug: null
     }
@@ -48,7 +48,7 @@ describe('TemplateView', () => {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: journeyWithStrategySlug,
+            journey: journeyWithoutStrategySlug,
             variant: 'admin'
           }}
         >
