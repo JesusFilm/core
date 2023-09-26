@@ -249,5 +249,11 @@
   },
   "msw": {
     "workerDirectory": "./.storybook/static"
+  },
+  "nextBundleAnalysis": {
+    "budget": null,
+    "budgetPercentIncreaseRed": 200,
+    "minimumChangeThreshold": 0,
+    "showDetails": true
   }
 }
