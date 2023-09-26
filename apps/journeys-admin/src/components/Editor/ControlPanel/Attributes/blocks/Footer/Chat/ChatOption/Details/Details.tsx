@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
@@ -10,14 +9,15 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import Instagram from '@core/shared/ui/icons/Instagram'
-import Line from '@core/shared/ui/icons/Line'
-import MessageTyping from '@core/shared/ui/icons/MessageTyping'
-import Skype from '@core/shared/ui/icons/Skype'
-import Snapchat from '@core/shared/ui/icons/Snapchat'
-import Tiktok from '@core/shared/ui/icons/Tiktok'
-import Viber from '@core/shared/ui/icons/Viber'
-import Vk from '@core/shared/ui/icons/Vk'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import InstagramIcon from '@core/shared/ui/icons/Instagram'
+import LineIcon from '@core/shared/ui/icons/Line'
+import MessageTypingIcon from '@core/shared/ui/icons/MessageTyping'
+import SkypeIcon from '@core/shared/ui/icons/Skype'
+import SnapchatIcon from '@core/shared/ui/icons/Snapchat'
+import TiktokIcon from '@core/shared/ui/icons/Tiktok'
+import ViberIcon from '@core/shared/ui/icons/Viber'
+import VkIcon from '@core/shared/ui/icons/Vk'
 
 import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonUpdate } from '../../../../../../../../../../__generated__/JourneyChatButtonUpdate'
@@ -78,42 +78,42 @@ export function Details({
     {
       value: ChatPlatform.custom,
       label: t('Chat'),
-      icon: <MessageTyping />
+      icon: <MessageTypingIcon />
     },
     {
       value: ChatPlatform.instagram,
       label: t('Instagram'),
-      icon: <Instagram />
+      icon: <InstagramIcon />
     },
     {
       value: ChatPlatform.line,
       label: t('LINE'),
-      icon: <Line />
+      icon: <LineIcon />
     },
     {
       value: ChatPlatform.skype,
       label: t('Skype'),
-      icon: <Skype />
+      icon: <SkypeIcon />
     },
     {
       value: ChatPlatform.snapchat,
       label: t('Snapchat'),
-      icon: <Snapchat />
+      icon: <SnapchatIcon />
     },
     {
       value: ChatPlatform.tikTok,
       label: t('TikTok'),
-      icon: <Tiktok />
+      icon: <TiktokIcon />
     },
     {
       value: ChatPlatform.viber,
       label: t('Viber'),
-      icon: <Viber />
+      icon: <ViberIcon />
     },
     {
       value: ChatPlatform.vk,
       label: t('VK'),
-      icon: <Vk />
+      icon: <VkIcon />
     }
   ]
 
@@ -172,7 +172,7 @@ export function Details({
               onChange={async (event) =>
                 await handleUpdate('platform', event.target.value)
               }
-              IconComponent={KeyboardArrowDownRoundedIcon}
+              IconComponent={ChevronDownIcon}
             >
               {chatPlatformOptions.map(({ value, label, icon }) => (
                 <MenuItem key={`chat-icon-${value}`} value={value}>

@@ -1,8 +1,8 @@
-import ImageIcon from '@mui/icons-material/Image'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 export function SocialImage(): ReactElement {
@@ -41,7 +41,7 @@ export function SocialImage(): ReactElement {
             backgroundColor: 'background.default'
           }}
         >
-          {journey != null ? <ImageIcon fontSize="large" /> : <></>}
+          {journey != null ? <GridEmptyIcon fontSize="large" /> : <></>}
         </Box>
       )}
     </Box>

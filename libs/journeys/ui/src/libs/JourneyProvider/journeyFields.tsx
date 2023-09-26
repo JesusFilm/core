@@ -25,6 +25,7 @@ export const JOURNEY_FIELDS = gql`
     publishedAt
     themeName
     themeMode
+    strategySlug
     seoTitle
     seoDescription
     template

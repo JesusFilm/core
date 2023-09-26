@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import DraftsRounded from '@mui/icons-material/DraftsRounded'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -8,6 +7,7 @@ import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { SIGN_UP_FIELDS } from '@core/journeys/ui/SignUp/signUpFields'
+import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { SignUpBlockCreate } from '../../../../../../__generated__/SignUpBlockCreate'
@@ -119,7 +119,5 @@ export function NewSignUpButton(): ReactElement {
     }
   }
 
-  return (
-    <Button icon={<DraftsRounded />} value="Subscribe" onClick={handleClick} />
-  )
+  return <Button icon={<Mail2Icon />} value="Subscribe" onClick={handleClick} />
 }
