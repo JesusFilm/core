@@ -40,8 +40,6 @@ const myComponents: FormiumComponents = {
 interface Props {
   formiumClient: FormiumClient
   form: Form
-  // userId?: string
-  // email?: string
 }
 
 export function FormiumForm({ formiumClient, form }: Props): ReactElement {
@@ -51,7 +49,6 @@ export function FormiumForm({ formiumClient, form }: Props): ReactElement {
       components={myComponents}
       onSubmit={async (values) => {
         await formiumClient.submitForm('ns-test', values)
-        alert('Success')
       }}
     />
   )
