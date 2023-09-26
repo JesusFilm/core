@@ -1,7 +1,13 @@
+enum Service {
+  journeys
+  watch
+}
+
 type Tag @key(fields: "id") {
   id: ID!
   name: [Translation!]!
   parentId: ID
+  service: Service
 }
 
 extend type Query {

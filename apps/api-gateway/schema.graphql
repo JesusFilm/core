@@ -1487,6 +1487,13 @@ enum SegmindModel
   tinysd1__5_txt2img @join__enumValue(graph: MEDIA)
 }
 
+enum Service
+  @join__type(graph: TAGS)
+{
+  journeys @join__enumValue(graph: TAGS)
+  watch @join__enumValue(graph: TAGS)
+}
+
 type SignUpBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -1675,6 +1682,7 @@ type Tag
   id: ID!
   name: [Translation!]! @join__field(graph: TAGS)
   parentId: ID @join__field(graph: TAGS)
+  service: Service @join__field(graph: TAGS)
 }
 
 type Team
