@@ -1,5 +1,6 @@
-import VisibilityIcon from '@mui/icons-material/Visibility'
 import { Meta, StoryObj } from '@storybook/react'
+
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
 import { simpleComponentConfig } from '../../libs/storybook'
 
@@ -21,7 +22,7 @@ export const Default = {
   ...Template,
   args: {
     label: 'Preview',
-    icon: <VisibilityIcon />
+    icon: <EyeOpenIcon />
   }
 }
 
@@ -29,7 +30,7 @@ export const Disabled = {
   ...Template,
   args: {
     label: 'Preview',
-    icon: <VisibilityIcon />,
+    icon: <EyeOpenIcon />,
     disabled: true
   }
 }

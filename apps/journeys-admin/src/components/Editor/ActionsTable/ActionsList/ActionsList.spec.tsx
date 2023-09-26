@@ -82,7 +82,7 @@ describe('ActionsList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
       expect(getByText('Information')).toBeInTheDocument()
-      fireEvent.click(getByTestId('CloseIcon'))
+      fireEvent.click(getByTestId('X2Icon'))
       expect(getByTestId('ActionInformation').parentElement).not.toHaveClass(
         'MuiDrawer-parentAnchorRight'
       )
@@ -101,7 +101,7 @@ describe('ActionsList', () => {
       const { getAllByTestId } = render(
         <ActionsList actions={actions} goalLabel={() => 'Visit a website'} />
       )
-      fireEvent.click(getAllByTestId('EditRoundedIcon')[0])
+      fireEvent.click(getAllByTestId('Edit2Icon')[0])
       expect(dispatch).toHaveBeenCalled()
     })
   })

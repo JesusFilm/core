@@ -889,7 +889,7 @@ describe('ControlPanel', () => {
   })
 
   it('should keep cards tab open when adding a new card', async () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getAllByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -953,7 +953,7 @@ describe('ControlPanel', () => {
       'aria-selected',
       'true'
     )
-    fireEvent.click(getByTestId('AddIcon'))
+    fireEvent.click(getAllByTestId('Plus2Icon')[1])
     await waitFor(() =>
       expect(getByRole('tab', { name: 'Journey' })).toHaveAttribute(
         'aria-selected',

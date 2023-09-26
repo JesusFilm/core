@@ -1,7 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
-  AuthAction,
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
@@ -12,11 +11,13 @@ import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { GetTemplate } from '../../__generated__/GetTemplate'
 import { JourneyView } from '../../src/components/JourneyView'
 import { Menu } from '../../src/components/JourneyView/Menu'
 import { PageWrapper } from '../../src/components/PageWrapper'
+import { TemplateView } from '../../src/components/TemplateView/TempateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
@@ -32,6 +33,7 @@ export const GET_TEMPLATE = gql`
 function TemplateDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+  const { templates } = useFlags()
   const AuthUser = useAuthUser()
   const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
     variables: { id: router.query.journeyId }
@@ -57,34 +59,31 @@ function TemplateDetails(): ReactElement {
           backHref="/templates"
           menu={<Menu />}
         >
-          <JourneyView journeyType="Template" />
+          {templates ? (
+            <TemplateView />
+          ) : (
+            <JourneyView journeyType="Template" />
+          )}
         </PageWrapper>
       </JourneyProvider>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  if (AuthUser == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = withAuthUserTokenSSR()(
+  async ({ AuthUser, locale }) => {
+    const { flags, translations } = await initAndAuthApp({
+      AuthUser,
+      locale
+    })
 
-  const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
-  })
-
-  if (redirect != null) return { redirect }
-
-  return {
-    props: {
-      flags,
-      ...translations
+    return {
+      props: {
+        flags,
+        ...translations
+      }
     }
   }
-})
+)
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateDetails)
+export default withAuthUser()(TemplateDetails)

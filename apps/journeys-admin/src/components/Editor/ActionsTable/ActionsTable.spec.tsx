@@ -79,6 +79,7 @@ describe('ActionsTable', () => {
     themeMode: ThemeMode.light,
     title: 'my journey',
     slug: 'my-journey',
+    strategySlug: null,
     language: {
       __typename: 'Language',
       id: '529',
@@ -132,6 +133,6 @@ describe('ActionsTable', () => {
     )
     expect(getByText('The Journey Goals')).toBeInTheDocument()
     expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
-    expect(getByTestId('EditRoundedIcon')).toBeInTheDocument()
+    expect(getByTestId('Edit2Icon')).toBeInTheDocument()
   })
 })

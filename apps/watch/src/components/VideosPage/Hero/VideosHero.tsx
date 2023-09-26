@@ -24,6 +24,7 @@ export function VideosHero(): ReactElement {
           height: { xs: 240, md: 340 },
           backgroundColor: '#771E3E'
         }}
+        data-testid="VideosHero"
       >
         <Image
           src={background}
