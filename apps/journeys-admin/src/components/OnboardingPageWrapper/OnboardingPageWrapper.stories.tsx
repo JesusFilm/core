@@ -20,6 +20,7 @@ const Template: StoryObj<typeof OnboardingPageWrapper> = {
 export const Default = {
   ...Template,
   args: {
+    email: 'email@example.com',
     children: (
       <Box
         sx={{

@@ -13,14 +13,18 @@ jest.mock('react-i18next', () => ({
 
 describe('OnboardingPageWrapper', () => {
   it('should show logo', () => {
-    const { getByRole } = render(<OnboardingPageWrapper />)
+    const { getByRole } = render(
+      <OnboardingPageWrapper email="email@example.com">
+        <div>Child</div>
+      </OnboardingPageWrapper>
+    )
 
     expect(getByRole('img', { name: 'Next Steps' })).toBeInTheDocument()
   })
 
   it('should render children', () => {
     const { getByText } = render(
-      <OnboardingPageWrapper>
+      <OnboardingPageWrapper email="email@example.com">
         <div>Child</div>
       </OnboardingPageWrapper>
     )
@@ -28,11 +32,16 @@ describe('OnboardingPageWrapper', () => {
   })
 
   it('should show support link', () => {
-    const { getByRole } = render(<OnboardingPageWrapper />)
+    const email = 'email@example.com'
+    const { getByRole } = render(
+      <OnboardingPageWrapper email={email}>
+        <div>Child</div>
+      </OnboardingPageWrapper>
+    )
 
     expect(getByRole('link', { name: 'Feedback & Support' })).toHaveAttribute(
       'href',
-      'mailto:support@nextstep.is?subject=A question about the terms and conditions form'
+      `mailto:${email}?subject=A question about the terms and conditions form`
     )
   })
 })
