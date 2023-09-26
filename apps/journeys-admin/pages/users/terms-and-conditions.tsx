@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ACCEPT_ALL_INVITES } from '..'
 import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
+import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TermsAndConditions } from '../../src/components/TermsAndConditions'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
@@ -17,7 +18,9 @@ function TermsAndConditionsPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Terms and Conditions')} />
-      <TermsAndConditions />
+      <OnboardingPageWrapper>
+        <TermsAndConditions />
+      </OnboardingPageWrapper>
     </>
   )
 }
