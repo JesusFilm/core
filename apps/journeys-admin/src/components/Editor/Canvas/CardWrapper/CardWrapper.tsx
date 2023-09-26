@@ -63,7 +63,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
             {...{ ...block, children: blocks }}
             wrappers={children.props.wrappers}
           />
-          {blocks.length === 0 && !smUp && (
+          {blocks.length === 0 && smUp === false && (
             <Box
               sx={{
                 position: 'absolute',
