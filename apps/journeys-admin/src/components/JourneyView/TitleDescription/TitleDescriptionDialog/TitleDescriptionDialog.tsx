@@ -1,5 +1,5 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
@@ -138,12 +138,12 @@ export function TitleDescriptionDialog({
                   rows={3}
                   onChange={handleChange}
                 />
-                <Box sx={{ pt: 6 }}>
+                <Stack sx={{ pt: 6 }}>
                   <FeaturedCheckbox
                     featuredAt={journey.featuredAt}
                     journeyId={journey.id}
                   />
-                </Box>
+                </Stack>
               </Form>
             </Dialog>
           )}

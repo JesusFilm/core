@@ -38,7 +38,7 @@ export function FeaturedCheckbox({
   return (
     <Stack direction="row" alignItems="center">
       <Checkbox
-        sx={{ mr: 3, ml: -2 }}
+        sx={{ mr: 1, ml: -2 }}
         color="secondary"
         defaultChecked={featuredAt != null}
         onChange={(e) => handleChecked(e.target.checked)}
