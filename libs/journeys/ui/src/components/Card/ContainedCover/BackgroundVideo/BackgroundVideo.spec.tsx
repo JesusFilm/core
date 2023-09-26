@@ -49,7 +49,6 @@ const video: TreeBlock<VideoFields> = {
   children: []
 }
 
-// const videoRefMock = { current: document.createElement('video') }
 const playerRefMock = { current: null }
 
 describe('BackgroundVideo', () => {
