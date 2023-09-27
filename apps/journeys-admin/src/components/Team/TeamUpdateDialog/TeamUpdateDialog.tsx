@@ -115,7 +115,11 @@ export function TeamUpdateDialog({
                 variant="filled"
                 error={Boolean(errors.title)}
                 onChange={handleChange}
-                helperText={errors.title !== undefined ? errors.title as string : "Private: Visible only to your team"}
+                helperText={
+                  errors.title !== undefined
+                    ? (errors.title as string)
+                    : 'Private: Visible only to your team'
+                }
                 label="Team Name"
               />
               <TextField
@@ -126,7 +130,11 @@ export function TeamUpdateDialog({
                 variant="filled"
                 error={Boolean(errors.publicTitle)}
                 onChange={handleChange}
-                helperText={errors.publicTitle === null ? errors.publicTitle as string : "Anyone can view it"}
+                helperText={
+                  errors.publicTitle === null
+                    ? (errors.publicTitle as string)
+                    : 'Anyone can view it'
+                }
                 label="Legal Name"
                 placeholder={values.title}
               />
@@ -140,10 +148,14 @@ export function TeamUpdateDialog({
                 <InformationCircleContainedIcon
                   sx={{ color: 'secondary.light' }}
                 />
-                <Typography variant="caption" color="secondary.light" gutterBottom>
+                <Typography
+                  variant="caption"
+                  color="secondary.light"
+                  gutterBottom
+                >
                   {t(
-                  "When visitors click the info icon, they will see text from the Legal Name box. This text can be a mission name, website title, or other public information."
-                )}
+                    'When visitors click the info icon, they will see text from the Legal Name box. This text can be a mission name, website title, or other public information.'
+                  )}
                 </Typography>
               </Stack>
             </Stack>
