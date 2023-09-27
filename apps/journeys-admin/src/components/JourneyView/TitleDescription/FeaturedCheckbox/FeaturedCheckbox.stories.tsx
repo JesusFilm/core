@@ -1,10 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-<<<<<<<< HEAD:apps/journeys-admin/src/components/JourneyView/TitleDescription/TemplateSettingsDialog/FeaturedCheckbox/FeaturedCheckbox.stories.tsx
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-========
-import { simpleComponentConfig } from '../../../../libs/storybook'
->>>>>>>> 2c85d35ec (feat: add featured checkbox to dialog (#1910)):apps/journeys-admin/src/components/JourneyView/TitleDescription/FeaturedCheckbox/FeaturedCheckbox.stories.tsx
 
 import { FeaturedCheckbox } from './FeaturedCheckbox'
 
