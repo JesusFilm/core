@@ -30,7 +30,6 @@ describe('CardWrapper', () => {
     const { state } = useEditor()
     return (
       <>
-        <div>hello</div>
         <div>selectedBlock: {state.selectedBlock?.id}</div>
         <div>drawerTitle: {state.drawerTitle}</div>
         <div>selectedAttributeId: {state.selectedAttributeId}</div>

@@ -3,6 +3,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { Properties } from '../../JourneyView/Properties'
 
@@ -16,12 +17,18 @@ import { CardVideo } from './Templates/CardVideo'
 export function CardLibrary(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
+  const { journey } = useJourney()
   function handleClick(): void {
     dispatch({
       type: 'SetDrawerPropsAction',
       mobileOpen: false,
       title: t('Properties'),
-      children: <Properties journeyType="Journey" isPublisher={false} />
+      children: (
+        <Properties
+          journeyType={journey?.template === true ? 'Template' : 'Journey'}
+          isPublisher={false}
+        />
+      )
     })
   }
   return (

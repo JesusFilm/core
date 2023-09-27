@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -214,16 +215,14 @@ export function CardIntro({ onClick }: CardIntroProps): ReactElement {
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <Image
-        width={128}
-        height={195}
-        src={cardIntroImage}
-        alt="Card Intro Template"
-        onClick={handleClick}
-        style={{
-          cursor: 'pointer'
-        }}
-      />
+      <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
+        <Image
+          width={128}
+          height={195}
+          src={cardIntroImage}
+          alt="Card Intro Template"
+        />
+      </ButtonBase>
     </Box>
   )
 }

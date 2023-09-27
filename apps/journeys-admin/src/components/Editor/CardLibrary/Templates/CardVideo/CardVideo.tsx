@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
@@ -34,7 +35,7 @@ export function CardVideo({ onClick }: CardVideoProps): ReactElement {
     state: { selectedStep }
   } = useEditor()
 
-  const [videoBlocksCreate] = useMutation<
+  const [cardVideoCreate] = useMutation<
     CardVideoCreate,
     CardVideoCreateVariables
   >(CARD_VIDEO_CREATE)
@@ -42,7 +43,7 @@ export function CardVideo({ onClick }: CardVideoProps): ReactElement {
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null) return
-    await videoBlocksCreate({
+    await cardVideoCreate({
       variables: {
         videoInput: {
           journeyId: journey.id,
@@ -85,16 +86,14 @@ export function CardVideo({ onClick }: CardVideoProps): ReactElement {
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <Image
-        width={128}
-        height={195}
-        src={cardVideoImage}
-        alt="Card Video Template"
-        onClick={handleClick}
-        style={{
-          cursor: 'pointer'
-        }}
-      />
+      <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
+        <Image
+          width={128}
+          height={195}
+          src={cardVideoImage}
+          alt="Card Video Template"
+        />
+      </ButtonBase>
     </Box>
   )
 }
