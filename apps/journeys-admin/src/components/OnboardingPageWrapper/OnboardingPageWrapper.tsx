@@ -8,12 +8,12 @@ import { useTranslation } from 'react-i18next'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 
 interface OnboardingPageWrapperProps {
-  email: string
+  emailSubject: string
   children: ReactNode
 }
 
 export function OnboardingPageWrapper({
-  email,
+  emailSubject,
   children
 }: OnboardingPageWrapperProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -46,7 +46,7 @@ export function OnboardingPageWrapper({
           color: 'primary.main',
           cursor: 'pointer'
         }}
-        href={`mailto:${email}?subject=A question about the terms and conditions form`}
+        href={`mailto:support@nextstep.is?subject=${emailSubject}`}
       >
         {t('Feedback & Support')}
       </Link>

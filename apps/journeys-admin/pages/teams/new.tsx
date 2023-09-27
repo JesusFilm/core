@@ -23,7 +23,7 @@ function TeamsNewPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('New Team')} />
-      <OnboardingPageWrapper email="support@nextstep.is">
+      <OnboardingPageWrapper emailSubject="A question about creating a team for the first time.">
         <TeamOnboarding />
       </OnboardingPageWrapper>
     </>

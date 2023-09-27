@@ -14,7 +14,7 @@ jest.mock('react-i18next', () => ({
 describe('OnboardingPageWrapper', () => {
   it('should show logo', () => {
     const { getByRole } = render(
-      <OnboardingPageWrapper email="email@example.com">
+      <OnboardingPageWrapper emailSubject="a question about onboarding">
         <div>Child</div>
       </OnboardingPageWrapper>
     )
@@ -24,7 +24,7 @@ describe('OnboardingPageWrapper', () => {
 
   it('should render children', () => {
     const { getByText } = render(
-      <OnboardingPageWrapper email="email@example.com">
+      <OnboardingPageWrapper emailSubject="a question about onboarding">
         <div>Child</div>
       </OnboardingPageWrapper>
     )
@@ -32,16 +32,16 @@ describe('OnboardingPageWrapper', () => {
   })
 
   it('should show support link', () => {
-    const email = 'email@example.com'
+    const emailSubject = 'a question about onboarding'
     const { getByRole } = render(
-      <OnboardingPageWrapper email={email}>
+      <OnboardingPageWrapper emailSubject={emailSubject}>
         <div>Child</div>
       </OnboardingPageWrapper>
     )
 
     expect(getByRole('link', { name: 'Feedback & Support' })).toHaveAttribute(
       'href',
-      `mailto:${email}?subject=A question about the terms and conditions form`
+      `mailto:support@nextstep.is?subject=${emailSubject}`
     )
   })
 })
