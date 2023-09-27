@@ -6,6 +6,7 @@ import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+
 import { TemplateSettingsDialog } from './TemplateSettingsDialog'
 
 interface TitleDescriptionProps {
