@@ -1,11 +1,4 @@
 import { FormElementType } from '@formium/client'
-import { FormControlProps } from '@formium/react'
-import {
-  CheckboxProps,
-  RadioGroupProps,
-  TextInputProps,
-  TextareaProps
-} from '@formium/react/dist/inputs'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
@@ -31,15 +24,15 @@ const FormiumFormStory: Meta<typeof FormiumForm> = {
 }
 
 interface FormStoryProps {
-  textInputProps: TextInputProps
-  textAreaProps: TextareaProps
-  checkboxProps: CheckboxProps
-  radioGroupProps: RadioGroupProps
+  textInputProps: ComponentProps<typeof TextInput>
+  textAreaProps: ComponentProps<typeof Textarea>
+  checkboxProps: ComponentProps<typeof Checkbox>
+  radioGroupProps: ComponentProps<typeof RadioGroup>
   headerProps: ComponentProps<typeof Header>
-  formControlProps: FormControlProps
-  previousButtonProps: JSX.IntrinsicElements['button']
-  nextButtonProps: JSX.IntrinsicElements['button']
-  submitButtonProps: JSX.IntrinsicElements['button']
+  formControlProps: ComponentProps<typeof FormControl>
+  previousButtonProps: ComponentProps<typeof Button>
+  nextButtonProps: ComponentProps<typeof Button>
+  submitButtonProps: ComponentProps<typeof Button>
 }
 
 const defaultFormStoryArgs: FormStoryProps = {
@@ -97,7 +90,7 @@ const defaultFormStoryArgs: FormStoryProps = {
     ],
     onChange: noop,
     onBlur: noop
-  } as unknown as RadioGroupProps,
+  } as unknown as ComponentProps<typeof RadioGroup>,
   headerProps: {
     page: {
       title: 'Page Title'
