@@ -26,7 +26,7 @@ export function FeaturedCheckbox({
         <FormControlLabel
           control={
             <Checkbox
-              sx={{ mr: 1, ml: -2 }}
+              sx={{ mr: 1 }}
               color="secondary"
               defaultChecked={values}
               onChange={handleChange}

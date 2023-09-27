@@ -167,20 +167,18 @@ export function TemplateSettingsDialog({
                   onChange={handleTabChange}
                   aria-label="template-update-settings-tabs"
                   variant="fullWidth"
+                  sx={{ borderBottom: 1, borderColor: 'divider' }}
                 >
                   <Tab
                     label={t('Metadata')}
-                    sx={{ borderBottom: 2, borderColor: 'divider' }}
                     {...tabA11yProps('template-meta-data-settings', 0)}
                   />
                   <Tab
                     label={t('Categories')}
-                    sx={{ borderBottom: 2, borderColor: 'divider' }}
                     {...tabA11yProps('template-categories-settings', 1)}
                   />
                   <Tab
                     label={t('About')}
-                    sx={{ borderBottom: 2, borderColor: 'divider' }}
                     {...tabA11yProps('template-about-settings', 2)}
                   />
                 </Tabs>
