@@ -114,7 +114,7 @@ export function BackgroundVideo({
       height={{ xs: '100vh', sm: '100%' }}
       width={{ xs: 'calc(100vh * 16 / 9)', sm: '100%' }}
       overflow="hidden"
-      marginLeft={{ xs: 'calc((100vh * 16 / 9) * -0.355)', sm: 0 }}
+      marginX={{ xs: '-100%', sm: 0 }}
       position="absolute"
       data-testid="background-video-container"
     >
