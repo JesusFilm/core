@@ -640,6 +640,7 @@ export interface GetJourney_journey {
   status: JourneyStatus;
   language: GetJourney_journey_language;
   createdAt: any;
+  featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;

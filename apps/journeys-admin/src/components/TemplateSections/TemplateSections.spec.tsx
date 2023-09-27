@@ -18,13 +18,14 @@ describe('TemplateSections', () => {
     } as unknown as NextRouter)
   })
 
-  it('should render Featured and New templates', () => {
-    const { getByRole } = render(
+  it('should render Featured and New templates if tagIds are not present', () => {
+    const { getByRole, queryByRole } = render(
       <MockedProvider>
         <TemplateSections />
       </MockedProvider>
     )
     expect(getByRole('heading', { name: 'Featured & New' })).toBeInTheDocument()
+    expect(queryByRole('heading', { name: 'Tag Ids' })).not.toBeInTheDocument()
   })
 
   it('should render Most Relevant Templates when tag Ids are provided', () => {

@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { JourneyFeature } from '../../../../__generated__/JourneyFeature'
+import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
 
 import { FeaturedCheckbox, JOURNEY_FEATURE_UPDATE } from './FeaturedCheckbox'
 

@@ -640,6 +640,7 @@ export interface GetTemplate_template {
   status: JourneyStatus;
   language: GetTemplate_template_language;
   createdAt: any;
+  featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
