@@ -53,6 +53,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser<Props>({
+export default withAuthUser<OnboardingFormPageProps>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(OnboardingFormPage)
