@@ -30,7 +30,7 @@ describe('TemplateSections', () => {
 
   it('should render Most Relevant Templates when tag Ids are provided', () => {
     mockUseRouter.mockReturnValue({
-      query: { tags: ['tagId1'] }
+      query: { tags: ['767561ca-3f63-46f4-b2a0-3a37f891632a'] }
     } as unknown as NextRouter)
 
     const { getByRole, queryByRole } = render(

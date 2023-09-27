@@ -63,9 +63,14 @@ describe('MostRelevantTemplates', () => {
     ]
   }
 
-  it('should render Most Relevant templates', async () => {
+  it('should render templates from tag id', async () => {
     mockUseRouter.mockReturnValue({
-      query: { tags: ['tagId1'] }
+      query: {
+        tags: [
+          '767561ca-3f63-46f4-b2a0-3a37f891632a',
+          '4e6cf9db-0928-4e34-8e63-8f62bddf87d4'
+        ]
+      }
     } as unknown as NextRouter)
 
     const { getByRole, getAllByTestId } = render(
@@ -78,7 +83,10 @@ describe('MostRelevantTemplates', () => {
                 where: {
                   template: true,
                   orderByRecent: true,
-                  tagIds: ['tagId1']
+                  tagIds: [
+                    '767561ca-3f63-46f4-b2a0-3a37f891632a',
+                    '4e6cf9db-0928-4e34-8e63-8f62bddf87d4'
+                  ]
                 }
               }
             },
@@ -108,7 +116,7 @@ describe('MostRelevantTemplates', () => {
     })
   })
 
-  it('should not render Most Relevant Templates when TagIds are not present', async () => {
+  it('should not render templates when no tagIds', async () => {
     mockUseRouter.mockReturnValue({
       query: {}
     } as unknown as NextRouter)
