@@ -17,7 +17,7 @@ import { GetTemplate } from '../../__generated__/GetTemplate'
 import { JourneyView } from '../../src/components/JourneyView'
 import { Menu } from '../../src/components/JourneyView/Menu'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import { TemplateView } from '../../src/components/TemplateView/TempateView'
+import { TemplateView } from '../../src/components/TemplateView/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
@@ -35,6 +35,8 @@ function TemplateDetails(): ReactElement {
   const router = useRouter()
   const { templates } = useFlags()
   const AuthUser = useAuthUser()
+
+  // GetJourney if AuthUser is anon
   const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
@@ -60,7 +62,7 @@ function TemplateDetails(): ReactElement {
           menu={<Menu />}
         >
           {templates ? (
-            <TemplateView />
+            <TemplateView authUser={AuthUser} />
           ) : (
             <JourneyView journeyType="Template" />
           )}
@@ -71,11 +73,25 @@ function TemplateDetails(): ReactElement {
 }
 
 export const getServerSideProps = withAuthUserTokenSSR()(
-  async ({ AuthUser, locale }) => {
-    const { flags, translations } = await initAndAuthApp({
+  async ({ AuthUser, locale, req }) => {
+    const { flags, redirect, translations } = await initAndAuthApp({
       AuthUser,
       locale
     })
+
+    // Without this we could get a stack of redirect queries (eg redirect to then terms and conditions, then templates)
+    const initialRedirect = req.headers.referer?.split('?redirect=').pop()
+
+    if (redirect != null) {
+      return initialRedirect != null
+        ? {
+            redirect: {
+              ...redirect,
+              destination: redirect.destination + `?redirect=${initialRedirect}`
+            }
+          }
+        : { redirect }
+    }
 
     return {
       props: {

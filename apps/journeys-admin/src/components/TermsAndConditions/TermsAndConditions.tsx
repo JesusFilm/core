@@ -43,7 +43,11 @@ export function TermsAndConditions(): ReactElement {
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
     await journeyProfileCreate()
-    await router.push('/?onboarding=true')
+    const redirect =
+      router.query.redirect != null
+        ? `?redirect=${router.query.redirect as string}`
+        : ''
+    await router.push(`/teams/new${redirect}`)
   }
 
   return (

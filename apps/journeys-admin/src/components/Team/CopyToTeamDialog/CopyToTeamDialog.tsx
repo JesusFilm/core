@@ -12,10 +12,11 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { useTeam } from '../TeamProvider'
 
-interface DuplicateToTeamDialogProps {
+interface CopyToTeamDialogProps {
   title: string
   submitLabel?: string
   open: boolean
+  loading?: boolean
   onClose: () => void
   submitAction: (teamId: string) => Promise<void>
 }
@@ -24,9 +25,10 @@ export function CopyToTeamDialog({
   title,
   submitLabel = 'Copy',
   open,
+  loading,
   onClose,
   submitAction
-}: DuplicateToTeamDialogProps): ReactElement {
+}: CopyToTeamDialogProps): ReactElement {
   const { query, setActiveTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
   function handleClose(): void {
@@ -61,7 +63,7 @@ export function CopyToTeamDialog({
           open={open}
           onClose={handleClose}
           dialogTitle={{ title: t(title) }}
-          loading={isSubmitting}
+          loading={loading ?? isSubmitting}
           dialogAction={{
             onSubmit: () => {
               if (!isSubmitting) handleSubmit()
