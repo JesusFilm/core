@@ -3,12 +3,14 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
+import isEqual from 'lodash/isEqual'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
 import { TitleDescriptionUpdate } from '../../../../../__generated__/TitleDescriptionUpdate'
 import { FeaturedCheckbox } from '../FeaturedCheckbox'
 
@@ -18,6 +20,15 @@ export const TITLE_DESCRIPTION_UPDATE = gql`
       id
       title
       description
+    }
+  }
+`
+
+export const JOURNEY_FEATURE_UPDATE = gql`
+  mutation JourneyFeature($id: ID!, $feature: Boolean!) {
+    journeyFeature(id: $id, feature: $feature) {
+      id
+      featuredAt
     }
   }
 `
@@ -33,6 +44,11 @@ export function TitleDescriptionDialog({
   const [titleDescriptionUpdate] = useMutation<TitleDescriptionUpdate>(
     TITLE_DESCRIPTION_UPDATE
   )
+
+  const [journeyFeature, { loading }] = useMutation<JourneyFeature>(
+    JOURNEY_FEATURE_UPDATE
+  )
+
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
@@ -41,21 +57,38 @@ export function TitleDescriptionDialog({
   ): Promise<void> => {
     if (journey == null) return
 
+    const journeyUpdateValues = (({ title, description }) => ({
+      title,
+      description
+    }))(journey)
+
+    const formikJourneyUpdateValues = (({ title, description }) => ({
+      title,
+      description
+    }))(values)
+
     try {
-      await titleDescriptionUpdate({
-        variables: {
-          id: journey.id,
-          input: { title: values.title, description: values.description }
-        },
-        optimisticResponse: {
-          journeyUpdate: {
+      if (!isEqual(journeyUpdateValues, formikJourneyUpdateValues)) {
+        await titleDescriptionUpdate({
+          variables: {
             id: journey.id,
-            __typename: 'Journey',
-            title: values.title,
-            description: values.description
+            input: { title: values.title, description: values.description }
+          },
+          optimisticResponse: {
+            journeyUpdate: {
+              id: journey.id,
+              __typename: 'Journey',
+              title: values.title,
+              description: values.description
+            }
           }
-        }
-      })
+        })
+      }
+      if (Boolean(journey.featuredAt) !== values.featuredAt) {
+        void journeyFeature({
+          variables: { id: journey.id, feature: values.featuredAt }
+        })
+      }
       onClose()
     } catch (error) {
       if (error instanceof ApolloError) {
@@ -83,19 +116,24 @@ export function TitleDescriptionDialog({
       // wait for dialog animation to complete
       setTimeout(() =>
         resetForm({
-          values: { title: journey?.title, description: journey?.description }
+          values: {
+            title: journey?.title,
+            description: journey?.description,
+            featuredAt: journey?.featuredAt != null
+          }
         })
       )
     }
   }
 
   return (
-    <>
+    <Stack>
       {journey != null && (
         <Formik
           initialValues={{
             title: journey.title ?? '',
-            description: journey?.description ?? ''
+            description: journey.description ?? '',
+            featuredAt: journey.featuredAt != null
           }}
           onSubmit={handleUpdateTitleDescription}
         >
@@ -140,8 +178,10 @@ export function TitleDescriptionDialog({
                 />
                 <Stack sx={{ pt: 6 }}>
                   <FeaturedCheckbox
-                    featuredAt={journey.featuredAt}
-                    journeyId={journey.id}
+                    loading={loading}
+                    values={values.featuredAt}
+                    handleChange={handleChange}
+                    name="featuredAt"
                   />
                 </Stack>
               </Form>
@@ -149,6 +189,6 @@ export function TitleDescriptionDialog({
           )}
         </Formik>
       )}
-    </>
+    </Stack>
   )
 }
