@@ -20,6 +20,6 @@ export interface JourneyFeature {
 }
 
 export interface JourneyFeatureVariables {
-  journeyFeatureId: string;
+  id: string;
   feature: boolean;
 }

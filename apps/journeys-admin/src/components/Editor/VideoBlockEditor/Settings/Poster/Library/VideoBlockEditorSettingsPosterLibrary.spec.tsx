@@ -41,6 +41,7 @@ const journey: Journey = {
   title: 'my journey',
   strategySlug: null,
   slug: 'my-journey',
+  featuredAt: null,
   language: {
     __typename: 'Language',
     id: '529',

@@ -57,6 +57,7 @@ const defaultJourney: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   title: 'my journey',
+  featuredAt: null,
   strategySlug: null,
   slug: 'my-journey',
   language: {
