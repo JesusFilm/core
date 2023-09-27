@@ -16,6 +16,7 @@ export const defaultJourney: Journey = {
   __typename: 'Journey',
   id: 'journey-id',
   title: 'Journey Heading',
+  featuredAt: null,
   description: 'Description',
   strategySlug: null,
   slug: 'default',
