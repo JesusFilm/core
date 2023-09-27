@@ -16,7 +16,7 @@ import SettingsIcon from '@core/shared/ui/icons/Settings'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
-import { TemplateSettingsDialog } from '../../../JourneyView/TitleDescription/TemplateSettingsDialog'
+import { TemplateSettingsDialog } from '../../../JourneyView/TemplateSettings/TemplateSettingsDialog'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
 

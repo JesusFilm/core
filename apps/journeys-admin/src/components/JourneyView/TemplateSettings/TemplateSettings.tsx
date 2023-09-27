@@ -9,19 +9,19 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { TemplateSettingsDialog } from './TemplateSettingsDialog'
 
-interface TitleDescriptionProps {
+interface TemplateSettingsProps {
   isPublisher?: boolean
 }
 
-export function TitleDescription({
+export function TemplateSettings({
   isPublisher
-}: TitleDescriptionProps): ReactElement {
+}: TemplateSettingsProps): ReactElement {
   const { journey } = useJourney()
 
   const [showTemplateSettingsDialog, setTemplateSettingsDialog] =
     useState(false)
 
-  const handleUpdateTitleDescription = (): void => {
+  const handleeTemplateSettingsOpen = (): void => {
     setTemplateSettingsDialog(true)
   }
 
@@ -44,9 +44,9 @@ export function TitleDescription({
           </Typography>
           {isPublisher === true && journey?.template === true && (
             <IconButton
-              data-testid="EditTitleDescription"
+              data-testid="EditTemplateSettings"
               size="small"
-              onClick={handleUpdateTitleDescription}
+              onClick={handleeTemplateSettingsOpen}
             >
               <Edit2Icon />
             </IconButton>

@@ -41,13 +41,15 @@ export const JOURNEY_FEATURE_UPDATE = gql`
 interface TemplateSettingsDialogProps {
   open: boolean
   onClose: () => void
+  defaultOpenTab?: number
 }
 
 export function TemplateSettingsDialog({
   open,
-  onClose
+  onClose,
+  defaultOpenTab = 0
 }: TemplateSettingsDialogProps): ReactElement {
-  const [tabValue, setTabValue] = useState(0)
+  const [tabValue, setTabValue] = useState(defaultOpenTab)
   const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
   }
@@ -65,23 +67,21 @@ export function TemplateSettingsDialog({
   const { t } = useTranslation()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const handleUpdateTitleDescription = async (
-    values: FormikValues
-  ): Promise<void> => {
+  const handleTemplateUpdate = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
 
-    const journeyUpdateValues = (({ title, description }) => ({
+    const existingValues = (({ title, description }) => ({
       title,
       description
     }))(journey)
 
-    const formikJourneyUpdateValues = (({ title, description }) => ({
+    const formValues = (({ title, description }) => ({
       title,
       description
     }))(values)
 
     try {
-      if (!isEqual(journeyUpdateValues, formikJourneyUpdateValues)) {
+      if (!isEqual(existingValues, formValues)) {
         await titleDescriptionUpdate({
           variables: {
             id: journey.id,
@@ -98,7 +98,7 @@ export function TemplateSettingsDialog({
         })
       }
       if (Boolean(journey.featuredAt) !== values.featuredAt) {
-        void journeyFeature({
+        await journeyFeature({
           variables: { id: journey.id, feature: values.featuredAt }
         })
       }
@@ -148,7 +148,7 @@ export function TemplateSettingsDialog({
             description: journey.description ?? '',
             featuredAt: journey.featuredAt != null
           }}
-          onSubmit={handleUpdateTitleDescription}
+          onSubmit={handleTemplateUpdate}
         >
           {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog
@@ -165,23 +165,23 @@ export function TemplateSettingsDialog({
                 <Tabs
                   value={tabValue}
                   onChange={handleTabChange}
-                  aria-label="background tabs"
+                  aria-label="template-update-settings-tabs"
                   variant="fullWidth"
                 >
                   <Tab
                     label={t('Metadata')}
                     sx={{ borderBottom: 2, borderColor: 'divider' }}
-                    {...tabA11yProps('template-settings', 0)}
+                    {...tabA11yProps('template-meta-data-settings', 0)}
                   />
                   <Tab
                     label={t('Categories')}
                     sx={{ borderBottom: 2, borderColor: 'divider' }}
-                    {...tabA11yProps('template-settings', 1)}
+                    {...tabA11yProps('template-categories-settings', 1)}
                   />
                   <Tab
                     label={t('About')}
                     sx={{ borderBottom: 2, borderColor: 'divider' }}
-                    {...tabA11yProps('template-settings', 2)}
+                    {...tabA11yProps('template-about-settings', 2)}
                   />
                 </Tabs>
                 <TabPanel name="template-settings" value={tabValue} index={0}>

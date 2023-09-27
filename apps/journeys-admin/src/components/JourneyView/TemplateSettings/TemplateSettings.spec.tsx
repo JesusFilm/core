@@ -6,33 +6,15 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { defaultJourney } from '../data'
 
-import { TitleDescription } from './TitleDescription'
+import { TemplateSettings } from './TemplateSettings'
 
-describe('TitleDescription', () => {
-  describe('Journey TitleDescription', () => {
-    it('should render the title and description of a journey', () => {
-      const { getByText, queryByTestId } = render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <TitleDescription />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
 
-      expect(getByText('Journey Heading')).toBeInTheDocument()
-      expect(getByText('Description')).toBeInTheDocument()
-      expect(queryByTestId('CreateRoundedIcon')).not.toBeInTheDocument()
-    })
-  })
-
-  describe('Template TitleDescription', () => {
+describe('TemplateSettings', () => {
+  describe('Template TemplateSettings', () => {
     const template = {
       ...defaultJourney,
       template: true
@@ -48,7 +30,7 @@ describe('TitleDescription', () => {
                 variant: 'admin'
               }}
             >
-              <TitleDescription isPublisher />
+              <TemplateSettings isPublisher />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -59,7 +41,7 @@ describe('TitleDescription', () => {
       expect(getByTestId('Edit2Icon')).toBeInTheDocument()
     })
 
-    it('should open TitleDescriptionDialog', () => {
+    it('should open TemplateSettingsDialog', () => {
       const { getByRole, getByText } = render(
         <MockedProvider>
           <SnackbarProvider>
@@ -69,7 +51,7 @@ describe('TitleDescription', () => {
                 variant: 'admin'
               }}
             >
-              <TitleDescription isPublisher />
+              <TemplateSettings isPublisher />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
