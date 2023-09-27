@@ -131,7 +131,7 @@ export function TeamUpdateDialog({
                 error={Boolean(errors.publicTitle)}
                 onChange={handleChange}
                 helperText={
-                  errors.publicTitle === null
+                  errors.publicTitle !== undefined
                     ? (errors.publicTitle as string)
                     : 'Anyone can view it'
                 }
