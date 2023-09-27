@@ -1,9 +1,17 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import { GET_JOURNEYS } from '../../../libs/useJourneysQuery/useJourneysQuery'
 
 import { MostRelevantTemplates } from './MostRelevantTemplates'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('MostRelevantTemplates', () => {
   const template = {
@@ -56,6 +64,10 @@ describe('MostRelevantTemplates', () => {
   }
 
   it('should render Most Relevant templates', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { tags: ['tagId1'] }
+    } as unknown as NextRouter)
+
     const { getByRole, getAllByTestId } = render(
       <MockedProvider
         mocks={[
@@ -66,7 +78,7 @@ describe('MostRelevantTemplates', () => {
                 where: {
                   template: true,
                   orderByRecent: true,
-                  tagIds: ['767561ca-3f63-46f4-b2a0-3a37f891632a']
+                  tagIds: ['tagId1']
                 }
               }
             },
@@ -85,9 +97,7 @@ describe('MostRelevantTemplates', () => {
           }
         ]}
       >
-        <MostRelevantTemplates
-          tags={['767561ca-3f63-46f4-b2a0-3a37f891632a']}
-        />
+        <MostRelevantTemplates />
       </MockedProvider>
     )
     expect(getByRole('heading', { name: 'Most Relevant' })).toBeInTheDocument()
@@ -95,6 +105,24 @@ describe('MostRelevantTemplates', () => {
       const cards = getAllByTestId(/journey-/)
       expect(cards[0]).toHaveTextContent('Template 1')
       expect(cards[1]).toHaveTextContent('Template 2')
+    })
+  })
+
+  it('should not render Most Relevant Templates when TagIds are not present', async () => {
+    mockUseRouter.mockReturnValue({
+      query: {}
+    } as unknown as NextRouter)
+
+    const { getByRole, queryAllByTestId } = render(
+      <MockedProvider>
+        <MostRelevantTemplates />
+      </MockedProvider>
+    )
+
+    expect(getByRole('heading', { name: 'Most Relevant' })).toBeInTheDocument()
+    await waitFor(() => {
+      const journeys = queryAllByTestId(/journey-/)
+      expect(journeys).toHaveLength(0)
     })
   })
 })
