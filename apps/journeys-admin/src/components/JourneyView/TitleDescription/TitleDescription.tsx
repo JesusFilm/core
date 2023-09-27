@@ -6,8 +6,7 @@ import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-
-import { TitleDescriptionDialog } from './TitleDescriptionDialog'
+import { TemplateSettingsDialog } from './TemplateSettingsDialog'
 
 interface TitleDescriptionProps {
   isPublisher?: boolean
@@ -18,11 +17,11 @@ export function TitleDescription({
 }: TitleDescriptionProps): ReactElement {
   const { journey } = useJourney()
 
-  const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
+  const [showTemplateSettingsDialog, setTemplateSettingsDialog] =
     useState(false)
 
   const handleUpdateTitleDescription = (): void => {
-    setShowTitleDescriptionDialog(true)
+    setTemplateSettingsDialog(true)
   }
 
   return (
@@ -60,9 +59,9 @@ export function TitleDescription({
           )}
         </Typography>
       </Stack>
-      <TitleDescriptionDialog
-        open={showTitleDescriptionDialog}
-        onClose={() => setShowTitleDescriptionDialog(false)}
+      <TemplateSettingsDialog
+        open={showTemplateSettingsDialog}
+        onClose={() => setTemplateSettingsDialog(false)}
       />
     </>
   )

@@ -16,7 +16,7 @@ import SettingsIcon from '@core/shared/ui/icons/Settings'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
-import { TitleDescriptionDialog } from '../../../JourneyView/TitleDescription/TitleDescriptionDialog'
+import { TemplateSettingsDialog } from '../../../JourneyView/TitleDescription/TemplateSettingsDialog'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
 
@@ -209,7 +209,7 @@ export function Menu(): ReactElement {
         open={showDescriptionDialog}
         onClose={handleCloseDescription}
       />
-      <TitleDescriptionDialog
+      <TemplateSettingsDialog
         open={showTitleDescriptionDialog}
         onClose={handleCloseTitleDescription}
       />

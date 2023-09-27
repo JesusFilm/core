@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { simpleComponentConfig } from '../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
 
 import { FeaturedCheckbox } from './FeaturedCheckbox'
 
@@ -20,16 +20,24 @@ const Template: StoryObj<typeof FeaturedCheckbox> = {
 export const Default = {
   ...Template,
   args: {
-    journeyId: 'journeyId',
-    featuredAt: null
+    loading: false,
+    values: false
+  }
+}
+
+export const Disabled = {
+  ...Template,
+  args: {
+    loading: true,
+    values: true
   }
 }
 
 export const Checked = {
   ...Template,
   args: {
-    journeyId: 'journeyId',
-    featuredAt: '2021-11-19T12:34:56.647Z'
+    loading: false,
+    values: true
   }
 }
 

@@ -1,18 +1,24 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikValues } from 'formik'
 import isEqual from 'lodash/isEqual'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
 import { TitleDescriptionUpdate } from '../../../../../__generated__/TitleDescriptionUpdate'
-import { FeaturedCheckbox } from '../FeaturedCheckbox'
+
+import { FeaturedCheckbox } from './FeaturedCheckbox'
 
 export const TITLE_DESCRIPTION_UPDATE = gql`
   mutation TitleDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -32,15 +38,20 @@ export const JOURNEY_FEATURE_UPDATE = gql`
     }
   }
 `
-interface TitleDescriptionDialogProps {
+interface TemplateSettingsDialogProps {
   open: boolean
   onClose: () => void
 }
 
-export function TitleDescriptionDialog({
+export function TemplateSettingsDialog({
   open,
   onClose
-}: TitleDescriptionDialogProps): ReactElement {
+}: TemplateSettingsDialogProps): ReactElement {
+  const [tabValue, setTabValue] = useState(0)
+  const handleTabChange = (_event, newValue): void => {
+    setTabValue(newValue)
+  }
+
   const [titleDescriptionUpdate] = useMutation<TitleDescriptionUpdate>(
     TITLE_DESCRIPTION_UPDATE
   )
@@ -51,6 +62,8 @@ export function TitleDescriptionDialog({
 
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation()
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const handleUpdateTitleDescription = async (
     values: FormikValues
@@ -146,44 +159,73 @@ export function TitleDescriptionDialog({
                 onSubmit: handleSubmit,
                 closeLabel: 'Cancel'
               }}
-              divider
+              fullscreen={!smUp}
             >
               <Form>
-                <Typography variant="body1" gutterBottom>
-                  Journey Title
-                </Typography>
-                <TextField
-                  id="title"
-                  name="title"
-                  hiddenLabel
-                  fullWidth
-                  value={values.title}
-                  variant="filled"
-                  onChange={handleChange}
-                  sx={{ mb: 2 }}
-                />
-                <Typography variant="body1" gutterBottom>
-                  Description
-                </Typography>
-                <TextField
-                  id="description"
-                  name="description"
-                  hiddenLabel
-                  fullWidth
-                  value={values.description}
-                  multiline
-                  variant="filled"
-                  rows={3}
-                  onChange={handleChange}
-                />
-                <Stack sx={{ pt: 6 }}>
-                  <FeaturedCheckbox
-                    loading={loading}
-                    values={values.featuredAt}
-                    handleChange={handleChange}
-                    name="featuredAt"
+                <Tabs
+                  value={tabValue}
+                  onChange={handleTabChange}
+                  aria-label="background tabs"
+                  variant="fullWidth"
+                >
+                  <Tab
+                    label={t('Metadata')}
+                    sx={{ borderBottom: 2, borderColor: 'divider' }}
+                    {...tabA11yProps('template-settings', 0)}
                   />
-                </Stack>
+                  <Tab
+                    label={t('Categories')}
+                    sx={{ borderBottom: 2, borderColor: 'divider' }}
+                    {...tabA11yProps('template-settings', 1)}
+                  />
+                  <Tab
+                    label={t('About')}
+                    sx={{ borderBottom: 2, borderColor: 'divider' }}
+                    {...tabA11yProps('template-settings', 2)}
+                  />
+                </Tabs>
+                <TabPanel name="template-settings" value={tabValue} index={0}>
+                  <Stack sx={{ pt: 6 }} gap={5}>
+                    <TextField
+                      label={t('Title')}
+                      id="title"
+                      name="title"
+                      fullWidth
+                      value={values.title}
+                      variant="filled"
+                      onChange={handleChange}
+                    />
+                    <TextField
+                      label={t('Description')}
+                      id="description"
+                      name="description"
+                      fullWidth
+                      value={values.description}
+                      multiline
+                      variant="filled"
+                      rows={3}
+                      onChange={handleChange}
+                    />
+                    <FeaturedCheckbox
+                      loading={loading}
+                      values={values.featuredAt}
+                      handleChange={handleChange}
+                      name="featuredAt"
+                    />
+                  </Stack>
+                </TabPanel>
+                <TabPanel name="template-settings" value={tabValue} index={1}>
+                  <Stack sx={{ pt: 6 }}>
+                    Categories - yet to be implemented - contact
+                    support@nextsteps.is for more info
+                  </Stack>
+                </TabPanel>
+                <TabPanel name="template-settings" value={tabValue} index={2}>
+                  <Stack sx={{ pt: 6 }}>
+                    About - yet to be implemented - contact support@nextsteps.is
+                    for more info
+                  </Stack>
+                </TabPanel>
               </Form>
             </Dialog>
           )}
