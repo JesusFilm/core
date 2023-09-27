@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { MouseEvent, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -64,26 +66,31 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
             wrappers={children.props.wrappers}
           />
           {blocks.length === 0 && smUp === false && (
-            <Box
+            <Stack
               sx={{
                 position: 'absolute',
                 top: 60,
                 bottom: 130,
                 right: 20,
-                left: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
-                display: 'flex'
+                left: 20
               }}
+              alignItems="center"
+              justifyContent="center"
+              spacing={5}
             >
+              <Typography>{t('Fill this card with content')}</Typography>
               <Button
                 variant="contained"
                 size="large"
                 onClick={openCardLibrary}
+                fullWidth
               >
-                {t('open card template library')}
+                {t('Select Card Template')}
               </Button>
-            </Box>
+              <Typography variant="body2">
+                {t('or add blocks from the list below ⤵')}
+              </Typography>
+            </Stack>
           )}
         </Box>
       </>

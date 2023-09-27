@@ -1,8 +1,11 @@
-import { render } from '@testing-library/react'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
+import { EditorProvider, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 
@@ -13,11 +16,29 @@ jest.mock('@core/journeys/ui/Card', () => ({
   Card: jest.fn(() => <></>)
 }))
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 describe('CardWrapper', () => {
+  function Container(_props: { wrappers?: WrappersProps }): ReactElement {
+    return <></>
+  }
+
+  function EditorState(): ReactElement {
+    const { state } = useEditor()
+    return (
+      <>
+        <div>hello</div>
+        <div>selectedBlock: {state.selectedBlock?.id}</div>
+        <div>drawerTitle: {state.drawerTitle}</div>
+        <div>selectedAttributeId: {state.selectedAttributeId}</div>
+      </>
+    )
+  }
+
   it('should set videoId to null', () => {
-    const Container = (_props: {
-      wrappers: Record<string, never>
-    }): ReactElement => <></>
     const block: TreeBlock = {
       id: 'card5.id',
       __typename: 'CardBlock',
@@ -128,9 +149,6 @@ describe('CardWrapper', () => {
   })
 
   it('should handle where videoId is not set', () => {
-    const Container = (_props: {
-      wrappers: Record<string, never>
-    }): ReactElement => <></>
     const block: TreeBlock = {
       id: 'card5.id',
       __typename: 'CardBlock',
@@ -238,5 +256,130 @@ describe('CardWrapper', () => {
       },
       {}
     )
+  })
+
+  it('does not show Select Card Template button when desktop', () => {
+    const card: TreeBlock = {
+      id: 'cardId',
+      __typename: 'CardBlock',
+      parentBlockId: 'stepId',
+      coverBlockId: null,
+      parentOrder: 0,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
+    const step: TreeBlock = {
+      id: 'stepId',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      children: [card]
+    }
+    const { queryByRole } = render(
+      <EditorProvider initialState={{ steps: [step] }}>
+        <EditorState />
+        <CardWrapper block={card}>
+          <Container wrappers={{}} />
+        </CardWrapper>
+      </EditorProvider>
+    )
+    expect(
+      queryByRole('button', { name: 'Select Card Template' })
+    ).not.toBeInTheDocument()
+  })
+
+  describe('mobile', () => {
+    beforeEach(() =>
+      (useMediaQuery as jest.Mock).mockImplementation(() => false)
+    )
+
+    it('opens card template library', () => {
+      const card: TreeBlock = {
+        id: 'cardId',
+        __typename: 'CardBlock',
+        parentBlockId: 'stepId',
+        coverBlockId: null,
+        parentOrder: 0,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: []
+      }
+      const step: TreeBlock = {
+        id: 'stepId',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        children: [card]
+      }
+      const { getByRole, getByText } = render(
+        <EditorProvider initialState={{ steps: [step] }}>
+          <EditorState />
+          <CardWrapper block={card}>
+            <Container wrappers={{}} />
+          </CardWrapper>
+        </EditorProvider>
+      )
+      fireEvent.click(getByRole('button', { name: 'Select Card Template' }))
+      expect(getByText('selectedBlock: stepId')).toBeInTheDocument()
+      expect(getByText('drawerTitle: Card Templates')).toBeInTheDocument()
+      expect(getByText('selectedAttributeId:')).toBeInTheDocument()
+    })
+
+    it('does not show Select Card Template button when children', () => {
+      const card: TreeBlock = {
+        id: 'cardId',
+        __typename: 'CardBlock',
+        parentBlockId: 'stepId',
+        coverBlockId: null,
+        parentOrder: 0,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'imageId',
+            __typename: 'ImageBlock',
+            src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+            width: 1920,
+            height: 1080,
+            alt: 'random image from unsplash',
+            parentBlockId: 'cardId',
+            parentOrder: 0,
+            children: [],
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+          }
+        ]
+      }
+      const step: TreeBlock = {
+        id: 'stepId',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        children: [card]
+      }
+      const { queryByRole } = render(
+        <EditorProvider initialState={{ steps: [step] }}>
+          <EditorState />
+          <CardWrapper block={card}>
+            <Container wrappers={{}} />
+          </CardWrapper>
+        </EditorProvider>
+      )
+      expect(
+        queryByRole('button', { name: 'Select Card Template' })
+      ).not.toBeInTheDocument()
+    })
   })
 })
