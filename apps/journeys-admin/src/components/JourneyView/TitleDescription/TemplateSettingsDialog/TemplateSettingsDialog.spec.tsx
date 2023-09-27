@@ -28,7 +28,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-describe('TitleDescriptionDialog', () => {
+describe('TemplateSettingsDialog', () => {
   beforeEach(() => jest.clearAllMocks())
 
   it('should update title and description on submit', async () => {
