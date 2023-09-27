@@ -43,7 +43,7 @@ export function EmailInviteForm({
         variables: {
           journeyId,
           input: {
-            email: values.email
+            email: values.email.trim().toLowerCase()
           }
         },
         update(cache, { data }) {
@@ -86,6 +86,7 @@ export function EmailInviteForm({
   const usersToLowerCase = users.map((user) => user.toLowerCase())
   const validationSchema = object().shape({
     email: string()
+      .trim()
       .lowercase()
       .email(t('Please enter a valid email address'))
       .required(t('Required'))
