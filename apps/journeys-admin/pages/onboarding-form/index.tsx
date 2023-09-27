@@ -7,16 +7,16 @@ import {
 } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
+import { formiumClient } from '@core/shared/ui/formiumClient'
 import { FormiumForm } from '@core/shared/ui/FormiumForm'
 
-import { formiumClient } from '../../src/libs/formiumClient'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
-interface Props {
+interface OnboardingFormPageProps {
   form: Form
 }
 
-function OnboardingFormPage({ form }: Props): ReactElement {
+function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
   return (
     <Box
       sx={{
@@ -24,7 +24,7 @@ function OnboardingFormPage({ form }: Props): ReactElement {
         justifyContent: 'center'
       }}
     >
-      <FormiumForm formiumClient={formiumClient} form={form} />
+      <FormiumForm form={form} />
     </Box>
   )
 }
@@ -42,7 +42,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  const form = await formiumClient.getFormBySlug('ns-test')
+  const form = await formiumClient.getFormBySlug('ns-onboarding-form')
 
   return {
     props: {
