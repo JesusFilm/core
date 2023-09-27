@@ -1,4 +1,3 @@
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
@@ -10,6 +9,8 @@ import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+
+import X2Icon from '@core/shared/ui/icons/X2'
 
 import { ClearAllButton } from './ClearAllButton'
 
@@ -44,7 +45,7 @@ export function FilterDrawer({
             Filters <ClearAllButton handleClearAll={handleClearAll} />
           </Typography>
           <IconButton sx={{ ml: 'auto' }}>
-            <CloseRoundedIcon onClick={handleClose} />
+            <X2Icon onClick={handleClose} />
           </IconButton>
         </Stack>
         <Divider />

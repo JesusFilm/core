@@ -72,7 +72,7 @@ describe('PageWrapper', () => {
         </MockedProvider>
       )
       expect(getAllByRole('button')[0]).toContainElement(
-        getByTestId('ChevronRightRoundedIcon')
+        getByTestId('ChevronRightIcon')
       )
       fireEvent.click(getAllByRole('button')[0])
       expect(getByText('Discover')).toBeInTheDocument()
@@ -94,7 +94,7 @@ describe('PageWrapper', () => {
       )
       expect(getByText('Active Journeys')).toBeInTheDocument()
       const button = getAllByRole('button')[0]
-      expect(button).toContainElement(getByTestId('MenuIcon'))
+      expect(button).toContainElement(getByTestId('Menu1Icon'))
       fireEvent.click(button)
       expect(getByText('Discover')).toBeInTheDocument()
     })
@@ -108,7 +108,7 @@ describe('PageWrapper', () => {
         </MockedProvider>
       )
       expect(getByText('Journey Edit')).toBeInTheDocument()
-      expect(queryByTestId('MenuIcon')).not.toBeInTheDocument()
+      expect(queryByTestId('Menu1Icon')).not.toBeInTheDocument()
     })
   })
 })

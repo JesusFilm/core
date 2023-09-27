@@ -640,9 +640,11 @@ export interface JourneyFields {
   status: JourneyStatus;
   language: JourneyFields_language;
   createdAt: any;
+  featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  strategySlug: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;

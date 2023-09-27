@@ -393,4 +393,22 @@ describe('SignUp', () => {
 
     expect(await waitFor(() => getByText('Error'))).toBeInTheDocument()
   })
+
+  it('should not allow selection in editor', () => {
+    const { getAllByRole } = render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <SignUpMock />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    const name = getAllByRole('textbox')[0]
+    fireEvent.click(name)
+    expect(name.matches(':focus')).not.toBeTruthy()
+
+    const email = getAllByRole('textbox')[1]
+    fireEvent.click(email)
+    expect(email.matches(':focus')).not.toBeTruthy()
+  })
 })

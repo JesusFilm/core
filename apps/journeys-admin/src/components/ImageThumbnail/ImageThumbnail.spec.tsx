@@ -46,6 +46,6 @@ describe('ImageThumbnail', () => {
     const { getByTestId } = render(
       <ImageThumbnail imageSrc={image.src} imageAlt={image.alt} error />
     )
-    expect(getByTestId('BrokenImageOutlinedIcon')).toBeInTheDocument()
+    expect(getByTestId('ImageXIcon')).toBeInTheDocument()
   })
 })

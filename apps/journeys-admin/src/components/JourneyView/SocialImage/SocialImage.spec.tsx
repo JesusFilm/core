@@ -56,6 +56,6 @@ describe('SocialImage', () => {
         <SocialImage />
       </JourneyProvider>
     )
-    expect(getByTestId('ImageIcon')).toBeInTheDocument()
+    expect(getByTestId('GridEmptyIcon')).toBeInTheDocument()
   })
 })

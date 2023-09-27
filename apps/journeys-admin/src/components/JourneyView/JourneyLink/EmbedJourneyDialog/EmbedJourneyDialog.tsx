@@ -1,4 +1,3 @@
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -15,6 +14,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { EmbedCardPreview } from './EmbedCardPreview'
 
@@ -94,7 +94,7 @@ iframe.style.zIndex="auto"
             }}
           >
             <AccordionSummary
-              expandIcon={<ExpandMoreIcon color="secondary" />}
+              expandIcon={<ChevronDownIcon color="secondary" />}
               aria-controls="panel-content"
               sx={{
                 flexDirection: 'row-reverse'

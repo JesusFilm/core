@@ -3,9 +3,9 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-/** Contains information for the page and renders the header */
+// Contains information for the page and renders the header
 
-export interface HeaderProps {
+interface HeaderProps {
   form: Form
   page: Page
   pageIndex: number

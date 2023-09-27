@@ -16,6 +16,8 @@ describe('HostTitleLocation', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     title: 'my journey',
+    featuredAt: null,
+    strategySlug: null,
     slug: 'my-journey',
     language: {
       __typename: 'Language' as const,

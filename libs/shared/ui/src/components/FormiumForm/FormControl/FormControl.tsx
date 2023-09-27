@@ -2,7 +2,7 @@ import { FormControlProps } from '@formium/react'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-/**
+/*
 label: field question
 description: field helper text
 children: form elements

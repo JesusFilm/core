@@ -148,8 +148,13 @@ export const TextResponse = ({
                 onClick={(e) => e.stopPropagation()}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                disabled={selectedBlock !== undefined}
-                inputProps={{ maxLength: 1000 }}
+                inputProps={{
+                  maxLength: 1000,
+                  readOnly: selectedBlock !== undefined,
+                  sx: {
+                    pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                  }
+                }}
               />
               <LoadingButton
                 type="submit"

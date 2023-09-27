@@ -1,27 +1,19 @@
 import { FormElementType } from '@formium/client'
-import { FormControlProps } from '@formium/react'
-import {
-  CheckboxProps,
-  RadioGroupProps,
-  TextInputProps,
-  TextareaProps
-} from '@formium/react/dist/inputs'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
+import { ComponentProps } from 'react'
 
 import { sharedUiConfig } from '../../libs/sharedUiConfig'
 
+import { Button } from './Button'
 import { Checkbox } from './Checkbox'
 import { ElementsWrapper } from './ElementsWrapper'
 import { FooterWrapper } from './FooterWrapper'
 import { FormControl } from './FormControl'
 import { FormiumForm } from './FormiumForm'
-import { Header, HeaderProps } from './Header'
-import { NextButton } from './NextButton'
+import { Header } from './Header'
 import { PageWrapper } from './PageWrapper'
-import { PreviousButton } from './PreviousButton'
 import { RadioGroup } from './RadioGroup'
-import { SubmitButton } from './SubmitButton'
 import { Textarea } from './Textarea'
 import { TextInput } from './TextInput'
 
@@ -32,15 +24,15 @@ const FormiumFormStory: Meta<typeof FormiumForm> = {
 }
 
 interface FormStoryProps {
-  textInputProps: TextInputProps
-  textAreaProps: TextareaProps
-  checkboxProps: CheckboxProps
-  radioGroupProps: RadioGroupProps
-  headerProps: HeaderProps
-  formControlProps: FormControlProps
-  previousButtonProps: JSX.IntrinsicElements['button']
-  nextButtonProps: JSX.IntrinsicElements['button']
-  submitButtonProps: JSX.IntrinsicElements['button']
+  textInputProps: ComponentProps<typeof TextInput>
+  textAreaProps: ComponentProps<typeof Textarea>
+  checkboxProps: ComponentProps<typeof Checkbox>
+  radioGroupProps: ComponentProps<typeof RadioGroup>
+  headerProps: ComponentProps<typeof Header>
+  formControlProps: ComponentProps<typeof FormControl>
+  previousButtonProps: ComponentProps<typeof Button>
+  nextButtonProps: ComponentProps<typeof Button>
+  submitButtonProps: ComponentProps<typeof Button>
 }
 
 const defaultFormStoryArgs: FormStoryProps = {
@@ -98,12 +90,12 @@ const defaultFormStoryArgs: FormStoryProps = {
     ],
     onChange: noop,
     onBlur: noop
-  } as unknown as RadioGroupProps,
+  } as unknown as ComponentProps<typeof RadioGroup>,
   headerProps: {
     page: {
       title: 'Page Title'
     }
-  } as unknown as HeaderProps,
+  } as unknown as ComponentProps<typeof Header>,
   formControlProps: {
     label: 'Form Control Label',
     description: 'Form Control Description',
@@ -144,9 +136,9 @@ const Template: StoryObj<FormStoryProps> = {
         </ElementsWrapper>
         <FooterWrapper>
           <>
-            <PreviousButton {...args.previousButtonProps} />
-            <SubmitButton {...args.submitButtonProps} />
-            <NextButton {...args.nextButtonProps} />
+            <Button {...args.previousButtonProps} />
+            <Button {...args.submitButtonProps} />
+            <Button {...args.nextButtonProps} />
           </>
         </FooterWrapper>
       </>
