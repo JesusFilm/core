@@ -14,9 +14,6 @@ DROP INDEX "Visitor_id_teamId_createdAt_userId_status_countryCode_idx";
 CREATE INDEX "Action_parentBlockId_idx" ON "Action"("parentBlockId");
 
 -- CreateIndex
-CREATE INDEX "Block_id_idx" ON "Block"("id");
-
--- CreateIndex
 CREATE INDEX "Block_journeyId_idx" ON "Block"("journeyId");
 
 -- CreateIndex
@@ -38,13 +35,7 @@ CREATE INDEX "Event_blockId_idx" ON "Event"("blockId");
 CREATE INDEX "Event_userId_idx" ON "Event"("userId");
 
 -- CreateIndex
-CREATE INDEX "Host_id_idx" ON "Host"("id");
-
--- CreateIndex
 CREATE INDEX "Host_teamId_idx" ON "Host"("teamId");
-
--- CreateIndex
-CREATE INDEX "Journey_id_idx" ON "Journey"("id");
 
 -- CreateIndex
 CREATE INDEX "JourneyProfile_userId_idx" ON "JourneyProfile"("userId");
@@ -74,28 +65,16 @@ CREATE INDEX "JourneyVisitor_activityCount_idx" ON "JourneyVisitor"("activityCou
 CREATE INDEX "JourneyVisitor_duration_idx" ON "JourneyVisitor"("duration" DESC);
 
 -- CreateIndex
-CREATE INDEX "Team_id_idx" ON "Team"("id");
-
--- CreateIndex
-CREATE INDEX "UserInvite_id_idx" ON "UserInvite"("id");
-
--- CreateIndex
 CREATE INDEX "UserInvite_email_acceptedAt_removedAt_idx" ON "UserInvite"("email", "acceptedAt", "removedAt");
 
 -- CreateIndex
 CREATE INDEX "UserJourney_journeyId_idx" ON "UserJourney"("journeyId");
 
 -- CreateIndex
-CREATE INDEX "UserJourney_id_idx" ON "UserJourney"("id");
-
--- CreateIndex
 CREATE INDEX "UserJourney_role_idx" ON "UserJourney"("role");
 
 -- CreateIndex
 CREATE INDEX "UserRole_userId_idx" ON "UserRole"("userId");
-
--- CreateIndex
-CREATE INDEX "UserTeam_id_idx" ON "UserTeam"("id");
 
 -- CreateIndex
 CREATE INDEX "UserTeam_role_idx" ON "UserTeam"("role");
@@ -105,9 +84,6 @@ CREATE INDEX "UserTeam_teamId_idx" ON "UserTeam"("teamId");
 
 -- CreateIndex
 CREATE INDEX "UserTeamInvite_email_acceptedAt_removedAt_idx" ON "UserTeamInvite"("email", "acceptedAt", "removedAt");
-
--- CreateIndex
-CREATE INDEX "UserTeamInvite_id_idx" ON "UserTeamInvite"("id");
 
 -- CreateIndex
 CREATE INDEX "UserTeamInvite_teamId_idx" ON "UserTeamInvite"("teamId");

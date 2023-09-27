@@ -161,7 +161,6 @@ model Host {
   updatedAt DateTime  @default(now()) @updatedAt
   journeys  Journey[]
 
-  @@index(id)
   @@index(teamId)
 }
 
@@ -207,7 +206,6 @@ model Team {
   hosts           Host[]
   UserTeamInvites UserTeamInvite[]
 
-  @@index(id)
   @@index(title)
 }
 
@@ -221,7 +219,6 @@ model UserTeam {
   updatedAt DateTime     @updatedAt
 
   @@unique([teamId, userId])
-  @@index(id)
   @@index(role)
   @@index(teamId)
 }
@@ -240,7 +237,6 @@ model UserTeamInvite {
 
   @@unique([teamId, email])
   @@index([email, acceptedAt, removedAt])
-  @@index(id)
   @@index(email)
   @@index(teamId)
 }
@@ -267,7 +263,6 @@ model UserJourney {
 
   @@unique([journeyId, userId])
   @@index(journeyId)
-  @@index(id)
   @@index(role)
 }
 
@@ -322,7 +317,6 @@ model Journey {
   journeyVisitors     JourneyVisitor[]
   strategySlug        String?
 
-  @@index(id)
   @@index(title)
 }
 
@@ -358,7 +352,6 @@ model UserInvite {
   journey    Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([journeyId, email])
-  @@index(id)
   @@index([email, acceptedAt, removedAt])
 }
 
@@ -435,7 +428,6 @@ model Block {
   childBlocks             Block[]              @relation("ParentBlock")
   targetActions           Action[]             @relation("Block")
 
-  @@index(id)
   @@index(journeyId)
   @@index(parentOrder(sort: Asc))
   @@index(typename)
