@@ -3,11 +3,12 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
+import { CategoryTemplates } from './CategoryTemplates'
 import { FeaturedAndNewTemplates } from './FeaturedAndNewTemplates'
 
 export function TemplateSections(): ReactElement {
   const router = useRouter()
-  const tags = router.query.tags
+  const tags = router.query.tags as string[]
 
   return (
     <Stack spacing={8}>
@@ -25,6 +26,7 @@ export function TemplateSections(): ReactElement {
       ) : (
         <FeaturedAndNewTemplates />
       )}
+      <CategoryTemplates />
     </Stack>
   )
 }
