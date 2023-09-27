@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
 import { useTeam } from '../TeamProvider'
@@ -114,10 +115,9 @@ export function TeamUpdateDialog({
                 variant="filled"
                 error={Boolean(errors.title)}
                 onChange={handleChange}
-                helperText={errors.title as string}
+                helperText={errors.title !== undefined ? errors.title as string : "Private: Visible only to your team"}
                 label="Team Name"
               />
-
               <TextField
                 id="publicTitle"
                 name="publicTitle"
@@ -126,16 +126,26 @@ export function TeamUpdateDialog({
                 variant="filled"
                 error={Boolean(errors.publicTitle)}
                 onChange={handleChange}
-                helperText={errors.publicTitle as string}
-                hiddenLabel
+                helperText={errors.publicTitle === null ? errors.publicTitle as string : "Anyone can view it"}
+                label="Legal Name"
                 placeholder={values.title}
               />
 
-              <Typography>
-                {t(
-                  "Users will see this when the information (i) icon is clicked. It could be a mission name, the name of a website, or any other public detail you're willing to share."
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={3}
+                color="text.secondary"
+              >
+                <InformationCircleContainedIcon
+                  sx={{ color: 'secondary.light' }}
+                />
+                <Typography variant="caption" color="secondary.light" gutterBottom>
+                  {t(
+                  "When visitors click the info icon, they will see text from the Legal Name box. This text can be a mission name, website title, or other public information."
                 )}
-              </Typography>
+                </Typography>
+              </Stack>
             </Stack>
           </Form>
         </Dialog>
