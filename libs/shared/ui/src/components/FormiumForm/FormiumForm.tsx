@@ -43,8 +43,9 @@ interface FormiumFormProps {
 
 export function FormiumForm({ form }: FormiumFormProps): ReactElement {
   async function handleSubmit(values: FormikValues): Promise<void> {
-    await formiumClient.submitForm('ns-test', values)
+    await formiumClient.submitForm(form.slug, values)
   }
+
   return (
     <Formium data={form} components={myComponents} onSubmit={handleSubmit} />
   )
