@@ -162,11 +162,14 @@
   "Details": "Details",
   "Properties": "Properties",
   "Mark as Featured": "Mark as Featured",
+<<<<<<< HEAD
   "Metadata": "Metadata",
   "Categories": "Categories",
   "About": "About",
   "Title": "Title",
   "Description": "Description",
+=======
+>>>>>>> 2c85d35ec (feat: add featured checkbox to dialog (#1910))
   "Showing": "Showing",
   "visitors out of": "visitors out of",
   "Load More": "Load More",
