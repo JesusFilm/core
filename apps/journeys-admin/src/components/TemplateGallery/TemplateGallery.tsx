@@ -2,6 +2,8 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
+import { TemplateSections } from '../TemplateSections'
+
 export function TemplateGallery(): ReactElement {
   return (
     <Box>
@@ -11,6 +13,7 @@ export function TemplateGallery(): ReactElement {
       <Typography variant="h3">
         Your email is currently under a launch darkly flag
       </Typography>
+      <TemplateSections />
     </Box>
   )
 }
