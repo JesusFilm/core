@@ -1,6 +1,10 @@
 enum Service {
-  journeys
-  watch
+  apiJourneys
+  apiLanguages
+  apiMedia
+  apiTags
+  apiUsers
+  apiVideos
 }
 
 type Tag @key(fields: "id") {

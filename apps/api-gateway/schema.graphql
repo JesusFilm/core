@@ -1490,8 +1490,12 @@ enum SegmindModel
 enum Service
   @join__type(graph: TAGS)
 {
-  journeys @join__enumValue(graph: TAGS)
-  watch @join__enumValue(graph: TAGS)
+  apiJourneys @join__enumValue(graph: TAGS)
+  apiLanguages @join__enumValue(graph: TAGS)
+  apiMedia @join__enumValue(graph: TAGS)
+  apiTags @join__enumValue(graph: TAGS)
+  apiUsers @join__enumValue(graph: TAGS)
+  apiVideos @join__enumValue(graph: TAGS)
 }
 
 type SignUpBlock implements Block

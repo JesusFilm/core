@@ -11,8 +11,12 @@ directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFAC
 directive @extends on OBJECT | INTERFACE
 
 enum Service {
-  journeys
-  watch
+  apiJourneys
+  apiLanguages
+  apiMedia
+  apiTags
+  apiUsers
+  apiVideos
 }
 
 type Tag
