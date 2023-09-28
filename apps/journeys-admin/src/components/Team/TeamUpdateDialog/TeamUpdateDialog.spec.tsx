@@ -52,7 +52,8 @@ describe('TeamUpdateDialog', () => {
       variables: {
         id: 'teamId',
         input: {
-          title: 'Team Title'
+          title: 'Team Title',
+          publicTitle: ''
         }
       }
     },
@@ -61,6 +62,7 @@ describe('TeamUpdateDialog', () => {
         teamUpdate: {
           id: 'teamId',
           title: 'Team Title',
+          publicTitle: '',
           __typename: 'Team'
         }
       }
