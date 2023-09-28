@@ -283,7 +283,7 @@ describe('TemplateSettingsDialog', () => {
   })
 
   it('calls on close and resets form when dialog is closed', async () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getByTestId, getAllByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <JourneyProvider
@@ -298,18 +298,29 @@ describe('TemplateSettingsDialog', () => {
       </MockedProvider>
     )
 
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'some title that wont be saved' }
+    })
+    expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
+      title: 'some title that wont be saved'
+    })
+    fireEvent.change(getAllByRole('textbox')[1], {
+      target: { value: 'some description that wont be saved' }
+    })
+    expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
+      description: 'some description that wont be saved'
+    })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalled()
-    })
+      expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
+        description: defaultJourney.description
+      })
 
-    expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
-      description: defaultJourney.description
-    })
-
-    expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
-      title: defaultJourney.title
+      expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
+        title: defaultJourney.title
+      })
     })
   })
 
