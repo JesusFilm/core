@@ -139,11 +139,7 @@ export function TeamUpdateDialog({
                 placeholder={values.title}
               />
 
-              <Stack
-                direction="row"
-                spacing={3}
-                color="text.secondary"
-              >
+              <Stack direction="row" spacing={3} color="text.secondary">
                 <InformationCircleContainedIcon
                   sx={{ color: 'secondary.light' }}
                 />
