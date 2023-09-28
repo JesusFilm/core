@@ -133,7 +133,7 @@ export function TeamUpdateDialog({
                 helperText={
                   errors.publicTitle !== undefined
                     ? (errors.publicTitle as string)
-                    : 'Anyone can view it'
+                    : 'Public: Anyone can view it'
                 }
                 label="Legal Name"
                 placeholder={values.title}
@@ -141,7 +141,6 @@ export function TeamUpdateDialog({
 
               <Stack
                 direction="row"
-                alignItems="center"
                 spacing={3}
                 color="text.secondary"
               >
