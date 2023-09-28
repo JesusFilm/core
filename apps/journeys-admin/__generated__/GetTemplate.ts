@@ -629,6 +629,7 @@ export interface GetTemplate_template_team {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
 }
 
 export interface GetTemplate_template {
