@@ -13,6 +13,7 @@ export interface TeamUpdate_teamUpdate {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
 }
 
 export interface TeamUpdate {
