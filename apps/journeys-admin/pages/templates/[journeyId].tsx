@@ -27,17 +27,18 @@ function TemplateDetails(): ReactElement {
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string
   })
+  const template = data?.journey
   useInvalidJourneyRedirect(data)
 
   return (
     <>
       <NextSeo
-        title={data?.journey.title ?? t('Journey Template')}
-        description={data?.journey.description ?? undefined}
+        title={template?.title ?? t('Journey Template')}
+        description={template?.description ?? undefined}
       />
       <JourneyProvider
         value={{
-          journey: data?.journey ?? undefined,
+          journey: template,
           variant: 'admin'
         }}
       >

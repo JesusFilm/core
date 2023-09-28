@@ -15,8 +15,7 @@ export const GET_JOURNEY = gql`
     }
   }
 `
-
-// Gets journey by id
+// useJourney in journeys-admin gets journey by databaseId
 export function useJourneyQuery(
   variables?: GetJourneyVariables
 ): QueryResult<GetJourney, GetJourneyVariables> {
