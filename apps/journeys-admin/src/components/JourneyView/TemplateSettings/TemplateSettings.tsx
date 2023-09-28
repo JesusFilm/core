@@ -36,7 +36,6 @@ export function TemplateSettings(): ReactElement {
               <Skeleton variant="text" width="60%" />
             )}
           </Typography>
-
           <IconButton
             data-testid="EditTemplateSettings"
             size="small"
