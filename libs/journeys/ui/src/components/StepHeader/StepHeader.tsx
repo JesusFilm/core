@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -15,19 +14,6 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '../../libs/JourneyProvider'
 
-import { GetJourneyTeam } from './__generated__/GetJourneyTeam'
-
-export const GET_JOURNEY_TEAM = gql`
-  query GetJourneyTeam($journeyId: ID!) {
-    journey(id: $journeyId) {
-      team {
-        title
-        publicTitle
-      }
-    }
-  }
-`
-
 interface Props {
   sx?: SxProps
 }
@@ -37,12 +23,6 @@ export function StepHeader({ sx }: Props): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-
-  const { data } = useQuery<GetJourneyTeam>(GET_JOURNEY_TEAM, {
-    variables: {
-      journeyId: journey?.slug
-    }
-  })
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
     if (variant === 'default' || variant === 'embed')
@@ -87,7 +67,7 @@ export function StepHeader({ sx }: Props): ReactElement {
       >
         <MuiMenuItem disabled>
           <Typography color="text.primary" variant="body2">
-            {data?.journey.team?.publicTitle ?? data?.journey.team?.title}
+            {journey?.team?.publicTitle ?? journey?.team?.title}
           </Typography>
         </MuiMenuItem>
         <Divider />
@@ -131,7 +111,7 @@ export function StepHeader({ sx }: Props): ReactElement {
           >
             {t(
               'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".',
-              { teamTitle: journey?.team?.title ?? '' }
+              { teamTitle: journey?.team?.publicTitle ?? journey?.team?.title ?? '' }
             )}
           </Typography>
         </Box>
