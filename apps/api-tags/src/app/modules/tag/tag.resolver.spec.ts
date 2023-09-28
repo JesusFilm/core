@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { Tag } from '.prisma/api-tags-client'
 
+import { Service } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { TagResolver } from './tag.resolver'
@@ -14,7 +15,7 @@ describe('TagResolver', () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     name: 'Audience',
-    service: 'journeys',
+    service: Service.apiJourneys,
     nameTranslations: [
       {
         value: 'Audience',
