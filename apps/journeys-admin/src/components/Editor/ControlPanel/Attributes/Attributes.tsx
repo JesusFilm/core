@@ -35,7 +35,7 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
         return <Footer />
       }
       default:
-        return <Box sx={{ height: 87 }} />
+        return <></>
     }
   } else {
     const withMoveButtons = (block: ReactElement): ReactElement => {
@@ -131,12 +131,12 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
     ) {
       dispatch({
         type: 'SetDrawerPropsAction',
-        title: t('Properties'),
+        title: 'Properties',
         children: <Properties journeyType="Journey" isPublisher={false} />,
         mobileOpen: false
       })
     }
-  }, [activeTab, dispatch, journeyEditContentComponent, t])
+  }, [activeTab, dispatch, journeyEditContentComponent])
 
   // Map typename to labels when we have translation keys
   const blockLabel =
