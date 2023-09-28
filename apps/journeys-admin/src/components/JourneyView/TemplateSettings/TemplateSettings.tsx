@@ -21,7 +21,7 @@ export function TemplateSettings({
   const [showTemplateSettingsDialog, setTemplateSettingsDialog] =
     useState(false)
 
-  const handleeTemplateSettingsOpen = (): void => {
+  const handleTemplateSettingsOpen = (): void => {
     setTemplateSettingsDialog(true)
   }
 
@@ -46,7 +46,7 @@ export function TemplateSettings({
             <IconButton
               data-testid="EditTemplateSettings"
               size="small"
-              onClick={handleeTemplateSettingsOpen}
+              onClick={handleTemplateSettingsOpen}
             >
               <Edit2Icon />
             </IconButton>

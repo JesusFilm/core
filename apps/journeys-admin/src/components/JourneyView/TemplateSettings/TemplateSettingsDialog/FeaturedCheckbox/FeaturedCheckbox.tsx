@@ -9,7 +9,7 @@ interface FeaturedCheckboxProps {
   loading: boolean
   values: boolean
   name: string
-  handleChange: (e: ChangeEvent<unknown>) => void
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 export function FeaturedCheckbox({

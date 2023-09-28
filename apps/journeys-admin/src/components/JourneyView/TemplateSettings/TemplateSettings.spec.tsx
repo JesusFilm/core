@@ -14,50 +14,48 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('TemplateSettings', () => {
-  describe('Template TemplateSettings', () => {
-    const template = {
-      ...defaultJourney,
-      template: true
-    }
+  const template = {
+    ...defaultJourney,
+    template: true
+  }
 
-    it('should render the title and description of a template', () => {
-      const { getByText, getByTestId } = render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: template,
-                variant: 'admin'
-              }}
-            >
-              <TemplateSettings isPublisher />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
+  it('should render the title and description of a template', () => {
+    const { getByText, getByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: template,
+              variant: 'admin'
+            }}
+          >
+            <TemplateSettings isPublisher />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
-      expect(getByText('Journey Heading')).toBeInTheDocument()
-      expect(getByText('Description')).toBeInTheDocument()
-      expect(getByTestId('Edit2Icon')).toBeInTheDocument()
-    })
+    expect(getByText('Journey Heading')).toBeInTheDocument()
+    expect(getByText('Description')).toBeInTheDocument()
+    expect(getByTestId('Edit2Icon')).toBeInTheDocument()
+  })
 
-    it('should open TemplateSettingsDialog', () => {
-      const { getByRole, getByText } = render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: template,
-                variant: 'admin'
-              }}
-            >
-              <TemplateSettings isPublisher />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(getByRole('button'))
-      expect(getByText('Edit Title and Description')).toBeInTheDocument()
-    })
+  it('should open TemplateSettingsDialog', () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: template,
+              variant: 'admin'
+            }}
+          >
+            <TemplateSettings isPublisher />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    expect(getByText('Edit Title and Description')).toBeInTheDocument()
   })
 })

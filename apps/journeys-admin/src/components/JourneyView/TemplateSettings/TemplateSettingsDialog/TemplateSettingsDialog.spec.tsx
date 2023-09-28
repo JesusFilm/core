@@ -190,7 +190,7 @@ describe('TemplateSettingsDialog', () => {
   it('should update featuredAt on submit', async () => {
     const featuredAtJourney = {
       ...defaultJourney,
-      featuredAt: 'featuredAt'
+      featuredAt: null
     }
 
     const result = jest.fn(() => ({
@@ -198,7 +198,7 @@ describe('TemplateSettingsDialog', () => {
         journeyFeature: {
           id: defaultJourney.id,
           __typename: 'Journey',
-          featuredAt: null
+          featuredAt: Date.now()
         }
       }
     }))
@@ -211,7 +211,7 @@ describe('TemplateSettingsDialog', () => {
               query: JOURNEY_FEATURE_UPDATE,
               variables: {
                 id: featuredAtJourney.id,
-                feature: false
+                feature: true
               }
             },
             result
@@ -283,7 +283,7 @@ describe('TemplateSettingsDialog', () => {
   })
 
   it('calls on close and resets form when dialog is closed', async () => {
-    const { getByRole } = render(
+    const { getByRole, getByTestId } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <JourneyProvider
@@ -302,6 +302,14 @@ describe('TemplateSettingsDialog', () => {
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalled()
+    })
+
+    expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
+      description: defaultJourney.description
+    })
+
+    expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
+      title: defaultJourney.title
     })
   })
 

@@ -161,7 +161,7 @@ export function TemplateSettingsDialog({
               }}
               fullscreen={!smUp}
             >
-              <Form>
+              <Form data-testId="template-settings-dialog-form">
                 <Tabs
                   value={tabValue}
                   onChange={handleTabChange}
