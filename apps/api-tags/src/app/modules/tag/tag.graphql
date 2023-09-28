@@ -1,7 +1,17 @@
+enum Service {
+  apiJourneys
+  apiLanguages
+  apiMedia
+  apiTags
+  apiUsers
+  apiVideos
+}
+
 type Tag @key(fields: "id") {
   id: ID!
   name: [Translation!]!
   parentId: ID
+  service: Service
 }
 
 extend type Query {
