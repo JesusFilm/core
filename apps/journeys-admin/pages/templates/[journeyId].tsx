@@ -62,24 +62,16 @@ function TemplateDetails(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR()(
   async ({ AuthUser, locale, req }) => {
+    // Without this we could get a stack of redirect queries (eg redirect to then terms and conditions, then templates)
+    const refererUrl = req.headers.referer
+
     const { flags, redirect, translations } = await initAndAuthApp({
       AuthUser,
-      locale
+      locale,
+      refererUrl
     })
 
-    // Without this we could get a stack of redirect queries (eg redirect to then terms and conditions, then templates)
-    const initialRedirect = req.headers.referer?.split('?redirect=').pop()
-
-    if (redirect != null) {
-      return initialRedirect != null
-        ? {
-            redirect: {
-              ...redirect,
-              destination: redirect.destination + `?redirect=${initialRedirect}`
-            }
-          }
-        : { redirect }
-    }
+    if (redirect != null) return { redirect }
 
     return {
       props: {

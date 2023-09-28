@@ -57,7 +57,7 @@ describe('checkConditionalRedirect', () => {
     })
   })
 
-  it('redirect if termsAndConditions is null', async () => {
+  it('redirect if terms not accepted', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',
@@ -77,6 +77,35 @@ describe('checkConditionalRedirect', () => {
       })
     ).toEqual({
       destination: '/users/terms-and-conditions',
+      permanent: false
+    })
+  })
+
+  it('redirects to terms and conditions with redirect parameter', async () => {
+    const data: GetJourneyProfileAndTeams = {
+      getJourneyProfile: {
+        id: 'profile.id',
+        userId: 'user.id',
+        acceptedTermsAt: null,
+        __typename: 'JourneyProfile'
+      },
+      teams: []
+    }
+    const client = {
+      query: jest.fn().mockResolvedValue({ data })
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    expect(
+      await checkConditionalRedirect(
+        client,
+        {
+          termsAndConditions: true,
+          teams: true
+        },
+        'basePath?redirect=custom-redirect-location'
+      )
+    ).toEqual({
+      destination:
+        '/users/terms-and-conditions?redirect=custom-redirect-location',
       permanent: false
     })
   })
@@ -101,6 +130,34 @@ describe('checkConditionalRedirect', () => {
       })
     ).toEqual({
       destination: '/teams/new',
+      permanent: false
+    })
+  })
+
+  it('redirect to teams with redirect parameter', async () => {
+    const data: GetJourneyProfileAndTeams = {
+      getJourneyProfile: {
+        id: 'profile.id',
+        userId: 'user.id',
+        acceptedTermsAt: '1970-01-01T00:00:00.000Z',
+        __typename: 'JourneyProfile'
+      },
+      teams: []
+    }
+    const client = {
+      query: jest.fn().mockResolvedValue({ data })
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    expect(
+      await checkConditionalRedirect(
+        client,
+        {
+          termsAndConditions: true,
+          teams: true
+        },
+        'basePath?redirect=custom-redirect-location'
+      )
+    ).toEqual({
+      destination: '/teams/new?redirect=custom-redirect-location',
       permanent: false
     })
   })
