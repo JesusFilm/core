@@ -30,3 +30,9 @@ module "stage" {
 module "datadog" {
   source = "./modules/aws/datadog"
 }
+
+module "datadog_rds_enhanced_monitoring_forwarder" {
+  source = "terraform-aws-modules/datadog-forwarders/aws//modules/rds_enhanced_monitoring_forwarder"
+
+  dd_api_key = module.datadog.datadog_api_key
+}
