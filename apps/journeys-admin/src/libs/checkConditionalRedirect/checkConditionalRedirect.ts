@@ -27,6 +27,8 @@ export async function checkConditionalRedirect(
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
+  console.log('refererURL', refererUrl)
+
   // refererUrl example:
   // http://localhost:4200/users/sign-in?redirect=http://localhost:4200/templates/[journeyId]?createNew=true
   const redirectPath = refererUrl?.split('?redirect=').pop()

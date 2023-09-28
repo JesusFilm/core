@@ -62,6 +62,7 @@ function TemplateDetails(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR()(
   async ({ AuthUser, locale, req }) => {
+    console.log('req', req)
     const { flags, redirect, translations } = await initAndAuthApp({
       AuthUser,
       locale,
