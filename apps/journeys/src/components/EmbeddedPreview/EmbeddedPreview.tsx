@@ -128,7 +128,7 @@ export function EmbeddedPreview({
           box-shadow: none !important;
         }
       `}</style>
-      <Div100vh data-testid="embedded-preview">
+      <Div100vh data-testid="EmbeddedPreview">
         {!isFullWindow && <ClickableCard />}
         <Box
           id="embed-fullscreen-container"
