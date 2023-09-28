@@ -1,4 +1,5 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
+import FormGroup from '@mui/material/FormGroup'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
@@ -165,21 +166,21 @@ export function TemplateSettingsDialog({
                 <Tabs
                   value={tabValue}
                   onChange={handleTabChange}
-                  aria-label="template-update-settings-tabs"
+                  aria-label="template-settings-dialog-tabs"
                   variant="fullWidth"
                   sx={{ borderBottom: 1, borderColor: 'divider' }}
                 >
                   <Tab
                     label={t('Metadata')}
-                    {...tabA11yProps('template-meta-data-settings', 0)}
+                    {...tabA11yProps('template-settings-dialog-tabs', 0)}
                   />
                   <Tab
                     label={t('Categories')}
-                    {...tabA11yProps('template-categories-settings', 1)}
+                    {...tabA11yProps('template-settings-dialog-tabs', 1)}
                   />
                   <Tab
                     label={t('About')}
-                    {...tabA11yProps('template-about-settings', 2)}
+                    {...tabA11yProps('template-settings-dialog-tabs', 2)}
                   />
                 </Tabs>
                 <TabPanel name="template-settings" value={tabValue} index={0}>
@@ -204,12 +205,14 @@ export function TemplateSettingsDialog({
                       rows={3}
                       onChange={handleChange}
                     />
-                    <FeaturedCheckbox
-                      loading={loading}
-                      values={values.featuredAt}
-                      handleChange={handleChange}
-                      name="featuredAt"
-                    />
+                    <FormGroup>
+                      <FeaturedCheckbox
+                        loading={loading}
+                        values={values.featuredAt}
+                        handleChange={handleChange}
+                        name="featuredAt"
+                      />
+                    </FormGroup>
                   </Stack>
                 </TabPanel>
                 <TabPanel name="template-settings" value={tabValue} index={1}>

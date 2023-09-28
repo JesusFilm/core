@@ -9,13 +9,7 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { TemplateSettingsDialog } from './TemplateSettingsDialog'
 
-interface TemplateSettingsProps {
-  isPublisher?: boolean
-}
-
-export function TemplateSettings({
-  isPublisher
-}: TemplateSettingsProps): ReactElement {
+export function TemplateSettings(): ReactElement {
   const { journey } = useJourney()
 
   const [showTemplateSettingsDialog, setTemplateSettingsDialog] =
@@ -27,7 +21,7 @@ export function TemplateSettings({
 
   return (
     <>
-      <Stack direction="column" spacing={journey?.template === true ? 2 : 0}>
+      <Stack direction="column" spacing={2}>
         <Stack
           direction="row"
           sx={{
@@ -42,15 +36,14 @@ export function TemplateSettings({
               <Skeleton variant="text" width="60%" />
             )}
           </Typography>
-          {isPublisher === true && journey?.template === true && (
-            <IconButton
-              data-testid="EditTemplateSettings"
-              size="small"
-              onClick={handleTemplateSettingsOpen}
-            >
-              <Edit2Icon />
-            </IconButton>
-          )}
+
+          <IconButton
+            data-testid="EditTemplateSettings"
+            size="small"
+            onClick={handleTemplateSettingsOpen}
+          >
+            <Edit2Icon />
+          </IconButton>
         </Stack>
         <Typography variant="body1">
           {journey != null ? (

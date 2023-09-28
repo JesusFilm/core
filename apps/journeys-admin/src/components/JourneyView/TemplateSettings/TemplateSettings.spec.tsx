@@ -29,7 +29,7 @@ describe('TemplateSettings', () => {
               variant: 'admin'
             }}
           >
-            <TemplateSettings isPublisher />
+            <TemplateSettings />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -50,7 +50,7 @@ describe('TemplateSettings', () => {
               variant: 'admin'
             }}
           >
-            <TemplateSettings isPublisher />
+            <TemplateSettings />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>

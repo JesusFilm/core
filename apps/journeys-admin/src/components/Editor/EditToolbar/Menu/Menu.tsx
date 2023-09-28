@@ -50,7 +50,7 @@ export function Menu(): ReactElement {
 
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
-  const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
+  const [showTemplateSettingsDialog, setShowTemplateSettingsDialog] =
     useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -78,12 +78,12 @@ export function Menu(): ReactElement {
     setAnchorEl(null)
   }
 
-  const handleUpdateTitleDescription = (): void => {
-    setShowTitleDescriptionDialog(true)
+  const handleUpdateTemplateSettings = (): void => {
+    setShowTemplateSettingsDialog(true)
   }
 
-  const handleCloseTitleDescription = (): void => {
-    setShowTitleDescriptionDialog(false)
+  const handleCloseTemplateSettings = (): void => {
+    setShowTemplateSettingsDialog(false)
     setAnchorEl(null)
   }
 
@@ -172,7 +172,7 @@ export function Menu(): ReactElement {
           <MenuItem
             label="Description"
             icon={<Edit2Icon />}
-            onClick={handleUpdateTitleDescription}
+            onClick={handleUpdateTemplateSettings}
           />
         )}
         {journey?.template !== true && (
@@ -210,8 +210,8 @@ export function Menu(): ReactElement {
         onClose={handleCloseDescription}
       />
       <TemplateSettingsDialog
-        open={showTitleDescriptionDialog}
-        onClose={handleCloseTitleDescription}
+        open={showTemplateSettingsDialog}
+        onClose={handleCloseTemplateSettings}
       />
     </>
   )
