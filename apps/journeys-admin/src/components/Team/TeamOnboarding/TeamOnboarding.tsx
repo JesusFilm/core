@@ -175,7 +175,7 @@ export function TeamOnboarding(): ReactElement {
                         fullWidth
                         variant="filled"
                         hiddenLabel
-                        id="publict=Title"
+                        id="publicTitle"
                         name="publicTitle"
                         value={values.publicTitle}
                         error={Boolean(errors.publicTitle)}
