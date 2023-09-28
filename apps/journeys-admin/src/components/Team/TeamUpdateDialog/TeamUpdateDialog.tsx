@@ -53,23 +53,27 @@ export function TeamUpdateDialog({
   ): Promise<void> {
     try {
       const { data } = await teamUpdate({
-        variables: { id: activeTeam?.id, input: { title: values.title, publicTitle: values.publicTitle } }
+        variables: {
+          id: activeTeam?.id,
+          input: { title: values.title, publicTitle: values.publicTitle }
+        }
       })
       handleClose(resetForm)()
-      if(values.title !== activeTeam?.title){
+      if (values.title !== activeTeam?.title) {
         enqueueSnackbar(t(`${data?.teamUpdate.title ?? 'Team'} updated.`), {
           variant: 'success',
           preventDuplicate: true
         })
-      }      
-      if(values.publicTitle !== activeTeam?.publicTitle && data !== null){
-        enqueueSnackbar(t(`${data?.teamUpdate.publicTitle ?? 'Team'} updated.`), {
-          variant: 'success',
-          preventDuplicate: true
-        })
       }
-
-
+      if (values.publicTitle !== activeTeam?.publicTitle && data !== null) {
+        enqueueSnackbar(
+          t(`${data?.teamUpdate.publicTitle ?? 'Team'} updated.`),
+          {
+            variant: 'success',
+            preventDuplicate: true
+          }
+        )
+      }
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
@@ -100,7 +104,10 @@ export function TeamUpdateDialog({
 
   return (
     <Formik
-      initialValues={{ title: activeTeam?.title ?? '' , publicTitle: activeTeam?.publicTitle ?? ''}}
+      initialValues={{
+        title: activeTeam?.title ?? '',
+        publicTitle: activeTeam?.publicTitle ?? ''
+      }}
       onSubmit={handleSubmit}
       validationSchema={teamSchema}
       enableReinitialize
@@ -166,8 +173,6 @@ export function TeamUpdateDialog({
               </Stack>
             </Stack>
           </Form>
-
-          
         </Dialog>
       )}
     </Formik>
