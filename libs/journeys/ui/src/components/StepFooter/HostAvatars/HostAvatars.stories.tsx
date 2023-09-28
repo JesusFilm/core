@@ -39,6 +39,7 @@ const journey: Journey = {
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  featuredAt: null,
   title: 'my journey',
   strategySlug: null,
   slug: 'my-journey',

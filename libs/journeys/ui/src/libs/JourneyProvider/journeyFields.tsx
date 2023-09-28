@@ -22,6 +22,7 @@ export const JOURNEY_FIELDS = gql`
       }
     }
     createdAt
+    featuredAt
     publishedAt
     themeName
     themeMode
