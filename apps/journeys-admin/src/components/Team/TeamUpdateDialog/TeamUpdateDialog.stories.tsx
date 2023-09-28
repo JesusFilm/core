@@ -33,7 +33,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
         {
           id: 'teamId',
           title: 'My Team',
-          publicTitle: null,
+          publicTitle: '',
           __typename: 'Team',
           userTeams: []
         }
@@ -52,7 +52,8 @@ const teamUpdateMock: MockedResponse<TeamUpdate> = {
     variables: {
       id: 'teamId',
       input: {
-        title: 'Jesus Film Project'
+        title: 'Jesus Film Project',
+        publicTitle: ''
       }
     }
   },
@@ -61,6 +62,7 @@ const teamUpdateMock: MockedResponse<TeamUpdate> = {
       teamUpdate: {
         id: 'teamId',
         title: 'Jesus Film Project',
+        publicTitle: '',
         __typename: 'Team'
       }
     }

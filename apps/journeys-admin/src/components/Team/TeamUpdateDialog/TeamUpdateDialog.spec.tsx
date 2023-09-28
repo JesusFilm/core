@@ -34,7 +34,7 @@ describe('TeamUpdateDialog', () => {
           {
             id: 'teamId',
             title: 'Jesus Film Project',
-            publicTitle: null,
+            publicTitle: '',
             __typename: 'Team',
             userTeams: []
           }
@@ -74,7 +74,8 @@ describe('TeamUpdateDialog', () => {
       variables: {
         id: 'teamId',
         input: {
-          title: 'Team Title'
+          title: 'Team Title',
+          publicTitle: ''
         }
       }
     },
