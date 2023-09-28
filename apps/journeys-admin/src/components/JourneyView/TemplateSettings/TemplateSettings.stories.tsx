@@ -35,7 +35,7 @@ const Template: StoryObj<
               variant: 'admin'
             }}
           >
-            <TemplateSettings isPublisher={args.isPublisher} />
+            <TemplateSettings />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
