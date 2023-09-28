@@ -50,7 +50,6 @@ export function BackgroundVideo({
         preload: 'metadata',
         // Make video fill container instead of set aspect ratio
         fill: true,
-        fluid: true,
         userActions: {
           hotkeys: false,
           doubleClick: false
