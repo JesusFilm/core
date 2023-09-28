@@ -111,7 +111,7 @@ export function StepHeader({ sx }: Props): ReactElement {
           >
             {t(
               'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".',
-              { teamTitle: journey?.team?.publicTitle ?? journey?.team?.title ?? '' }
+              { teamTitle: journey?.team?.publicTitle !== '' ? journey?.team?.publicTitle :  journey?.team?.title ?? '' }
             )}
           </Typography>
         </Box>
