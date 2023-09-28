@@ -104,13 +104,12 @@ export function TeamOnboarding(): ReactElement {
                 >
                   <Button
                     onClick={async () => {
-                      if (router.query.redirect != null) {
-                        const redirect =
-                          router.query.redirect != null
-                            ? `${router.query.redirect as string}`
-                            : '/?onboarding=true'
-                        await router?.push(redirect)
-                      }
+                      const redirect =
+                        router.query.redirect != null
+                          ? // redirect may or may not already be sanitised
+                            new URL(router.query.redirect as string).toString()
+                          : '/?onboarding=true'
+                      await router.push(redirect)
                     }}
                   >
                     {(data?.userTeamInvites ?? []).length > 0

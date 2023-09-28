@@ -72,7 +72,10 @@ describe('TermsAndConditions', () => {
     fireEvent.click(getByRole('button', { name: 'Next' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(push).toHaveBeenCalledWith('/teams/new')
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/teams/new',
+      query: { redirect: null }
+    })
   })
 
   it('should pass redirect query location to next page', async () => {
@@ -109,7 +112,10 @@ describe('TermsAndConditions', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(push).toHaveBeenCalledWith('/teams/new?redirect=custom-location')
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/teams/new',
+      query: { redirect: 'custom-location' }
+    })
   })
 
   it('should link to terms of use page', () => {

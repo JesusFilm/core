@@ -301,14 +301,12 @@ describe('TeamOnboarding', () => {
     expect(getByRole('button', { name: 'Skip' })).toBeInTheDocument()
     await waitFor(() => fireEvent.click(getByRole('button', { name: 'Skip' })))
     expect(push).toHaveBeenCalledWith('/?onboarding=true')
-
-    jest.resetAllMocks()
   })
 
   it('should redirect to router query location', async () => {
     mockUseRouter.mockReturnValue({
       push,
-      query: { redirect: '/custom-location' }
+      query: { redirect: 'http://custom-location' }
     } as unknown as NextRouter)
 
     const { getByText, getByRole } = render(
@@ -326,8 +324,6 @@ describe('TeamOnboarding', () => {
     await waitFor(() => expect(getByText('Siyang Gang')).toBeInTheDocument())
     expect(getByRole('button', { name: 'Skip' })).toBeInTheDocument()
     await waitFor(() => fireEvent.click(getByRole('button', { name: 'Skip' })))
-    expect(push).toHaveBeenCalledWith('/custom-location')
-
-    jest.resetAllMocks()
+    expect(push).toHaveBeenCalledWith('http://custom-location/')
   })
 })
