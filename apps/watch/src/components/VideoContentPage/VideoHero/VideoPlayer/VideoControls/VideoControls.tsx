@@ -299,7 +299,7 @@ export function VideoControls({
         top: 0,
         right: 0,
         bottom: 0,
-        left: { xs: 'calc((100vh * 16 / 9) * -0.355)', sm: 0 },
+        left: 0,
         cursor: visible ? undefined : 'none'
       }}
       onClick={getClickHandler(handlePlay, () => {
