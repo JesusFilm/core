@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
   useAuthUser,
@@ -10,45 +9,35 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { GetTemplate } from '../../__generated__/GetTemplate'
 import { JourneyView } from '../../src/components/JourneyView'
 import { Menu } from '../../src/components/JourneyView/Menu'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import { TemplateView } from '../../src/components/TemplateView/TempateView'
+import { TemplateView } from '../../src/components/TemplateView/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
-
-export const GET_TEMPLATE = gql`
-  ${JOURNEY_FIELDS}
-  query GetTemplate($id: ID!) {
-    template: adminJourney(id: $id, idType: databaseId) {
-      ...JourneyFields
-    }
-  }
-`
+import { useJourneyQuery } from '../../src/libs/useJourneyQuery/useJourneyQuery'
 
 function TemplateDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { templates } = useFlags()
   const AuthUser = useAuthUser()
-  const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
-    variables: { id: router.query.journeyId }
+  const { data } = useJourneyQuery({
+    id: router.query.journeyId as string
   })
   useInvalidJourneyRedirect(data)
 
   return (
     <>
       <NextSeo
-        title={data?.template?.title ?? t('Journey Template')}
-        description={data?.template?.description ?? undefined}
+        title={data?.journey.title ?? t('Journey Template')}
+        description={data?.journey.description ?? undefined}
       />
       <JourneyProvider
         value={{
-          journey: data?.template ?? undefined,
+          journey: data?.journey ?? undefined,
           variant: 'admin'
         }}
       >
