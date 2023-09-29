@@ -31,6 +31,7 @@ export function UseTemplateButton({
   }, [signedIn, router])
 
   useEffect(() => {
+    console.log('router', router.query)
     if (router.query.createNew === 'true') {
       setOpenTeamDialog(true)
     }
@@ -69,6 +70,7 @@ export function UseTemplateButton({
     if (signedIn) {
       setOpenTeamDialog(true)
     } else {
+      console.log('router check sign in', router.asPath)
       void router
         .push(
           `/users/sign-in?redirect=${

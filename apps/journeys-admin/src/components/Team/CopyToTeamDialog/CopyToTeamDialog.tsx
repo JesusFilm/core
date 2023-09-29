@@ -30,6 +30,7 @@ export function CopyToTeamDialog({
   submitAction
 }: CopyToTeamDialogProps): ReactElement {
   const { query, setActiveTeam } = useTeam()
+  const teams = query?.data?.teams ?? []
   const { t } = useTranslation('apps-journeys-admin')
   function handleClose(): void {
     onClose()
@@ -46,7 +47,7 @@ export function CopyToTeamDialog({
     // submitAction runs first so loading state can be shown
     await submitAction(values.teamSelect)
     await setActiveTeam(
-      query?.data?.teams.find((team) => team.id === values.teamSelect) ?? null
+      teams.find((team) => team.id === values.teamSelect) ?? null
     )
 
     resetForm()
@@ -54,7 +55,8 @@ export function CopyToTeamDialog({
 
   return (
     <Formik
-      initialValues={{ teamSelect: '' }}
+      initialValues={{ teamSelect: teams.length === 1 ? teams[0].id : '' }}
+      enableReinitialize
       onSubmit={handleSubmit}
       validationSchema={copyToSchema}
     >

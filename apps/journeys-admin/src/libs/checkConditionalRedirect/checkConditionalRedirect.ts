@@ -27,15 +27,15 @@ export async function checkConditionalRedirect(
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
-  console.info('refererURL', refererUrl)
+  console.log('refererURL', refererUrl)
 
   // refererUrl example:
   // http://localhost:4200/users/sign-in?redirect=http://localhost:4200/templates/[journeyId]?createNew=true
   const redirectPath = refererUrl?.split('?redirect=').pop()
-  console.info('redirectPath', redirectPath)
+  console.log('redirectPath', redirectPath)
   const redirect =
     redirectPath != null && redirectPath !== ''
-      ? `?redirect=${redirectPath}`
+      ? `?redirect=${refererUrl ?? 'refererUrl-is-null'}`
       : ''
 
   if (
