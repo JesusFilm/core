@@ -16,21 +16,6 @@ RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg -
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends gnupg2 libpixman-1-dev libcairo2-dev libpango1.0-dev postgresql-client-13
 
-# Install Playwright dependencies (you can choose the browser you need)
-RUN apt-get update && \
-    apt-get install -yq \
-    libgtk-3-0 \
-    libgbm-dev \
-    libnss3 \
-    libxkbcommon-x11-0 \
-    libasound2 \
-    fonts-noto-color-emoji \
-    libxss1
-
-# Install Playwright & deps
-RUN npm install -g playwright
-RUN playwright install-deps
-
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10
 # RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
