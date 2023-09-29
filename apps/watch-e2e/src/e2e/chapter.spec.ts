@@ -12,6 +12,9 @@ Wait for two minutes as this video is for 1.59 minutes
 Take screenshot - so it will be tested all the times
 */
 test('Chapter', async ({ page }) => {
+  // Set test time out as it has video
+  test.setTimeout(7 * 60 * 1000)
+
   await page.goto('/')
 
   // Get and log the current URL

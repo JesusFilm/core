@@ -17,6 +17,9 @@ Wait for 20 seconds as this video is 19 seconds
 Take screenshot (after-video)
 */
 test('Feature film', async ({ page }) => {
+  // Set test time out as it has video
+  test.setTimeout(5 * 60 * 1000)
+
   await page.goto('/')
 
   // Get and log the current URL
@@ -55,7 +58,7 @@ test('Feature film', async ({ page }) => {
     .click()
 
   await expect(page).toHaveURL(
-    '/jesus.html/blessed-are-those-who-hear-and-obey/english.html'
+    '/watch/jesus.html/blessed-are-those-who-hear-and-obey/english.html'
   )
 
   //   eslint-disable-next-line
@@ -67,9 +70,9 @@ test('Feature film', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Play' }).click()
 
-  // wait for 20 seconds to see if the video is complete. Until there are some events in the code to figure this out
+  // wait for 60 seconds to see if the video is complete. Until there are some events in the code to figure this out
   // eslint-disable-next-line
-  await page.waitForTimeout(20 * 1000)
+  await page.waitForTimeout(45 * 1000)
 
   // Take screenshot once video is played and test it is same all the times
   await expect(page).toHaveScreenshot('after-video.png', {
