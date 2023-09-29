@@ -24,7 +24,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Use URL that has been set part of app-deploy.yml */
-    baseURL: process.env.DEPLOYMENT_URL ?? 'http://localhost:4100',
+    baseURL: process.env.DEPLOYMENT_URL ?? 'https://watch-stage.jesusfilm.org/watch',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -40,21 +40,21 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-    {
-      name: 'chrome-desktop',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' }
-    },
-
-    // /* Test against mobile viewports. */
-    // // By default it's using chromium channel, changed it to chrome so it can play the video
-    {
-      name: 'chrome-mobile',
-      use: { ...devices['Pixel 5'], channel: 'chrome' }
-    }
     // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
+    //   name: 'chrome-desktop',
+    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' }
     // },
+
+    // // /* Test against mobile viewports. */
+    // // // By default it's using chromium channel, changed it to chrome so it can play the video
+    // {
+    //   name: 'chrome-mobile',
+    //   use: { ...devices['Pixel 5'], channel: 'chrome' }
+    // }
+    {
+      name: 'mobile-safari',
+      use: { ...devices['iPhone 12'] },
+    },
 
     /* Others. */
     // {
