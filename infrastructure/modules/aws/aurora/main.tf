@@ -34,8 +34,9 @@ resource "aws_rds_cluster_instance" "default" {
   engine_version     = aws_rds_cluster.default.engine_version
   promotion_tier     = 1
 
-  monitoring_interval = 30
-  monitoring_role_arn = aws_iam_role.rds_enhanced_monitoring.arn
+  performance_insights_enabled = true
+  monitoring_interval          = 15
+  monitoring_role_arn          = aws_iam_role.rds_enhanced_monitoring.arn
 }
 
 resource "aws_ssm_parameter" "parameter" {
