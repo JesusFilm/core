@@ -21,6 +21,7 @@ resource "aws_rds_cluster" "default" {
   allow_major_version_upgrade     = true
   final_snapshot_identifier       = "${var.name}-${var.env}-final-snapshot"
   db_cluster_parameter_group_name = "aurora-postgresql13-cluster-replication"
+  enabled_cloudwatch_logs_exports = ["postgresql"]
   serverlessv2_scaling_configuration {
     max_capacity = 16
     min_capacity = 0.5
