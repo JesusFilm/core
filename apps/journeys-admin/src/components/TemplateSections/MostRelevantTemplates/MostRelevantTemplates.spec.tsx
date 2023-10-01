@@ -73,6 +73,19 @@ describe('MostRelevantTemplates', () => {
       }
     } as unknown as NextRouter)
 
+    const result = jest.fn(() => ({
+      data: {
+        journeys: [
+          template,
+          {
+            ...template,
+            id: 2,
+            title: 'Template 2'
+          }
+        ]
+      }
+    }))
+
     const { getByRole, getAllByTestId } = render(
       <MockedProvider
         mocks={[
@@ -90,18 +103,7 @@ describe('MostRelevantTemplates', () => {
                 }
               }
             },
-            result: {
-              data: {
-                journeys: [
-                  template,
-                  {
-                    ...template,
-                    id: 2,
-                    title: 'Template 2'
-                  }
-                ]
-              }
-            }
+            result
           }
         ]}
       >
@@ -114,6 +116,7 @@ describe('MostRelevantTemplates', () => {
       expect(cards[0]).toHaveTextContent('Template 1')
       expect(cards[1]).toHaveTextContent('Template 2')
     })
+    expect(result).toHaveBeenCalled()
   })
 
   it('should not render templates when no tagIds', async () => {
