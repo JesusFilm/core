@@ -14,10 +14,16 @@ export function ElementsWrapper({
 }: ElementsWrapperProps): ReactElement {
   return (
     <Card sx={{ minWidth: '404px', borderRadius: '8px', mb: '18px' }}>
-      <CardContent>
-        <Stack spacing={10} sx={{ px: '24px', pt: '20px', pb: '28px' }}>
-          {children}
-        </Stack>
+      <CardContent
+        sx={{
+          '&:last-of-type': {
+            paddingBottom: '12px'
+          },
+          pt: '12px',
+          px: '24px'
+        }}
+      >
+        <Stack spacing={10}>{children}</Stack>
       </CardContent>
     </Card>
   )
