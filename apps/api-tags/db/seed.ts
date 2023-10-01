@@ -108,7 +108,7 @@ async function main(): Promise<void> {
     'Inspirational',
     'Testimonies'
   ])
-  await upsertTag('Collections', ['Jesus Film', 'NUA'])
+  await upsertTag('Collections', ['Jesus Film', 'NUA'], Service.apiJourneys)
 }
 main().catch((e) => {
   console.error(e)
