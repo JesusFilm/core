@@ -25,7 +25,9 @@ describe('TemplateSections', () => {
       </MockedProvider>
     )
     expect(getByRole('heading', { name: 'Featured & New' })).toBeInTheDocument()
-    expect(queryByRole('heading', { name: 'Tag Ids' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('heading', { name: 'Most Relevant' })
+    ).not.toBeInTheDocument()
   })
 
   it('should render Most Relevant Templates when tag Ids are provided', () => {
