@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -40,8 +40,8 @@ describe('TemplateSettings', () => {
     expect(getByTestId('Edit2Icon')).toBeInTheDocument()
   })
 
-  it('should open TemplateSettingsDialog', () => {
-    const { getByRole, getByText } = render(
+  it('should open and close TemplateSettingsDialog', async () => {
+    const { getByRole, getByText, queryByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -57,5 +57,11 @@ describe('TemplateSettings', () => {
     )
     fireEvent.click(getByRole('button'))
     expect(getByText('Edit Title and Description')).toBeInTheDocument()
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    })
+    await waitFor(() => {
+      expect(queryByText('Edit Title and Description')).not.toBeInTheDocument()
+    })
   })
 })

@@ -19,7 +19,7 @@ describe('FeaturedCheckbox', () => {
         loading={false}
         values={false}
         name="test"
-        handleChange={handleChange}
+        onChange={handleChange}
       />
     )
 
@@ -36,7 +36,7 @@ describe('FeaturedCheckbox', () => {
         loading
         values={false}
         name="test"
-        handleChange={handleChange}
+        onChange={handleChange}
       />
     )
 

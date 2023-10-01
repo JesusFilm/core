@@ -42,15 +42,13 @@ export const JOURNEY_FEATURE_UPDATE = gql`
 interface TemplateSettingsDialogProps {
   open: boolean
   onClose: () => void
-  defaultOpenTab?: number
 }
 
 export function TemplateSettingsDialog({
   open,
-  onClose,
-  defaultOpenTab = 0
+  onClose
 }: TemplateSettingsDialogProps): ReactElement {
-  const [tabValue, setTabValue] = useState(defaultOpenTab)
+  const [tabValue, setTabValue] = useState(0)
   const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
   }
@@ -172,18 +170,22 @@ export function TemplateSettingsDialog({
                 >
                   <Tab
                     label={t('Metadata')}
-                    {...tabA11yProps('template-settings-dialog-tabs', 0)}
+                    {...tabA11yProps('template-meta-data-settings', 0)}
                   />
                   <Tab
                     label={t('Categories')}
-                    {...tabA11yProps('template-settings-dialog-tabs', 1)}
+                    {...tabA11yProps('template-categories-settings', 1)}
                   />
                   <Tab
                     label={t('About')}
-                    {...tabA11yProps('template-settings-dialog-tabs', 2)}
+                    {...tabA11yProps('template-about-settings', 2)}
                   />
                 </Tabs>
-                <TabPanel name="template-settings" value={tabValue} index={0}>
+                <TabPanel
+                  name="template-meta-data-settings"
+                  value={tabValue}
+                  index={0}
+                >
                   <Stack sx={{ pt: 6 }} gap={5}>
                     <TextField
                       label={t('Title')}
@@ -209,19 +211,27 @@ export function TemplateSettingsDialog({
                       <FeaturedCheckbox
                         loading={loading}
                         values={values.featuredAt}
-                        handleChange={handleChange}
+                        onChange={handleChange}
                         name="featuredAt"
                       />
                     </FormGroup>
                   </Stack>
                 </TabPanel>
-                <TabPanel name="template-settings" value={tabValue} index={1}>
+                <TabPanel
+                  name="template-categories-settings"
+                  value={tabValue}
+                  index={1}
+                >
                   <Stack sx={{ pt: 6 }}>
                     Categories - yet to be implemented - contact
                     support@nextsteps.is for more info
                   </Stack>
                 </TabPanel>
-                <TabPanel name="template-settings" value={tabValue} index={2}>
+                <TabPanel
+                  name="template-about-settings"
+                  value={tabValue}
+                  index={2}
+                >
                   <Stack sx={{ pt: 6 }}>
                     About - yet to be implemented - contact support@nextsteps.is
                     for more info

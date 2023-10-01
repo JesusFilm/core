@@ -7,14 +7,14 @@ interface FeaturedCheckboxProps {
   loading: boolean
   values: boolean
   name: string
-  handleChange: (e: ChangeEvent<HTMLInputElement>) => void
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 export function FeaturedCheckbox({
   loading,
   values,
   name,
-  handleChange
+  onChange
 }: FeaturedCheckboxProps): ReactElement {
   const { t } = useTranslation()
 
@@ -25,7 +25,7 @@ export function FeaturedCheckbox({
           sx={{ mr: 1 }}
           color="secondary"
           defaultChecked={values}
-          onChange={handleChange}
+          onChange={onChange}
           disabled={loading}
           value={values}
           name={name}

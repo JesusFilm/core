@@ -31,7 +31,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('TemplateSettingsDialog', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  it('should update title and description on submit', async () => {
+  it('should update field data on submit', async () => {
     const updatedJourney = {
       title: 'New Title',
       description: 'New Description'
@@ -43,6 +43,16 @@ describe('TemplateSettingsDialog', () => {
           id: defaultJourney.id,
           __typename: 'Journey',
           ...updatedJourney
+        }
+      }
+    }))
+
+    const result2 = jest.fn(() => ({
+      data: {
+        journeyFeature: {
+          id: defaultJourney.id,
+          __typename: 'Journey',
+          featuredAt: Date.now()
         }
       }
     }))
@@ -59,6 +69,16 @@ describe('TemplateSettingsDialog', () => {
               }
             },
             result
+          },
+          {
+            request: {
+              query: JOURNEY_FEATURE_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                feature: true
+              }
+            },
+            result: result2
           }
         ]}
       >
@@ -81,15 +101,25 @@ describe('TemplateSettingsDialog', () => {
     fireEvent.change(getAllByRole('textbox')[1], {
       target: { value: 'New Description' }
     })
+    fireEvent.click(getByRole('checkbox'))
     fireEvent.click(getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
+      expect(result2).toHaveBeenCalled()
     })
   })
 
-  it('should not update title and description on submit if not different from original journey', async () => {
+  it('should not update field data if it remains unchanged on submit', async () => {
     const result = jest.fn()
+    const result2 = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          id: defaultJourney.id,
+          __typename: 'Journey'
+        }
+      }
+    }))
 
     const { getByRole, getAllByRole } = render(
       <MockedProvider
@@ -106,6 +136,16 @@ describe('TemplateSettingsDialog', () => {
               }
             },
             result
+          },
+          {
+            request: {
+              query: JOURNEY_FEATURE_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                feature: false
+              }
+            },
+            result: result2
           }
         ]}
       >
@@ -128,10 +168,14 @@ describe('TemplateSettingsDialog', () => {
     fireEvent.change(getAllByRole('textbox')[1], {
       target: { value: defaultJourney.description }
     })
+
     fireEvent.click(getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
       expect(result).not.toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(result2).not.toHaveBeenCalled()
     })
   })
 
@@ -185,58 +229,6 @@ describe('TemplateSettingsDialog', () => {
         getByText('Field update failed. Reload the page or try again.')
       ).toBeInTheDocument()
     )
-  })
-
-  it('should update featuredAt on submit', async () => {
-    const featuredAtJourney = {
-      ...defaultJourney,
-      featuredAt: null
-    }
-
-    const result = jest.fn(() => ({
-      data: {
-        journeyFeature: {
-          id: defaultJourney.id,
-          __typename: 'Journey',
-          featuredAt: Date.now()
-        }
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_FEATURE_UPDATE,
-              variables: {
-                id: featuredAtJourney.id,
-                feature: true
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: featuredAtJourney,
-              variant: 'admin'
-            }}
-          >
-            <TemplateSettingsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByRole('checkbox'))
-    fireEvent.click(getByRole('button', { name: 'Save' }))
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
   })
 
   it('should not update featured at if not different from journey', async () => {
@@ -325,7 +317,7 @@ describe('TemplateSettingsDialog', () => {
   })
 
   it('switches between tabs', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <JourneyProvider
@@ -343,11 +335,9 @@ describe('TemplateSettingsDialog', () => {
     fireEvent.click(getByRole('tab', { name: 'Categories' }))
 
     await waitFor(() => {
-      expect(
-        getByText(
-          'Categories - yet to be implemented - contact support@nextsteps.is for more info'
-        )
-      ).toBeInTheDocument()
+      expect(getByRole('tab', { selected: true })).toHaveTextContent(
+        'Categories'
+      )
     })
   })
 })
