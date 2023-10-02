@@ -18,7 +18,6 @@ Take screenshot (after-video)
 */
 
 test.describe('firefox only', () => {
-  
   // skip the test if mobile as no.of video clips differs based on the device size
   // eslint-disable-next-line
   test.skip(({ browserName }) => browserName !== 'firefox', 'firefox only!')
