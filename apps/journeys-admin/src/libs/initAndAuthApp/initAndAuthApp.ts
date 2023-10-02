@@ -14,7 +14,7 @@ import { checkConditionalRedirect } from '../checkConditionalRedirect'
 interface props {
   AuthUser?: AuthUser
   locale: string | undefined
-  refererUrl?: string
+  encodedRedirectPathname?: string
 }
 
 interface initAndAuth {
@@ -29,7 +29,7 @@ interface initAndAuth {
 export async function initAndAuthApp({
   AuthUser,
   locale,
-  refererUrl
+  encodedRedirectPathname
 }: props): Promise<initAndAuth> {
   const ldUser =
     AuthUser?.id != null
@@ -61,7 +61,11 @@ export async function initAndAuthApp({
   const apolloClient = createApolloClient(token != null ? token : '')
   const redirect =
     token != null
-      ? await checkConditionalRedirect(apolloClient, flags, refererUrl)
+      ? await checkConditionalRedirect(
+          apolloClient,
+          flags,
+          encodedRedirectPathname
+        )
       : undefined
 
   return { apolloClient, flags, redirect, translations }

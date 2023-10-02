@@ -21,21 +21,17 @@ export async function checkConditionalRedirect(
   flags: {
     [key: string]: boolean | undefined
   } = {},
-  refererUrl?: string
+  encodedRedirectPathname?: string
 ): Promise<Redirect | undefined> {
   const { data } = await client.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
-  console.log('refererURL', refererUrl)
+  console.log('refererURL', encodedRedirectPathname)
 
-  // refererUrl example:
-  // http://localhost:4200/users/sign-in?redirect=http://localhost:4200/templates/[journeyId]?createNew=true
-  const redirectPath = refererUrl?.split('?redirect=').pop()
-  console.log('redirectPath', redirectPath)
   const redirect =
-    redirectPath != null && redirectPath !== ''
-      ? `?redirect=${refererUrl ?? 'refererUrl-is-null'}`
+    encodedRedirectPathname != null && encodedRedirectPathname !== ''
+      ? `?redirect=${encodedRedirectPathname}`
       : ''
 
   if (

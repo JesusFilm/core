@@ -104,11 +104,20 @@ export function TeamOnboarding(): ReactElement {
                 >
                   <Button
                     onClick={async () => {
+                      console.log(
+                        'router.query.redirect',
+                        router.query.redirect
+                      )
                       const redirect =
                         router.query.redirect != null
-                          ? // redirect may or may not already be sanitised
-                            new URL(router.query.redirect as string).toString()
+                          ? new URL(
+                              `${window.location.origin}${
+                                router.query.redirect as string
+                              }`
+                            )
                           : '/?onboarding=true'
+
+                      console.log('redirect', redirect)
                       await router.push(redirect)
                     }}
                   >
