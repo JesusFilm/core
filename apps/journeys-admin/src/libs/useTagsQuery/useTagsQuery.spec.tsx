@@ -10,19 +10,23 @@ describe('useTagsQuery', () => {
         tags: [
           {
             __typename: 'Tag',
-            id: '123e4567-e89b-12d3-a456-426614174000',
-            name: {
-              value: 'Acceptance',
-              primary: true
-            }
+            id: '73cb38e3-06b6-4f34-b1e1-8d2859e510a1',
+            name: [
+              {
+                value: 'Acceptance',
+                primary: true
+              }
+            ]
           },
           {
             __typename: 'Tag',
-            id: '123e4567-e89b-12d3-a456-426614174001',
-            name: {
-              value: 'Addiction',
-              primary: true
-            }
+            id: '29ceed4c-c2e7-4b0e-8643-74181b646784',
+            name: [
+              {
+                value: 'Addiction',
+                primary: true
+              }
+            ]
           }
         ]
       }

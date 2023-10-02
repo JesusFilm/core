@@ -8,17 +8,25 @@ import { useTagsQuery } from '../../libs/useTagsQuery/useTagsQuery'
 import { CategoryTemplates } from './CategoryTemplates'
 import { FeaturedAndNewTemplates } from './FeaturedAndNewTemplates'
 
-export type TagDetailsProps = Array<{ id: string; name?: string }> | undefined
+interface TagDetailsProps {
+  id: string
+  name: string
+}
 
 export function TemplateSections(): ReactElement {
   const router = useRouter()
-  const paramTags = router.query.tags as string[]
+  const paramTags = router.query.tags
   const { data: serverTags } = useTagsQuery()
 
-  function transformTagsValue(paramTags, serverTags): TagDetailsProps {
+  function transformTagsValue(paramTags, serverTags): TagDetailsProps[] {
     if (paramTags != null) {
       const tagsArray = Array.isArray(paramTags) ? paramTags : [paramTags]
-      return tagsArray.map((tag) => ({ id: tag }))
+      return tagsArray.map((id) => ({
+        id,
+        name: serverTags?.tags
+          .find((tag) => tag.id === id)
+          .name.find(({ primary }) => primary)?.value
+      }))
     }
 
     return serverTags?.tags.map((tag) => ({

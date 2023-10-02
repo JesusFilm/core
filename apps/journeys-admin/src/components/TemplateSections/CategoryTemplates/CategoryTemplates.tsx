@@ -3,15 +3,15 @@ import { ReactElement } from 'react'
 import { useJourneysQuery } from '../../../libs/useJourneysQuery'
 import { TemplateSection } from '../TemplateSection'
 
-interface CategoryTemplateProps {
+interface CategoryTemplatesProps {
   id: string
-  name?: string
+  name: string
 }
 
 export function CategoryTemplates({
   id,
   name
-}: CategoryTemplateProps): ReactElement {
+}: CategoryTemplatesProps): ReactElement {
   const { data } = useJourneysQuery({
     where: {
       template: true,
@@ -20,14 +20,13 @@ export function CategoryTemplates({
     }
   })
 
-  const paramName = data?.journeys[0]?.tags
-    .find((tag) => tag.id === id)
-    ?.name.find(({ primary }) => primary)?.value
+  const renderTemplates = data?.journeys != null && data?.journeys.length >= 5
 
   return (
-    <TemplateSection
-      category={name != null ? name : paramName ?? ''}
-      journeys={data?.journeys}
-    />
+    <>
+      {renderTemplates && (
+        <TemplateSection category={name} journeys={data?.journeys} />
+      )}
+    </>
   )
 }
