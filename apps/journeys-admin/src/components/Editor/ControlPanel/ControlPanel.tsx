@@ -66,11 +66,11 @@ export function ControlPanel(): ReactElement {
     if (step != null) {
       dispatch({ type: 'SetSelectedStepAction', step })
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        id: undefined
-      })
       if (step.children[0].children.length === 0) {
+        dispatch({
+          type: 'SetSelectedAttributeIdAction',
+          id: undefined
+        })
         dispatch({
           type: 'SetDrawerPropsAction',
           mobileOpen: false,

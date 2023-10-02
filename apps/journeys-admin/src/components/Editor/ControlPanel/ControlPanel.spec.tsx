@@ -1,22 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
   ActiveJourneyEditContent,
   ActiveTab,
   EditorProvider,
-  EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
-import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
-} from '../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -26,16 +19,17 @@ import {
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
-import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
-
 import { BUTTON_BLOCK_CREATE } from './BlocksTab/NewButtonButton/NewButtonButton'
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
 import { RADIO_QUESTION_BLOCK_CREATE } from './BlocksTab/NewRadioQuestionButton/NewRadioQuestionButton'
 import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/NewSignUpButton/NewSignUpButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
-
 import { ControlPanel } from '.'
+import { TypographyVariant } from 'libs/journeys/ui/__generated__/globalTypes'
+import { ReactElement, ReactNode } from 'react'
+import { formatISO } from 'date-fns'
+import { SnackbarProvider } from 'notistack'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -44,55 +38,27 @@ jest.mock('uuid', () => ({
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
+  useTranslation: () => ({ t: (str: string) => str })
 }))
 
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn(
-      jest.requireActual('@core/journeys/ui/EditorProvider').useEditor
-    )
-  }
-})
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
 
 describe('ControlPanel', () => {
-  const step1: TreeBlock<StepBlock> = {
+  const step1: TreeBlock = {
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
-    children: []
-  }
-  const step2: TreeBlock<StepBlock> = {
-    id: 'step2.id',
-    __typename: 'StepBlock',
-    parentBlockId: null,
-    parentOrder: 1,
-    locked: true,
-    nextBlockId: null,
-    children: []
-  }
-  const step3: TreeBlock = {
-    __typename: 'StepBlock',
-    id: 'step3.id',
-    parentBlockId: null,
-    parentOrder: 2,
-    locked: true,
-    nextBlockId: null,
     children: [
       {
-        id: 'cardId',
+        id: 'card1.id',
         __typename: 'CardBlock',
-        parentBlockId: 'stepId',
+        parentBlockId: 'step1.id',
         parentOrder: 0,
         coverBlockId: null,
         backgroundColor: null,
@@ -103,29 +69,122 @@ describe('ControlPanel', () => {
       }
     ]
   }
-
-  const videoBlock: TreeBlock<VideoBlock> = {
-    __typename: 'VideoBlock',
-    id: 'videoId',
+  const step2: TreeBlock = {
+    id: 'step2.id',
+    __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: null,
-    muted: true,
-    autoplay: false,
-    startAt: null,
-    endAt: null,
-    posterBlockId: null,
-    fullsize: null,
-    videoId: null,
-    videoVariantLanguageId: null,
-    source: VideoBlockSource.internal,
-    title: null,
-    description: null,
-    image: null,
-    duration: null,
-    objectFit: null,
-    video: null,
-    action: null,
-    children: []
+    parentOrder: 1,
+    locked: true,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'card2.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step2.id',
+        parentOrder: 0,
+        coverBlockId: null,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: []
+      }
+    ]
+  }
+  const step3: TreeBlock = {
+    __typename: 'StepBlock',
+    id: 'step3.id',
+    parentBlockId: null,
+    parentOrder: 2,
+    locked: true,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'card3.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step3.id',
+        parentOrder: 0,
+        coverBlockId: null,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            __typename: 'TypographyBlock',
+            id: 'typography.id',
+            parentBlockId: 'step3.id',
+            parentOrder: 0,
+            variant: TypographyVariant.body1,
+            content: 'typography content',
+            color: null,
+            align: null,
+            children: []
+          }
+        ]
+      }
+    ]
+  }
+  const step4: TreeBlock = {
+    __typename: 'StepBlock',
+    id: 'step4.id',
+    parentBlockId: null,
+    parentOrder: 2,
+    locked: true,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'card4.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step4.id',
+        parentOrder: 0,
+        coverBlockId: null,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            __typename: 'VideoBlock',
+            id: 'videoId',
+            parentBlockId: 'card4.id',
+            parentOrder: null,
+            muted: true,
+            autoplay: false,
+            startAt: null,
+            endAt: null,
+            posterBlockId: null,
+            fullsize: null,
+            videoId: null,
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            image: null,
+            duration: null,
+            objectFit: null,
+            video: null,
+            action: null,
+            children: []
+          }
+        ]
+      }
+    ]
+  }
+
+  function EditorState(): ReactElement {
+    const { state } = useEditor()
+    return (
+      <>
+        <div>selectedBlock: {state.selectedBlock?.id}</div>
+        <div>drawerMobileOpen: {state.drawerMobileOpen.toString()}</div>
+        <div>drawerTitle: {state.drawerTitle}</div>
+        <div>
+          journeyEditContentComponent: {state.journeyEditContentComponent}
+        </div>
+        <div>{state.drawerChildren}</div>
+      </>
+    )
   }
 
   it('should render tabs and tab panels', async () => {
@@ -206,8 +265,7 @@ describe('ControlPanel', () => {
     ).toBeInTheDocument()
   })
 
-  // test fails in ci, but passes locally and in wallaby and works as intended
-  it.skip('should hide add button when clicking blocks tab', async () => {
+  it('should hide add button when clicking blocks tab', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>
         <JourneyProvider
@@ -239,7 +297,7 @@ describe('ControlPanel', () => {
   })
 
   it('should hide add button when clicking add button', async () => {
-    const { getByRole } = render(
+    const { queryByRole, getByRole } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -265,14 +323,12 @@ describe('ControlPanel', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
-    // TODO: Flakey expectation passes locally, fails remotely
-    // await waitFor(() =>
-    //   expect(queryByRole('button', { name: 'Add' })).not.toBeInTheDocument()
-    // )
+    await waitFor(() =>
+      expect(queryByRole('button', { name: 'Add' })).not.toBeInTheDocument()
+    )
   })
 
-  // test fails in ci, but passes locally and in wallaby and works as intended
-  it.skip('should change to properties tab on text button click', async () => {
+  it('should change to properties tab on text button click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -282,9 +338,9 @@ describe('ControlPanel', () => {
               variables: {
                 input: {
                   journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
+                  parentBlockId: 'card3.id',
                   content: '',
-                  variant: 'h1'
+                  variant: 'body2'
                 }
               }
             },
@@ -351,7 +407,7 @@ describe('ControlPanel', () => {
                 input: {
                   id: 'uuid',
                   journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
+                  parentBlockId: 'card3.id',
                   submitLabel: 'Submit'
                 },
                 iconBlockCreateInput: {
@@ -424,6 +480,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
+    expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
     fireEvent.click(getByTestId('preview-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
@@ -543,7 +600,7 @@ describe('ControlPanel', () => {
                 input: {
                   journeyId: 'journeyId',
                   id: 'uuid',
-                  parentBlockId: 'cardId'
+                  parentBlockId: 'card3.id'
                 },
                 radioOptionBlockCreateInput1: {
                   journeyId: 'journeyId',
@@ -605,7 +662,7 @@ describe('ControlPanel', () => {
               variables: {
                 input: {
                   journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
+                  parentBlockId: 'card3.id',
                   src: null,
                   alt: 'Default Image Icon'
                 }
@@ -674,7 +731,7 @@ describe('ControlPanel', () => {
               variables: {
                 input: {
                   journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
+                  parentBlockId: 'card2.id',
                   autoplay: true,
                   muted: false,
                   fullsize: true
@@ -724,7 +781,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('preview-step2.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Video' }))
@@ -736,8 +793,7 @@ describe('ControlPanel', () => {
     )
   })
 
-  // test fails in ci, but passes locally and in wallaby and works as intended
-  it.skip('should change to properties tab on "button" button click', async () => {
+  it('should change to properties tab on "button" button click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -748,7 +804,7 @@ describe('ControlPanel', () => {
                 input: {
                   id: 'uuid',
                   journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
+                  parentBlockId: 'card3.id',
                   label: '',
                   variant: ButtonVariant.contained,
                   color: ButtonColor.primary,
@@ -801,7 +857,7 @@ describe('ControlPanel', () => {
                 },
                 buttonBlockUpdate: {
                   id: 'uuid',
-                  parentBlockId: 'cardId',
+                  parentBlockId: 'card3.id',
                   parentOrder: 0,
                   journeyId: 'journeyId',
                   label: '',
@@ -962,9 +1018,97 @@ describe('ControlPanel', () => {
     )
   })
 
+  it('should open properties drawer when selecting a card with children', async () => {
+    const { getByTestId, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base,
+                language: {
+                  __typename: 'Language',
+                  id: '529',
+                  bcp47: 'en',
+                  iso3: 'eng',
+                  name: [{ primary: true, value: 'English' }]
+                },
+                createdAt: formatISO(new Date())
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider
+              initialState={{
+                steps: [step1, step2, step3],
+                selectedBlock: step1,
+                drawerMobileOpen: false,
+                activeTab: ActiveTab.Properties,
+                activeFab: ActiveFab.Add,
+                journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+              }}
+            >
+              <EditorState />
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByTestId('preview-step3.id'))
+    expect(getByText('selectedBlock: step3.id')).toBeInTheDocument()
+    expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
+    expect(getByText('drawerTitle: Properties')).toBeInTheDocument()
+    expect(getByText('Access Control')).toBeInTheDocument()
+  })
+
+  it('should open card library drawer when selecting a card without children', async () => {
+    const { getByTestId, getByText, getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2, step3],
+              selectedBlock: step1,
+              drawerMobileOpen: false,
+              activeTab: ActiveTab.Properties,
+              activeFab: ActiveFab.Add,
+              journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+            }}
+          >
+            <EditorState />
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('preview-step2.id'))
+    expect(getByText('selectedBlock: step2.id')).toBeInTheDocument()
+    expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
+    expect(getByText('drawerTitle: Card Templates')).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Card Video Template' })
+    ).toBeInTheDocument()
+  })
+
   it('should not allow blocks to be added when a Video Block is present', async () => {
-    const step4 = step3
-    step4.children[0].children.push(videoBlock)
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
@@ -995,8 +1139,6 @@ describe('ControlPanel', () => {
   })
 
   it('should show a tooltip when disabled blocks tab is hovered over', async () => {
-    const step4 = step3
-    step4.children[0].children.push(videoBlock)
     const { getByRole, queryByRole } = render(
       <MockedProvider>
         <JourneyProvider
@@ -1036,23 +1178,7 @@ describe('ControlPanel', () => {
   })
 
   it('should open mobile drawer for social preview', async () => {
-    const state: EditorState = {
-      steps: [step1, step2, step3],
-      selectedBlock: step1,
-      drawerMobileOpen: false,
-      activeTab: ActiveTab.Properties,
-      activeFab: ActiveFab.Add,
-      journeyEditContentComponent: ActiveJourneyEditContent.SocialPreview
-    }
-
-    const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-
-    const { getByRole, getByTestId } = render(
+    const { getByText, getByRole, getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -1070,72 +1196,111 @@ describe('ControlPanel', () => {
             variant: 'admin'
           }}
         >
-          <EditorProvider initialState={state}>
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute('disabled')
-    expect(getByRole('tab', { name: 'Blocks' })).toHaveAttribute('disabled')
-    fireEvent.click(getByTestId('social-edit-fab'))
-    expect(dispatch).toHaveBeenCalledWith({
-      mobileOpen: true,
-      type: 'SetDrawerMobileOpenAction'
-    })
-  })
-
-  it('should open social preview on selection', async () => {
-    const state: EditorState = {
-      steps: [step1, step2, step3],
-      selectedBlock: step1,
-      drawerMobileOpen: false,
-      activeTab: ActiveTab.Properties,
-      activeFab: ActiveFab.Add,
-      journeyEditContentComponent: ActiveJourneyEditContent.Canvas
-    }
-
-    const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-
-    const { getByTestId } = render(
-      <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base,
-              language: {
-                __typename: 'Language',
-                id: '529',
-                bcp47: 'en',
-                iso3: 'eng'
-              }
-            } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={state}>
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2, step3],
+              selectedBlock: step1,
+              drawerMobileOpen: false,
+              activeTab: ActiveTab.Properties,
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <EditorState />
             <ControlPanel />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('social-preview-navigation-card'))
-    expect(dispatch).toHaveBeenCalledWith({
-      component: 'social',
-      type: 'SetJourneyEditContentAction'
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Social Share Preview',
-      mobileOpen: false,
-      children: <SocialShareAppearance />
-    })
+    expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute('disabled')
+    expect(getByRole('tab', { name: 'Blocks' })).toHaveAttribute('disabled')
+    fireEvent.click(getByTestId('social-edit-fab'))
+    expect(getByText('selectedBlock: step1.id')).toBeInTheDocument()
+    expect(getByText('drawerMobileOpen: true')).toBeInTheDocument()
+    expect(getByText('drawerTitle: Social Share Preview')).toBeInTheDocument()
+    expect(getByText('journeyEditContentAction: social')).toBeInTheDocument()
+    expect(getByText('Social Image')).toBeInTheDocument()
+  })
+
+  it('should open social preview on selection', async () => {
+    const { getByTestId, getByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2, step3],
+              selectedBlock: step1,
+              drawerMobileOpen: false,
+              activeTab: ActiveTab.Properties,
+              activeFab: ActiveFab.Add,
+              journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+            }}
+          >
+            <EditorState />
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    expect(getByText('selectedBlock: step1.id')).toBeInTheDocument()
+    expect(getByText('drawerMobileOpen: true')).toBeInTheDocument()
+    expect(getByText('drawerTitle: Social Share Preview')).toBeInTheDocument()
+    expect(getByText('journeyEditContentAction: social')).toBeInTheDocument()
+    expect(getByText('Social Image')).toBeInTheDocument()
+  })
+
+  it('should open action on selection', async () => {
+    const { getByTestId, getByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2, step3],
+              selectedBlock: step1,
+              drawerMobileOpen: false,
+              activeTab: ActiveTab.Properties,
+              activeFab: ActiveFab.Add,
+              journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+            }}
+          >
+            <EditorState />
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('goals-navigation-card'))
+    expect(getByText('journeyEditContentAction: goals')).toBeInTheDocument()
   })
 })
