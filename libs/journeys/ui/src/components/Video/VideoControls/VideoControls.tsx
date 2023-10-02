@@ -330,7 +330,7 @@ export function VideoControls({
               }}
               onClick={handleMute}
             >
-              {muted ? <VolumeOffOutlined /> : <VolumeUpOutlined />}
+              {player.muted() ? <VolumeOffOutlined /> : <VolumeUpOutlined />}
             </IconButton>
           </Stack>
           {/* Play/Pause */}
