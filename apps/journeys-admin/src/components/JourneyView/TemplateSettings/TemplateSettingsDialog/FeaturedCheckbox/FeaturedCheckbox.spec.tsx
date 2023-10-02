@@ -12,7 +12,7 @@ jest.mock('react-i18next', () => ({
 }))
 
 describe('FeaturedCheckbox', () => {
-  it('calls handleChange when clicked', () => {
+  it('calls handleChange on click', () => {
     const handleChange = jest.fn()
     const { getByRole } = render(
       <FeaturedCheckbox

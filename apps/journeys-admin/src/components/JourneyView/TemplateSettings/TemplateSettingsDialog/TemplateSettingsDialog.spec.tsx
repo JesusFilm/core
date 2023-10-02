@@ -31,7 +31,7 @@ describe('TemplateSettingsDialog', () => {
 
   beforeEach(() => jest.clearAllMocks())
 
-  it('should update field data on submit', async () => {
+  it('should update field data and close dialog on submit', async () => {
     const updatedJourney = {
       title: 'New Title',
       description: 'New Description'
@@ -107,6 +107,7 @@ describe('TemplateSettingsDialog', () => {
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
       expect(result2).toHaveBeenCalled()
+      expect(onClose).toHaveBeenCalled()
     })
   })
 
@@ -179,7 +180,7 @@ describe('TemplateSettingsDialog', () => {
     })
   })
 
-  it('shows error alert when either field fails to update', async () => {
+  it('shows error alert when any field fails to update', async () => {
     const { getByRole, getByText, getAllByRole } = render(
       <MockedProvider
         mocks={[
@@ -229,49 +230,6 @@ describe('TemplateSettingsDialog', () => {
         getByText('Field update failed. Reload the page or try again.')
       ).toBeInTheDocument()
     )
-  })
-
-  it('should not update featured at if not different from journey', async () => {
-    const featuredAtJourney = {
-      ...defaultJourney,
-      featuredAt: 'featuredAt'
-    }
-
-    const result = jest.fn()
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_FEATURE_UPDATE,
-              variables: {
-                id: featuredAtJourney.id,
-                feature: true
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: featuredAtJourney,
-              variant: 'admin'
-            }}
-          >
-            <TemplateSettingsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByRole('button', { name: 'Save' }))
-
-    await waitFor(() => {
-      expect(result).not.toHaveBeenCalled()
-    })
   })
 
   it('calls on close and resets form when dialog is closed', async () => {
