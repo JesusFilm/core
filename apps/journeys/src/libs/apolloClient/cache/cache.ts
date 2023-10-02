@@ -33,23 +33,7 @@ export const cache = (): InMemoryCache =>
         'VideoTriggerBlock'
       ]
     },
-    dataIdFromObject(responseObject) {
-      let id: string
-      switch (responseObject.__typename) {
-        case 'Video':
-          if (responseObject.variant != null) {
-            id = (
-              responseObject.variant as unknown as {
-                id: string
-              }
-            ).id
-          } else {
-            id = responseObject.id as unknown as string
-          }
-          return `Video:${id}`
-        case 'Person':
-        default:
-          return defaultDataIdFromObject(responseObject)
-      }
+    typePolicies: {
+      Video: { keyFields: ['id', 'variant', ['id']] }
     }
   })

@@ -1,8 +1,4 @@
-import {
-  InMemoryCache,
-  StoreObject,
-  defaultDataIdFromObject
-} from '@apollo/client'
+import { InMemoryCache } from '@apollo/client'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 
 export const cache = (): InMemoryCache =>
@@ -58,18 +54,21 @@ export const cache = (): InMemoryCache =>
             }
           }
         }
-      }
-    },
-    dataIdFromObject(responseObject) {
-      const videoVariant = responseObject.variant as unknown as StoreObject & {
-        id: string
-      }
-      switch (responseObject.__typename) {
-        case 'Video':
-          return `Video:${videoVariant?.id ?? responseObject.id}`
-        case 'Person':
-        default:
-          return defaultDataIdFromObject(responseObject)
+      },
+      Video: {
+        keyFields: ['id', 'variant', ['id']]
       }
     }
+    // dataIdFromObject(responseObject) {
+    //   const videoVariant = responseObject.variant as unknown as StoreObject & {
+    //     id: string
+    //   }
+    //   switch (responseObject.__typename) {
+    //     case 'Video':
+    //       return `Video:${videoVariant?.id ?? responseObject.id}`
+    //     case 'Person':
+    //     default:
+    //       return defaultDataIdFromObject(responseObject)
+    //   }
+    // }
   })
