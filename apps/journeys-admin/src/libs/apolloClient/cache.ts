@@ -59,16 +59,4 @@ export const cache = (): InMemoryCache =>
         keyFields: ['id', 'variant', ['id']]
       }
     }
-    // dataIdFromObject(responseObject) {
-    //   const videoVariant = responseObject.variant as unknown as StoreObject & {
-    //     id: string
-    //   }
-    //   switch (responseObject.__typename) {
-    //     case 'Video':
-    //       return `Video:${videoVariant?.id ?? responseObject.id}`
-    //     case 'Person':
-    //     default:
-    //       return defaultDataIdFromObject(responseObject)
-    //   }
-    // }
   })
