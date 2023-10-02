@@ -9,7 +9,7 @@ interface PageWrapperProps {
 
 export function PageWrapper({ children }: PageWrapperProps): ReactElement {
   return (
-    <Container maxWidth="md" disableGutters>
+    <Container maxWidth="md" disableGutters data-testid="PageWrapper">
       {children}
     </Container>
   )

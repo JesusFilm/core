@@ -8,6 +8,7 @@ import { sharedUiConfig } from '../../libs/sharedUiConfig'
 import { Button } from './Button'
 import { Checkbox } from './Checkbox'
 import { ElementsWrapper } from './ElementsWrapper'
+import { FieldWrapper } from './FieldWrapper'
 import { FooterWrapper } from './FooterWrapper'
 import { FormControl } from './FormControl'
 import { FormiumForm } from './FormiumForm'
@@ -128,10 +129,18 @@ const Template: StoryObj<FormStoryProps> = {
         <FormControl {...args.formControlProps} />
         <ElementsWrapper>
           <>
-            <TextInput {...args.textInputProps} />
-            <Textarea {...args.textAreaProps} />
-            <Checkbox {...args.checkboxProps} />
-            <RadioGroup {...args.radioGroupProps} />
+            <FieldWrapper>
+              <TextInput {...args.textInputProps} />
+            </FieldWrapper>
+            <FieldWrapper>
+              <Textarea {...args.textAreaProps} />
+            </FieldWrapper>
+            <FieldWrapper>
+              <Checkbox {...args.checkboxProps} />
+            </FieldWrapper>
+            <FieldWrapper>
+              <RadioGroup {...args.radioGroupProps} />
+            </FieldWrapper>
           </>
         </ElementsWrapper>
         <FooterWrapper>

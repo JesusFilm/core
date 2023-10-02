@@ -12,6 +12,7 @@ import { formiumClient } from '../../libs/formiumClient'
 import { Button } from './Button'
 import { Checkbox } from './Checkbox'
 import { ElementsWrapper } from './ElementsWrapper'
+import { FieldWrapper } from './FieldWrapper'
 import { FooterWrapper } from './FooterWrapper'
 import { FormControl } from './FormControl'
 import { Header } from './Header'
@@ -32,6 +33,7 @@ const myComponents: FormiumComponents = {
   PageWrapper,
   FooterWrapper,
   Header,
+  FieldWrapper,
   SubmitButton: Button,
   NextButton: Button,
   PreviousButton: Button

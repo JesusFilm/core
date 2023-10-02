@@ -41,6 +41,7 @@ interface PageChild {
 export function Header({ page: { title } }: HeaderProps): ReactElement {
   return (
     <Box
+      data-testid="Header"
       sx={{
         display: 'flex',
         justifyContent: 'center',

@@ -9,6 +9,11 @@ interface FooterWrapperProps {
 
 export function FooterWrapper({ children }: FooterWrapperProps): ReactElement {
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>{children}</Box>
+    <Box
+      data-testid="FooterWrapper"
+      sx={{ display: 'flex', justifyContent: 'center' }}
+    >
+      {children}
+    </Box>
   )
 }

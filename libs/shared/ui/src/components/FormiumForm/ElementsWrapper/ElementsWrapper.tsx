@@ -12,7 +12,14 @@ export function ElementsWrapper({
   children
 }: ElementsWrapperProps): ReactElement {
   return (
-    <Card sx={{ minWidth: '404px', borderRadius: '8px', mb: '18px' }}>
+    <Card
+      data-testid='ElementsWrapper'
+      sx={{
+        width: '404px',
+        borderRadius: '8px',
+        mb: '18px'
+      }}
+    >
       <CardContent
         sx={{
           '&:last-of-type': {

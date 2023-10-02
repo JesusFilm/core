@@ -8,5 +8,5 @@ Short Answer, URL, Email
 */
 
 export function TextInput(props: TextInputProps): ReactElement {
-  return <TextField variant="outlined" fullWidth {...props} />
+  return <TextField variant="filled" fullWidth {...props} sx={{ pt: 4 }} />
 }
