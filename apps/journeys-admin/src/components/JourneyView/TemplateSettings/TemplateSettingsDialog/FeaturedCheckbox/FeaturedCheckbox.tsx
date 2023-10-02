@@ -34,7 +34,7 @@ export function FeaturedCheckbox({
       componentsProps={{
         typography: { color: 'secondary.main', variant: 'subtitle2' }
       }}
-      label={t('Mark as Featured')}
+      label={t('Featured')}
     />
   )
 }

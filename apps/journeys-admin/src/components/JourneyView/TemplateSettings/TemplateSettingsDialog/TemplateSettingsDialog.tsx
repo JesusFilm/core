@@ -153,7 +153,7 @@ export function TemplateSettingsDialog({
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: 'Edit Title and Description' }}
+              dialogTitle={{ title: 'Template Settings' }}
               dialogAction={{
                 onSubmit: handleSubmit,
                 closeLabel: 'Cancel'
@@ -195,6 +195,7 @@ export function TemplateSettingsDialog({
                       value={values.title}
                       variant="filled"
                       onChange={handleChange}
+                      helperText={t('Recommended length: six words or shorter')}
                     />
                     <TextField
                       label={t('Description')}
@@ -206,6 +207,9 @@ export function TemplateSettingsDialog({
                       variant="filled"
                       rows={3}
                       onChange={handleChange}
+                      helperText={t(
+                        'Publicly visible on template details page'
+                      )}
                     />
                     <FormGroup>
                       <FeaturedCheckbox

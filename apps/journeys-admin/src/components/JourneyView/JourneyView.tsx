@@ -21,6 +21,7 @@ import { SlugDialog } from './JourneyLink/SlugDialog'
 import { JourneyViewFab } from './JourneyViewFab'
 import { Properties } from './Properties'
 import { SocialImage } from './SocialImage'
+import { TemplateSettings } from './TemplateSettings'
 
 export type JourneyType = 'Journey' | 'Template'
 
@@ -72,6 +73,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
           }}
         >
           {journeyType === 'Template' && <DatePreview />}
+          <TemplateSettings />
         </Stack>
       </Box>
       <Properties journeyType={journeyType} isPublisher={isPublisher} />
