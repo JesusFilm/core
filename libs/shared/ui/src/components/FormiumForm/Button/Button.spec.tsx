@@ -24,6 +24,6 @@ describe('Button', () => {
       <Button type="submit">Submit</Button>
     )
     expect(getByText('Submit')).toBeInTheDocument()
-    expect(getByTestId('CheckBorkenIcon')).toBeInTheDocument()
+    expect(getByTestId('CheckBrokenIcon')).toBeInTheDocument()
   })
 })
