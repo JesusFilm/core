@@ -13,6 +13,8 @@ export function Button({
       type={type}
       disabled={disabled}
       onClick={onClick}
+      fullWidth
+      color="secondary"
     >
       {children}
     </MuiButton>
