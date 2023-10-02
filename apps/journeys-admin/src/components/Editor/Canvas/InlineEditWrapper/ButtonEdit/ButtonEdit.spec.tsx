@@ -11,6 +11,11 @@ import { ButtonVariant } from '../../../../../../__generated__/globalTypes'
 
 import { BUTTON_BLOCK_UPDATE_CONTENT, ButtonEdit } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {

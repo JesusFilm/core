@@ -20,6 +20,11 @@ import {
 
 import { BLOCK_DELETE, DeleteBlock } from './DeleteBlock'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const selectedBlock: TreeBlock<TypographyBlock> = {
   id: 'typography0.id',
   __typename: 'TypographyBlock',

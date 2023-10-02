@@ -13,6 +13,11 @@ import { RADIO_OPTION_BLOCK_CREATE } from './RadioQuestionEdit'
 
 import { RadioQuestionEdit } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
