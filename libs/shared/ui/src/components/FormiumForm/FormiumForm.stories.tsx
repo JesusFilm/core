@@ -80,7 +80,8 @@ const defaultFormStoryArgs: FormStoryProps = {
         id: 'radioGroupOption1.id',
         label: 'Label 1',
         value: 'Value 1',
-        disabled: false
+        disabled: false,
+        checked: true
       },
       {
         id: 'radioGroupOption2.id',
@@ -107,17 +108,17 @@ const defaultFormStoryArgs: FormStoryProps = {
   previousButtonProps: {
     type: 'button',
     onClick: noop,
-    children: 'Previous Button'
+    children: 'Back'
   },
   nextButtonProps: {
     type: 'submit',
     onClick: noop,
-    children: 'Next Button'
+    children: 'Next'
   },
   submitButtonProps: {
     type: 'submit',
     disabled: false,
-    children: 'Submit Button'
+    children: 'Submit'
   }
 }
 
@@ -136,7 +137,10 @@ const Template: StoryObj<FormStoryProps> = {
               <Textarea {...args.textAreaProps} />
             </FieldWrapper>
             <FieldWrapper>
-              <Checkbox {...args.checkboxProps} />
+              <>
+                <Checkbox {...args.checkboxProps} checked />
+                <Checkbox {...args.checkboxProps} />
+              </>
             </FieldWrapper>
             <FieldWrapper>
               <RadioGroup {...args.radioGroupProps} />
