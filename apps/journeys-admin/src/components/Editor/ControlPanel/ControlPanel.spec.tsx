@@ -1218,7 +1218,7 @@ describe('ControlPanel', () => {
     expect(getByText('selectedBlock: step1.id')).toBeInTheDocument()
     expect(getByText('drawerMobileOpen: true')).toBeInTheDocument()
     expect(getByText('drawerTitle: Social Share Preview')).toBeInTheDocument()
-    expect(getByText('journeyEditContentAction: social')).toBeInTheDocument()
+    expect(getByText('journeyEditContentComponent: social')).toBeInTheDocument()
     expect(getByText('Social Image')).toBeInTheDocument()
   })
 
@@ -1259,9 +1259,9 @@ describe('ControlPanel', () => {
     )
     fireEvent.click(getByTestId('social-preview-navigation-card'))
     expect(getByText('selectedBlock: step1.id')).toBeInTheDocument()
-    expect(getByText('drawerMobileOpen: true')).toBeInTheDocument()
+    expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
     expect(getByText('drawerTitle: Social Share Preview')).toBeInTheDocument()
-    expect(getByText('journeyEditContentAction: social')).toBeInTheDocument()
+    expect(getByText('journeyEditContentComponent: social')).toBeInTheDocument()
     expect(getByText('Social Image')).toBeInTheDocument()
   })
 
@@ -1301,6 +1301,6 @@ describe('ControlPanel', () => {
       </MockedProvider>
     )
     fireEvent.click(getByTestId('goals-navigation-card'))
-    expect(getByText('journeyEditContentAction: goals')).toBeInTheDocument()
+    expect(getByText('journeyEditContentComponent: action')).toBeInTheDocument()
   })
 })
