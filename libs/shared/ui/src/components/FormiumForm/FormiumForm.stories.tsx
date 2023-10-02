@@ -127,11 +127,13 @@ const Template: StoryObj<FormStoryProps> = {
     <PageWrapper>
       <>
         <Header {...args.headerProps} />
-        <FormControl {...args.formControlProps} />
         <ElementsWrapper>
           <>
             <FieldWrapper>
-              <TextInput {...args.textInputProps} />
+              <>
+                <FormControl {...args.formControlProps} />
+                <TextInput {...args.textInputProps} />
+              </>
             </FieldWrapper>
             <FieldWrapper>
               <Textarea {...args.textAreaProps} />

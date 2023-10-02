@@ -9,7 +9,12 @@ interface PageWrapperProps {
 
 export function PageWrapper({ children }: PageWrapperProps): ReactElement {
   return (
-    <Container maxWidth="md" disableGutters data-testid="PageWrapper">
+    <Container
+      maxWidth="md"
+      disableGutters
+      data-testid="PageWrapper"
+      sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+    >
       {children}
     </Container>
   )
