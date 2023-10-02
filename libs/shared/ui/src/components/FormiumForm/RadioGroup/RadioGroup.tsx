@@ -13,7 +13,7 @@ export function RadioGroup({
   options
 }: RadioGroupProps): ReactElement {
   return (
-    <FormControl disabled={disabled} sx={{ pt: 4 }}>
+    <FormControl disabled={disabled}>
       <MuiRadioGroup name={name} onChange={onChange} onBlur={onBlur}>
         {options.map((option) => (
           <FormControlLabel

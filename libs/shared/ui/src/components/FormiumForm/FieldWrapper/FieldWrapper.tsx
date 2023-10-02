@@ -14,14 +14,7 @@ export function FieldWrapper({ children }: FieldWrapperProps): ReactElement {
   return (
     <Box
       data-testid="FieldWrapper"
-      sx={{
-        pb: 4
-        // '&.MuiTypography-root': {
-        //   border: '1px solid red',
-        //   color: 'blue',
-        //   backgroundColor: 'green'
-        // }
-      }}
+      sx={{ pb: 4 }}
     >
       {children}
     </Box>

@@ -8,9 +8,9 @@ export function Textarea(props: TextareaProps): ReactElement {
       variant="filled"
       fullWidth
       multiline
+      hiddenLabel
       {...props}
       rows={3}
-      sx={{ pt: 4 }}
     />
   )
 }
