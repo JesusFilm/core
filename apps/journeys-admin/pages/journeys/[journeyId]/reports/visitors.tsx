@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ACCEPT_ALL_INVITES } from '../../..'
 import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
-import { GetJourney } from '../../../../__generated__/GetJourney'
+import { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
 import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
@@ -27,7 +27,7 @@ import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/Fil
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/NewPageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
-import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
+import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -256,8 +256,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
   })
 
   try {
-    await apolloClient.query<GetJourney>({
-      query: GET_JOURNEY,
+    await apolloClient.query<GetAdminJourney>({
+      query: GET_ADMIN_JOURNEY,
       variables: {
         id: query?.journeyId
       }
