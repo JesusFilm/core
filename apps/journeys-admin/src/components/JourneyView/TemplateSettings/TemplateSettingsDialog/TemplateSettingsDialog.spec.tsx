@@ -12,8 +12,6 @@ import {
   TemplateSettingsDialog
 } from './TemplateSettingsDialog'
 
-const onClose = jest.fn()
-
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
@@ -29,6 +27,8 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('TemplateSettingsDialog', () => {
+  const onClose = jest.fn()
+
   beforeEach(() => jest.clearAllMocks())
 
   it('should update field data on submit', async () => {
