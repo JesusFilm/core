@@ -13,7 +13,7 @@ export function ElementsWrapper({
 }: ElementsWrapperProps): ReactElement {
   return (
     <Card
-      data-testid='ElementsWrapper'
+      data-testid="ElementsWrapper"
       sx={{
         width: '404px',
         borderRadius: '8px',

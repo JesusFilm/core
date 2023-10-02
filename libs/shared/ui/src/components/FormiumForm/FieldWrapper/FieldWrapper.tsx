@@ -12,10 +12,7 @@ label, description, children, error
 
 export function FieldWrapper({ children }: FieldWrapperProps): ReactElement {
   return (
-    <Box
-      data-testid="FieldWrapper"
-      sx={{ pb: 4 }}
-    >
+    <Box data-testid="FieldWrapper" sx={{ pb: 4 }}>
       {children}
     </Box>
   )

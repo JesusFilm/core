@@ -8,12 +8,5 @@ Short Answer, URL, Email
 */
 
 export function TextInput(props: TextInputProps): ReactElement {
-  return (
-    <TextField
-      variant="filled"
-      fullWidth
-      hiddenLabel
-      {...props}
-    />
-  )
+  return <TextField variant="filled" fullWidth hiddenLabel {...props} />
 }
