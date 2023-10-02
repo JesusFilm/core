@@ -34,7 +34,7 @@ async function upsertTag(
   })
 
   await childrenNames.map(async (name) => {
-    await upsertTag(name, [], tag.id)
+    await upsertTag(name, [], tag.id, service)
   })
 }
 
