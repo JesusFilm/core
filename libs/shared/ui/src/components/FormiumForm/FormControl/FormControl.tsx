@@ -19,7 +19,9 @@ export function FormControl({
     <>
       {label != null && <Typography variant="subtitle1">{label}</Typography>}
       {description != null && (
-        <Typography variant="body1">{description}</Typography>
+        <Typography variant="body1" sx={{ pb: 4 }}>
+          {description}
+        </Typography>
       )}
       {children}
       {error != null && (
