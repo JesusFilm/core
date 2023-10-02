@@ -1,4 +1,5 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
@@ -9,6 +10,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { TitleDescriptionUpdate } from '../../../../../__generated__/TitleDescriptionUpdate'
+import { FeaturedCheckbox } from '../FeaturedCheckbox'
 
 export const TITLE_DESCRIPTION_UPDATE = gql`
   mutation TitleDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -136,6 +138,12 @@ export function TitleDescriptionDialog({
                   rows={3}
                   onChange={handleChange}
                 />
+                <Stack sx={{ pt: 6 }}>
+                  <FeaturedCheckbox
+                    featuredAt={journey.featuredAt}
+                    journeyId={journey.id}
+                  />
+                </Stack>
               </Form>
             </Dialog>
           )}
