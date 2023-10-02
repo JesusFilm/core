@@ -15,7 +15,7 @@ jest.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-describe('CategoryTempaltes', () => {
+describe('CategoryTemplates', () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({
       query: {}
