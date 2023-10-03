@@ -61,13 +61,13 @@ function TemplateDetails(): ReactElement {
 }
 
 export const getServerSideProps = withAuthUserTokenSSR()(
-  async ({ AuthUser, locale, req, query, params }) => {
-    console.log('req -----------!!!!', req.url, query, params)
+  async ({ AuthUser, locale, req, query, params, resolvedUrl }) => {
+    console.log('req -----------!!!!', req.url, query, params, resolvedUrl)
     const { flags, redirect, translations } = await initAndAuthApp({
       AuthUser,
       locale,
       encodedRedirectPathname:
-        req.url != null ? encodeURIComponent(req.url) : undefined
+        req.url != null ? encodeURIComponent(resolvedUrl) : undefined
     })
 
     if (redirect != null) return { redirect }
