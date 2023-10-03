@@ -18,7 +18,9 @@ function TermsAndConditionsPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Terms and Conditions')} />
-      <OnboardingPageWrapper emailSubject="A question about the terms and conditions form">
+      <OnboardingPageWrapper
+        emailSubject={t('A question about the terms and conditions form')}
+      >
         <TermsAndConditions />
       </OnboardingPageWrapper>
     </>
