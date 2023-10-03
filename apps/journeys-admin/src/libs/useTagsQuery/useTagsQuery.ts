@@ -6,6 +6,8 @@ export const GET_TAGS = gql`
   query GetTags {
     tags {
       id
+      service
+      parentId
       name {
         value
         primary
