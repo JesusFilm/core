@@ -92,13 +92,18 @@ function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
+})(async ({ AuthUser, locale, resolvedUrl, req, query, params }) => {
   if (AuthUser == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
+  console.log('landing page ---', req.url, query, params, resolvedUrl)
+
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     AuthUser,
-    locale
+    locale,
+    encodedRedirectPathname:
+      resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
+    pageSource: 'landing-page'
   })
 
   if (redirect != null) return { redirect }
