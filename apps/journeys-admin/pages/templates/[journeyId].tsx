@@ -66,8 +66,8 @@ export const getServerSideProps = withAuthUserTokenSSR()(
     const { flags, redirect, translations } = await initAndAuthApp({
       AuthUser,
       locale,
-      encodedRedirectPathname:
-        resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
+      encodedRedirectPathname: resolvedUrl != null ? resolvedUrl : undefined,
+      // resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
       pageSource: 'template page'
     })
 
