@@ -3,12 +3,15 @@
 
 import { PrismaClient } from '.prisma/api-tags-client'
 
+import { Service } from '../src/app/__generated__/graphql'
+
 const prisma = new PrismaClient()
 
 async function upsertTag(
   name: string,
   childrenNames: string[],
-  parentId?: string
+  parentId?: string,
+  service?: Service
 ): Promise<void> {
   const tag = await prisma.tag.upsert({
     where: {
@@ -18,18 +21,20 @@ async function upsertTag(
       name,
       // 529 is ID for English
       nameTranslations: [{ value: name, languageId: '529', primary: true }],
-      parentId
+      parentId,
+      service
     },
     update: {
       name,
       // 529 is ID for English
       nameTranslations: [{ value: name, languageId: '529', primary: true }],
-      parentId
+      parentId,
+      service
     }
   })
 
   await childrenNames.map(async (name) => {
-    await upsertTag(name, [], tag.id)
+    await upsertTag(name, [], tag.id, service)
   })
 }
 
@@ -103,6 +108,12 @@ async function main(): Promise<void> {
     'Inspirational',
     'Testimonies'
   ])
+  await upsertTag(
+    'Collections',
+    ['Jesus Film', 'NUA'],
+    undefined,
+    Service.apiJourneys
+  )
 }
 main().catch((e) => {
   console.error(e)

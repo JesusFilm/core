@@ -16,9 +16,9 @@ import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { ACCEPT_ALL_INVITES } from '..'
 import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
 import {
-  GetJourney,
-  GetJourney_journey as Journey
-} from '../../__generated__/GetJourney'
+  GetAdminJourney,
+  GetAdminJourney_journey as Journey
+} from '../../__generated__/GetAdminJourney'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { Editor } from '../../src/components/Editor'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
@@ -27,9 +27,9 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 
-export const GET_JOURNEY = gql`
+export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
-  query GetJourney($id: ID!) {
+  query GetAdminJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       ...JourneyFields
     }
@@ -48,7 +48,7 @@ function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
-  const { data } = useQuery<GetJourney>(GET_JOURNEY, {
+  const { data } = useQuery<GetAdminJourney>(GET_ADMIN_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
   useInvalidJourneyRedirect(data)
@@ -101,8 +101,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   let journey: Journey | null
   try {
-    const { data } = await apolloClient.query<GetJourney>({
-      query: GET_JOURNEY,
+    const { data } = await apolloClient.query<GetAdminJourney>({
+      query: GET_ADMIN_JOURNEY,
       variables: {
         id: query?.journeyId
       }
