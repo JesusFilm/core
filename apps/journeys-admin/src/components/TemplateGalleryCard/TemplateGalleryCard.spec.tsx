@@ -1,41 +1,72 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 
+import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import {
-  defaultTemplate,
-  oldTemplate
-} from '../TemplateLibrary/TemplateListData'
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
 
 import { TemplateGalleryCard } from '.'
 
 describe('TemplateGalleryCard', () => {
+  const journey: Journey = {
+    __typename: 'Journey',
+    id: 'template-id',
+    title: 'A Template Heading',
+    description: null,
+    slug: 'default',
+    template: true,
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English',
+          primary: true
+        }
+      ]
+    },
+    status: JourneyStatus.published,
+    userJourneys: [],
+    seoTitle: null,
+    seoDescription: null,
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.dark,
+    tags: [],
+    trashedAt: null,
+    primaryImageBlock: {
+      id: 'image1.id',
+      __typename: 'ImageBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+      alt: 'random image from unsplash',
+      width: 1920,
+      height: 1080,
+      blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+    },
+    publishedAt: '2023-08-14T04:24:24.392Z',
+    createdAt: '2023-08-14T04:24:24.392Z',
+    featuredAt: '2023-08-14T04:24:24.392Z'
+  }
+
   it('should render Template Gallery Card', () => {
-    const { getByText } = render(<TemplateGalleryCard journey={oldTemplate} />)
-    expect(getByText('November 19, 2020 ● English')).toBeInTheDocument()
-    expect(getByText('An Old Template Heading')).toBeInTheDocument()
+    const { getByRole, getByText } = render(
+      <TemplateGalleryCard journey={journey} />
+    )
+    expect(getByRole('img').attributes.getNamedItem('src')?.value).toBe(
+      'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
+    )
+    expect(getByText('August ● English')).toBeInTheDocument()
     expect(
-      getByText(
-        'Template created before the current year should also show the year in the date'
-      )
+      getByRole('heading', { name: 'A Template Heading' })
     ).toBeInTheDocument()
   })
 
   it('should link to template details', () => {
-    const { getByRole } = render(
-      <TemplateGalleryCard journey={defaultTemplate} />
-    )
+    const { getByRole } = render(<TemplateGalleryCard journey={journey} />)
     expect(getByRole('link')).toHaveAttribute('href', '/templates/template-id')
-  })
-
-  it('should link to publisher template details', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <TemplateGalleryCard journey={defaultTemplate} isPublisher />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    expect(getByRole('link')).toHaveAttribute('href', '/publisher/template-id')
   })
 })

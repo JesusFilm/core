@@ -46,6 +46,7 @@ describe('FeaturedAndNewTemplates', () => {
                     id: 1,
                     publishedAt: '2023-08-14T04:24:24.392Z',
                     featuredAt: '2023-08-14T04:24:24.392Z',
+                    createdAt: '2023-09-05T23:27:45.596Z',
                     template: true
                   },
                   {
@@ -53,6 +54,7 @@ describe('FeaturedAndNewTemplates', () => {
                     id: 2,
                     publishedAt: '2023-08-14T04:24:24.292Z',
                     featuredAt: '2023-08-14T04:24:24.292Z',
+                    createdAt: '2023-09-05T23:27:45.596Z',
                     template: true
                   }
                 ]
