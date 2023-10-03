@@ -1,5 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { formatISO } from 'date-fns'
+import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
@@ -9,6 +13,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import {
   ButtonColor,
@@ -16,20 +21,19 @@ import {
   ButtonVariant,
   ThemeMode,
   ThemeName,
+  TypographyVariant,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
+
 import { BUTTON_BLOCK_CREATE } from './BlocksTab/NewButtonButton/NewButtonButton'
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
 import { RADIO_QUESTION_BLOCK_CREATE } from './BlocksTab/NewRadioQuestionButton/NewRadioQuestionButton'
 import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/NewSignUpButton/NewSignUpButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
+
 import { ControlPanel } from '.'
-import { TypographyVariant } from 'libs/journeys/ui/__generated__/globalTypes'
-import { ReactElement, ReactNode } from 'react'
-import { formatISO } from 'date-fns'
-import { SnackbarProvider } from 'notistack'
 
 jest.mock('uuid', () => ({
   __esModule: true,
