@@ -63,7 +63,7 @@ export function OverlayContent({
 
   return (
     <Box
-      data-testid="OverlayContent"
+      data-testid="CardOverlayContent"
       sx={{
         ...enableVerticalScroll,
         ...topBottomEdgeFadeEffect,

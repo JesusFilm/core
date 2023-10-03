@@ -70,7 +70,7 @@ describe('Video', () => {
       </MockedProvider>
     )
     const sourceTag =
-      getByTestId('video-video0.id').querySelector('.vjs-tech source')
+      getByTestId('JourneysVideo-video0.id').querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
@@ -90,7 +90,7 @@ describe('Video', () => {
       </MockedProvider>
     )
     const sourceTag =
-      getByTestId('video-video0.id').querySelector('.vjs-tech source')
+      getByTestId('JourneysVideo-video0.id').querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8'
     )
@@ -133,8 +133,8 @@ describe.skip('Admin Video', () => {
     )
     const video = getByRole('region', { name: 'Video Player' })
 
-    fireEvent.click(getByTestId('video-video0.id'))
-    expect(getByTestId('video-video0.id')).toHaveStyle(
+    fireEvent.click(getByTestId('JourneysVideo-video0.id'))
+    expect(getByTestId('JourneysVideo-video0.id')).toHaveStyle(
       'outline: 2px solid #C52D3A'
     )
     expect(video).toHaveClass('vjs-paused')

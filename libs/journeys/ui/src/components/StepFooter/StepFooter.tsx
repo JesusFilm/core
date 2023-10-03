@@ -39,7 +39,7 @@ export function StepFooter({
 
   return (
     <Box
-      data-testid="stepFooter"
+      data-testid="JourneysStepFooter"
       className="swiper-no-swiping"
       sx={{
         position: { xs: 'absolute', lg: 'relative' },

@@ -20,7 +20,7 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
   }
 
   return (
-    <StyledFooterButton onClick={handleClick} clicked={clicked}>
+    <StyledFooterButton onClick={handleClick} clicked={clicked} data-testid='ReactionButton'>
       {variant === 'thumbsup' && <ThumbsUp />}
       {variant === 'thumbsdown' && <ThumbsDown />}
     </StyledFooterButton>
