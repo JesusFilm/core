@@ -111,7 +111,7 @@ export function BackgroundVideo({
   return (
     <StyledVideo
       ref={videoRef}
-      data-testid="background-video"
+      data-testid="ContainedBackgroundVideo"
       className="vjs-fill video-js"
       playsInline
       sx={{

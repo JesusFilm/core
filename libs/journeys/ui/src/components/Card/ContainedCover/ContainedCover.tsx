@@ -167,7 +167,7 @@ export function ContainedCover({
       </Box>
       {/* Background image, after overlay-content-container temp fix embed render bug */}
       <Box
-        data-testid="overlay-image-container"
+        data-testid="OverlayImageContainer"
         sx={{
           width: '100%',
           height: hasFullscreenVideo ? undefined : '100%',
@@ -192,7 +192,7 @@ export function ContainedCover({
         )}
       </Box>
       <Stack
-        data-testid="overlay-content-container"
+        data-testid="OverlayContentContainer"
         sx={{
           position: 'relative',
           zIndex: 1,
