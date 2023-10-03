@@ -21,13 +21,14 @@ export async function checkConditionalRedirect(
   flags: {
     [key: string]: boolean | undefined
   } = {},
-  encodedRedirectPathname?: string
+  encodedRedirectPathname?: string,
+  pageSource?: string
 ): Promise<Redirect | undefined> {
   const { data } = await client.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
-  console.log('encodedRedirectPathname', encodedRedirectPathname)
+  console.log('encodedRedirectPathname', encodedRedirectPathname, pageSource)
 
   const redirect =
     encodedRedirectPathname != null && encodedRedirectPathname !== ''

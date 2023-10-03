@@ -34,7 +34,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
     AuthUser,
     locale,
     encodedRedirectPathname:
-      resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined
+      resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
+    pageSource: 'terms-and-conditions'
   })
 
   console.log('redirect from t&c', redirect)

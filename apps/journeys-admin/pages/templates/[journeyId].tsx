@@ -67,10 +67,15 @@ export const getServerSideProps = withAuthUserTokenSSR()(
       AuthUser,
       locale,
       encodedRedirectPathname:
-        resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined
+        resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
+      pageSource: 'template page'
     })
 
-    if (redirect != null) return { redirect }
+    if (redirect != null) {
+      console.log('redirect exists', redirect)
+
+      return { redirect }
+    }
 
     return {
       props: {
