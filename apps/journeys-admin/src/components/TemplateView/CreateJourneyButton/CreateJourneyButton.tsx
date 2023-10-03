@@ -10,13 +10,13 @@ import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMu
 import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 import { useTeam } from '../../Team/TeamProvider'
 
-interface UseTemplateButtonProps {
+interface CreateJourneyButtonProps {
   signedIn: boolean
 }
 
-export function UseTemplateButton({
+export function CreateJourneyButton({
   signedIn
-}: UseTemplateButtonProps): ReactElement {
+}: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { query } = useTeam()
   const router = useRouter()
@@ -79,7 +79,6 @@ export function UseTemplateButton({
     if (signedIn) {
       setOpenTeamDialog(true)
     } else {
-      console.log('router check sign in', router.asPath)
       void router
         .push(
           {

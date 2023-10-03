@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { UseTemplateButton } from './UseTemplateButton'
+import { CreateJourneyButton } from './CreateJourneyButton'
 
 interface TemplateViewProps {
   authUser: AuthUser
@@ -18,7 +18,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
     <Stack gap={4}>
       <Typography variant="h1">{journey?.title}</Typography>
       <Typography variant="body1">{journey?.description}</Typography>
-      <UseTemplateButton signedIn={authUser.id != null} />
+      <CreateJourneyButton signedIn={authUser.id != null} />
     </Stack>
   )
 }
