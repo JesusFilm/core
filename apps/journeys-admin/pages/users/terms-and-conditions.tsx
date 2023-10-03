@@ -24,15 +24,20 @@ function TermsAndConditionsPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
+})(async ({ AuthUser, locale, req, query, params, resolvedUrl }) => {
   if (AuthUser == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  console.info('terms-and-conditions')
-  const { apolloClient, flags, translations } = await initAndAuthApp({
+  console.log('t&c page ---', req.url, query, params, resolvedUrl)
+
+  const { apolloClient, redirect, flags, translations } = await initAndAuthApp({
     AuthUser,
-    locale
+    locale,
+    encodedRedirectPathname:
+      resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined
   })
+
+  console.log('redirect from t&c', redirect)
 
   await apolloClient.mutate<AcceptAllInvites>({
     mutation: ACCEPT_ALL_INVITES
