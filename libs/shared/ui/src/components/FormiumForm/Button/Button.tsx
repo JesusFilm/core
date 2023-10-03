@@ -15,7 +15,7 @@ export function Button({
     children === 'Submit' ? <CheckBrokenIcon /> : <ArrowRightIcon />
   return (
     <MuiButton
-      variant="contained"
+      variant={type === 'button' ? 'outlined' : 'contained'}
       type={type}
       disabled={disabled}
       onClick={onClick}
