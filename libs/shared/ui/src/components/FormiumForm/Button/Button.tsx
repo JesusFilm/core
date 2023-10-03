@@ -3,7 +3,6 @@ import { ComponentProps, ReactElement } from 'react'
 
 import ArrowLeftIcon from '../../icons/ArrowLeft'
 import ArrowRightIcon from '../../icons/ArrowRight'
-import CheckBrokenIcon from '../../icons/CheckBroken'
 
 export function Button({
   type,
@@ -11,8 +10,6 @@ export function Button({
   disabled,
   children
 }: ComponentProps<'button'>): ReactElement {
-  const endIcon =
-    children === 'Submit' ? <CheckBrokenIcon /> : <ArrowRightIcon />
   return (
     <MuiButton
       variant={type === 'button' ? 'outlined' : 'contained'}
@@ -22,7 +19,7 @@ export function Button({
       fullWidth
       color="secondary"
       startIcon={type === 'button' && <ArrowLeftIcon />}
-      endIcon={type === 'submit' && endIcon}
+      endIcon={type === 'submit' && <ArrowRightIcon />}
     >
       {children}
     </MuiButton>

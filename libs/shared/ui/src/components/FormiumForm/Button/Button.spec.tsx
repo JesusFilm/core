@@ -18,12 +18,4 @@ describe('Button', () => {
     expect(getByText('Next')).toBeInTheDocument()
     expect(getByTestId('ArrowRightIcon')).toBeInTheDocument()
   })
-
-  it('should show submit button', () => {
-    const { getByText, getByTestId } = render(
-      <Button type="submit">Submit</Button>
-    )
-    expect(getByText('Submit')).toBeInTheDocument()
-    expect(getByTestId('CheckBrokenIcon')).toBeInTheDocument()
-  })
 })

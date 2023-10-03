@@ -15,6 +15,7 @@ import { FormiumForm } from './FormiumForm'
 import { Header } from './Header'
 import { PageWrapper } from './PageWrapper'
 import { RadioGroup } from './RadioGroup'
+import { SubmitButton } from './SubmitButton'
 import { Textarea } from './Textarea'
 import { TextInput } from './TextInput'
 
@@ -33,7 +34,7 @@ interface FormStoryProps {
   formControlProps: ComponentProps<typeof FormControl>
   previousButtonProps: ComponentProps<typeof Button>
   nextButtonProps: ComponentProps<typeof Button>
-  submitButtonProps: ComponentProps<typeof Button>
+  submitButtonProps: ComponentProps<typeof SubmitButton>
 }
 
 const defaultFormStoryArgs: FormStoryProps = {
@@ -152,7 +153,7 @@ const Template: StoryObj<FormStoryProps> = {
         <FooterWrapper>
           <>
             <Button {...args.previousButtonProps} />
-            <Button {...args.submitButtonProps} />
+            <SubmitButton {...args.submitButtonProps} />
             <Button {...args.nextButtonProps} />
           </>
         </FooterWrapper>

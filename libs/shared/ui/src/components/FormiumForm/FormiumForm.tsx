@@ -18,6 +18,7 @@ import { FormControl } from './FormControl'
 import { Header } from './Header'
 import { PageWrapper } from './PageWrapper'
 import { RadioGroup } from './RadioGroup'
+import { SubmitButton } from './SubmitButton'
 import { Textarea } from './Textarea'
 import { TextInput } from './TextInput'
 
@@ -34,7 +35,7 @@ const myComponents: FormiumComponents = {
   FooterWrapper,
   Header,
   FieldWrapper,
-  SubmitButton: Button,
+  SubmitButton,
   NextButton: Button,
   PreviousButton: Button
 }
