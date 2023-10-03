@@ -78,7 +78,9 @@ describe('ActionsTable', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     title: 'my journey',
+    featuredAt: null,
     slug: 'my-journey',
+    strategySlug: null,
     language: {
       __typename: 'Language',
       id: '529',

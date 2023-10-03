@@ -56,7 +56,9 @@ export function UserTeamInviteForm({
       await userTeamInviteCreate({
         variables: {
           teamId: activeTeam?.id,
-          input
+          input: {
+            email: input.email.trim().toLowerCase()
+          }
         },
         update(cache, { data }) {
           if (data?.userTeamInviteCreate != null) {
@@ -90,6 +92,7 @@ export function UserTeamInviteForm({
   const userTeamInviteCreateSchema: ObjectSchema<UserTeamInviteCreateInput> =
     object({
       email: string()
+        .trim()
         .lowercase()
         .email(t('Please enter a valid email address'))
         .required(t('Required'))

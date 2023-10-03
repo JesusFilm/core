@@ -1,0 +1,1 @@
+export { FeaturedAndNewTemplates } from './FeaturedAndNewTemplates'
