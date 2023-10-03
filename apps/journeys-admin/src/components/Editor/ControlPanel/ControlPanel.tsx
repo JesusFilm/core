@@ -19,7 +19,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
 import { Properties } from '../../JourneyView/Properties'
-import { CardLibrary } from '../CardLibrary'
+import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 
 import { Attributes } from './Attributes'
@@ -75,7 +75,7 @@ export function ControlPanel(): ReactElement {
           type: 'SetDrawerPropsAction',
           mobileOpen: false,
           title: t('Card Templates'),
-          children: <CardLibrary />
+          children: <CardTemplateDrawer />
         })
       } else {
         dispatch({

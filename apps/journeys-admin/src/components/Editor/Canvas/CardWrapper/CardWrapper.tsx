@@ -9,7 +9,7 @@ import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { CardLibrary } from '../../CardLibrary'
+import { CardTemplateDrawer } from '../../CardTemplateDrawer'
 
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -17,7 +17,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
     state: { selectedStep, smUp },
     dispatch
   } = useEditor()
-  const openCardLibrary = (e: MouseEvent): void => {
+  const openCardTemplateDrawer = (e: MouseEvent): void => {
     e.stopPropagation()
     dispatch({
       type: 'SetSelectedBlockAction',
@@ -27,7 +27,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
       title: t('Card Templates'),
-      children: <CardLibrary />
+      children: <CardTemplateDrawer />
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
@@ -82,7 +82,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
               <Button
                 variant="contained"
                 size="large"
-                onClick={openCardLibrary}
+                onClick={openCardTemplateDrawer}
                 fullWidth
               >
                 {t('Select Card Template')}

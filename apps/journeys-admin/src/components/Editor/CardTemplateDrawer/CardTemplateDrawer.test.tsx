@@ -11,14 +11,14 @@ import { JourneyFields as Journey } from '../../../../__generated__/JourneyField
 
 import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
 
-import { CardLibrary } from '.'
+import { CardTemplateDrawer } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
 
-describe('CardLibrary', () => {
+describe('CardTemplateDrawer', () => {
   function EditorState(): ReactElement {
     const { state } = useEditor()
     return (
@@ -85,7 +85,7 @@ describe('CardLibrary', () => {
         >
           <EditorProvider initialState={{ steps: [step] }}>
             <EditorState />
-            <CardLibrary />
+            <CardTemplateDrawer />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

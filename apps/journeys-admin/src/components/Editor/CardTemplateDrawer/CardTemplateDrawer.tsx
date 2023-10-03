@@ -14,7 +14,7 @@ import { CardPoll } from './Templates/CardPoll'
 import { CardQuote } from './Templates/CardQuote'
 import { CardVideo } from './Templates/CardVideo'
 
-export function CardLibrary(): ReactElement {
+export function CardTemplateDrawer(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
   const { journey } = useJourney()
