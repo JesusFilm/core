@@ -3,7 +3,7 @@ import MuiFab from '@mui/material/Fab'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
-import { ReactElement, SyntheticEvent, useEffect } from 'react'
+import { ReactElement, SyntheticEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -19,6 +19,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
 import { Properties } from '../../JourneyView/Properties'
+import { ActionDetails } from '../ActionDetails'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 
@@ -42,24 +43,39 @@ export function ControlPanel(): ReactElement {
 
   const selected = selectedComponent ?? selectedBlock ?? 'none'
 
-  useEffect(() => {
-    if (
-      activeTab === ActiveTab.Journey &&
-      journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
-    ) {
-      dispatch({
-        type: 'SetDrawerPropsAction',
-        title: 'Social Share Preview',
-        children: <SocialShareAppearance />
-      })
-    }
-  }, [activeTab, dispatch, journeyEditContentComponent])
-
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
     dispatch({ type: 'SetActiveTabAction', activeTab: newValue })
+
+    if (newValue === ActiveTab.Journey) {
+      switch (journeyEditContentComponent) {
+        case ActiveJourneyEditContent.SocialPreview:
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: t('Social Share Preview'),
+            children: <SocialShareAppearance />
+          })
+          break
+        case ActiveJourneyEditContent.Action:
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            mobileOpen: true,
+            title: t('Information'),
+            children: <ActionDetails />
+          })
+          break
+        default:
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: t('Properties'),
+            children: <Properties journeyType="Journey" isPublisher={false} />,
+            mobileOpen: false
+          })
+          break
+      }
+    }
   }
 
   const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {

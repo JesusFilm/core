@@ -948,7 +948,7 @@ describe('ControlPanel', () => {
     )
   })
 
-  it('should keep cards tab open when adding a new card', async () => {
+  it('should keep Journey tab open when adding a new card', async () => {
     const { getByRole, getAllByTestId } = render(
       <MockedProvider
         mocks={[
@@ -1068,7 +1068,7 @@ describe('ControlPanel', () => {
     expect(getByText('Access Control')).toBeInTheDocument()
   })
 
-  it('should open card library drawer when selecting a card without children', async () => {
+  it('should open card template drawer when selecting a card without children', async () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
         <JourneyProvider
@@ -1306,5 +1306,125 @@ describe('ControlPanel', () => {
     )
     fireEvent.click(getByTestId('goals-navigation-card'))
     expect(getByText('journeyEditContentComponent: action')).toBeInTheDocument()
+  })
+
+  it('should open social share preview drawer when changing to journey tab', async () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2, step3],
+              selectedBlock: step1,
+              drawerMobileOpen: false,
+              activeTab: ActiveTab.Properties,
+              activeFab: ActiveFab.Add,
+              journeyEditContentComponent:
+                ActiveJourneyEditContent.SocialPreview
+            }}
+          >
+            <EditorState />
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByText('Journey'))
+    expect(getByText('drawerTitle: Social Share Preview')).toBeInTheDocument()
+  })
+
+  it('should open information drawer when changing to journey tab', async () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2, step3],
+              selectedBlock: step1,
+              drawerMobileOpen: false,
+              activeTab: ActiveTab.Properties,
+              activeFab: ActiveFab.Add,
+              journeyEditContentComponent: ActiveJourneyEditContent.Action
+            }}
+          >
+            <EditorState />
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByText('Journey'))
+    expect(getByText('drawerTitle: Information')).toBeInTheDocument()
+  })
+
+  it('should open properties drawer when changing to journey tab', async () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng',
+                name: [{ primary: true, value: 'English' }]
+              },
+              createdAt: formatISO(new Date())
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2, step3],
+              selectedBlock: step1,
+              drawerMobileOpen: false,
+              activeTab: ActiveTab.Properties,
+              activeFab: ActiveFab.Add,
+              journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+            }}
+          >
+            <EditorState />
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByText('Journey'))
+    expect(getByText('drawerTitle: Properties')).toBeInTheDocument()
   })
 })
