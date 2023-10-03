@@ -1390,38 +1390,40 @@ describe('ControlPanel', () => {
   it('should open properties drawer when changing to journey tab', async () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base,
-              language: {
-                __typename: 'Language',
-                id: '529',
-                bcp47: 'en',
-                iso3: 'eng',
-                name: [{ primary: true, value: 'English' }]
-              },
-              createdAt: formatISO(new Date())
-            } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider
-            initialState={{
-              steps: [step1, step2, step3],
-              selectedBlock: step1,
-              drawerMobileOpen: false,
-              activeTab: ActiveTab.Properties,
-              activeFab: ActiveFab.Add,
-              journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base,
+                language: {
+                  __typename: 'Language',
+                  id: '529',
+                  bcp47: 'en',
+                  iso3: 'eng',
+                  name: [{ primary: true, value: 'English' }]
+                },
+                createdAt: formatISO(new Date())
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
-            <EditorState />
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step1, step2, step3],
+                selectedBlock: step1,
+                drawerMobileOpen: false,
+                activeTab: ActiveTab.Properties,
+                activeFab: ActiveFab.Add,
+                journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+              }}
+            >
+              <EditorState />
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByText('Journey'))
