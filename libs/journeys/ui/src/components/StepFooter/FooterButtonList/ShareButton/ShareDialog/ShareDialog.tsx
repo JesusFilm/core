@@ -58,7 +58,7 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
         closeButton: true
       }}
       container={element}
-      testId='ShareDialog'
+      testId="ShareDialog"
     >
       <Stack direction="row" justifyContent="space-around">
         <Stack

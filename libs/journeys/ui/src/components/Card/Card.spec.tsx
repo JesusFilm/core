@@ -114,7 +114,9 @@ describe('CardBlock', () => {
     const { getByTestId, getByText } = render(<Card {...block} />)
 
     expect(blurImage).not.toHaveBeenCalled()
-    expect(getByTestId('JourneysCard-card')).toHaveStyle('background-color: #FFF')
+    expect(getByTestId('JourneysCard-card')).toHaveStyle(
+      'background-color: #FFF'
+    )
     await waitFor(() =>
       expect(getByText('How did we get here?')).toBeInTheDocument()
     )
@@ -131,7 +133,9 @@ describe('CardBlock', () => {
     )
 
     expect(blurImage).not.toHaveBeenCalled()
-    expect(getByTestId('JourneysCard-card')).toHaveStyle('background-color: #F1A025')
+    expect(getByTestId('JourneysCard-card')).toHaveStyle(
+      'background-color: #F1A025'
+    )
   })
 
   it('should render expanded cover if no coverBlockId', () => {

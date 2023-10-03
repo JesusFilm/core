@@ -616,7 +616,9 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByTestId('JourneysVideo-main')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByTestId('JourneysVideo-main')).toBeInTheDocument()
+    )
   })
 
   it('should render Video with general wrapper and specific wrapper', () => {

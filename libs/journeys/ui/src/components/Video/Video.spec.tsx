@@ -69,8 +69,9 @@ describe('Video', () => {
         <Video {...block} />
       </MockedProvider>
     )
-    const sourceTag =
-      getByTestId('JourneysVideo-video0.id').querySelector('.vjs-tech source')
+    const sourceTag = getByTestId('JourneysVideo-video0.id').querySelector(
+      '.vjs-tech source'
+    )
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
@@ -89,8 +90,9 @@ describe('Video', () => {
         />
       </MockedProvider>
     )
-    const sourceTag =
-      getByTestId('JourneysVideo-video0.id').querySelector('.vjs-tech source')
+    const sourceTag = getByTestId('JourneysVideo-video0.id').querySelector(
+      '.vjs-tech source'
+    )
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8'
     )

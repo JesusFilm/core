@@ -145,7 +145,9 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('JourneysStepFooter')).toHaveStyle('outline: 1px solid red')
+    expect(getByTestId('JourneysStepFooter')).toHaveStyle(
+      'outline: 1px solid red'
+    )
   })
 
   it('should call onFooterClick on click', () => {
