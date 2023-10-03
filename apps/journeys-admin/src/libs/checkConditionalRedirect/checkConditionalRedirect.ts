@@ -27,6 +27,8 @@ export async function checkConditionalRedirect(
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
+  console.log('encodedRedirectPathname', encodedRedirectPathname)
+
   const redirect =
     encodedRedirectPathname != null && encodedRedirectPathname !== ''
       ? `?redirect=${encodedRedirectPathname}`
