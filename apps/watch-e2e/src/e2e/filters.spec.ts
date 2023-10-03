@@ -8,7 +8,7 @@ Click on 'Seel All' button
 Take screenshot
 Select 'Telugu' audion & 'English' subtitles
 Check the URL has correct parameters
-Take a screenshot
+Take a screenshot of just filters list
 */
 test('Filters', async ({ page }) => {
   await page.goto('/')
@@ -51,9 +51,8 @@ test('Filters', async ({ page }) => {
   // check it's navigated to the correct URL
   await expect(page).toHaveURL('/watch/videos?language=5848&subtitle=529')
 
+  const filtersList = page.getByTestId('FilterList')
+
   // Take screenshot
-  await expect(page).toHaveScreenshot('after-selection.png', {
-    animations: 'disabled',
-    fullPage: true
-  })
+  await expect(filtersList).toHaveScreenshot('filters-list.png')
 })
