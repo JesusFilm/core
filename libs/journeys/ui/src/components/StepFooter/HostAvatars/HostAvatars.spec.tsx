@@ -73,7 +73,7 @@ describe('HostAvatars', () => {
       </JourneyProvider>
     )
 
-    const avatarGroupElement = getByTestId('host-avatars')
+    const avatarGroupElement = getByTestId('StepFooterHostAvatars')
     expect(avatarGroupElement).toBeInTheDocument()
     const avatars = getAllByRole('img')
     expect(avatars).toHaveLength(2)
