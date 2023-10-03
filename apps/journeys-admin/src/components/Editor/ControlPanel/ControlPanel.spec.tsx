@@ -1387,7 +1387,51 @@ describe('ControlPanel', () => {
     expect(getByText('drawerTitle: Information')).toBeInTheDocument()
   })
 
-  it('should open properties drawer when changing to journey tab', async () => {
+  it('should open properties drawer when changing to journey tab when card not empty', async () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base,
+                language: {
+                  __typename: 'Language',
+                  id: '529',
+                  bcp47: 'en',
+                  iso3: 'eng',
+                  name: [{ primary: true, value: 'English' }]
+                },
+                createdAt: formatISO(new Date())
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider
+              initialState={{
+                steps: [step1, step2, step3],
+                selectedBlock: step3,
+                selectedStep: step3,
+                drawerMobileOpen: false,
+                activeTab: ActiveTab.Properties,
+                activeFab: ActiveFab.Add,
+                journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+              }}
+            >
+              <EditorState />
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByText('Journey'))
+    expect(getByText('drawerTitle: Properties')).toBeInTheDocument()
+  })
+
+  it('should open properties drawer when changing to journey tab when card empty', async () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -1413,6 +1457,7 @@ describe('ControlPanel', () => {
               initialState={{
                 steps: [step1, step2, step3],
                 selectedBlock: step1,
+                selectedStep: step1,
                 drawerMobileOpen: false,
                 activeTab: ActiveTab.Properties,
                 activeFab: ActiveFab.Add,
@@ -1427,6 +1472,6 @@ describe('ControlPanel', () => {
       </MockedProvider>
     )
     fireEvent.click(getByText('Journey'))
-    expect(getByText('drawerTitle: Properties')).toBeInTheDocument()
+    expect(getByText('drawerTitle: Card Templates')).toBeInTheDocument()
   })
 })

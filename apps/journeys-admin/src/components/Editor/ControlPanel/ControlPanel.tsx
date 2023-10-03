@@ -67,12 +67,25 @@ export function ControlPanel(): ReactElement {
           })
           break
         default:
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: t('Properties'),
-            children: <Properties journeyType="Journey" isPublisher={false} />,
-            mobileOpen: false
-          })
+          if (selectedStep?.children[0].children.length === 0) {
+            dispatch({
+              type: 'SetSelectedAttributeIdAction',
+              id: undefined
+            })
+            dispatch({
+              type: 'SetDrawerPropsAction',
+              mobileOpen: false,
+              title: t('Card Templates'),
+              children: <CardTemplateDrawer />
+            })
+          } else {
+            dispatch({
+              type: 'SetDrawerPropsAction',
+              mobileOpen: false,
+              title: t('Properties'),
+              children: <Properties journeyType="Journey" isPublisher={false} />
+            })
+          }
           break
       }
     }
