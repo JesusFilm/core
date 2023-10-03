@@ -62,12 +62,12 @@ function TemplateDetails(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR()(
   async ({ AuthUser, locale, req, query, params, resolvedUrl }) => {
-    console.log('req -----------!!!!', req, query, params, resolvedUrl)
+    console.log('req -----------!!!!', req.url, query, params, resolvedUrl)
     const { flags, redirect, translations } = await initAndAuthApp({
       AuthUser,
       locale,
       encodedRedirectPathname:
-        req.url != null ? encodeURIComponent(resolvedUrl) : undefined
+        resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined
     })
 
     if (redirect != null) return { redirect }
@@ -82,3 +82,9 @@ export const getServerSideProps = withAuthUserTokenSSR()(
 )
 
 export default withAuthUser()(TemplateDetails)
+
+// Sign in
+// https://journeys-admin-1924-jesusfilm.vercel.app/users/sign-in?redirect=https%3A%2F%2Fjourneys-admin-1924-jesusfilm.vercel.app%2Ftemplates%2F7c97fdce-52f3-4560-98c3-c7d9638364ee%3FcreateNew%3Dtrue
+
+// T&C's
+// /users/terms-and-conditions
