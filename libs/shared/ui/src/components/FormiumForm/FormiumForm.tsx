@@ -23,7 +23,7 @@ import { Textarea } from './Textarea'
 import { TextInput } from './TextInput'
 
 // declared outside of the component to save on rerenders
-const myComponents: FormiumComponents = {
+const formiumComponents: FormiumComponents = {
   ...defaultComponents,
   TextInput,
   Textarea,
@@ -50,6 +50,10 @@ export function FormiumForm({ form }: FormiumFormProps): ReactElement {
   }
 
   return (
-    <Formium data={form} components={myComponents} onSubmit={handleSubmit} />
+    <Formium
+      data={form}
+      components={formiumComponents}
+      onSubmit={handleSubmit}
+    />
   )
 }
