@@ -9,6 +9,8 @@ import { ReactElement } from 'react'
 
 import { formiumClient } from '@core/shared/ui/formiumClient'
 import { FormiumForm } from '@core/shared/ui/FormiumForm'
+import { FormiumProvider } from '@core/shared/ui/FormiumProvider'
+import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
@@ -18,14 +20,18 @@ interface OnboardingFormPageProps {
 
 function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center'
-      }}
+    <FormiumProvider
+      value={{ submitText: 'Next', submitIcon: <ArrowRightIcon /> }}
     >
-      <FormiumForm form={form} />
-    </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center'
+        }}
+      >
+        <FormiumForm form={form} />
+      </Box>
+    </FormiumProvider>
   )
 }
 
