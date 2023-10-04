@@ -1,4 +1,5 @@
-import Stack from '@mui/material/Stack'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
 import { ReactElement } from 'react'
 
 interface ElementsWrapperProps {
@@ -11,8 +12,25 @@ export function ElementsWrapper({
   children
 }: ElementsWrapperProps): ReactElement {
   return (
-    <Stack spacing={10} sx={{ m: 4 }}>
-      {children}
-    </Stack>
+    <Card
+      data-testid="ElementsWrapper"
+      sx={{
+        maxWidth: '404px',
+        borderRadius: '8px',
+        mb: '18px'
+      }}
+    >
+      <CardContent
+        sx={{
+          '&:last-of-type': {
+            paddingBottom: '28px'
+          },
+          pt: '12px',
+          px: '24px'
+        }}
+      >
+        {children}
+      </CardContent>
+    </Card>
   )
 }

@@ -1,5 +1,6 @@
 import { Form, FormElementAction, FormElementType } from '@formium/types'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
@@ -40,15 +41,17 @@ interface PageChild {
 export function Header({ page: { title } }: HeaderProps): ReactElement {
   return (
     <Box
+      data-testid="Header"
       sx={{
         display: 'flex',
         justifyContent: 'center',
-        minHeight: '100px'
+        pb: '30px'
       }}
     >
-      <Typography variant="h2" sx={{ minHeight: '100px' }}>
-        {title}
-      </Typography>
+      <Stack spacing={2}>
+        <Typography variant="subtitle2">{title}</Typography>
+        <Typography variant="caption">Help us serve you better</Typography>
+      </Stack>
     </Box>
   )
 }

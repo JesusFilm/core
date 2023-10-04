@@ -1,6 +1,9 @@
 import MuiButton from '@mui/material/Button'
 import { ComponentProps, ReactElement } from 'react'
 
+import ArrowLeftIcon from '../../icons/ArrowLeft'
+import ArrowRightIcon from '../../icons/ArrowRight'
+
 export function Button({
   type,
   onClick,
@@ -9,10 +12,14 @@ export function Button({
 }: ComponentProps<'button'>): ReactElement {
   return (
     <MuiButton
-      variant="contained"
+      variant={type === 'button' ? 'outlined' : 'contained'}
       type={type}
       disabled={disabled}
       onClick={onClick}
+      fullWidth
+      color="secondary"
+      startIcon={type === 'button' && <ArrowLeftIcon />}
+      endIcon={type === 'submit' && <ArrowRightIcon />}
     >
       {children}
     </MuiButton>
