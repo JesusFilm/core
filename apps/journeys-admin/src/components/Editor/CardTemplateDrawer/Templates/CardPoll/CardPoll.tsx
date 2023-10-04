@@ -112,7 +112,7 @@ export function CardPoll({ onClick }: CardPollProps): ReactElement {
         subtitleInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
-          content: t('Got an Opinion`?'),
+          content: t('Got an Opinion?'),
           variant: TypographyVariant.h6
         },
         titleInput: {
