@@ -108,7 +108,9 @@ describe('TeamCreateDialog', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.change(getAllByRole('textbox')[0], { target: { value: 'Team Title' } })
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'Team Title' }
+    })
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() =>
       expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
@@ -144,7 +146,9 @@ describe('TeamCreateDialog', () => {
         getByText('Team Name must be at least one character.')
       ).toBeInTheDocument()
     )
-    fireEvent.change(getAllByRole('textbox')[0], { target: { value: 'Team Title' } })
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'Team Title' }
+    })
     await waitFor(() =>
       expect(getByRole('button', { name: 'Create' })).not.toBeDisabled()
     )
