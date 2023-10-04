@@ -18,8 +18,6 @@ export function TemplateSections(): ReactElement {
   const paramTags = router.query.tags
   const { childTags } = useTagsQuery()
 
-  console.log(paramTags != null)
-
   function transformTagsValue(paramTags, childTags): TagDetailsProps[] {
     if (paramTags != null) {
       const tagsArray = Array.isArray(paramTags) ? paramTags : [paramTags]
