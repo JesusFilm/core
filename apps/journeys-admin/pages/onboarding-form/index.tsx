@@ -1,5 +1,4 @@
 import { Form } from '@formium/types'
-import Box from '@mui/material/Box'
 import {
   AuthAction,
   useAuthUser,
@@ -9,10 +8,10 @@ import {
 import { ReactElement } from 'react'
 
 import { formiumClient } from '@core/shared/ui/formiumClient'
-import { FormiumForm } from '@core/shared/ui/FormiumForm'
 import { FormiumProvider } from '@core/shared/ui/FormiumProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
+import { OnboardingForm } from '../../src/components/OnboardingForm'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
@@ -27,18 +26,7 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
       value={{ submitText: 'Next', submitIcon: <ArrowRightIcon /> }}
     >
       <OnboardingPageWrapper emailSubject="a question about onboarding form">
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center'
-          }}
-        >
-          <FormiumForm
-            form={form}
-            userId={AuthUser.id}
-            email={AuthUser.email}
-          />
-        </Box>
+        <OnboardingForm form={form} authUser={AuthUser} />
       </OnboardingPageWrapper>
     </FormiumProvider>
   )
