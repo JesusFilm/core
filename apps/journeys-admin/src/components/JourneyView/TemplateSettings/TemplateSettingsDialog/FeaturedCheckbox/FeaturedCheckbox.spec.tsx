@@ -12,32 +12,27 @@ jest.mock('react-i18next', () => ({
 }))
 
 describe('FeaturedCheckbox', () => {
-  it('calls handleChange on click', () => {
-    const handleChange = jest.fn()
+  it('calls onClick when clicked', () => {
+    const onClick = jest.fn()
     const { getByRole } = render(
       <FeaturedCheckbox
         loading={false}
         values={false}
         name="test"
-        onChange={handleChange}
+        onChange={onClick}
       />
     )
 
     const checkbox = getByRole('checkbox')
     fireEvent.click(checkbox)
 
-    expect(handleChange).toHaveBeenCalled()
+    expect(onClick).toHaveBeenCalled()
   })
 
   it('is disabled when loading is true', () => {
-    const handleChange = jest.fn()
+    const onClick = jest.fn()
     const { getByRole } = render(
-      <FeaturedCheckbox
-        loading
-        values={false}
-        name="test"
-        onChange={handleChange}
-      />
+      <FeaturedCheckbox loading values={false} name="test" onChange={onClick} />
     )
 
     const checkbox = getByRole('checkbox')
