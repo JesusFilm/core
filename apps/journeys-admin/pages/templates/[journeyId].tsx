@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
   useAuthUser,
@@ -13,7 +14,7 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { JourneyView } from '../../src/components/JourneyView'
 import { Menu } from '../../src/components/JourneyView/Menu'
-import { PageWrapper } from '../../src/components/PageWrapper'
+import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateView } from '../../src/components/TemplateView/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
@@ -33,7 +34,7 @@ function TemplateDetails(): ReactElement {
   return (
     <>
       <NextSeo
-        title={template?.title ?? t('Journey Template')}
+        title={template?.title ?? t('Template Details')}
         description={template?.description ?? undefined}
       />
       <JourneyProvider
@@ -43,11 +44,19 @@ function TemplateDetails(): ReactElement {
         }}
       >
         <PageWrapper
-          title={t('Journey Template')}
+          title={template?.title ?? t('Template Details')}
           authUser={AuthUser}
-          showDrawer
           backHref="/templates"
-          menu={<Menu />}
+          mainHeaderChildren={
+            <Stack
+              direction="row"
+              flexGrow={1}
+              justifyContent="flex-end"
+              alignItems="center"
+            >
+              <Menu />
+            </Stack>
+          }
         >
           {templates ? (
             <TemplateView />

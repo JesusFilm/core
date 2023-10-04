@@ -4,6 +4,8 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import { TemplatePreviewTabs } from './TemplatePreviewTabs'
+
 export function TemplateView(): ReactElement {
   const { journey } = useJourney()
 
@@ -11,6 +13,7 @@ export function TemplateView(): ReactElement {
     <Stack gap={4}>
       <Typography variant="h1">{journey?.title}</Typography>
       <Typography variant="body1">{journey?.description}</Typography>
+      <TemplatePreviewTabs />
     </Stack>
   )
 }
