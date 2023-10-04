@@ -1,4 +1,3 @@
-import VisibilityIcon from '@mui/icons-material/Visibility'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -8,6 +7,7 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
 export function DatePreview(): ReactElement {
   const { journey } = useJourney()
@@ -35,7 +35,7 @@ export function DatePreview(): ReactElement {
         legacyBehavior
       >
         <Button
-          startIcon={<VisibilityIcon />}
+          startIcon={<EyeOpenIcon />}
           variant="outlined"
           size="small"
           color="secondary"

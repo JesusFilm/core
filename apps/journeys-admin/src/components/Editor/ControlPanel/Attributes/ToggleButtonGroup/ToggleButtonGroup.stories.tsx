@@ -1,10 +1,11 @@
-import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
-import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
-import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
-import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactNode, useState } from 'react'
+
+import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
+import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
+import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
+import DashIcon from '@core/shared/ui/icons/Dash'
 
 import {
   TypographyAlign,
@@ -30,17 +31,17 @@ const ToggleButtonGroupComponent = ({ ...args }): ReactNode => {
     {
       value: TypographyAlign.left,
       label: 'Left',
-      icon: <FormatAlignLeftRoundedIcon />
+      icon: <AlignLeftIcon />
     },
     {
       value: TypographyAlign.center,
       label: 'Center',
-      icon: <FormatAlignCenterRoundedIcon />
+      icon: <AlignCenterIcon />
     },
     {
       value: TypographyAlign.right,
       label: 'Right',
-      icon: <FormatAlignRightRoundedIcon />
+      icon: <AlignRightIcon />
     }
   ]
 
@@ -77,14 +78,14 @@ export const CustomOptions = {
         label: (
           <Typography variant={TypographyVariant.h1}>Heading 1</Typography>
         ),
-        icon: <HorizontalRuleRoundedIcon />
+        icon: <DashIcon />
       },
       {
         value: TypographyVariant.h2,
         label: (
           <Typography variant={TypographyVariant.h2}>Heading 2</Typography>
         ),
-        icon: <HorizontalRuleRoundedIcon />
+        icon: <DashIcon />
       }
     ]
   }

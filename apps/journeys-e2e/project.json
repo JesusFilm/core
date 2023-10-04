@@ -11,6 +11,13 @@
         "cwd": "apps/journeys-e2e"
       }
     },
+    "update-snapshots": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test --update-snapshots"],
+        "cwd": "apps/journeys-e2e"
+      }
+    },
     "debug": {
       "executor": "nx:run-commands",
       "options": {

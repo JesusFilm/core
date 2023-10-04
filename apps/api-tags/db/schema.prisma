@@ -11,6 +11,15 @@ datasource db {
   url      = env("PG_DATABASE_URL")
 }
 
+enum Service {
+  apiJourneys
+  apiLanguages
+  apiMedia
+  apiTags
+  apiUsers
+  apiVideos
+}
+
 model Tag {
   id               String    @id @default(uuid())
   createdAt        DateTime  @default(now())
@@ -21,6 +30,7 @@ model Tag {
   parent           Tag?      @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Cascade)
   parentId         String?
   children         Tag[]     @relation("ParentChildren")
+  service          Service?
 }
 
 model Tagging {

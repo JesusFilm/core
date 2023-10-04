@@ -10,12 +10,22 @@ directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFAC
 
 directive @extends on OBJECT | INTERFACE
 
+enum Service {
+  apiJourneys
+  apiLanguages
+  apiMedia
+  apiTags
+  apiUsers
+  apiVideos
+}
+
 type Tag
   @key(fields: "id")
 {
   id: ID!
   name: [Translation!]!
   parentId: ID
+  service: Service
 }
 
 type Query {

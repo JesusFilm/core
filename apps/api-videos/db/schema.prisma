@@ -34,14 +34,15 @@ model Video {
   studyQuestions    Json[]
   image             String?
   imageAlt          Json[]
-  slug              String?
+  slug              String?        @unique
   noIndex           Boolean?
   childIds          String[] // needed for child sort order
   children          Video[]        @relation("ParentChild")
   parent            Video[]        @relation("ParentChild")
   variants          VideoVariant[]
 
-  @@unique([slug])
+  @@index(label)
+  @@index(childIds)
 }
 
 model VideoTitle {
@@ -53,6 +54,9 @@ model VideoTitle {
   video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@unique([videoId, languageId])
+  @@index(value(type: Gin))
+  @@index(primary)
+  @@index(languageId)
 }
 
 enum VideoVariantDownloadQuality {
@@ -78,12 +82,13 @@ model VideoVariant {
   duration   Int?
   languageId String
   subtitle   VideoVariantSubtitle[]
-  slug       String
+  slug       String                 @unique
   video      Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId    String?
 
   @@unique([languageId, videoId])
-  @@unique([slug])
+  @@index(languageId)
+  @@index(videoId)
 }
 
 model VideoVariantSubtitle {
@@ -96,4 +101,6 @@ model VideoVariantSubtitle {
   variant VideoVariant @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
 
   @@unique([videoVariantId, languageId])
+  @@index(languageId)
+  @@index(videoVariantId)
 }

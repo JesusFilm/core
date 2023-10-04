@@ -1,4 +1,3 @@
-import CreateRoundedIcon from '@mui/icons-material/CreateRounded'
 import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -6,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { TitleDescriptionDialog } from './TitleDescriptionDialog'
 
@@ -48,7 +48,7 @@ export function TitleDescription({
               size="small"
               onClick={handleUpdateTitleDescription}
             >
-              <CreateRoundedIcon />
+              <Edit2Icon />
             </IconButton>
           )}
         </Stack>
