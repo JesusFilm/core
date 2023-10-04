@@ -96,9 +96,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
   if (AuthUser == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
+  // Vercel strips the redirect query after redirecting from sign-in
+  // Use referer if present to get redirect pathname
   const referer =
     req.headers.host != null && req.headers.referer != null
-      ? req.headers.referer?.split(req.headers.host)[1]
+      ? req.headers.referer?.split('?redirect=')[1]
       : undefined
 
   console.log(
@@ -115,10 +117,10 @@ export const getServerSideProps = withAuthUserTokenSSR({
     AuthUser,
     locale,
     encodedRedirectPathname:
-      resolvedUrl != null
-        ? encodeURIComponent(resolvedUrl)
-        : referer != null
+      referer != null
         ? encodeURIComponent(referer)
+        : resolvedUrl != null
+        ? encodeURIComponent(resolvedUrl)
         : undefined,
     pageSource: 'landing-page'
   })
