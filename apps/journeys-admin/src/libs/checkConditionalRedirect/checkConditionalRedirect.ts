@@ -16,10 +16,6 @@ export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
   }
 `
 
-// interface NextRedirect extends Redirect {
-// has: [{type: string, key: string, value: string}]
-// }
-
 export async function checkConditionalRedirect(
   client: ApolloClient<NormalizedCacheObject>,
   flags: {
@@ -50,14 +46,6 @@ export async function checkConditionalRedirect(
   } else if (flags.teams === true && data.teams.length === 0) {
     return {
       destination: `/teams/new${redirect}`,
-      permanent: false
-    }
-  } else if (
-    encodedRedirectPathname != null &&
-    encodedRedirectPathname !== ''
-  ) {
-    return {
-      destination: encodedRedirectPathname,
       permanent: false
     }
   }
