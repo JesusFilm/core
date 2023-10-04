@@ -6,6 +6,7 @@ import { NextRouter, useRouter } from 'next/router'
 import { GetTags_tags as Tags } from '../../../__generated__/GetTags'
 import {
   JourneyStatus,
+  Service,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
@@ -76,6 +77,8 @@ describe('TemplateSections', () => {
       {
         __typename: 'Tag',
         id: '73cb38e3-06b6-4f34-b1e1-8d2859e510a1',
+        parentId: 'f56b51a4-7d7c-445f-bd2a-206f71c27739',
+        service: Service.apiJourneys,
         name: [
           {
             __typename: 'Translation',
@@ -87,6 +90,8 @@ describe('TemplateSections', () => {
       {
         __typename: 'Tag',
         id: '29ceed4c-c2e7-4b0e-8643-74181b646784',
+        parentId: 'f56b51a4-7d7c-445f-bd2a-206f71c27739',
+        service: Service.apiJourneys,
         name: [
           {
             __typename: 'Translation',
@@ -98,6 +103,8 @@ describe('TemplateSections', () => {
       {
         __typename: 'Tag',
         id: 'a8b31676-3908-4b87-a172-ae252626a9f0',
+        parentId: 'f56b51a4-7d7c-445f-bd2a-206f71c27739',
+        service: Service.apiJourneys,
         name: [
           {
             __typename: 'Translation',

@@ -6,7 +6,7 @@ import { TemplateSection } from '../TemplateSection'
 interface CategoryTemplatesProps {
   id: string
   name: string
-  filtered: boolean
+  filtered?: boolean
 }
 
 export function CategoryTemplates({
@@ -23,7 +23,7 @@ export function CategoryTemplates({
   })
 
   const renderTemplates =
-    filtered || (data?.journeys != null && data?.journeys.length >= 5)
+    filtered === true || (data?.journeys != null && data?.journeys.length >= 5)
 
   return (
     <>

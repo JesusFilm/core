@@ -132,4 +132,40 @@ describe('CategoryTemplates', () => {
       expect(queryByRole('heading', { name: 'Easter' })).not.toBeInTheDocument()
     )
   })
+
+  it('should render all templates when filtered is true, regardless of the number of templates', async () => {
+    const { getAllByTestId, getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_JOURNEYS,
+              variables: {
+                where: {
+                  template: true,
+                  orderByRecent: true,
+                  tagIds: ['767561ca-3f63-46f4-b2a0-3a37f891632a']
+                }
+              }
+            },
+            result: {
+              data: {
+                journeys: [template, template, template]
+              }
+            }
+          }
+        ]}
+      >
+        <CategoryTemplates
+          id="767561ca-3f63-46f4-b2a0-3a37f891632a"
+          name="Easter"
+          filtered
+        />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('heading', { name: 'Easter' })).toBeInTheDocument()
+    )
+    expect(getAllByTestId(/journey-/)).toHaveLength(3)
+  })
 })
