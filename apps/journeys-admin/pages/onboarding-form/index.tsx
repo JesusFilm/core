@@ -5,7 +5,9 @@ import {
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { formiumClient } from '@core/shared/ui/formiumClient'
 import { FormiumProvider } from '@core/shared/ui/FormiumProvider'
@@ -21,14 +23,21 @@ interface OnboardingFormPageProps {
 
 function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
   const AuthUser = useAuthUser()
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
-    <FormiumProvider
-      value={{ submitText: 'Next', submitIcon: <ArrowRightIcon /> }}
-    >
-      <OnboardingPageWrapper emailSubject="a question about onboarding form">
-        <OnboardingForm form={form} authUser={AuthUser} />
-      </OnboardingPageWrapper>
-    </FormiumProvider>
+    <>
+      <NextSeo title={t('Onboarding')} />
+      <FormiumProvider
+        value={{ submitText: 'Next', submitIcon: <ArrowRightIcon /> }}
+      >
+        <OnboardingPageWrapper
+          emailSubject={t('a question about onboarding form')}
+        >
+          <OnboardingForm form={form} authUser={AuthUser} />
+        </OnboardingPageWrapper>
+      </FormiumProvider>
+    </>
   )
 }
 
