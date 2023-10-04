@@ -26,6 +26,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
 })(async ({ locale, req, query, params, resolvedUrl }) => {
   console.log('sign in page ---', req.url, query, params, resolvedUrl)
 
+  // TODO: See if we can dynamically update appPageUrl option of withAuthUserToken using query value.
+
   return {
     props: {
       ...(await serverSideTranslations(
