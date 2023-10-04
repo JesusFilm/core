@@ -2,6 +2,7 @@ import { Form } from '@formium/types'
 import Box from '@mui/material/Box'
 import {
   AuthAction,
+  useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
@@ -17,6 +18,7 @@ interface OnboardingFormPageProps {
 }
 
 function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
+  const AuthUser = useAuthUser()
   return (
     <Box
       sx={{
@@ -24,7 +26,7 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
         justifyContent: 'center'
       }}
     >
-      <FormiumForm form={form} />
+      <FormiumForm form={form} userId={AuthUser.id} email={AuthUser.email} />
     </Box>
   )
 }
