@@ -956,11 +956,17 @@ describe('ControlPanel', () => {
             request: {
               query: STEP_AND_CARD_BLOCK_CREATE,
               variables: {
-                journeyId: 'journeyId',
-                stepId: 'uuid',
-                cardId: 'uuid',
-                themeMode: ThemeMode.dark,
-                themeName: ThemeName.base
+                stepBlockCreateInput: {
+                  id: 'uuid',
+                  journeyId: 'journeyId'
+                },
+                cardBlockCreateInput: {
+                  id: 'uuid',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base
+                }
               }
             },
             result: {
