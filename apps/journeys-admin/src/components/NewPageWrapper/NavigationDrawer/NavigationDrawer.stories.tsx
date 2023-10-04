@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { NextRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 
 import {
@@ -73,14 +73,14 @@ const NavigationDrawerComponent = ({ ...args }): ReactElement => {
       <NavigationDrawer
         open={open}
         onClose={() => setOpen(!open)}
-        authUser={
+        user={
           {
             id: 'user.id',
             displayName: 'Amin One',
             photoURL: 'https://bit.ly/3Gth4Yf',
             email: 'amin@email.com',
             signOut: noop
-          } as unknown as AuthUser
+          } as unknown as User
         }
         router={{ pathname: undefined } as unknown as NextRouter}
       />

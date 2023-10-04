@@ -19,7 +19,7 @@ const Template: StoryObj<typeof Avatar> = {
         <Avatar {...args} />
         <Avatar
           {...args}
-          user={{
+          apiUser={{
             __typename: 'User',
             id: '2',
             firstName: 'Person',

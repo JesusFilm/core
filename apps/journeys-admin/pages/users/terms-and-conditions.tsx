@@ -1,8 +1,4 @@
-import {
-  AuthAction,
-  withAuthUser,
-  withAuthUserTokenSSR
-} from 'next-firebase-auth'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,10 +23,10 @@ function TermsAndConditionsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale, req, query, params, resolvedUrl }) => {
-  if (AuthUser == null)
+})(async ({ user, locale, req, query, params, resolvedUrl }) => {
+  if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   console.log(
@@ -43,7 +39,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   )
 
   const { apolloClient, redirect, flags, translations } = await initAndAuthApp({
-    AuthUser,
+    user,
     locale,
     encodedRedirectPathname:
       resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
@@ -64,6 +60,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(TermsAndConditionsPage)

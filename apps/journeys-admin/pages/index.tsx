@@ -3,9 +3,9 @@ import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -56,7 +56,7 @@ interface IndexPageProps {
 
 function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const { teams } = useFlags()
   const router = useRouter()
 
@@ -65,7 +65,7 @@ function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
       <NextSeo title={t('Journeys')} />
       <PageWrapper
         title={!teams ? t('Journeys') : undefined}
-        authUser={AuthUser}
+        user={user}
         mainHeaderChildren={
           teams && (
             <Stack
@@ -84,16 +84,16 @@ function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
         }
         sidePanelTitle={t('Create a New Journey')}
       >
-        <JourneyList authUser={AuthUser} />
+        <JourneyList user={user} />
       </PageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale, resolvedUrl, req, query, params }) => {
-  if (AuthUser == null)
+})(async ({ user, locale, resolvedUrl, req, query, params }) => {
+  if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   let encodedReferer
@@ -117,7 +117,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   )
 
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
+    user,
     locale,
     encodedRedirectPathname:
       encodedReferer != null
@@ -158,6 +158,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser<IndexPageProps>({
+export default withUser<IndexPageProps>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(IndexPage)

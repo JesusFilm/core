@@ -1,6 +1,6 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { LDClient } from 'launchdarkly-node-server-sdk'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
@@ -37,7 +37,7 @@ describe('initAndAuthApp', () => {
     displayName: 'test',
     email: 'test@test.com',
     getIdToken: jest.fn().mockResolvedValue('token')
-  } as unknown as AuthUser
+  } as unknown as User
 
   const mockSSRConfig: SSRConfig = {
     _nextI18Next: {
@@ -77,7 +77,7 @@ describe('initAndAuthApp', () => {
 
   it('should return with apolloClient, flags, redirect, and translations when auth user', async () => {
     const result = await initAndAuthApp({
-      AuthUser: mockAuthUser,
+      user: mockAuthUser,
       locale: 'en'
     })
 

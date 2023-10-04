@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -8,7 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CreateJourneyButton } from './CreateJourneyButton'
 
 interface TemplateViewProps {
-  authUser: AuthUser
+  authUser: User
 }
 
 export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
