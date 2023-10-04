@@ -168,6 +168,7 @@ export function TemplateSettingsDialog({
                 onSubmit: handleSubmit,
                 closeLabel: 'Cancel'
               }}
+              divider
               fullscreen={!smUp}
             >
               <Form data-testId="template-settings-dialog-form">
