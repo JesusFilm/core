@@ -81,6 +81,15 @@ export function CreateJourneyButton({
     } else {
       void router
         .push(
+          // `/users/sign-in?redirect=${
+          //   window.location.origin + router.asPath
+          // }?createNew=true`,
+          // {
+          //   pathname: '/users/sign-in',
+          //   query: {
+          //     redirect: `${router.asPath}?createNew=true`
+          //   }
+          // },
           {
             pathname: '/users/sign-in',
             query: {

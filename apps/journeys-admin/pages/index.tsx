@@ -96,20 +96,30 @@ export const getServerSideProps = withAuthUserTokenSSR({
   if (AuthUser == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
+  const referer =
+    req.headers.host != null && req.headers.referer != null
+      ? req.headers.referer?.split(req.headers.host)[1]
+      : undefined
+
   console.log(
     'landing page ---',
     req.url,
     query,
     params,
     resolvedUrl,
-    req.headers.referer
+    req.headers.referer,
+    referer
   )
 
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     AuthUser,
     locale,
     encodedRedirectPathname:
-      resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
+      resolvedUrl != null
+        ? encodeURIComponent(resolvedUrl)
+        : referer != null
+        ? encodeURIComponent(referer)
+        : undefined,
     pageSource: 'landing-page'
   })
 
