@@ -176,11 +176,17 @@ export class JourneyResolver {
   @Query()
   async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
-    if (where?.template === true) filter.template = true
-    if (where?.featured === true) filter.featuredAt = { not: null }
+    if (where?.template != null) filter.template = where.template
+    if (where?.featured != null)
+      filter.featuredAt = where?.featured ? { not: null } : null
     if (where?.ids != null) filter.id = { in: where?.ids }
+    if (where?.tagIds != null) filter.tagIds = { hasEvery: where?.tagIds }
+
     return await this.prismaService.journey.findMany({
-      where: filter
+      where: filter,
+      take: where?.limit ?? undefined,
+      orderBy:
+        where?.orderByRecent === true ? { publishedAt: 'desc' } : undefined
     })
   }
 
@@ -228,6 +234,7 @@ export class JourneyResolver {
               status: JourneyStatus.published,
               publishedAt: new Date(),
               team: { connect: { id: teamId } },
+              tagIds: [],
               userJourneys: {
                 create: {
                   userId,
@@ -405,15 +412,18 @@ export class JourneyResolver {
                   'publishedAt',
                   'hostId',
                   'teamId',
-                  'createdAt'
+                  'createdAt',
+                  'strategySlug'
                 ]),
                 id: duplicateJourneyId,
                 slug,
                 title: duplicateTitle,
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
+                featuredAt: null,
                 template: false,
                 team: { connect: { id: teamId } },
+                tagIds: journey.template === true ? journey.tagIds : [],
                 userJourneys: {
                   create: {
                     userId,
@@ -563,7 +573,8 @@ export class JourneyResolver {
           ...input,
           title: input.title ?? undefined,
           languageId: input.languageId ?? undefined,
-          slug: input.slug ?? undefined
+          slug: input.slug ?? undefined,
+          tagIds: input.tagIds ?? []
         }
       })
     } catch (err) {
@@ -603,6 +614,38 @@ export class JourneyResolver {
       data: {
         status: JourneyStatus.published,
         publishedAt: new Date()
+      }
+    })
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async journeyFeature(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string,
+    @Args('feature') feature: boolean
+  ): Promise<Journey> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id },
+      include: {
+        userJourneys: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
+    })
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+      throw new GraphQLError('user is not allowed to update featured date', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.prismaService.journey.update({
+      where: { id },
+      data: {
+        featuredAt: feature ? new Date() : null
       }
     })
   }
@@ -788,7 +831,14 @@ export class JourneyResolver {
   async language(
     @Parent() journey
   ): Promise<{ __typename: 'Language'; id: string }> {
-    // 529 (english) is default if not set
+    //  529 (english) is default if not set
     return { __typename: 'Language', id: journey.languageId ?? '529' }
+  }
+
+  @ResolveField('tags')
+  async tags(@Parent() journey): Promise<[{ __typename: 'Tag'; id: string }]> {
+    return journey.tagIds.map((tagId) => {
+      return { __typename: 'Tag', id: tagId }
+    })
   }
 }

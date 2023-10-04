@@ -111,7 +111,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             .then(
               (data: { city?: string; country?: string; region?: string }) => {
                 const countryCodes: string[] = []
-                if (data.city != null) countryCodes.push(data.city)
+                if (data.city != null) countryCodes.push(decodeURI(data.city))
                 if (data.region != null) countryCodes.push(data.region)
                 if (data.country != null) countryCodes.push(data.country)
 
@@ -123,7 +123,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                           countryCodes.length > 0
                             ? countryCodes.join(', ')
                             : undefined,
-                        referrer: document.referrer
+                        referrer:
+                          document.referrer !== ''
+                            ? document.referrer
+                            : undefined
                       }
                     }
                   })
@@ -183,6 +186,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           height: '100%',
           background: theme.palette.grey[900]
         }}
+        data-testid="Conductor"
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
           <StyledSwiperContainer

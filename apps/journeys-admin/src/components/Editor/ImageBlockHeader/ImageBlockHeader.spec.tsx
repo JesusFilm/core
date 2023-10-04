@@ -42,7 +42,7 @@ describe('ImageBlockHeader', () => {
     const { getByText, getByTestId } = render(
       <ImageBlockHeader showAdd selectedBlock={null} />
     )
-    expect(getByTestId('AddIcon')).toBeInTheDocument()
+    expect(getByTestId('Plus2Icon')).toBeInTheDocument()
     expect(getByText('Select Image')).toBeInTheDocument()
   })
 
@@ -52,7 +52,7 @@ describe('ImageBlockHeader', () => {
     )
 
     expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
-    expect(getByTestId('AddIcon')).toBeInTheDocument()
+    expect(getByTestId('Plus2Icon')).toBeInTheDocument()
     expect(getByText('Select Image')).toBeInTheDocument()
   })
 
@@ -61,7 +61,7 @@ describe('ImageBlockHeader', () => {
       <ImageBlockHeader selectedBlock={null} error />
     )
     expect(getByText('Upload failed')).toBeInTheDocument()
-    expect(getByTestId('BrokenImageOutlinedIcon')).toBeInTheDocument()
+    expect(getByTestId('ImageXIcon')).toBeInTheDocument()
   })
 
   it('should render the unsplash author', () => {

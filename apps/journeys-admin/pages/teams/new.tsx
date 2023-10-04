@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 
 import i18nConfig from '../../next-i18next.config'
+import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { checkConditionalRedirect } from '../../src/libs/checkConditionalRedirect'
@@ -18,7 +19,11 @@ function TeamsNewPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('New Team')} />
-      <TeamOnboarding />
+      <OnboardingPageWrapper
+        emailSubject={t('A question about creating a team for the first time.')}
+      >
+        <TeamOnboarding />
+      </OnboardingPageWrapper>
     </>
   )
 }

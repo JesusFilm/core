@@ -1,5 +1,3 @@
-import Close from '@mui/icons-material/Close'
-import InfoOutlined from '@mui/icons-material/InfoOutlined'
 import AppBar from '@mui/material/AppBar'
 import Button from '@mui/material/Button'
 import Drawer from '@mui/material/Drawer'
@@ -13,6 +11,8 @@ import Box from '@mui/system/Box'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
+import X2Icon from '@core/shared/ui/icons/X2'
 
 import { ActionDetails } from '../../ActionDetails'
 import { ActionInformation } from '../../ActionDetails/ActionInformation'
@@ -97,7 +97,11 @@ export function ActionsList({
             <Typography variant="h1">The Journey Goals</Typography>
             <Button
               variant="outlined"
-              startIcon={<InfoOutlined sx={{ color: 'secondary.light' }} />}
+              startIcon={
+                <InformationCircleContainedIcon
+                  sx={{ color: 'secondary.light' }}
+                />
+              }
               sx={{
                 display: 'flex',
                 color: 'secondary.main',
@@ -156,7 +160,7 @@ export function ActionsList({
               sx={{ display: 'inline-flex' }}
               edge="end"
             >
-              <Close />
+              <X2Icon />
             </IconButton>
           </Toolbar>
         </AppBar>

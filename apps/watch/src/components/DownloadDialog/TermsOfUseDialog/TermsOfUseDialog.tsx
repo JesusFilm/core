@@ -27,6 +27,7 @@ export function TermsOfUseDialog({
         closeLabel: 'Cancel'
       }}
       divider
+      testId="TermsOfUseDialog"
     >
       <Typography>
         PLEASE CAREFULLY REVIEW THE TERMS OF USE OF THIS SITE. As your use of

@@ -1,4 +1,3 @@
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -8,6 +7,8 @@ import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
+
+import Logout2Icon from '@core/shared/ui/icons/Logout2'
 
 import { GetMe_me as ApiUser } from '../../../../../__generated__/GetMe'
 import { MenuItem } from '../../../MenuItem'
@@ -67,7 +68,7 @@ export function UserMenu({
       <Divider />
       <MenuItem
         label="Logout"
-        icon={<LogoutRoundedIcon fontSize="small" />}
+        icon={<Logout2Icon fontSize="small" />}
         onClick={async () => {
           handleProfileClose()
           await user.signOut()

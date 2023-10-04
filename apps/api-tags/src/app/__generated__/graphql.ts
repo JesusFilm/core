@@ -8,11 +8,21 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum Service {
+    apiJourneys = "apiJourneys",
+    apiLanguages = "apiLanguages",
+    apiMedia = "apiMedia",
+    apiTags = "apiTags",
+    apiUsers = "apiUsers",
+    apiVideos = "apiVideos"
+}
+
 export class Tag {
     __typename?: 'Tag';
     id: string;
     name: Translation[];
     parentId?: Nullable<string>;
+    service?: Nullable<Service>;
 }
 
 export abstract class IQuery {

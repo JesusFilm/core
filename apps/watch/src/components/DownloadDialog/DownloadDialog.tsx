@@ -79,6 +79,7 @@ export function DownloadDialog({
         title: 'Download Video',
         closeButton: true
       }}
+      testId="DownloadDialog"
     >
       <>
         <Stack
