@@ -59,10 +59,37 @@ describe('TemplateGalleryCard', () => {
     expect(getByRole('img').attributes.getNamedItem('src')?.value).toBe(
       'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
     )
-    expect(getByText('August ● English')).toBeInTheDocument()
+    expect(getByText('AUG, 2023 ● English')).toBeInTheDocument()
     expect(
       getByRole('heading', { name: 'A Template Heading' })
     ).toBeInTheDocument()
+  })
+
+  it('should return an abbreviated version of the language', () => {
+    const { getByText } = render(
+      <TemplateGalleryCard
+        journey={{
+          ...journey,
+          language: {
+            __typename: 'Language',
+            id: '529',
+            name: [
+              {
+                __typename: 'Translation',
+                value: 'Kalagan, Tagakalu',
+                primary: true
+              },
+              {
+                __typename: 'Translation',
+                value: 'Kalagan, Tagakalu Kalu',
+                primary: false
+              }
+            ]
+          }
+        }}
+      />
+    )
+    expect(getByText('AUG, 2023 ● Kalagan (TK)')).toBeInTheDocument()
   })
 
   it('should link to template details', () => {

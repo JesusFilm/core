@@ -2,12 +2,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
-import { journeysAdminConfig } from '../../libs/storybook'
 import {
-  defaultTemplate,
-  publishedTemplate
-} from '../TemplateLibrary/TemplateListData'
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../libs/storybook'
 
 import { TemplateGalleryCard } from '.'
 
@@ -17,15 +17,52 @@ const TemplateGalleryCardStory: Meta<typeof TemplateGalleryCard> = {
   title: 'Journeys-Admin/TemplateGalleryCard'
 }
 
-const Template: StoryObj<
-  ComponentProps<typeof TemplateGalleryCard> & { template: Journey }
-> = {
+const journey = {
+  __typename: 'Journey',
+  id: 'template-id',
+  title: 'A Template Heading',
+  description: null,
+  slug: 'default',
+  template: true,
+  language: {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  status: JourneyStatus.published,
+  userJourneys: [],
+  seoTitle: null,
+  seoDescription: null,
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.dark,
+  tags: [],
+  trashedAt: null,
+  primaryImageBlock: {
+    id: 'image1.id',
+    __typename: 'ImageBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+    alt: 'random image from unsplash',
+    width: 1920,
+    height: 1080,
+    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+  },
+  publishedAt: '2023-08-14T04:24:24.392Z',
+  createdAt: '2023-08-14T04:24:24.392Z',
+  featuredAt: '2023-08-14T04:24:24.392Z'
+}
+
+const Template: StoryObj<ComponentProps<typeof TemplateGalleryCard>> = {
   render: ({ ...args }) => (
     <MockedProvider>
-      <TemplateGalleryCard
-        journey={args.template}
-        isPublisher={args.isPublisher}
-      />
+      <TemplateGalleryCard journey={args.journey} />
     </MockedProvider>
   )
 }
@@ -33,27 +70,35 @@ const Template: StoryObj<
 export const Default = {
   ...Template,
   args: {
-    template: defaultTemplate,
-    isPublisher: false
+    journey
   }
 }
 
 export const Loading = {
   ...Template,
   args: {
-    template: undefined,
-    isPublisher: false
+    journey: undefined
   }
 }
 
 export const Complete = {
   ...Template,
   args: {
-    template: {
-      ...publishedTemplate,
-      title: 'Where did Jesus body go'
-    },
-    isPublisher: true
+    journey: {
+      ...journey,
+      title: 'Where did Jesus body go',
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            __typename: 'Translation',
+            value: 'Kalagan, Tagalu Kalua',
+            primary: true
+          }
+        ]
+      }
+    }
   }
 }
 

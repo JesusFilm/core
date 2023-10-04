@@ -12,6 +12,7 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 
 export interface TemplateGalleryCardProps {
   journey?: Journey
@@ -25,21 +26,19 @@ export function TemplateGalleryCard({
   )?.value
   const nativeLanguage =
     journey?.language?.name.find(({ primary }) => primary)?.value ?? ''
-  const displayLanguage =
-    nativeLanguage === localLanguage || localLanguage == null
-      ? nativeLanguage
-      : `${nativeLanguage} (${localLanguage})`
 
-  console.log(parseISO(journey?.createdAt))
-  console.log(intlFormat(parseISO(journey?.createdAt)))
-  console.log(isThisYear(parseISO(journey?.createdAt)))
+  const displayLanguage = abbreviateLanguageName(
+    localLanguage ?? nativeLanguage
+  )
 
   const date =
     journey != null
       ? intlFormat(parseISO(journey.createdAt), {
-          month: 'long',
-          year: isThisYear(parseISO(journey?.createdAt)) ? undefined : 'numeric'
-        }).replace(' ', ', ')
+          month: 'short',
+          year: isThisYear(parseISO(journey?.createdAt)) ? 'numeric' : undefined
+        })
+          .replace(' ', ', ')
+          .toUpperCase()
       : ''
 
   return (
@@ -50,7 +49,6 @@ export function TemplateGalleryCard({
         width: { xs: 124, lg: 180 },
         height: { xs: 223, lg: 266 },
         border: 'none',
-        borderRadius: 0,
         backgroundColor: 'transparent',
         cursor: 'pointer'
       }}
@@ -96,7 +94,15 @@ export function TemplateGalleryCard({
           <CardContent sx={{ display: 'flex', flexDirection: 'column', px: 0 }}>
             {journey != null ? (
               <>
-                <Typography variant="caption">
+                <Typography
+                  variant="overline"
+                  sx={{
+                    whiteSpace: 'noWrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    color: (theme) => theme.palette.grey[700]
+                  }}
+                >
                   {date} ● {displayLanguage}
                 </Typography>
                 <Typography variant="subtitle2" sx={{ my: 1 }}>

@@ -31,6 +31,11 @@ describe('useJourneysQuery', () => {
                   __typename: 'Translation',
                   value: 'English',
                   primary: true
+                },
+                {
+                  __typename: 'Translation',
+                  value: 'English',
+                  primary: false
                 }
               ]
             },

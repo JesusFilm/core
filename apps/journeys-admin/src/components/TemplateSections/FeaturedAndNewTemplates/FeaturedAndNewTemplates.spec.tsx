@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
+import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { GET_JOURNEYS } from '../../../libs/useJourneysQuery/useJourneysQuery'
 
 import { FeaturedAndNewTemplates } from './FeaturedAndNewTemplates'
@@ -19,9 +20,19 @@ describe('FeaturedAndNewTemplates', () => {
     id: 'nw',
     title: 'New Template',
     publishedAt: '2023-09-05T23:27:45.596Z',
+    createdAt: '2023-09-05T23:27:45.596Z',
     featuredAt: null,
     template: true
-  }
+  } as unknown as Journey
+
+  const journey = {
+    title: 'Featured Template 1',
+    id: 1,
+    publishedAt: '2023-08-14T04:24:24.392Z',
+    featuredAt: '2023-08-14T04:24:24.392Z',
+    createdAt: '2023-09-05T23:27:45.596Z',
+    template: true
+  } as unknown as Journey
 
   it('should render Featured & New Section', async () => {
     const { getByRole, getAllByTestId } = render(
@@ -41,15 +52,9 @@ describe('FeaturedAndNewTemplates', () => {
             result: {
               data: {
                 journeys: [
+                  journey,
                   {
-                    title: 'Featured Template 1',
-                    id: 1,
-                    publishedAt: '2023-08-14T04:24:24.392Z',
-                    featuredAt: '2023-08-14T04:24:24.392Z',
-                    createdAt: '2023-09-05T23:27:45.596Z',
-                    template: true
-                  },
-                  {
+                    ...journey,
                     title: 'Featured Template 2',
                     id: 2,
                     publishedAt: '2023-08-14T04:24:24.292Z',

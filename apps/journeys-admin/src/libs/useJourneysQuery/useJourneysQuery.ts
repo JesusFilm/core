@@ -20,7 +20,7 @@ export const GET_JOURNEYS = gql`
       themeMode
       language {
         id
-        name(primary: true) {
+        name {
           value
           primary
         }
@@ -38,13 +38,6 @@ export const GET_JOURNEYS = gql`
           firstName
           lastName
           imageUrl
-        }
-      }
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
         }
       }
       primaryImageBlock {
