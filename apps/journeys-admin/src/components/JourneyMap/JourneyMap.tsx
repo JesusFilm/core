@@ -1,11 +1,13 @@
 import dagre from 'dagre'
 import React, { useCallback } from 'react'
 import ReactFlow, {
+  Edge,
   MarkerType,
   MiniMap,
   Position,
   ReactFlowProvider,
   addEdge,
+  updateEdge,
   useEdgesState,
   useNodesState,
   useOnSelectionChange,
@@ -13,34 +15,41 @@ import ReactFlow, {
 } from 'reactflow'
 
 import 'reactflow/dist/style.css'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { StepBlockNextBlockUpdate } from '../../../__generated__/StepBlockNextBlockUpdate'
+import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../Editor/ControlPanel/Attributes/blocks/Step/NextCard/Cards'
+
 import ActionNode from './ActionNode'
 import CustomNode from './CustomNode'
 import { OnSelectProps } from './OnSelectProps'
 
 import { styled } from '@mui/material/styles'
 import { Box } from '@mui/material'
+import { initConsoleObservable } from '@datadog/browser-core'
+import { useMutation } from '@apollo/client'
 
 const BoxStyled = styled(Box)`
-
   .react-flow .react-flow__node.selected {
     border-radius: 6px;
-    box-shadow: 0px 0px 0px 6px #e4e4e4,0px 0px 0px 8px #C52D3A;
+    box-shadow: 0px 0px 0px 6px #e4e4e4, 0px 0px 0px 8px #c52d3a;
   }
 
-  .react-flow__handle.connectionindicator{
+  .react-flow__handle.connectionindicator {
     background: #bbb;
     width: 8px;
     height: 8px;
-    opacity:0;
+    opacity: 0;
   }
 
-  .react-flow__node.selected .react-flow__handle.connectionindicator.react-flow__handle-right{
+  .react-flow__node.selected
+    .react-flow__handle.connectionindicator.react-flow__handle-right {
     background: #fff;
-    border-color: #C52D3A;
+    border-color: #c52d3a;
     border-width: 2px;
     width: 12px;
     height: 12px;
-    opacity:1;
+    opacity: 1;
   }
 
   .react-flow__node.selected .react-flow__handle-right,
@@ -60,8 +69,6 @@ const BoxStyled = styled(Box)`
   .react-flow__node:hover .react-flow__handle-left {
     left: -15px;
   }
-
-
 `
 // background: '#bbb', // #C52D3A
 //               width: '8px',
@@ -69,12 +76,10 @@ const BoxStyled = styled(Box)`
 //               left: '-16px',
 //               border:'none',
 
-
-
 const nodeTypes = {
   custom: CustomNode,
   action: ActionNode
-};
+}
 
 const FlowMap = ({
   nodes,
@@ -87,7 +92,7 @@ const FlowMap = ({
   const reactFlowInstance = useReactFlow()
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {
-      console.log('changed selection', nodes, edges)
+      // console.log('changed selection', nodes, edges)
       if (nodes[0]?.id !== undefined) {
         onSelect({
           step: nodes[0]?.data?.step
@@ -98,20 +103,20 @@ const FlowMap = ({
   return (
     <BoxStyled width="100%" height="100%">
       <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      fitView
-      // snapGrid ={[50,50]}
-      // snapToGrid
-      nodeTypes={nodeTypes}
-      // zoomOnScroll={false}
-      // onScrollCapture={false}
-      attributionPosition="bottom-left"
-      style={{}}
-       />
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView
+        // snapGrid ={[50,50]}
+        // snapToGrid
+        nodeTypes={nodeTypes}
+        // zoomOnScroll={false}
+        // onScrollCapture={false}
+        attributionPosition="bottom-left"
+        style={{}}
+      />
       {/* <Box sx={{left:'10px', top:'30%', width: '200px', height:'150px', position:'relative'}}>
         <MiniMap nodeColor="#eee" nodeStrokeWidth={3} 
       />
@@ -150,6 +155,7 @@ export const JourneyMap = ({
 
   const getLayoutedElements = (nodes, edges, direction = 'TB') => {
     const isHorizontal = direction === 'LR'
+    console.log('get layouted elements')
     dagreGraph.setGraph({
       rankdir: direction,
       nodesep: 30, // vertical
@@ -187,6 +193,7 @@ export const JourneyMap = ({
   }
 
   const transformData = (data) => {
+    console.log('Transforming data')
     const nodes = []
     const links = []
     let x = 0
@@ -198,7 +205,7 @@ export const JourneyMap = ({
       const titleWeight = null
       // block.children.reverse().forEach((child) => {
       for (let i = block.children.length - 1; i >= 0; i--) {
-        const child = block.children[i];
+        const child = block.children[i]
         if (child.__typename === 'ImageBlock' && child?.src) {
           image = child?.src
         }
@@ -206,7 +213,7 @@ export const JourneyMap = ({
         if (child.__typename === 'TypographyBlock' && child?.content) {
           title = child.content
         }
-      } 
+      }
 
       return [image, title]
     }
@@ -228,59 +235,60 @@ export const JourneyMap = ({
               data: {
                 // icon: <FunctionIcon />,
                 title: child.label,
-                subline: 'MULTI CHOISE',
+                subline: 'MULTI CHOISE'
                 // bgColor: step.children[0].backgroundColor
                 //   ? step.children[0].backgroundColor
                 //   : null,
-      
+
                 // bgImage: stepImage,
-      
+
                 // step
               },
               position: { x: 0, y: 0 }
             })
 
             if (child?.action?.blockId) {
-            // links.push({
-            //   id: child.id + '->' + child?.action?.blockId,
-            //   source: child.id,
-            //   type: 'smoothstep',
-            //   target: child?.action?.blockId,
-            //   animated: true
-            // })
+              // links.push({
+              //   id: child.id + '->' + child?.action?.blockId,
+              //   source: child.id,
+              //   type: 'smoothstep',
+              //   target: child?.action?.blockId,
+              //   animated: true
+              // })
+              console.log('creating radio quesiton link')
+              links.push({
+                id: child.id + '->' + child?.action?.blockId,
+                source: child.id,
+                target: child.action.blockId,
+                // label: child?.label,
+                markerEnd: {
+                  type: MarkerType.Arrow
+                },
+                style: {
+                  strokeWidth: 2
+                  // stroke: '#FF0072',
+                }
+                // animated: true
+              })
+            }
 
-            links.push({
-              id: child.id + '->' + child?.action?.blockId,
-              source: child.id,
-              target: child.action.blockId,
-              // label: child?.label,
-              markerEnd: {
-                type: MarkerType.Arrow
-              },
-              style: {
-                strokeWidth: 2
-                // stroke: '#FF0072',
-              }
-              // animated: true
-            })
-          }
-
-          if (child?.id) {
-            links.push({
-              id: stepBlockId + '->' + child.id,
-              source: stepBlockId,
-              target: child.id,
-              // label: child?.label,
-              // markerEnd: {
-              //   type: MarkerType.Arrow
-              // },
-              style: {
-                strokeWidth: 2
-                // stroke: '#FF0072',
-              }
-              // animated: true
-            })
-          }
+            if (child?.id) {
+              console.log('creating radio quesiton link')
+              links.push({
+                id: stepBlockId + '->' + child.id,
+                source: stepBlockId,
+                target: child.id,
+                // label: child?.label,
+                // markerEnd: {
+                //   type: MarkerType.Arrow
+                // },
+                style: {
+                  strokeWidth: 2
+                  // stroke: '#FF0072',
+                }
+                // animated: true
+              })
+            }
 
             // if (child?.action?.blockId) {
             //   links.push({
@@ -309,7 +317,10 @@ export const JourneyMap = ({
       }
     }
 
+    // console.log('Edges length', data.length)
     data.forEach((step, index) => {
+      // console.log(step)
+
       const yPrev = y
       let stepHeight = 20
 
@@ -317,14 +328,14 @@ export const JourneyMap = ({
 
       stepHeight += y
 
-      const [stepImage, stepTitle] = findContent(step?.children[0]);
+      const [stepImage, stepTitle] = findContent(step?.children[0])
       // console.log({step}, stepImage, stepTitle);
       nodes.push({
         id: step.id,
         sourcePosition: 'right',
         targetPosition: 'left',
         type: 'custom',
-    
+
         data: {
           // icon: <FunctionIcon />,
           title: stepTitle,
@@ -337,13 +348,13 @@ export const JourneyMap = ({
 
           step
         },
-        position: { x: 0, y: 0 },
-       
+        position: { x: 0, y: 0 }
       })
 
       x += 200
 
       if (!step.nextBlockId && data[index + 1]) {
+        // console.log('No Next block connection')
         links.push({
           id: step.id + '->' + data[index + 1].id,
           source: step.id,
@@ -362,6 +373,7 @@ export const JourneyMap = ({
       }
 
       if (step.nextBlockId && step.nextBlockId !== step.id) {
+        // console.log('Next block connection')
         links.push({
           id: step.id + '->' + step.nextBlockId,
           source: step.id,
@@ -399,8 +411,88 @@ export const JourneyMap = ({
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges)
 
+  const [stepBlockNextBlockUpdate] = useMutation<StepBlockNextBlockUpdate>(
+    STEP_BLOCK_NEXT_BLOCK_UPDATE
+  )
+
+  const { journey } = useJourney()
+
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    async (params) => {
+      // TODO: logic for removing existing connections?
+      console.log({ params }) // source
+      // :
+      // "0b379d0f-d362-4c26-adaf-d96d51278730"
+      // sourceHandle
+      // :
+      // null
+      // target
+      // :
+      // "49562132-4179-4faa-91bf-31ff0dcd0cab"
+      // targetHandle
+      // :
+      // null
+
+      // setEdges((eds) => {
+      //   eds.forEach((edge) => {
+      //     // console.log({ edge })
+      //     if (edge.target === params.target) {
+      //       console.log('Matching edge: ', { edge })
+      //       updateEdge(edge, ,eds)
+
+      //     }
+      //   })
+
+      //   return addEdge(params, eds)
+      // updateEdge to remove the old connection
+
+      //   })
+      // },
+
+      // [setEdges]
+      if (journey == null) return
+      console.log({ edges })
+
+      try {
+        await stepBlockNextBlockUpdate({
+          variables: {
+            id: params.source,
+            journeyId: journey.id,
+            input: {
+              nextBlockId: params.target
+            }
+          }
+        })
+
+        const updatedEdges: Array<Edge<any>> = []
+
+        for (const edge of edges) {
+          if (edge.target === params.target && edge.source !== params.source) {
+            console.log('Found existing edge: ', { edge })
+            await stepBlockNextBlockUpdate({
+              variables: {
+                id: edge.source,
+                journeyId: journey.id,
+                input: {
+                  nextBlockId: null
+                }
+              }
+            })
+          } else {
+            updatedEdges.push(edge)
+          }
+        }
+
+        // Add the new edge to the updatedEdges array
+        updatedEdges.push(params)
+        console.log({ updatedEdges })
+
+        setEdges(updatedEdges)
+        // getLayoutedElements(stepsNodes, stepEdges, 'LR')
+      } catch (e) {
+        console.log(e)
+      }
+    },
     [setEdges]
   )
 

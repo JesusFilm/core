@@ -21,7 +21,7 @@ export function NextCard(): ReactElement {
 
   return (
     <>
-      {/* <SelectedCard />
+      <SelectedCard />
       <Box
         sx={{
           [theme.breakpoints.up('sm')]: {
@@ -52,7 +52,7 @@ export function NextCard(): ReactElement {
         <Cards />
         <Divider />
         <Conditions />
-      </Box> */}
+      </Box>
     </>
   )
 }

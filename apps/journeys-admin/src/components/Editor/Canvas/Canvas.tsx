@@ -25,6 +25,7 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { FramePortal } from '../../FramePortal'
+import { JourneyMap } from '../../JourneyMap'
 import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 import { DRAWER_WIDTH, Drawer } from '../Drawer'
@@ -35,7 +36,7 @@ import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 
 import 'swiper/swiper.min.css'
-import { JourneyMap } from '../../JourneyMap'
+
 import { OnSelectProps } from '../../CardPreview'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 
@@ -55,7 +56,7 @@ export function Canvas(): ReactElement {
     state: { steps, selectedStep, selectedBlock, selectedComponent },
     dispatch
   } = useEditor()
-  
+
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
@@ -88,7 +89,7 @@ export function Canvas(): ReactElement {
   }, [smUp])
 
   const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
-    console.log('handleSelectStepPreview', {step, view})
+    console.log('handleSelectStepPreview', { step, view })
     if (step != null) {
       dispatch({ type: 'SetSelectedStepAction', step })
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
@@ -153,180 +154,198 @@ export function Canvas(): ReactElement {
         })
       }}
     >
-      <Box height="400px" width="100%" bgcolor="#e4e4e4" sx={{
-        // overflowX:'scroll',
-        // position:'absolute',
-        zIndex:9999,
-      }} >
-        {steps?.length > 1 && <JourneyMap selected={selectedStep} showNavigationCards onSelect={handleSelectStepPreview} steps={steps} width={800} height={400}/>}
-      </Box>
-      <Box sx={{
-        py:'100px',
-        position:'relative'
-      }}>
-        <ContextEditActions />
-        <Box sx={{
-          width:'calc(100% - 300px)'
-        }}>
-          <Swiper
-        slidesPerView="auto"
-        spaceBetween={spaceBetween}
-        centeredSlides
-        shortSwipes={false}
-        slideToClickedSlide={steps != null}
-        onSwiper={(swiper) => setSwiper(swiper)}
-        onSlideChange={(swiper) => {
-          if (steps == null) return
-          dispatch({
-            type: 'SetSelectedStepAction',
-            step: steps[swiper.activeIndex]
-          })
+      <Box
+        height="400px"
+        width="100%"
+        bgcolor="#e4e4e4"
+        sx={{
+          // overflowX:'scroll',
+          // position:'absolute',
+          zIndex: 9999
         }}
       >
+        {steps?.length > 1 && (
+          <JourneyMap
+            selected={selectedStep}
+            showNavigationCards
+            onSelect={handleSelectStepPreview}
+            steps={steps}
+            width={800}
+            height={400}
+          />
+        )}
+      </Box>
+      <Box
+        sx={{
+          py: '100px',
+          position: 'relative'
+        }}
+      >
+        <ContextEditActions />
+        <Box
+          sx={{
+            width: 'calc(100% - 300px)'
+          }}
+        >
+          <Swiper
+            slidesPerView="auto"
+            spaceBetween={spaceBetween}
+            centeredSlides
+            shortSwipes={false}
+            slideToClickedSlide={steps != null}
+            onSwiper={(swiper) => setSwiper(swiper)}
+            onSlideChange={(swiper) => {
+              if (steps == null) return
+              dispatch({
+                type: 'SetSelectedStepAction',
+                step: steps[swiper.activeIndex]
+              })
+            }}
+          >
             {steps != null ? (
-          steps.map((step) => {
-            const theme = getStepTheme(step, journey)
-            return (
-              <SwiperSlide key={step.id} style={{ width: 362 }}>
-                <Box
-                  data-testid={`step-${step.id}`}
-                  sx={{
-                    borderRadius: 5,
-                    transition: '0.2s all ease-out 0.1s',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    outline: (theme) =>
-                      step.parentOrder === swiper?.activeIndex
-                        ? step.id === selectedBlock?.id
-                          ? `2px solid ${theme.palette.primary.main}`
-                          : `2px solid ${theme.palette.background.default}`
-                        : `0px solid`,
-                    outlineOffset: 4,
-                    transform:
-                      step.id === selectedStep?.id
-                        ? { xs: 'scale(0.9)', lg: 'scale(1)' }
-                        : { xs: 'scale(0.8)', lg: 'scale(0.9)' },
-                    height: 640
-                  }}
-                >
-                  <Box
+              steps.map((step) => {
+                const theme = getStepTheme(step, journey)
+                return (
+                  <SwiperSlide key={step.id} style={{ width: 362 }}>
+                    <Box
+                      data-testid={`step-${step.id}`}
+                      sx={{
+                        borderRadius: 5,
+                        transition: '0.2s all ease-out 0.1s',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        outline: (theme) =>
+                          step.parentOrder === swiper?.activeIndex
+                            ? step.id === selectedBlock?.id
+                              ? `2px solid ${theme.palette.primary.main}`
+                              : `2px solid ${theme.palette.background.default}`
+                            : `0px solid`,
+                        outlineOffset: 4,
+                        transform:
+                          step.id === selectedStep?.id
+                            ? { xs: 'scale(0.9)', lg: 'scale(1)' }
+                            : { xs: 'scale(0.8)', lg: 'scale(0.9)' },
+                        height: 640
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          bottom: 0,
+                          left: 0,
+                          zIndex: 1,
+                          transition: '0.2s opacity ease-out 0.1s',
+                          backgroundColor: (theme) =>
+                            theme.palette.background.default,
+                          opacity: step.id === selectedStep?.id ? 0 : 1,
+                          pointerEvents:
+                            step.id === selectedStep?.id ? 'none' : 'auto'
+                        }}
+                      />
+                      <FramePortal
+                        width={360}
+                        height={640}
+                        dir={rtl ? 'rtl' : 'ltr'}
+                      >
+                        <ThemeProvider {...theme} rtl={rtl} locale={locale}>
+                          <Fade
+                            in={selectedStep?.id === step.id}
+                            mountOnEnter
+                            unmountOnExit
+                          >
+                            <Stack
+                              justifyContent="center"
+                              sx={{
+                                width: '100%',
+                                height: '100%',
+                                borderRadius: 5
+                              }}
+                            >
+                              <StepHeader />
+                              <BlockRenderer
+                                block={step}
+                                wrappers={{
+                                  Wrapper: SelectableWrapper,
+                                  TypographyWrapper: InlineEditWrapper,
+                                  ButtonWrapper: InlineEditWrapper,
+                                  RadioQuestionWrapper: InlineEditWrapper,
+                                  RadioOptionWrapper: InlineEditWrapper,
+                                  TextResponseWrapper: InlineEditWrapper,
+                                  SignUpWrapper: InlineEditWrapper,
+                                  VideoWrapper,
+                                  CardWrapper
+                                }}
+                              />
+                              <StepFooter
+                                sx={{
+                                  outline:
+                                    selectedComponent === 'Footer'
+                                      ? '3px solid #C52D3A'
+                                      : 'none',
+                                  outlineOffset: -4,
+                                  borderRadius: 5,
+                                  cursor: 'pointer'
+                                }}
+                                onFooterClick={() => {
+                                  if (editableStepFooter) {
+                                    dispatch({
+                                      type: 'SetSelectedComponentAction',
+                                      component: 'Footer'
+                                    })
+                                    dispatch({
+                                      type: 'SetActiveFabAction',
+                                      activeFab: ActiveFab.Add
+                                    })
+                                    dispatch({
+                                      type: 'SetActiveTabAction',
+                                      activeTab: ActiveTab.Properties
+                                    })
+                                    dispatch({
+                                      type: 'SetDrawerPropsAction',
+                                      title: t('Hosted By'),
+                                      mobileOpen: true,
+                                      children: <HostSidePanel />
+                                    })
+                                    dispatch({
+                                      type: 'SetSelectedAttributeIdAction',
+                                      id: 'hosted-by'
+                                    })
+                                  }
+                                }}
+                              />
+                            </Stack>
+                          </Fade>
+                        </ThemeProvider>
+                      </FramePortal>
+                    </Box>
+                  </SwiperSlide>
+                )
+              })
+            ) : (
+              <>
+                <SwiperSlide style={{ width: 362 }}>
+                  <Skeleton
+                    variant="rectangular"
+                    width={362}
+                    height={536}
+                    sx={{ borderRadius: 5 }}
+                  />
+                </SwiperSlide>
+                <SwiperSlide style={{ width: 362 }}>
+                  <Skeleton
+                    variant="rectangular"
+                    width={362}
+                    height={536}
                     sx={{
-                      position: 'absolute',
-                      top: 0,
-                      right: 0,
-                      bottom: 0,
-                      left: 0,
-                      zIndex: 1,
-                      transition: '0.2s opacity ease-out 0.1s',
-                      backgroundColor: (theme) =>
-                        theme.palette.background.default,
-                      opacity: step.id === selectedStep?.id ? 0 : 1,
-                      pointerEvents:
-                        step.id === selectedStep?.id ? 'none' : 'auto'
+                      borderRadius: 5,
+                      transform: 'scaleY(0.9)'
                     }}
                   />
-                  <FramePortal
-                    width={360}
-                    height={640}
-                    dir={rtl ? 'rtl' : 'ltr'}
-                  >
-                    <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-                      <Fade
-                        in={selectedStep?.id === step.id}
-                        mountOnEnter
-                        unmountOnExit
-                      >
-                        <Stack
-                          justifyContent="center"
-                          sx={{
-                            width: '100%',
-                            height: '100%',
-                            borderRadius: 5
-                          }}
-                        >
-                          <StepHeader />
-                          <BlockRenderer
-                            block={step}
-                            wrappers={{
-                              Wrapper: SelectableWrapper,
-                              TypographyWrapper: InlineEditWrapper,
-                              ButtonWrapper: InlineEditWrapper,
-                              RadioQuestionWrapper: InlineEditWrapper,
-                              RadioOptionWrapper: InlineEditWrapper,
-                              TextResponseWrapper: InlineEditWrapper,
-                              SignUpWrapper: InlineEditWrapper,
-                              VideoWrapper,
-                              CardWrapper
-                            }}
-                          />
-                          <StepFooter
-                            sx={{
-                              outline:
-                                selectedComponent === 'Footer'
-                                  ? '3px solid #C52D3A'
-                                  : 'none',
-                              outlineOffset: -4,
-                              borderRadius: 5,
-                              cursor: 'pointer'
-                            }}
-                            onFooterClick={() => {
-                              if (editableStepFooter) {
-                                dispatch({
-                                  type: 'SetSelectedComponentAction',
-                                  component: 'Footer'
-                                })
-                                dispatch({
-                                  type: 'SetActiveFabAction',
-                                  activeFab: ActiveFab.Add
-                                })
-                                dispatch({
-                                  type: 'SetActiveTabAction',
-                                  activeTab: ActiveTab.Properties
-                                })
-                                dispatch({
-                                  type: 'SetDrawerPropsAction',
-                                  title: t('Hosted By'),
-                                  mobileOpen: true,
-                                  children: <HostSidePanel />
-                                })
-                                dispatch({
-                                  type: 'SetSelectedAttributeIdAction',
-                                  id: 'hosted-by'
-                                })
-                              }
-                            }}
-                          />
-                        </Stack>
-                      </Fade>
-                    </ThemeProvider>
-                  </FramePortal>
-                </Box>
-              </SwiperSlide>
-            )
-          })
-        ) : (
-          <>
-            <SwiperSlide style={{ width: 362 }}>
-              <Skeleton
-                variant="rectangular"
-                width={362}
-                height={536}
-                sx={{ borderRadius: 5 }}
-              />
-            </SwiperSlide>
-            <SwiperSlide style={{ width: 362 }}>
-              <Skeleton
-                variant="rectangular"
-                width={362}
-                height={536}
-                sx={{
-                  borderRadius: 5,
-                  transform: 'scaleY(0.9)'
-                }}
-              />
-            </SwiperSlide>
-          </>
-        )}
+                </SwiperSlide>
+              </>
+            )}
           </Swiper>
         </Box>
         <Drawer />

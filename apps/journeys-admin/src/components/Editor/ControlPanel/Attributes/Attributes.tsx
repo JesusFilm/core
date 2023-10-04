@@ -60,7 +60,7 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
         )
         return (
           <>
-            {/* <Step {...selected} /> */}
+            <Step {...selected} />
             <Divider orientation="vertical" variant="middle" flexItem />
             {block != null && (
               <AttributesContent selected={block} step={step} />
@@ -159,11 +159,13 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
       <Stack
         direction="column"
         spacing={0}
-        sx={{
-          // overflowX: 'auto',
-          // py: 5,
-          // px: 6
-        }}
+        sx={
+          {
+            // overflowX: 'auto',
+            // py: 5,
+            // px: 6
+          }
+        }
       >
         <AttributesContent selected={selected} step={step} />
       </Stack>
