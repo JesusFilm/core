@@ -1,4 +1,4 @@
-import Stack from '@mui/material/Stack'
+import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
@@ -25,27 +25,24 @@ export function MostRelevantTemplates(): ReactElement {
           journeys={data?.journeys}
         />
       ) : (
-        <Stack
-          gap={3}
+        <Paper
+          elevation={0}
+          variant="outlined"
           sx={{
             borderRadius: 4,
-            border: 1,
             width: '100%',
-            height: 132,
-            padding: 8,
-            display: 'flex',
-            justifyContent: 'center'
+            padding: 8
           }}
         >
           <Typography variant="h6">
-            {t('No template that fully matches your search criteria.')}
+            {t('No template fully matches your search criteria.')}
           </Typography>
-          <Typography variant="body1">
+          <Typography variant="body1" sx={{ mt: 2 }}>
             {t(
               "Try using fewer filters or look below for templates related to the categories you've selected to search"
             )}
           </Typography>
-        </Stack>
+        </Paper>
       )}
     </>
   )

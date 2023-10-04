@@ -140,7 +140,7 @@ describe('MostRelevantTemplates', () => {
     )
     expect(
       getByRole('heading', {
-        name: 'No template that fully matches your search criteria.'
+        name: 'No template fully matches your search criteria.'
       })
     ).toBeInTheDocument()
     expect(
