@@ -93,12 +93,22 @@ export function TemplateSettingsDialog({
               title: values.title,
               description: values.description
             }
-          }
+          },
+          onCompleted: () =>
+            enqueueSnackbar(t('Template settings have been saved'), {
+              variant: 'success',
+              preventDuplicate: true
+            })
         })
       }
       if (Boolean(journey.featuredAt) !== values.featuredAt) {
         await journeyFeature({
-          variables: { id: journey.id, feature: values.featuredAt }
+          variables: { id: journey.id, feature: values.featuredAt },
+          onCompleted: () =>
+            enqueueSnackbar(t('Template settings have been saved'), {
+              variant: 'success',
+              preventDuplicate: true
+            })
         })
       }
       onClose()
