@@ -7,12 +7,9 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import {
-  JourneyFields
-} from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFields } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { StepHeader } from './StepHeader'
-
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -29,8 +26,8 @@ describe('StepHeader', () => {
     id: 'journeyId',
     title: 'my journey',
     themeName: ThemeName.base,
-  themeMode: ThemeMode.light,
-  featuredAt: null,
+    themeMode: ThemeMode.light,
+    featuredAt: null,
     strategySlug: null,
     slug: 'my-journey',
     language: {
@@ -66,7 +63,12 @@ describe('StepHeader', () => {
       src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
       src2: null
     },
-    team:  { __typename: 'Team', id: 'teamId', title: 'Team Title', publicTitle: ''}
+    team: {
+      __typename: 'Team',
+      id: 'teamId',
+      title: 'Team Title',
+      publicTitle: ''
+    }
   }
 
   it('should have report contact button', () => {
@@ -129,14 +131,22 @@ describe('StepHeader', () => {
   })
 
   it('should show public title', async () => {
-
     const { getByRole, getByText } = render(
-      <MockedProvider >
+      <MockedProvider>
         <JourneyProvider
-            value={{
-              journey: { ...journey, seoTitle: null, team: {__typename: 'Team', id: 'teamId', title: 'Team Title', publicTitle: 'Public Title'} }
-            }}
-          >
+          value={{
+            journey: {
+              ...journey,
+              seoTitle: null,
+              team: {
+                __typename: 'Team',
+                id: 'teamId',
+                title: 'Team Title',
+                publicTitle: 'Public Title'
+              }
+            }
+          }}
+        >
           <StepHeader />
         </JourneyProvider>
       </MockedProvider>
@@ -147,12 +157,12 @@ describe('StepHeader', () => {
 
   it('should default to team title if public title does not exist', async () => {
     const { getByRole, getByText } = render(
-      <MockedProvider >
+      <MockedProvider>
         <JourneyProvider
-            value={{
-              journey: { ...journey, seoTitle: null }
-            }}
-          >
+          value={{
+            journey: { ...journey, seoTitle: null }
+          }}
+        >
           <StepHeader />
         </JourneyProvider>
       </MockedProvider>
