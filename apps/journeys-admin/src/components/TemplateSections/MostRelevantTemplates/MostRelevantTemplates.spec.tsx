@@ -6,6 +6,15 @@ import { GET_JOURNEYS } from '../../../libs/useJourneysQuery/useJourneysQuery'
 
 import { MostRelevantTemplates } from './MostRelevantTemplates'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
@@ -110,30 +119,34 @@ describe('MostRelevantTemplates', () => {
         <MostRelevantTemplates />
       </MockedProvider>
     )
-    expect(getByRole('heading', { name: 'Most Relevant' })).toBeInTheDocument()
     await waitFor(() => {
-      const cards = getAllByTestId(/journey-/)
-      expect(cards[0]).toHaveTextContent('Template 1')
-      expect(cards[1]).toHaveTextContent('Template 2')
+      expect(result).toHaveBeenCalled()
     })
-    expect(result).toHaveBeenCalled()
+    expect(getByRole('heading', { name: 'Most Relevant' })).toBeInTheDocument()
+    const cards = getAllByTestId(/journey-/)
+    expect(cards[0]).toHaveTextContent('Template 1')
+    expect(cards[1]).toHaveTextContent('Template 2')
   })
 
-  it('should not render templates when no tagIds', async () => {
+  it('should render the placeholder component when no templates are found', async () => {
     mockUseRouter.mockReturnValue({
       query: {}
     } as unknown as NextRouter)
 
-    const { getByRole, queryAllByTestId } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <MostRelevantTemplates />
       </MockedProvider>
     )
-
-    expect(getByRole('heading', { name: 'Most Relevant' })).toBeInTheDocument()
-    await waitFor(() => {
-      const journeys = queryAllByTestId(/journey-/)
-      expect(journeys).toHaveLength(0)
-    })
+    expect(
+      getByRole('heading', {
+        name: 'No template that fully matches your search criteria.'
+      })
+    ).toBeInTheDocument()
+    expect(
+      getByText(
+        "Try using fewer filters or look below for templates related to the categories you've selected to search"
+      )
+    ).toBeInTheDocument()
   })
 })
