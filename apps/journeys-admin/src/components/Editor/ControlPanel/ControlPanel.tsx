@@ -93,6 +93,7 @@ export function ControlPanel(): ReactElement {
 
   const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
     if (step != null) {
+      // this is mirrored in the editor canvas handleSlideChange fn
       dispatch({ type: 'SetSelectedStepAction', step })
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
       if (step.children[0].children.length === 0) {

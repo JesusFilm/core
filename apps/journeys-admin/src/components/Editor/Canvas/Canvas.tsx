@@ -109,13 +109,13 @@ export function Canvas(): ReactElement {
   }
 
   function handleSlideChange(swiper: SwiperCore): void {
-    const swiperStep = steps?.[swiper.activeIndex]
-    if (swiperStep == null || swiperStep.id === selectedStep?.id) return
-    dispatch({
-      type: 'SetSelectedStepAction',
-      step: swiperStep
-    })
-    if (swiperStep.children[0].children.length === 0) {
+    const step = steps?.[swiper.activeIndex]
+    if (step == null || step.id === selectedStep?.id) return
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Journey })
+    // this is mirrored in the editor control panel handleSelectStepPreview fn
+    dispatch({ type: 'SetSelectedStepAction', step })
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    if (step.children[0].children.length === 0) {
       dispatch({
         type: 'SetSelectedAttributeIdAction',
         id: undefined
@@ -200,7 +200,7 @@ export function Canvas(): ReactElement {
                     position: 'relative',
                     overflow: 'hidden',
                     outline: (theme) =>
-                      step.parentOrder === swiper?.activeIndex
+                      step.id === selectedStep?.id
                         ? step.id === selectedBlock?.id
                           ? `2px solid ${theme.palette.primary.main}`
                           : `2px solid ${theme.palette.background.default}`
