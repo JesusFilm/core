@@ -52,5 +52,13 @@ export async function checkConditionalRedirect(
       destination: `/teams/new${redirect}`,
       permanent: false
     }
+  } else if (
+    encodedRedirectPathname != null &&
+    encodedRedirectPathname !== ''
+  ) {
+    return {
+      destination: encodedRedirectPathname,
+      permanent: false
+    }
   }
 }
