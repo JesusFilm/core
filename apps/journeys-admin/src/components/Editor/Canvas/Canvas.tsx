@@ -24,6 +24,8 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { FramePortal } from '../../FramePortal'
+import { Properties } from '../../JourneyView/Properties'
+import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 import { DRAWER_WIDTH } from '../Drawer'
@@ -78,6 +80,89 @@ export function Canvas(): ReactElement {
     return () => window.removeEventListener('resize', setSpaceBetweenOnResize)
   }, [smUp])
 
+  function handleClick(): void {
+    // Prevent losing focus on empty input
+    if (
+      selectedBlock?.__typename === 'TypographyBlock' &&
+      selectedBlock.content === ''
+    )
+      return
+    dispatch({
+      type: 'SetSelectedBlockAction',
+      block: selectedStep
+    })
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    dispatch({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: t('Next Card Properties'),
+      mobileOpen: true,
+      children: <NextCard />
+    })
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: `${selectedStep?.id ?? ''}-next-block`
+    })
+  }
+
+  function handleSlideChange(swiper: SwiperCore): void {
+    const swiperStep = steps?.[swiper.activeIndex]
+    if (swiperStep == null || swiperStep.id === selectedStep?.id) return
+    dispatch({
+      type: 'SetSelectedStepAction',
+      step: swiperStep
+    })
+    if (swiperStep.children[0].children.length === 0) {
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: undefined
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        mobileOpen: false,
+        title: t('Card Templates'),
+        children: <CardTemplateDrawer />
+      })
+    } else {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        mobileOpen: false,
+        title: t('Properties'),
+        children: <Properties journeyType="Journey" isPublisher={false} />
+      })
+    }
+  }
+
+  function handleFooterClick(): void {
+    if (editableStepFooter) {
+      dispatch({
+        type: 'SetSelectedComponentAction',
+        component: 'Footer'
+      })
+      dispatch({
+        type: 'SetActiveFabAction',
+        activeFab: ActiveFab.Add
+      })
+      dispatch({
+        type: 'SetActiveTabAction',
+        activeTab: ActiveTab.Properties
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: t('Hosted By'),
+        mobileOpen: true,
+        children: <HostSidePanel />
+      })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: 'hosted-by'
+      })
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -91,34 +176,7 @@ export function Canvas(): ReactElement {
           justifyContent: 'center'
         }
       }}
-      onClick={() => {
-        // Prevent losing focus on empty input
-        if (
-          selectedBlock?.__typename === 'TypographyBlock' &&
-          selectedBlock.content === ''
-        ) {
-          return
-        }
-        dispatch({
-          type: 'SetSelectedBlockAction',
-          block: selectedStep
-        })
-        dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-        dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
-        })
-        dispatch({
-          type: 'SetDrawerPropsAction',
-          title: 'Next Card Properties',
-          mobileOpen: true,
-          children: <NextCard />
-        })
-        dispatch({
-          type: 'SetSelectedAttributeIdAction',
-          id: `${selectedStep?.id ?? ''}-next-block`
-        })
-      }}
+      onClick={handleClick}
     >
       <Swiper
         slidesPerView="auto"
@@ -127,13 +185,7 @@ export function Canvas(): ReactElement {
         shortSwipes={false}
         slideToClickedSlide={steps != null}
         onSwiper={(swiper) => setSwiper(swiper)}
-        onSlideChange={(swiper) => {
-          if (steps == null) return
-          dispatch({
-            type: 'SetSelectedStepAction',
-            step: steps[swiper.activeIndex]
-          })
-        }}
+        onSlideChange={handleSlideChange}
       >
         {steps != null ? (
           steps.map((step) => {
@@ -221,32 +273,7 @@ export function Canvas(): ReactElement {
                               borderRadius: 5,
                               cursor: 'pointer'
                             }}
-                            onFooterClick={() => {
-                              if (editableStepFooter) {
-                                dispatch({
-                                  type: 'SetSelectedComponentAction',
-                                  component: 'Footer'
-                                })
-                                dispatch({
-                                  type: 'SetActiveFabAction',
-                                  activeFab: ActiveFab.Add
-                                })
-                                dispatch({
-                                  type: 'SetActiveTabAction',
-                                  activeTab: ActiveTab.Properties
-                                })
-                                dispatch({
-                                  type: 'SetDrawerPropsAction',
-                                  title: t('Hosted By'),
-                                  mobileOpen: true,
-                                  children: <HostSidePanel />
-                                })
-                                dispatch({
-                                  type: 'SetSelectedAttributeIdAction',
-                                  id: 'hosted-by'
-                                })
-                              }
-                            }}
+                            onFooterClick={handleFooterClick}
                           />
                         </Stack>
                       </Fade>

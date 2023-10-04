@@ -2,15 +2,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
   ActiveJourneyEditContent,
   ActiveTab,
-  EditorProvider,
-  useEditor
+  EditorProvider
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -24,6 +22,7 @@ import {
   TypographyVariant,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../libs/TestEditorState'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
 
 import { BUTTON_BLOCK_CREATE } from './BlocksTab/NewButtonButton/NewButtonButton'
@@ -174,21 +173,6 @@ describe('ControlPanel', () => {
         ]
       }
     ]
-  }
-
-  function EditorState(): ReactElement {
-    const { state } = useEditor()
-    return (
-      <>
-        <div>selectedBlock: {state.selectedBlock?.id}</div>
-        <div>drawerMobileOpen: {state.drawerMobileOpen.toString()}</div>
-        <div>drawerTitle: {state.drawerTitle}</div>
-        <div>
-          journeyEditContentComponent: {state.journeyEditContentComponent}
-        </div>
-        <div>{state.drawerChildren}</div>
-      </>
-    )
   }
 
   it('should render tabs and tab panels', async () => {
@@ -1063,7 +1047,7 @@ describe('ControlPanel', () => {
                 journeyEditContentComponent: ActiveJourneyEditContent.Canvas
               }}
             >
-              <EditorState />
+              <TestEditorState renderChildren />
               <ControlPanel />
             </EditorProvider>
           </JourneyProvider>
@@ -1106,7 +1090,7 @@ describe('ControlPanel', () => {
               journeyEditContentComponent: ActiveJourneyEditContent.Canvas
             }}
           >
-            <EditorState />
+            <TestEditorState renderChildren />
             <ControlPanel />
           </EditorProvider>
         </JourneyProvider>
@@ -1218,7 +1202,7 @@ describe('ControlPanel', () => {
               activeFab: ActiveFab.Add
             }}
           >
-            <EditorState />
+            <TestEditorState renderChildren />
             <ControlPanel />
           </EditorProvider>
         </JourneyProvider>
@@ -1264,7 +1248,7 @@ describe('ControlPanel', () => {
               journeyEditContentComponent: ActiveJourneyEditContent.Canvas
             }}
           >
-            <EditorState />
+            <TestEditorState renderChildren />
             <ControlPanel />
           </EditorProvider>
         </JourneyProvider>
@@ -1307,7 +1291,7 @@ describe('ControlPanel', () => {
               journeyEditContentComponent: ActiveJourneyEditContent.Canvas
             }}
           >
-            <EditorState />
+            <TestEditorState />
             <ControlPanel />
           </EditorProvider>
         </JourneyProvider>
@@ -1347,7 +1331,7 @@ describe('ControlPanel', () => {
                 ActiveJourneyEditContent.SocialPreview
             }}
           >
-            <EditorState />
+            <TestEditorState />
             <ControlPanel />
           </EditorProvider>
         </JourneyProvider>
@@ -1386,7 +1370,7 @@ describe('ControlPanel', () => {
               journeyEditContentComponent: ActiveJourneyEditContent.Action
             }}
           >
-            <EditorState />
+            <TestEditorState />
             <ControlPanel />
           </EditorProvider>
         </JourneyProvider>
@@ -1429,7 +1413,7 @@ describe('ControlPanel', () => {
                 journeyEditContentComponent: ActiveJourneyEditContent.Canvas
               }}
             >
-              <EditorState />
+              <TestEditorState renderChildren />
               <ControlPanel />
             </EditorProvider>
           </JourneyProvider>
@@ -1473,7 +1457,7 @@ describe('ControlPanel', () => {
                 journeyEditContentComponent: ActiveJourneyEditContent.Canvas
               }}
             >
-              <EditorState />
+              <TestEditorState />
               <ControlPanel />
             </EditorProvider>
           </JourneyProvider>

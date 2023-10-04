@@ -85,7 +85,7 @@ describe('CardPoll', () => {
           subtitleInput: {
             journeyId: 'journeyId',
             parentBlockId: 'cardId',
-            content: 'Got an Opinion`?',
+            content: 'Got an Opinion?',
             variant: TypographyVariant.h6
           },
           titleInput: {

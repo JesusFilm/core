@@ -1,13 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider, useEditor } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+import { TestEditorState } from '../../../libs/TestEditorState'
 
 import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
 
@@ -19,17 +19,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('CardTemplateDrawer', () => {
-  function EditorState(): ReactElement {
-    const { state } = useEditor()
-    return (
-      <>
-        <div>selectedBlock: {state.selectedBlock?.id}</div>
-        <div>drawerTitle: {state.drawerTitle}</div>
-        <div>selectedAttributeId: {state.selectedAttributeId}</div>
-      </>
-    )
-  }
-
   it('changes content of card to match template', async () => {
     const card: TreeBlock = {
       id: 'cardId',
@@ -84,7 +73,7 @@ describe('CardTemplateDrawer', () => {
           value={{ journey: { id: 'journeyId' } as unknown as Journey }}
         >
           <EditorProvider initialState={{ steps: [step] }}>
-            <EditorState />
+            <TestEditorState />
             <CardTemplateDrawer />
           </EditorProvider>
         </JourneyProvider>

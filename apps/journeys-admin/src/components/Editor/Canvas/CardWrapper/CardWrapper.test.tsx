@@ -5,9 +5,10 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
-import { EditorProvider, useEditor } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../libs/TestEditorState'
 
 import { CardWrapper } from '.'
 
@@ -24,17 +25,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('CardWrapper', () => {
   function Container(_props: { wrappers?: WrappersProps }): ReactElement {
     return <></>
-  }
-
-  function EditorState(): ReactElement {
-    const { state } = useEditor()
-    return (
-      <>
-        <div>selectedBlock: {state.selectedBlock?.id}</div>
-        <div>drawerTitle: {state.drawerTitle}</div>
-        <div>selectedAttributeId: {state.selectedAttributeId}</div>
-      </>
-    )
   }
 
   it('should set videoId to null', () => {
@@ -281,7 +271,7 @@ describe('CardWrapper', () => {
     }
     const { queryByRole } = render(
       <EditorProvider initialState={{ steps: [step] }}>
-        <EditorState />
+        <TestEditorState />
         <CardWrapper block={card}>
           <Container wrappers={{}} />
         </CardWrapper>
@@ -321,7 +311,7 @@ describe('CardWrapper', () => {
       }
       const { getByRole, getByText } = render(
         <EditorProvider initialState={{ steps: [step] }}>
-          <EditorState />
+          <TestEditorState />
           <CardWrapper block={card}>
             <Container wrappers={{}} />
           </CardWrapper>
@@ -370,7 +360,7 @@ describe('CardWrapper', () => {
       }
       const { queryByRole } = render(
         <EditorProvider initialState={{ steps: [step] }}>
-          <EditorState />
+          <TestEditorState />
           <CardWrapper block={card}>
             <Container wrappers={{}} />
           </CardWrapper>
