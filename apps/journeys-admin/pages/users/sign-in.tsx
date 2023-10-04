@@ -23,7 +23,9 @@ function SignInPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenAuthed: AuthAction.REDIRECT_TO_APP
-})(async ({ locale }) => {
+})(async ({ locale, req, query, params, resolvedUrl }) => {
+  console.log('sign in page ---', req.url, query, params, resolvedUrl)
+
   return {
     props: {
       ...(await serverSideTranslations(

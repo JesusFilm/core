@@ -91,7 +91,7 @@ export function CreateJourneyButton({
           },
           undefined,
           {
-            shallow: false
+            shallow: true
           }
         )
         .then(() => {
