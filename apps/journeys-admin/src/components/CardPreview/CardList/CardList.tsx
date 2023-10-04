@@ -289,7 +289,7 @@ const CardItem = ({
         <FramePortal width={380} height={560} dir={rtl ? 'rtl' : 'ltr'}>
           <ThemeProvider
             themeName={cardBlock?.themeName ?? ThemeName.base}
-            themeMode={cardBlock?.themeMode ?? ThemeMode.light}
+            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
             rtl={rtl}
             locale={locale}
           >
