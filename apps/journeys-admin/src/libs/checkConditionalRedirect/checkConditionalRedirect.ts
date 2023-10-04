@@ -16,9 +16,9 @@ export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
   }
 `
 
-type NextRedirect = Redirect & {
-  has?: Array<{ type: string; key: string; value: string }>
-}
+// interface NextRedirect extends Redirect {
+// has: [{type: string, key: string, value: string}]
+// }
 
 export async function checkConditionalRedirect(
   client: ApolloClient<NormalizedCacheObject>,
@@ -27,7 +27,7 @@ export async function checkConditionalRedirect(
   } = {},
   encodedRedirectPathname?: string,
   pageSource?: string
-): Promise<NextRedirect | undefined> {
+): Promise<Redirect | undefined> {
   const { data } = await client.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
@@ -36,31 +36,20 @@ export async function checkConditionalRedirect(
 
   const redirect =
     encodedRedirectPathname != null && encodedRedirectPathname !== ''
-      ? {
-          source: `/?redirect=${encodedRedirectPathname.substring(1)}`
-          // has: [
-          //   {
-          //     type: 'query',
-          //     key: 'redirect',
-          //     value: encodedRedirectPathname
-          //   }
-          // ]
-        }
-      : {}
+      ? `?redirect=${encodedRedirectPathname}`
+      : ''
 
   if (
     flags.termsAndConditions === true &&
     data.getJourneyProfile?.acceptedTermsAt == null
   ) {
     return {
-      ...redirect,
-      destination: '/users/terms-and-conditions',
+      destination: `/users/terms-and-conditions${redirect}`,
       permanent: false
     }
   } else if (flags.teams === true && data.teams.length === 0) {
     return {
-      ...redirect,
-      destination: '/teams/new',
+      destination: `/teams/new${redirect}`,
       permanent: false
     }
   }
