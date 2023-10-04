@@ -113,8 +113,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
     query,
     params,
     resolvedUrl,
-    req.headers.referer,
-    req.headers.host,
     encodedReferer
   )
 
