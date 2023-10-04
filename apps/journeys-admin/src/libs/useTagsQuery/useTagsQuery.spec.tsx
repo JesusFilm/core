@@ -6,7 +6,7 @@ import { Service } from '../../../__generated__/globalTypes'
 import { GET_TAGS, useTagsQuery } from './useTagsQuery'
 
 describe('useTagsQuery', () => {
-  it('should return the tags', async () => {
+  it('should return the parent and child tags', async () => {
     const result = jest.fn(() => ({
       data: {
         tags: [
@@ -14,7 +14,7 @@ describe('useTagsQuery', () => {
             __typename: 'Tag',
             id: '73cb38e3-06b6-4f34-b1e1-8d2859e510a1',
             service: Service.apiJourneys,
-            parentId: '73cb38e3-06b6-4f34-b1e1-8d2859e521b2',
+            parentId: null, // This is a parent tag
             name: [
               {
                 value: 'Acceptance',
@@ -25,8 +25,8 @@ describe('useTagsQuery', () => {
           {
             __typename: 'Tag',
             id: '29ceed4c-c2e7-4b0e-8643-74181b646784',
-            service: Service.apiVideos,
-            parentId: '29ceed4c-c2e7-4b0e-8643-74181b647895',
+            service: Service.apiJourneys,
+            parentId: '73cb38e3-06b6-4f34-b1e1-8d2859e510a1', // This is a child tag
             name: [
               {
                 value: 'Addiction',
@@ -38,7 +38,7 @@ describe('useTagsQuery', () => {
       }
     }))
 
-    renderHook(() => useTagsQuery(), {
+    const { result: hookResult } = renderHook(() => useTagsQuery(), {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
@@ -58,5 +58,37 @@ describe('useTagsQuery', () => {
     await act(
       async () => await waitFor(() => expect(result).toHaveBeenCalled())
     )
+
+    // Check that the parentTags array contains the parent tag
+    expect(hookResult.current.parentTags).toEqual([
+      {
+        __typename: 'Tag',
+        id: '73cb38e3-06b6-4f34-b1e1-8d2859e510a1',
+        service: Service.apiJourneys,
+        parentId: null,
+        name: [
+          {
+            value: 'Acceptance',
+            primary: true
+          }
+        ]
+      }
+    ])
+
+    // Check that the childTags array contains the child tag
+    expect(hookResult.current.childTags).toEqual([
+      {
+        __typename: 'Tag',
+        id: '29ceed4c-c2e7-4b0e-8643-74181b646784',
+        service: Service.apiJourneys,
+        parentId: '73cb38e3-06b6-4f34-b1e1-8d2859e510a1',
+        name: [
+          {
+            value: 'Addiction',
+            primary: true
+          }
+        ]
+      }
+    ])
   })
 })

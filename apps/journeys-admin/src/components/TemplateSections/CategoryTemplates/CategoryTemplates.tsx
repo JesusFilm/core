@@ -6,11 +6,13 @@ import { TemplateSection } from '../TemplateSection'
 interface CategoryTemplatesProps {
   id: string
   name: string
+  filtered: boolean
 }
 
 export function CategoryTemplates({
   id,
-  name
+  name,
+  filtered
 }: CategoryTemplatesProps): ReactElement {
   const { data } = useJourneysQuery({
     where: {
@@ -20,7 +22,8 @@ export function CategoryTemplates({
     }
   })
 
-  const renderTemplates = data?.journeys != null && data?.journeys.length >= 5
+  const renderTemplates =
+    filtered || (data?.journeys != null && data?.journeys.length >= 5)
 
   return (
     <>

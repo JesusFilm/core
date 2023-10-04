@@ -16,28 +16,30 @@ interface TagDetailsProps {
 export function TemplateSections(): ReactElement {
   const router = useRouter()
   const paramTags = router.query.tags
-  const { data: serverTags } = useTagsQuery()
+  const { childTags } = useTagsQuery()
 
-  function transformTagsValue(paramTags, serverTags): TagDetailsProps[] {
+  console.log(paramTags != null)
+
+  function transformTagsValue(paramTags, childTags): TagDetailsProps[] {
     if (paramTags != null) {
       const tagsArray = Array.isArray(paramTags) ? paramTags : [paramTags]
       return tagsArray.map((id) => ({
         id,
-        name: serverTags?.tags
-          .find((tag) => tag.id === id)
+        name: childTags
+          ?.find((tag) => tag.id === id)
           .name.find(({ primary }) => primary)?.value
       }))
     }
 
-    return serverTags?.tags.map((tag) => ({
+    return childTags?.map((tag) => ({
       id: tag.id,
       name: tag.name.find(({ primary }) => primary)?.value
     }))
   }
 
   const tags = useMemo(
-    () => transformTagsValue(paramTags, serverTags),
-    [paramTags, serverTags]
+    () => transformTagsValue(paramTags, childTags),
+    [paramTags, childTags]
   )
 
   return (
@@ -57,7 +59,12 @@ export function TemplateSections(): ReactElement {
         <FeaturedAndNewTemplates />
       )}
       {tags?.map(({ id, name }) => (
-        <CategoryTemplates key={`category-${id}`} id={id} name={name} />
+        <CategoryTemplates
+          key={`category-${id}`}
+          id={id}
+          name={name}
+          filtered={paramTags != null}
+        />
       ))}
     </Stack>
   )
