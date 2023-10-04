@@ -958,7 +958,9 @@ describe('ControlPanel', () => {
               variables: {
                 journeyId: 'journeyId',
                 stepId: 'uuid',
-                cardId: 'uuid'
+                cardId: 'uuid',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
               }
             },
             result: {
