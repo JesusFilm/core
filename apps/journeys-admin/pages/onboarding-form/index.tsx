@@ -27,7 +27,7 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Onboarding')} />
+      <NextSeo title={t('A Few Questions')} />
       <FormiumProvider
         value={{ submitText: 'Next', submitIcon: <ArrowRightIcon /> }}
       >
@@ -47,20 +47,18 @@ export const getServerSideProps = withAuthUserTokenSSR({
   if (AuthUser == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { flags, redirect, translations } = await initAndAuthApp({
+  const { flags, translations } = await initAndAuthApp({
     AuthUser,
     locale
   })
-
-  if (redirect != null) return { redirect }
 
   const form = await formiumClient.getFormBySlug('ns-onboarding-form')
 
   return {
     props: {
+      form,
       flags,
-      ...translations,
-      form
+      ...translations
     }
   }
 })

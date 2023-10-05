@@ -63,7 +63,8 @@ describe('checkConditionalRedirect', () => {
         id: 'profile.id',
         userId: 'user.id',
         acceptedTermsAt: null,
-        __typename: 'JourneyProfile'
+        __typename: 'JourneyProfile',
+        onboardingFormCompletedAt: null
       },
       teams: []
     }
@@ -81,13 +82,39 @@ describe('checkConditionalRedirect', () => {
     })
   })
 
+  it('should redirect if a new user has not completed onboarding form', async () => {
+    const data: GetJourneyProfileAndTeams = {
+      getJourneyProfile: {
+        id: 'profile.id',
+        userId: 'user.id',
+        acceptedTermsAt: '2023-10-07T00:00:00.000Z',
+        __typename: 'JourneyProfile',
+        onboardingFormCompletedAt: null
+      },
+      teams: []
+    }
+    const client = {
+      query: jest.fn().mockResolvedValue({ data })
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    expect(
+      await checkConditionalRedirect(client, {
+        termsAndConditions: true,
+        teams: true
+      })
+    ).toEqual({
+      destination: '/onboarding-form',
+      permanent: false
+    })
+  })
+
   it('redirect if teams empty', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',
         userId: 'user.id',
         acceptedTermsAt: '1970-01-01T00:00:00.000Z',
-        __typename: 'JourneyProfile'
+        __typename: 'JourneyProfile',
+        onboardingFormCompletedAt: null
       },
       teams: []
     }
@@ -111,7 +138,8 @@ describe('checkConditionalRedirect', () => {
         id: 'profile.id',
         userId: 'user.id',
         acceptedTermsAt: '1970-01-01T00:00:00.000Z',
-        __typename: 'JourneyProfile'
+        __typename: 'JourneyProfile',
+        onboardingFormCompletedAt: '1970-01-01T00:00:00.000Z'
       },
       teams: [
         {
