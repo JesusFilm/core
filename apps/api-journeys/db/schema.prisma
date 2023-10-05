@@ -337,6 +337,7 @@ model JourneyProfile {
   userId           String   @unique
   acceptedTermsAt  DateTime @default(now())
   lastActiveTeamId String?
+  formFilledAt     DateTime @default(now())
 
   @@index(userId)
 }

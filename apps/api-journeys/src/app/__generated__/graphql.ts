@@ -1177,6 +1177,7 @@ export class JourneyProfile {
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
     lastActiveTeamId?: Nullable<string>;
+    formFilledAt?: Nullable<DateTime>;
 }
 
 export class JourneyVisitor {
@@ -1458,6 +1459,8 @@ export abstract class IMutation {
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract journeyProfileFormFilled(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 

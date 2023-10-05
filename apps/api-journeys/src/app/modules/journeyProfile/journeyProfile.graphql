@@ -3,6 +3,7 @@ type JourneyProfile @key(fields: "id") {
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
+  formFilledAt: DateTime
 }
 
 extend type Query {
@@ -16,4 +17,5 @@ input JourneyProfileUpdateInput {
 extend type Mutation {
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
+  journeyProfileFormFilled: JourneyProfile!
 }
