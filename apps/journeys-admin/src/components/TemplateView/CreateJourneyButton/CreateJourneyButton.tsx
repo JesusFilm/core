@@ -84,15 +84,17 @@ export function CreateJourneyButton({
         </Button>
       ) : (
         <NoSsr>
-          <Button
-            LinkComponent="a"
-            href={`/users/sign-in?redirect=${encodeURIComponent(
-              `${window.location.origin}${router.asPath}?createNew=true`
-            )}`}
-            variant="contained"
-          >
-            {t('Use Template')}
-          </Button>
+          {typeof window !== 'undefined' && (
+            <Button
+              LinkComponent="a"
+              href={`/users/sign-in?redirect=${encodeURIComponent(
+                `${window.location.origin}${router.asPath}?createNew=true`
+              )}`}
+              variant="contained"
+            >
+              {t('Use Template')}
+            </Button>
+          )}
         </NoSsr>
       )}
       <CopyToTeamDialog
