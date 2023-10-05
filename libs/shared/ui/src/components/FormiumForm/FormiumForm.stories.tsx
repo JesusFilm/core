@@ -5,7 +5,6 @@ import { ComponentProps } from 'react'
 
 import { sharedUiConfig } from '../../libs/sharedUiConfig'
 
-import { Button } from './Button'
 import { Checkbox } from './Checkbox'
 import { ElementsWrapper } from './ElementsWrapper'
 import { FieldWrapper } from './FieldWrapper'
@@ -13,7 +12,9 @@ import { FooterWrapper } from './FooterWrapper'
 import { FormControl } from './FormControl'
 import { FormiumForm } from './FormiumForm'
 import { Header } from './Header'
+import { NextButton } from './NextButton'
 import { PageWrapper } from './PageWrapper'
+import { PreviousButton } from './PreviousButton'
 import { RadioGroup } from './RadioGroup'
 import { SubmitButton } from './SubmitButton'
 import { Textarea } from './Textarea'
@@ -32,8 +33,8 @@ interface FormStoryProps {
   radioGroupProps: ComponentProps<typeof RadioGroup>
   headerProps: ComponentProps<typeof Header>
   formControlProps: ComponentProps<typeof FormControl>
-  previousButtonProps: ComponentProps<typeof Button>
-  nextButtonProps: ComponentProps<typeof Button>
+  previousButtonProps: ComponentProps<typeof PreviousButton>
+  nextButtonProps: ComponentProps<typeof NextButton>
   submitButtonProps: ComponentProps<typeof SubmitButton>
 }
 
@@ -152,9 +153,9 @@ const Template: StoryObj<FormStoryProps> = {
         </ElementsWrapper>
         <FooterWrapper>
           <>
-            <Button {...args.previousButtonProps} />
+            <PreviousButton {...args.previousButtonProps} />
             <SubmitButton {...args.submitButtonProps} />
-            <Button {...args.nextButtonProps} />
+            <NextButton {...args.nextButtonProps} />
           </>
         </FooterWrapper>
       </>

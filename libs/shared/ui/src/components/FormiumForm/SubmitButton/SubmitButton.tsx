@@ -1,4 +1,4 @@
-import MuiButton from '@mui/material/Button'
+import Button from '@mui/material/Button'
 import { ComponentProps, ReactElement } from 'react'
 
 import { useFormium } from '../../../libs/FormiumProvider'
@@ -12,10 +12,8 @@ export function SubmitButton({
 }: ComponentProps<'button'>): ReactElement {
   const { submitText, submitIcon } = useFormium()
 
-  console.log(submitText)
-
   return (
-    <MuiButton
+    <Button
       variant="contained"
       type={type}
       disabled={disabled}
@@ -23,8 +21,9 @@ export function SubmitButton({
       fullWidth
       color="secondary"
       endIcon={submitIcon ?? <CheckBrokenIcon />}
+      sx={{ py: 3.25, borderRadius: '12px' }}
     >
       {submitText ?? children}
-    </MuiButton>
+    </Button>
   )
 }

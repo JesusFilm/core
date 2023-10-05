@@ -49,8 +49,8 @@ export function Header({ page: { title } }: HeaderProps): ReactElement {
       }}
     >
       <Stack spacing={2}>
-        <Typography variant="subtitle2">{title}</Typography>
-        <Typography variant="caption">Help us serve you better</Typography>
+        <Typography variant="h4">{title}</Typography>
+        <Typography variant="body1">Help us serve you better</Typography>
       </Stack>
     </Box>
   )
