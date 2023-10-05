@@ -1,19 +1,19 @@
 import { expect, test } from '@playwright/test'
 
 /* 
-Test a single video that doesn't have any chapters:
+Test a chapter:
 
 Navigate to home page 
-Take screenshot - so it will be tested all the times
+Take screenshot - so it will be tested all the times (This checks 'Jesus' is the first video)
 Click on 'Jesus Calms the Storm Jesus Calms the Storm Chapter
 Take screenshot - so it will be tested all the times
 Click on the Play button
 Wait for two minutes as this video is for 1.59 minutes
 Take screenshot - so it will be tested all the times
 */
-test('Test single video', async ({ page }) => {
-  // 8 mins timeout for this test as it got videos (later we can use 10 seconds videos)
-  test.setTimeout(8 * 60 * 1000)
+test('Chapter', async ({ page }) => {
+  // Set test time out as it has video
+  test.setTimeout(7 * 60 * 1000)
 
   await page.goto('/')
 
@@ -21,9 +21,9 @@ test('Test single video', async ({ page }) => {
   const url = page.url()
   console.log('Current URL:', url)
 
-  // Screenshot test are not stable - so give a hard wait and try
+  // video tiles aren't loading upon right away and there is no event to say they are loaded. So the only option is to hard wait
   // eslint-disable-next-line
-  await page.waitForTimeout(1 * 60 * 1000)
+  await page.waitForTimeout(8 * 1000)
   // Note: all video tiles are not fully loading
   await expect(page).toHaveScreenshot('home-page.png', {
     animations: 'disabled',
@@ -37,17 +37,19 @@ test('Test single video', async ({ page }) => {
     })
     .click()
 
-  // Screenshot test are not stable - so give a hard wait and try
   // eslint-disable-next-line
-  await page.waitForTimeout(1 * 60 * 1000)
+  await page.waitForTimeout(8 * 1000)
   await expect(page).toHaveScreenshot('before-video.png', {
     animations: 'disabled',
     fullPage: true
   })
 
+  // check it's navigated to the correct URL
+  await expect(page).toHaveURL('/watch/jesus-calms-the-storm.html/english.html')
+
   await page.getByRole('button', { name: 'Play' }).click()
 
-  // wait for 3 minutes to see if the video is complete - a quick way of finding without writing much code for now
+  // wait for 3 minutes to see if the video until there are some events thta can say the state of the video
   // later find a way to check if the video is complete and check if the video is playing. Also use 10 seconds video
   // eslint-disable-next-line
   await page.waitForTimeout(3 * 60 * 1000)
