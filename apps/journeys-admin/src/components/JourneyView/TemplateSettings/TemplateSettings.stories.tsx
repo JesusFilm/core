@@ -46,13 +46,6 @@ const Template: StoryObj<
 export const Default = {
   ...Template,
   args: {
-    journey: defaultJourney
-  }
-}
-
-export const TemplateTitleDescription = {
-  ...Template,
-  args: {
     journey: {
       ...defaultJourney,
       title: 'Template Heading',
