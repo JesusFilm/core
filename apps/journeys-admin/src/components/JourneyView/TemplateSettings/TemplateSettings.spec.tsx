@@ -56,12 +56,12 @@ describe('TemplateSettings', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByText('Edit Title and Description')).toBeInTheDocument()
+    expect(getByText('Template Settings')).toBeInTheDocument()
     await waitFor(() => {
       fireEvent.click(getByRole('button', { name: 'Cancel' }))
     })
     await waitFor(() => {
-      expect(queryByText('Edit Title and Description')).not.toBeInTheDocument()
+      expect(queryByText('Template Settings')).not.toBeInTheDocument()
     })
   })
 })
