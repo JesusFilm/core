@@ -1,3 +1,4 @@
+import { NoSsr } from '@mui/base'
 import Button from '@mui/material/Button'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
@@ -75,44 +76,25 @@ export function CreateJourneyButton({
     }
   }, [router, query, handleCreateJourney])
 
-  const handleCheckSignIn = (): void => {
-    if (signedIn) {
-      setOpenTeamDialog(true)
-    } else {
-      void router
-        .push(
-          // `/users/sign-in?redirect=${
-          //   window.location.origin + router.asPath
-          // }?createNew=true`,
-          // {
-          //   pathname: '/users/sign-in',
-          //   query: {
-          //     redirect: `${router.asPath}?createNew=true`
-          //   }
-          // },
-          {
-            pathname: '/users/sign-in',
-            query: {
-              redirect: `${
-                window.location.origin + router.asPath
-              }?createNew=true`
-            }
-          },
-          undefined,
-          {
-            shallow: true
-          }
-        )
-        .then(() => {
-          setOpenTeamDialog(true)
-        })
-    }
-  }
   return (
     <>
-      <Button onClick={handleCheckSignIn} variant="contained">
-        {t('Use Template')}
-      </Button>
+      {signedIn ? (
+        <Button onClick={() => setOpenTeamDialog(true)} variant="contained">
+          {t('Use Template')}
+        </Button>
+      ) : (
+        <NoSsr>
+          <Button
+            LinkComponent="a"
+            href={`/users/sign-in?redirect=${encodeURIComponent(
+              `${window.location.origin}${router.asPath}?createNew=true`
+            )}`}
+            variant="contained"
+          >
+            {t('Use Template')}
+          </Button>
+        </NoSsr>
+      )}
       <CopyToTeamDialog
         submitLabel="Add"
         title="Add Journey to Team"

@@ -29,14 +29,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  console.log(
-    't&c page ---',
-    req.url,
-    query,
-    params,
-    resolvedUrl,
-    req.headers.referer
-  )
+  console.log('terms-and-conditions page ---', query, params, resolvedUrl)
 
   const { apolloClient, redirect, flags, translations } = await initAndAuthApp({
     user,

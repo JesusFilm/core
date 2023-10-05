@@ -96,36 +96,14 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  let encodedReferer
-
-  // Vercel strips the redirect query after redirecting from sign-in
-  // Use referer if present to get redirect pathname
-  if (req.headers.host != null && req.headers.referer != null) {
-    const protocol = req.headers.referer.split(req.headers.host)[0]
-    encodedReferer = req.headers.referer.split(
-      `?redirect=${encodeURIComponent(protocol + req.headers.host)}`
-    )[1]
-  }
-
-  console.log(
-    'landing page ---',
-    req.url,
-    query,
-    params,
-    resolvedUrl,
-    encodedReferer
-  )
+  console.log('root page ---', query, params, resolvedUrl)
 
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     encodedRedirectPathname:
-      encodedReferer != null
-        ? encodedReferer
-        : resolvedUrl != null
-        ? encodeURIComponent(resolvedUrl)
-        : undefined,
-    pageSource: 'landing-page'
+      resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
+    pageSource: 'root-page'
   })
 
   if (redirect != null) return { redirect }
