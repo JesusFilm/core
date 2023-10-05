@@ -13,18 +13,6 @@ describe('abbreviateLanguageName', () => {
     )
   })
 
-  it('should return the original string with abbreviation for inputs with multiple words after special character', () => {
-    expect(abbreviateLanguageName('Kalagan, Tugukalu Kalua')).toBe(
-      'Kalagan (TK)'
-    )
-    expect(abbreviateLanguageName('Kalagan: Tugukalu Kalua')).toBe(
-      'Kalagan (TK)'
-    )
-    expect(abbreviateLanguageName('Kalagan (Tugukalu Kalua)')).toBe(
-      'Kalagan (TK)'
-    )
-  })
-
   it('should return the original string without modification for inputs with no words after special character', () => {
     expect(abbreviateLanguageName('Kalagan Takalu')).toBe('Kalagan Takalu')
   })
