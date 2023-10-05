@@ -45,9 +45,8 @@ import {
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
-
-export const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
 @Resolver('Journey')
 export class JourneyResolver {
@@ -177,11 +176,16 @@ export class JourneyResolver {
   async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
     if (where?.template != null) filter.template = where.template
-    if (where?.featured === true) filter.featuredAt = { not: null }
+    if (where?.featured != null)
+      filter.featuredAt = where?.featured ? { not: null } : null
     if (where?.ids != null) filter.id = { in: where?.ids }
     if (where?.tagIds != null) filter.tagIds = { hasEvery: where?.tagIds }
+
     return await this.prismaService.journey.findMany({
-      where: filter
+      where: filter,
+      take: where?.limit ?? undefined,
+      orderBy:
+        where?.orderByRecent === true ? { publishedAt: 'desc' } : undefined
     })
   }
 
@@ -407,7 +411,8 @@ export class JourneyResolver {
                   'publishedAt',
                   'hostId',
                   'teamId',
-                  'createdAt'
+                  'createdAt',
+                  'strategySlug'
                 ]),
                 id: duplicateJourneyId,
                 slug,

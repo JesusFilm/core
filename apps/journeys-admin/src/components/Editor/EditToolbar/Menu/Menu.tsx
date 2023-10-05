@@ -1,9 +1,4 @@
 import { gql, useQuery } from '@apollo/client'
-import DescriptionIcon from '@mui/icons-material/Description'
-import EditIcon from '@mui/icons-material/Edit'
-import MoreVert from '@mui/icons-material/MoreVert'
-import SettingsIcon from '@mui/icons-material/Settings'
-import VisibilityIcon from '@mui/icons-material/Visibility'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -12,11 +7,16 @@ import { ReactElement, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import File5Icon from '@core/shared/ui/icons/File5'
+import MoreIcon from '@core/shared/ui/icons/More'
+import SettingsIcon from '@core/shared/ui/icons/Settings'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
-import { TitleDescriptionDialog } from '../../../JourneyView/TitleDescription/TitleDescriptionDialog'
+import { TemplateSettingsDialog } from '../../../JourneyView/TemplateSettings/TemplateSettingsDialog'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
 
@@ -50,7 +50,7 @@ export function Menu(): ReactElement {
 
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
-  const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
+  const [showTemplateSettingsDialog, setShowTemplateSettingsDialog] =
     useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -78,12 +78,12 @@ export function Menu(): ReactElement {
     setAnchorEl(null)
   }
 
-  const handleUpdateTitleDescription = (): void => {
-    setShowTitleDescriptionDialog(true)
+  const handleUpdateTemplateSettings = (): void => {
+    setShowTemplateSettingsDialog(true)
   }
 
-  const handleCloseTitleDescription = (): void => {
-    setShowTitleDescriptionDialog(false)
+  const handleCloseTemplateSettings = (): void => {
+    setShowTemplateSettingsDialog(false)
     setAnchorEl(null)
   }
 
@@ -97,7 +97,7 @@ export function Menu(): ReactElement {
         >
           <MenuItem
             label="Preview"
-            icon={<VisibilityIcon />}
+            icon={<EyeOpenIcon />}
             openInNew
             onClick={handleCloseMenu}
           />
@@ -123,7 +123,7 @@ export function Menu(): ReactElement {
         >
           <MenuItem
             label="Preview"
-            icon={<VisibilityIcon />}
+            icon={<EyeOpenIcon />}
             openInNew
             onClick={handleCloseMenu}
           />
@@ -152,7 +152,7 @@ export function Menu(): ReactElement {
         onClick={handleShowMenu}
         disabled={journey == null}
       >
-        <MoreVert />
+        <MoreIcon />
       </IconButton>
       <MuiMenu
         id="edit-journey-actions"
@@ -171,20 +171,20 @@ export function Menu(): ReactElement {
         {journey?.template === true && isPublisher != null && (
           <MenuItem
             label="Description"
-            icon={<EditIcon />}
-            onClick={handleUpdateTitleDescription}
+            icon={<Edit2Icon />}
+            onClick={handleUpdateTemplateSettings}
           />
         )}
         {journey?.template !== true && (
           <>
             <MenuItem
               label="Title"
-              icon={<EditIcon />}
+              icon={<Edit2Icon />}
               onClick={handleUpdateTitle}
             />
             <MenuItem
               label="Description"
-              icon={<DescriptionIcon />}
+              icon={<File5Icon />}
               onClick={handleUpdateDescription}
             />
           </>
@@ -209,9 +209,9 @@ export function Menu(): ReactElement {
         open={showDescriptionDialog}
         onClose={handleCloseDescription}
       />
-      <TitleDescriptionDialog
-        open={showTitleDescriptionDialog}
-        onClose={handleCloseTitleDescription}
+      <TemplateSettingsDialog
+        open={showTemplateSettingsDialog}
+        onClose={handleCloseTemplateSettings}
       />
     </>
   )

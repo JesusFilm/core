@@ -662,6 +662,7 @@ type Journey
   template: Boolean
   host: Host
   team: Team
+  strategySlug: String
   tags: [Tag!]!
   userJourneys: [UserJourney!]
 }
@@ -697,6 +698,7 @@ type JourneyProfile
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
+  onboardingFormCompletedAt: DateTime
 }
 
 input JourneyProfileUpdateInput
@@ -712,6 +714,8 @@ input JourneysFilter
   template: Boolean
   ids: [ID!]
   tagIds: [ID!]
+  limit: Int
+  orderByRecent: Boolean
 }
 
 enum JourneysReportType
@@ -752,6 +756,7 @@ input JourneyUpdateInput
   seoTitle: String
   seoDescription: String
   hostId: String
+  strategySlug: String
   tagIds: [ID!]
 }
 
@@ -1171,6 +1176,7 @@ type Mutation
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
+  journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
@@ -1483,6 +1489,17 @@ enum SegmindModel
   tinysd1__5_txt2img @join__enumValue(graph: MEDIA)
 }
 
+enum Service
+  @join__type(graph: TAGS)
+{
+  apiJourneys @join__enumValue(graph: TAGS)
+  apiLanguages @join__enumValue(graph: TAGS)
+  apiMedia @join__enumValue(graph: TAGS)
+  apiTags @join__enumValue(graph: TAGS)
+  apiUsers @join__enumValue(graph: TAGS)
+  apiVideos @join__enumValue(graph: TAGS)
+}
+
 type SignUpBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -1671,6 +1688,7 @@ type Tag
   id: ID!
   name: [Translation!]! @join__field(graph: TAGS)
   parentId: ID @join__field(graph: TAGS)
+  service: Service @join__field(graph: TAGS)
 }
 
 type Team

@@ -4,7 +4,8 @@ import Stack from '@mui/material/Stack'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import UserProfiledAddIcon from '@core/shared/ui/icons/UserProfileAdd'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
+import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/GetJourney'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
@@ -101,7 +102,7 @@ export function HostAvatarsButton({
               : avatarStyles
           }
         >
-          {host?.src1 == null && host?.src2 == null && <UserProfiledAddIcon />}
+          {host?.src1 == null && host?.src2 == null && <UserProfile2Icon />}
         </Avatar>
         <Avatar
           data-testid="avatar2"
@@ -117,9 +118,7 @@ export function HostAvatarsButton({
               : avatarStyles
           }
         >
-          {(host?.src1 == null || host?.src2 == null) && (
-            <UserProfiledAddIcon />
-          )}
+          {(host?.src1 == null || host?.src2 == null) && <Plus2Icon />}
         </Avatar>
       </AvatarGroup>
       <ImageLibrary

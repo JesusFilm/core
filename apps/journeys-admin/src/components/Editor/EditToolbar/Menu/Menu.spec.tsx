@@ -18,6 +18,11 @@ import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('EditToolbar Menu', () => {
   it('should disable duplicate button when video block is selected', async () => {
     const { getByRole } = render(
@@ -249,7 +254,7 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(getByTestId('MoreVertIcon'))
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
     fireEvent.click(getByRole('button'))
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
@@ -285,7 +290,7 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(getByTestId('MoreVertIcon'))
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
     fireEvent.click(getByRole('button'))
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()

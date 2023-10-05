@@ -24,13 +24,13 @@ describe('VideoSearch', () => {
     const { getByTestId } = render(
       <VideoSearch onChange={jest.fn()} icon="search" />
     )
-    expect(getByTestId('SearchIcon')).toBeInTheDocument()
+    expect(getByTestId('Search1Icon')).toBeInTheDocument()
   })
 
   it('uses the link icon if tab is youtube', () => {
     const { getByTestId } = render(
       <VideoSearch onChange={jest.fn()} icon="link" />
     )
-    expect(getByTestId('LinkRoundedIcon')).toBeInTheDocument()
+    expect(getByTestId('LinkIcon')).toBeInTheDocument()
   })
 })

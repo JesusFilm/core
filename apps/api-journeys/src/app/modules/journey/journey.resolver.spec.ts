@@ -27,15 +27,13 @@ import {
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { UserRoleService } from '../userRole/userRole.service'
 
-import {
-  ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
-  JourneyResolver
-} from './journey.resolver'
+import { JourneyResolver } from './journey.resolver'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -82,6 +80,7 @@ describe('JourneyResolver', () => {
     seoDescription: null,
     template: false,
     hostId: null,
+    strategySlug: null,
     tagIds: []
   }
   const journeyWithUserTeam = {
@@ -500,6 +499,20 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('returns published journeys where featuredAt is false', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(await resolver.journeys({ featured: false })).toEqual([
+        journey,
+        journey
+      ])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published',
+          featuredAt: null
+        }
+      })
+    })
+
     it('returns published journeys where template', async () => {
       prismaService.journey.findMany.mockResolvedValueOnce([
         journeyWithTemplate,
@@ -553,6 +566,31 @@ describe('JourneyResolver', () => {
           tagIds: { hasEvery: ['tagId1', 'tagId2'] },
           status: 'published'
         }
+      })
+    })
+
+    it('returns limited number of published journeys', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(await resolver.journeys({ limit: 2 })).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published'
+        },
+        take: 2
+      })
+    })
+
+    it('returns published journeys ordered by recent', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(await resolver.journeys({ orderByRecent: true })).toEqual([
+        journey,
+        journey
+      ])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published'
+        },
+        orderBy: { publishedAt: 'desc' }
       })
     })
   })
@@ -892,7 +930,8 @@ describe('JourneyResolver', () => {
             'primaryImageBlockId',
             'publishedAt',
             'teamId',
-            'createdAt'
+            'createdAt',
+            'strategySlug'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -946,7 +985,8 @@ describe('JourneyResolver', () => {
           'primaryImageBlockId',
           'publishedAt',
           'teamId',
-          'createdAt'
+          'createdAt',
+          'strategySlug'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1047,7 +1087,8 @@ describe('JourneyResolver', () => {
             'primaryImageBlockId',
             'publishedAt',
             'teamId',
-            'createdAt'
+            'createdAt',
+            'strategySlug'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1244,7 +1285,8 @@ describe('JourneyResolver', () => {
         languageId: '529',
         slug: 'new-slug',
         hostId: 'hostId',
-        tagIds: ['tagId1']
+        tagIds: ['tagId1'],
+        strategySlug: 'https://docs.google.com/presentation/slidesId'
       })
 
       expect(prismaService.journey.update).toHaveBeenCalledWith({
@@ -1254,7 +1296,8 @@ describe('JourneyResolver', () => {
           languageId: '529',
           slug: 'new-slug',
           hostId: 'hostId',
-          tagIds: ['tagId1']
+          tagIds: ['tagId1'],
+          strategySlug: 'https://docs.google.com/presentation/slidesId'
         }
       })
     })
