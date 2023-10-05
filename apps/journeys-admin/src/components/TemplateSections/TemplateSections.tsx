@@ -26,7 +26,8 @@ export function TemplateSections(): ReactElement {
       const tagsArray = Array.isArray(paramTags) ? paramTags : [paramTags]
       setTagsFilter(tagsArray)
     }
-  }, [paramTags])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function transformTagsValue(tagsFilter, childTags): TagDetailsProps[] {
     if (tagsFilter.length > 0) {

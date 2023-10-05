@@ -22,8 +22,12 @@ export function CategoryTemplates({
     }
   })
 
+  function getJourneysLength(length): boolean {
+    return data?.journeys != null && data?.journeys.length > length
+  }
+
   const renderTemplates =
-    filtered === true || (data?.journeys != null && data?.journeys.length >= 5)
+    (filtered === true && getJourneysLength(0)) || getJourneysLength(4)
 
   return (
     <>

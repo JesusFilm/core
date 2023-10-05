@@ -168,4 +168,39 @@ describe('CategoryTemplates', () => {
     )
     expect(getAllByTestId(/journey-/)).toHaveLength(3)
   })
+
+  it('should not render a category if it does not have any templates', async () => {
+    const { queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_JOURNEYS,
+              variables: {
+                where: {
+                  template: true,
+                  orderByRecent: true,
+                  tagIds: ['767561ca-3f63-46f4-b2a0-3a37f891632a']
+                }
+              }
+            },
+            result: {
+              data: {
+                journeys: []
+              }
+            }
+          }
+        ]}
+      >
+        <CategoryTemplates
+          id="767561ca-3f63-46f4-b2a0-3a37f891632a"
+          name="Easter"
+          filtered
+        />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(queryByRole('heading', { name: 'Easter' })).not.toBeInTheDocument()
+    )
+  })
 })
