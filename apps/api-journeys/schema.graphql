@@ -261,7 +261,7 @@ extend type Mutation {
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
-  journeyProfileFormFilled: JourneyProfile!
+  journeyProfileOnboardingFormComplete: JourneyProfile!
   teamCreate(input: TeamCreateInput): Team!
   teamUpdate(id: ID!, input: TeamUpdateInput): Team!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
@@ -1872,7 +1872,7 @@ type JourneyProfile
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
-  formFilledAt: DateTime
+  onboardingFormCompletedAt: DateTime
 }
 
 input JourneyProfileUpdateInput {

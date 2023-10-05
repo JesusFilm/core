@@ -333,11 +333,11 @@ model UserRole {
 }
 
 model JourneyProfile {
-  id               String    @id @default(uuid())
-  userId           String    @unique
-  acceptedTermsAt  DateTime  @default(now())
-  lastActiveTeamId String?
-  formFilledAt     DateTime?
+  id                        String    @id @default(uuid())
+  userId                    String    @unique
+  acceptedTermsAt           DateTime  @default(now())
+  lastActiveTeamId          String?
+  onboardingFormCompletedAt DateTime?
 
   @@index(userId)
 }

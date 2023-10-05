@@ -58,14 +58,14 @@ export class JourneyProfileResolver {
 
   @Mutation()
   @UseGuards(AppCaslGuard)
-  async journeyProfileFormFilled(
+  async journeyProfileOnboardingFormComplete(
     @CurrentUserId() userId: string
   ): Promise<JourneyProfile> {
     const profile = await this.getJourneyProfile(userId)
 
     return await this.prismaService.journeyProfile.update({
       where: { id: profile?.id },
-      data: { formFilledAt: new Date() }
+      data: { onboardingFormCompletedAt: new Date() }
     })
   }
 }

@@ -698,7 +698,7 @@ type JourneyProfile
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
-  formFilledAt: DateTime
+  onboardingFormCompletedAt: DateTime
 }
 
 input JourneyProfileUpdateInput
@@ -1176,7 +1176,7 @@ type Mutation
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
-  journeyProfileFormFilled: JourneyProfile! @join__field(graph: JOURNEYS)
+  journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
