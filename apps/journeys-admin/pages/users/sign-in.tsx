@@ -19,11 +19,7 @@ function SignInPage(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR({
   whenAuthed: AuthAction.REDIRECT_TO_APP
-})(async ({ locale, req, query, params, resolvedUrl }) => {
-  console.log('sign in page ---', req.url, query, params, resolvedUrl)
-
-  // TODO: See if we can dynamically update appPageUrl option of withAuthUserToken using query value.
-
+})(async ({ locale }) => {
   return {
     props: {
       ...(await serverSideTranslations(

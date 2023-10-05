@@ -65,38 +65,42 @@ export function CreateJourneyButton({
     [journey, journeyDuplicate, router]
   )
 
+  const handleCheckSignIn = (): void => {
+    if (signedIn) {
+      setOpenTeamDialog(true)
+    } else {
+      void router
+        .push(
+          {
+            pathname: '/users/sign-in',
+            query: {
+              redirect: `${
+                window.location.origin + router.asPath
+              }?createNew=true`
+            }
+          },
+          undefined,
+          {
+            shallow: true
+          }
+        )
+        .then(() => {
+          setOpenTeamDialog(true)
+        })
+    }
+  }
+
   useEffect(() => {
     if (router.query.createNew === 'true') {
       setOpenTeamDialog(true)
-
-      // const teams = query?.data?.teams ?? []
-      // if (teams.length === 1) {
-      //   void handleCreateJourney(teams[0].id)
-      // }
     }
   }, [router, query, handleCreateJourney])
 
   return (
     <>
-      {signedIn ? (
-        <Button onClick={() => setOpenTeamDialog(true)} variant="contained">
-          {t('Use Template')}
-        </Button>
-      ) : (
-        <NoSsr>
-          {typeof window !== 'undefined' && (
-            <Button
-              LinkComponent="a"
-              href={`/users/sign-in?redirect=${encodeURIComponent(
-                `${window.location.origin}${router.asPath}?createNew=true`
-              )}`}
-              variant="contained"
-            >
-              {t('Use Template')}
-            </Button>
-          )}
-        </NoSsr>
-      )}
+      <Button onClick={handleCheckSignIn} variant="contained">
+        {t('Use Template')}
+      </Button>
       <CopyToTeamDialog
         submitLabel="Add"
         title="Add Journey to Team"

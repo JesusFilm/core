@@ -74,7 +74,6 @@ export function TeamOnboarding(): ReactElement {
               >
                 <Button
                   onClick={async () => {
-                    console.log('router.query.redirect', router.query.redirect)
                     const redirect =
                       router.query.redirect != null
                         ? new URL(
@@ -83,8 +82,6 @@ export function TeamOnboarding(): ReactElement {
                             }`
                           )
                         : '/?onboarding=true'
-
-                    console.log('redirect', redirect)
                     await router.push(redirect)
                   }}
                 >
