@@ -19,9 +19,13 @@ export function FormControl({
   return (
     <>
       <Box data-testid="FieldHeader" sx={{ pb: 4 }}>
-        {label != null && <Typography variant="subtitle1">{label}</Typography>}
+        {label != null && (
+          <Typography variant="h6" gutterBottom>
+            {label}
+          </Typography>
+        )}
         {description != null && (
-          <Typography variant="body1">{description}</Typography>
+          <Typography variant="body2">{description}</Typography>
         )}
       </Box>
       {children}
