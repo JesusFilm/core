@@ -1,7 +1,7 @@
-name: watch-monitoring-every10mins
+name: watch-monitoring-every5mins
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/5 * * * *'
   push:
     branches: [main, master]
   pull_request:
