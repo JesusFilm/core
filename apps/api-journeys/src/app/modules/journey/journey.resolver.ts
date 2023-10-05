@@ -45,9 +45,8 @@ import {
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
-
-export const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
 @Resolver('Journey')
 export class JourneyResolver {
