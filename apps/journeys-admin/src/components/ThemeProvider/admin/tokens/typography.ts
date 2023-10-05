@@ -79,8 +79,7 @@ const typography = {
   subtitle3: {
     fontSize: 14,
     fontWeight: 600,
-    lineHeight: '19px',
-    letterSpacing: 0.5
+    lineHeight: '19px'
   },
   body1: {
     fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
@@ -102,11 +101,10 @@ const typography = {
     textTransform: 'uppercase'
   },
   overline2: {
-    fontSize: 10,
     fontWeight: 600,
+    fontSize: 10,
     lineHeight: '16px',
     letterSpacing: 1,
-    marginBottom: '4px',
     textTransform: 'uppercase'
   },
   caption: {
