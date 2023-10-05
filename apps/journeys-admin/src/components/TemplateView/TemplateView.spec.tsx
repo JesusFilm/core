@@ -5,8 +5,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields } from '../../../__generated__/JourneyFields'
 import { defaultJourney } from '../JourneyView/data'
-
-import { TemplateView } from './TempateView'
+import { TemplateView } from './TemplateView'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
