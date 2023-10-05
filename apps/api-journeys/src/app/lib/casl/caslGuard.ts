@@ -3,9 +3,8 @@ import { Reflector } from '@nestjs/core'
 
 import { CaslFactory, CaslGuard } from '@core/nest/common/CaslAuthModule'
 
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../modules/journey/journey.resolver'
 import { PrismaService } from '../prisma.service'
-
-const ERROR_INVALID_UPSERT_INVOCATION = 'P2014'
 
 @Injectable()
 export class AppCaslGuard extends CaslGuard {
@@ -26,7 +25,7 @@ export class AppCaslGuard extends CaslGuard {
       })
       return userRole.roles
     } catch (err) {
-      if (err.code !== ERROR_INVALID_UPSERT_INVOCATION) {
+      if (err.code !== ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
         throw err
       }
     }

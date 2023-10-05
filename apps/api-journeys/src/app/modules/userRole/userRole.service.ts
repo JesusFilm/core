@@ -3,8 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { UserRole } from '.prisma/api-journeys-client'
 
 import { PrismaService } from '../../lib/prisma.service'
-
-const ERROR_INVALID_UPSERT_INVOCATION = 'P2014'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../journey/journey.resolver'
 
 @Injectable()
 export class UserRoleService {
@@ -18,7 +17,7 @@ export class UserRoleService {
         update: {}
       })
     } catch (err) {
-      if (err.code !== ERROR_INVALID_UPSERT_INVOCATION) {
+      if (err.code !== ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
         throw err
       }
     }

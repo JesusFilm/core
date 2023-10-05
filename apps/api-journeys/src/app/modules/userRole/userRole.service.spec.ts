@@ -3,6 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { Role } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../journey/journey.resolver'
 
 import { UserRoleService } from './userRole.service'
 
@@ -48,7 +49,9 @@ describe('userRoleService', () => {
     })
 
     it('should retry if error', async () => {
-      prismaService.userRole.upsert.mockRejectedValueOnce({ code: 'P2014' })
+      prismaService.userRole.upsert.mockRejectedValueOnce({
+        code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+      })
       prismaService.userRole.upsert.mockResolvedValue(user)
       expect(await service.getUserRoleById('1')).toEqual(user)
       expect(prismaService.userRole.upsert).toHaveBeenCalledWith({
