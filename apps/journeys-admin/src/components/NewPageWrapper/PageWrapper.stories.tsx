@@ -187,7 +187,7 @@ export const Complete = {
         Bottom Panel Content - no padding since TabPanels usually go here
       </Typography>
     ),
-    authUser: {
+    user: {
       displayName: 'Amin One',
       photoURL: 'https://bit.ly/3Gth4Yf',
       email: 'amin@email.com',
