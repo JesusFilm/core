@@ -3,7 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { Role } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
-import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../journey/journey.resolver'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 
 import { UserRoleService } from './userRole.service'
 

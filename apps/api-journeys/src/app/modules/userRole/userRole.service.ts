@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { UserRole } from '.prisma/api-journeys-client'
 
 import { PrismaService } from '../../lib/prisma.service'
-import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../journey/journey.resolver'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 
 @Injectable()
 export class UserRoleService {

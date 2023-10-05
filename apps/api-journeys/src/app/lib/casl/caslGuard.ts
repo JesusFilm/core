@@ -3,8 +3,8 @@ import { Reflector } from '@nestjs/core'
 
 import { CaslFactory, CaslGuard } from '@core/nest/common/CaslAuthModule'
 
-import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../modules/journey/journey.resolver'
 import { PrismaService } from '../prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../prismaErrors'
 
 @Injectable()
 export class AppCaslGuard extends CaslGuard {
