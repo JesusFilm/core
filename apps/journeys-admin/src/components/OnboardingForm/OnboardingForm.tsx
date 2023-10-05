@@ -45,7 +45,12 @@ export function OnboardingForm({
         justifyContent: 'center'
       }}
     >
-      <FormiumForm form={form} userId={authUser.id} email={authUser.email} />
+      <FormiumForm
+        form={form}
+        userId={authUser.id}
+        email={authUser.email}
+        handleClick={handleClick}
+      />
     </Box>
   )
 }

@@ -45,12 +45,14 @@ interface FormiumFormProps {
   form: Form
   userId: string | null
   email: string | null
+  handleClick: () => Promise<void>
 }
 
 export function FormiumForm({
   form,
   userId,
-  email
+  email,
+  handleClick
 }: FormiumFormProps): ReactElement {
   async function handleSubmit(values: FormikValues): Promise<void> {
     await formiumClient.submitForm(form.slug, {
@@ -58,6 +60,7 @@ export function FormiumForm({
       hiddenUserId: userId,
       hiddenUserEmail: email
     })
+    await handleClick()
   }
 
   return (
