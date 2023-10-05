@@ -27,7 +27,7 @@ initAuth()
 const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
-  AuthUserSerialized?: string
+  userSerialized?: string
   flags?: { [key: string]: boolean }
 }> & {
   pageProps: SSRConfig
@@ -41,8 +41,8 @@ function JourneysAdminApp({
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const token =
-    (pageProps.AuthUserSerialized != null
-      ? (JSON.parse(pageProps.AuthUserSerialized)._token as string | null)
+    (pageProps.userSerialized != null
+      ? (JSON.parse(pageProps.userSerialized)._token as string | null)
       : '') ?? ''
   const apolloClient = useApollo(token)
 
