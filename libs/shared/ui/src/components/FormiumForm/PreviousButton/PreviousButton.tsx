@@ -9,7 +9,13 @@ export function PreviousButton({
   disabled
 }: ComponentProps<'button'>): ReactElement {
   return (
-    <IconButton onClick={onClick} disabled={disabled} type={type}>
+    <IconButton
+      onClick={onClick}
+      disabled={disabled}
+      type={type}
+      sx={{ minWidth: '12px' }}
+      size="large"
+    >
       <ArrowLeftIcon fontSize="inherit" />
     </IconButton>
   )
