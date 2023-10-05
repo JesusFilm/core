@@ -80,7 +80,7 @@ model ChatButton {
   platform  ChatPlatform?
   journey   Journey       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
-  @@index([journeyId])
+  @@index(journeyId)
 }
 
 model Event {
@@ -110,7 +110,10 @@ model Event {
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
 
-  @@index([id, journeyId, visitorId, blockId, userId])
+  @@index(journeyId)
+  @@index(visitorId)
+  @@index(blockId)
+  @@index(userId)
 }
 
 model Visitor {
@@ -140,7 +143,11 @@ model Visitor {
   journeyVisitors           JourneyVisitor[]
   team                      Team             @relation(fields: [teamId], references: [id])
 
-  @@index([id, teamId, createdAt, userId, status, countryCode])
+  @@index(teamId)
+  @@index(createdAt(sort: Desc))
+  @@index(userId)
+  @@index(status)
+  @@index(countryCode)
 }
 
 model Host {
@@ -153,6 +160,8 @@ model Host {
   src2      String?
   updatedAt DateTime  @default(now()) @updatedAt
   journeys  Journey[]
+
+  @@index(teamId)
 }
 
 model JourneyVisitor {
@@ -175,7 +184,14 @@ model JourneyVisitor {
   events                    Event[]
 
   @@unique([journeyId, visitorId])
-  @@index([journeyId, visitorId, createdAt, lastChatStartedAt, lastRadioQuestion, lastTextResponse, activityCount, duration])
+  @@index(createdAt(sort: Desc))
+  @@index(journeyId)
+  @@index(visitorId)
+  @@index(lastChatStartedAt)
+  @@index(lastRadioQuestion)
+  @@index(lastTextResponse)
+  @@index(activityCount(sort: Desc))
+  @@index(duration(sort: Desc))
 }
 
 model Team {
@@ -190,7 +206,7 @@ model Team {
   hosts           Host[]
   UserTeamInvites UserTeamInvite[]
 
-  @@index([title])
+  @@index(title)
 }
 
 model UserTeam {
@@ -203,6 +219,8 @@ model UserTeam {
   updatedAt DateTime     @updatedAt
 
   @@unique([teamId, userId])
+  @@index(role)
+  @@index(teamId)
 }
 
 model UserTeamInvite {
@@ -218,7 +236,9 @@ model UserTeamInvite {
   updatedAt    DateTime  @updatedAt
 
   @@unique([teamId, email])
-  @@index([email])
+  @@index([email, acceptedAt, removedAt])
+  @@index(email)
+  @@index(teamId)
 }
 
 enum UserTeamRole {
@@ -242,6 +262,8 @@ model UserJourney {
   openedAt  DateTime?
 
   @@unique([journeyId, userId])
+  @@index(journeyId)
+  @@index(role)
 }
 
 enum JourneyStatus {
@@ -295,7 +317,7 @@ model Journey {
   journeyVisitors     JourneyVisitor[]
   strategySlug        String?
 
-  @@index([title])
+  @@index(title)
 }
 
 enum Role {
@@ -306,13 +328,18 @@ model UserRole {
   id     String @id @default(uuid())
   userId String @unique
   roles  Role[]
+
+  @@index(userId)
 }
 
 model JourneyProfile {
-  id               String   @id @default(uuid())
-  userId           String   @unique
-  acceptedTermsAt  DateTime @default(now())
-  lastActiveTeamId String?
+  id                        String    @id @default(uuid())
+  userId                    String    @unique
+  acceptedTermsAt           DateTime  @default(now())
+  lastActiveTeamId          String?
+  onboardingFormCompletedAt DateTime?
+
+  @@index(userId)
 }
 
 model UserInvite {
@@ -326,7 +353,7 @@ model UserInvite {
   journey    Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([journeyId, email])
-  @@index([journeyId, email])
+  @@index([email, acceptedAt, removedAt])
 }
 
 enum VideoBlockObjectFit {
@@ -401,6 +428,10 @@ model Block {
   parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
   childBlocks             Block[]              @relation("ParentBlock")
   targetActions           Action[]             @relation("Block")
+
+  @@index(journeyId)
+  @@index(parentOrder(sort: Asc))
+  @@index(typename)
 }
 
 model Action {
@@ -415,4 +446,6 @@ model Action {
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
   journey       Journey? @relation(fields: [journeyId], references: [id])
   block         Block?   @relation("Block", fields: [blockId], references: [id])
+
+  @@index(parentBlockId)
 }

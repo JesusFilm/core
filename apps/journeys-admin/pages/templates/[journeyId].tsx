@@ -1,7 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
-  AuthAction,
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
@@ -11,44 +9,35 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { GetTemplate } from '../../__generated__/GetTemplate'
 import { JourneyView } from '../../src/components/JourneyView'
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
-
-export const GET_TEMPLATE = gql`
-  ${JOURNEY_FIELDS}
-  query GetTemplate($id: ID!) {
-    template: adminJourney(id: $id, idType: databaseId) {
-      ...JourneyFields
-    }
-  }
-`
+import { useJourneyQuery } from '../../src/libs/useJourneyQuery/useJourneyQuery'
 
 function TemplateDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { templates } = useFlags()
   const AuthUser = useAuthUser()
-  const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
-    variables: { id: router.query.journeyId }
+  const { data } = useJourneyQuery({
+    id: router.query.journeyId as string
   })
+  const template = data?.journey
   useInvalidJourneyRedirect(data)
 
   return (
     <>
       <NextSeo
-        title={data?.template?.title ?? t('Journey Template')}
-        description={data?.template?.description ?? undefined}
+        title={template?.title ?? t('Journey Template')}
+        description={template?.description ?? undefined}
       />
       <JourneyProvider
         value={{
-          journey: data?.template ?? undefined,
+          journey: template,
           variant: 'admin'
         }}
       >
@@ -68,27 +57,20 @@ function TemplateDetails(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  if (AuthUser == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = withAuthUserTokenSSR()(
+  async ({ AuthUser, locale }) => {
+    const { flags, translations } = await initAndAuthApp({
+      AuthUser,
+      locale
+    })
 
-  const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
-  })
-
-  if (redirect != null) return { redirect }
-
-  return {
-    props: {
-      flags,
-      ...translations
+    return {
+      props: {
+        flags,
+        ...translations
+      }
     }
   }
-})
+)
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateDetails)
+export default withAuthUser()(TemplateDetails)

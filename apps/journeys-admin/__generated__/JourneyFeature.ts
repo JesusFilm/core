@@ -9,6 +9,7 @@
 
 export interface JourneyFeature_journeyFeature {
   __typename: "Journey";
+  id: string;
   featuredAt: any | null;
 }
 
@@ -20,6 +21,6 @@ export interface JourneyFeature {
 }
 
 export interface JourneyFeatureVariables {
-  journeyFeatureId: string;
+  id: string;
   feature: boolean;
 }
