@@ -401,3 +401,46 @@ export async function fetchMediaComponentsAndTransformToVideos(
     )
   }
 }
+
+export async function fetchMediaComponentAndTransformToVideo(
+  languages: Language[],
+  usedVideoSlugs: Record<string, string>,
+  id: string
+): Promise<
+  | (Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
+      title: Prisma.VideoTitleUncheckedCreateInput[]
+      variants: Array<
+        Omit<
+          Prisma.VideoVariantUncheckedCreateInput,
+          'downloads' | 'subtitle'
+        > & {
+          downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
+          subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
+        }
+      >
+      childIds: string[]
+    })
+  | null
+> {
+  const mediaComponent = await getArclightMediaComponent(id)
+
+  if (mediaComponent == null) {
+    console.log(`mediaComponent not found:`, id)
+    return null
+  }
+  console.log(`fetching mediaComponent:`, mediaComponent.mediaComponentId)
+  const mediaComponentLanguages = await getArclightMediaComponentLanguages(
+    mediaComponent.mediaComponentId
+  )
+  const mediaComponentLinks = await getArclightMediaComponentLinks(
+    mediaComponent.mediaComponentId
+  )
+
+  return transformArclightMediaComponentToVideo(
+    mediaComponent,
+    mediaComponentLanguages,
+    mediaComponentLinks,
+    languages,
+    usedVideoSlugs
+  )
+}
