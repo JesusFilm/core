@@ -595,6 +595,9 @@ export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
     ids?: Nullable<string[]>;
+    tagIds?: Nullable<string[]>;
+    limit?: Nullable<number>;
+    orderByRecent?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
@@ -618,6 +621,8 @@ export class JourneyUpdateInput {
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     hostId?: Nullable<string>;
+    strategySlug?: Nullable<string>;
+    tagIds?: Nullable<string[]>;
 }
 
 export class JourneyTemplateInput {
@@ -755,6 +760,8 @@ export class Journey {
     template?: Nullable<boolean>;
     host?: Nullable<Host>;
     team?: Nullable<Team>;
+    strategySlug?: Nullable<string>;
+    tags: Tag[];
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1170,6 +1177,7 @@ export class JourneyProfile {
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
     lastActiveTeamId?: Nullable<string>;
+    onboardingFormCompletedAt?: Nullable<DateTime>;
 }
 
 export class JourneyVisitor {
@@ -1436,6 +1444,8 @@ export abstract class IMutation {
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
+    abstract journeyFeature(id: string, feature: boolean): Nullable<Journey> | Promise<Nullable<Journey>>;
+
     abstract journeysArchive(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
 
     abstract journeysDelete(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
@@ -1449,6 +1459,8 @@ export abstract class IMutation {
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract journeyProfileOnboardingFormComplete(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 
@@ -1493,6 +1505,10 @@ export class Video {
 }
 
 export class Language {
+    id: string;
+}
+
+export class Tag {
     id: string;
 }
 

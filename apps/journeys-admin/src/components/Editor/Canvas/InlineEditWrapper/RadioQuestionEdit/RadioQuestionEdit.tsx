@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import Box from '@mui/material/Box'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
 import { ReactElement } from 'react'
@@ -9,6 +8,7 @@ import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StyledRadioOption } from '@core/journeys/ui/RadioOption'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
+import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 
 import { RadioOptionBlockCreate } from '../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
@@ -83,7 +83,7 @@ export function RadioQuestionEdit({
         fullWidth
         disableRipple
         startIcon={
-          <AddCircleRoundedIcon sx={{ color: `${adminPrimaryColor.main}` }} />
+          <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
         }
         onClick={handleCreateOption}
         sx={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}

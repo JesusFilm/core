@@ -1,8 +1,4 @@
 import { useQuery } from '@apollo/client'
-import CheckRounded from '@mui/icons-material/CheckRounded'
-import MoreVert from '@mui/icons-material/MoreVert'
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
-import VisibilityIcon from '@mui/icons-material/Visibility'
 import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
@@ -12,6 +8,10 @@ import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
+import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../__generated__/GetRole'
 import { Role } from '../../../../__generated__/globalTypes'
@@ -69,7 +69,7 @@ export function Menu(): ReactElement {
           {journey.template !== true && (
             <>
               <Chip
-                icon={<VisibilityIcon />}
+                icon={<EyeOpenIcon />}
                 label="Preview"
                 component="a"
                 href={`/api/preview?slug=${journey.slug}`}
@@ -94,7 +94,7 @@ export function Menu(): ReactElement {
                   }
                 }}
               >
-                <VisibilityIcon />
+                <EyeOpenIcon />
               </IconButton>
             </>
           )}
@@ -106,7 +106,7 @@ export function Menu(): ReactElement {
             aria-expanded={openMenu ? 'true' : undefined}
             onClick={handleShowMenu}
           >
-            <MoreVert />
+            <MoreIcon />
           </IconButton>
           <MuiMenu
             id="single-journey-actions"
@@ -124,7 +124,7 @@ export function Menu(): ReactElement {
             >
               <MenuItem
                 label="Preview"
-                icon={<VisibilityIcon />}
+                icon={<EyeOpenIcon />}
                 openInNew
                 onClick={handleCloseMenu}
               />
@@ -132,7 +132,7 @@ export function Menu(): ReactElement {
             {journey.template === true && (
               <MenuItem
                 label="Use Template"
-                icon={<CheckRounded />}
+                icon={<CheckContainedIcon />}
                 onClick={() => setDuplicateTeamDialogOpen(true)}
               />
             )}
@@ -144,7 +144,7 @@ export function Menu(): ReactElement {
                   passHref
                   legacyBehavior
                 >
-                  <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
+                  <MenuItem label="Edit Cards" icon={<JourneysIcon />} />
                 </NextLink>
               </>
             )}
@@ -159,7 +159,7 @@ export function Menu(): ReactElement {
         </>
       ) : (
         <IconButton edge="end" disabled>
-          <MoreVert />
+          <MoreIcon />
         </IconButton>
       )}
     </>

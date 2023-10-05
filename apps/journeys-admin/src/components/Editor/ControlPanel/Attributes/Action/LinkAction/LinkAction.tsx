@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import { ReactElement } from 'react'
@@ -8,6 +7,7 @@ import { object, string } from 'yup'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
@@ -101,7 +101,7 @@ export function LinkAction(): ReactElement {
         onSubmit={handleSubmit}
         startIcon={
           <InputAdornment position="start">
-            <InsertLinkRoundedIcon />
+            <LinkIcon />
           </InputAdornment>
         }
       />
