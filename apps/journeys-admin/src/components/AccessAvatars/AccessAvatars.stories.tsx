@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 
 import {
-  GetAdminJourneys_journeys_userJourneys_user as User,
+  GetAdminJourneys_journeys_userJourneys_user as ApiUser,
   GetAdminJourneys_journeys_userJourneys as UserJourney
 } from '../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
@@ -70,7 +70,7 @@ const notificationJourneys = [
   {
     ...userJourney4,
     role: UserJourneyRole.inviteRequested,
-    user: { ...userJourney4.user, imageUrl: null } as unknown as User
+    user: { ...userJourney4.user, imageUrl: null } as unknown as ApiUser
   },
   userJourney5,
   { ...userJourney6, role: UserJourneyRole.inviteRequested }

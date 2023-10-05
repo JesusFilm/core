@@ -36,7 +36,7 @@ export const DELETE_TRASHED_JOURNEYS = gql`
   }
 `
 export function TrashedJourneyList({
-  authUser,
+  user,
   sortOrder,
   event
 }: JourneyListProps): ReactElement {
@@ -76,7 +76,7 @@ export function TrashedJourneyList({
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+              (userJourney) => userJourney.user?.id === (user?.id ?? '')
             )?.role === 'owner'
         )
         .map((journey) => journey.id)
@@ -96,7 +96,7 @@ export function TrashedJourneyList({
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+              (userJourney) => userJourney.user?.id === (user?.id ?? '')
             )?.role === 'owner'
         )
         .map((journey) => journey.id)

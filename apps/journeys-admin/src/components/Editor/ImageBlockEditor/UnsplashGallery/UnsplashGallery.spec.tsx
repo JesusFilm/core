@@ -103,7 +103,6 @@ describe('UnsplashGallery', () => {
     )
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
     const textbox = getByRole('textbox', { name: 'UnsplashSearch' })
-    fireEvent.change(textbox, { target: { value: 'Jesus' } })
     fireEvent.submit(textbox, { target: { value: 'Jesus' } })
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
     expect(
