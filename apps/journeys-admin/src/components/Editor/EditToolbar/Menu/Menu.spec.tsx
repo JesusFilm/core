@@ -18,6 +18,11 @@ import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('EditToolbar Menu', () => {
   it('should disable duplicate button when video block is selected', async () => {
     const { getByRole } = render(
