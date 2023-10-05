@@ -5,6 +5,9 @@ import Radio from '@mui/material/Radio'
 import MuiRadioGroup from '@mui/material/RadioGroup'
 import { ReactElement } from 'react'
 
+import CheckContainedIcon from '../../icons/CheckContained'
+import CircleIcon from '../../icons/Circle'
+
 export function RadioGroup({
   disabled,
   name,
@@ -19,7 +22,13 @@ export function RadioGroup({
           <FormControlLabel
             key={option.id}
             {...option}
-            control={<Radio color="secondary" />}
+            control={
+              <Radio
+                color="secondary"
+                icon={<CircleIcon />}
+                checkedIcon={<CheckContainedIcon />}
+              />
+            }
           />
         ))}
       </MuiRadioGroup>
