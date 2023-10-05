@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
+import { JourneyProfile } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
@@ -8,12 +10,15 @@ import { PrismaService } from '../../lib/prisma.service'
 import { JourneyProfileResolver } from './journeyProfile.resolver'
 
 describe('JourneyProfileResolver', () => {
-  let resolver: JourneyProfileResolver, prismaService: PrismaService
+  let resolver: JourneyProfileResolver,
+    prismaService: DeepMockProxy<PrismaService>
 
-  const profile = {
+  const profile: JourneyProfile = {
     id: '1',
     userId: 'userId',
-    acceptedTermsAt: null
+    acceptedTermsAt: new Date(),
+    lastActiveTeamId: null,
+    onboardingFormCompletedAt: null
   }
 
   beforeAll(() => {
@@ -24,32 +29,30 @@ describe('JourneyProfileResolver', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
-      providers: [JourneyProfileResolver, PrismaService]
+      providers: [
+        JourneyProfileResolver,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
     }).compile()
     resolver = module.get<JourneyProfileResolver>(JourneyProfileResolver)
-    prismaService = module.get<PrismaService>(PrismaService)
-    prismaService.journeyProfile.findUnique = jest
-      .fn()
-      .mockResolvedValueOnce(profile)
-    prismaService.journeyProfile.create = jest
-      .fn()
-      .mockImplementationOnce((result) => result.data)
-    prismaService.journeyProfile.update = jest
-      .fn()
-      .mockImplementation((result) => result.data)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
   describe('getJourneyProfile', () => {
     it('should return user profile', async () => {
+      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
       expect(await resolver.getJourneyProfile('userId')).toEqual(profile)
     })
   })
 
   describe('journeyProfileCreate', () => {
     it('should create user profile', async () => {
-      prismaService.journeyProfile.findUnique = jest
-        .fn()
-        .mockResolvedValueOnce(null)
+      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(null)
       await resolver.journeyProfileCreate('newUserId')
       expect(prismaService.journeyProfile.create).toHaveBeenCalledWith({
         data: {
@@ -60,19 +63,17 @@ describe('JourneyProfileResolver', () => {
     })
 
     it('should return existing profile', async () => {
+      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
       expect(await resolver.journeyProfileCreate('userId')).toEqual(profile)
     })
   })
 
   describe('journeyProfileUpdate', () => {
     it('should update journeyProfile', async () => {
+      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
       await resolver.journeyProfileUpdate('userId', {
         lastActiveTeamId: 'lastTeamId'
       })
-      prismaService.journeyProfile.findUnique = jest
-        .fn()
-        .mockResolvedValueOnce(profile)
-
       expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
         where: { id: profile.id },
         data: {
@@ -82,14 +83,10 @@ describe('JourneyProfileResolver', () => {
     })
   })
 
-  describe('journeyProfileFormFilled', () => {
+  describe('journeyProfileOnboardingFormComplete', () => {
     it('should update onboardingFormCompletedAt', async () => {
+      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
       await resolver.journeyProfileOnboardingFormComplete('userId')
-
-      prismaService.journeyProfile.findUnique = jest
-        .fn()
-        .mockResolvedValueOnce(profile)
-
       expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
         where: { id: profile.id },
         data: {
