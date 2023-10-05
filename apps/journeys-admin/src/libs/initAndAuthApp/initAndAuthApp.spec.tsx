@@ -32,7 +32,7 @@ const checkConditionalRedirectMock =
   >
 
 describe('initAndAuthApp', () => {
-  const mockAuthUser = {
+  const mockUser = {
     id: '1',
     displayName: 'test',
     email: 'test@test.com',
@@ -77,7 +77,7 @@ describe('initAndAuthApp', () => {
 
   it('should return with apolloClient, flags, redirect, and translations when auth user', async () => {
     const result = await initAndAuthApp({
-      user: mockAuthUser,
+      user: mockUser,
       locale: 'en'
     })
 
@@ -94,9 +94,9 @@ describe('initAndAuthApp', () => {
 
   it('should return with apolloClient, flags, redirect, and translations when anonymous user', async () => {
     const result = await initAndAuthApp({
-      AuthUser: {
+      user: {
         id: null
-      } as unknown as AuthUser,
+      } as unknown as User,
       locale: 'en'
     })
 
