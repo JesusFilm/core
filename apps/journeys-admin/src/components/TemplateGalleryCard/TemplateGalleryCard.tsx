@@ -5,6 +5,7 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -21,6 +22,8 @@ export interface TemplateGalleryCardProps {
 export function TemplateGalleryCard({
   journey
 }: TemplateGalleryCardProps): ReactElement {
+  const theme = useTheme()
+
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
   )?.value
@@ -36,9 +39,7 @@ export function TemplateGalleryCard({
       ? intlFormat(parseISO(journey.createdAt), {
           month: 'short',
           year: isThisYear(parseISO(journey?.createdAt)) ? 'numeric' : undefined
-        })
-          .replace(' ', ', ')
-          .toUpperCase()
+        }).replace(' ', ', ')
       : ''
 
   return (
@@ -95,7 +96,7 @@ export function TemplateGalleryCard({
             {journey != null ? (
               <>
                 <Typography
-                  variant="overline"
+                  variant="overline2"
                   sx={{
                     whiteSpace: 'noWrap',
                     overflow: 'hidden',
@@ -105,7 +106,22 @@ export function TemplateGalleryCard({
                 >
                   {date} ● {displayLanguage}
                 </Typography>
-                <Typography variant="subtitle2" sx={{ my: 1 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    my: 1,
+                    [theme.breakpoints.down('lg')]: { display: 'none' }
+                  }}
+                >
+                  {journey.title}
+                </Typography>
+                <Typography
+                  variant="subtitle3"
+                  sx={{
+                    my: 1,
+                    [theme.breakpoints.up('lg')]: { display: 'none' }
+                  }}
+                >
                   {journey.title}
                 </Typography>
               </>
