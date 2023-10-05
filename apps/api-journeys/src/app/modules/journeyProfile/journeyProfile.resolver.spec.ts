@@ -81,4 +81,21 @@ describe('JourneyProfileResolver', () => {
       })
     })
   })
+
+  describe('journeyProfileFormFilled', () => {
+    it('should update formFilledAt', async () => {
+      await resolver.journeyProfileFormFilled('userId')
+
+      prismaService.journeyProfile.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(profile)
+
+      expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
+        where: { id: profile.id },
+        data: {
+          formFilledAt: new Date('2021-02-18T00:00:00.000Z')
+        }
+      })
+    })
+  })
 })
