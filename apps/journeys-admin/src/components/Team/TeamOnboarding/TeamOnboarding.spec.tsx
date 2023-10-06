@@ -50,8 +50,6 @@ jest.mock('apps/journeys-admin/src/libs/useCurrentUser', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('TeamOnboarding', () => {
-  let push: jest.Mock
-
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
@@ -141,10 +139,15 @@ describe('TeamOnboarding', () => {
 
     return <div data-testid="active-team-title">{activeTeam?.title}</div>
   }
+  let push: jest.Mock
 
   beforeEach(() => {
     push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
   })
 
   it('creates new team and sets it as active', async () => {
@@ -315,7 +318,7 @@ describe('TeamOnboarding', () => {
     expect(push).not.toHaveBeenCalled()
   })
 
-  it('submits team invite form correctly', async () => {
+  it('should submit team invite form and redirect to homepage', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
         <SnackbarProvider>
@@ -331,8 +334,32 @@ describe('TeamOnboarding', () => {
     await waitFor(() => expect(getByText('Siyang Gang')).toBeInTheDocument())
     expect(getByRole('button', { name: 'Skip' })).toBeInTheDocument()
     await waitFor(() => fireEvent.click(getByRole('button', { name: 'Skip' })))
-    expect(push).toHaveBeenCalled()
+    expect(push).toHaveBeenCalledWith('/?onboarding=true')
+  })
 
-    jest.resetAllMocks()
+  it('should redirect to router query location', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: '/custom-location' }
+    } as unknown as NextRouter)
+
+    const { getByText, getByRole } = render(
+      <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamOnboarding />
+            <TestComponent />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(getByText('Team Title')).toBeInTheDocument())
+    await waitFor(() => expect(getByText('Siyang Gang')).toBeInTheDocument())
+    expect(getByRole('button', { name: 'Skip' })).toBeInTheDocument()
+    await waitFor(() => fireEvent.click(getByRole('button', { name: 'Skip' })))
+    expect(push).toHaveBeenCalledWith(
+      new URL('http://localhost/custom-location')
+    )
   })
 })

@@ -1,9 +1,5 @@
 import { useRouter } from 'next/router'
-import {
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
-} from 'next-firebase-auth'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -23,7 +19,7 @@ function TemplateDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { templates } = useFlags()
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string
   })
@@ -44,13 +40,13 @@ function TemplateDetails(): ReactElement {
       >
         <PageWrapper
           title={t('Journey Template')}
-          authUser={AuthUser}
+          user={user}
           showDrawer
           backHref="/templates"
           menu={<Menu />}
         >
           {templates ? (
-            <TemplateView />
+            <TemplateView authUser={user} />
           ) : (
             <JourneyView journeyType="Template" />
           )}
@@ -60,12 +56,16 @@ function TemplateDetails(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR()(
-  async ({ AuthUser, locale }) => {
-    const { flags, translations } = await initAndAuthApp({
-      AuthUser,
-      locale
+export const getServerSideProps = withUserTokenSSR()(
+  async ({ user, locale, resolvedUrl }) => {
+    const { flags, redirect, translations } = await initAndAuthApp({
+      user,
+      locale,
+      encodedRedirectPathname:
+        resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined
     })
+
+    if (redirect != null) return { redirect }
 
     return {
       props: {
@@ -76,4 +76,4 @@ export const getServerSideProps = withAuthUserTokenSSR()(
   }
 )
 
-export default withAuthUser()(TemplateDetails)
+export default withUser()(TemplateDetails)

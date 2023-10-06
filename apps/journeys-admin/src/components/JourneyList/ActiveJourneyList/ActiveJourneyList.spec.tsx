@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
@@ -169,7 +169,7 @@ describe('ActiveJourneyList', () => {
               <SnackbarProvider>
                 <ActiveJourneyList
                   event="archiveAllActive"
-                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                  user={{ id: 'user-id1' } as unknown as User}
                 />
               </SnackbarProvider>
             </TeamProvider>
@@ -197,7 +197,7 @@ describe('ActiveJourneyList', () => {
               <SnackbarProvider>
                 <ActiveJourneyList
                   event="archiveAllActive"
-                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                  user={{ id: 'user-id1' } as unknown as User}
                 />
               </SnackbarProvider>
             </TeamProvider>
@@ -233,7 +233,7 @@ describe('ActiveJourneyList', () => {
             <SnackbarProvider>
               <ActiveJourneyList
                 event="trashAllActive"
-                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -258,7 +258,7 @@ describe('ActiveJourneyList', () => {
               <SnackbarProvider>
                 <ActiveJourneyList
                   event="trashAllActive"
-                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                  user={{ id: 'user-id1' } as unknown as User}
                 />
               </SnackbarProvider>
             </TeamProvider>
@@ -287,7 +287,7 @@ describe('ActiveJourneyList', () => {
                 <SnackbarProvider>
                   <ActiveJourneyList
                     event="trashAllActive"
-                    authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                    user={{ id: 'user-id1' } as unknown as User}
                   />
                 </SnackbarProvider>
               </ThemeProvider>

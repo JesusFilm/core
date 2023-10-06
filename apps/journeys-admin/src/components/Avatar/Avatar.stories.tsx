@@ -19,7 +19,7 @@ const Template: StoryObj<typeof Avatar> = {
         <Avatar {...args} />
         <Avatar
           {...args}
-          user={{
+          apiUser={{
             __typename: 'User',
             id: '2',
             firstName: 'Person',
@@ -35,7 +35,7 @@ const Template: StoryObj<typeof Avatar> = {
 export const Default = {
   ...Template,
   args: {
-    user: {
+    apiUser: {
       __typename: 'User',
       id: '1',
       firstName: 'Person',
@@ -48,7 +48,7 @@ export const Default = {
 export const Notifications = {
   ...Template,
   args: {
-    user: {
+    apiUser: {
       __typename: 'User',
       id: '3',
       firstName: 'Person',

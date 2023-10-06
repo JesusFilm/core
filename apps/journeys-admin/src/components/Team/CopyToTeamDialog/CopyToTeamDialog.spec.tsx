@@ -21,6 +21,54 @@ describe('DuplicateJourneys', () => {
     handleSubmitActionMock.mockClear()
   })
 
+  it('should set initial team selection if only 1 team', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <CopyToTeamDialog
+                open
+                title="Copy To Journey"
+                onClose={handleCloseMenuMock}
+                submitAction={handleSubmitActionMock}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(
+      getByRole('button', { name: 'Select Team Team Name' })
+    ).toBeInTheDocument()
+  })
+
   it('should call submit action on dialog submit', async () => {
     const result = jest.fn(() => ({
       data: {
@@ -28,8 +76,7 @@ describe('DuplicateJourneys', () => {
           {
             id: 'teamId',
             title: 'Team Name',
-            __typename: 'Team',
-            userTeams: []
+            __typename: 'Team'
           }
         ],
         getJourneyProfile: {
