@@ -1,9 +1,5 @@
 import { useRouter } from 'next/router'
-import {
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
-} from 'next-firebase-auth'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -23,7 +19,7 @@ function TemplateDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { templates } = useFlags()
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string
   })
@@ -44,7 +40,7 @@ function TemplateDetails(): ReactElement {
       >
         <PageWrapper
           title={t('Journey Template')}
-          authUser={AuthUser}
+          user={user}
           showDrawer
           backHref="/templates"
           menu={<Menu />}
@@ -60,10 +56,10 @@ function TemplateDetails(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR()(
-  async ({ AuthUser, locale }) => {
+export const getServerSideProps = withUserTokenSSR()(
+  async ({ user, locale }) => {
     const { flags, translations } = await initAndAuthApp({
-      AuthUser,
+      user,
       locale
     })
 
@@ -76,4 +72,4 @@ export const getServerSideProps = withAuthUserTokenSSR()(
   }
 )
 
-export default withAuthUser()(TemplateDetails)
+export default withUser()(TemplateDetails)

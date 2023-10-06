@@ -27,15 +27,13 @@ import {
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { UserRoleService } from '../userRole/userRole.service'
 
-import {
-  ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
-  JourneyResolver
-} from './journey.resolver'
+import { JourneyResolver } from './journey.resolver'
 
 jest.mock('uuid', () => ({
   __esModule: true,

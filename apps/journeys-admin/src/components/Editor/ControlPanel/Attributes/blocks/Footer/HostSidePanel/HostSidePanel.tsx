@@ -41,7 +41,7 @@ export function HostSidePanel(): ReactElement {
 
   // Get all team members of journey team, check if user in team
   // TODO: Replace with CASL authorisation check
-  const { loadUser, data: authUser } = useCurrentUser()
+  const { loadUser, data: user } = useCurrentUser()
   useEffect(() => {
     void loadUser()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,9 +58,8 @@ export function HostSidePanel(): ReactElement {
   const userInTeam =
     data == null || data.userTeams.length === 0 || team == null
       ? false
-      : data.userTeams.find(
-          (userTeam) => userTeam.user.email === authUser.email
-        ) != null
+      : data.userTeams.find((userTeam) => userTeam.user.email === user.email) !=
+        null
 
   // Fetch all hosts made for a team
   const { data: teamHosts, refetch } = useQuery(GET_ALL_TEAM_HOSTS, {
