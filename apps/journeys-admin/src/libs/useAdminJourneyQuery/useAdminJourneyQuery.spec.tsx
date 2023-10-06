@@ -13,7 +13,7 @@ import {
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
-import { GET_JOURNEY, useJourneyQuery } from './useJourneyQuery'
+import { GET_ADMIN_JOURNEY, useAdminJourneyQuery } from './useAdminJourneyQuery'
 
 describe('useJourneyQuery', () => {
   it('should get journey', async () => {
@@ -74,7 +74,7 @@ describe('useJourneyQuery', () => {
 
     renderHook(
       () =>
-        useJourneyQuery({
+        useAdminJourneyQuery({
           id: 'journey.id'
         }),
       {
@@ -83,7 +83,7 @@ describe('useJourneyQuery', () => {
             mocks={[
               {
                 request: {
-                  query: GET_JOURNEY,
+                  query: GET_ADMIN_JOURNEY,
                   variables: {
                     id: 'journey.id'
                   }

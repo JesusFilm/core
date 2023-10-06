@@ -3,14 +3,16 @@ import { fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import {
+  GetJourney_journey as AdminJourney,
+  GetJourney_journey_blocks as TreeBlock
+} from '../../../__generated__/GetJourney'
+import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../block'
 
 import { AdminJourneyProvider, useAdminJourney } from '.'
-import { GetJourney_journey as AdminJourney } from '../../../__generated__/GetJourney'
 
 const checkJourney = jest.fn()
 
@@ -63,7 +65,7 @@ const journey: AdminJourney = {
   chatButtons: [],
   host: null,
   team: null,
-  tags: null
+  tags: []
 }
 
 describe('JourneyContext', () => {
@@ -118,7 +120,8 @@ describe('JourneyContext', () => {
       seoDescription: null,
       chatButtons: [],
       host: null,
-      team: null
+      team: null,
+      tags: []
     })
   })
 })

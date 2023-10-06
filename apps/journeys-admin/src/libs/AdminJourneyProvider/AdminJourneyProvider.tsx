@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
-import { GetJourney_journey as AdminJourney } from '../../../__generated__/GetJourney'
+import { AdminJourneyFields as AdminJourney } from '../../../__generated__/AdminJourneyFields'
 
 interface Context {
   journey?: AdminJourney
