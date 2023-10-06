@@ -1,23 +1,23 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import TagManager from 'react-gtm-module'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../../__generated__/globalTypes'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../Team/TeamProvider'
 
-import { CreateJourneyButton } from '.'
-import {
-  ThemeMode,
-  JourneyStatus,
-  ThemeName
-} from 'libs/journeys/ui/__generated__/globalTypes'
-import TagManager from 'react-gtm-module'
+import { CreateJourneyButton } from './CreateJourneyButton'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -178,7 +178,7 @@ describe('CreateJourneyButton', () => {
 
     fireEvent.click(getByRole('button', { name: 'Use Template' }))
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         '/journeys/duplicatedJourneyId',
         undefined,
