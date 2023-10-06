@@ -18,7 +18,7 @@ export function TemplateSection({
   return (
     <Stack spacing={4}>
       <Typography variant="h2">{category}</Typography>
-      <Stack direction="row" spacing={16} sx={{ overflowX: 'auto' }}>
+      <Stack direction="row" spacing={14} sx={{ overflowX: 'auto' }}>
         {journeys?.map((journey) => (
           <Box key={journey?.id} data-testId={`journey-${journey.id}`}>
             <TemplateGalleryCard journey={journey} />
