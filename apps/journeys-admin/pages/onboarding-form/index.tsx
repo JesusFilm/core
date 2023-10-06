@@ -22,7 +22,7 @@ interface OnboardingFormPageProps {
 }
 
 function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
-  const AuthUser = useUser()
+  const user = useUser()
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
@@ -34,7 +34,7 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
         <OnboardingPageWrapper
           emailSubject={t('a question about onboarding form')}
         >
-          <OnboardingForm form={form} authUser={AuthUser} />
+          <OnboardingForm form={form} authUser={user} />
         </OnboardingPageWrapper>
       </FormiumProvider>
     </>
