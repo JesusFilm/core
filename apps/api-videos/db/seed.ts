@@ -14,7 +14,8 @@ import {
 import { ExportedVideo, handleVideo } from '../src/libs/postgresSeed'
 
 const prisma = new PrismaClient()
-const args = minimist(process.argv.slice(2))
+console.log(process.argv)
+const args = minimist(process.argv.slice(4))
 const mode = args.mode ?? 'update'
 const target = args.target ?? null
 
@@ -92,7 +93,7 @@ async function main(): Promise<void> {
   if (args.mode == null) {
     console.log('no mode argument provided')
     console.log(
-      'usage: nx seed api-videos --args="--mode {mode} --target {optional target arclight id}"'
+      'usage: nx seed api-videos --mode {mode} --target {optional target arclight id}'
     )
     console.log('valid modes: missing, replace, update, complete')
     return
