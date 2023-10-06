@@ -35,13 +35,13 @@ export function TemplateSections(): ReactElement {
         id,
         name: childTags
           ?.find((tag) => tag.id === id)
-          .name.find(({ primary }) => primary)?.value
+          ?.name.find(({ primary }) => primary)?.value
       }))
     }
 
     return childTags?.map((tag) => ({
       id: tag.id,
-      name: tag.name.find(({ primary }) => primary)?.value
+      name: tag?.name.find(({ primary }) => primary)?.value
     }))
   }
 
