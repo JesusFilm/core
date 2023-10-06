@@ -1,5 +1,5 @@
 import dagre from 'dagre'
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import ReactFlow, {
   Edge,
   MarkerType,
@@ -147,6 +147,7 @@ export const JourneyMap = ({
   selected,
   onSelect
 }: JourneyMapProps) => {
+  const [key, setKey] = useState(0)
   const dagreGraph = new dagre.graphlib.Graph()
   dagreGraph.setDefaultEdgeLabel(() => ({}))
 
@@ -484,10 +485,25 @@ export const JourneyMap = ({
         }
 
         // Add the new edge to the updatedEdges array
-        updatedEdges.push(params)
+        const newEdge = {
+          // id: params.source + '->'+params.target,
+          source: params.source,
+          target: params.target,
+          markerEnd: {
+            type: MarkerType.Arrow // Replace this with the desired marker type
+          },
+          style: {
+            strokeWidth: 2, // Customize style properties as needed
+            strokeDasharray: 4
+            // stroke: '#FF0072',
+          }
+        }
+        updatedEdges.push(newEdge)
         console.log({ updatedEdges })
 
         setEdges(updatedEdges)
+        // setKey((k) => k + 1)
+
         // getLayoutedElements(stepsNodes, stepEdges, 'LR')
       } catch (e) {
         console.log(e)
@@ -496,8 +512,9 @@ export const JourneyMap = ({
     [setEdges]
   )
 
+  // console.log({ key })
   return (
-    <div style={{ width: '100%', height: '400px' }}>
+    <div key={key} style={{ width: '100%', height: '400px' }}>
       <ReactFlowProvider>
         <FlowMap
           nodes={nodes}
