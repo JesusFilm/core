@@ -152,8 +152,15 @@ describe('CreateJourneyButton', () => {
     mockUseRouter.mockReturnValue({
       prefetch,
       push,
-      query: { createNew: false }
+      query: { createNew: false },
+      asPath: '/templates/[journeyId]'
     } as unknown as NextRouter)
+
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      enumerable: true,
+      value: { origin: 'http://localhost:4200' }
+    })
 
     const { getByRole } = render(
       <MockedProvider
@@ -180,7 +187,13 @@ describe('CreateJourneyButton', () => {
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
-        '/journeys/duplicatedJourneyId',
+        {
+          pathname: '/users/sign-in',
+          query: {
+            redirect:
+              'http://localhost:4200/templates/[journeyId]?createNew=true'
+          }
+        },
         undefined,
         { shallow: true }
       )
