@@ -12,6 +12,17 @@ export const GET_JOURNEY = gql`
   query GetJourney($id: ID!) {
     journey(id: $id, idType: databaseId) {
       ...JourneyFields
+      tags {
+        id
+        parentId
+        name {
+          value
+          language {
+            id
+          }
+          primary
+        }
+      }
     }
   }
 `
