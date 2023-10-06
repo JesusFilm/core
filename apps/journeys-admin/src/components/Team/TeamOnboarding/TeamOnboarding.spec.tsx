@@ -306,7 +306,7 @@ describe('TeamOnboarding', () => {
   it('should redirect to router query location', async () => {
     mockUseRouter.mockReturnValue({
       push,
-      query: { redirect: 'http://custom-location' }
+      query: { redirect: '/custom-location' }
     } as unknown as NextRouter)
 
     const { getByText, getByRole } = render(
@@ -324,6 +324,8 @@ describe('TeamOnboarding', () => {
     await waitFor(() => expect(getByText('Siyang Gang')).toBeInTheDocument())
     expect(getByRole('button', { name: 'Skip' })).toBeInTheDocument()
     await waitFor(() => fireEvent.click(getByRole('button', { name: 'Skip' })))
-    expect(push).toHaveBeenCalledWith('http://custom-location/')
+    expect(push).toHaveBeenCalledWith(
+      new URL('http://localhost/custom-location')
+    )
   })
 })

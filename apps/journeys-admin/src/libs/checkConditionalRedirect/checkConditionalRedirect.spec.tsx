@@ -101,11 +101,11 @@ describe('checkConditionalRedirect', () => {
           termsAndConditions: true,
           teams: true
         },
-        'basePath?redirect=custom-redirect-location'
+        '/custom-redirect-location'
       )
     ).toEqual({
       destination:
-        '/users/terms-and-conditions?redirect=custom-redirect-location',
+        '/users/terms-and-conditions?redirect=/custom-redirect-location',
       permanent: false
     })
   })
@@ -154,10 +154,10 @@ describe('checkConditionalRedirect', () => {
           termsAndConditions: true,
           teams: true
         },
-        'basePath?redirect=custom-redirect-location'
+        '/custom-redirect-location'
       )
     ).toEqual({
-      destination: '/teams/new?redirect=custom-redirect-location',
+      destination: '/teams/new?redirect=/custom-redirect-location',
       permanent: false
     })
   })

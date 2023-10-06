@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { act, fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
