@@ -1,8 +1,7 @@
 // version 3
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
-// valid import modes: missing, replace,
-import minimist from 'minimist'
+// valid import modes: missing, replace, complete, update
 
 import { PrismaClient } from '.prisma/api-videos-client'
 
@@ -14,10 +13,22 @@ import {
 import { ExportedVideo, handleVideo } from '../src/libs/postgresSeed'
 
 const prisma = new PrismaClient()
-console.log(process.argv)
-const args = minimist(process.argv.slice(4))
-const mode = args.mode ?? 'update'
-const target = args.target ?? null
+
+let mode = process.argv[2] ?? null
+
+if (mode == null || mode === 'undefined' || mode === '') {
+  console.log('No mode argument provided. Using default missing mode.')
+  console.log(
+    'usage: nx seed api-videos --mode={mode} --target={target arclight id for replace/update}'
+  )
+  console.log('valid modes: missing, replace, update, complete')
+  mode = 'missing'
+}
+
+let target: string | undefined = process.argv[3]
+if (target === 'undefined' || target === '') {
+  target = undefined
+}
 
 async function getVideoSlugs(): Promise<Record<string, string>> {
   const results = await prisma.video.findMany({
@@ -90,14 +101,6 @@ async function importMediaComponents(
 }
 
 async function main(): Promise<void> {
-  if (args.mode == null) {
-    console.log('no mode argument provided')
-    console.log(
-      'usage: nx seed api-videos --mode {mode} --target {optional target arclight id}'
-    )
-    console.log('valid modes: missing, replace, update, complete')
-    return
-  }
   console.log('import mode:', mode)
 
   console.log('importing mediaComponents as videos...')

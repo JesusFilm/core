@@ -131,7 +131,7 @@
       "options": {
         "commands": [
           {
-            "command": "npm run ts-node apps/api-videos/db/seed.ts -mode {args.mode} -target {args.target}",
+            "command": "npm run ts-node apps/api-videos/db/seed.ts {args.mode} {args.target}",
             "forwardAllArgs": false
           }
         ]
