@@ -23,9 +23,9 @@ export function ElementsWrapper({
       <CardContent
         sx={{
           '&:last-of-type': {
-            paddingBottom: '28px'
+            paddingBottom: '18px'
           },
-          pt: '12px',
+          pt: '28px',
           px: '24px'
         }}
       >
