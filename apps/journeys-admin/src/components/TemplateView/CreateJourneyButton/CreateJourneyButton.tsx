@@ -1,4 +1,3 @@
-import { NoSsr } from '@mui/base'
 import Button from '@mui/material/Button'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
@@ -12,11 +11,11 @@ import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 import { useTeam } from '../../Team/TeamProvider'
 
 interface CreateJourneyButtonProps {
-  signedIn: boolean
+  signedIn?: boolean
 }
 
 export function CreateJourneyButton({
-  signedIn
+  signedIn = false
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { query } = useTeam()

@@ -15,7 +15,6 @@ interface props {
   user?: User
   locale: string | undefined
   encodedRedirectPathname?: string
-  pageSource?: string
 }
 
 interface initAndAuth {
@@ -30,8 +29,7 @@ interface initAndAuth {
 export async function initAndAuthApp({
   user,
   locale,
-  encodedRedirectPathname,
-  pageSource
+  encodedRedirectPathname
 }: props): Promise<initAndAuth> {
   const ldUser =
     user?.id != null
@@ -66,8 +64,7 @@ export async function initAndAuthApp({
       ? await checkConditionalRedirect(
           apolloClient,
           flags,
-          encodedRedirectPathname,
-          pageSource
+          encodedRedirectPathname
         )
       : undefined
 
