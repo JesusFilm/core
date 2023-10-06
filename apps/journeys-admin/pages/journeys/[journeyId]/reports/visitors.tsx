@@ -27,7 +27,8 @@ import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/Fil
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/NewPageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
-import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
+import { GET_ADMIN_JOURNEY } from '../../../../src/libs/useAdminJourneyQuery'
+import { USER_JOURNEY_OPEN } from '../../[journeyId]'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(

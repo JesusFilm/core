@@ -10,14 +10,13 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { GetPublisher } from '../../__generated__/GetPublisher'
 import { Role } from '../../__generated__/globalTypes'
 import { JourneyView } from '../../src/components/JourneyView'
 import { Menu } from '../../src/components/JourneyView/Menu'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
+import { AdminJourneyProvider } from '../../src/libs/AdminJourneyProvider'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useAdminJourneyQuery } from '../../src/libs/useAdminJourneyQuery'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
@@ -52,10 +51,9 @@ function TemplateDetailsAdmin(): ReactElement {
             title={data?.journey?.title ?? t('Template Details')}
             description={data?.journey?.description ?? undefined}
           />
-          <JourneyProvider
+          <AdminJourneyProvider
             value={{
-              journey: data?.journey ?? undefined,
-              variant: 'admin'
+              journey: data?.journey ?? undefined
             }}
           >
             <PageWrapper
@@ -67,7 +65,7 @@ function TemplateDetailsAdmin(): ReactElement {
             >
               <JourneyView journeyType="Template" />
             </PageWrapper>
-          </JourneyProvider>
+          </AdminJourneyProvider>
         </>
       )}
       {data?.journey != null && isPublisher !== true && (

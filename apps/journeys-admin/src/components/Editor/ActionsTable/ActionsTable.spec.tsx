@@ -106,7 +106,8 @@ describe('ActionsTable', () => {
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it('should render placeholder', () => {

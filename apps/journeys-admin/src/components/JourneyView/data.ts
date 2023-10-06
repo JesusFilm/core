@@ -46,6 +46,7 @@ export const defaultJourney: Journey = {
   chatButtons: [],
   host: null,
   team: null,
+  tags: [],
   userJourneys: [
     {
       id: 'userJourneyId1',
@@ -57,6 +58,7 @@ export const defaultJourney: Journey = {
         __typename: 'User',
         firstName: 'Amin',
         lastName: 'One',
+        email: '1@email.com',
         imageUrl: 'https://bit.ly/3Gth4Yf'
       }
     },
@@ -70,6 +72,7 @@ export const defaultJourney: Journey = {
         __typename: 'User',
         firstName: 'Horace',
         lastName: 'Two',
+        email: '2@email.com',
         imageUrl: 'https://bit.ly/3rgHd6a'
       }
     },
@@ -83,6 +86,7 @@ export const defaultJourney: Journey = {
         __typename: 'User',
         firstName: 'Coral',
         lastName: 'Three',
+        email: '3@email.com',
         imageUrl: 'https://bit.ly/3nlwUwJ'
       }
     }

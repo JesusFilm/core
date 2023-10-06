@@ -63,6 +63,7 @@ describe('useJourneyQuery', () => {
             id: 'user-id1',
             firstName: 'Amin',
             lastName: 'One',
+            email: '1@email.com',
             imageUrl: 'https://bit.ly/3Gth4Yf'
           }
         }
