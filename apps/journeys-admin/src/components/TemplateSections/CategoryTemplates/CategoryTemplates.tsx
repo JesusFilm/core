@@ -22,12 +22,12 @@ export function CategoryTemplates({
     }
   })
 
-  function getJourneysLength(length): boolean {
+  function hasMinimumJourneys(length): boolean {
     return data?.journeys != null && data?.journeys.length > length
   }
 
   const renderTemplates =
-    (filtered === true && getJourneysLength(0)) || getJourneysLength(4)
+    (filtered === true && hasMinimumJourneys(0)) || hasMinimumJourneys(4)
 
   return (
     <>
