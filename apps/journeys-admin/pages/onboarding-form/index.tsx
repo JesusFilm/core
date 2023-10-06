@@ -1,9 +1,9 @@
 import { Form } from '@formium/types'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -22,7 +22,7 @@ interface OnboardingFormPageProps {
 }
 
 function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
-  const AuthUser = useAuthUser()
+  const AuthUser = useUser()
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
@@ -41,14 +41,14 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  if (AuthUser == null)
+})(async ({ user, locale }) => {
+  if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   const { flags, translations } = await initAndAuthApp({
-    AuthUser,
+    user,
     locale
   })
 
@@ -63,6 +63,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser<OnboardingFormPageProps>({
+export default withUser<OnboardingFormPageProps>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(OnboardingFormPage)
