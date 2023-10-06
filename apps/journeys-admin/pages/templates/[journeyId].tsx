@@ -46,7 +46,7 @@ function TemplateDetails(): ReactElement {
           menu={<Menu />}
         >
           {templates ? (
-            <TemplateView />
+            <TemplateView authUser={user} />
           ) : (
             <JourneyView journeyType="Template" />
           )}
@@ -57,11 +57,15 @@ function TemplateDetails(): ReactElement {
 }
 
 export const getServerSideProps = withUserTokenSSR()(
-  async ({ user, locale }) => {
-    const { flags, translations } = await initAndAuthApp({
+  async ({ user, locale, resolvedUrl }) => {
+    const { flags, redirect, translations } = await initAndAuthApp({
       user,
-      locale
+      locale,
+      encodedRedirectPathname:
+        resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined
     })
+
+    if (redirect != null) return { redirect }
 
     return {
       props: {
