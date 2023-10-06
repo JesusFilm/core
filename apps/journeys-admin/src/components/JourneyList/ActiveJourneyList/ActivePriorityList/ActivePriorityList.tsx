@@ -1,6 +1,6 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement, useMemo } from 'react'
 
 import {
@@ -19,14 +19,14 @@ interface Props {
   refetch?: (
     variables?: Partial<OperationVariables> | undefined
   ) => Promise<ApolloQueryResult<GetAdminJourneys>>
-  authUser?: AuthUser
+  user?: User
 }
 
 export function ActivePriorityList({
   journeys,
   sortOrder,
   refetch,
-  authUser
+  user
 }: Props): ReactElement {
   const { newJourneys, actionRequiredJourneys, activeJourneys } =
     useMemo(() => {
@@ -36,7 +36,7 @@ export function ActivePriorityList({
 
       journeys.forEach((journey) => {
         const currentUserJourney = journey.userJourneys?.find(
-          (uj) => uj.user?.id === authUser?.id
+          (uj) => uj.user?.id === user?.id
         )
 
         if (
@@ -57,7 +57,7 @@ export function ActivePriorityList({
       })
 
       return { newJourneys, actionRequiredJourneys, activeJourneys }
-    }, [journeys, authUser])
+    }, [journeys, user])
 
   const sortedActionRequiredJourneys = useMemo(() => {
     return sortJourneys(actionRequiredJourneys, sortOrder)

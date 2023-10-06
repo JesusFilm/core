@@ -7,27 +7,21 @@ import { ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { TitleDescriptionDialog } from './TitleDescriptionDialog'
+import { TemplateSettingsDialog } from './TemplateSettingsDialog'
 
-interface TitleDescriptionProps {
-  isPublisher?: boolean
-}
-
-export function TitleDescription({
-  isPublisher
-}: TitleDescriptionProps): ReactElement {
+export function TemplateSettings(): ReactElement {
   const { journey } = useJourney()
 
-  const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
+  const [showTemplateSettingsDialog, setTemplateSettingsDialog] =
     useState(false)
 
-  const handleUpdateTitleDescription = (): void => {
-    setShowTitleDescriptionDialog(true)
+  const handleTemplateSettingsOpen = (): void => {
+    setTemplateSettingsDialog(true)
   }
 
   return (
     <>
-      <Stack direction="column" spacing={journey?.template === true ? 2 : 0}>
+      <Stack direction="column" spacing={2}>
         <Stack
           direction="row"
           sx={{
@@ -42,15 +36,13 @@ export function TitleDescription({
               <Skeleton variant="text" width="60%" />
             )}
           </Typography>
-          {isPublisher === true && journey?.template === true && (
-            <IconButton
-              data-testid="EditTitleDescription"
-              size="small"
-              onClick={handleUpdateTitleDescription}
-            >
-              <Edit2Icon />
-            </IconButton>
-          )}
+          <IconButton
+            data-testid="EditTemplateSettings"
+            size="small"
+            onClick={handleTemplateSettingsOpen}
+          >
+            <Edit2Icon />
+          </IconButton>
         </Stack>
         <Typography variant="body1">
           {journey != null ? (
@@ -60,9 +52,9 @@ export function TitleDescription({
           )}
         </Typography>
       </Stack>
-      <TitleDescriptionDialog
-        open={showTitleDescriptionDialog}
-        onClose={() => setShowTitleDescriptionDialog(false)}
+      <TemplateSettingsDialog
+        open={showTemplateSettingsDialog}
+        onClose={() => setTemplateSettingsDialog(false)}
       />
     </>
   )

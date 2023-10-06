@@ -10,12 +10,12 @@ import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { defaultJourney } from '../data'
 
-import { TitleDescription } from './TitleDescription'
+import { TemplateSettings } from './TemplateSettings'
 
-const TitleDescriptionStory: Meta<typeof TitleDescription> = {
+const TemplateSettingsStory: Meta<typeof TemplateSettings> = {
   ...simpleComponentConfig,
-  component: TitleDescription,
-  title: 'Journeys-Admin/JourneyView/TitleDescription',
+  component: TemplateSettings,
+  title: 'Journeys-Admin/JourneyView/TemplateSettings',
   parameters: {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen'
@@ -23,7 +23,7 @@ const TitleDescriptionStory: Meta<typeof TitleDescription> = {
 }
 
 const Template: StoryObj<
-  ComponentProps<typeof TitleDescription> & { journey: Journey }
+  ComponentProps<typeof TemplateSettings> & { journey: Journey }
 > = {
   render: ({ ...args }) => (
     <ApolloLoadingProvider>
@@ -35,7 +35,7 @@ const Template: StoryObj<
               variant: 'admin'
             }}
           >
-            <TitleDescription isPublisher={args.isPublisher} />
+            <TemplateSettings />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -44,13 +44,6 @@ const Template: StoryObj<
 }
 
 export const Default = {
-  ...Template,
-  args: {
-    journey: defaultJourney
-  }
-}
-
-export const TemplateTitleDescription = {
   ...Template,
   args: {
     journey: {
@@ -63,4 +56,4 @@ export const TemplateTitleDescription = {
   }
 }
 
-export default TitleDescriptionStory
+export default TemplateSettingsStory
