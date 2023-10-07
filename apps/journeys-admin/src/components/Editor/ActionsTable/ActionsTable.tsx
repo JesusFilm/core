@@ -1,10 +1,11 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
 import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
-import { useAdminJourney } from '../../../libs/AdminJourneyProvider'
 
 import { ActionsBanner } from './ActionsBanner'
 import { ActionsList } from './ActionsList'
@@ -19,7 +20,7 @@ export interface Actions {
 }
 
 export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
-  const { journey } = useAdminJourney()
+  const { journey } = useJourney()
 
   function countUrls(journey: Journey | undefined): Actions[] {
     const actions = (journey?.blocks ?? [])
