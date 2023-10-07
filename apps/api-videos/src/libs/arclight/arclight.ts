@@ -6,6 +6,7 @@ import {
   VideoVariantDownloadQuality
 } from '.prisma/api-videos-client'
 
+import { PrismaVideoCreateInput } from '../postgresSeed'
 import { slugify } from '../slugify'
 
 export interface ArclightMediaLanguage {
@@ -216,19 +217,9 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
 export function transformArclightMediaComponentToVideo(
   mediaComponent: ArclightMediaComponent,
   mediaComponentLanguages: ArclightMediaComponentLanguage[],
-  mediaComponentLinks: string[],
   languages: Language[],
   usedSlugs: Record<string, string>
-): Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
-  title: Prisma.VideoTitleUncheckedCreateInput[]
-  variants: Array<
-    Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
-      downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
-      subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
-    }
-  >
-  childIds: string[]
-} {
+): PrismaVideoCreateInput {
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
@@ -312,7 +303,6 @@ export function transformArclightMediaComponentToVideo(
     ],
     variants,
     slug,
-    childIds: mediaComponentLinks,
     noIndex: false
   }
 }
@@ -342,104 +332,19 @@ export async function fetchMediaLanguagesAndTransformToLanguages(): Promise<
   )
 }
 
-export async function fetchMediaComponentsAndTransformToVideos(
+export async function transformMediaComponentToVideo(
+  mediaComponent: ArclightMediaComponent,
   languages: Language[],
-  usedVideoSlugs: Record<string, string>,
-  page: number,
-  importedVideos: string[]
-): Promise<{
-  count: number
-  videos: Array<
-    Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
-      title: Prisma.VideoTitleUncheckedCreateInput[]
-      variants: Array<
-        Omit<
-          Prisma.VideoVariantUncheckedCreateInput,
-          'downloads' | 'subtitle'
-        > & {
-          downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
-          subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
-        }
-      >
-      childIds: string[]
-    }
-  >
-}> {
-  let mediaComponents = await getArclightMediaComponents(page)
-
-  const mediaComponentsLength = mediaComponents.length
-
-  mediaComponents = mediaComponents.filter(
-    ({ mediaComponentId }) => !importedVideos.includes(mediaComponentId)
-  )
-
-  const mediaComponentsAndMetadata = await Promise.all(
-    mediaComponents.map(async (mediaComponent) => {
-      console.log(`fetching mediaComponent:`, mediaComponent.mediaComponentId)
-      const mediaComponentLanguages = await getArclightMediaComponentLanguages(
-        mediaComponent.mediaComponentId
-      )
-      const mediaComponentLinks = await getArclightMediaComponentLinks(
-        mediaComponent.mediaComponentId
-      )
-      return { mediaComponent, mediaComponentLanguages, mediaComponentLinks }
-    })
-  )
-
-  return {
-    count: mediaComponentsLength,
-    videos: mediaComponentsAndMetadata.map(
-      ({ mediaComponent, mediaComponentLanguages, mediaComponentLinks }) => {
-        return transformArclightMediaComponentToVideo(
-          mediaComponent,
-          mediaComponentLanguages,
-          mediaComponentLinks,
-          languages,
-          usedVideoSlugs
-        )
-      }
-    )
-  }
-}
-
-export async function fetchMediaComponentAndTransformToVideo(
-  languages: Language[],
-  usedVideoSlugs: Record<string, string>,
-  id: string
-): Promise<
-  | (Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
-      title: Prisma.VideoTitleUncheckedCreateInput[]
-      variants: Array<
-        Omit<
-          Prisma.VideoVariantUncheckedCreateInput,
-          'downloads' | 'subtitle'
-        > & {
-          downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
-          subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
-        }
-      >
-      childIds: string[]
-    })
-  | null
-> {
-  const mediaComponent = await getArclightMediaComponent(id)
-
-  if (mediaComponent == null) {
-    console.log(`mediaComponent not found:`, id)
-    return null
-  }
+  usedVideoSlugs: Record<string, string>
+): Promise<PrismaVideoCreateInput> {
   console.log(`fetching mediaComponent:`, mediaComponent.mediaComponentId)
   const mediaComponentLanguages = await getArclightMediaComponentLanguages(
-    mediaComponent.mediaComponentId
-  )
-  const mediaComponentLinks = await getArclightMediaComponentLinks(
     mediaComponent.mediaComponentId
   )
 
   return transformArclightMediaComponentToVideo(
     mediaComponent,
     mediaComponentLanguages,
-    mediaComponentLinks,
     languages,
     usedVideoSlugs
   )

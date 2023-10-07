@@ -5,12 +5,14 @@
 
 import { PrismaClient } from '.prisma/api-videos-client'
 
-import { fetchMediaComponentsAndTransformToVideos } from '../src/libs/arclight'
 import {
-  fetchMediaComponentAndTransformToVideo,
-  fetchMediaLanguagesAndTransformToLanguages
+  fetchMediaLanguagesAndTransformToLanguages,
+  getArclightMediaComponent,
+  getArclightMediaComponentLinks,
+  getArclightMediaComponents,
+  transformMediaComponentToVideo
 } from '../src/libs/arclight/arclight'
-import { ExportedVideo, handleVideo } from '../src/libs/postgresSeed'
+import { handleVideo, handleVideoChildren } from '../src/libs/postgresSeed'
 
 const prisma = new PrismaClient()
 
@@ -21,7 +23,7 @@ if (mode == null || mode === 'undefined' || mode === '') {
   console.log(
     'usage: nx seed api-videos --mode={mode} --target={target arclight id for replace/update}'
   )
-  console.log('valid modes: missing, replace, update, complete')
+  console.log('valid modes: missing, replace, update, complete, resume')
   mode = 'missing'
 }
 
@@ -30,73 +32,127 @@ if (target === 'undefined' || target === '') {
   target = undefined
 }
 
-async function getVideoSlugs(): Promise<Record<string, string>> {
+async function getVideoIdsAndSlugs(): Promise<{
+  slugs: Record<string, string>
+  ids: string[]
+}> {
   const results = await prisma.video.findMany({
     select: { slug: true, id: true }
   })
 
   const slugs: Record<string, string> = {}
+  const ids: string[] = []
   for await (const video of results) {
+    ids.push(video.id)
     if (video.slug != null) slugs[video.slug] = video.id
   }
 
-  return slugs
+  return { slugs, ids }
 }
 
 async function importMediaComponents(
   mode: string,
   target?: string
 ): Promise<void> {
-  const usedVideoSlugs: Record<string, string> = await getVideoSlugs()
+  const { slugs: usedVideoSlugs, ids: existingVideoIds } =
+    await getVideoIdsAndSlugs()
+
   const languages = await fetchMediaLanguagesAndTransformToLanguages()
-  let videos: ExportedVideo[]
+
   let count = 0
   const importedVideos: string[] = []
 
   const startTime = new Date().getTime()
-  if (mode === 'complete' || mode === 'missing') {
+  if (mode === 'complete' || (mode === 'missing' && target == null)) {
     let page = 1
+    const errors: Record<string, Error> = {}
     do {
-      ;({ videos, count } = await fetchMediaComponentsAndTransformToVideos(
-        languages,
-        usedVideoSlugs,
-        page,
-        importedVideos
-      ))
-      for (const video of videos) {
-        await handleVideo(
-          video,
-          languages,
-          usedVideoSlugs,
-          importedVideos,
-          mode
-        )
+      const videos = await getArclightMediaComponents(page)
+      count = videos.length
+      for (const arclightVideo of videos) {
+        try {
+          if (
+            mode === 'missing' &&
+            target == null &&
+            existingVideoIds.includes(arclightVideo.mediaComponentId)
+          )
+            continue
+
+          if (mode === 'missing' && target !== arclightVideo.mediaComponentId)
+            continue
+
+          if (!importedVideos.includes(arclightVideo.mediaComponentId)) {
+            const video = await transformMediaComponentToVideo(
+              arclightVideo,
+              languages,
+              usedVideoSlugs
+            )
+
+            await handleVideo(video, importedVideos)
+          } else {
+            console.log('already imported')
+          }
+
+          const childIds = await getArclightMediaComponentLinks(
+            arclightVideo.mediaComponentId
+          )
+          await handleVideoChildren(
+            arclightVideo.mediaComponentId,
+            childIds,
+            importedVideos,
+            languages,
+            usedVideoSlugs
+          )
+        } catch (e) {
+          console.error(e)
+          errors[arclightVideo.mediaComponentId] = e
+        }
       }
       const duration = new Date().getTime() - startTime
       console.log('importMediaComponents duration(s):', duration * 0.001)
       console.log('importMediaComponents page:', page)
       page++
     } while (count > 0)
-  } else if (mode === 'replace') {
+    for (const [key, value] of Object.entries(errors)) {
+      console.log('error:', key, value)
+    }
+  } else if (mode === 'replace' || mode === 'update' || mode === 'missing') {
     if (target == null) {
       console.log('no target arclight id provided')
       return
     }
-    const video = await fetchMediaComponentAndTransformToVideo(
-      languages,
-      usedVideoSlugs,
-      target
-    )
-    if (video != null) {
-      if (mode === 'replace') {
-        await prisma.video.delete({
-          where: { id: video.id }
-        })
-      }
-      await handleVideo(video, languages, usedVideoSlugs, importedVideos, mode)
-      const duration = new Date().getTime() - startTime
-      console.log('importMediaComponents duration(s):', duration * 0.001)
+    const arclightVideo = await getArclightMediaComponent(target)
+
+    if (arclightVideo == null) {
+      console.log('no arclight video found for id:', target)
+      return
     }
+
+    const video = await transformMediaComponentToVideo(
+      arclightVideo,
+      languages,
+      usedVideoSlugs
+    )
+
+    if (mode === 'replace') {
+      await prisma.video.delete({
+        where: { id: video.id }
+      })
+    }
+    await handleVideo(video, importedVideos)
+
+    const childIds = await getArclightMediaComponentLinks(
+      arclightVideo.mediaComponentId
+    )
+    await handleVideoChildren(
+      arclightVideo.mediaComponentId,
+      childIds,
+      importedVideos,
+      languages,
+      usedVideoSlugs
+    )
+    const duration = new Date().getTime() - startTime
+    console.log('importMediaComponents duration(s):', duration * 0.001)
   }
 }
 
