@@ -39,10 +39,7 @@ function TemplateDetails(): ReactElement {
       >
         <PageWrapper
           title={t('Journey Template')}
-
           user={user}
-          showDrawer
-
           backHref="/templates"
         >
           {templates ? (
