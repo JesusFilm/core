@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { User } from 'next-firebase-auth'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -7,7 +8,6 @@ import { JourneyFields } from '../../../__generated__/JourneyFields'
 import { defaultJourney } from '../JourneyView/data'
 
 import { TemplateView } from './TemplateView'
-import { User } from 'next-firebase-auth'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -32,7 +32,7 @@ describe('TemplateView', () => {
             variant: 'admin'
           }}
         >
-          <TemplateView authUser={{} as User} />
+          <TemplateView authUser={{} as unknown as User} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -53,7 +53,7 @@ describe('TemplateView', () => {
             variant: 'admin'
           }}
         >
-          <TemplateView authUser={{} as User} />
+          <TemplateView authUser={{} as unknown as User} />
         </JourneyProvider>
       </MockedProvider>
     )
