@@ -9,7 +9,7 @@ import { TabPanel } from '@core/shared/ui/TabPanel'
 
 import { StrategySection } from '../../../../TemplateView/StrategySection'
 
-interface CaseStudyTabPanelProps {
+interface AboutTabPanelProps {
   name: string
   value: FormikValues[string]
   errors: FormikErrors<FormikValues>
@@ -17,13 +17,13 @@ interface CaseStudyTabPanelProps {
   tabValue: number
 }
 
-export function CaseStudyTabPanel({
+export function AboutTabPanel({
   name,
   value,
   errors,
   onChange,
   tabValue
-}: CaseStudyTabPanelProps): ReactElement {
+}: AboutTabPanelProps): ReactElement {
   const { t } = useTranslation()
   return (
     <TabPanel name="template-about-settings" value={tabValue} index={2}>

@@ -20,7 +20,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
 import { TemplateSettingsUpdate } from '../../../../../__generated__/TemplateSettingsUpdate'
 
-import { CaseStudyTabPanel } from './CaseStudyTabPanel'
+import { AboutTabPanel } from './AboutTabPanel'
 import { FeaturedCheckbox } from './FeaturedCheckbox'
 
 export const TEMPLATE_SETTINGS_UPDATE = gql`
@@ -276,7 +276,7 @@ export function TemplateSettingsDialog({
                     support@nextsteps.is for more info
                   </Stack>
                 </TabPanel>
-                <CaseStudyTabPanel
+                <AboutTabPanel
                   name="strategySlug"
                   value={values.strategySlug}
                   errors={errors}

@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 
-import { CaseStudyTabPanel } from './CaseStudyTabPanel'
+import { AboutTabPanel } from './AboutTabPanel'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -11,14 +11,14 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-describe('CaseStudyFieldForm', () => {
+describe('AboutTabPanel', () => {
   afterEach(() => jest.clearAllMocks())
 
   const handleChange = jest.fn()
 
   it('should call onChange on form change', async () => {
     const { getByLabelText } = render(
-      <CaseStudyTabPanel
+      <AboutTabPanel
         name="strategySlug"
         errors={{ strategySlug: '' }}
         value=""
@@ -35,7 +35,7 @@ describe('CaseStudyFieldForm', () => {
 
   it('should validate form on error', async () => {
     const { getByText } = render(
-      <CaseStudyTabPanel
+      <AboutTabPanel
         name="strategySlug"
         errors={{ strategySlug: 'Invalid embed link' }}
         value="some invalid value"
@@ -49,7 +49,7 @@ describe('CaseStudyFieldForm', () => {
 
   it('should render strategy section preview', async () => {
     const { queryByText, getByTestId } = render(
-      <CaseStudyTabPanel
+      <AboutTabPanel
         name="strategySlug"
         errors={{ strategySlug: '' }}
         value="https://www.canva.com/design/DAFvDBw1z1A/view"
