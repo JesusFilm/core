@@ -100,7 +100,6 @@ export function TermsAndConditions(): ReactElement {
       </List>
       <Button
         variant="contained"
-        disabled={!accepted}
         onClick={handleJourneyProfileCreate}
         sx={{
           mt: 6,
