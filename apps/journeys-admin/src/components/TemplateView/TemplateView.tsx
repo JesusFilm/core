@@ -20,7 +20,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
       <Typography variant="h1">{journey?.title}</Typography>
       <Typography variant="body1">{journey?.description}</Typography>
 
-      <CreateJourneyButton signedIn={authUser.id != null} />
+      <CreateJourneyButton signedIn={authUser?.id != null} />
       <Stack sx={{ pt: 4 }}>
         {journey?.strategySlug != null && (
           <StrategySection
