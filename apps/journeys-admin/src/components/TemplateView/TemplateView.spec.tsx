@@ -5,7 +5,9 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields } from '../../../__generated__/JourneyFields'
 import { defaultJourney } from '../JourneyView/data'
+
 import { TemplateView } from './TemplateView'
+import { User } from 'next-firebase-auth'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -30,7 +32,7 @@ describe('TemplateView', () => {
             variant: 'admin'
           }}
         >
-          <TemplateView />
+          <TemplateView authUser={{} as User} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -51,7 +53,7 @@ describe('TemplateView', () => {
             variant: 'admin'
           }}
         >
-          <TemplateView />
+          <TemplateView authUser={{} as User} />
         </JourneyProvider>
       </MockedProvider>
     )
