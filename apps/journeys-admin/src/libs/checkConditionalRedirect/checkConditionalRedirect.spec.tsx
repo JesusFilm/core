@@ -57,7 +57,7 @@ describe('checkConditionalRedirect', () => {
     })
   })
 
-  it('redirect if termsAndConditions is null', async () => {
+  it('redirect if terms not accepted', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',
@@ -82,7 +82,37 @@ describe('checkConditionalRedirect', () => {
     })
   })
 
-  it('should redirect if a new user has not completed onboarding form', async () => {
+  it('redirects to terms and conditions with redirect parameter', async () => {
+    const data: GetJourneyProfileAndTeams = {
+      getJourneyProfile: {
+        id: 'profile.id',
+        userId: 'user.id',
+        __typename: 'JourneyProfile',
+        onboardingFormCompletedAt: null,
+        acceptedTermsAt: null
+      },
+      teams: []
+    }
+    const client = {
+      query: jest.fn().mockResolvedValue({ data })
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    expect(
+      await checkConditionalRedirect(
+        client,
+        {
+          termsAndConditions: true,
+          teams: true
+        },
+        '/custom-redirect-location'
+      )
+    ).toEqual({
+      destination:
+        '/users/terms-and-conditions?redirect=/custom-redirect-location',
+      permanent: false
+    })
+  })
+
+  it('should redirect if a new user has not completed onboarding form with redirect parameter', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',
@@ -93,16 +123,22 @@ describe('checkConditionalRedirect', () => {
       },
       teams: []
     }
+
     const client = {
       query: jest.fn().mockResolvedValue({ data })
     } as unknown as ApolloClient<NormalizedCacheObject>
+
     expect(
-      await checkConditionalRedirect(client, {
-        termsAndConditions: true,
-        teams: true
-      })
+      await checkConditionalRedirect(
+        client,
+        {
+          termsAndConditions: true,
+          teams: true
+        },
+        '/custom-redirect-location'
+      )
     ).toEqual({
-      destination: '/onboarding-form',
+      destination: '/onboarding-form?redirect=/custom-redirect-location',
       permanent: false
     })
   })
@@ -128,6 +164,35 @@ describe('checkConditionalRedirect', () => {
       })
     ).toEqual({
       destination: '/teams/new',
+      permanent: false
+    })
+  })
+
+  it('redirect to teams with redirect parameter', async () => {
+    const data: GetJourneyProfileAndTeams = {
+      getJourneyProfile: {
+        id: 'profile.id',
+        userId: 'user.id',
+        acceptedTermsAt: '1970-01-01T00:00:00.000Z',
+        __typename: 'JourneyProfile',
+        onboardingFormCompletedAt: null
+      },
+      teams: []
+    }
+    const client = {
+      query: jest.fn().mockResolvedValue({ data })
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    expect(
+      await checkConditionalRedirect(
+        client,
+        {
+          termsAndConditions: true,
+          teams: true
+        },
+        '/custom-redirect-location'
+      )
+    ).toEqual({
+      destination: '/teams/new?redirect=/custom-redirect-location',
       permanent: false
     })
   })
