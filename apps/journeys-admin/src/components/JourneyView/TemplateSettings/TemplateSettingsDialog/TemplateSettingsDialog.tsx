@@ -18,21 +18,10 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
-import { TemplateSettingsUpdate } from '../../../../../__generated__/TemplateSettingsUpdate'
+import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 
 import { AboutTabPanel } from './AboutTabPanel'
 import { FeaturedCheckbox } from './FeaturedCheckbox'
-
-export const TEMPLATE_SETTINGS_UPDATE = gql`
-  mutation TemplateSettingsUpdate($id: ID!, $input: JourneyUpdateInput!) {
-    journeyUpdate(id: $id, input: $input) {
-      id
-      title
-      description
-      strategySlug
-    }
-  }
-`
 
 export const JOURNEY_FEATURE_UPDATE = gql`
   mutation JourneyFeature($id: ID!, $feature: Boolean!) {
@@ -56,10 +45,7 @@ export function TemplateSettingsDialog({
     setTabValue(newValue)
   }
 
-  const [templateSettingsUpdate] = useMutation<TemplateSettingsUpdate>(
-    TEMPLATE_SETTINGS_UPDATE
-  )
-
+  const [journeySettingsUpdate] = useJourneyUpdateMutation()
   const [journeyFeature, { loading }] = useMutation<JourneyFeature>(
     JOURNEY_FEATURE_UPDATE
   )
@@ -86,7 +72,7 @@ export function TemplateSettingsDialog({
 
     try {
       if (!isEqual(existingValues, formValues)) {
-        await templateSettingsUpdate({
+        await journeySettingsUpdate({
           variables: {
             id: journey.id,
             input: {
