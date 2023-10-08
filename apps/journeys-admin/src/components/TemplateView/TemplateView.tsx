@@ -13,7 +13,7 @@ export function TemplateView(): ReactElement {
     <Stack gap={4}>
       <Typography variant="h1">{journey?.title}</Typography>
       <Typography variant="body1">{journey?.description}</Typography>
-      <Stack sx={{ p: 4 }}>
+      <Stack sx={{ pt: 4 }}>
         {journey?.strategySlug != null && (
           <StrategySection
             strategySlug={journey?.strategySlug}
