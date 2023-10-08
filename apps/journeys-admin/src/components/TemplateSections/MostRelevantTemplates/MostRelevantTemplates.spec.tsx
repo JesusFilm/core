@@ -27,6 +27,7 @@ describe('MostRelevantTemplates', () => {
     id: 1,
     title: 'Template 1',
     publishedAt: '2023-08-14T04:24:24.392Z',
+    createdAt: '2023-08-14T04:24:24.392Z',
     template: true,
     tags: [
       {
