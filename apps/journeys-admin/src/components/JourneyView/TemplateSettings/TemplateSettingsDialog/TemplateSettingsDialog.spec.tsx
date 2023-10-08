@@ -4,11 +4,11 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 import { defaultJourney } from '../../data'
 
 import {
   JOURNEY_FEATURE_UPDATE,
-  TEMPLATE_SETTINGS_UPDATE,
   TemplateSettingsDialog
 } from './TemplateSettingsDialog'
 
@@ -63,7 +63,7 @@ describe('TemplateSettingsDialog', () => {
         mocks={[
           {
             request: {
-              query: TEMPLATE_SETTINGS_UPDATE,
+              query: JOURNEY_SETTINGS_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: updatedJourney
@@ -141,7 +141,7 @@ describe('TemplateSettingsDialog', () => {
         mocks={[
           {
             request: {
-              query: TEMPLATE_SETTINGS_UPDATE,
+              query: JOURNEY_SETTINGS_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: updatedJourney
@@ -237,7 +237,7 @@ describe('TemplateSettingsDialog', () => {
         mocks={[
           {
             request: {
-              query: TEMPLATE_SETTINGS_UPDATE,
+              query: JOURNEY_SETTINGS_UPDATE,
               variables: {
                 id: journeyWithStrategySlug.id,
                 input: { ...updatedJourney }
@@ -289,7 +289,7 @@ describe('TemplateSettingsDialog', () => {
         mocks={[
           {
             request: {
-              query: TEMPLATE_SETTINGS_UPDATE,
+              query: JOURNEY_SETTINGS_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: {
@@ -348,7 +348,7 @@ describe('TemplateSettingsDialog', () => {
         mocks={[
           {
             request: {
-              query: TEMPLATE_SETTINGS_UPDATE,
+              query: JOURNEY_SETTINGS_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: {
