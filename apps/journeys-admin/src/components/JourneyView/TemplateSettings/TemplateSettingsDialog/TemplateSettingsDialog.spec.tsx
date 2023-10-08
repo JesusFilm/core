@@ -8,7 +8,7 @@ import { defaultJourney } from '../../data'
 
 import {
   JOURNEY_FEATURE_UPDATE,
-  TITLE_DESCRIPTION_UPDATE,
+  TEMPLATE_SETTINGS_UPDATE,
   TemplateSettingsDialog
 } from './TemplateSettingsDialog'
 
@@ -34,7 +34,8 @@ describe('TemplateSettingsDialog', () => {
   it('should update field data and close dialog on submit', async () => {
     const updatedJourney = {
       title: 'New Title',
-      description: 'New Description'
+      description: 'New Description',
+      strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view'
     }
 
     const result = jest.fn(() => ({
@@ -62,7 +63,7 @@ describe('TemplateSettingsDialog', () => {
         mocks={[
           {
             request: {
-              query: TITLE_DESCRIPTION_UPDATE,
+              query: TEMPLATE_SETTINGS_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: updatedJourney
@@ -102,6 +103,12 @@ describe('TemplateSettingsDialog', () => {
       target: { value: 'New Description' }
     })
     fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('tab', { name: 'About' }))
+
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
+    })
+
     fireEvent.click(getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
@@ -109,6 +116,161 @@ describe('TemplateSettingsDialog', () => {
       expect(result2).toHaveBeenCalled()
       expect(onClose).toHaveBeenCalled()
     })
+  })
+
+  it('should update case study to a google slides embed link', async () => {
+    const updatedJourney = {
+      title: defaultJourney.title,
+      description: defaultJourney.description,
+      strategySlug:
+        'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          id: defaultJourney.id,
+          __typename: 'Journey',
+          ...updatedJourney
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TEMPLATE_SETTINGS_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                input: updatedJourney
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('tab', { name: 'About' }))
+
+    fireEvent.change(getByRole('textbox'), {
+      target: {
+        value:
+          'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
+      }
+    })
+
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => {
+      expect(result).toHaveBeenCalled()
+      expect(onClose).toHaveBeenCalled()
+    })
+  })
+
+  it('should validate on invalid embed url', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('tab', { name: 'About' }))
+    const textField = getByRole('textbox')
+    fireEvent.change(textField, {
+      target: { value: 'www.canva.com/123' }
+    })
+    fireEvent.submit(getByRole('textbox'))
+
+    await waitFor(() =>
+      expect(getByText('Invalid embed link')).toBeInTheDocument()
+    )
+  })
+
+  it('should update embed url to null on empty string', async () => {
+    const journeyWithStrategySlug = {
+      ...defaultJourney,
+      strategySlug:
+        'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
+    }
+
+    const updatedJourney = {
+      title: journeyWithStrategySlug.title,
+      description: journeyWithStrategySlug.description,
+      strategySlug: null
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          id: journeyWithStrategySlug.id,
+          __typename: 'Journey',
+          ...updatedJourney
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TEMPLATE_SETTINGS_UPDATE,
+              variables: {
+                id: journeyWithStrategySlug.id,
+                input: { ...updatedJourney }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: journeyWithStrategySlug,
+              variant: 'admin'
+            }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('tab', { name: 'About' }))
+    expect(getByRole('textbox')).toHaveValue(
+      journeyWithStrategySlug.strategySlug
+    )
+    await fireEvent.change(getByRole('textbox'), {
+      target: { value: '' }
+    })
+    expect(getByRole('textbox')).toHaveValue('')
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should not update field data if it remains unchanged on submit', async () => {
@@ -127,7 +289,7 @@ describe('TemplateSettingsDialog', () => {
         mocks={[
           {
             request: {
-              query: TITLE_DESCRIPTION_UPDATE,
+              query: TEMPLATE_SETTINGS_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: {
@@ -186,7 +348,7 @@ describe('TemplateSettingsDialog', () => {
         mocks={[
           {
             request: {
-              query: TITLE_DESCRIPTION_UPDATE,
+              query: TEMPLATE_SETTINGS_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: {

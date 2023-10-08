@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { StrategySection } from './StrategySection'
 
 export function TemplateView(): ReactElement {
@@ -14,7 +15,10 @@ export function TemplateView(): ReactElement {
       <Typography variant="body1">{journey?.description}</Typography>
       <Stack sx={{ p: 4 }}>
         {journey?.strategySlug != null && (
-          <StrategySection strategySlug={journey?.strategySlug} />
+          <StrategySection
+            strategySlug={journey?.strategySlug}
+            variant="full"
+          />
         )}
       </Stack>
     </Stack>

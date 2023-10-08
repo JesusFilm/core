@@ -11,22 +11,25 @@ import isEqual from 'lodash/isEqual'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
-import { TitleDescriptionUpdate } from '../../../../../__generated__/TitleDescriptionUpdate'
+import { TemplateSettingsUpdate } from '../../../../../__generated__/TemplateSettingsUpdate'
 
+import { CaseStudyTabPanel } from './CaseStudyTabPanel'
 import { FeaturedCheckbox } from './FeaturedCheckbox'
 
-export const TITLE_DESCRIPTION_UPDATE = gql`
-  mutation TitleDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
+export const TEMPLATE_SETTINGS_UPDATE = gql`
+  mutation TemplateSettingsUpdate($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
       id
       title
       description
+      strategySlug
     }
   }
 `
@@ -53,8 +56,8 @@ export function TemplateSettingsDialog({
     setTabValue(newValue)
   }
 
-  const [titleDescriptionUpdate] = useMutation<TitleDescriptionUpdate>(
-    TITLE_DESCRIPTION_UPDATE
+  const [templateSettingsUpdate] = useMutation<TemplateSettingsUpdate>(
+    TEMPLATE_SETTINGS_UPDATE
   )
 
   const [journeyFeature, { loading }] = useMutation<JourneyFeature>(
@@ -69,29 +72,37 @@ export function TemplateSettingsDialog({
   const handleTemplateUpdate = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
 
-    const existingValues = (({ title, description }) => ({
+    const existingValues = (({ title, description, strategySlug }) => ({
       title,
-      description
+      description,
+      strategySlug
     }))(journey)
 
-    const formValues = (({ title, description }) => ({
+    const formValues = (({ title, description, strategySlug }) => ({
       title,
-      description
+      description,
+      strategySlug: strategySlug === '' ? null : strategySlug
     }))(values)
 
     try {
       if (!isEqual(existingValues, formValues)) {
-        await titleDescriptionUpdate({
+        await templateSettingsUpdate({
           variables: {
             id: journey.id,
-            input: { title: values.title, description: values.description }
+            input: {
+              title: values.title,
+              description: values.description,
+              strategySlug:
+                values.strategySlug === '' ? null : values.strategySlug
+            }
           },
           optimisticResponse: {
             journeyUpdate: {
               id: journey.id,
               __typename: 'Journey',
               title: values.title,
-              description: values.description
+              description: values.description,
+              strategySlug: values.strategySlug
             }
           },
           onCompleted: () =>
@@ -141,12 +152,33 @@ export function TemplateSettingsDialog({
           values: {
             title: journey?.title,
             description: journey?.description,
-            featuredAt: journey?.featuredAt != null
+            featuredAt: journey?.featuredAt != null,
+            strategySlug: journey?.strategySlug
           }
         })
       )
     }
   }
+
+  const validationSchema = object({
+    strategySlug: string()
+      .trim()
+      .test('valid-embed-url', t('Invalid embed link'), (value) => {
+        if (value == null) return true
+        const canvaRegex =
+          /^https:\/\/www\.canva\.com\/design\/[A-Za-z0-9]+\/(view|watch)$/
+
+        const googleSlidesRegex =
+          /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[A-Za-z0-9-_]+\/pub\?(start=true|start=false)&(loop=true|loop=false)&delayms=\d+$/
+
+        const isValidCanvaLink = canvaRegex.test(value)
+        const isValidGoogleLink = googleSlidesRegex.test(value)
+        if (!isValidCanvaLink && !isValidGoogleLink) {
+          return false
+        }
+        return true
+      })
+  })
 
   return (
     <Stack>
@@ -155,11 +187,13 @@ export function TemplateSettingsDialog({
           initialValues={{
             title: journey.title ?? '',
             description: journey.description ?? '',
-            featuredAt: journey.featuredAt != null
+            featuredAt: journey.featuredAt != null,
+            strategySlug: journey?.strategySlug ?? ''
           }}
           onSubmit={handleTemplateUpdate}
+          validationSchema={validationSchema}
         >
-          {({ values, handleChange, handleSubmit, resetForm }) => (
+          {({ values, handleChange, handleSubmit, resetForm, errors }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
@@ -242,16 +276,13 @@ export function TemplateSettingsDialog({
                     support@nextsteps.is for more info
                   </Stack>
                 </TabPanel>
-                <TabPanel
-                  name="template-about-settings"
-                  value={tabValue}
-                  index={2}
-                >
-                  <Stack sx={{ pt: 6 }}>
-                    About - yet to be implemented - contact support@nextsteps.is
-                    for more info
-                  </Stack>
-                </TabPanel>
+                <CaseStudyTabPanel
+                  name="strategySlug"
+                  value={values.strategySlug}
+                  errors={errors}
+                  onChange={handleChange}
+                  tabValue={tabValue}
+                />
               </Form>
             </Dialog>
           )}
