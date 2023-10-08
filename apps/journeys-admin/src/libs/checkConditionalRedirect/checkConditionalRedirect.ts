@@ -20,18 +20,30 @@ export async function checkConditionalRedirect(
   client: ApolloClient<NormalizedCacheObject>,
   flags: {
     [key: string]: boolean | undefined
-  } = {}
+  } = {},
+  encodedRedirectPathname?: string
 ): Promise<Redirect | undefined> {
   const { data } = await client.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
+  const redirect =
+    encodedRedirectPathname != null && encodedRedirectPathname !== ''
+      ? `?redirect=${encodedRedirectPathname}`
+      : ''
+
   if (
     flags.termsAndConditions === true &&
     data.getJourneyProfile?.acceptedTermsAt == null
   ) {
-    return { destination: '/users/terms-and-conditions', permanent: false }
+    return {
+      destination: `/users/terms-and-conditions${redirect}`,
+      permanent: false
+    }
   } else if (flags.teams === true && data.teams.length === 0) {
-    return { destination: '/teams/new', permanent: false }
+    return {
+      destination: `/teams/new${redirect}`,
+      permanent: false
+    }
   }
 }
