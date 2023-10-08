@@ -22,7 +22,7 @@ describe('AboutTabPanel', () => {
         name="strategySlug"
         errors={{ strategySlug: '' }}
         value=""
-        tabValue={3}
+        tabValue={2}
         onChange={handleChange}
       />
     )
@@ -39,7 +39,7 @@ describe('AboutTabPanel', () => {
         name="strategySlug"
         errors={{ strategySlug: 'Invalid embed link' }}
         value="some invalid value"
-        tabValue={3}
+        tabValue={2}
         onChange={handleChange}
       />
     )
@@ -53,7 +53,7 @@ describe('AboutTabPanel', () => {
         name="strategySlug"
         errors={{ strategySlug: '' }}
         value="https://www.canva.com/design/DAFvDBw1z1A/view"
-        tabValue={3}
+        tabValue={2}
         onChange={handleChange}
       />
     )

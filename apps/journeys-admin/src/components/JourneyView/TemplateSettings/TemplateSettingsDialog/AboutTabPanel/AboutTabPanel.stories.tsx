@@ -24,7 +24,7 @@ export const Default = {
     name: 'strategySlug',
     errors: {},
     value: '',
-    tabValue: 3,
+    tabValue: 2,
     onChange: noop
   }
 }
