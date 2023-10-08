@@ -81,7 +81,7 @@ describe('TermsAndConditions', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(push).toHaveBeenCalledWith({
-      pathname: '/teams/new',
+      pathname: '/onboarding-form',
       query: { redirect: null }
     })
   })
@@ -121,7 +121,7 @@ describe('TermsAndConditions', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(push).toHaveBeenCalledWith({
-      pathname: '/teams/new',
+      pathname: '/onboarding-form',
       query: { redirect: 'custom-location' }
     })
   })

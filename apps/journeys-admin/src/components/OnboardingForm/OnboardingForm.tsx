@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import { Form } from '@formium/client'
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
 import { FormiumForm } from '@core/shared/ui/FormiumForm'
@@ -19,7 +19,7 @@ export const JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE = gql`
 
 interface OnboardingFormProps {
   form: Form
-  authUser: AuthUser
+  authUser: User
 }
 
 export function OnboardingForm({
@@ -35,7 +35,7 @@ export function OnboardingForm({
 
   async function handleClick(): Promise<void> {
     await journeyProfileOnboardingFormComplete()
-    await router?.push('/?onboarding=true')
+    await router?.push('/teams/new')
   }
 
   return (
