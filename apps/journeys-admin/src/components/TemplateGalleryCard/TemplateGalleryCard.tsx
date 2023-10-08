@@ -1,9 +1,7 @@
-import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -76,28 +74,26 @@ export function TemplateGalleryCard({
               />
             </Box>
           ) : (
-            <CardMedia
-              component="div"
+            <Skeleton
+              variant="rectangular"
               sx={{
-                height: { xs: 124, lg: 180 },
-                width: { xs: 130, lg: 180 },
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
+                width: { xs: 124, lg: 180 },
+                height: { xs: 130, lg: 180 },
                 borderColor: 'divider',
                 borderRadius: 2,
                 backgroundColor: 'background.default'
               }}
-            >
-              <InsertPhotoRoundedIcon />
-            </CardMedia>
+            />
           )}
-          <CardContent sx={{ display: 'flex', flexDirection: 'column', px: 0 }}>
+          <CardContent
+            sx={{ display: 'flex', flexDirection: 'column', px: 0, py: 3 }}
+          >
             {journey != null ? (
               <>
                 <Typography
                   variant="overline2"
                   sx={{
+                    fontFamily: 'Montserrat',
                     whiteSpace: 'noWrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -109,6 +105,7 @@ export function TemplateGalleryCard({
                 <Typography
                   variant="subtitle2"
                   sx={{
+                    fontFamily: 'Montserrat',
                     my: 1,
                     [theme.breakpoints.down('lg')]: { display: 'none' }
                   }}
@@ -118,6 +115,7 @@ export function TemplateGalleryCard({
                 <Typography
                   variant="subtitle3"
                   sx={{
+                    fontFamily: 'Montserrat',
                     my: 1,
                     [theme.breakpoints.up('lg')]: { display: 'none' }
                   }}
@@ -127,9 +125,9 @@ export function TemplateGalleryCard({
               </>
             ) : (
               <Box sx={{ height: '44px' }}>
-                <Skeleton variant="text" width={120} />
-                <Skeleton variant="text" width={120} />
-                <Skeleton variant="text" width={150} />
+                <Skeleton variant="text" sx={{ width: { xs: 124, lg: 180 } }} />
+                <Skeleton variant="text" sx={{ width: { xs: 124, lg: 180 } }} />
+                <Skeleton variant="text" sx={{ width: { xs: 80, lg: 130 } }} />
               </Box>
             )}
           </CardContent>

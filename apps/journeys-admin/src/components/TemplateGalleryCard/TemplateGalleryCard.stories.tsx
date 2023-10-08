@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -14,7 +15,11 @@ import { TemplateGalleryCard } from '.'
 const TemplateGalleryCardStory: Meta<typeof TemplateGalleryCard> = {
   ...journeysAdminConfig,
   component: TemplateGalleryCard,
-  title: 'Journeys-Admin/TemplateGalleryCard'
+  title: 'Journeys-Admin/TemplateGalleryCard',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const journey = {
@@ -62,7 +67,14 @@ const journey = {
 const Template: StoryObj<ComponentProps<typeof TemplateGalleryCard>> = {
   render: ({ ...args }) => (
     <MockedProvider>
-      <TemplateGalleryCard journey={args.journey} />
+      <Box
+        sx={{
+          backgroundColor: 'background.paper',
+          p: 5
+        }}
+      >
+        <TemplateGalleryCard journey={args.journey} />
+      </Box>
     </MockedProvider>
   )
 }
