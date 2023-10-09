@@ -16,6 +16,11 @@ import {
 
 import { Cards, STEP_BLOCK_NEXT_BLOCK_UPDATE } from './Cards'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Cards', () => {
   it('updates the next step on click', async () => {
     const selectedBlock: TreeBlock<StepBlock> = {
