@@ -11,6 +11,11 @@ import { TextResponseFields } from '../../../../../../__generated__/TextResponse
 
 import { TEXT_RESPONSE_BLOCK_UPDATE_CONTENT, TextResponseEdit } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('TextResponseEdit', () => {
   const props: TreeBlock<TextResponseFields> = {
     id: 'textResponse.id',

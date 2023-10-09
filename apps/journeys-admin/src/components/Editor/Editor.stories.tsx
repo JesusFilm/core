@@ -1,10 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks as Block,
+  GetJourney_journey as Journey
+} from '../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -42,7 +46,7 @@ const EditorStory: Meta<typeof Editor> = {
   }
 }
 
-const blocks: GetJourney_journey_blocks[] = [
+const blocks: Block[] = [
   {
     id: 'step0.id',
     __typename: 'StepBlock',
@@ -602,9 +606,45 @@ const blocks: GetJourney_journey_blocks[] = [
   }
 ]
 
+const journey: Journey = {
+  __typename: 'Journey',
+  id: 'journeyId',
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
+  title: 'NUA Journey: Ep.3 – Decision',
+  slug: 'nua-journey-ep-3-decision',
+  description: 'my cool journey',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  status: JourneyStatus.draft,
+  createdAt: '2021-11-19T12:34:56.647Z',
+  publishedAt: null,
+  primaryImageBlock: null,
+  userJourneys: [],
+  blocks,
+  featuredAt: null,
+  strategySlug: null,
+  seoTitle: null,
+  seoDescription: null,
+  template: null,
+  chatButtons: [],
+  host: null,
+  team: null
+}
+
 const Template: StoryObj<typeof Editor> = {
   render: (args) => {
-    console.log(args)
     return (
       <MockedProvider>
         <FlagsProvider>
@@ -629,43 +669,30 @@ const Template: StoryObj<typeof Editor> = {
 
 export const Default = {
   ...Template,
-  args: {
-    journey: {
-      __typename: 'Journey',
-      id: 'journeyId',
-      themeName: ThemeName.base,
-      themeMode: ThemeMode.light,
-      title: 'NUA Journey: Ep.3 – Decision',
-      slug: 'nua-journey-ep-3-decision',
-      description: 'my cool journey',
-      language: {
-        __typename: 'Language',
-        id: '529',
-        bcp47: 'en',
-        iso3: 'eng',
-        name: [
-          {
-            __typename: 'Translation',
-            value: 'English',
-            primary: true
-          }
-        ]
-      },
-      status: JourneyStatus.draft,
-      createdAt: '2021-11-19T12:34:56.647Z',
-      publishedAt: null,
-      primaryImageBlock: null,
-      userJourneys: [],
-      blocks
-    }
-  }
+  args: { journey }
 }
 
 export const SocialPreview = {
   ...Template,
-  args: {
-    ...Default.args,
-    view: ActiveJourneyEditContent.SocialPreview
+  args: { journey },
+  play: async () => {
+    const button = screen.getByTestId('social-preview-navigation-card')
+    await userEvent.click(button)
+    await waitFor(async () => {
+      await screen.getByText('Social App View')
+    })
+  }
+}
+
+export const Goals = {
+  ...Template,
+  args: { journey },
+  play: async () => {
+    const button = screen.getByTestId('goals-navigation-card')
+    await userEvent.click(button)
+    await waitFor(async () => {
+      await screen.getByText('Every Journey has a goal')
+    })
   }
 }
 
@@ -680,13 +707,7 @@ export const RTL = {
   ...Template,
   args: {
     journey: {
-      __typename: 'Journey',
-      id: 'journeyId',
-      themeName: ThemeName.base,
-      themeMode: ThemeMode.light,
-      title: 'NUA Journey: Ep.3 – Decision',
-      slug: 'nua-journey-ep-3-decision',
-      description: 'my cool journey',
+      ...journey,
       language: {
         __typename: 'Language',
         id: '529',
@@ -698,13 +719,7 @@ export const RTL = {
             primary: true
           }
         ]
-      },
-      status: JourneyStatus.draft,
-      createdAt: '2021-11-19T12:34:56.647Z',
-      publishedAt: null,
-      primaryImageBlock: null,
-      userJourneys: [],
-      blocks
+      }
     }
   }
 }

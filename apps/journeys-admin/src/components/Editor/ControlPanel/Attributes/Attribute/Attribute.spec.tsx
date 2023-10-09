@@ -6,6 +6,11 @@ import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { Attribute } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Attribute', () => {
   it('should render attribute', () => {
     const { getByText } = render(

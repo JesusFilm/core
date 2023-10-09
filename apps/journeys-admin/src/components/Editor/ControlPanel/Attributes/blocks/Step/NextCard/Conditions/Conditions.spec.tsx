@@ -12,6 +12,11 @@ import {
 
 import { Conditions, STEP_BLOCK_LOCK_UPDATE } from './Conditions'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Conditions', () => {
   it('changes the locked step state on click', async () => {
     const selectedBlock: TreeBlock<StepBlock> = {
