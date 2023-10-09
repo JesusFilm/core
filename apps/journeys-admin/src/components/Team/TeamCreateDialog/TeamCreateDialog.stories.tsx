@@ -66,7 +66,10 @@ export const Default = {
     }
   },
   play: async () => {
-    await userEvent.type(screen.getAllByRole('textbox')[0], 'Jesus Film Project')
+    await userEvent.type(
+      screen.getAllByRole('textbox')[0],
+      'Jesus Film Project'
+    )
   }
 }
 
@@ -78,7 +81,10 @@ export const LegalName = {
     }
   },
   play: async () => {
-    await userEvent.type(screen.getAllByRole('textbox')[0], 'Jesus Film Project')
+    await userEvent.type(
+      screen.getAllByRole('textbox')[0],
+      'Jesus Film Project'
+    )
     await userEvent.type(screen.getAllByRole('textbox')[1], 'Legal Name JFP')
   }
 }
