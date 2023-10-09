@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/system/Stack'
-import { ReactElement, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import SwiperCore, { A11y, Navigation } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -26,7 +26,31 @@ export function TemplateSection({
   const [isAtBeginning, setIsAtBeginning] = useState(true)
   const [isAtEnd, setIsAtEnd] = useState(false)
 
-  console.log(isAtEnd)
+  useEffect(() => {
+    const handleResize = (): void => {
+      const width = window.innerWidth
+      if (width <= 1199) {
+        document.querySelectorAll('.swiper-slide').forEach((swiperSlide) => {
+          const slide = swiperSlide as HTMLElement
+          slide.style.width = '124px'
+        })
+      }
+      if (width >= 1200) {
+        document.querySelectorAll('.swiper-slide').forEach((swiperSlide) => {
+          const slide = swiperSlide as HTMLElement
+          slide.style.width = '180px'
+        })
+      }
+    }
+
+    handleResize()
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
 
   return (
     <Stack spacing={4} justifyContent="center" sx={{ position: 'relative' }}>
@@ -35,7 +59,7 @@ export function TemplateSection({
         autoHeight
         watchOverflow
         slidesPerView="auto"
-        spaceBetween={36}
+        spaceBetween={25}
         navigation={{
           nextEl: nextRef.current,
           prevEl: prevRef.current
@@ -43,7 +67,6 @@ export function TemplateSection({
         onSlideChange={(swiper) => {
           setIsAtBeginning(swiper.isBeginning)
           setIsAtEnd(swiper.isEnd)
-          console.log(swiper)
         }}
       >
         {journeys?.map((journey) => (
@@ -51,7 +74,7 @@ export function TemplateSection({
             key={journey?.id}
             data-testId={`journey-${journey.id}`}
             style={{
-              width: 184
+              width: 180
             }}
           >
             <TemplateGalleryCard journey={journey} />

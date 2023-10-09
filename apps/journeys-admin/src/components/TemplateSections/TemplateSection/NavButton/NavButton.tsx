@@ -24,7 +24,8 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
             position: 'absolute',
             left: variant === 'prev' ? 0 : undefined,
             right: variant === 'next' ? 0 : undefined,
-            height: { xs: 225, lg: 240 },
+            height: { xs: 225, lg: 270 },
+            top: 25,
             width: 30,
             zIndex: 1,
             background:
