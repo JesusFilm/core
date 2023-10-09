@@ -59,7 +59,7 @@ describe('TemplateGalleryCard', () => {
     expect(getByRole('img').attributes.getNamedItem('src')?.value).toBe(
       'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
     )
-    expect(getByText('AUG, 2023 ● English')).toBeInTheDocument()
+    expect(getByText('Aug, 2023 ● English')).toBeInTheDocument()
     expect(
       getByRole('heading', { name: 'A Template Heading' })
     ).toBeInTheDocument()
@@ -89,7 +89,7 @@ describe('TemplateGalleryCard', () => {
         }}
       />
     )
-    expect(getByText('AUG, 2023 ● Kalagan (TK)')).toBeInTheDocument()
+    expect(getByText('Aug, 2023 ● Kalagan (TK)')).toBeInTheDocument()
   })
 
   it('should link to template details', () => {

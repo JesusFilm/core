@@ -5,6 +5,7 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -21,6 +22,8 @@ export interface TemplateGalleryCardProps {
 export function TemplateGalleryCard({
   journey
 }: TemplateGalleryCardProps): ReactElement {
+  const theme = useTheme()
+
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
   )?.value
@@ -36,9 +39,7 @@ export function TemplateGalleryCard({
       ? intlFormat(parseISO(journey.createdAt), {
           month: 'short',
           year: isThisYear(parseISO(journey?.createdAt)) ? 'numeric' : undefined
-        })
-          .replace(' ', ', ')
-          .toUpperCase()
+        }).replace(' ', ', ')
       : ''
 
   return (
@@ -59,44 +60,60 @@ export function TemplateGalleryCard({
         legacyBehavior
       >
         <CardActionArea sx={{ height: 'inherit' }}>
-          {journey?.primaryImageBlock?.src != null ? (
-            <Box
-              sx={{
-                position: 'relative',
-                width: { xs: 124, lg: 180 },
-                height: { xs: 130, lg: 180 }
-              }}
-            >
-              <Image
-                src={journey?.primaryImageBlock?.src}
-                alt={journey?.primaryImageBlock.alt}
-                fill
-                style={{ borderRadius: 8, objectFit: 'cover' }}
-              />
-            </Box>
+          {journey != null ? (
+            journey?.primaryImageBlock?.src != null ? (
+              <Box
+                sx={{
+                  position: 'relative',
+                  width: { xs: 124, lg: 180 },
+                  height: { xs: 130, lg: 180 }
+                }}
+              >
+                <Image
+                  src={journey?.primaryImageBlock?.src}
+                  alt={journey?.primaryImageBlock.alt}
+                  fill
+                  style={{ borderRadius: 8, objectFit: 'cover' }}
+                />
+              </Box>
+            ) : (
+              <CardMedia
+                component="div"
+                sx={{
+                  width: { xs: 124, lg: 180 },
+                  height: { xs: 130, lg: 180 },
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  backgroundColor: 'background.default'
+                }}
+              >
+                <InsertPhotoRoundedIcon />
+              </CardMedia>
+            )
           ) : (
-            <CardMedia
-              component="div"
+            <Skeleton
+              variant="rectangular"
               sx={{
-                height: { xs: 124, lg: 180 },
-                width: { xs: 130, lg: 180 },
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
+                width: { xs: 124, lg: 180 },
+                height: { xs: 130, lg: 180 },
                 borderColor: 'divider',
                 borderRadius: 2,
                 backgroundColor: 'background.default'
               }}
-            >
-              <InsertPhotoRoundedIcon />
-            </CardMedia>
+            />
           )}
-          <CardContent sx={{ display: 'flex', flexDirection: 'column', px: 0 }}>
+          <CardContent
+            sx={{ display: 'flex', flexDirection: 'column', px: 0, py: 3 }}
+          >
             {journey != null ? (
               <>
                 <Typography
-                  variant="overline"
+                  variant="overline2"
                   sx={{
+                    fontFamily: 'Montserrat',
                     whiteSpace: 'noWrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -105,15 +122,32 @@ export function TemplateGalleryCard({
                 >
                   {date} ● {displayLanguage}
                 </Typography>
-                <Typography variant="subtitle2" sx={{ my: 1 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontFamily: 'Montserrat',
+                    my: 1,
+                    [theme.breakpoints.down('lg')]: { display: 'none' }
+                  }}
+                >
+                  {journey.title}
+                </Typography>
+                <Typography
+                  variant="subtitle3"
+                  sx={{
+                    fontFamily: 'Montserrat',
+                    my: 1,
+                    [theme.breakpoints.up('lg')]: { display: 'none' }
+                  }}
+                >
                   {journey.title}
                 </Typography>
               </>
             ) : (
               <Box sx={{ height: '44px' }}>
-                <Skeleton variant="text" width={120} />
-                <Skeleton variant="text" width={120} />
-                <Skeleton variant="text" width={150} />
+                <Skeleton variant="text" sx={{ width: { xs: 124, lg: 180 } }} />
+                <Skeleton variant="text" sx={{ width: { xs: 124, lg: 180 } }} />
+                <Skeleton variant="text" sx={{ width: { xs: 80, lg: 130 } }} />
               </Box>
             )}
           </CardContent>

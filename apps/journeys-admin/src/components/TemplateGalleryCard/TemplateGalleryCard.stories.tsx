@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -14,7 +15,11 @@ import { TemplateGalleryCard } from '.'
 const TemplateGalleryCardStory: Meta<typeof TemplateGalleryCard> = {
   ...journeysAdminConfig,
   component: TemplateGalleryCard,
-  title: 'Journeys-Admin/TemplateGalleryCard'
+  title: 'Journeys-Admin/TemplateGalleryCard',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const journey = {
@@ -43,17 +48,7 @@ const journey = {
   themeMode: ThemeMode.dark,
   tags: [],
   trashedAt: null,
-  primaryImageBlock: {
-    id: 'image1.id',
-    __typename: 'ImageBlock',
-    parentBlockId: null,
-    parentOrder: 0,
-    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-    alt: 'random image from unsplash',
-    width: 1920,
-    height: 1080,
-    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
-  },
+  primaryImageBlock: null,
   publishedAt: '2023-08-14T04:24:24.392Z',
   createdAt: '2023-08-14T04:24:24.392Z',
   featuredAt: '2023-08-14T04:24:24.392Z'
@@ -62,7 +57,14 @@ const journey = {
 const Template: StoryObj<ComponentProps<typeof TemplateGalleryCard>> = {
   render: ({ ...args }) => (
     <MockedProvider>
-      <TemplateGalleryCard journey={args.journey} />
+      <Box
+        sx={{
+          backgroundColor: 'background.paper',
+          p: 5
+        }}
+      >
+        <TemplateGalleryCard journey={args.journey} />
+      </Box>
     </MockedProvider>
   )
 }
@@ -87,6 +89,17 @@ export const Complete = {
     journey: {
       ...journey,
       title: 'Where did Jesus body go',
+      primaryImageBlock: {
+        id: 'image1.id',
+        __typename: 'ImageBlock',
+        parentBlockId: null,
+        parentOrder: 0,
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'random image from unsplash',
+        width: 1920,
+        height: 1080,
+        blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+      },
       language: {
         __typename: 'Language',
         id: '529',

@@ -81,7 +81,7 @@ export const Complete = {
       backHref: '/',
       showDrawer: true,
       title: 'Journey Details',
-      authUser: {
+      user: {
         displayName: 'Amin One',
         photoURL: 'https://bit.ly/3Gth4Yf',
         email: 'amin@email.com',

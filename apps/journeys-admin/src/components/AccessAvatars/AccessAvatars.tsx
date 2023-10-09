@@ -137,7 +137,7 @@ const withRenderLogic = ({
           return (
             user != null && (
               <Avatar
-                user={user}
+                apiUser={user}
                 notification={role === UserJourneyRole.inviteRequested}
                 key={user.id}
               />
