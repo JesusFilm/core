@@ -5,8 +5,9 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import { StrategySection } from '../StrategySection'
+
 import { CreateJourneyButton } from './CreateJourneyButton'
-import { StrategySection } from './StrategySection'
 
 interface TemplateViewProps {
   authUser: User
@@ -18,17 +19,16 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   return (
     <Stack gap={4}>
       <Typography variant="h1">{journey?.title}</Typography>
-      <Typography variant="body1">{journey?.description}</Typography>
-
+      <Typography variant="body1">{journey?.description}</Typography>z
       <CreateJourneyButton signedIn={authUser?.id != null} />
-      <Stack sx={{ pt: 4 }}>
-        {journey?.strategySlug != null && (
+      {journey?.strategySlug != null && (
+        <Stack sx={{ pt: 4 }}>
           <StrategySection
             strategySlug={journey?.strategySlug}
             variant="full"
           />
-        )}
-      </Stack>
+        </Stack>
+      )}
     </Stack>
   )
 }

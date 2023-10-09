@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../libs/storybook'
 
 import { StrategySection } from './StrategySection'
 
@@ -45,20 +45,19 @@ export const GoogleSlides = {
   }
 }
 
-export const Preview = {
-  ...Template,
-  args: {
-    strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
-    variant: 'preview'
-  }
-}
-
-export const PreviewPlaceholder = {
+export const PlaceHolderDefault = {
   ...Template,
   args: {
     strategySlug: '',
-    variant: 'preview',
-    isError: true
+    variant: 'placeholder'
+  }
+}
+
+export const PlaceHolderFilled = {
+  ...Template,
+  args: {
+    strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
+    variant: 'placeholder'
   }
 }
 

@@ -12,7 +12,7 @@ jest.mock('react-i18next', () => ({
 }))
 
 describe('StrategySection', () => {
-  it('should render embedded canva strategy slug properly', () => {
+  it('should render embedded canva strategy slug', () => {
     const canvaStrategySlug = 'https://www.canva.com/design/DAFvDBw1z1A/view'
     const { getByTestId, getByText } = render(
       <StrategySection strategySlug={canvaStrategySlug} variant="full" />
@@ -25,7 +25,7 @@ describe('StrategySection', () => {
     )
   })
 
-  it('should render embedded google strategy slug properly', () => {
+  it('should render embedded google strategy slug', () => {
     const googleStrategySlug =
       'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
     const { getByTestId, getByText } = render(
@@ -57,7 +57,10 @@ describe('StrategySection', () => {
     const googleStrategySlug =
       'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
     const { queryByText } = render(
-      <StrategySection strategySlug={googleStrategySlug} variant="preview" />
+      <StrategySection
+        strategySlug={googleStrategySlug}
+        variant="placeholder"
+      />
     )
 
     expect(queryByText('Strategy')).not.toBeInTheDocument()
@@ -65,7 +68,7 @@ describe('StrategySection', () => {
 
   it('should render empty placeholder preview on empty strategy slug and validation error', () => {
     const { queryByText, queryByTestId, getByTestId } = render(
-      <StrategySection strategySlug="" variant="preview" isError />
+      <StrategySection strategySlug="" variant="placeholder" isError />
     )
 
     expect(queryByText('Strategy')).not.toBeInTheDocument()

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import { TabPanel } from '@core/shared/ui/TabPanel'
 
-import { StrategySection } from '../../../../TemplateView/StrategySection'
+import { StrategySection } from '../../../../StrategySection'
 
 interface AboutTabPanelProps {
   name: string

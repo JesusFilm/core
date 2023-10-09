@@ -177,8 +177,8 @@ describe('TemplateSettingsDialog', () => {
 
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
-      expect(onClose).toHaveBeenCalled()
     })
+    expect(onClose).toHaveBeenCalled()
   })
 
   it('should validate on invalid embed url', async () => {
