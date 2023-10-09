@@ -20,6 +20,11 @@ import {
   NavigateToJourneyAction
 } from './NavigateToJourneyAction'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('NavigateToJourneyAction', () => {
   const journey: Journey = {
     __typename: 'Journey',

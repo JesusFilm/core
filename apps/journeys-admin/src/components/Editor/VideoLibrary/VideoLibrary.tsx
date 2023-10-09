@@ -173,12 +173,12 @@ export function VideoLibrary({
       </Drawer>
       {selectedBlock?.videoId != null && (
         <VideoDetails
-          id={selectedBlock?.videoId}
+          id={selectedBlock.videoId}
           open={openVideoDetails}
           source={selectedBlock.source}
           onClose={handleVideoDetailsClose}
           onSelect={onSelect}
-          activeVideo
+          activeVideoBlock={selectedBlock}
         />
       )}
     </>

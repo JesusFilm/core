@@ -15,6 +15,11 @@ import { TYPOGRAPHY_BLOCK_UPDATE_VARIANT } from './Variant'
 
 import { Variant } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Typography variant selector', () => {
   it('should show variant properties', () => {
     const selectedBlock: TreeBlock<TypographyBlock> = {
