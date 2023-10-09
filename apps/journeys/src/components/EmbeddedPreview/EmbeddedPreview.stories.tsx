@@ -1,12 +1,18 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import {
+  ChatPlatform,
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
 import { journeysConfig } from '../../libs/storybook'
 import {
   basic,
@@ -29,31 +35,65 @@ const Demo: Meta<typeof EmbeddedPreview> = {
   }
 }
 
+const journey: Journey = {
+  __typename: 'Journey',
+  id: 'journeyId',
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
+  title: 'My Journey',
+  seoTitle: 'My Journey',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  slug: 'my journey',
+  description: 'my cool journey',
+  status: JourneyStatus.draft,
+  createdAt: '2021-11-19T12:34:56.647Z',
+  publishedAt: null,
+  primaryImageBlock: null,
+  userJourneys: [],
+  featuredAt: null,
+  strategySlug: null,
+  seoDescription: null,
+  template: null,
+  chatButtons: [
+    {
+      __typename: 'ChatButton',
+      id: 'chatButtonId',
+      link: 'http://me.com',
+      platform: ChatPlatform.facebook
+    }
+  ],
+  host: {
+    __typename: 'Host',
+    id: 'hostId',
+    teamId: 'teamId',
+    title: 'Bob Jones and Michael Smith',
+    location: 'Auckland, NZ',
+    src1: 'https://tinyurl.com/3bxusmyb',
+    src2: 'https://tinyurl.com/mr4a78kb'
+  },
+  team: null,
+  blocks: basic
+}
+
 const Template: StoryObj<typeof EmbeddedPreview> = {
   render: ({ ...args }): ReactElement => (
     <MockedProvider>
       <SnackbarProvider>
         <JourneyProvider
           value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base,
-              seoTitle: 'my journey',
-              language: {
-                __typename: 'Language',
-                id: '529',
-                bcp47: 'en',
-                iso3: 'eng',
-                name: [
-                  {
-                    __typename: 'Translation',
-                    value: 'English',
-                    primary: true
-                  }
-                ]
-              }
-            } as unknown as Journey,
+            journey,
             variant: 'embed'
           }}
         >
@@ -68,6 +108,17 @@ export const Default = {
   ...Template,
   args: {
     blocks: basic
+  }
+}
+
+export const Opened = {
+  ...Template,
+  args: {
+    blocks: imageBlocks
+  },
+  play: async () => {
+    const card = screen.getAllByTestId('card0.id')[0]
+    await userEvent.click(card)
   }
 }
 
