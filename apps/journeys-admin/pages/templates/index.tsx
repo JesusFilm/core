@@ -18,7 +18,11 @@ function LibraryIndex(): ReactElement {
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
-      <PageWrapper title={t('Journey Templates')} user={user}>
+      <PageWrapper
+        title={t('Journey Templates')}
+        user={user}
+        bodyBackgroundColor={templates ? 'background.paper' : undefined}
+      >
         {templates ? <TemplateGallery /> : <TemplateLibrary />}
       </PageWrapper>
     </>
