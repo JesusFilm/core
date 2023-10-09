@@ -80,8 +80,8 @@ export function TemplateGalleryCard({
               <CardMedia
                 component="div"
                 sx={{
-                  height: { xs: 124, lg: 180 },
-                  width: { xs: 130, lg: 180 },
+                  width: { xs: 124, lg: 180 },
+                  height: { xs: 130, lg: 180 },
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
