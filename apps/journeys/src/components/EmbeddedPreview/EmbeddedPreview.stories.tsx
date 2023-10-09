@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -117,6 +118,10 @@ export const Opened = {
     blocks: imageBlocks
   },
   play: async () => {
+    await waitFor(
+      async () =>
+        await expect(screen.getAllByTestId('card0.id')[0]).toBeInTheDocument()
+    )
     const card = screen.getAllByTestId('card0.id')[0]
     await userEvent.click(card)
   }
