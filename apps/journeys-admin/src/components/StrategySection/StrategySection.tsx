@@ -92,8 +92,6 @@ export function StrategySection({
               width: '100%',
               py: 'calc(28.11125% - 24px)',
               border: 'none',
-              display: 'flex',
-              direction: 'row',
               justifyContent: 'center',
               alignItems: 'center'
             }}
