@@ -59,21 +59,11 @@ export function TeamUpdateDialog({
         }
       })
       handleClose(resetForm)()
-      if (values.title !== activeTeam?.title) {
-        enqueueSnackbar(t(`${data?.teamUpdate.title ?? 'Team'} updated.`), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      }
-      if (values.publicTitle !== activeTeam?.publicTitle && data !== null) {
-        enqueueSnackbar(
-          t(`${data?.teamUpdate.publicTitle ?? 'Team'} updated.`),
-          {
-            variant: 'success',
-            preventDuplicate: true
-          }
-        )
-      }
+
+      enqueueSnackbar(t(`${data?.teamUpdate.title ?? 'Team'} updated.`), {
+        variant: 'success',
+        preventDuplicate: true
+      })
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
