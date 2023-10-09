@@ -41,19 +41,18 @@ describe('useJourneyUpdateMutation', () => {
       )
     })
 
-    await result.current[0]({
-      variables: {
-        id: 'journeyId',
-        input: {
-          title: 'New Title',
-          description: 'New Description',
-          strategySlug: 'www.example.com/embed'
-        }
-      }
-    })
-
     await act(async () => {
       await waitFor(async () => {
+        await result.current[0]({
+          variables: {
+            id: 'journeyId',
+            input: {
+              title: 'New Title',
+              description: 'New Description',
+              strategySlug: 'www.example.com/embed'
+            }
+          }
+        })
         expect(journeyUpdateMutationMock.result).toHaveBeenCalled()
       })
     })
