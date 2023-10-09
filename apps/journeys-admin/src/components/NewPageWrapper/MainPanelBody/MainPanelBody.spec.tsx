@@ -15,7 +15,7 @@ describe('MainPanelBody', () => {
 
   it('should render the main body with a background color', () => {
     const { getByTestId } = render(
-      <MainPanelBody addBackgroundColor>
+      <MainPanelBody backgroundColor="background.paper">
         <Typography variant="h1">Child</Typography>
       </MainPanelBody>
     )

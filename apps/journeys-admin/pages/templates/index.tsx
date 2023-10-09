@@ -13,7 +13,6 @@ import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
-  // TODO: remove templates and update logic accordingly
   const { templates } = useFlags()
 
   return (
@@ -22,7 +21,7 @@ function LibraryIndex(): ReactElement {
       <PageWrapper
         title={t('Journey Templates')}
         user={user}
-        addBackgroundColor={templates}
+        bodyBackgroundColor="background.paper"
       >
         {templates ? <TemplateGallery /> : <TemplateLibrary />}
       </PageWrapper>

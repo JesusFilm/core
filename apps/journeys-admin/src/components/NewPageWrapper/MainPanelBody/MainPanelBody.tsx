@@ -6,13 +6,13 @@ import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 export interface MainPanelBodyProps {
   children: ReactNode
   bottomPanelChildren?: ReactNode
-  addBackgroundColor?: boolean
+  backgroundColor?: string
 }
 
 export function MainPanelBody({
   children,
   bottomPanelChildren,
-  addBackgroundColor
+  backgroundColor
 }: MainPanelBodyProps): ReactElement {
   const { navbar, bottomPanel } = usePageWrapperStyles()
 
@@ -32,8 +32,7 @@ export function MainPanelBody({
         flexGrow={1}
         sx={{
           // Make optional or remove during cooldown
-          backgroundColor:
-            addBackgroundColor === true ? 'background.paper' : undefined,
+          backgroundColor,
           px: { xs: 6, md: 8 },
           py: { xs: 6, md: 9 },
           mb: {
