@@ -1,9 +1,10 @@
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
+import { AdminJourneyFields as AdminJourney } from './__generated__/AdminJourneyFields'
 import { JourneyFields as Journey } from './__generated__/JourneyFields'
 
 interface Context {
-  journey?: Journey
+  journey?: Journey | AdminJourney
   variant?: 'default' | 'admin' | 'embed'
 }
 

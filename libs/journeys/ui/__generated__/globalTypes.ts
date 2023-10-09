@@ -151,6 +151,11 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum UserTeamRole {
+  manager = "manager",
+  member = "member",
+}
+
 export enum VideoBlockObjectFit {
   fill = "fill",
   fit = "fit",
