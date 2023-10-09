@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -11,7 +12,11 @@ import { TemplateSections } from '.'
 const TemplateSectionsStory: Meta<typeof TemplateSections> = {
   ...journeysAdminConfig,
   component: TemplateSections,
-  title: 'Journeys-Admin/TemplateSections'
+  title: 'Journeys-Admin/TemplateSections',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const defaultTemplate = {
@@ -55,7 +60,9 @@ const Template: StoryObj<
 > = {
   render: ({ mocks }) => (
     <MockedProvider mocks={mocks}>
-      <TemplateSections />
+      <Box sx={{ backgroundColor: 'background.paper', p: 5 }}>
+        <TemplateSections />
+      </Box>
     </MockedProvider>
   )
 }
