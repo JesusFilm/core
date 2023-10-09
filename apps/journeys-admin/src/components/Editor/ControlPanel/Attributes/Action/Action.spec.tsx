@@ -14,6 +14,11 @@ import {
 import { ACTION_DELETE, Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {

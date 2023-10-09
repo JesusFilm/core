@@ -12,4 +12,15 @@ describe('MainPanelBody', () => {
     )
     expect(getByTestId('bottom-panel')).toHaveTextContent('Bottom Panel')
   })
+
+  it('should render the main body with a background color', () => {
+    const { getByTestId } = render(
+      <MainPanelBody backgroundColor="background.paper">
+        <Typography variant="h1">Child</Typography>
+      </MainPanelBody>
+    )
+    expect(getByTestId('main-body')).toHaveStyle({
+      backgroundColor: '#FFFFFF'
+    })
+  })
 })
