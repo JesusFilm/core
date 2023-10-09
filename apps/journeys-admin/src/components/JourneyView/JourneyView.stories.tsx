@@ -28,48 +28,6 @@ const JourneyViewStory: Meta<typeof JourneyView> = {
   }
 }
 
-const Template: StoryObj<
-  ComponentProps<typeof JourneyView> & { journey: Journey }
-> = {
-  render: ({ ...args }) => (
-    <ApolloLoadingProvider>
-      <FlagsProvider>
-        <TeamProvider>
-          <JourneyProvider
-            value={{
-              journey: args.journey,
-              variant: 'admin'
-            }}
-          >
-            <PageWrapper
-              title="Journey Details"
-              showDrawer
-              backHref="/"
-              menu={<Menu />}
-            >
-              <JourneyView journeyType="Journey" />
-            </PageWrapper>
-          </JourneyProvider>
-        </TeamProvider>
-      </FlagsProvider>
-    </ApolloLoadingProvider>
-  )
-}
-
-export const Default = {
-  ...Template,
-  args: {
-    journey: publishedJourney
-  }
-}
-
-export const Loading = {
-  ...Template,
-  args: {
-    journey: undefined
-  }
-}
-
 const JourneyTemplate: StoryObj<
   ComponentProps<typeof JourneyView> & {
     mocks: [MockedResponse<GetUserRole>]

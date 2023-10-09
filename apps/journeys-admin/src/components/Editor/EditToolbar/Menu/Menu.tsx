@@ -16,7 +16,7 @@ import SettingsIcon from '@core/shared/ui/icons/Settings'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
-import { TitleDescriptionDialog } from '../../../JourneyView/TitleDescription/TitleDescriptionDialog'
+import { TemplateSettingsDialog } from '../../../JourneyView/TemplateSettings/TemplateSettingsDialog'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
 
@@ -50,7 +50,7 @@ export function Menu(): ReactElement {
 
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
-  const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
+  const [showTemplateSettingsDialog, setShowTemplateSettingsDialog] =
     useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -78,12 +78,12 @@ export function Menu(): ReactElement {
     setAnchorEl(null)
   }
 
-  const handleUpdateTitleDescription = (): void => {
-    setShowTitleDescriptionDialog(true)
+  const handleUpdateTemplateSettings = (): void => {
+    setShowTemplateSettingsDialog(true)
   }
 
-  const handleCloseTitleDescription = (): void => {
-    setShowTitleDescriptionDialog(false)
+  const handleCloseTemplateSettings = (): void => {
+    setShowTemplateSettingsDialog(false)
     setAnchorEl(null)
   }
 
@@ -172,7 +172,7 @@ export function Menu(): ReactElement {
           <MenuItem
             label="Description"
             icon={<Edit2Icon />}
-            onClick={handleUpdateTitleDescription}
+            onClick={handleUpdateTemplateSettings}
           />
         )}
         {journey?.template !== true && (
@@ -208,9 +208,9 @@ export function Menu(): ReactElement {
         open={showDescriptionDialog}
         onClose={handleCloseDescription}
       />
-      <TitleDescriptionDialog
-        open={showTitleDescriptionDialog}
-        onClose={handleCloseTitleDescription}
+      <TemplateSettingsDialog
+        open={showTemplateSettingsDialog}
+        onClose={handleCloseTemplateSettings}
       />
     </>
   )
