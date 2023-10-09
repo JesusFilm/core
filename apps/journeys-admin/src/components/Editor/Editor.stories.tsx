@@ -5,7 +5,10 @@ import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-import { GetJourney_journey_blocks as Block } from '../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks as Block,
+  GetJourney_journey as Journey
+} from '../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -603,7 +606,7 @@ const blocks: Block[] = [
   }
 ]
 
-const journey = {
+const journey: Journey = {
   __typename: 'Journey',
   id: 'journeyId',
   themeName: ThemeName.base,
@@ -629,7 +632,15 @@ const journey = {
   publishedAt: null,
   primaryImageBlock: null,
   userJourneys: [],
-  blocks
+  blocks,
+  featuredAt: null,
+  strategySlug: null,
+  seoTitle: null,
+  seoDescription: null,
+  template: null,
+  chatButtons: [],
+  host: null,
+  team: null
 }
 
 const Template: StoryObj<typeof Editor> = {
@@ -668,7 +679,7 @@ export const SocialPreview = {
     const button = screen.getByTestId('social-preview-navigation-card')
     await userEvent.click(button)
     await waitFor(async () => {
-      await screen.getByText('Social Share Preview')
+      await screen.getByText('Social App View')
     })
   }
 }
@@ -680,7 +691,7 @@ export const Goals = {
     const button = screen.getByTestId('goals-navigation-card')
     await userEvent.click(button)
     await waitFor(async () => {
-      await screen.getByText('Information')
+      await screen.getByText('Every Journey has a goal')
     })
   }
 }
@@ -696,13 +707,7 @@ export const RTL = {
   ...Template,
   args: {
     journey: {
-      __typename: 'Journey',
-      id: 'journeyId',
-      themeName: ThemeName.base,
-      themeMode: ThemeMode.light,
-      title: 'NUA Journey: Ep.3 – Decision',
-      slug: 'nua-journey-ep-3-decision',
-      description: 'my cool journey',
+      ...journey,
       language: {
         __typename: 'Language',
         id: '529',
@@ -714,13 +719,7 @@ export const RTL = {
             primary: true
           }
         ]
-      },
-      status: JourneyStatus.draft,
-      createdAt: '2021-11-19T12:34:56.647Z',
-      publishedAt: null,
-      primaryImageBlock: null,
-      userJourneys: [],
-      blocks
+      }
     }
   }
 }
