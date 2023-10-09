@@ -1,5 +1,4 @@
 export {
-  fetchMediaComponentsAndTransformToVideos,
   getArclightMediaLanguages,
   getArclightMediaComponents,
   getArclightMediaComponentLanguages,
