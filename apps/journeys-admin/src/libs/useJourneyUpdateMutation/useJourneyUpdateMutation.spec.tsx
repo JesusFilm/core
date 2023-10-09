@@ -1,11 +1,12 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
-import {
-  useJourneyUpdateMutation,
-  JOURNEY_SETTINGS_UPDATE
-} from './useJourneyUpdateMutation'
 import { JourneySettingsUpdate } from '../../../__generated__/JourneySettingsUpdate'
+
+import {
+  JOURNEY_SETTINGS_UPDATE,
+  useJourneyUpdateMutation
+} from './useJourneyUpdateMutation'
 
 describe('useJourneyUpdateMutation', () => {
   const journeyUpdateMutationMock: MockedResponse<JourneySettingsUpdate> = {
@@ -32,6 +33,7 @@ describe('useJourneyUpdateMutation', () => {
       }
     }))
   }
+
   it('should update journey details', async () => {
     const { result } = renderHook(() => useJourneyUpdateMutation(), {
       wrapper: ({ children }) => (
