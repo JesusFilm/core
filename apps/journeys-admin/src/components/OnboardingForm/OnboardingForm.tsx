@@ -38,6 +38,8 @@ export function OnboardingForm({
     await router?.push('/teams/new')
   }
 
+  console.log(form)
+
   return (
     <Box
       sx={{
