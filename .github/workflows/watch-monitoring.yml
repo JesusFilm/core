@@ -1,7 +1,7 @@
-name: watch-monitoring-every5mins
+name: watch-monitoring-every3mins
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/3 * * * *'
   push:
     branches: [main, master]
   pull_request:
@@ -33,7 +33,7 @@ jobs:
         with:
           status: ${{ job.status }}
           channel: '#apps-monitoring'
-          message: Watch monitoring is '${{ job.status }}'
-        if: always()
+          message: watch app (https://www.jesusfilm.org/watch) is down.
+        if: failure()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

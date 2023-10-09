@@ -1,7 +1,7 @@
-name: journeys-admin-monitoring-every5mins
+name: journeys-admin-monitoring-every3mins
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/3 * * * *'
   push:
     branches: [main, master]
   pull_request:
@@ -33,7 +33,7 @@ jobs:
         with:
           status: ${{ job.status }}
           channel: '#apps-monitoring'
-          message: journeys-admin app(https://admin.nextstep.is/) is down.
+          message: journeys-admin app (https://admin.nextstep.is/) is down.
         if: failure()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
