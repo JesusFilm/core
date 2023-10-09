@@ -1,7 +1,9 @@
+import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -58,21 +60,39 @@ export function TemplateGalleryCard({
         legacyBehavior
       >
         <CardActionArea sx={{ height: 'inherit' }}>
-          {journey?.primaryImageBlock?.src != null ? (
-            <Box
-              sx={{
-                position: 'relative',
-                width: { xs: 124, lg: 180 },
-                height: { xs: 130, lg: 180 }
-              }}
-            >
-              <Image
-                src={journey?.primaryImageBlock?.src}
-                alt={journey?.primaryImageBlock.alt}
-                fill
-                style={{ borderRadius: 8, objectFit: 'cover' }}
-              />
-            </Box>
+          {journey != null ? (
+            journey?.primaryImageBlock?.src != null ? (
+              <Box
+                sx={{
+                  position: 'relative',
+                  width: { xs: 124, lg: 180 },
+                  height: { xs: 130, lg: 180 }
+                }}
+              >
+                <Image
+                  src={journey?.primaryImageBlock?.src}
+                  alt={journey?.primaryImageBlock.alt}
+                  fill
+                  style={{ borderRadius: 8, objectFit: 'cover' }}
+                />
+              </Box>
+            ) : (
+              <CardMedia
+                component="div"
+                sx={{
+                  height: { xs: 124, lg: 180 },
+                  width: { xs: 130, lg: 180 },
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  backgroundColor: 'background.default'
+                }}
+              >
+                <InsertPhotoRoundedIcon />
+              </CardMedia>
+            )
           ) : (
             <Skeleton
               variant="rectangular"
