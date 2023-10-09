@@ -37,7 +37,7 @@ export const TRASH_ACTIVE_JOURNEYS = gql`
   }
 `
 export function ActiveJourneyList({
-  authUser,
+  user,
   sortOrder,
   event
 }: JourneyListProps): ReactElement {
@@ -77,7 +77,7 @@ export function ActiveJourneyList({
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+              (userJourney) => userJourney.user?.id === (user?.id ?? '')
             )?.role === 'owner'
         )
         .map((journey) => journey.id)
@@ -97,7 +97,7 @@ export function ActiveJourneyList({
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+              (userJourney) => userJourney.user?.id === (user?.id ?? '')
             )?.role === 'owner'
         )
         .map((journey) => journey.id)
@@ -139,7 +139,7 @@ export function ActiveJourneyList({
               journeys={data.journeys}
               sortOrder={sortOrder}
               refetch={refetch}
-              authUser={authUser}
+              user={user}
             />
             {data.journeys.length === 0 && (
               <Card
