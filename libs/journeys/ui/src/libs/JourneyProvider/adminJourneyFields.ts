@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { JOURNEY_FIELDS } from './journeyFields'
 
 /**
  * Inherit common journey fields.
