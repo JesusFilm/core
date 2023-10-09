@@ -15,6 +15,11 @@ import {
 
 import { ColorDisplayIcon } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('ColorDisplayIcon', () => {
   it('should show the selected color primary as default', () => {
     const step: TreeBlock<StepBlock> = {

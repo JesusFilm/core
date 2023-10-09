@@ -258,6 +258,16 @@ export interface ButtonClickEventCreateInput {
   actionValue?: string | null;
 }
 
+export interface CardBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  backgroundColor?: string | null;
+  fullscreen?: boolean | null;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
+}
+
 export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   backgroundColor?: string | null;
@@ -446,6 +456,13 @@ export interface SignUpSubmissionEventCreateInput {
   stepId?: string | null;
   name: string;
   email: string;
+}
+
+export interface StepBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  nextBlockId?: string | null;
+  locked?: boolean | null;
 }
 
 export interface StepBlockUpdateInput {
