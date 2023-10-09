@@ -6,7 +6,7 @@ import {
   VideoVariantDownloadQuality
 } from '.prisma/api-videos-client'
 
-import { PrismaVideoCreateInput } from '../postgresSeed'
+import { PrismaVideoCreateInput } from '../postgresql'
 import { slugify } from '../slugify'
 
 export interface ArclightMediaLanguage {

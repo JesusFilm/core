@@ -1,7 +1,7 @@
 // version 3
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
-// valid import modes: missing, replace, complete, update
+// valid import modes: missing, replace, complete, update, single
 
 import { PrismaClient } from '.prisma/api-videos-client'
 
@@ -12,7 +12,15 @@ import {
   getArclightMediaComponents,
   transformMediaComponentToVideo
 } from '../src/libs/arclight/arclight'
-import { handleVideo, handleVideoChildren } from '../src/libs/postgresSeed'
+import {
+  getVideoIdsAndSlugs,
+  handleVideo,
+  handleVideoChildren
+} from '../src/libs/postgresql'
+
+import { importAllMissing } from './seeds/allMissing'
+import { importComplete } from './seeds/complete'
+import { importSingle } from './seeds/update'
 
 const prisma = new PrismaClient()
 
@@ -21,7 +29,7 @@ let mode = process.argv[2] ?? null
 if (mode == null || mode === 'undefined' || mode === '') {
   console.log('No mode argument provided. Using default missing mode.')
   console.log(
-    'usage: nx seed api-videos --mode={mode} --target={target arclight id for replace/update}'
+    'usage: nx prisma-seed api-videos --mode={mode} --target={target arclight id for replace/update}'
   )
   console.log('valid modes: missing, replace, update, complete, resume')
   mode = 'missing'
@@ -30,24 +38,6 @@ if (mode == null || mode === 'undefined' || mode === '') {
 let target: string | undefined = process.argv[3]
 if (target === 'undefined' || target === '') {
   target = undefined
-}
-
-async function getVideoIdsAndSlugs(): Promise<{
-  slugs: Record<string, string>
-  ids: string[]
-}> {
-  const results = await prisma.video.findMany({
-    select: { slug: true, id: true }
-  })
-
-  const slugs: Record<string, string> = {}
-  const ids: string[] = []
-  for await (const video of results) {
-    ids.push(video.id)
-    if (video.slug != null) slugs[video.slug] = video.id
-  }
-
-  return { slugs, ids }
 }
 
 async function importMediaComponents(
@@ -159,6 +149,13 @@ async function importMediaComponents(
 async function main(): Promise<void> {
   console.log('import mode:', mode)
 
+  if (mode === 'complete') {
+    await importComplete(target)
+  } else if (mode === 'missing' && target == null) {
+    await importAllMissing()
+  } else if (mode === 'single') {
+    await importSingle(target)
+  }
   console.log('importing mediaComponents as videos...')
   await importMediaComponents(mode, target)
   console.log('mediaComponents imported')

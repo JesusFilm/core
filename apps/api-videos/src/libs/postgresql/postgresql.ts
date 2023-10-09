@@ -461,3 +461,21 @@ export async function handleVideoChildren(
     })
   }
 }
+
+export async function getVideoIdsAndSlugs(): Promise<{
+  slugs: Record<string, string>
+  ids: string[]
+}> {
+  const results = await prisma.video.findMany({
+    select: { slug: true, id: true }
+  })
+
+  const slugs: Record<string, string> = {}
+  const ids: string[] = []
+  for await (const video of results) {
+    ids.push(video.id)
+    if (video.slug != null) slugs[video.slug] = video.id
+  }
+
+  return { slugs, ids }
+}
