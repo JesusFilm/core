@@ -47,7 +47,7 @@ export function AboutTabPanel({
         />
         <StrategySection
           strategySlug={value}
-          variant="preview"
+          variant="placeholder"
           isError={Boolean(errors?.strategySlug)}
         />
       </Stack>
