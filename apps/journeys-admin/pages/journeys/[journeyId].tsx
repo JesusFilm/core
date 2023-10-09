@@ -27,14 +27,14 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 
-export const GET_ADMIN_JOURNEY = gql`
-  ${JOURNEY_FIELDS}
-  query GetAdminJourney($id: ID!) {
-    journey: adminJourney(id: $id, idType: databaseId) {
-      ...JourneyFields
-    }
-  }
-`
+// export const GET_ADMIN_JOURNEY = gql`
+//   ${JOURNEY_FIELDS}
+//   query GetAdminJourney($id: ID!) {
+//     journey: adminJourney(id: $id, idType: databaseId) {
+//       ...JourneyFields
+//     }
+//   }
+// `
 
 export const USER_JOURNEY_OPEN = gql`
   mutation UserJourneyOpen($id: ID!) {
