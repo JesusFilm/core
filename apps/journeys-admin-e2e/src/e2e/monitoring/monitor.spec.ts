@@ -13,5 +13,5 @@ test('Homepage checks', async ({ page }) => {
     .locator('li.firebaseui-list-item:nth-child(1)')
     .textContent()
   // Fail intentionally to test notification
-  expect(loginOptionsText).toEqual('Sign in with emailEmail')
+  expect(loginOptionsText).toEqual('Sign in with Google')
 })
