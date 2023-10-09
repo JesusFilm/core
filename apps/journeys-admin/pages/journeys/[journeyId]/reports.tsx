@@ -19,7 +19,8 @@ import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiRep
 import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
+import { GET_ADMIN_JOURNEY } from '../../../src/libs/useAdminJourneyQuery/useAdminJourneyQuery'
+import { USER_JOURNEY_OPEN } from '../[journeyId]'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

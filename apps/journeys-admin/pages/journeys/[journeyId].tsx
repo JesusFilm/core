@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -11,7 +11,6 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
 import { ACCEPT_ALL_INVITES } from '..'
 import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
@@ -25,16 +24,11 @@ import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import {
+  GET_ADMIN_JOURNEY,
+  useAdminJourneyQuery
+} from '../../src/libs/useAdminJourneyQuery'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
-
-// export const GET_ADMIN_JOURNEY = gql`
-//   ${JOURNEY_FIELDS}
-//   query GetAdminJourney($id: ID!) {
-//     journey: adminJourney(id: $id, idType: databaseId) {
-//       ...JourneyFields
-//     }
-//   }
-// `
 
 export const USER_JOURNEY_OPEN = gql`
   mutation UserJourneyOpen($id: ID!) {
@@ -48,8 +42,8 @@ function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
-  const { data } = useQuery<GetAdminJourney>(GET_ADMIN_JOURNEY, {
-    variables: { id: router.query.journeyId }
+  const { data } = useAdminJourneyQuery({
+    id: router.query.journeyId as string
   })
   useInvalidJourneyRedirect(data)
 
