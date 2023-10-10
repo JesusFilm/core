@@ -22,6 +22,6 @@ export interface BlockDeleteForBackgroundImage {
 
 export interface BlockDeleteForBackgroundImageVariables {
   id: string;
-  parentBlockId: string;
   journeyId: string;
+  parentBlockId?: string | null;
 }

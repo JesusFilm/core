@@ -15,6 +15,11 @@ import { BUTTON_BLOCK_UPDATE } from './Variant'
 
 import { Variant } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Button variant selector', () => {
   it('should show button variant properties', () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
