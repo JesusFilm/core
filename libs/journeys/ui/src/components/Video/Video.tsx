@@ -286,11 +286,20 @@ export function Video({
         <>
           <StyledVideoGradient />
           <Box
-            height={{ xs: '100vh', sm: '100%' }}
-            width={{ xs: 'calc(100vh * 16 / 9)', sm: '100%' }}
+            height={{
+              xs: objectFit === VideoBlockObjectFit.fill ? '100vh' : '100%',
+              sm: '100%'
+            }}
+            width={{
+              xs:
+                objectFit === VideoBlockObjectFit.fill
+                  ? 'calc(100vh * 16 / 9)'
+                  : '100%',
+              sm: '100%'
+            }}
             overflow="hidden"
             marginX={{
-              xs: '-100%',
+              xs: objectFit === VideoBlockObjectFit.fill ? '-100%' : 0,
               sm: 0
             }}
             position="absolute"
