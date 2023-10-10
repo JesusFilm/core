@@ -1,10 +1,12 @@
-import { fireEvent, getByTestId, render, waitFor } from '@testing-library/react'
-import { TemplateVideoPreview } from './TemplateVideoPreview'
+import { render } from '@testing-library/react'
+
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+
+import { TemplateVideoPreview } from './TemplateVideoPreview'
 
 describe('TemplateVideoPreview', () => {
   it('should render internal video', async () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole } = render(
       <TemplateVideoPreview
         id="https://arc.gt/opsgn"
         source={VideoBlockSource.internal}
@@ -23,7 +25,7 @@ describe('TemplateVideoPreview', () => {
   })
 
   it('should render cloudflare videos', async () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole } = render(
       <TemplateVideoPreview
         id="some-id-from-cloudFlare"
         source={VideoBlockSource.cloudflare}
@@ -44,7 +46,7 @@ describe('TemplateVideoPreview', () => {
   })
 
   it('should render youTube video', async () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole } = render(
       <TemplateVideoPreview
         id="sOm3iD"
         source={VideoBlockSource.youTube}

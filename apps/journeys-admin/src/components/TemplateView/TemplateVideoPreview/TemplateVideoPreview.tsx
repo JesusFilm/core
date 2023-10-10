@@ -1,13 +1,12 @@
 import Box from '@mui/material/Box'
 import { ReactElement, useEffect, useRef, useState } from 'react'
+import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import videojs from 'video.js'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
-
-import Player from 'video.js/dist/types/player'
 
 interface TemplateVideoPreviewProps {
   id?: string | null
@@ -30,7 +29,7 @@ export function TemplateVideoPreview({
           controls: true,
           bigPlayButton: true,
           fluid: true,
-          poster: poster,
+          poster,
           // Make video fill container instead of set aspect ratio
           fill: true,
           userActions: {
@@ -41,10 +40,10 @@ export function TemplateVideoPreview({
         })
       )
     }
-  }, [])
+  }, [poster])
 
   useEffect(() => {
-    //make sure swiper-js is not interrupting interaction with certain components of video-js
+    // make sure swiper-js is not interrupting interaction with certain components of video-js
     player
       ?.getChild('ControlBar')
       ?.getChild('ProgressControl')
@@ -66,7 +65,12 @@ export function TemplateVideoPreview({
         position: 'relative'
       }}
     >
-      <video ref={videoRef} className="video-js vjs-tech" playsInline>
+      <video
+        ref={videoRef}
+        className="video-js vjs-tech"
+        playsInline
+        style={{ height: '100%' }}
+      >
         {source === VideoBlockSource.cloudflare && id != null && (
           <source
             src={`https://customer-${

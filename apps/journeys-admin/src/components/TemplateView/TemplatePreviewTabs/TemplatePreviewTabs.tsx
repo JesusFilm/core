@@ -7,15 +7,15 @@ import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ReactElement, useState } from 'react'
+import uniqBy from 'lodash/uniqBy'
+import { ReactElement, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import SwiperCore, { A11y, Mousewheel, Scrollbar } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import SwiperCore, { Mousewheel, Scrollbar, A11y } from 'swiper'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
-
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import {
@@ -38,9 +38,17 @@ export function TemplatePreviewTabs(): ReactElement {
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
       : undefined
 
-  const videoBlocks = journey?.blocks?.filter(
-    (block) => block.__typename === 'VideoBlock'
-  ) as Array<TreeBlock<VideoBlock>>
+  const uniqueArray = useMemo(() => {
+    const videoBlocks = journey?.blocks?.filter(
+      (block) => block.__typename === 'VideoBlock'
+    ) as Array<TreeBlock<VideoBlock>>
+
+    if (videoBlocks == null) return
+    return uniqBy(
+      videoBlocks,
+      (block) => block.video?.variant?.hls ?? block.videoId
+    )
+  }, [journey])
 
   const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
@@ -61,9 +69,9 @@ export function TemplatePreviewTabs(): ReactElement {
           sx={{ width: smUp ? 200 : undefined }}
         />
         <Tab
-          disabled={videoBlocks?.length === 0 || videoBlocks == null}
+          disabled={uniqueArray?.length === 0 || uniqueArray == null}
           label={t('{{videoBlockCount}} Videos', {
-            videoBlockCount: videoBlocks?.length ?? 0
+            videoBlockCount: uniqueArray?.length ?? 0
           })}
           {...tabA11yProps('videos-preview-tab', 1)}
           sx={{ width: smUp ? 200 : undefined }}
@@ -71,8 +79,6 @@ export function TemplatePreviewTabs(): ReactElement {
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
         <Stack sx={{ pt: 6 }}>
-          Card Preview - yet to be implemented, this is just a placeholder, for
-          more information contact support@nextstep.is
           <CardPreview steps={steps} />
         </Stack>
       </TabPanel>
@@ -89,7 +95,7 @@ export function TemplatePreviewTabs(): ReactElement {
               marginRight: smUp ? '-32px' : '-24px'
             }}
           >
-            {videoBlocks?.map((block) => (
+            {uniqueArray?.map((block) => (
               <SwiperSlide key={block.id} style={{ width: 423 }}>
                 <TemplateVideoPreview
                   id={block.video?.variant?.hls ?? block.videoId}
