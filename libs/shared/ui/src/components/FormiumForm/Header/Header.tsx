@@ -4,9 +4,11 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
+import { useFormium } from '../FormiumProvider'
+
 // Contains information for the page and renders the header
 
-interface HeaderProps {
+export interface HeaderProps {
   form: Form
   page: Page
   pageIndex: number
@@ -39,6 +41,8 @@ interface PageChild {
 }
 
 export function Header({ page: { title } }: HeaderProps): ReactElement {
+  const { formSubtitle } = useFormium()
+
   return (
     <Box
       data-testid="Header"
@@ -50,7 +54,9 @@ export function Header({ page: { title } }: HeaderProps): ReactElement {
     >
       <Stack spacing={2}>
         <Typography variant="h4">{title}</Typography>
-        <Typography variant="body1">Help us serve you better</Typography>
+        {formSubtitle != null && (
+          <Typography variant="body1">{formSubtitle}</Typography>
+        )}
       </Stack>
     </Box>
   )

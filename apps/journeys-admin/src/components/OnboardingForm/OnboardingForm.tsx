@@ -55,6 +55,7 @@ export function OnboardingForm({
         form={form}
         userId={authUser.id}
         email={authUser.email}
+        formSubtitle={t('Help us serve you better')}
         submitText={t('Next')}
         submitIcon={<ArrowRightIcon />}
         handleClick={handleClick}

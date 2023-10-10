@@ -1,4 +1,5 @@
 import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 import { render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
@@ -9,18 +10,27 @@ import { FormiumProvider, useFormium } from './FormiumProvider'
 describe('FormiumContext', () => {
   it('should pass submit button props', () => {
     function TestButton(): ReactElement {
-      const { submitText, submitIcon } = useFormium()
-      return <Button endIcon={submitIcon}>{submitText}</Button>
+      const { formSubtitle, submitText, submitIcon } = useFormium()
+      return (
+        <>
+          <Typography>{formSubtitle}</Typography>
+          <Button endIcon={submitIcon}>{submitText}</Button>
+        </>
+      )
     }
 
-    const { getByTestId, getByRole } = render(
+    const { getByTestId, getByRole, getByText } = render(
       <FormiumProvider
-        value={{ submitText: 'Button Submit', submitIcon: <ArrowLeftIcon /> }}
+        value={{
+          formSubtitle: 'custom subtitle',
+          submitText: 'Button Submit',
+          submitIcon: <ArrowLeftIcon />
+        }}
       >
         <TestButton />
       </FormiumProvider>
     )
-
+    expect(getByText('custom subtitle')).toBeInTheDocument()
     expect(getByRole('button')).toHaveTextContent('Button Submit')
     expect(getByTestId('ArrowLeftIcon')).toBeInTheDocument()
   })

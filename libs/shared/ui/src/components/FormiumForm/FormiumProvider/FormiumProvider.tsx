@@ -1,6 +1,7 @@
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
 interface FormiumProviderContext {
+  formSubtitle?: string
   submitText?: string
   submitIcon?: ReactNode
 }
