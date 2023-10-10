@@ -304,7 +304,9 @@ export function Video({
               xs: objectFit === VideoBlockObjectFit.fill ? '-100%' : 0,
               sm: 0
             }}
-            position="absolute"
+            position={
+              objectFit === VideoBlockObjectFit.fill ? 'absolute' : 'inherit'
+            }
             data-testid="video-container"
           >
             <StyledVideo
