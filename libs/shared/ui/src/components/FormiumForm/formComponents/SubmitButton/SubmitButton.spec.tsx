@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 
-import ArrowLeftIcon from '../../icons/ArrowLeft'
-import { FormiumProvider } from '../FormiumProvider'
+import ArrowLeftIcon from '../../../icons/ArrowLeft'
+import { FormiumProvider } from '../../FormiumProvider'
 
 import { SubmitButton } from '.'
 

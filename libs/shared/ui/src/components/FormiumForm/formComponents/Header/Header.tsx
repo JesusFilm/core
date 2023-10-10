@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import { useFormium } from '../FormiumProvider'
+import { useFormium } from '../../FormiumProvider'
 
 // Contains information for the page and renders the header
 

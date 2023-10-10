@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { FormiumProvider } from '../FormiumProvider'
+import { FormiumProvider } from '../../FormiumProvider'
 
 import { Header, HeaderProps } from './Header'
 

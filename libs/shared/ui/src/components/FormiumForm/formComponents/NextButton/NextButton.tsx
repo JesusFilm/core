@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button'
 import { ComponentProps, ReactElement } from 'react'
 
-import ArrowRightIcon from '../../icons/ArrowRight'
+import ArrowRightIcon from '../../../icons/ArrowRight'
 
 export function NextButton({
   type,
