@@ -89,8 +89,6 @@ export function CategoriesTabPanel({
     onChange('tags', selected)
   }
 
-  console.log(mdUp)
-
   return (
     <TabPanel name="template-categories-settings" value={tabValue} index={1}>
       <Stack gap={4} sx={{ pt: 6 }}>
