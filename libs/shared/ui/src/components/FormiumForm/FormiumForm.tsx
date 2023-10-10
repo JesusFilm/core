@@ -39,11 +39,21 @@ const myComponents: FormiumComponents = {
 
 interface FormiumFormProps {
   form: Form
+  userId: string | null
+  email: string | null
 }
 
-export function FormiumForm({ form }: FormiumFormProps): ReactElement {
+export function FormiumForm({
+  form,
+  userId,
+  email
+}: FormiumFormProps): ReactElement {
   async function handleSubmit(values: FormikValues): Promise<void> {
-    await formiumClient.submitForm(form.slug, values)
+    await formiumClient.submitForm(form.slug, {
+      ...values,
+      hiddenUserId: userId,
+      hiddenUserEmail: email
+    })
   }
 
   return (
