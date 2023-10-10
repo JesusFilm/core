@@ -158,7 +158,7 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('tab', { name: 'Properties' }))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
-    fireEvent.click(getByTestId('preview-step2.id'))
+    fireEvent.click(getByTestId('CardItem-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
@@ -327,7 +327,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Text' }))
@@ -424,7 +424,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Subscribe' }))
@@ -583,7 +583,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Poll' }))
@@ -652,7 +652,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Image' }))
@@ -724,7 +724,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Video' }))
@@ -839,7 +839,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Button' }))
@@ -881,7 +881,7 @@ describe('ControlPanel', () => {
       'aria-selected',
       'true'
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     expect(getByRole('tab', { name: 'Journey' })).toHaveAttribute(
       'aria-selected',
       'true'
@@ -1126,7 +1126,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardSocial'))
     expect(dispatch).toHaveBeenCalledWith({
       component: 'social',
       type: 'SetJourneyEditContentAction'

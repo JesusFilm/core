@@ -84,7 +84,7 @@ describe('NavigateToBlockAction', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step0.id'))
+    fireEvent.click(getByTestId('CardItem-step0.id'))
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({

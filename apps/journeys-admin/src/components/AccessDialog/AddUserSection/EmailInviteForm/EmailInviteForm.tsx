@@ -100,7 +100,7 @@ export function EmailInviteForm({
       validationSchema={validationSchema}
     >
       {({ values, handleChange, handleBlur, errors, touched }) => (
-        <Form noValidate autoComplete="off">
+        <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
           <TextField
             label={t('Email')}
             name="email"

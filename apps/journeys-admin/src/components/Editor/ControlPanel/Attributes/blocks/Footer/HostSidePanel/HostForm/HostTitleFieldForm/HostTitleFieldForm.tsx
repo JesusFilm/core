@@ -90,6 +90,7 @@ export function HostTitleFieldForm({
       initialValue={empty ? '' : host?.title}
       validationSchema={titleSchema}
       onSubmit={handleSubmit}
+      data-testid="HostTitleFieldForm"
     />
   )
 }

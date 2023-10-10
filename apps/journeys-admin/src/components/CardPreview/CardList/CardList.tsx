@@ -114,12 +114,12 @@ export function CardList({
       id={selectedId}
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
+      testId="CardList"
     >
       {showNavigation === true && (
         <NavigationCard
           key="goals"
           id="goals"
-          testId="goals-navigation-card"
           title="Goals"
           destination={ActiveJourneyEditContent.Action}
           header={
@@ -152,7 +152,6 @@ export function CardList({
         <NavigationCard
           key="social"
           id="social"
-          testId="social-preview-navigation-card"
           title="Social Media"
           destination={ActiveJourneyEditContent.SocialPreview}
           header={
@@ -241,7 +240,7 @@ const CardItem = ({
       ref={provided != null ? provided.innerRef : null}
       id={id}
       key={id}
-      data-testid={`preview-${id}`}
+      data-testid={`CardItem-${id}`}
       sx={{
         display: 'flex',
         flexDirection: 'column',

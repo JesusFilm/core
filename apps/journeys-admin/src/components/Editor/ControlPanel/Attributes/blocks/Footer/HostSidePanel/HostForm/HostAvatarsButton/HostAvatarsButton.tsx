@@ -72,7 +72,7 @@ export function HostAvatarsButton({
   }
 
   return (
-    <Stack direction="row">
+    <Stack direction="row" data-testid="HostAvatarsButton">
       <AvatarGroup
         sx={{
           alignItems: 'center',

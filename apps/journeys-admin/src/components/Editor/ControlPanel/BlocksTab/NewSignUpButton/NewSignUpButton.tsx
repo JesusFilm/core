@@ -119,5 +119,5 @@ export function NewSignUpButton(): ReactElement {
     }
   }
 
-  return <Button icon={<Mail2Icon />} value="Subscribe" onClick={handleClick} />
+  return <Button icon={<Mail2Icon />} value="Subscribe" onClick={handleClick} testId="NewSignUpButton" />
 }

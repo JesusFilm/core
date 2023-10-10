@@ -79,7 +79,7 @@ export function Canvas(): ReactElement {
   }, [smUp])
 
   return (
-    <Box
+    <Box data-testid="EditorCanvas"
       sx={{
         backgroundColor: (theme) => theme.palette.background.paper,
         '& .swiper-container': {

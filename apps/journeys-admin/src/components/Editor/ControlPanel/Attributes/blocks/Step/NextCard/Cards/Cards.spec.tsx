@@ -90,7 +90,7 @@ describe('Cards', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('preview-step2.id'))
+    fireEvent.click(getByTestId('CardItem-step2.id'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

@@ -133,6 +133,6 @@ export function NewRadioQuestionButton(): ReactElement {
   }
 
   return (
-    <Button icon={<CheckContainedIcon />} value="Poll" onClick={handleClick} />
+    <Button icon={<CheckContainedIcon />} value="Poll" onClick={handleClick} testId="NewRadioQuestionButton" />
   )
 }

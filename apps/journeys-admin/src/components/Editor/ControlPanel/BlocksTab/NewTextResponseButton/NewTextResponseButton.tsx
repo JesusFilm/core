@@ -132,6 +132,6 @@ export function NewTextResponseButton(): ReactElement {
     }
   }
   return (
-    <Button icon={<TextInput1Icon />} value="Feedback" onClick={handleClick} />
+    <Button icon={<TextInput1Icon />} value="Feedback" onClick={handleClick} testId="NewTextResponseButton" />
   )
 }

@@ -87,7 +87,12 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
   }
 
   return (
-    <Stack gap={2} justifyContent="center" py={6}>
+    <Stack
+      gap={2}
+      justifyContent="center"
+      py={6}
+      data-testid="EditorActionsTable"
+    >
       {journey != null &&
         (actions != null && actions.length > 0 ? (
           <ActionsList actions={actions} goalLabel={goalLabel} />

@@ -91,5 +91,5 @@ export function NewTypographyButton(): ReactElement {
     }
   }
 
-  return <Button icon={<Type3Icon />} value="Text" onClick={handleClick} />
+  return <Button icon={<Type3Icon />} value="Text" onClick={handleClick} testId="NewTypographyButton" />
 }

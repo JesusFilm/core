@@ -37,6 +37,7 @@ export function ImageSource({
           height: 73,
           borderRadius: 2
         }}
+        data-testid="ImageSource"
       >
         <CardActionArea
           data-testid="card click area"

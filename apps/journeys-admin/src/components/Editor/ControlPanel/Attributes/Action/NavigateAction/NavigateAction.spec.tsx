@@ -41,7 +41,7 @@ describe('NavigateAction', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByTestId('cards-disabled-view')).toBeInTheDocument()
+    expect(getByTestId('NavigateAction')).toBeInTheDocument()
     expect(
       getByText('Default Next Step defined in the current card settings.')
     ).toBeInTheDocument()

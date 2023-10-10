@@ -129,6 +129,7 @@ export function AccessDialog({
         <AddUserSection users={emails} journeyId={journeyId} />
       }
       fullscreen={!smUp}
+      testId="AccessDialog"
     >
       <Stack spacing={4}>
         {data?.journey?.team?.userTeams != null &&

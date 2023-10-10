@@ -79,5 +79,5 @@ export function NewImageButton(): ReactElement {
     }
   }
 
-  return <Button icon={<Image3Icon />} value="Image" onClick={handleClick} />
+  return <Button icon={<Image3Icon />} value="Image" onClick={handleClick} testId='NewImageButton'/>
 }

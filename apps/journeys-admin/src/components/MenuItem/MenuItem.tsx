@@ -9,6 +9,7 @@ interface MenuItemProps {
   disabled?: boolean
   openInNew?: boolean
   onClick?: () => void
+  testid?: string
 }
 
 export function MenuItem({
@@ -31,6 +32,7 @@ export function MenuItem({
       {...newTabProps}
       disabled={disabled}
       onClick={onClick}
+      data-testid={`MenuItem${label}`}
     >
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText>{label}</ListItemText>

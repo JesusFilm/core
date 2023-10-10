@@ -100,7 +100,7 @@ export function ControlPanel(): ReactElement {
   }
 
   return (
-    <Box sx={{ width: '100%', position: 'relative' }}>
+    <Box sx={{ width: '100%', position: 'relative' }} data-testid="EditorControlPanel">
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
         {journeyEditContentComponent ===
           ActiveJourneyEditContent.SocialPreview && (

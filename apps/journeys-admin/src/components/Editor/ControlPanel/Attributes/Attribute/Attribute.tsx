@@ -11,6 +11,7 @@ interface AttributeProps {
   value: string
   description: string
   onClick?: () => void
+  testId?: string
 }
 
 export function Attribute(props: AttributeProps): ReactElement {
@@ -29,6 +30,7 @@ export function Attribute(props: AttributeProps): ReactElement {
       {...props}
       selected={props.id === selectedAttributeId}
       onClick={handleClick}
+      testId={props.testId ?? "Attribute"}
     />
   )
 }

@@ -142,7 +142,7 @@ export function Summary({
   }
 
   return (
-    <AccordionSummary expandIcon={<ChevronDownIcon />} sx={{ px: 6, py: 2 }}>
+    <AccordionSummary expandIcon={<ChevronDownIcon />} sx={{ px: 6, py: 2 }} data-testid="ChatOptionSummary" >
       <Checkbox
         data-testid={`checkbox-${currentPlatform as string}`}
         checked={active}

@@ -224,7 +224,7 @@ export function ImageEdit(): ReactElement {
             '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.1)' },
             '&:active:hover': { bgcolor: 'rgba(0, 0, 0, 0.2)' }
           }}
-          data-testid="social-image-edit"
+          data-testid="ImageEdit"
           onClick={handleOpen}
         >
           {primaryImageBlock?.src != null ? (
@@ -268,6 +268,7 @@ export function ImageEdit(): ReactElement {
           mb={6}
           position="relative"
           onClick={handleOpen}
+          data-testid="ImageEdit"
         >
           <Skeleton
             variant="rectangular"

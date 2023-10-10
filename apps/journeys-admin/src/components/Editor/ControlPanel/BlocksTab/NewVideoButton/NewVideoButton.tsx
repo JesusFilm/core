@@ -77,5 +77,5 @@ export function NewVideoButton(): ReactElement {
     }
   }
 
-  return <Button icon={<VideoOnIcon />} value="Video" onClick={handleClick} />
+  return <Button icon={<VideoOnIcon />} value="Video" onClick={handleClick} testId="NewVideoButton" />
 }

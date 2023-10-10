@@ -44,6 +44,7 @@ export function EmbedJourney({ slug, discoveryJourney }: Props): ReactElement {
         height: dimensions,
         width: dimensions
       }}
+      data-testid={`EmbedJourney-${slug}`}
     >
       {block != null && (
         <>

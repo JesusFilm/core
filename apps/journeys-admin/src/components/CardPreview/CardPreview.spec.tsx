@@ -93,7 +93,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step.id'))
+    fireEvent.click(getByTestId('CardItem-step.id'))
     expect(onSelect).toHaveBeenCalledWith({ step })
   })
 
@@ -210,7 +210,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('goals-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardGoals'))
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({ view: 'action' })
     )
@@ -240,7 +240,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardSocial'))
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({ view: 'social' })
     )

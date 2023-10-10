@@ -32,6 +32,7 @@ export function HostLocationFieldForm({
       disabled={disabled}
       initialValue={empty ? undefined : host?.location ?? ''}
       onSubmit={handleSubmit}
+      data-testid="HostLocationFieldForm"
     />
   )
 }
