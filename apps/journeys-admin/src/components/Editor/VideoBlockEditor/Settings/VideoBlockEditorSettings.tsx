@@ -99,7 +99,10 @@ export function VideoBlockEditorSettings({
   })
 
   return (
-    <Box sx={{ px: 6, py: 3, width: '100%' }}>
+    <Box
+      sx={{ px: 6, py: 3, width: '100%' }}
+      data-testid="VideoBlockEditorSettings"
+    >
       <Stack direction="column" spacing={3}>
         <Stack direction="column" spacing={3}>
           <Typography

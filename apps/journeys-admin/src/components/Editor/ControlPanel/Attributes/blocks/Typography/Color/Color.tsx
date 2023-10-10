@@ -77,7 +77,7 @@ export function Color(): ReactElement {
       value={selectedBlock?.color ?? TypographyColor.primary}
       onChange={handleChange}
       options={options}
-      testId='Color'
+      testId="Color"
     />
   )
 }

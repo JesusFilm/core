@@ -9,7 +9,7 @@ interface MenuItemProps {
   disabled?: boolean
   openInNew?: boolean
   onClick?: () => void
-  testid?: string
+  testId?: string
 }
 
 export function MenuItem({
@@ -18,6 +18,7 @@ export function MenuItem({
   disabled,
   openInNew,
   onClick,
+  testId,
   // implicitly pass in href
   ...menuItemProps
 }: MenuItemProps): ReactElement {
@@ -32,7 +33,7 @@ export function MenuItem({
       {...newTabProps}
       disabled={disabled}
       onClick={onClick}
-      data-testid={`MenuItem${label}`}
+      data-testid={`MenuItem${testId ?? ''}`}
     >
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText>{label}</ListItemText>

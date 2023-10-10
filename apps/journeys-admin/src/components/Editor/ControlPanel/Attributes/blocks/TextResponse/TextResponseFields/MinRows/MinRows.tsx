@@ -80,7 +80,7 @@ export function MinRows(): ReactElement {
       value={selectedBlock?.minRows ?? 3}
       onChange={handleChange}
       options={options}
-      testId='MinRows'
+      testId="MinRows"
     />
   )
 }

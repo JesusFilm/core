@@ -55,6 +55,7 @@ export function ImageLibrary({
           height: '100%'
         }
       }}
+      data-testid="ImageLibrary"
     >
       <AppBar position="static" color="default">
         <Toolbar>

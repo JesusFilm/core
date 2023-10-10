@@ -36,7 +36,7 @@ export function Button({
         maxWidth: 150
       }}
       onMouseDown={(e) => e.preventDefault()}
-      data-testid={`JourneysAdminButton${testId ?? ""}`}
+      data-testid={`JourneysAdminButton${testId ?? ''}`}
     >
       <MuiCard
         variant="outlined"

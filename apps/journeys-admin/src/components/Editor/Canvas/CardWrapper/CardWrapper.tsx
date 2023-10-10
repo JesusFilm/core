@@ -21,7 +21,8 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
       return child
     })
     return (
-      <Card data-testid="CardWrapper"
+      <Card
+        data-testid="CardWrapper"
         {...{ ...block, children: blocks }}
         wrappers={children.props.wrappers}
       />

@@ -17,7 +17,11 @@ export function PaletteColorPicker({
   onChange
 }: PaletteColorPickerProps): ReactElement {
   return (
-    <HorizontalSelect onChange={onChange} id={selectedColor} testId="PaletteColorPicker">
+    <HorizontalSelect
+      onChange={onChange}
+      id={selectedColor}
+      testId="PaletteColorPicker"
+    >
       {colors.map((color) => {
         return (
           <Swatch

@@ -190,7 +190,9 @@ describe('SelectableWrapper', () => {
       })
     )
     fireEvent.click(getByTestId(`radioQuestion-${radioQuestionBlock.id}`))
-    expect(getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)).toHaveStyle({
+    expect(
+      getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
+    ).toHaveStyle({
       outline: '2px solid #C52D3A',
       zIndex: '1'
     })
@@ -218,7 +220,9 @@ describe('SelectableWrapper', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
-    expect(getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)).toHaveStyle({
+    expect(
+      getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
+    ).toHaveStyle({
       outline: '2px solid #C52D3A',
       zIndex: '1'
     })

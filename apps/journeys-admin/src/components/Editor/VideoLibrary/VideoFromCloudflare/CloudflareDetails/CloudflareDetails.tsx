@@ -26,7 +26,7 @@ export function CloudflareDetails({
   }, [id])
 
   return (
-    <Stack spacing={4} sx={{ p: 6 }}>
+    <Stack spacing={4} sx={{ p: 6 }} data-testid="CloudflareDetails">
       <Box
         sx={{
           borderRadius: 3,

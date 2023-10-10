@@ -72,7 +72,7 @@ export function Size(): ReactElement {
       value={selectedBlock?.size ?? ButtonSize.medium}
       onChange={handleChange}
       options={options}
-      testId='Size'
+      testId="Size"
     />
   )
 }

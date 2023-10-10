@@ -34,6 +34,7 @@ export function CopyMenuItem({ journey, onClose }: Props): ReactElement {
       label="Copy Link"
       icon={<LingAngledIcon />}
       onClick={handleCopyLink}
+      testId="Copy"
     />
   )
 }

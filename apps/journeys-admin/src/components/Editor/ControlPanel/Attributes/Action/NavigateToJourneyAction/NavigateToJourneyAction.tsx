@@ -90,7 +90,12 @@ export function NavigateToJourneyAction(): ReactElement {
   }
 
   return (
-    <FormControl variant="filled" hiddenLabel sx={{ pt: 8 }} data-testid="NavigateToJourneyAction">
+    <FormControl
+      variant="filled"
+      hiddenLabel
+      sx={{ pt: 8 }}
+      data-testid="NavigateToJourneyAction"
+    >
       <Select
         displayEmpty
         onChange={handleChange}

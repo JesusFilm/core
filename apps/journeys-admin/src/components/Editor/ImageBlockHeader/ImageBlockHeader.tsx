@@ -32,7 +32,7 @@ export function ImageBlockHeader({
 }: ImageBlockHeaderProps): ReactElement {
   return (
     <Stack
-      data-testid="imageSrcStack"
+      data-testid="ImageBlockHeader"
       flexDirection="row"
       justifyContent="space-between"
       alignItems="center"

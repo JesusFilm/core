@@ -33,7 +33,11 @@ export function VideoBlockEditorSettingsPoster({
   const handleLoad = (): void => setLoading(false)
 
   return (
-    <Stack direction="row" justifyContent="space-between">
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      data-testid="VideoBlockEditorSettingsPoster"
+    >
       <Stack direction="column" justifyContent="center">
         <Typography
           variant="subtitle2"

@@ -30,7 +30,7 @@ export function Attribute(props: AttributeProps): ReactElement {
       {...props}
       selected={props.id === selectedAttributeId}
       onClick={handleClick}
-      testId={props.testId ?? "Attribute"}
+      testId={props.testId ?? 'Attribute'}
     />
   )
 }
