@@ -46,7 +46,9 @@ export const getServerSideProps = withUserTokenSSR({
     locale
   })
 
-  const form = await formiumClient.getFormBySlug('ns-onboarding-form')
+  const form = await formiumClient.getFormBySlug(
+    process.env.NEXT_PUBLIC_FORMIUM_PROJECT_SLUG ?? ''
+  )
 
   return {
     props: {
