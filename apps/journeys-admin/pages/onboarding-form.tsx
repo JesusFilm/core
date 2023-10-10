@@ -13,9 +13,9 @@ import { formiumClient } from '@core/shared/ui/formiumClient'
 import { FormiumProvider } from '@core/shared/ui/FormiumProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
-import { OnboardingForm } from '../../src/components/OnboardingForm'
-import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
-import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { OnboardingForm } from '../src/components/OnboardingForm'
+import { OnboardingPageWrapper } from '../src/components/OnboardingPageWrapper'
+import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 
 interface OnboardingFormPageProps {
   form: Form

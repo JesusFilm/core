@@ -35,7 +35,10 @@ export function OnboardingForm({
 
   async function handleClick(): Promise<void> {
     await journeyProfileOnboardingFormComplete()
-    await router?.push('/teams/new')
+    await router?.push({
+      pathname: '/teams/new',
+      query: { redirect: router.query.redirect }
+    })
   }
 
   return (
