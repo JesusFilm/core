@@ -7,6 +7,7 @@ import {
   FormValidate
 } from '@formium/types'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 
 import {
@@ -21,7 +22,37 @@ jest.mock('@core/shared/ui/formiumClient', () => ({
   }
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('OnboardingForm', () => {
+  const push = jest.fn()
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   const form: Form = {
     actionIds: [],
     createAt: '2023-10-09T02:59:18.299Z',
@@ -72,6 +103,11 @@ describe('OnboardingForm', () => {
   } as unknown as User
 
   it('should handle submit', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
     const result = jest.fn(() => ({
       data: {
         journeyProfileOnboardingFormComplete: {
@@ -80,24 +116,63 @@ describe('OnboardingForm', () => {
       }
     }))
 
+    const formCompleteMock = {
+      request: {
+        query: JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE
+      },
+      result
+    }
+
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[formCompleteMock]}>
         <OnboardingForm form={form} authUser={authUser} />
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Submit' }))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
+    })
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/teams/new',
+      query: { redirect: null }
+    })
+  })
+
+  it('should passmredirect query location to next page', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: 'custom-location' }
+    } as unknown as NextRouter)
+
+    const result = jest.fn(() => ({
+      data: {
+        journeyProfileOnboardingFormComplete: {
+          id: 'id'
+        }
+      }
+    }))
+
+    const formCompleteMock = {
+      request: {
+        query: JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE
+      },
+      result
+    }
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[formCompleteMock]}>
+        <OnboardingForm form={form} authUser={authUser} />
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+    await waitFor(() => {
+      expect(result).toHaveBeenCalled()
+    })
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/teams/new',
+      query: { redirect: 'custom-location' }
     })
   })
 })

@@ -5,7 +5,7 @@ import {
 } from '@formium/react'
 import { Form } from '@formium/types'
 import { FormikValues } from 'formik'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import { formiumClient } from '../../libs/formiumClient'
 
@@ -14,6 +14,7 @@ import { ElementsWrapper } from './ElementsWrapper'
 import { FieldWrapper } from './FieldWrapper'
 import { FooterWrapper } from './FooterWrapper'
 import { FormControl } from './FormControl'
+import { FormiumProvider } from './FormiumProvider'
 import { Header } from './Header'
 import { NextButton } from './NextButton'
 import { PageWrapper } from './PageWrapper'
@@ -45,6 +46,8 @@ interface FormiumFormProps {
   form: Form
   userId: string | null
   email: string | null
+  submitText?: string
+  submitIcon?: ReactNode
   handleClick: () => Promise<void>
 }
 
@@ -52,6 +55,8 @@ export function FormiumForm({
   form,
   userId,
   email,
+  submitText,
+  submitIcon,
   handleClick
 }: FormiumFormProps): ReactElement {
   async function handleSubmit(values: FormikValues): Promise<void> {
@@ -64,10 +69,12 @@ export function FormiumForm({
   }
 
   return (
-    <Formium
-      data={form}
-      components={formiumComponents}
-      onSubmit={handleSubmit}
-    />
+    <FormiumProvider value={{ submitText, submitIcon }}>
+      <Formium
+        data={form}
+        components={formiumComponents}
+        onSubmit={handleSubmit}
+      />
+    </FormiumProvider>
   )
 }

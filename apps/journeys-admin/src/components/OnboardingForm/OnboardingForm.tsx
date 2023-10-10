@@ -4,8 +4,10 @@ import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { FormiumForm } from '@core/shared/ui/FormiumForm'
+import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { JourneyProfileOnboardingFormComplete } from '../../../__generated__/JourneyProfileOnboardingFormComplete'
 
@@ -27,6 +29,7 @@ export function OnboardingForm({
   authUser
 }: OnboardingFormProps): ReactElement {
   const router = useRouter()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const [journeyProfileOnboardingFormComplete] =
     useMutation<JourneyProfileOnboardingFormComplete>(
@@ -52,6 +55,8 @@ export function OnboardingForm({
         form={form}
         userId={authUser.id}
         email={authUser.email}
+        submitText={t('Next')}
+        submitIcon={<ArrowRightIcon />}
         handleClick={handleClick}
       />
     </Box>

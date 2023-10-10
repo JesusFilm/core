@@ -10,8 +10,6 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { formiumClient } from '@core/shared/ui/formiumClient'
-import { FormiumProvider } from '@core/shared/ui/FormiumProvider'
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { OnboardingForm } from '../src/components/OnboardingForm'
 import { OnboardingPageWrapper } from '../src/components/OnboardingPageWrapper'
@@ -28,15 +26,11 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
   return (
     <>
       <NextSeo title={t('A Few Questions')} />
-      <FormiumProvider
-        value={{ submitText: 'Next', submitIcon: <ArrowRightIcon /> }}
+      <OnboardingPageWrapper
+        emailSubject={t('a question about onboarding form')}
       >
-        <OnboardingPageWrapper
-          emailSubject={t('a question about onboarding form')}
-        >
-          <OnboardingForm form={form} authUser={user} />
-        </OnboardingPageWrapper>
-      </FormiumProvider>
+        <OnboardingForm form={form} authUser={user} />
+      </OnboardingPageWrapper>
     </>
   )
 }
