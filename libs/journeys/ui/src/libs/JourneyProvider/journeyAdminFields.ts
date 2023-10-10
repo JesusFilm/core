@@ -6,9 +6,9 @@ import { JOURNEY_FIELDS } from './journeyFields'
  * Inherit common journey fields.
  * Add project-specific fields for reuse in journey query hooks.
  */
-export const ADMIN_JOURNEY_FIELDS = gql`
+export const JOURNEY_ADMIN_FIELDS = gql`
   ${JOURNEY_FIELDS}
-  fragment AdminJourneyFields on Journey {
+  fragment JourneyAdminFields on Journey {
     ...JourneyFields
     userJourneys {
       id
