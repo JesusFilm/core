@@ -1,5 +1,7 @@
 import { ReactElement, useEffect } from 'react'
 
+import { allowedHost } from '@core/journeys/ui/allowedHost'
+
 interface IFrameTestProps {
   journeySlug: string
 }
@@ -9,7 +11,13 @@ export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
     const makeIframeFullWindow = (event: MessageEvent): void => {
       // Use this page for basic local testing
       // More accurate testing with stage should use embed script on a webpage.
-      if (event.origin === 'http://localhost:4100') {
+      if (
+        allowedHost(new URL(event.origin).host, [
+          'localhost:4100',
+          'your.nextstep.is',
+          'your-stage.nextstep.is'
+        ])
+      ) {
         const iframe = document.getElementById('jfm-iframe')
         if (iframe != null) {
           if (event.data === true) {
