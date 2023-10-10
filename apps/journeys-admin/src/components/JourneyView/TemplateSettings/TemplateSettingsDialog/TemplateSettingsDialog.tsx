@@ -228,7 +228,6 @@ export function TemplateSettingsDialog({
                         'Publicly visible on template details page'
                       )}
                     />
-
                     <FeaturedCheckbox
                       loading={loading}
                       values={values.featuredAt}

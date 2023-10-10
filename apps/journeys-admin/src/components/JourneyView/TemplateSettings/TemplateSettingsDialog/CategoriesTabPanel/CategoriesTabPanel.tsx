@@ -50,6 +50,7 @@ export function CategoriesTabPanel({
     [parentTag.id]: { label: parentTag.name[0].value, children: [] }
   })
   const tags = parentTags?.reduce(populateTagDataByParentId, {})
+
   // Populate TagData with children
   childTags?.forEach((tag) => {
     if (tag.parentId != null && tags != null) {
@@ -87,6 +88,8 @@ export function CategoriesTabPanel({
 
     onChange('tags', selected)
   }
+
+  console.log(mdUp)
 
   return (
     <TabPanel name="template-categories-settings" value={tabValue} index={1}>
