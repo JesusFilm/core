@@ -190,6 +190,7 @@ export function ControlPanel(): ReactElement {
           showAddButton
           showNavigationCards
           isDraggable
+          testId="ControlPanel"
         />
       </TabPanel>
       <TabPanel name="control-panel" value={activeTab} index={1}>

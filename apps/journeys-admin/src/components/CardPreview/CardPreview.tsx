@@ -27,6 +27,7 @@ export interface CardPreviewProps {
   showAddButton?: boolean
   isDraggable?: boolean
   showNavigationCards?: boolean
+  testId?: string
 }
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
@@ -63,7 +64,8 @@ export function CardPreview({
   onSelect,
   showAddButton,
   isDraggable,
-  showNavigationCards
+  showNavigationCards,
+  testId
 }: CardPreviewProps): ReactElement {
   const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
@@ -229,6 +231,7 @@ export function CardPreview({
             py: 5,
             px: 6
           }}
+          data-testId={`CardPreview${testId ?? ''}`}
         >
           <Box
             sx={{

@@ -15,6 +15,7 @@ export function SocialImage(): ReactElement {
         justifyContent: 'center',
         alignItems: 'center'
       }}
+      data-testid="SocialImage"
     >
       {journey?.primaryImageBlock?.src != null ? (
         <NextImage

@@ -28,7 +28,11 @@ export function NavigateAction(): ReactElement {
         }}
         data-testid="NavigateAction"
       >
-        <CardPreview selected={nextStep} steps={steps} />
+        <CardPreview
+          selected={nextStep}
+          steps={steps}
+          testId="NavigateAction"
+        />
       </Box>
       <Stack
         direction="row"

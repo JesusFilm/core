@@ -23,6 +23,7 @@ export function MainPanelBody({
         overflowY: { md: 'auto' },
         width: 'inherit'
       }}
+      data-testid="MainPanelBody"
     >
       {/* MainBody */}
       <Stack

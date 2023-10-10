@@ -35,6 +35,7 @@ export function FeaturedCheckbox({
         typography: { color: 'secondary.main', variant: 'subtitle2' }
       }}
       label={t('Featured')}
+      data-testid="FeaturedCheckbox"
     />
   )
 }

@@ -33,7 +33,7 @@ export function MenuItem({
       {...newTabProps}
       disabled={disabled}
       onClick={onClick}
-      data-testid={`MenuItem${testId ?? ''}`}
+      data-testid={`JourneysAdminMenuItem${testId ?? ''}`}
     >
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText>{label}</ListItemText>

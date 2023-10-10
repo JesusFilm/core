@@ -74,6 +74,7 @@ export function VisitorCard({ visitorNode, loading }: Props): ReactElement {
           borderTopRightRadius: { xs: 0, sm: 12 }
         }
       }}
+      data-testid="VisitorCard"
     >
       {!loading ? withLink(Content) : Content}
     </Card>

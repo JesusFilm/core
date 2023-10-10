@@ -21,7 +21,7 @@ export function TemplateSettings(): ReactElement {
 
   return (
     <>
-      <Stack direction="column" spacing={2}>
+      <Stack direction="column" spacing={2} data-testid="TemplateSettings">
         <Stack
           direction="row"
           sx={{

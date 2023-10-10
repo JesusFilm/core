@@ -6,7 +6,7 @@ import { TemplateSections } from '../TemplateSections'
 
 export function TemplateGallery(): ReactElement {
   return (
-    <Box>
+    <Box data-testid="JourneysAdminTemplateGallery">
       <Typography variant="h3">
         This is a placeholder for the new template gallery
       </Typography>

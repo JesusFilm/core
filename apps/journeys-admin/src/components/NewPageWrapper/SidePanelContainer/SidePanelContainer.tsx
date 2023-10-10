@@ -28,6 +28,7 @@ export function SidePanelContainer({
         px: 6,
         py: 4
       }}
+      data-testid="SidePanelContainer"
     >
       {children}
     </Stack>

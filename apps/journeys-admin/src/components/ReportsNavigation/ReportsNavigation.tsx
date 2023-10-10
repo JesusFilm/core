@@ -19,7 +19,12 @@ export function ReportsNavigation({
 }: Props): ReactElement {
   const { t } = useTranslation('journeys-admin')
   return (
-    <Stack direction="row" spacing={4} sx={{ pb: 8 }}>
+    <Stack
+      direction="row"
+      spacing={4}
+      sx={{ pb: 8 }}
+      data-testid="JourneysAdminReportsNavigation"
+    >
       <NavigationButton
         selected={selected === 'journeys'}
         value={t('Journeys')}

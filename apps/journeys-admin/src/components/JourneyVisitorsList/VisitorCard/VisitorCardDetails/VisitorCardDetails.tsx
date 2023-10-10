@@ -37,6 +37,7 @@ export function VisitorCardDetails({
         pl: { xs: '9px', sm: 9 },
         pt: filteredEvents.length > 0 || loading ? 3 : 0
       }}
+      data-testid="VisitorCardDetails"
     >
       {loading ? (
         <>

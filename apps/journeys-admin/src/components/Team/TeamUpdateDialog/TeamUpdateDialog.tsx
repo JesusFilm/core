@@ -97,6 +97,7 @@ export function TeamUpdateDialog({
             closeLabel: t('Cancel'),
             submitLabel: t('Save')
           }}
+          testId="TeamUpdateDialog"
         >
           <Form>
             <TextField

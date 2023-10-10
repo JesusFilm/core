@@ -170,6 +170,7 @@ export function TemplateSettingsDialog({
               }}
               divider
               fullscreen={!smUp}
+              testId="TemplateSettingsDialog"
             >
               <Form data-testId="template-settings-dialog-form">
                 <Tabs

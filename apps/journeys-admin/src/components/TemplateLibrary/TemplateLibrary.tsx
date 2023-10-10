@@ -9,7 +9,10 @@ export function TemplateLibrary(): ReactElement {
   const { data } = useJourneysQuery({ where: { template: true } })
 
   return (
-    <Box sx={{ mx: { xs: -6, sm: 0 } }}>
+    <Box
+      sx={{ mx: { xs: -6, sm: 0 } }}
+      data-testid="JourneysAdminTemplateLibrary"
+    >
       <Container disableGutters>
         {data?.journeys != null ? (
           <>

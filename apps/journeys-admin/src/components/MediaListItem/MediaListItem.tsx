@@ -72,6 +72,7 @@ export function MediaListItem({
       onClick={onClick}
       disabled={loading}
       sx={{ ...faceOnButtonHoverFix, ...bottomBorder, px: 6 }}
+      data-testid="JourneysAdminMediaListItem"
     >
       <Stack
         direction={imagePosition === 'start' ? 'row' : 'row-reverse'}

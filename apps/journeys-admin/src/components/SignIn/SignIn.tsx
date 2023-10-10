@@ -59,6 +59,7 @@ export function SignIn(): ReactElement {
             justifyContent: 'center',
             pt: 30
           }}
+          data-testid="JourneysAdminSignIn"
         >
           <Image
             src={logo}

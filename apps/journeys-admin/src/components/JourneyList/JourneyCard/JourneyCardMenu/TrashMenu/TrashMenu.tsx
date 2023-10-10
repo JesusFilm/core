@@ -25,6 +25,7 @@ export function TrashMenu({
           setOpenRestoreDialog()
           handleCloseMenu()
         }}
+        testId="Restore"
       />
 
       <MenuItem
@@ -34,6 +35,7 @@ export function TrashMenu({
           setOpenDeleteDialog()
           handleCloseMenu()
         }}
+        testId="Delete"
       />
     </>
   )

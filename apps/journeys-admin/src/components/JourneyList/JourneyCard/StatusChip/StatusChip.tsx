@@ -42,7 +42,12 @@ export function StatusChip({ status }: StatusChipProps): ReactElement {
   )
 
   return currentStatus != null ? (
-    <Stack direction="row" alignItems="center" spacing={1.5}>
+    <Stack
+      direction="row"
+      alignItems="center"
+      spacing={1.5}
+      data-testid="StatusChip"
+    >
       {currentStatus.icon}
       <Typography
         color={

@@ -43,7 +43,10 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
 
   return (
-    <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
+    <Box
+      sx={{ mr: { sm: '328px' }, mb: '80px' }}
+      data-testid="JourneysAdminJourneyView"
+    >
       <Box
         sx={{
           p: { xs: 6, sm: 8 },

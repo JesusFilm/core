@@ -110,6 +110,7 @@ export function UserTeamListItem({
             {menuLabel}
           </Button>
         }
+        data-testid={`UserTeamListItem-${listItem.id}`}
       >
         <ListItemAvatar>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
