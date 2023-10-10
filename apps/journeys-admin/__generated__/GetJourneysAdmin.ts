@@ -6,22 +6,22 @@
 import { JourneyStatus, ThemeName, ThemeMode, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetAdminJourneys
+// GraphQL query operation: GetJourneysAdmin
 // ====================================================
 
-export interface GetAdminJourneys_journeys_language_name {
+export interface GetJourneysAdmin_journeys_language_name {
   __typename: "Translation";
   value: string;
   primary: boolean;
 }
 
-export interface GetAdminJourneys_journeys_language {
+export interface GetJourneysAdmin_journeys_language {
   __typename: "Language";
   id: string;
-  name: GetAdminJourneys_journeys_language_name[];
+  name: GetJourneysAdmin_journeys_language_name[];
 }
 
-export interface GetAdminJourneys_journeys_userJourneys_user {
+export interface GetJourneysAdmin_journeys_userJourneys_user {
   __typename: "User";
   id: string;
   firstName: string;
@@ -29,7 +29,7 @@ export interface GetAdminJourneys_journeys_userJourneys_user {
   imageUrl: string | null;
 }
 
-export interface GetAdminJourneys_journeys_userJourneys {
+export interface GetJourneysAdmin_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
@@ -37,10 +37,10 @@ export interface GetAdminJourneys_journeys_userJourneys {
    * Date time of when the journey was first opened
    */
   openedAt: any | null;
-  user: GetAdminJourneys_journeys_userJourneys_user | null;
+  user: GetJourneysAdmin_journeys_userJourneys_user | null;
 }
 
-export interface GetAdminJourneys_journeys_primaryImageBlock {
+export interface GetJourneysAdmin_journeys_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -56,7 +56,7 @@ export interface GetAdminJourneys_journeys_primaryImageBlock {
   blurhash: string;
 }
 
-export interface GetAdminJourneys_journeys {
+export interface GetJourneysAdmin_journeys {
   __typename: "Journey";
   id: string;
   title: string;
@@ -67,26 +67,26 @@ export interface GetAdminJourneys_journeys {
   slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
-  language: GetAdminJourneys_journeys_language;
+  language: GetJourneysAdmin_journeys_language;
   status: JourneyStatus;
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
-  userJourneys: GetAdminJourneys_journeys_userJourneys[] | null;
-  primaryImageBlock: GetAdminJourneys_journeys_primaryImageBlock | null;
+  userJourneys: GetJourneysAdmin_journeys_userJourneys[] | null;
+  primaryImageBlock: GetJourneysAdmin_journeys_primaryImageBlock | null;
 }
 
-export interface GetAdminJourneys {
+export interface GetJourneysAdmin {
   /**
    * returns all journeys that match the provided filters
    * If no team id is provided and template is not true then only returns journeys
    * where the user is not a member of a team but is an editor or owner of the
    * journey
    */
-  journeys: GetAdminJourneys_journeys[];
+  journeys: GetJourneysAdmin_journeys[];
 }
 
-export interface GetAdminJourneysVariables {
+export interface GetJourneysAdminVariables {
   status?: JourneyStatus[] | null;
   template?: boolean | null;
   teamId?: string | null;

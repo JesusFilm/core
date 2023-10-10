@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { GET_ADMIN_JOURNEYS } from '../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import {
   defaultTemplate,
   descriptiveTemplate,

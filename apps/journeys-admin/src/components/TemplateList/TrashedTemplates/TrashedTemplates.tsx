@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { useAdminJourneysQuery } from '../../../libs/useJourneysAdminQuery'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {

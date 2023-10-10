@@ -4,7 +4,7 @@ import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { SortOrder } from '../JourneySort'

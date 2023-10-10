@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS

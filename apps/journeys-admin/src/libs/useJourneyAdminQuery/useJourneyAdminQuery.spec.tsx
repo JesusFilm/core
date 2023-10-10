@@ -15,7 +15,7 @@ import {
 
 import { GET_JOURNEY_ADMIN, useJourneyAdminQuery } from './useJourneyAdminQuery'
 
-describe('useJourneyQuery', () => {
+describe('useJourneyAdminQuery', () => {
   it('should get journey', async () => {
     const language: Language = {
       __typename: 'Language',

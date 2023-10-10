@@ -10,11 +10,11 @@ import {
 } from '../../../__generated__/globalTypes'
 
 import {
-  GET_ADMIN_JOURNEYS,
-  useAdminJourneysQuery
-} from './useAdminJourneysQuery'
+  GET_JOURNEYS_ADMIN,
+  useJourneysAdminQuery
+} from './useJourneysAdminQuery'
 
-describe('useAdminJourneysQuery', () => {
+describe('useJourneysAdminQuery', () => {
   it('should get journeys', async () => {
     const result = jest.fn(() => ({
       data: {
@@ -64,7 +64,7 @@ describe('useAdminJourneysQuery', () => {
 
     renderHook(
       () =>
-        useAdminJourneysQuery({
+        useJourneysAdminQuery({
           status: [JourneyStatus.draft],
           template: true
         }),
@@ -74,7 +74,7 @@ describe('useAdminJourneysQuery', () => {
             mocks={[
               {
                 request: {
-                  query: GET_ADMIN_JOURNEYS,
+                  query: GET_JOURNEYS_ADMIN,
                   variables: {
                     status: [JourneyStatus.draft],
                     template: true

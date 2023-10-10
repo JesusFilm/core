@@ -1,12 +1,12 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
 
 import {
-  GetAdminJourneys,
-  GetAdminJourneysVariables
-} from '../../../__generated__/GetAdminJourneys'
+  GetJourneysAdmin,
+  GetJourneysAdminVariables
+} from '../../../__generated__/GetJourneysAdmin'
 
-export const GET_ADMIN_JOURNEYS = gql`
-  query GetAdminJourneys(
+export const GET_JOURNEYS_ADMIN = gql`
+  query GetJourneysAdmin(
     $status: [JourneyStatus!]
     $template: Boolean
     $teamId: ID
@@ -68,11 +68,11 @@ export const GET_ADMIN_JOURNEYS = gql`
   }
 `
 
-export function useAdminJourneysQuery(
-  variables?: GetAdminJourneysVariables
-): QueryResult<GetAdminJourneys, GetAdminJourneysVariables> {
-  const query = useQuery<GetAdminJourneys, GetAdminJourneysVariables>(
-    GET_ADMIN_JOURNEYS,
+export function useJourneysAdminQuery(
+  variables?: GetJourneysAdminVariables
+): QueryResult<GetJourneysAdmin, GetJourneysAdminVariables> {
+  const query = useQuery<GetJourneysAdmin, GetJourneysAdminVariables>(
+    GET_JOURNEYS_ADMIN,
     {
       variables
     }

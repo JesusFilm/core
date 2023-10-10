@@ -1,1 +1,0 @@
-export { useAdminJourneysQuery } from './useAdminJourneysQuery'

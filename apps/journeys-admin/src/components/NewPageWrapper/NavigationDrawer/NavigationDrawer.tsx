@@ -29,7 +29,7 @@ import { GetMe } from '../../../../__generated__/GetMe'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
-import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { useAdminJourneysQuery } from '../../../libs/useJourneysAdminQuery'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 

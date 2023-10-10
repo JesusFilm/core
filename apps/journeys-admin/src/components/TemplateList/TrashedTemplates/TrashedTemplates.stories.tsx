@@ -7,7 +7,7 @@ import { ComponentProps } from 'react'
 import { GetAdminJourneys } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
   defaultTemplate,

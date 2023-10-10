@@ -12,7 +12,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
-import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { useAdminJourneysQuery } from '../../../libs/useJourneysAdminQuery'
 import { useTeam } from '../../Team/TeamProvider'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
