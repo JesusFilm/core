@@ -1,5 +1,4 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
-import FormGroup from '@mui/material/FormGroup'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
@@ -19,6 +18,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
 import { TitleDescriptionUpdate } from '../../../../../__generated__/TitleDescriptionUpdate'
 
+import { CategoriesTabPanel } from './CategoriesTabPanel'
 import { FeaturedCheckbox } from './FeaturedCheckbox'
 
 export const TITLE_DESCRIPTION_UPDATE = gql`
@@ -159,7 +159,13 @@ export function TemplateSettingsDialog({
           }}
           onSubmit={handleTemplateUpdate}
         >
-          {({ values, handleChange, handleSubmit, resetForm }) => (
+          {({
+            values,
+            handleChange,
+            handleSubmit,
+            resetForm,
+            setFieldValue
+          }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
@@ -222,26 +228,19 @@ export function TemplateSettingsDialog({
                         'Publicly visible on template details page'
                       )}
                     />
-                    <FormGroup>
-                      <FeaturedCheckbox
-                        loading={loading}
-                        values={values.featuredAt}
-                        onChange={handleChange}
-                        name="featuredAt"
-                      />
-                    </FormGroup>
+
+                    <FeaturedCheckbox
+                      loading={loading}
+                      values={values.featuredAt}
+                      onChange={handleChange}
+                      name="featuredAt"
+                    />
                   </Stack>
                 </TabPanel>
-                <TabPanel
-                  name="template-categories-settings"
-                  value={tabValue}
-                  index={1}
-                >
-                  <Stack sx={{ pt: 6 }}>
-                    Categories - yet to be implemented - contact
-                    support@nextsteps.is for more info
-                  </Stack>
-                </TabPanel>
+                <CategoriesTabPanel
+                  tabValue={tabValue}
+                  onChange={setFieldValue}
+                />
                 <TabPanel
                   name="template-about-settings"
                   value={tabValue}
