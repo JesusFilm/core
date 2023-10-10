@@ -8,9 +8,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { JourneyView } from '../../src/components/JourneyView'
-import { Menu } from '../../src/components/JourneyView/Menu'
-import { PageWrapper } from '../../src/components/PageWrapper'
-import { TemplateView } from '../../src/components/TemplateView/TemplateView'
+import { PageWrapper } from '../../src/components/NewPageWrapper'
+import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 import { useJourneyQuery } from '../../src/libs/useJourneyQuery/useJourneyQuery'
@@ -41,9 +40,7 @@ function TemplateDetails(): ReactElement {
         <PageWrapper
           title={t('Journey Template')}
           user={user}
-          showDrawer
           backHref="/templates"
-          menu={<Menu />}
         >
           {templates ? (
             <TemplateView authUser={user} />
