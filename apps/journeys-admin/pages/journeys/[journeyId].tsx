@@ -14,21 +14,16 @@ import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 
 import { ACCEPT_ALL_INVITES } from '..'
 import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
-import {
-  GetJourneyAdmin,
-  GetJourneyAdmin_journey as Journey
-} from '../../__generated__/GetJourneyAdmin'
+import { GetAdminJourney_adminJourney as Journey } from '../../__generated__/GetAdminJourney'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { Editor } from '../../src/components/Editor'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { journeyAdminExists } from '../../src/libs/journeyAdminExists/journeyAdminExists'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
-import {
-  GET_JOURNEY_ADMIN,
-  useJourneyAdminQuery
-} from '../../src/libs/useJourneyAdminQuery'
+import { useJourneyAdminQuery } from '../../src/libs/useJourneyAdminQuery'
 
 export const USER_JOURNEY_OPEN = gql`
   mutation UserJourneyOpen($id: ID!) {
@@ -95,19 +90,12 @@ export const getServerSideProps = withUserTokenSSR({
 
   let journey: Journey | null
   try {
-    const { data } = await apolloClient.query<GetJourneyAdmin>({
-      query: GET_JOURNEY_ADMIN,
-      variables: {
-        id: query?.journeyId
-      }
-    })
-
-    journey = data?.journey
+    journey = await journeyAdminExists(apolloClient, query?.journeyId as string)
   } catch (error) {
     return {
       redirect: {
         permanent: false,
-        destination: `/journeys/${query?.journeyId as string}`
+        destination: '/'
       }
     }
   }

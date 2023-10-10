@@ -14,7 +14,6 @@ import { useTranslation } from 'react-i18next'
 
 import { ACCEPT_ALL_INVITES } from '../../..'
 import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
-import { GetJourneyAdmin } from '../../../../__generated__/GetJourneyAdmin'
 import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
@@ -27,7 +26,7 @@ import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/Fil
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/NewPageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
-import { GET_JOURNEY_ADMIN } from '../../../../src/libs/useJourneyAdminQuery/useJourneyAdminQuery'
+import { journeyAdminExists } from '../../../../src/libs/journeyAdminExists/journeyAdminExists'
 import { USER_JOURNEY_OPEN } from '../../[journeyId]'
 
 export const GET_JOURNEY_VISITORS = gql`
@@ -257,17 +256,12 @@ export const getServerSideProps = withUserTokenSSR({
   })
 
   try {
-    await apolloClient.query<GetJourneyAdmin>({
-      query: GET_JOURNEY_ADMIN,
-      variables: {
-        id: query?.journeyId
-      }
-    })
+    await journeyAdminExists(apolloClient, query?.journeyId as string)
   } catch (error) {
     return {
       redirect: {
         permanent: false,
-        destination: `/journeys/${query?.journeyId as string}`
+        destination: '/'
       }
     }
   }

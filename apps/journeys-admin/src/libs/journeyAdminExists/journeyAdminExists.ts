@@ -16,7 +16,7 @@ export const GET_ADMIN_JOURNEY = gql`
 
 export async function journeyAdminExists(
   apolloClient: ApolloClient<NormalizedCacheObject>,
-  journeyId: string
+  journeyId?: string
 ): Promise<Journey | null> {
   const { data } = await apolloClient.query<GetAdminJourney>({
     query: GET_ADMIN_JOURNEY,
@@ -24,6 +24,5 @@ export async function journeyAdminExists(
       id: journeyId
     }
   })
-
-  return data?.adminJourney
+  return data.adminJourney
 }
