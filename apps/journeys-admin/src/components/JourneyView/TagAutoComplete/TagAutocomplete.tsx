@@ -38,7 +38,6 @@ export function TagAutocomplete({
       limitTags={limit}
       disableCloseOnSelect
       onChange={(e, value) => {
-        console.log('updated value', value)
         onChange(parentId, value)
       }}
       fullWidth
