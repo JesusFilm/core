@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
@@ -17,7 +17,7 @@ import { useUserRoleQuery } from '../../src/libs/useUserRoleQuery'
 
 function TemplateIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const router = useRouter()
 
   const { data } = useUserRoleQuery()
@@ -33,21 +33,21 @@ function TemplateIndex(): ReactElement {
   return (
     <>
       <NextSeo title={t('Templates Admin')} />
-      <PageWrapper title={t('Templates Admin')} authUser={AuthUser}>
+      <PageWrapper title={t('Templates Admin')} user={user}>
         <TemplateList />
       </PageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  if (AuthUser == null)
+})(async ({ user, locale }) => {
+  if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
+    user,
     locale
   })
 
@@ -61,6 +61,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(TemplateIndex)

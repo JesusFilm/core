@@ -1,30 +1,70 @@
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
+import { useTagsQuery } from '../../libs/useTagsQuery'
+
+import { CategoryTemplates } from './CategoryTemplates'
 import { FeaturedAndNewTemplates } from './FeaturedAndNewTemplates'
+import { MostRelevantTemplates } from './MostRelevantTemplates'
+
+interface TagDetailsProps {
+  id: string
+  name: string
+}
 
 export function TemplateSections(): ReactElement {
   const router = useRouter()
-  const tags = router.query.tags
+  const paramTags = router.query.tags
+  const { childTags } = useTagsQuery()
+
+  const [tagsFilter, setTagsFilter] = useState<string[]>([])
+
+  useEffect(() => {
+    // add logic to update state with tags from filter component
+    if (paramTags != null) {
+      const tagsArray = Array.isArray(paramTags) ? paramTags : [paramTags]
+      setTagsFilter(tagsArray)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function transformTagsValue(tagsFilter, childTags): TagDetailsProps[] {
+    if (tagsFilter.length > 0) {
+      return tagsFilter.map((id) => ({
+        id,
+        name: childTags
+          ?.find((tag) => tag.id === id)
+          ?.name.find(({ primary }) => primary)?.value
+      }))
+    }
+
+    return childTags?.map((tag) => ({
+      id: tag.id,
+      name: tag?.name.find(({ primary }) => primary)?.value
+    }))
+  }
+
+  const tags = useMemo(
+    () => transformTagsValue(tagsFilter, childTags),
+    [tagsFilter, childTags]
+  )
 
   return (
     <Stack spacing={8}>
-      {tags != null ? (
-        // replace with MostRelevantTemplates Component
-        <>
-          <Typography variant="h3">Tag Ids</Typography>
-          {Array.isArray(tags) &&
-            tags.map((tag, i) => (
-              <Typography key={i} variant="h4">
-                {tag}
-              </Typography>
-            ))}
-        </>
+      {tagsFilter.length > 0 ? (
+        <MostRelevantTemplates />
       ) : (
         <FeaturedAndNewTemplates />
       )}
+      {tags?.map(({ id, name }) => (
+        <CategoryTemplates
+          key={`category-${id}`}
+          id={id}
+          name={name}
+          filtered={tagsFilter.length > 0}
+        />
+      ))}
     </Stack>
   )
 }

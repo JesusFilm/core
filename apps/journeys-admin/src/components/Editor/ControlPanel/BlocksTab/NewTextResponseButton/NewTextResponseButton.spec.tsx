@@ -16,6 +16,11 @@ import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
 
 import { NewTextResponseButton } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
