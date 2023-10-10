@@ -36,20 +36,24 @@ export function TemplateCardPreview({
     <Swiper
       freeMode
       slidesPerView="auto"
-      spaceBetween={24}
+      spaceBetween={28}
       slidesOffsetAfter={64}
       mousewheel
       style={{
         marginLeft: smUp ? '-32px' : '-24px',
-        marginRight: smUp ? '-32px' : '-24px',
-        paddingLeft: smUp ? '28px' : '20px',
+        marginRight: smUp ? '-36px' : '-24px',
+        paddingLeft: smUp ? '32px' : '20px',
         zIndex: 2
       }}
     >
       {steps?.map((step) => (
         <SwiperSlide
           key={step.id}
-          style={{ width: smUp ? '240px' : '177px', zIndex: 2 }}
+          style={{
+            width: smUp ? '240px' : '177px',
+            height: '380px',
+            zIndex: 2
+          }}
         >
           <TemplateCardPreviewItem step={step} />
         </SwiperSlide>
@@ -72,28 +76,55 @@ export function TemplateCardPreviewItem({
     (child) => child.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
   return (
-    <FramePortal
-      width={smUp ? '244px' : '181px'}
-      height={smUp ? '384px' : '284px'}
-      dir={rtl ? 'rtl' : 'ltr'}
-      style={{ zIndex: -2, position: 'relative' }}
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        width: 240,
+        height: 380
+      }}
     >
-      <ThemeProvider
-        themeName={cardBlock?.themeName ?? ThemeName.base}
-        themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
-        rtl={rtl}
-        locale={locale}
+      <Box
+        sx={{
+          transform: 'scale(0.6)',
+          transformOrigin: smUp ? 'top left' : '22.5% top'
+        }}
       >
-        <Box sx={{ p: 1, height: '100%', borderRadius: 4 }}>
-          <BlockRenderer
-            block={step}
-            wrappers={{
-              VideoWrapper,
-              CardWrapper
-            }}
-          />
-        </Box>
-      </ThemeProvider>
-    </FramePortal>
+        <Box
+          sx={{
+            position: 'absolute',
+            display: 'block',
+            width: 405,
+            height: '100%',
+            zIndex: 2,
+            cursor: 'grab'
+          }}
+        />
+        <FramePortal width={405} height={633} dir={rtl ? 'rtl' : 'ltr'}>
+          <ThemeProvider
+            themeName={cardBlock?.themeName ?? ThemeName.base}
+            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+            rtl={rtl}
+            locale={locale}
+          >
+            <Box
+              sx={{
+                height: '100%',
+                borderRadius: 4
+              }}
+            >
+              <BlockRenderer
+                block={step}
+                wrappers={{
+                  VideoWrapper,
+                  CardWrapper
+                }}
+              />
+            </Box>
+          </ThemeProvider>
+        </FramePortal>
+      </Box>
+    </Box>
   )
 }

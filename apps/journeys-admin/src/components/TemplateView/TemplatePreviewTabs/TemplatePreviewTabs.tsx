@@ -45,28 +45,18 @@ export function TemplatePreviewTabs(): ReactElement {
         sx={{ borderBottom: 1, borderColor: 'divider' }}
       >
         <Tab
+          disableRipple
           label={t('{{cardBlockCount}} Cards', {
             cardBlockCount: steps?.length ?? 0
           })}
           {...tabA11yProps('cards-preview-tab', 0)}
-          sx={{ width: smUp ? 200 : undefined }}
-        />
-        <Tab
-          disabled
-          label={t('{{videoBlockCount}} Videos', {
-            videoBlockCount: 0
-          })}
-          {...tabA11yProps('videos-preview-tab', 1)}
-          sx={{ width: smUp ? 200 : undefined }}
+          sx={{ width: smUp ? 200 : undefined, pointerEvents: 'none' }}
         />
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
-        <Stack sx={{ py: 7 }}>
+        <Stack sx={{ py: 6 }}>
           <TemplateCardPreview steps={steps} />
         </Stack>
-      </TabPanel>
-      <TabPanel name="videos-preview-tab" value={tabValue} index={1}>
-        Video tab coming soon
       </TabPanel>
     </Stack>
   )
