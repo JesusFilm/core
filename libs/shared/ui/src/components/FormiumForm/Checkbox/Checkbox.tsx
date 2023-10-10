@@ -6,7 +6,7 @@ import { ReactElement } from 'react'
 export function Checkbox(props: CheckboxProps): ReactElement {
   return (
     <FormControlLabel
-      control={<MuiCheckbox {...props} />}
+      control={<MuiCheckbox {...props} color="secondary" />}
       label={props.label}
     />
   )
