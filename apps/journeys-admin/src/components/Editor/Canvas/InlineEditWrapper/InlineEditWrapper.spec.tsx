@@ -22,6 +22,11 @@ import { SelectableWrapper } from '../SelectableWrapper'
 
 import { InlineEditWrapper } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {

@@ -15,6 +15,11 @@ import { TYPOGRAPHY_BLOCK_UPDATE_ALIGN } from './Align'
 
 import { Align } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Typography align selector', () => {
   it('should show typography align properties', () => {
     const selectedBlock: TreeBlock<TypographyBlock> = {
