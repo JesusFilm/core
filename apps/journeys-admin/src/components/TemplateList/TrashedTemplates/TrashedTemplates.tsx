@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { useAdminJourneysQuery } from '../../../libs/useJourneysAdminQuery'
+import { useJourneysAdminQuery } from '../../../libs/useJourneysAdminQuery'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
@@ -25,7 +25,7 @@ export function TrashedTemplates({
 }: Omit<JourneyListProps, 'user'>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useAdminJourneysQuery({
+  const { data, refetch } = useJourneysAdminQuery({
     status: [JourneyStatus.trashed],
     template: true
   })

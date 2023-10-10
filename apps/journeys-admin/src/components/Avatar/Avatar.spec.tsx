@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { GetAdminJourneys_journeys_userJourneys_user as ApiUser } from '../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin_journeys_userJourneys_user as ApiUser } from '../../../__generated__/GetJourneysAdmin'
 
 import { Avatar } from '.'
 

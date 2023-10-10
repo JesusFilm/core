@@ -1,8 +1,8 @@
 import {
-  GetAdminJourneys_journeys_userJourneys_user as ApiUser,
-  GetAdminJourneys_journeys as Journey,
-  GetAdminJourneys_journeys_userJourneys as UserJourney
-} from '../../../../../__generated__/GetAdminJourneys'
+  GetJourneysAdmin_journeys_userJourneys_user as ApiUser,
+  GetJourneysAdmin_journeys as Journey,
+  GetJourneysAdmin_journeys_userJourneys as UserJourney
+} from '../../../../../__generated__/GetJourneysAdmin'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 
 import { getJourneyTooltip } from '.'

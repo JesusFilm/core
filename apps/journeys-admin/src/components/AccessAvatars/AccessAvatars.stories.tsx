@@ -4,9 +4,9 @@ import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 
 import {
-  GetAdminJourneys_journeys_userJourneys_user as ApiUser,
-  GetAdminJourneys_journeys_userJourneys as UserJourney
-} from '../../../__generated__/GetAdminJourneys'
+  GetJourneysAdmin_journeys_userJourneys_user as ApiUser,
+  GetJourneysAdmin_journeys_userJourneys as UserJourney
+} from '../../../__generated__/GetJourneysAdmin'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'

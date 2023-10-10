@@ -2,10 +2,10 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { GetAdminJourneys } from '../../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin } from '../../../../__generated__/GetJourneysAdmin'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
+import { GET_JOURNEYS_ADMIN } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import { JourneyListProps } from '../JourneyList'
 import {
   defaultJourney,
@@ -29,7 +29,7 @@ const TrashedJourneyListStory: Meta<typeof TrashedJourneyList> = {
 const Template: StoryObj<
   ComponentProps<typeof TrashedJourneyList> & {
     props: JourneyListProps
-    mocks: [MockedResponse<GetAdminJourneys>]
+    mocks: [MockedResponse<GetJourneysAdmin>]
   }
 > = {
   render: ({ ...args }) => (
@@ -45,7 +45,7 @@ export const Default = {
     mocks: [
       {
         request: {
-          query: GET_ADMIN_JOURNEYS,
+          query: GET_JOURNEYS_ADMIN,
           variables: {
             status: [JourneyStatus.trashed]
           }
@@ -71,7 +71,7 @@ export const NoJourneys = {
     mocks: [
       {
         request: {
-          query: GET_ADMIN_JOURNEYS,
+          query: GET_JOURNEYS_ADMIN,
           variables: {
             status: [JourneyStatus.trashed]
           }

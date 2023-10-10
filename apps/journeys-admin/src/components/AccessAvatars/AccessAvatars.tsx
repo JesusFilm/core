@@ -7,7 +7,7 @@ import { styled } from '@mui/material/styles'
 import noop from 'lodash/noop'
 import { ReactElement, useState } from 'react'
 
-import { GetAdminJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneysAdmin'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { AccessDialog } from '../AccessDialog'
 import { Avatar } from '../Avatar'

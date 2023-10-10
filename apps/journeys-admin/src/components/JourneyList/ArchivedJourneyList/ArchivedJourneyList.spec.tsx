@@ -4,7 +4,7 @@ import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
+import { GET_JOURNEYS_ADMIN } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { SortOrder } from '../JourneySort'
@@ -32,7 +32,7 @@ jest.mock('react-i18next', () => ({
 
 const archivedJourneysMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.archived]
     }
@@ -46,7 +46,7 @@ const archivedJourneysMock = {
 
 const noJourneysMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.archived]
     }
@@ -90,7 +90,7 @@ describe('ArchivedJourneyList', () => {
         mocks={[
           {
             request: {
-              query: GET_ADMIN_JOURNEYS,
+              query: GET_JOURNEYS_ADMIN,
               variables: {
                 status: [JourneyStatus.archived]
               }

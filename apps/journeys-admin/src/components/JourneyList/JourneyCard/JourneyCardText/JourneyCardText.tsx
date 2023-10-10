@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import { ReactElement } from 'react'
 
-import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin_journeys as Journey } from '../../../../../__generated__/GetJourneysAdmin'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
 interface Props {

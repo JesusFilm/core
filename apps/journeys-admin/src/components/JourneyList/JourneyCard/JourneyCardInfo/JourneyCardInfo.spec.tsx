@@ -2,9 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 
 import {
-  GetAdminJourneys_journeys as Journey,
-  GetAdminJourneys_journeys_userJourneys as UserJourney
-} from '../../../../../__generated__/GetAdminJourneys'
+  GetJourneysAdmin_journeys as Journey,
+  GetJourneysAdmin_journeys_userJourneys as UserJourney
+} from '../../../../../__generated__/GetJourneysAdmin'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { publishedJourney } from '../../journeyListData'

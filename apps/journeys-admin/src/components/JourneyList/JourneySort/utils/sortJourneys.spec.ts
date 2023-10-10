@@ -1,4 +1,4 @@
-import { GetAdminJourneys_journeys as ActiveJourney } from '../../../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin_journeys as ActiveJourney } from '../../../../../__generated__/GetJourneysAdmin'
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { SortOrder } from '../JourneySort'
 

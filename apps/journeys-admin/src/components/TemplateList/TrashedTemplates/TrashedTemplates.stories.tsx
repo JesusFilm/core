@@ -4,10 +4,10 @@ import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
 
-import { GetAdminJourneys } from '../../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin } from '../../../../__generated__/GetJourneysAdmin'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
+import { GET_JOURNEYS_ADMIN } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
   defaultTemplate,
@@ -63,7 +63,7 @@ const publishedDeletedTemplate = {
 const Template: StoryObj<
   ComponentProps<typeof TrashedTemplates> & {
     props: JourneyListProps
-    mocks: [MockedResponse<GetAdminJourneys>]
+    mocks: [MockedResponse<GetJourneysAdmin>]
   }
 > = {
   render: ({ ...args }) => (
@@ -79,7 +79,7 @@ export const Default = {
     mocks: [
       {
         request: {
-          query: GET_ADMIN_JOURNEYS,
+          query: GET_JOURNEYS_ADMIN,
           variables: {
             status: [JourneyStatus.trashed],
             template: true
@@ -106,7 +106,7 @@ export const NoTemplates = {
     mocks: [
       {
         request: {
-          query: GET_ADMIN_JOURNEYS,
+          query: GET_JOURNEYS_ADMIN,
           variables: {
             status: [JourneyStatus.trashed],
             template: true

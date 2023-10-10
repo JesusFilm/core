@@ -5,7 +5,7 @@ import Tooltip from '@mui/material/Tooltip'
 import compact from 'lodash/compact'
 import { ReactElement } from 'react'
 
-import { GetAdminJourneys_journeys_userJourneys_user as ApiUser } from '../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin_journeys_userJourneys_user as ApiUser } from '../../../__generated__/GetJourneysAdmin'
 
 export interface AvatarProps {
   apiUser: ApiUser

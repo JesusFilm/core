@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { useAdminJourneysQuery } from '../../../libs/useJourneysAdminQuery'
+import { useJourneysAdminQuery } from '../../../libs/useJourneysAdminQuery'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
@@ -25,7 +25,7 @@ export function ActiveTemplates({
 }: Omit<JourneyListProps, 'user'>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useAdminJourneysQuery({
+  const { data, refetch } = useJourneysAdminQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
     template: true
   })

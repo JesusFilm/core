@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { useAdminJourneysQuery } from '../../../libs/useJourneysAdminQuery'
+import { useJourneysAdminQuery } from '../../../libs/useJourneysAdminQuery'
 import { DiscoveryJourneys } from '../../DiscoveryJourneys'
 import { useTeam } from '../../Team/TeamProvider'
 import { JourneyCard } from '../JourneyCard'
@@ -44,7 +44,7 @@ export function ActiveJourneyList({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { activeTeam } = useTeam()
-  const { data, refetch } = useAdminJourneysQuery({
+  const { data, refetch } = useJourneysAdminQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
     teamId: activeTeam?.id
   })

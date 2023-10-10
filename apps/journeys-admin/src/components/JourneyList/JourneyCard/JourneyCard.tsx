@@ -7,9 +7,9 @@ import NextLink from 'next/link'
 import { ReactElement, useEffect, useRef } from 'react'
 
 import {
-  GetAdminJourneys,
-  GetAdminJourneys_journeys as Journey
-} from '../../../../__generated__/GetAdminJourneys'
+  GetJourneysAdmin,
+  GetJourneysAdmin_journeys as Journey
+} from '../../../../__generated__/GetJourneysAdmin'
 
 import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
@@ -20,7 +20,7 @@ interface JourneyCardProps {
   journey?: Journey
   duplicatedJourneyId?: string
   variant?: JourneyCardVariant
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetJourneysAdmin>>
 }
 
 export function JourneyCard({

@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
+import { GET_JOURNEYS_ADMIN } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
@@ -19,7 +19,7 @@ import { ArchivedTemplates } from '.'
 
 const archivedJourneysMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.archived],
       template: true
@@ -34,7 +34,7 @@ const archivedJourneysMock = {
 
 const noJourneysMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.archived],
       template: true
@@ -78,7 +78,7 @@ describe('ArchivedTemplates', () => {
         mocks={[
           {
             request: {
-              query: GET_ADMIN_JOURNEYS,
+              query: GET_JOURNEYS_ADMIN,
               variables: {
                 status: [JourneyStatus.archived],
                 template: true

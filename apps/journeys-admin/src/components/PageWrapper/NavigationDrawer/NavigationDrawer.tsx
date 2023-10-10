@@ -29,7 +29,7 @@ import { GetMe } from '../../../../__generated__/GetMe'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
-import { useAdminJourneysQuery } from '../../../libs/useJourneysAdminQuery'
+import { useJourneysAdminQuery } from '../../../libs/useJourneysAdminQuery'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
@@ -92,7 +92,7 @@ export function NavigationDrawer({
   onClose,
   user
 }: NavigationDrawerProps): ReactElement {
-  const { data: activeJourneys } = useAdminJourneysQuery({
+  const { data: activeJourneys } = useJourneysAdminQuery({
     status: [JourneyStatus.draft, JourneyStatus.published]
   })
   const journeys = activeJourneys?.journeys

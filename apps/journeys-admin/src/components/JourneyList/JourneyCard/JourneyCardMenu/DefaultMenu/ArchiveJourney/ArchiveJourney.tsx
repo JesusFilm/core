@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 import FolderDown1Icon from '@core/shared/ui/icons/FolderDown1'
 import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
 
-import { GetAdminJourneys } from '../../../../../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin } from '../../../../../../../__generated__/GetJourneysAdmin'
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
@@ -34,7 +34,7 @@ export interface ArchiveJourneyProps {
   id: string
   published: boolean
   handleClose: () => void
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetJourneysAdmin>>
 }
 
 export function ArchiveJourney({

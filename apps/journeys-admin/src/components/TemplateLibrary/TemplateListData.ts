@@ -1,6 +1,6 @@
 import { formatISO, startOfYear } from 'date-fns'
 
-import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin_journeys as Journey } from '../../../__generated__/GetJourneysAdmin'
 import {
   JourneyStatus,
   ThemeMode,

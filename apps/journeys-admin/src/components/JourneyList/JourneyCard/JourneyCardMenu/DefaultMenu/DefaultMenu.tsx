@@ -8,7 +8,7 @@ import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin } from '../../../../../../__generated__/GetJourneysAdmin'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
@@ -26,7 +26,7 @@ interface DefaultMenuProps {
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
   template?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetJourneysAdmin>>
 }
 
 export function DefaultMenu({

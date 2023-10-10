@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
+import { GET_JOURNEYS_ADMIN } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -37,7 +37,7 @@ jest.mock('react-i18next', () => ({
 
 const trashedJourneysMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.trashed]
     }
@@ -62,7 +62,7 @@ const trashedJourneysMock = {
 
 const noJourneysMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.trashed]
     }
@@ -153,7 +153,7 @@ describe('TrashedJourneyList', () => {
         mocks={[
           {
             request: {
-              query: GET_ADMIN_JOURNEYS,
+              query: GET_JOURNEYS_ADMIN,
               variables: {
                 status: [JourneyStatus.trashed],
                 teamId: undefined
@@ -194,7 +194,7 @@ describe('TrashedJourneyList', () => {
         mocks={[
           {
             request: {
-              query: GET_ADMIN_JOURNEYS,
+              query: GET_JOURNEYS_ADMIN,
               variables: {
                 status: [JourneyStatus.trashed]
               }

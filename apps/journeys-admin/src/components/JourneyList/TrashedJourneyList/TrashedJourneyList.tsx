@@ -12,7 +12,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
-import { useAdminJourneysQuery } from '../../../libs/useJourneysAdminQuery'
+import { useJourneysAdminQuery } from '../../../libs/useJourneysAdminQuery'
 import { useTeam } from '../../Team/TeamProvider'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
@@ -43,7 +43,7 @@ export function TrashedJourneyList({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { activeTeam } = useTeam()
-  const { data, refetch } = useAdminJourneysQuery({
+  const { data, refetch } = useJourneysAdminQuery({
     status: [JourneyStatus.trashed],
     teamId: activeTeam?.id
   })

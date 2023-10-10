@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
+import { GET_JOURNEYS_ADMIN } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
@@ -19,7 +19,7 @@ import { ActiveTemplates } from '.'
 
 const activeTemplatesMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: true
@@ -34,7 +34,7 @@ const activeTemplatesMock = {
 
 const noTemplatesMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: true
@@ -79,7 +79,7 @@ describe('ActiveTemplates', () => {
         mocks={[
           {
             request: {
-              query: GET_ADMIN_JOURNEYS,
+              query: GET_JOURNEYS_ADMIN,
               variables: {
                 status: [JourneyStatus.draft, JourneyStatus.published],
                 template: true
@@ -116,7 +116,7 @@ describe('ActiveTemplates', () => {
         mocks={[
           {
             request: {
-              query: GET_ADMIN_JOURNEYS,
+              query: GET_JOURNEYS_ADMIN,
               variables: {
                 status: [JourneyStatus.draft, JourneyStatus.published],
                 template: true

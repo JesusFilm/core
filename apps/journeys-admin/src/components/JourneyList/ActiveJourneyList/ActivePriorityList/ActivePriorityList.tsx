@@ -4,9 +4,9 @@ import { User } from 'next-firebase-auth'
 import { ReactElement, useMemo } from 'react'
 
 import {
-  GetAdminJourneys,
-  GetAdminJourneys_journeys as Journey
-} from '../../../../../__generated__/GetAdminJourneys'
+  GetJourneysAdmin,
+  GetJourneysAdmin_journeys as Journey
+} from '../../../../../__generated__/GetJourneysAdmin'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { JourneyCard } from '../../JourneyCard'
 import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
@@ -18,7 +18,7 @@ interface Props {
   sortOrder?: SortOrder
   refetch?: (
     variables?: Partial<OperationVariables> | undefined
-  ) => Promise<ApolloQueryResult<GetAdminJourneys>>
+  ) => Promise<ApolloQueryResult<GetJourneysAdmin>>
   user?: User
 }
 

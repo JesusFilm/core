@@ -1,9 +1,9 @@
 import { formatISO, startOfYear } from 'date-fns'
 
 import {
-  GetAdminJourneys_journeys_userJourneys as ApiUser,
-  GetAdminJourneys_journeys as Journey
-} from '../../../__generated__/GetAdminJourneys'
+  GetJourneysAdmin_journeys_userJourneys as ApiUser,
+  GetJourneysAdmin_journeys as Journey
+} from '../../../__generated__/GetJourneysAdmin'
 import {
   JourneyStatus,
   ThemeMode,

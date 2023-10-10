@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { cache } from '../../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
+import { GET_JOURNEYS_ADMIN } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import { getDiscoveryJourneysMock } from '../../DiscoveryJourneys/data'
 import {
   defaultJourney,
@@ -36,7 +36,7 @@ export const Default = {
       mocks: [
         {
           request: {
-            query: GET_ADMIN_JOURNEYS,
+            query: GET_JOURNEYS_ADMIN,
             variables: {
               status: [JourneyStatus.draft, JourneyStatus.published]
             }
@@ -66,7 +66,7 @@ export const NoJourneys = {
       mocks: [
         {
           request: {
-            query: GET_ADMIN_JOURNEYS,
+            query: GET_JOURNEYS_ADMIN,
             variables: {
               status: [JourneyStatus.draft, JourneyStatus.published]
             }

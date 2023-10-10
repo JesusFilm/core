@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin_journeys as Journey } from '../../../__generated__/GetJourneysAdmin'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   defaultTemplate,

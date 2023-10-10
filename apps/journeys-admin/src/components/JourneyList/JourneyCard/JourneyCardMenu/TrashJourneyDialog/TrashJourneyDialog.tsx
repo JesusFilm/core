@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin } from '../../../../../../__generated__/GetJourneysAdmin'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
 
@@ -22,7 +22,7 @@ export interface TrashJourneyDialogProps {
   id: string
   open: boolean
   handleClose: () => void
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetJourneysAdmin>>
 }
 
 export function TrashJourneyDialog({

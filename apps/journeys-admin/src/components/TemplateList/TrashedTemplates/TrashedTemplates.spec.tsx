@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
+import { GET_JOURNEYS_ADMIN } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import {
   DELETE_TRASHED_JOURNEYS,
@@ -19,7 +19,7 @@ import { TrashedTemplates } from '.'
 
 const trashedJourneysMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.trashed],
       template: true
@@ -37,7 +37,7 @@ const trashedJourneysMock = {
 
 const noJourneysMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.trashed],
       template: true
@@ -91,7 +91,7 @@ describe('TrashedTemplatesTab', () => {
         mocks={[
           {
             request: {
-              query: GET_ADMIN_JOURNEYS,
+              query: GET_JOURNEYS_ADMIN,
               variables: {
                 status: [JourneyStatus.trashed],
                 template: true
@@ -128,7 +128,7 @@ describe('TrashedTemplatesTab', () => {
         mocks={[
           {
             request: {
-              query: GET_ADMIN_JOURNEYS,
+              query: GET_JOURNEYS_ADMIN,
               variables: {
                 status: [JourneyStatus.trashed],
                 template: true

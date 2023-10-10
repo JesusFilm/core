@@ -5,7 +5,7 @@ import { ReactElement, useState } from 'react'
 
 import MoreIcon from '@core/shared/ui/icons/More'
 
-import { GetAdminJourneys } from '../../../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin } from '../../../../../__generated__/GetJourneysAdmin'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
 
@@ -21,7 +21,7 @@ export interface JourneyCardMenuProps {
   slug: string
   published: boolean
   template?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetJourneysAdmin>>
 }
 
 export function JourneyCardMenu({

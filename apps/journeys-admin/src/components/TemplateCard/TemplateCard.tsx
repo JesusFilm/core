@@ -17,17 +17,17 @@ import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import MoreIcon from '@core/shared/ui/icons/More'
 
-import {
-  GetAdminJourneys_journeys as AdminJourney,
-  GetAdminJourneys
-} from '../../../__generated__/GetAdminJourneys'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import {
+  GetJourneysAdmin_journeys as AdminJourney,
+  GetJourneysAdmin
+} from '../../../__generated__/GetJourneysAdmin'
 import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
 
 export interface TemplateCardProps {
   journey?: AdminJourney | Journey
   isPublisher?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetJourneysAdmin>>
 }
 
 export function TemplateCard({

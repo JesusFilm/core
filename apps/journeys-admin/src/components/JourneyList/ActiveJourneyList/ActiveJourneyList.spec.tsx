@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
+import { GET_JOURNEYS_ADMIN } from '../../../libs/useJourneysAdminQuery/useJourneysAdminQuery'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -36,7 +36,7 @@ jest.mock('next/router', () => ({
 
 const activeJourneysMock: MockedResponse = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       teamId: 'teamId'
@@ -51,7 +51,7 @@ const activeJourneysMock: MockedResponse = {
 
 const noJourneysMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS_ADMIN,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       teamId: 'teamId'

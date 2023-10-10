@@ -1,4 +1,4 @@
-import { GetAdminJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetAdminJourneys'
+import { GetJourneysAdmin_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneysAdmin'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 
 export const userJourney1: UserJourney = {
