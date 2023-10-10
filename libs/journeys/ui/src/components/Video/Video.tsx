@@ -257,6 +257,8 @@ export function Video({
         backgroundColor: VIDEO_BACKGROUND_COLOR,
         overflow: 'hidden',
         my: '0px !important',
+        mx:
+          objectFit === VideoBlockObjectFit.fill ? 'inherit' : '0px !important',
         position: 'absolute',
         top: 0,
         right: 0,
