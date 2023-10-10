@@ -16,6 +16,11 @@ import {
 
 import { STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE, SelectedCard } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Selected Card', () => {
   const selectedBlock: TreeBlock<StepBlock> = {
     id: 'step0.id',

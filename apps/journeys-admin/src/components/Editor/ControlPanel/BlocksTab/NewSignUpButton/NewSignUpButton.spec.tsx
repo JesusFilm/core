@@ -13,6 +13,11 @@ import { SIGN_UP_BLOCK_CREATE } from './NewSignUpButton'
 
 import { NewSignUpButton } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()

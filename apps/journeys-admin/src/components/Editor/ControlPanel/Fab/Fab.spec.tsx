@@ -4,6 +4,11 @@ import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { Fab } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Fab', () => {
   const onClick = jest.fn()
 

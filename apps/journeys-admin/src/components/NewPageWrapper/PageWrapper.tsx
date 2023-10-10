@@ -30,6 +30,7 @@ interface PageWrapperProps {
   sidePanelChildren?: ReactNode
   user?: User
   initialState?: Partial<PageState>
+  bodyBackgroundColor?: string
 }
 
 export function PageWrapper({
@@ -43,7 +44,8 @@ export function PageWrapper({
   sidePanelTitle,
   sidePanelChildren,
   user,
-  initialState
+  initialState,
+  bodyBackgroundColor
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -101,7 +103,10 @@ export function PageWrapper({
               >
                 {mainHeaderChildren}
               </MainPanelHeader>
-              <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
+              <MainPanelBody
+                bottomPanelChildren={bottomPanelChildren}
+                backgroundColor={bodyBackgroundColor}
+              >
                 {children}
               </MainPanelBody>
             </Stack>
