@@ -43,6 +43,7 @@ export async function checkConditionalRedirect(
       permanent: false
     }
   } else if (
+    flags.onboardingForm === true &&
     data.getJourneyProfile?.onboardingFormCompletedAt == null &&
     compareAsc(
       parseISO(data.getJourneyProfile?.acceptedTermsAt),
