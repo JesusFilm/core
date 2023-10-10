@@ -1,5 +1,10 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
+
+import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
+
+import { JOURNEY_PROFILE_CREATE } from './TermsAndConditions'
 
 import { TermsAndConditions } from '.'
 
@@ -8,6 +13,7 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
@@ -18,6 +24,8 @@ jest.mock('react-i18next', () => ({
 }))
 
 describe('TermsAndConditions', () => {
+  const push = jest.fn()
+
   afterEach(() => {
     jest.resetAllMocks()
   })
@@ -37,6 +45,85 @@ describe('TermsAndConditions', () => {
     await waitFor(() =>
       expect(getByRole('button', { name: 'Next' })).toBeDisabled()
     )
+  })
+
+  it('should create profile and redirect on next button click', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const result = jest.fn(() => ({
+      data: {
+        journeyProfileCreate: {
+          __typename: 'JourneyProfile' as const,
+          id: 'profile.id',
+          userId: 'userId',
+          acceptedTermsAt: 'date'
+        }
+      }
+    }))
+
+    const createJourneyProfileMock: MockedResponse<JourneyProfileCreate> = {
+      request: {
+        query: JOURNEY_PROFILE_CREATE
+      },
+      result
+    }
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[createJourneyProfileMock]}>
+        <TermsAndConditions />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/teams/new',
+      query: { redirect: null }
+    })
+  })
+
+  it('should pass redirect query location to next page', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: 'custom-location' }
+    } as unknown as NextRouter)
+
+    const result = jest.fn(() => ({
+      data: {
+        journeyProfileCreate: {
+          __typename: 'JourneyProfile' as const,
+          id: 'profile.id',
+          userId: 'userId',
+          acceptedTermsAt: 'date'
+        }
+      }
+    }))
+
+    const createJourneyProfileMock: MockedResponse<JourneyProfileCreate> = {
+      request: {
+        query: JOURNEY_PROFILE_CREATE
+      },
+      result
+    }
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[createJourneyProfileMock]}>
+        <TermsAndConditions />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/teams/new',
+      query: { redirect: 'custom-location' }
+    })
   })
 
   it('should link to terms of use page', () => {

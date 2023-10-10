@@ -6,6 +6,11 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { TextResponseFields } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('TextResponseFields', () => {
   it('should show text response properties', () => {
     const { getByRole, getByText } = render(
