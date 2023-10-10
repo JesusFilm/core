@@ -1,8 +1,8 @@
 import Button from '@mui/material/Button'
 import { ComponentProps, ReactElement } from 'react'
 
-import { useFormium } from '../FormiumProvider'
 import CheckBrokenIcon from '../../icons/CheckBroken'
+import { useFormium } from '../FormiumProvider'
 
 export function SubmitButton({
   type,
