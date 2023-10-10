@@ -100,12 +100,10 @@ describe('CategoriesTabPanel', () => {
       within(getByRole('option', { name: 'Christmas' })).getByRole('checkbox')
     )
 
-    await waitFor(() =>
-      expect(onClick).toHaveBeenCalledWith('tags', [
-        { id: 'tag2', parentId: 'tag1' },
-        { id: 'tag3', parentId: 'tag1' }
-      ])
-    )
+    expect(onClick).toHaveBeenCalledWith('tags', [
+      { id: 'tag2', parentId: 'tag1' },
+      { id: 'tag3', parentId: 'tag1' }
+    ])
   })
 
   it('does not render placeholder below medium breakpoint', async () => {
