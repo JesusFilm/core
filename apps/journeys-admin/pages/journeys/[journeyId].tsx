@@ -21,7 +21,7 @@ import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { journeyAdminExists } from '../../src/libs/journeyAdminExists/journeyAdminExists'
+import { journeyAdminExists } from '../../src/libs/journeyAdminExists'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 import { useJourneyAdminQuery } from '../../src/libs/useJourneyAdminQuery'
 

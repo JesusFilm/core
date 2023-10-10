@@ -18,7 +18,7 @@ import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiRep
 import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-import { journeyAdminExists } from '../../../src/libs/journeyAdminExists/journeyAdminExists'
+import { journeyAdminExists } from '../../../src/libs/journeyAdminExists'
 import { USER_JOURNEY_OPEN } from '../[journeyId]'
 
 function JourneyReportsPage(): ReactElement {

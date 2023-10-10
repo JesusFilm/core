@@ -26,7 +26,7 @@ import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/Fil
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/NewPageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
-import { journeyAdminExists } from '../../../../src/libs/journeyAdminExists/journeyAdminExists'
+import { journeyAdminExists } from '../../../../src/libs/journeyAdminExists'
 import { USER_JOURNEY_OPEN } from '../../[journeyId]'
 
 export const GET_JOURNEY_VISITORS = gql`
