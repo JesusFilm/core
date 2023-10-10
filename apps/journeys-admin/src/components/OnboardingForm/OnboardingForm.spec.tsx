@@ -139,7 +139,7 @@ describe('OnboardingForm', () => {
     })
   })
 
-  it('should passmredirect query location to next page', async () => {
+  it('should pass redirect query location to next page', async () => {
     mockUseRouter.mockReturnValue({
       push,
       query: { redirect: 'custom-location' }
