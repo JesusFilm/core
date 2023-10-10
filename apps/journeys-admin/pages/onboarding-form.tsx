@@ -60,9 +60,9 @@ export const getServerSideProps = withUserTokenSSR({
 
   const redirect = await checkConditionalRedirect(apolloClient, {
     ...flags,
-    onboardingForm: false
+    onboardingForm: false,
+    teams: false
   })
-
   if (redirect != null) return { redirect }
 
   const form = await formiumClient.getFormBySlug(
