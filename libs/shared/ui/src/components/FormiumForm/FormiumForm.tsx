@@ -46,7 +46,7 @@ interface FormiumFormProps {
   form: Form
   userId: string | null
   email: string | null
-  formSubtitle?: string
+  hiddenPageTitle?: boolean
   submitText?: string
   submitIcon?: ReactNode
   handleClick: () => Promise<void>
@@ -56,7 +56,7 @@ export function FormiumForm({
   form,
   userId,
   email,
-  formSubtitle,
+  hiddenPageTitle,
   submitText,
   submitIcon,
   handleClick
@@ -71,7 +71,7 @@ export function FormiumForm({
   }
 
   return (
-    <FormiumProvider value={{ formSubtitle, submitText, submitIcon }}>
+    <FormiumProvider value={{ hiddenPageTitle, submitText, submitIcon }}>
       <Formium
         data={form}
         components={formiumComponents}

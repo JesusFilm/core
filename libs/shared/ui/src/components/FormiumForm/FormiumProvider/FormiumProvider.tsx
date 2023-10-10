@@ -1,12 +1,14 @@
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
 interface FormiumProviderContext {
-  formSubtitle?: string
+  hiddenPageTitle: boolean
   submitText?: string
   submitIcon?: ReactNode
 }
 
-const FormiumContext = createContext<FormiumProviderContext>({})
+const FormiumContext = createContext<FormiumProviderContext>({
+  hiddenPageTitle: false
+})
 
 export function useFormium(): FormiumProviderContext {
   const context = useContext(FormiumContext)
@@ -24,7 +26,7 @@ export function FormiumProvider({
   children
 }: FormProviderProps): ReactElement {
   return (
-    <FormiumContext.Provider value={{ ...value }}>
+    <FormiumContext.Provider value={{ hiddenPageTitle: false, ...value }}>
       {children}
     </FormiumContext.Provider>
   )

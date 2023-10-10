@@ -10,19 +10,19 @@ import { FormiumProvider, useFormium } from './FormiumProvider'
 describe('FormiumContext', () => {
   it('should pass submit button props', () => {
     function TestButton(): ReactElement {
-      const { formSubtitle, submitText, submitIcon } = useFormium()
+      const { hiddenPageTitle, submitText, submitIcon } = useFormium()
       return (
         <>
-          <Typography>{formSubtitle}</Typography>
+          {!hiddenPageTitle && <Typography>Page Title</Typography>}
           <Button endIcon={submitIcon}>{submitText}</Button>
         </>
       )
     }
 
-    const { getByTestId, getByRole, getByText } = render(
+    const { getByTestId, getByRole, queryByText } = render(
       <FormiumProvider
         value={{
-          formSubtitle: 'custom subtitle',
+          hiddenPageTitle: true,
           submitText: 'Button Submit',
           submitIcon: <ArrowLeftIcon />
         }}
@@ -30,7 +30,7 @@ describe('FormiumContext', () => {
         <TestButton />
       </FormiumProvider>
     )
-    expect(getByText('custom subtitle')).toBeInTheDocument()
+    expect(queryByText('Page Title')).not.toBeInTheDocument()
     expect(getByRole('button')).toHaveTextContent('Button Submit')
     expect(getByTestId('ArrowLeftIcon')).toBeInTheDocument()
   })

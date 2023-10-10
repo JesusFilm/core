@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { Form } from '@formium/client'
-import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
@@ -22,11 +23,15 @@ export const JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE = gql`
 interface OnboardingFormProps {
   form: Form
   authUser: User
+  title?: string
+  subtitle?: string
 }
 
 export function OnboardingForm({
   form,
-  authUser
+  authUser,
+  title,
+  subtitle
 }: OnboardingFormProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
@@ -45,21 +50,22 @@ export function OnboardingForm({
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center'
-      }}
-    >
+    <Stack justifyContent="center" alignItems="center" spacing={7}>
+      {(title != null || subtitle != null) && (
+        <Stack alignItems="center">
+          <Typography variant="h4">{title}</Typography>
+          <Typography variant="body1">{subtitle}</Typography>
+        </Stack>
+      )}
       <FormiumForm
         form={form}
         userId={authUser.id}
         email={authUser.email}
-        formSubtitle={t('Help us serve you better')}
+        hiddenPageTitle
         submitText={t('Next')}
         submitIcon={<ArrowRightIcon />}
         handleClick={handleClick}
       />
-    </Box>
+    </Stack>
   )
 }

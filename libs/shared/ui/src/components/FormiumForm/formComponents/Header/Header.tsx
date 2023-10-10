@@ -1,5 +1,4 @@
 import { Form, FormElementAction, FormElementType } from '@formium/types'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
@@ -40,21 +39,19 @@ interface PageChild {
 }
 
 export function Header({ page: { title } }: HeaderProps): ReactElement {
-  const { formSubtitle } = useFormium()
+  const { hiddenPageTitle } = useFormium()
 
   return (
-    <Stack
-      data-testid="Header"
-      spacing={2}
-      sx={{
-        alignItems: 'center',
-        pb: '30px'
-      }}
-    >
-      <Typography variant="h4">{title}</Typography>
-      {formSubtitle != null && (
-        <Typography variant="body1">{formSubtitle}</Typography>
+    /* eslint-disable-next-line react/jsx-no-useless-fragment */
+    <>
+      {hiddenPageTitle ? (
+        /* eslint-disable-next-line react/jsx-no-useless-fragment */
+        <></>
+      ) : (
+        <Typography variant="h4" sx={{ pb: '30px' }}>
+          {title}
+        </Typography>
       )}
-    </Stack>
+    </>
   )
 }

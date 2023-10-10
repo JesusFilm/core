@@ -33,7 +33,12 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
       <OnboardingPageWrapper
         emailSubject={t('a question about onboarding form')}
       >
-        <OnboardingForm form={form} authUser={user} />
+        <OnboardingForm
+          form={form}
+          authUser={user}
+          title={t('A Few Questions')}
+          subtitle={t('Help us serve you better')}
+        />
       </OnboardingPageWrapper>
     </>
   )

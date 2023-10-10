@@ -102,6 +102,22 @@ describe('OnboardingForm', () => {
     email: 'test@example.com'
   } as unknown as User
 
+  it('should show title and subtitle', () => {
+    const { getByText } = render(
+      <MockedProvider mocks={[]}>
+        <OnboardingForm
+          form={form}
+          authUser={authUser}
+          title="Page Title"
+          subtitle="Page Subtitle"
+        />
+      </MockedProvider>
+    )
+
+    expect(getByText('Page Title')).toBeInTheDocument()
+    expect(getByText('Page Subtitle')).toBeInTheDocument()
+  })
+
   it('should handle submit', async () => {
     mockUseRouter.mockReturnValue({
       push,
