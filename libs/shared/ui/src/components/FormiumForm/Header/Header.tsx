@@ -1,5 +1,4 @@
 import { Form, FormElementAction, FormElementType } from '@formium/types'
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
@@ -44,20 +43,18 @@ export function Header({ page: { title } }: HeaderProps): ReactElement {
   const { formSubtitle } = useFormium()
 
   return (
-    <Box
+    <Stack
       data-testid="Header"
+      spacing={2}
       sx={{
-        display: 'flex',
-        justifyContent: 'center',
+        alignItems: 'center',
         pb: '30px'
       }}
     >
-      <Stack spacing={2}>
-        <Typography variant="h4">{title}</Typography>
-        {formSubtitle != null && (
-          <Typography variant="body1">{formSubtitle}</Typography>
-        )}
-      </Stack>
-    </Box>
+      <Typography variant="h4">{title}</Typography>
+      {formSubtitle != null && (
+        <Typography variant="body1">{formSubtitle}</Typography>
+      )}
+    </Stack>
   )
 }
