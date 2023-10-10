@@ -9,7 +9,7 @@ import { FormiumProvider, useFormium } from './FormiumProvider'
 
 describe('FormiumContext', () => {
   it('should pass submit button props', () => {
-    function TestButton(): ReactElement {
+    function TestComponent(): ReactElement {
       const { hiddenPageTitle, submitText, submitIcon } = useFormium()
       return (
         <>
@@ -27,7 +27,7 @@ describe('FormiumContext', () => {
           submitIcon: <ArrowLeftIcon />
         }}
       >
-        <TestButton />
+        <TestComponent />
       </FormiumProvider>
     )
     expect(queryByText('Page Title')).not.toBeInTheDocument()

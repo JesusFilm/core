@@ -21,7 +21,7 @@ describe('Header', () => {
     expect(getByText('Page Title')).toBeInTheDocument()
   })
 
-  it('should show custom subtitle', () => {
+  it('should hide title', () => {
     const { queryByText } = render(
       <FormiumProvider value={{ hiddenPageTitle: true }}>
         <Header {...headerProps} />
