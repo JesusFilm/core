@@ -12,14 +12,14 @@ import { useTranslation } from 'react-i18next'
 
 import { ACCEPT_ALL_INVITES } from '../..'
 import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
-import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
+import { GetJourneyAdmin } from '../../../__generated__/GetJourneyAdmin'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-import { GET_ADMIN_JOURNEY } from '../../../src/libs/useAdminJourneyQuery/useAdminJourneyQuery'
+import { GET_JOURNEY_ADMIN } from '../../../src/libs/useJourneyAdminQuery/useJourneyAdminQuery'
 import { USER_JOURNEY_OPEN } from '../[journeyId]'
 
 function JourneyReportsPage(): ReactElement {
@@ -71,8 +71,8 @@ export const getServerSideProps = withUserTokenSSR({
   })
 
   try {
-    await apolloClient.query<GetAdminJourney>({
-      query: GET_ADMIN_JOURNEY,
+    await apolloClient.query<GetJourneyAdmin>({
+      query: GET_JOURNEY_ADMIN,
       variables: {
         id: query?.journeyId
       }

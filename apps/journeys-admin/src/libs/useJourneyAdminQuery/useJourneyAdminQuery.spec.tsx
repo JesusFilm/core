@@ -3,9 +3,9 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import { formatISO, startOfYear } from 'date-fns'
 
 import {
-  GetAdminJourney_journey as Journey,
-  GetAdminJourney_journey_language as Language
-} from '../../../__generated__/GetAdminJourney'
+  GetJourneyAdmin_journey as Journey,
+  GetJourneyAdmin_journey_language as Language
+} from '../../../__generated__/GetJourneyAdmin'
 import {
   JourneyStatus,
   ThemeMode,
@@ -13,7 +13,7 @@ import {
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
-import { GET_ADMIN_JOURNEY, useAdminJourneyQuery } from './useAdminJourneyQuery'
+import { GET_JOURNEY_ADMIN, useJourneyAdminQuery } from './useJourneyAdminQuery'
 
 describe('useJourneyQuery', () => {
   it('should get journey', async () => {
@@ -75,7 +75,7 @@ describe('useJourneyQuery', () => {
 
     renderHook(
       () =>
-        useAdminJourneyQuery({
+        useJourneyAdminQuery({
           id: 'journey.id'
         }),
       {
@@ -84,7 +84,7 @@ describe('useJourneyQuery', () => {
             mocks={[
               {
                 request: {
-                  query: GET_ADMIN_JOURNEY,
+                  query: GET_JOURNEY_ADMIN,
                   variables: {
                     id: 'journey.id'
                   }
