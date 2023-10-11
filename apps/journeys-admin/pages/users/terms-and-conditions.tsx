@@ -29,13 +29,15 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, flags, translations } = await initAndAuthApp({
+  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     encodedRedirectPathname:
       resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
     resolvedUrl
   })
+
+  if (redirect != null) return { redirect }
 
   await apolloClient.mutate<AcceptAllInvites>({
     mutation: ACCEPT_ALL_INVITES

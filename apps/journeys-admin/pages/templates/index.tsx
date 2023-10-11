@@ -31,11 +31,13 @@ function LibraryIndex(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR()(
   async ({ user, locale, resolvedUrl }) => {
-    const { flags, translations } = await initAndAuthApp({
+    const { flags, redirect, translations } = await initAndAuthApp({
       user,
       locale,
       resolvedUrl
     })
+
+    if (redirect != null) return { redirect }
 
     return {
       props: {
