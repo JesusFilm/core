@@ -133,6 +133,7 @@ describe('checkConditionalRedirect', () => {
         client,
         {
           termsAndConditions: true,
+          onboardingForm: true,
           teams: true
         },
         '/custom-redirect-location'
@@ -219,6 +220,7 @@ describe('checkConditionalRedirect', () => {
     expect(
       await checkConditionalRedirect(client, {
         termsAndConditions: true,
+        onboardingForm: true,
         teams: true
       })
     ).toBeUndefined()
