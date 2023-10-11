@@ -23,15 +23,11 @@ export const JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE = gql`
 interface OnboardingFormProps {
   form: Form
   authUser: User
-  title?: string
-  subtitle?: string
 }
 
 export function OnboardingForm({
   form,
-  authUser,
-  title,
-  subtitle
+  authUser
 }: OnboardingFormProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
@@ -51,12 +47,10 @@ export function OnboardingForm({
 
   return (
     <Stack justifyContent="center" alignItems="center" spacing={7}>
-      {(title != null || subtitle != null) && (
-        <Stack alignItems="center">
-          <Typography variant="h4">{title}</Typography>
-          <Typography variant="body1">{subtitle}</Typography>
-        </Stack>
-      )}
+      <Stack alignItems="center">
+        <Typography variant="h4">{t('A Few Questions')}</Typography>
+        <Typography variant="body1">{t('Help us serve you better')}</Typography>
+      </Stack>
       <FormiumForm
         form={form}
         userId={authUser.id}
