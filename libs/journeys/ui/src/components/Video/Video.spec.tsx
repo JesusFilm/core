@@ -9,6 +9,11 @@ import { VideoFields } from './__generated__/VideoFields'
 
 import { Video } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const block: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
   id: 'video0.id',

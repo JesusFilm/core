@@ -7,8 +7,8 @@ import {
   ActiveFab,
   ActiveJourneyEditContent,
   ActiveTab,
-  EditorState,
-  useEditor
+  EditorProvider,
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -18,20 +18,10 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../libs/TestEditorState'
 import { ThemeProvider } from '../../ThemeProvider'
-import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
-import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 
 import { Canvas } from '.'
-
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -41,8 +31,6 @@ jest.mock('react-i18next', () => ({
     }
   }
 }))
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('Canvas', () => {
   const step0: TreeBlock<StepBlock> = {
@@ -63,9 +51,7 @@ describe('Canvas', () => {
     nextBlockId: null,
     children: []
   }
-  const dispatch = jest.fn()
-
-  const state: EditorState = {
+  const initialState: EditorState = {
     steps: [step0, step1],
     selectedStep: step0,
     selectedBlock: step0,
@@ -74,13 +60,6 @@ describe('Canvas', () => {
     activeFab: ActiveFab.Add,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
-
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-  })
 
   it('should show border around selected step', () => {
     const { getByTestId } = render(
@@ -103,7 +82,9 @@ describe('Canvas', () => {
                 variant: 'admin'
               }}
             >
-              <Canvas />
+              <EditorProvider initialState={initialState}>
+                <Canvas />
+              </EditorProvider>
             </JourneyProvider>
           </ThemeProvider>
         </SnackbarProvider>
@@ -116,7 +97,7 @@ describe('Canvas', () => {
   })
 
   it('should select step on click', () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
@@ -136,41 +117,29 @@ describe('Canvas', () => {
                 variant: 'admin'
               }}
             >
-              <Canvas />
+              <EditorProvider initialState={initialState}>
+                <TestEditorState />
+                <Canvas />
+              </EditorProvider>
             </JourneyProvider>
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('step-step0.id'))
-
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedBlockAction',
-      block: step0
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetActiveFabAction',
-      activeFab: ActiveFab.Add
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Next Card Properties',
-      mobileOpen: true,
-      children: <NextCard />
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedAttributeIdAction',
-      id: 'step0.id-next-block'
-    })
+    expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
+    expect(getByText(`activeFab: Add`)).toBeInTheDocument()
+    expect(getByText('activeTab: Properties')).toBeInTheDocument()
+    expect(getByText('drawerTitle: Next Card Properties')).toBeInTheDocument()
+    expect(getByText('drawerMobileOpen: true')).toBeInTheDocument()
+    expect(
+      getByText('selectedAttributeId: step0.id-next-block')
+    ).toBeInTheDocument()
   })
 
   // TODO: Add to E2E tests when complete. Can't test in unit test as iframe doesn't render
   it.skip('should selected footer on click', () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <MockedProvider>
         <FlagsProvider flags={{ editableStepFooter: true }}>
           <ThemeProvider>
@@ -190,46 +159,29 @@ describe('Canvas', () => {
                 variant: 'admin'
               }}
             >
-              <Canvas />
+              <EditorProvider initialState={initialState}>
+                <TestEditorState />
+                <Canvas />
+              </EditorProvider>
             </JourneyProvider>
           </ThemeProvider>
         </FlagsProvider>
       </MockedProvider>
     )
-
     expect(getByTestId('stepFooter')).toHaveStyle({
       outline: 'none'
     })
-
     fireEvent.click(getByTestId('stepFooter'))
-
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedComponentAction',
-      component: 'Footer'
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetActiveFabAction',
-      activeFab: ActiveFab.Add
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Hosted By',
-      mobileOpen: true,
-      children: <HostSidePanel />
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedAttributeIdAction',
-      id: 'hosted-by'
-    })
-
+    expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
+    expect(getByText('activeFab: Add')).toBeInTheDocument()
+    expect(getByText('activeTab: Properties')).toBeInTheDocument()
+    expect(getByText('drawerTitle: Hosted By')).toBeInTheDocument()
+    expect(getByText('drawerMobileOpen: true')).toBeInTheDocument()
+    expect(getByText('selectedAttributeId: hosted-by')).toBeInTheDocument()
+    expect(getByText('selectedComponent: Footer')).toBeInTheDocument()
     expect(getByTestId('stepFooter')).toHaveStyle({
       outline: '2px solid #C52D3A'
     })
-
     expect(getByTestId('step-step0.id')).toHaveStyle({
       outline: '0px solid'
     })

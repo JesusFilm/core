@@ -18,7 +18,11 @@ function LibraryIndex(): ReactElement {
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
-      <PageWrapper title={t('Journey Templates')} user={user}>
+      <PageWrapper
+        title={t('Journey Templates')}
+        user={user}
+        bodyBackgroundColor={templates ? 'background.paper' : undefined}
+      >
         {templates ? <TemplateGallery /> : <TemplateLibrary />}
       </PageWrapper>
     </>
@@ -26,11 +30,14 @@ function LibraryIndex(): ReactElement {
 }
 
 export const getServerSideProps = withUserTokenSSR()(
-  async ({ user, locale }) => {
-    const { flags, translations } = await initAndAuthApp({
+  async ({ user, locale, resolvedUrl }) => {
+    const { flags, redirect, translations } = await initAndAuthApp({
       user,
-      locale
+      locale,
+      resolvedUrl
     })
+
+    if (redirect != null) return { redirect }
 
     return {
       props: {
