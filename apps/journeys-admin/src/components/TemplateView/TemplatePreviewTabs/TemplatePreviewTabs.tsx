@@ -33,6 +33,8 @@ export function TemplatePreviewTabs(): ReactElement {
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
       : undefined
 
+  console.log(steps)
+
   const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
   }

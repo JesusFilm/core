@@ -1,7 +1,12 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { JourneyFields } from '../../../../__generated__/JourneyFields'
+import { simpleComponentConfig } from '../../../libs/storybook'
+import { publishedJourney } from '../../JourneyView/data'
+
+import { journeyVideoBlocks } from './data'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 
 const TemplatePreviewTabsStory: Meta<typeof TemplatePreviewTabs> = {
@@ -10,9 +15,20 @@ const TemplatePreviewTabsStory: Meta<typeof TemplatePreviewTabs> = {
   title: 'Journeys-Admin/TemplatePreviewTabs'
 }
 
+const journey = {
+  ...publishedJourney,
+  blocks: journeyVideoBlocks
+}
+
 const Template: StoryObj<typeof TemplatePreviewTabs> = {
   render: () => {
-    return <TemplatePreviewTabs />
+    return (
+      <JourneyProvider
+        value={{ journey: journey as JourneyFields, variant: 'admin' }}
+      >
+        <TemplatePreviewTabs />
+      </JourneyProvider>
+    )
   }
 }
 

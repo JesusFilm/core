@@ -1,4 +1,5 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
@@ -6,7 +7,6 @@ import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
 
 import { TemplateCardPreview } from './TemplateCardPreview'
-import useMediaQuery from '@mui/material/useMediaQuery'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

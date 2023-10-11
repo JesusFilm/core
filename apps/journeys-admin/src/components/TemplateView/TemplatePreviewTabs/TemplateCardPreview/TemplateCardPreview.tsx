@@ -35,7 +35,7 @@ interface TemplateCardPreviewItemProps {
 export function TemplateCardPreview({
   steps
 }: TemplateCardPreviewProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const smUp = useMediaQuery((theme: Theme) => theme?.breakpoints?.up('sm'))
 
   function TemplateCardPreviewItem({
     step
@@ -119,7 +119,7 @@ export function TemplateCardPreview({
     >
       {steps?.map((step) => (
         <SwiperSlide
-          data-testid={'swiper-container'}
+          data-testid="swiper-container"
           key={step.id}
           style={{
             width: smUp ? '240px' : '177px',
