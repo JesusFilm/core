@@ -3,6 +3,8 @@ import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+
 import {
   VideoBlockObjectFit,
   VideoBlockSource
@@ -39,6 +41,7 @@ export function BackgroundVideo({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
         autoplay: true,
         controls: false,
         controlBar: false,

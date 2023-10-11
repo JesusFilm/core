@@ -2,6 +2,8 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+
 import { useVideo } from '../../../../libs/videoContext'
 
 import { VideoControls } from './VideoControls'
@@ -21,6 +23,7 @@ export function VideoPlayer({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
+          ...defaultVideoJsOptions,
           autoplay: true,
           controls: false,
           controlBar: false,
