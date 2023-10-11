@@ -1,8 +1,8 @@
 import { Form, FormElementAction, FormElementType } from '@formium/types'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+
+import { useFormium } from '../../FormiumProvider'
 
 // Contains information for the page and renders the header
 
@@ -39,19 +39,13 @@ interface PageChild {
 }
 
 export function Header({ page: { title } }: HeaderProps): ReactElement {
-  return (
-    <Box
-      data-testid="Header"
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        pb: '30px'
-      }}
-    >
-      <Stack spacing={2}>
-        <Typography variant="h4">{title}</Typography>
-        <Typography variant="body1">Help us serve you better</Typography>
-      </Stack>
-    </Box>
+  const { hiddenPageTitle } = useFormium()
+
+  return hiddenPageTitle === true ? (
+    <></>
+  ) : (
+    <Typography variant="h4" sx={{ pb: '30px' }}>
+      {title}
+    </Typography>
   )
 }

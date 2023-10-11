@@ -15,8 +15,8 @@ export function ElementsWrapper({
     <Card
       data-testid="ElementsWrapper"
       sx={{
-        maxWidth: '404px',
-        borderRadius: '8px',
+        width: { sm: '397px' },
+        borderRadius: '6px',
         mb: '18px'
       }}
     >

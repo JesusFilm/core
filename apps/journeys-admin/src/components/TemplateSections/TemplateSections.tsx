@@ -61,13 +61,14 @@ export function TemplateSections({
   return (
     <Stack spacing={8}>
       <TemplateSection
-        category={tagIds == null ? t('Featured and New') : t('Most Relevant')}
+        category={tagIds == null ? t('Featured & New') : t('Most Relevant')}
         journeys={collection}
       />
       {map(
         contents,
         ({ category, journeys }, key) =>
-          (tagIds == null || tagIds.includes(key)) && (
+          ((tagIds == null && journeys.length >= 5) ||
+            tagIds?.includes(key) === true) && (
             <TemplateSection category={category} journeys={journeys} />
           )
       )}

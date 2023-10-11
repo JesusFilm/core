@@ -1,7 +1,7 @@
 import IconButton from '@mui/material/IconButton'
 import { ComponentProps, ReactElement } from 'react'
 
-import ArrowLeftIcon from '../../icons/ArrowLeft'
+import ArrowLeftIcon from '../../../icons/ArrowLeft'
 
 export function PreviousButton({
   type,
