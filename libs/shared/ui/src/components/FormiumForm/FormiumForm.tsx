@@ -5,7 +5,7 @@ import {
 } from '@formium/react'
 import { Form } from '@formium/types'
 import { FormikValues } from 'formik'
-import { ReactElement, ReactNode, createContext, useContext } from 'react'
+import { ReactElement } from 'react'
 
 import { formiumClient } from '../../libs/formiumClient'
 
@@ -18,6 +18,7 @@ import { RadioGroup } from './formComponents/RadioGroup'
 import { SubmitButton } from './formComponents/SubmitButton'
 import { Textarea } from './formComponents/Textarea'
 import { TextInput } from './formComponents/TextInput'
+import { FormiumProvider, FormiumProviderContext } from './FormiumProvider'
 import { ElementsWrapper } from './wrappers/ElementsWrapper'
 import { FieldWrapper } from './wrappers/FieldWrapper'
 import { FooterWrapper } from './wrappers/FooterWrapper'
@@ -41,20 +42,6 @@ const formiumComponents: FormiumComponents = {
   PreviousButton
 }
 
-// Context
-interface FormiumProviderContext {
-  hiddenPageTitle?: boolean
-  submitText?: string
-  submitIcon?: ReactNode
-}
-
-const FormiumContext = createContext<FormiumProviderContext>({})
-
-export function useFormium(): FormiumProviderContext {
-  const context = useContext(FormiumContext)
-  return context
-}
-
 // Formium Component
 interface FormiumFormProps extends FormiumProviderContext {
   form: Form
@@ -67,10 +54,8 @@ export function FormiumForm({
   form,
   userId,
   email,
-  hiddenPageTitle,
-  submitText,
-  submitIcon,
-  onSubmit
+  onSubmit,
+  ...props
 }: FormiumFormProps): ReactElement {
   async function handleSubmit(values: FormikValues): Promise<void> {
     await formiumClient.submitForm(form.slug, {
@@ -82,14 +67,12 @@ export function FormiumForm({
   }
 
   return (
-    <FormiumContext.Provider
-      value={{ hiddenPageTitle, submitText, submitIcon }}
-    >
+    <FormiumProvider {...props}>
       <Formium
         data={form}
         components={formiumComponents}
         onSubmit={handleSubmit}
       />
-    </FormiumContext.Provider>
+    </FormiumProvider>
   )
 }
