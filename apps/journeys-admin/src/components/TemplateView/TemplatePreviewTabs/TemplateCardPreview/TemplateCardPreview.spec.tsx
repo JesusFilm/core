@@ -28,7 +28,7 @@ describe('TemplateCardPreview', () => {
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('swiper-container')).toHaveLength(3)
+      expect(getAllByTestId('templateCardsSwiperSlide')).toHaveLength(3)
     )
   })
 
@@ -46,7 +46,7 @@ describe('TemplateCardPreview', () => {
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('swiper-container')).toHaveLength(3)
+      expect(getAllByTestId('templateCardsSwiperSlide')).toHaveLength(3)
     )
   })
 })

@@ -1,6 +1,7 @@
-type VideoBlock = 'VideoBlock'
+import { GetJourney_journey_blocks as Blocks } from '../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 
-export const journeyVideoBlocks = [
+export const journeyVideoBlocks: Blocks[] = [
   {
     __typename: 'CardBlock',
     id: '779a6977-73d6-42dd-b909-aa8c5c6b2bab',
@@ -13,7 +14,7 @@ export const journeyVideoBlocks = [
     fullscreen: false
   },
   {
-    __typename: 'VideoBlock' as VideoBlock,
+    __typename: 'VideoBlock',
     id: 'e4edb342-7ca2-4248-a548-bf182cd05587',
     parentBlockId: '564edeb1-5407-4274-b3fd-7b1862fcc37c',
     parentOrder: 0,
@@ -25,7 +26,7 @@ export const journeyVideoBlocks = [
     fullsize: true,
     videoId: '1_0-TrainV_1Install',
     videoVariantLanguageId: '529',
-    source: 'internal',
+    source: VideoBlockSource.internal,
     title: null,
     description: null,
     image: null,
@@ -67,7 +68,7 @@ export const journeyVideoBlocks = [
     fullsize: true,
     videoId: '1_0-TrainV_5Ministry',
     videoVariantLanguageId: '529',
-    source: 'internal',
+    source: VideoBlockSource.internal,
     title: null,
     description: null,
     image: null,
@@ -109,7 +110,7 @@ export const journeyVideoBlocks = [
     fullsize: true,
     videoId: '1_cl1302-0-0',
     videoVariantLanguageId: '529',
-    source: 'internal',
+    source: VideoBlockSource.internal,
     title: null,
     description: null,
     image: null,
@@ -151,7 +152,7 @@ export const journeyVideoBlocks = [
     fullsize: true,
     videoId: 'TDBSCCrem-Q',
     videoVariantLanguageId: null,
-    source: 'youTube',
+    source: VideoBlockSource.youTube,
     title: 'Medley',
     description:
       'Just as a body, though one, has many parts, but all its many parts form one body, so it is with Christ.  For we were all baptized by one Spirit so as to form one body—whether Jews or Gentiles, slave or free—and we were all given the one Spirit to drink. Even so the body is not made up of one part but of many.  (1 Corinthians 12:12-14)\n\nThis is a whimsical story of a bowl of singing fruit. The unity of the group is disrupted when a new fruit joins the song with a new kind of style. Will the new sound create tension in the bowl or will it bring the whole group closer together?\n\nGod’s various gifts are handed out everywhere; but they all originate in God’s Spirit. God’s various ministries are carried out everywhere; but they all originate in God’s Spirit. God’s various expressions of power are in action everywhere; but God himself is behind it all. Each person is given something to do that shows who God is: Everyone gets in on it, everyone benefits. All kinds of things are handed out by the Spirit, and to all kinds of people! (1 Corinthians 12:4-7)',
@@ -191,13 +192,14 @@ export const journeyVideoBlocks = [
     parentOrder: 0,
     muted: false,
     autoplay: true,
+    action: null,
     startAt: 0,
     endAt: 147,
     posterBlockId: null,
     fullsize: true,
     videoId: '1_cl1305-0-0',
     videoVariantLanguageId: '529',
-    source: 'internal',
+    source: VideoBlockSource.internal,
     title: null,
     description: null,
     image: null,

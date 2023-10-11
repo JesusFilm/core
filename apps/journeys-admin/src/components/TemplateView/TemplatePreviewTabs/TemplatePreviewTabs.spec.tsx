@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -32,7 +32,7 @@ describe('TemplatePreviewTabs', () => {
   beforeEach(() => jest.clearAllMocks())
 
   it('should render card tab component', async () => {
-    const { getByText } = render(
+    const { getByText, getAllByTestId } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -46,50 +46,8 @@ describe('TemplatePreviewTabs', () => {
     )
 
     expect(getByText('{{cardBlockCount}} Cards')).toBeInTheDocument()
-  })
-
-  // todo: write video tab tests when implemented, remove skip
-  it.skip('should switch between tabs', async () => {
-    const { getByText, getByRole } = render(
-      <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: journeyWithVideos as JourneyFields,
-            variant: 'admin'
-          }}
-        >
-          <TemplatePreviewTabs />
-        </JourneyProvider>
-      </MockedProvider>
+    await waitFor(() =>
+      expect(getAllByTestId('templateCardsSwiperSlide')).toHaveLength(5)
     )
-
-    expect(getByText('{{cardBlockCount}} Cards')).toBeInTheDocument()
-    fireEvent.click(getByRole('tab', { name: '{{videoBlockCount}} Videos' }))
-    await waitFor(() => {
-      expect(getByRole('tab', { selected: true })).toHaveTextContent(
-        '{{videoBlockCount}} Videos'
-      )
-    })
-  })
-
-  // todo: write video tab tests when implemented, remove skip
-  it.skip('should disable videos tab if no videos in journey', async () => {
-    const { getByText, getByRole } = render(
-      <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: undefined,
-            variant: 'admin'
-          }}
-        >
-          <TemplatePreviewTabs />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    expect(getByText('{{cardBlockCount}} Cards')).toBeInTheDocument()
-    expect(
-      getByRole('tab', { name: '{{videoBlockCount}} Videos' })
-    ).toBeDisabled()
   })
 })

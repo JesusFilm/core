@@ -16,7 +16,6 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
-// import { CardPreview } from '../../CardPreview'
 
 import { TemplateCardPreview } from './TemplateCardPreview/TemplateCardPreview'
 
@@ -38,7 +37,7 @@ export function TemplatePreviewTabs(): ReactElement {
   }
 
   return (
-    <Stack>
+    <>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
@@ -58,6 +57,6 @@ export function TemplatePreviewTabs(): ReactElement {
           <TemplateCardPreview steps={steps} />
         </Stack>
       </TabPanel>
-    </Stack>
+    </>
   )
 }

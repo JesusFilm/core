@@ -35,7 +35,7 @@ const CardPreviewStory: Meta<typeof CardPreview> = {
   }
 }
 
-export const steps: Array<TreeBlock<StepBlock>> = [
+const steps: Array<TreeBlock<StepBlock>> = [
   {
     id: 'step0.id',
     __typename: 'StepBlock',

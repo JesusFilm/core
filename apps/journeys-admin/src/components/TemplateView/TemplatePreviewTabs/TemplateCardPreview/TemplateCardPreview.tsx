@@ -1,6 +1,7 @@
 import 'swiper/swiper.min.css'
 
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
@@ -30,78 +31,78 @@ interface TemplateCardPreviewProps {
 
 interface TemplateCardPreviewItemProps {
   step: TreeBlock<StepBlock>
+  smUp: boolean
+}
+
+function TemplateCardPreviewItem({
+  step,
+  smUp
+}: TemplateCardPreviewItemProps): ReactElement {
+  const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
+  const cardBlock = step.children.find(
+    (child) => child.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
+  return (
+    <Stack
+      sx={{
+        position: 'relative',
+        width: smUp ? 240 : 177,
+        height: smUp ? 380 : 280
+      }}
+    >
+      <Box
+        sx={{
+          transform: smUp ? 'scale(0.6)' : 'scale(0.4)',
+          transformOrigin: smUp ? 'top left' : '22.5% top'
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            display: 'block',
+            width: smUp ? 405 : 445,
+            height: '100%',
+            zIndex: 2,
+            cursor: 'grab'
+          }}
+        />
+        <FramePortal
+          width={smUp ? 405 : 445}
+          height={smUp ? 633 : 698}
+          dir={rtl ? 'rtl' : 'ltr'}
+        >
+          <ThemeProvider
+            themeName={cardBlock?.themeName ?? ThemeName.base}
+            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+            rtl={rtl}
+            locale={locale}
+          >
+            <Box
+              sx={{
+                height: '100%',
+                borderRadius: 4
+              }}
+            >
+              <BlockRenderer
+                block={step}
+                wrappers={{
+                  VideoWrapper,
+                  CardWrapper
+                }}
+              />
+            </Box>
+          </ThemeProvider>
+        </FramePortal>
+      </Box>
+    </Stack>
+  )
 }
 
 export function TemplateCardPreview({
   steps
 }: TemplateCardPreviewProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme?.breakpoints?.up('sm'))
-
-  function TemplateCardPreviewItem({
-    step
-  }: TemplateCardPreviewItemProps): ReactElement {
-    const { journey } = useJourney()
-    const { rtl, locale } = getJourneyRTL(journey)
-    const cardBlock = step.children.find(
-      (child) => child.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock>
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative',
-          width: smUp ? 240 : 177,
-          height: smUp ? 380 : 280
-        }}
-      >
-        <Box
-          sx={{
-            transform: smUp ? 'scale(0.6)' : 'scale(0.4)',
-            transformOrigin: smUp ? 'top left' : '22.5% top'
-          }}
-        >
-          <Box
-            sx={{
-              position: 'absolute',
-              display: 'block',
-              width: smUp ? 405 : 445,
-              height: '100%',
-              zIndex: 2,
-              cursor: 'grab'
-            }}
-          />
-          <FramePortal
-            width={smUp ? 405 : 445}
-            height={smUp ? 633 : 698}
-            dir={rtl ? 'rtl' : 'ltr'}
-          >
-            <ThemeProvider
-              themeName={cardBlock?.themeName ?? ThemeName.base}
-              themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
-              rtl={rtl}
-              locale={locale}
-            >
-              <Box
-                sx={{
-                  height: '100%',
-                  borderRadius: 4
-                }}
-              >
-                <BlockRenderer
-                  block={step}
-                  wrappers={{
-                    VideoWrapper,
-                    CardWrapper
-                  }}
-                />
-              </Box>
-            </ThemeProvider>
-          </FramePortal>
-        </Box>
-      </Box>
-    )
-  }
 
   return (
     <Swiper
@@ -119,7 +120,7 @@ export function TemplateCardPreview({
     >
       {steps?.map((step) => (
         <SwiperSlide
-          data-testid="swiper-container"
+          data-testid="templateCardsSwiperSlide"
           key={step.id}
           style={{
             width: smUp ? '240px' : '177px',
@@ -127,7 +128,7 @@ export function TemplateCardPreview({
             zIndex: 2
           }}
         >
-          <TemplateCardPreviewItem step={step} />
+          <TemplateCardPreviewItem step={step} smUp={smUp} />
         </SwiperSlide>
       ))}
     </Swiper>
