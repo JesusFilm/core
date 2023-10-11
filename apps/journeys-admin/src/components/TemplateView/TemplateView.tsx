@@ -8,6 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StrategySection } from '../StrategySection'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
+import { PreviewTemplateButton } from './PreviewTemplateButton'
 
 interface TemplateViewProps {
   authUser: User
@@ -21,6 +22,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
       <Typography variant="h1">{journey?.title}</Typography>
       <Typography variant="body1">{journey?.description}</Typography>
       <CreateJourneyButton signedIn={authUser?.id != null} />
+      <PreviewTemplateButton slug={journey?.slug} />
       {journey?.strategySlug != null && (
         <Stack sx={{ pt: 4 }}>
           <StrategySection
