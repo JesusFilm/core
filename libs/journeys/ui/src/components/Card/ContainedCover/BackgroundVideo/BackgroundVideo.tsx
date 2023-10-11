@@ -109,12 +109,19 @@ export function BackgroundVideo({
     }
   }
 
+  const isFillAndNotYoutube = (): boolean =>
+    objectFit === VideoBlockObjectFit.fill &&
+    source !== VideoBlockSource.youTube
+
   return (
     <Box
-      height={{ xs: '100vh', sm: '100%' }}
-      width={{ xs: 'calc(100vh * 16 / 9)', sm: '100%' }}
+      height={{ xs: isFillAndNotYoutube() ? '100vh' : '100%', sm: '100%' }}
+      width={{
+        xs: isFillAndNotYoutube() ? 'calc(100vh * 16 / 9)' : '100%',
+        sm: '100%'
+      }}
       overflow="hidden"
-      marginX={{ xs: '-100%', sm: 0 }}
+      marginX={{ xs: isFillAndNotYoutube() ? '-100%' : 0, sm: 0 }}
       position="absolute"
       data-testid="background-video-container"
     >
