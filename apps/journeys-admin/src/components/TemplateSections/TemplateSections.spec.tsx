@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
-import { formatISO, startOfYear } from 'date-fns'
 import { NextRouter, useRouter } from 'next/router'
 
 import { GetTags_tags as Tags } from '../../../__generated__/GetTags'
@@ -79,7 +78,8 @@ describe('TemplateSections', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     slug: 'default',
-    publishedAt: formatISO(startOfYear(new Date())),
+    publishedAt: '2023-08-14T04:24:24.392Z',
+    createdAt: '2023-08-14T04:24:24.392Z',
     status: JourneyStatus.draft,
     seoTitle: null,
     seoDescription: null,
