@@ -240,13 +240,14 @@ function JourneyVisitorsPage(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, query }) => {
+})(async ({ user, locale, query, resolvedUrl }) => {
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     user,
-    locale
+    locale,
+    resolvedUrl
   })
 
   if (redirect != null) return { redirect }
