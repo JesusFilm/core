@@ -3,9 +3,9 @@ import { Parameters } from '@storybook/react'
 import { ReactElement, ReactNode } from 'react'
 
 import { globalTypes } from '../../../../../../.storybook/preview'
-import { createEmotionCache } from '../../../src/libs/createEmotionCache'
-import { ThemeProvider } from '../../components/ThemeProvider'
+import { createEmotionCache } from '../../libs/createEmotionCache'
 import { ThemeMode, ThemeName, getTheme } from '../../libs/themes'
+import { ThemeProvider } from '../ThemeProvider'
 
 const storybookMode = globalTypes.theme.toolbar.items
 type StorybookThemeMode = (typeof storybookMode)[number]

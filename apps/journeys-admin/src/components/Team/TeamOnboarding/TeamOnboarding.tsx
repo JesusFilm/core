@@ -38,7 +38,7 @@ export function TeamOnboarding(): ReactElement {
       {activeTeam != null ? (
         <TeamManageWrapper>
           {({ data, userTeamList, userTeamInviteList, userTeamInviteForm }) => (
-            <Card sx={{ width: { sm: '444px' } }}>
+            <Card sx={{ width: { sm: '444px' }, borderRadius: '6px' }}>
               <CardHeader
                 title={t('Invite Teammates', {
                   title: activeTeam.title
