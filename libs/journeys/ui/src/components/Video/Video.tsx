@@ -249,8 +249,7 @@ export function Video({
   }
 
   const isFillAndNotYoutube = (): boolean =>
-    objectFit === VideoBlockObjectFit.fill &&
-    source !== VideoBlockSource.youTube
+    videoFit === 'cover' && source !== VideoBlockSource.youTube
 
   return (
     <Box
@@ -298,7 +297,7 @@ export function Video({
               sm: '100%'
             }}
             width={{
-              xs: isFillAndNotYoutube() ? 'calc(100vh * 16 / 9)' : '100%',
+              xs: isFillAndNotYoutube() ? '300%' : '100%',
               sm: '100%'
             }}
             overflow="hidden"
