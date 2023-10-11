@@ -65,9 +65,13 @@ describe('checkConditionalRedirect', () => {
       query: jest.fn().mockResolvedValue({ data })
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
-      await checkConditionalRedirect({ apolloClient, resolvedUrl: '/' })
+      await checkConditionalRedirect({
+        apolloClient,
+        resolvedUrl: '/templates/journeyId'
+      })
     ).toEqual({
-      destination: '/users/terms-and-conditions',
+      destination:
+        '/users/terms-and-conditions?redirect=%2Ftemplates%2FjourneyId',
       permanent: false
     })
   })
@@ -88,12 +92,11 @@ describe('checkConditionalRedirect', () => {
     expect(
       await checkConditionalRedirect({
         apolloClient,
-        resolvedUrl: '/',
-        encodedRedirectPathname: '/custom-redirect-location'
+        resolvedUrl: '/?redirect=%2Fcustom-redirect-location'
       })
     ).toEqual({
       destination:
-        '/users/terms-and-conditions?redirect=/custom-redirect-location',
+        '/users/terms-and-conditions?redirect=%2Fcustom-redirect-location',
       permanent: false
     })
   })
@@ -156,11 +159,10 @@ describe('checkConditionalRedirect', () => {
     expect(
       await checkConditionalRedirect({
         apolloClient,
-        resolvedUrl: '/',
-        encodedRedirectPathname: '/custom-redirect-location'
+        resolvedUrl: '/?redirect=%2Fcustom-redirect-location'
       })
     ).toEqual({
-      destination: '/teams/new?redirect=/custom-redirect-location',
+      destination: '/teams/new?redirect=%2Fcustom-redirect-location',
       permanent: false
     })
   })

@@ -32,8 +32,6 @@ export const getServerSideProps = withUserTokenSSR({
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     user,
     locale,
-    encodedRedirectPathname:
-      resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
     resolvedUrl
   })
 

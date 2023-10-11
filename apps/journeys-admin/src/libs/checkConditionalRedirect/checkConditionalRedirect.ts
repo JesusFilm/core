@@ -18,23 +18,29 @@ export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
 
 interface Props {
   apolloClient: ApolloClient<NormalizedCacheObject>
-  encodedRedirectPathname?: string
   resolvedUrl: string
 }
 
 export async function checkConditionalRedirect({
   apolloClient,
-  encodedRedirectPathname,
   resolvedUrl
 }: Props): Promise<Redirect | undefined> {
   const { data } = await apolloClient.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
-  const redirect =
-    encodedRedirectPathname != null && encodedRedirectPathname !== ''
-      ? `?redirect=${encodedRedirectPathname}`
-      : ''
+  const currentRedirect = new URL(
+    resolvedUrl,
+    'https://admin.nextstep.is'
+  ).searchParams.get('redirect')
+  let redirect = ''
+
+  if (currentRedirect != null) {
+    redirect = `?redirect=${encodeURIComponent(currentRedirect)}`
+  } else {
+    if (resolvedUrl !== '/')
+      redirect = `?redirect=${encodeURIComponent(resolvedUrl)}`
+  }
 
   if (data.getJourneyProfile?.acceptedTermsAt == null) {
     if (resolvedUrl.startsWith('/users/terms-and-conditions')) return
