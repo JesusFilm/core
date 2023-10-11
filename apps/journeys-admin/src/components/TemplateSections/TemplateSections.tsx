@@ -67,7 +67,8 @@ export function TemplateSections({
       {map(
         contents,
         ({ category, journeys }, key) =>
-          (tagIds == null || tagIds.includes(key)) && (
+          ((tagIds == null && journeys.length >= 5) ||
+            tagIds?.includes(key) === true) && (
             <TemplateSection category={category} journeys={journeys} />
           )
       )}
