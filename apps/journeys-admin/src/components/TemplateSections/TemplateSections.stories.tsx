@@ -1,8 +1,17 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { GetJourneys } from '../../../__generated__/GetJourneys'
+import {
+  GetJourneys,
+  GetJourneys_journeys as Journey,
+  GetJourneys_journeys_tags as Tag
+} from '../../../__generated__/GetJourneys'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 
@@ -14,7 +23,11 @@ const TemplateSectionsStory: Meta<typeof TemplateSections> = {
   title: 'Journeys-Admin/TemplateSections'
 }
 
-const defaultTemplate = {
+const defaultTemplate: Journey = {
+  __typename: 'Journey',
+  trashedAt: null,
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.dark,
   id: '1',
   title: 'New Template 1',
   description: null,
@@ -45,85 +58,170 @@ const defaultTemplate = {
   },
   publishedAt: '2023-08-14T04:24:24.392Z',
   createdAt: '2023-08-14T04:24:24.392Z',
-  featuredAt: '2023-08-14T04:24:24.392Z'
+  featuredAt: '2023-08-14T04:24:24.392Z',
+  status: JourneyStatus.published,
+  seoTitle: null,
+  seoDescription: null,
+  userJourneys: []
 }
 
-const Template: StoryObj<
-  ComponentProps<typeof TemplateSections> & {
-    mocks: [MockedResponse<GetJourneys>]
+const acceptance: Tag = {
+  __typename: 'Tag',
+  id: 'acceptanceTagId',
+  name: [
+    {
+      value: 'Acceptance',
+      primary: true,
+      __typename: 'Translation',
+      language: {
+        __typename: 'Language',
+        id: 'en'
+      }
+    }
+  ],
+  parentId: 'parentId'
+}
+
+const addiction: Tag = {
+  __typename: 'Tag',
+  id: 'addictionTagId',
+  name: [
+    {
+      value: 'Addiction',
+      primary: true,
+      __typename: 'Translation',
+      language: {
+        __typename: 'Language',
+        id: 'en'
+      }
+    }
+  ],
+  parentId: 'parentId'
+}
+
+const journeys: Journey[] = [
+  {
+    ...defaultTemplate,
+    id: 'featuredId1',
+    title: 'Featured Template 1',
+    createdAt: '2023-09-05T23:27:45.596Z',
+    tags: [acceptance]
+  },
+  {
+    ...defaultTemplate,
+    id: 'featuredId2',
+    title: 'Featured Template 2',
+    createdAt: '2023-08-05T23:27:45.596Z',
+    tags: [addiction]
+  },
+  {
+    ...defaultTemplate,
+    id: 'featuredId3',
+    title: 'Featured Template 3',
+    createdAt: '2023-08-05T23:27:45.596Z',
+    tags: [acceptance]
+  },
+  {
+    ...defaultTemplate,
+    id: 'newId1',
+    title: 'New Template 1',
+    createdAt: '2023-09-05T23:27:45.596Z',
+    tags: [acceptance, addiction],
+    featuredAt: null
+  },
+  {
+    ...defaultTemplate,
+    id: 'newId2',
+    title: 'New Template 2',
+    createdAt: '2023-08-05T23:27:45.596Z',
+    featuredAt: null
+  },
+  {
+    ...defaultTemplate,
+    id: 'newId3',
+    title: 'New Template 3',
+    createdAt: '2023-08-05T23:27:45.596Z',
+    tags: [acceptance, addiction],
+    featuredAt: null
+  },
+  {
+    ...defaultTemplate,
+    id: 'newId4',
+    title: 'New Template 4',
+    createdAt: '2023-08-05T23:27:45.596Z',
+    tags: [addiction],
+    featuredAt: null
+  },
+  {
+    ...defaultTemplate,
+    id: 'newId5',
+    title: 'New Template 5',
+    createdAt: '2023-08-05T23:27:45.596Z',
+    tags: [acceptance],
+    featuredAt: null
   }
-> = {
-  render: ({ mocks }) => (
-    <MockedProvider mocks={mocks}>
-      <TemplateSections />
-    </MockedProvider>
-  )
+]
+
+const getJourneysMock: MockedResponse<GetJourneys> = {
+  request: {
+    query: GET_JOURNEYS,
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true
+      }
+    }
+  },
+  result: {
+    data: {
+      journeys
+    }
+  }
+}
+
+const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
+  ...getJourneysMock,
+  request: {
+    ...getJourneysMock.request,
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true,
+        tagIds: [addiction.id]
+      }
+    }
+  },
+  result: {
+    data: {
+      journeys: journeys.filter(({ tags }) =>
+        tags.some(({ id }) => id === addiction.id)
+      )
+    }
+  }
+}
+
+const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
+  render: ({ ...args }) => <TemplateSections {...args} />
 }
 
 export const Default = {
   ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getJourneysMock]
+    }
+  }
+}
+
+export const TagIds = {
+  ...Template,
   args: {
-    mocks: [
-      {
-        request: {
-          query: GET_JOURNEYS,
-          variables: {
-            where: {
-              featured: true,
-              template: true,
-              orderByRecent: true
-            }
-          }
-        },
-        result: {
-          data: {
-            journeys: [
-              {
-                ...defaultTemplate,
-                id: '1',
-                title: 'Featured Template 1',
-                publishedAt: '2023-09-05T23:27:45.596Z'
-              },
-              {
-                ...defaultTemplate,
-                id: '2',
-                title: 'Featured Template 2',
-                publishedAt: '2023-09-05T23:27:45.596Z'
-              }
-            ]
-          }
-        }
-      },
-      {
-        request: {
-          query: GET_JOURNEYS,
-          variables: {
-            where: {
-              featured: false,
-              template: true,
-              limit: 10,
-              orderByRecent: true
-            }
-          }
-        },
-        result: {
-          data: {
-            journeys: [
-              defaultTemplate,
-              defaultTemplate,
-              defaultTemplate,
-              defaultTemplate,
-              defaultTemplate,
-              defaultTemplate,
-              defaultTemplate,
-              defaultTemplate,
-              defaultTemplate,
-              defaultTemplate
-            ]
-          }
-        }
-      }
-    ]
+    tagIds: [addiction.id]
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [getJourneysWithTagIdsMock]
+    }
   }
 }
 

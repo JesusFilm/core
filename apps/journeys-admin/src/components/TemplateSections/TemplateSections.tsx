@@ -61,7 +61,7 @@ export function TemplateSections({
   return (
     <Stack spacing={8}>
       <TemplateSection
-        category={tagIds == null ? t('Featured and New') : t('Most Relevant')}
+        category={tagIds == null ? t('Featured & New') : t('Most Relevant')}
         journeys={collection}
       />
       {map(
