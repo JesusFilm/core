@@ -64,9 +64,13 @@ export function TemplateSections({
         category={tagIds == null ? t('Featured and New') : t('Most Relevant')}
         journeys={collection}
       />
-      {map(contents, ({ category, journeys }) => (
-        <TemplateSection category={category} journeys={journeys} />
-      ))}
+      {map(
+        contents,
+        ({ category, journeys }, key) =>
+          (tagIds == null || tagIds.includes(key)) && (
+            <TemplateSection category={category} journeys={journeys} />
+          )
+      )}
     </Stack>
   )
 }
