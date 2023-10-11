@@ -6,7 +6,7 @@ import { useFormium } from '../../FormiumForm'
 
 // Contains information for the page and renders the header
 
-export interface HeaderProps {
+interface HeaderProps {
   form: Form
   page: Page
   pageIndex: number

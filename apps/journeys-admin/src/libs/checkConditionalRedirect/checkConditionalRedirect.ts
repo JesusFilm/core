@@ -1,5 +1,5 @@
 import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
-import { compareAsc, parseISO } from 'date-fns'
+import { isAfter, parseISO } from 'date-fns'
 import { Redirect } from 'next'
 
 import { GetJourneyProfileAndTeams } from '../../../__generated__/GetJourneyProfileAndTeams'
@@ -52,10 +52,10 @@ export async function checkConditionalRedirect({
     }
   } else if (
     data.getJourneyProfile?.onboardingFormCompletedAt == null &&
-    compareAsc(
+    isAfter(
       parseISO(data.getJourneyProfile?.acceptedTermsAt),
-      new Date(2023, 9, 5) // users created before this date will not have to fill out the form
-    ) === 1
+      new Date(2023, 9, 5)
+    )
   ) {
     if (resolvedUrl.startsWith('/onboarding-form')) return
     return { destination: `/onboarding-form${redirect}`, permanent: false }
