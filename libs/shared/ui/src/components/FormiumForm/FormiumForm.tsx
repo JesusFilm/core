@@ -18,7 +18,6 @@ import { RadioGroup } from './formComponents/RadioGroup'
 import { SubmitButton } from './formComponents/SubmitButton'
 import { Textarea } from './formComponents/Textarea'
 import { TextInput } from './formComponents/TextInput'
-// import { FormiumProvider } from './FormiumProvider'
 import { ElementsWrapper } from './wrappers/ElementsWrapper'
 import { FieldWrapper } from './wrappers/FieldWrapper'
 import { FooterWrapper } from './wrappers/FooterWrapper'
@@ -42,6 +41,7 @@ const formiumComponents: FormiumComponents = {
   PreviousButton
 }
 
+// Context
 interface FormiumProviderContext {
   hiddenPageTitle?: boolean
   submitText?: string
@@ -55,6 +55,7 @@ export function useFormium(): FormiumProviderContext {
   return context
 }
 
+// Formium Component
 interface FormiumFormProps extends FormiumProviderContext {
   form: Form
   userId: string | null

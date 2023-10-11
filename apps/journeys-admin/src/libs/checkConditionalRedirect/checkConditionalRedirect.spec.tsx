@@ -103,7 +103,7 @@ describe('checkConditionalRedirect', () => {
     })
   })
 
-  it('should redirect if a new user has not completed onboarding form with redirect parameter', async () => {
+  it('redirect if a new user has not completed onboarding form with redirect parameter', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',
