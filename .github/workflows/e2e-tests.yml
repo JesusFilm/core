@@ -44,7 +44,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report
+          name: ${{ inputs.TargetTests }}-playwright-report
           path: |
             playwright-report/
             apps/${{ inputs.TargetTests }}/src/e2e/

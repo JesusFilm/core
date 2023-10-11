@@ -5,15 +5,18 @@ import { ComponentProps } from 'react'
 
 import { sharedUiConfig } from '../../libs/sharedUiConfig'
 
-import { Button } from './Button'
 import { Checkbox } from './Checkbox'
 import { ElementsWrapper } from './ElementsWrapper'
+import { FieldWrapper } from './FieldWrapper'
 import { FooterWrapper } from './FooterWrapper'
 import { FormControl } from './FormControl'
 import { FormiumForm } from './FormiumForm'
 import { Header } from './Header'
+import { NextButton } from './NextButton'
 import { PageWrapper } from './PageWrapper'
+import { PreviousButton } from './PreviousButton'
 import { RadioGroup } from './RadioGroup'
+import { SubmitButton } from './SubmitButton'
 import { Textarea } from './Textarea'
 import { TextInput } from './TextInput'
 
@@ -30,9 +33,9 @@ interface FormStoryProps {
   radioGroupProps: ComponentProps<typeof RadioGroup>
   headerProps: ComponentProps<typeof Header>
   formControlProps: ComponentProps<typeof FormControl>
-  previousButtonProps: ComponentProps<typeof Button>
-  nextButtonProps: ComponentProps<typeof Button>
-  submitButtonProps: ComponentProps<typeof Button>
+  previousButtonProps: ComponentProps<typeof PreviousButton>
+  nextButtonProps: ComponentProps<typeof NextButton>
+  submitButtonProps: ComponentProps<typeof SubmitButton>
 }
 
 const defaultFormStoryArgs: FormStoryProps = {
@@ -79,7 +82,8 @@ const defaultFormStoryArgs: FormStoryProps = {
         id: 'radioGroupOption1.id',
         label: 'Label 1',
         value: 'Value 1',
-        disabled: false
+        disabled: false,
+        checked: true
       },
       {
         id: 'radioGroupOption2.id',
@@ -106,17 +110,17 @@ const defaultFormStoryArgs: FormStoryProps = {
   previousButtonProps: {
     type: 'button',
     onClick: noop,
-    children: 'Previous Button'
+    children: 'Back'
   },
   nextButtonProps: {
     type: 'submit',
     onClick: noop,
-    children: 'Next Button'
+    children: 'Next'
   },
   submitButtonProps: {
     type: 'submit',
     disabled: false,
-    children: 'Submit Button'
+    children: 'Submit'
   }
 }
 
@@ -125,20 +129,33 @@ const Template: StoryObj<FormStoryProps> = {
     <PageWrapper>
       <>
         <Header {...args.headerProps} />
-        <FormControl {...args.formControlProps} />
         <ElementsWrapper>
           <>
-            <TextInput {...args.textInputProps} />
-            <Textarea {...args.textAreaProps} />
-            <Checkbox {...args.checkboxProps} />
-            <RadioGroup {...args.radioGroupProps} />
+            <FieldWrapper>
+              <>
+                <FormControl {...args.formControlProps} />
+                <TextInput {...args.textInputProps} />
+              </>
+            </FieldWrapper>
+            <FieldWrapper>
+              <Textarea {...args.textAreaProps} />
+            </FieldWrapper>
+            <FieldWrapper>
+              <>
+                <Checkbox {...args.checkboxProps} checked />
+                <Checkbox {...args.checkboxProps} />
+              </>
+            </FieldWrapper>
+            <FieldWrapper>
+              <RadioGroup {...args.radioGroupProps} />
+            </FieldWrapper>
           </>
         </ElementsWrapper>
         <FooterWrapper>
           <>
-            <Button {...args.previousButtonProps} />
-            <Button {...args.submitButtonProps} />
-            <Button {...args.nextButtonProps} />
+            <PreviousButton {...args.previousButtonProps} />
+            <SubmitButton {...args.submitButtonProps} />
+            <NextButton {...args.nextButtonProps} />
           </>
         </FooterWrapper>
       </>

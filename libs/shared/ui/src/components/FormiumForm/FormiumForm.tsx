@@ -9,19 +9,22 @@ import { ReactElement } from 'react'
 
 import { formiumClient } from '../../libs/formiumClient'
 
-import { Button } from './Button'
 import { Checkbox } from './Checkbox'
 import { ElementsWrapper } from './ElementsWrapper'
+import { FieldWrapper } from './FieldWrapper'
 import { FooterWrapper } from './FooterWrapper'
 import { FormControl } from './FormControl'
 import { Header } from './Header'
+import { NextButton } from './NextButton'
 import { PageWrapper } from './PageWrapper'
+import { PreviousButton } from './PreviousButton'
 import { RadioGroup } from './RadioGroup'
+import { SubmitButton } from './SubmitButton'
 import { Textarea } from './Textarea'
 import { TextInput } from './TextInput'
 
 // declared outside of the component to save on rerenders
-const myComponents: FormiumComponents = {
+const formiumComponents: FormiumComponents = {
   ...defaultComponents,
   TextInput,
   Textarea,
@@ -32,21 +35,36 @@ const myComponents: FormiumComponents = {
   PageWrapper,
   FooterWrapper,
   Header,
-  SubmitButton: Button,
-  NextButton: Button,
-  PreviousButton: Button
+  FieldWrapper,
+  SubmitButton,
+  NextButton,
+  PreviousButton
 }
 
 interface FormiumFormProps {
   form: Form
+  userId: string | null
+  email: string | null
 }
 
-export function FormiumForm({ form }: FormiumFormProps): ReactElement {
+export function FormiumForm({
+  form,
+  userId,
+  email
+}: FormiumFormProps): ReactElement {
   async function handleSubmit(values: FormikValues): Promise<void> {
-    await formiumClient.submitForm(form.slug, values)
+    await formiumClient.submitForm(form.slug, {
+      ...values,
+      hiddenUserId: userId,
+      hiddenUserEmail: email
+    })
   }
 
   return (
-    <Formium data={form} components={myComponents} onSubmit={handleSubmit} />
+    <Formium
+      data={form}
+      components={formiumComponents}
+      onSubmit={handleSubmit}
+    />
   )
 }

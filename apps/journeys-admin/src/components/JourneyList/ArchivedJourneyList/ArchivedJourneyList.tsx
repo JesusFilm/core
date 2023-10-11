@@ -35,7 +35,7 @@ export const TRASH_ARCHIVED_JOURNEYS = gql`
 `
 
 export function ArchivedJourneyList({
-  authUser,
+  user,
   sortOrder,
   event
 }: JourneyListProps): ReactElement {
@@ -76,7 +76,7 @@ export function ArchivedJourneyList({
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+              (userJourney) => userJourney.user?.id === (user?.id ?? '')
             )?.role === 'owner'
         )
         .map((journey) => journey.id)
@@ -96,7 +96,7 @@ export function ArchivedJourneyList({
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+              (userJourney) => userJourney.user?.id === (user?.id ?? '')
             )?.role === 'owner'
         )
         .map((journey) => journey.id)

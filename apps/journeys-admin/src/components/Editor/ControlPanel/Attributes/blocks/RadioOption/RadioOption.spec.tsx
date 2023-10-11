@@ -18,6 +18,11 @@ import { Action } from '../../Action'
 
 import { RadioOption } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
   return {

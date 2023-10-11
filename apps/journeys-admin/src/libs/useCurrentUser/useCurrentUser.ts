@@ -6,8 +6,8 @@ import {
 } from '@apollo/client'
 
 import {
-  GetCurrentUser,
-  GetCurrentUser_me as User
+  GetCurrentUser_me as ApiUser,
+  GetCurrentUser
 } from '../../../__generated__/GetCurrentUser'
 
 export const GET_CURRENT_USER = gql`
@@ -21,7 +21,7 @@ export const GET_CURRENT_USER = gql`
 
 export function useCurrentUser(): {
   loadUser: LazyQueryExecFunction<GetCurrentUser, OperationVariables>
-  data: User
+  data: ApiUser
 } {
   const [loadUser, { data }] = useLazyQuery<GetCurrentUser>(GET_CURRENT_USER)
 

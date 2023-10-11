@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
@@ -28,8 +28,9 @@ interface PageWrapperProps {
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */
   sidePanelChildren?: ReactNode
-  authUser?: AuthUser
+  user?: User
   initialState?: Partial<PageState>
+  bodyBackgroundColor?: string
 }
 
 export function PageWrapper({
@@ -42,8 +43,9 @@ export function PageWrapper({
   bottomPanelChildren,
   sidePanelTitle,
   sidePanelChildren,
-  authUser,
-  initialState
+  user,
+  initialState,
+  bodyBackgroundColor
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -64,7 +66,7 @@ export function PageWrapper({
           <NavigationDrawer
             open={open}
             onClose={setOpen}
-            authUser={authUser}
+            user={user}
             router={router}
           />
 
@@ -101,7 +103,10 @@ export function PageWrapper({
               >
                 {mainHeaderChildren}
               </MainPanelHeader>
-              <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
+              <MainPanelBody
+                bottomPanelChildren={bottomPanelChildren}
+                backgroundColor={bodyBackgroundColor}
+              >
                 {children}
               </MainPanelBody>
             </Stack>
