@@ -1,1 +1,0 @@
-export { CategoryTemplates } from './CategoryTemplates'
