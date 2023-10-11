@@ -28,30 +28,102 @@ interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
 }
 
+interface TemplateCardPreviewItemProps {
+  step: TreeBlock<StepBlock>
+}
+
 export function TemplateCardPreview({
   steps
 }: TemplateCardPreviewProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  function TemplateCardPreviewItem({
+    step
+  }: TemplateCardPreviewItemProps): ReactElement {
+    const { journey } = useJourney()
+    const { rtl, locale } = getJourneyRTL(journey)
+    const cardBlock = step.children.find(
+      (child) => child.__typename === 'CardBlock'
+    ) as TreeBlock<CardBlock>
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          width: smUp ? 240 : 177,
+          height: smUp ? 380 : 280
+        }}
+      >
+        <Box
+          sx={{
+            transform: smUp ? 'scale(0.6)' : 'scale(0.4)',
+            transformOrigin: smUp ? 'top left' : '22.5% top'
+          }}
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              display: 'block',
+              width: smUp ? 405 : 445,
+              height: '100%',
+              zIndex: 2,
+              cursor: 'grab'
+            }}
+          />
+          <FramePortal
+            width={smUp ? 405 : 445}
+            height={smUp ? 633 : 698}
+            dir={rtl ? 'rtl' : 'ltr'}
+          >
+            <ThemeProvider
+              themeName={cardBlock?.themeName ?? ThemeName.base}
+              themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+              rtl={rtl}
+              locale={locale}
+            >
+              <Box
+                sx={{
+                  height: '100%',
+                  borderRadius: 4
+                }}
+              >
+                <BlockRenderer
+                  block={step}
+                  wrappers={{
+                    VideoWrapper,
+                    CardWrapper
+                  }}
+                />
+              </Box>
+            </ThemeProvider>
+          </FramePortal>
+        </Box>
+      </Box>
+    )
+  }
+
   return (
     <Swiper
       freeMode
       slidesPerView="auto"
-      spaceBetween={28}
-      slidesOffsetAfter={64}
+      spaceBetween={smUp ? 28 : 12}
+      slidesOffsetAfter={smUp ? 40 : 70}
       mousewheel
       style={{
-        marginLeft: smUp ? '-32px' : '-24px',
-        marginRight: smUp ? '-36px' : '-24px',
+        marginLeft: smUp ? '-32px' : '-44px',
+        marginRight: smUp ? '-36px' : '-44px',
         paddingLeft: smUp ? '32px' : '20px',
         zIndex: 2
       }}
     >
       {steps?.map((step) => (
         <SwiperSlide
+          data-testid={'swiper-container'}
           key={step.id}
           style={{
             width: smUp ? '240px' : '177px',
-            height: '380px',
+            height: smUp ? '380px' : '280px',
             zIndex: 2
           }}
         >
@@ -59,72 +131,5 @@ export function TemplateCardPreview({
         </SwiperSlide>
       ))}
     </Swiper>
-  )
-}
-
-interface TemplateCardPreviewItemProps {
-  step: TreeBlock<StepBlock>
-}
-
-export function TemplateCardPreviewItem({
-  step
-}: TemplateCardPreviewItemProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const { journey } = useJourney()
-  const { rtl, locale } = getJourneyRTL(journey)
-  const cardBlock = step.children.find(
-    (child) => child.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock>
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        width: 240,
-        height: 380
-      }}
-    >
-      <Box
-        sx={{
-          transform: 'scale(0.6)',
-          transformOrigin: smUp ? 'top left' : '22.5% top'
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            display: 'block',
-            width: 405,
-            height: '100%',
-            zIndex: 2,
-            cursor: 'grab'
-          }}
-        />
-        <FramePortal width={405} height={633} dir={rtl ? 'rtl' : 'ltr'}>
-          <ThemeProvider
-            themeName={cardBlock?.themeName ?? ThemeName.base}
-            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
-            rtl={rtl}
-            locale={locale}
-          >
-            <Box
-              sx={{
-                height: '100%',
-                borderRadius: 4
-              }}
-            >
-              <BlockRenderer
-                block={step}
-                wrappers={{
-                  VideoWrapper,
-                  CardWrapper
-                }}
-              />
-            </Box>
-          </ThemeProvider>
-        </FramePortal>
-      </Box>
-    </Box>
   )
 }

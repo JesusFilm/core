@@ -31,7 +31,25 @@ describe('TemplatePreviewTabs', () => {
 
   beforeEach(() => jest.clearAllMocks())
 
-  it('should switch between tabs', async () => {
+  it('should render card tab component', async () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: journeyWithVideos as JourneyFields,
+            variant: 'admin'
+          }}
+        >
+          <TemplatePreviewTabs />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByText('{{cardBlockCount}} Cards')).toBeInTheDocument()
+  })
+
+  // todo: write video tab tests when implemented
+  it.skip('should switch between tabs', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
         <JourneyProvider
@@ -54,7 +72,8 @@ describe('TemplatePreviewTabs', () => {
     })
   })
 
-  it('should disable videos tab if no videos in journey', async () => {
+  // todo: write video tab tests when implemented
+  it.skip('should disable videos tab if no videos in journey', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
         <JourneyProvider

@@ -26,7 +26,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
         <TemplatePreviewTabs />
       </Stack>
       {journey?.strategySlug != null && (
-        <Stack sx={{ pt: 4 }}>
+        <Stack sx={{ pt: { xs: 0, sm: 4 } }}>
           <StrategySection
             strategySlug={journey?.strategySlug}
             variant="full"
