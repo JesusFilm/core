@@ -11,13 +11,14 @@ import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
-interface props {
+interface Props {
   user?: User
   locale: string | undefined
   encodedRedirectPathname?: string
+  resolvedUrl: string
 }
 
-interface initAndAuth {
+interface InitAndAuth {
   apolloClient: ApolloClient<NormalizedCacheObject>
   flags: {
     [key: string]: boolean | undefined
@@ -29,8 +30,9 @@ interface initAndAuth {
 export async function initAndAuthApp({
   user,
   locale,
-  encodedRedirectPathname
-}: props): Promise<initAndAuth> {
+  encodedRedirectPathname,
+  resolvedUrl
+}: Props): Promise<InitAndAuth> {
   const ldUser =
     user?.id != null
       ? {
@@ -61,11 +63,11 @@ export async function initAndAuthApp({
   const apolloClient = createApolloClient(token != null ? token : '')
   const redirect =
     token != null
-      ? await checkConditionalRedirect(
+      ? await checkConditionalRedirect({
           apolloClient,
-          flags,
-          encodedRedirectPathname
-        )
+          encodedRedirectPathname,
+          resolvedUrl
+        })
       : undefined
 
   return { apolloClient, flags, redirect, translations }

@@ -59,7 +59,8 @@ export const getServerSideProps = withUserTokenSSR()(
       user,
       locale,
       encodedRedirectPathname:
-        resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined
+        resolvedUrl != null ? encodeURIComponent(resolvedUrl) : undefined,
+      resolvedUrl
     })
 
     if (redirect != null) return { redirect }

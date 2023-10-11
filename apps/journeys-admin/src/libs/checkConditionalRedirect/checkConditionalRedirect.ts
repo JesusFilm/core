@@ -16,14 +16,18 @@ export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
   }
 `
 
-export async function checkConditionalRedirect(
-  client: ApolloClient<NormalizedCacheObject>,
-  flags: {
-    [key: string]: boolean | undefined
-  } = {},
+interface Props {
+  apolloClient: ApolloClient<NormalizedCacheObject>
   encodedRedirectPathname?: string
-): Promise<Redirect | undefined> {
-  const { data } = await client.query<GetJourneyProfileAndTeams>({
+  resolvedUrl: string
+}
+
+export async function checkConditionalRedirect({
+  apolloClient,
+  encodedRedirectPathname,
+  resolvedUrl
+}: Props): Promise<Redirect | undefined> {
+  const { data } = await apolloClient.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
@@ -32,15 +36,14 @@ export async function checkConditionalRedirect(
       ? `?redirect=${encodedRedirectPathname}`
       : ''
 
-  if (
-    flags.termsAndConditions === true &&
-    data.getJourneyProfile?.acceptedTermsAt == null
-  ) {
+  if (data.getJourneyProfile?.acceptedTermsAt == null) {
+    if (resolvedUrl.startsWith('/users/terms-and-conditions')) return
     return {
       destination: `/users/terms-and-conditions${redirect}`,
       permanent: false
     }
-  } else if (flags.teams === true && data.teams.length === 0) {
+  } else if (data.teams.length === 0) {
+    if (resolvedUrl.startsWith('/teams/new')) return
     return {
       destination: `/teams/new${redirect}`,
       permanent: false
