@@ -4,6 +4,7 @@ import Stack from '@mui/system/Stack'
 import { ReactElement } from 'react'
 
 import { GetJourneys_journeys as Journeys } from '../../../../__generated__/GetJourneys'
+import { TemplateGalleryCard } from '../../TemplateGalleryCard'
 
 interface TemplateSectionProps {
   journeys?: Journeys[]
@@ -17,11 +18,10 @@ export function TemplateSection({
   return (
     <Stack spacing={4}>
       <Typography variant="h2">{category}</Typography>
-      <Stack direction="row" spacing={16} sx={{ overflowX: 'auto' }}>
+      <Stack direction="row" spacing={14} sx={{ overflowX: 'auto' }}>
         {journeys?.map((journey) => (
           <Box key={journey?.id} data-testId={`journey-${journey.id}`}>
-            <Typography variant="h4">{journey.title}</Typography>
-            <Typography variant="body1">{journey.id}</Typography>
+            <TemplateGalleryCard journey={journey} />
           </Box>
         ))}
       </Stack>
