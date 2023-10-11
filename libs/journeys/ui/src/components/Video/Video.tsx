@@ -246,6 +246,10 @@ export function Video({
     }
   }
 
+  const isFillAndNotYoutube = (): boolean =>
+    objectFit === VideoBlockObjectFit.fill &&
+    source !== VideoBlockSource.youTube
+
   return (
     <Box
       data-testid={`video-${blockId}`}
@@ -257,8 +261,7 @@ export function Video({
         backgroundColor: VIDEO_BACKGROUND_COLOR,
         overflow: 'hidden',
         my: '0px !important',
-        mx:
-          objectFit === VideoBlockObjectFit.fill ? 'inherit' : '0px !important',
+        mx: isFillAndNotYoutube() ? 'inherit' : '0px !important',
         position: 'absolute',
         top: 0,
         right: 0,
@@ -289,24 +292,19 @@ export function Video({
           <StyledVideoGradient />
           <Box
             height={{
-              xs: objectFit === VideoBlockObjectFit.fill ? '100vh' : '100%',
+              xs: isFillAndNotYoutube() ? '100vh' : '100%',
               sm: '100%'
             }}
             width={{
-              xs:
-                objectFit === VideoBlockObjectFit.fill
-                  ? 'calc(100vh * 16 / 9)'
-                  : '100%',
+              xs: isFillAndNotYoutube() ? 'calc(100vh * 16 / 9)' : '100%',
               sm: '100%'
             }}
             overflow="hidden"
             marginX={{
-              xs: objectFit === VideoBlockObjectFit.fill ? '-100%' : 0,
+              xs: isFillAndNotYoutube() ? '-100%' : 0,
               sm: 0
             }}
-            position={
-              objectFit === VideoBlockObjectFit.fill ? 'absolute' : 'inherit'
-            }
+            position={isFillAndNotYoutube() ? 'absolute' : 'inherit'}
             data-testid="video-container"
           >
             <StyledVideo
