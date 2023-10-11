@@ -78,7 +78,8 @@ describe('initAndAuthApp', () => {
   it('should return with apolloClient, flags, redirect, and translations when auth user', async () => {
     const result = await initAndAuthApp({
       user: mockUser,
-      locale: 'en'
+      locale: 'en',
+      resolvedUrl: '/templates'
     })
 
     expect(result).toEqual({
@@ -97,7 +98,8 @@ describe('initAndAuthApp', () => {
       user: {
         id: null
       } as unknown as User,
-      locale: 'en'
+      locale: 'en',
+      resolvedUrl: '/templates'
     })
 
     expect(result).toEqual({
