@@ -1,5 +1,2 @@
-export {
-  FormiumProvider,
-  useFormium,
-  FormiumProviderContext
-} from './FormiumProvider'
+export { FormiumProvider, useFormium } from './FormiumProvider'
+export type { FormiumProviderContext } from './FormiumProvider'
