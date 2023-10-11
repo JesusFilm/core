@@ -14,6 +14,11 @@ import { TEXT_RESPONSE_MIN_ROWS_UPDATE } from './MinRows'
 
 import { MinRows } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('MinRows', () => {
   it('should select Three Rows by default', () => {
     const selectedBlock: TreeBlock<TextResponseBlock> = {

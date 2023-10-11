@@ -10,6 +10,11 @@ import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFi
 
 import { RADIO_OPTION_BLOCK_UPDATE_CONTENT, RadioOptionEdit } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('RadioOptionEdit', () => {
   const props: TreeBlock<RadioOptionFields> = {
     __typename: 'RadioOptionBlock',

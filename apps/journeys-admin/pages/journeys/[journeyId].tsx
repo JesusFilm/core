@@ -2,9 +2,9 @@ import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -16,9 +16,9 @@ import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { ACCEPT_ALL_INVITES } from '..'
 import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
 import {
-  GetJourney,
-  GetJourney_journey as Journey
-} from '../../__generated__/GetJourney'
+  GetAdminJourney,
+  GetAdminJourney_journey as Journey
+} from '../../__generated__/GetAdminJourney'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { Editor } from '../../src/components/Editor'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
@@ -27,9 +27,9 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 
-export const GET_JOURNEY = gql`
+export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
-  query GetJourney($id: ID!) {
+  query GetAdminJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       ...JourneyFields
     }
@@ -47,8 +47,8 @@ export const USER_JOURNEY_OPEN = gql`
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const AuthUser = useAuthUser()
-  const { data } = useQuery<GetJourney>(GET_JOURNEY, {
+  const user = useUser()
+  const { data } = useQuery<GetAdminJourney>(GET_ADMIN_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
   useInvalidJourneyRedirect(data)
@@ -73,7 +73,7 @@ function JourneyEditPage(): ReactElement {
           showDrawer
           backHref="/"
           menu={<EditToolbar />}
-          authUser={AuthUser}
+          user={user}
         >
           <JourneyEdit />
         </PageWrapper>
@@ -82,14 +82,14 @@ function JourneyEditPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale, query }) => {
-  if (AuthUser == null)
+})(async ({ user, locale, query }) => {
+  if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
+    user,
     locale
   })
 
@@ -101,8 +101,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   let journey: Journey | null
   try {
-    const { data } = await apolloClient.query<GetJourney>({
-      query: GET_JOURNEY,
+    const { data } = await apolloClient.query<GetAdminJourney>({
+      query: GET_ADMIN_JOURNEY,
       variables: {
         id: query?.journeyId
       }
@@ -140,6 +140,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(JourneyEditPage)

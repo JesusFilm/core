@@ -12,6 +12,11 @@ import { TYPOGRAPHY_BLOCK_CREATE } from './NewTypographyButton'
 
 import { NewTypographyButton } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('NewTypographyButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',

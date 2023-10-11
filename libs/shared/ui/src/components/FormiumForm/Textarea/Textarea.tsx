@@ -4,6 +4,13 @@ import { ReactElement } from 'react'
 
 export function Textarea(props: TextareaProps): ReactElement {
   return (
-    <TextField variant="outlined" fullWidth multiline {...props} rows={3} />
+    <TextField
+      variant="filled"
+      fullWidth
+      multiline
+      hiddenLabel
+      {...props}
+      rows={3}
+    />
   )
 }
