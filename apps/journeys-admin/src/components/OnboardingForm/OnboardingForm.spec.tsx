@@ -97,7 +97,7 @@ describe('OnboardingForm', () => {
     validate: FormValidate.ANY
   }
 
-  const authUser = {
+  const user = {
     id: '1',
     email: 'test@example.com'
   } as unknown as User
@@ -125,7 +125,7 @@ describe('OnboardingForm', () => {
 
     const { getByRole } = render(
       <MockedProvider mocks={[formCompleteMock]}>
-        <OnboardingForm form={form} authUser={authUser} />
+        <OnboardingForm form={form} user={user} />
       </MockedProvider>
     )
 
@@ -162,7 +162,7 @@ describe('OnboardingForm', () => {
 
     const { getByRole } = render(
       <MockedProvider mocks={[formCompleteMock]}>
-        <OnboardingForm form={form} authUser={authUser} />
+        <OnboardingForm form={form} user={user} />
       </MockedProvider>
     )
 

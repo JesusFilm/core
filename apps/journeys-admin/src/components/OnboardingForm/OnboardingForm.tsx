@@ -22,12 +22,12 @@ export const JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE = gql`
 
 interface OnboardingFormProps {
   form: Form
-  authUser: User
+  user: User
 }
 
 export function OnboardingForm({
   form,
-  authUser
+  user
 }: OnboardingFormProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
@@ -53,8 +53,8 @@ export function OnboardingForm({
       </Stack>
       <FormiumForm
         form={form}
-        userId={authUser.id}
-        email={authUser.email}
+        userId={user.id}
+        email={user.email}
         hiddenPageTitle
         submitText={t('Next')}
         submitIcon={<ArrowRightIcon />}

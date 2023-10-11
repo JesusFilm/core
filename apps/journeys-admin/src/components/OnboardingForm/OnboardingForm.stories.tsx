@@ -292,7 +292,7 @@ export const Default = {
   ...Template,
   args: {
     form,
-    authUser: {
+    user: {
       id: 'user.id',
       email: 'user@eample.com'
     }
