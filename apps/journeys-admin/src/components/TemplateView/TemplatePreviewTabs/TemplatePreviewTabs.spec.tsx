@@ -48,7 +48,7 @@ describe('TemplatePreviewTabs', () => {
     expect(getByText('{{cardBlockCount}} Cards')).toBeInTheDocument()
   })
 
-  // todo: write video tab tests when implemented
+  // todo: write video tab tests when implemented, remove skip
   it.skip('should switch between tabs', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
@@ -72,7 +72,7 @@ describe('TemplatePreviewTabs', () => {
     })
   })
 
-  // todo: write video tab tests when implemented
+  // todo: write video tab tests when implemented, remove skip
   it.skip('should disable videos tab if no videos in journey', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider>

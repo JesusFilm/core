@@ -25,15 +25,13 @@ SwiperCore.use([Mousewheel, Scrollbar, A11y])
 export function TemplatePreviewTabs(): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const { t } = useTranslation('apps-journeys-admin')
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const smUp = useMediaQuery((theme: Theme) => theme?.breakpoints?.up('sm'))
   const { journey } = useJourney()
 
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
       : undefined
-
-  console.log(steps)
 
   const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
