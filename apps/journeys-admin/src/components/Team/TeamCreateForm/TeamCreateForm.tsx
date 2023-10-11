@@ -26,7 +26,8 @@ export function TeamCreateForm({
   const teamCreateSchema: ObjectSchema<TeamCreateInput> = object({
     title: string()
       .required(t('Team Name must be at least one character.'))
-      .max(40, t('Max {{ count }} Characters', { count: 40 })),
+      .max(40, t('Max {{ count }} Characters', { count: 40 }))
+      .matches(/^(?!\s+$).*/g, 'This field cannot contain only blankspaces'),
     publicTitle: string().max(
       40,
       t('Max {{ count }} Characters', { count: 40 })
