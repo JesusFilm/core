@@ -1,14 +1,9 @@
 import {
   fetchMediaLanguagesAndTransformToLanguages,
-  getArclightMediaComponentLinks,
-  getArclightMediaComponents,
-  transformMediaComponentToVideo
+  getArclightMediaComponents
 } from '../../src/libs/arclight/arclight'
-import {
-  getVideoIdsAndSlugs,
-  handleVideo,
-  handleVideoChildren
-} from '../../src/libs/postgresql'
+import { getVideoIdsAndSlugs } from '../../src/libs/postgresql'
+import { handleArclightMediaComponent } from './shared'
 
 export async function importComplete(target?: string): Promise<void> {
   const { slugs: usedVideoSlugs } = await getVideoIdsAndSlugs()
@@ -21,40 +16,21 @@ export async function importComplete(target?: string): Promise<void> {
 
   const startTime = new Date().getTime()
   let page = 1
-  const errors: Record<string, Error> = {}
+  let errors: Record<string, Error> = {}
   do {
     const videos = await getArclightMediaComponents(page)
     count = videos.length
     for (const arclightVideo of videos) {
-      if (arclightVideo.mediaComponentId === target) resumed = true
-      if (!resumed) continue
-      try {
-        if (!importedVideos.includes(arclightVideo.mediaComponentId)) {
-          const video = await transformMediaComponentToVideo(
-            arclightVideo,
-            languages,
-            usedVideoSlugs
-          )
-
-          await handleVideo(video, importedVideos)
-        } else {
-          console.log('already imported')
-        }
-
-        const childIds = await getArclightMediaComponentLinks(
-          arclightVideo.mediaComponentId
-        )
-        await handleVideoChildren(
-          arclightVideo.mediaComponentId,
-          childIds,
-          importedVideos,
-          languages,
-          usedVideoSlugs
-        )
-      } catch (e) {
-        console.error(e)
-        errors[arclightVideo.mediaComponentId] = e
-      }
+      ;({ resumed, errors } = await handleArclightMediaComponent(
+        arclightVideo,
+        importedVideos,
+        resumed,
+        languages,
+        usedVideoSlugs,
+        errors,
+        [],
+        target
+      ))
     }
     const duration = new Date().getTime() - startTime
     console.log('importMediaComponents duration(s):', duration * 0.001)

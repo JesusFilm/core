@@ -479,3 +479,10 @@ export async function getVideoIdsAndSlugs(): Promise<{
 
   return { slugs, ids }
 }
+
+export async function updateParentChild(parentId: string, childId: string) {
+  await prisma.video.update({
+    where: { id: childId },
+    data: { parent: { connect: { id: parentId } } }
+  })
+}
