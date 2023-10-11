@@ -9,7 +9,6 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import CheckIcon from '@core/shared/ui/icons/Check'
