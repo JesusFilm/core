@@ -1,4 +1,4 @@
-import Paper from '@mui/material/Paper'
+import Container from '@mui/material/Container'
 import { ReactElement } from 'react'
 
 interface PageWrapperProps {
@@ -8,5 +8,14 @@ interface PageWrapperProps {
 // wraps around the entire formium component
 
 export function PageWrapper({ children }: PageWrapperProps): ReactElement {
-  return <Paper sx={{ minWidth: '600px' }}>{children}</Paper>
+  return (
+    <Container
+      maxWidth="md"
+      disableGutters
+      data-testid="PageWrapper"
+      sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+    >
+      {children}
+    </Container>
+  )
 }

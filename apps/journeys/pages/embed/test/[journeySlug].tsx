@@ -1,15 +1,33 @@
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import Image from 'next/image'
+import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
+import Div100vh from 'react-div-100vh'
 
-interface IFrameTestProps {
-  journeySlug: string
-}
+import { allowedHost } from '@core/journeys/ui/allowedHost'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
+import logo from '../../../public/logo.svg'
+
+export function IFrameTest(): ReactElement {
+  const { query } = useRouter()
   useEffect(() => {
     const makeIframeFullWindow = (event: MessageEvent): void => {
       // Use this page for basic local testing
       // More accurate testing with stage should use embed script on a webpage.
-      if (event.origin === 'http://localhost:4100') {
+      if (
+        allowedHost(new URL(event.origin).host, [
+          'localhost:4100',
+          'your.nextstep.is',
+          'your-stage.nextstep.is'
+        ])
+      ) {
         const iframe = document.getElementById('jfm-iframe')
         if (iframe != null) {
           if (event.data === true) {
@@ -29,40 +47,67 @@ export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
   }, [])
 
   return (
-    <div style={{ width: '600px', height: '100%' }}>
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          paddingTop: '150%',
-          overflow: 'hidden',
-          backgroundColor: 'transparent'
-        }}
-      >
-        <iframe
-          id="jfm-iframe"
-          src={`/embed/${journeySlug}`}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            width: '100%',
-            height: '100%',
-            border: 'none'
-          }}
-          allow="fullscreen"
-        />
-      </div>
-    </div>
+    <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+      <Div100vh>
+        <Container sx={{ height: '100%' }} maxWidth="sm">
+          <Stack spacing={5} alignItems="center" sx={{ height: '100%', pt: 5 }}>
+            <Image
+              src={logo}
+              alt="Next Steps"
+              height={68}
+              width={152}
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+                alignSelf: 'center'
+              }}
+            />
+            <Typography>
+              This page has been created to test the embed code.{' '}
+              <strong>
+                If you&apos;ve found this page in error click the button below.
+              </strong>
+            </Typography>
+            <NextLink
+              href={`/${query.journeySlug?.toString() ?? ''}`}
+              passHref
+              legacyBehavior
+            >
+              <Button variant="contained" fullWidth>
+                Get me out of here!
+              </Button>
+            </NextLink>
+            <Box sx={{ flexGrow: 1, width: '100%' }}>
+              <div
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%',
+                  overflow: 'hidden'
+                }}
+              >
+                <iframe
+                  id="jfm-iframe"
+                  src={`/embed/${query.journeySlug?.toString() ?? ''}`}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    width: '100%',
+                    height: '100%',
+                    border: 'none'
+                  }}
+                  allow="fullscreen"
+                />
+              </div>
+            </Box>
+          </Stack>
+        </Container>
+      </Div100vh>
+    </ThemeProvider>
   )
-}
-
-IFrameTest.getInitialProps = (context): IFrameTestProps => {
-  return {
-    journeySlug: context.query?.journeySlug
-  }
 }
 
 export default IFrameTest

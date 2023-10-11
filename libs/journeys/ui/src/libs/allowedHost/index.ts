@@ -1,0 +1,1 @@
+export { allowedHost } from './allowedHost'
