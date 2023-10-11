@@ -2,7 +2,7 @@ import { Form, FormElementAction, FormElementType } from '@formium/types'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import { useFormium } from '../../FormiumProvider'
+import { useFormium } from '../../FormiumForm'
 
 // Contains information for the page and renders the header
 
@@ -44,7 +44,7 @@ export function Header({ page: { title } }: HeaderProps): ReactElement {
   return (
     /* eslint-disable-next-line react/jsx-no-useless-fragment */
     <>
-      {hiddenPageTitle ? (
+      {hiddenPageTitle === true ? (
         /* eslint-disable-next-line react/jsx-no-useless-fragment */
         <></>
       ) : (
