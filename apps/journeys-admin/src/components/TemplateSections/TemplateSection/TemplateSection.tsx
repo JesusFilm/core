@@ -1,7 +1,8 @@
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/system/Stack'
-import { ReactElement, useEffect, useRef } from 'react'
-import SwiperCore, { Navigation } from 'swiper'
+import { ReactElement, useRef } from 'react'
+import SwiperCore, { A11y, Navigation, SwiperOptions, Virtual } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { GetJourneys_journeys as Journeys } from '../../../../__generated__/GetJourneys'
@@ -10,7 +11,7 @@ import { TemplateGalleryCard } from '../../TemplateGalleryCard'
 import 'swiper/swiper.min.css'
 import { NavButton } from './NavButton'
 
-SwiperCore.use([Navigation])
+SwiperCore.use([Navigation, A11y, Virtual])
 
 interface TemplateSectionProps {
   journeys?: Journeys[]
@@ -21,55 +22,52 @@ export function TemplateSection({
   journeys,
   category
 }: TemplateSectionProps): ReactElement {
+  const { breakpoints } = useTheme()
   const nextRef = useRef<HTMLButtonElement>(null)
   const prevRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    const handleResize = (): void => {
-      const width = window.innerWidth
-      if (width <= 1199) {
-        document.querySelectorAll('.swiper-slide').forEach((swiperSlide) => {
-          const slide = swiperSlide as HTMLElement
-          slide.style.width = '124px'
-        })
-      }
-      if (width >= 1200) {
-        document.querySelectorAll('.swiper-slide').forEach((swiperSlide) => {
-          const slide = swiperSlide as HTMLElement
-          slide.style.width = '180px'
-        })
-      }
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      slidesPerGroup: 2,
+      slidesPerView: 2.4
+    },
+    [breakpoints.values.sm]: {
+      slidesPerGroup: 3,
+      slidesPerView: 3.4
+    },
+    [breakpoints.values.md]: {
+      slidesPerGroup: 4,
+      slidesPerView: 4.4
+    },
+    [breakpoints.values.lg]: {
+      slidesPerGroup: 7,
+      slidesPerView: 5.4
+    },
+    [breakpoints.values.xl]: {
+      slidesPerGroup: 6,
+      slidesPerView: 6.4
+    },
+    [breakpoints.values.xxl]: {
+      slidesPerGroup: 7,
+      slidesPerView: 7.4
     }
-
-    handleResize()
-
-    window.addEventListener('resize', handleResize)
-    return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
+  }
 
   return (
     <Stack spacing={4} justifyContent="center" sx={{ position: 'relative' }}>
-      <Typography variant="h2">{category}</Typography>
+      <Typography variant="h5">{category}</Typography>
       <Swiper
         autoHeight
-        slidesPerView="auto"
+        speed={850}
+        watchOverflow
         spaceBetween={25}
-        lazy={{ loadPrevNext: true }}
+        breakpoints={swiperBreakpoints}
         navigation={{
           nextEl: nextRef.current,
           prevEl: prevRef.current
         }}
       >
         {journeys?.map((journey) => (
-          <SwiperSlide
-            key={journey?.id}
-            data-testId={`journey-${journey.id}`}
-            style={{
-              width: 180
-            }}
-          >
+          <SwiperSlide key={journey?.id} data-testId={`journey-${journey.id}`}>
             <TemplateGalleryCard journey={journey} />
           </SwiperSlide>
         ))}
