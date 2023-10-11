@@ -27,7 +27,7 @@ jobs:
           name: journeys-admin-monitoring
           path: |
             playwright-report/
-          retention-days: 30
+          retention-days: 5
       - name: Slack Notification
         uses: act10ns/slack@v1
         with:
