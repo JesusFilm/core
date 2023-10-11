@@ -15,6 +15,11 @@ import { BUTTON_BLOCK_UPDATE } from './Color'
 
 import { Color } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Button color selector', () => {
   it('should show button color properties', () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {

@@ -22,6 +22,11 @@ import { TypographyFields } from '../../../../../__generated__/TypographyFields'
 
 import { SelectableWrapper } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()

@@ -15,6 +15,11 @@ import { TYPOGRAPHY_BLOCK_UPDATE_COLOR } from './Color'
 
 import { Color } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Typography color selector', () => {
   it('should show typography color properties', () => {
     const selectedBlock: TreeBlock<TypographyBlock> = {

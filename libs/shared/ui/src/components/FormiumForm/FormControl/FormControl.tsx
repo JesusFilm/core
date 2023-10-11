@@ -1,4 +1,5 @@
 import { FormControlProps } from '@formium/react'
+import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
@@ -17,10 +18,16 @@ export function FormControl({
 }: FormControlProps): ReactElement {
   return (
     <>
-      {label != null && <Typography variant="subtitle1">{label}</Typography>}
-      {description != null && (
-        <Typography variant="body1">{description}</Typography>
-      )}
+      <Box data-testid="FieldHeader" sx={{ pb: 4 }}>
+        {label != null && (
+          <Typography variant="h6" gutterBottom>
+            {label}
+          </Typography>
+        )}
+        {description != null && (
+          <Typography variant="body2">{description}</Typography>
+        )}
+      </Box>
       {children}
       {error != null && (
         <Typography variant="body1" color="error">

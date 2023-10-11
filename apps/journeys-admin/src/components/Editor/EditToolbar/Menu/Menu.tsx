@@ -176,18 +176,18 @@ export function Menu(): ReactElement {
           />
         )}
         {journey?.template !== true && (
-          <>
-            <MenuItem
-              label="Title"
-              icon={<Edit2Icon />}
-              onClick={handleUpdateTitle}
-            />
-            <MenuItem
-              label="Description"
-              icon={<File5Icon />}
-              onClick={handleUpdateDescription}
-            />
-          </>
+          <MenuItem
+            label="Title"
+            icon={<Edit2Icon />}
+            onClick={handleUpdateTitle}
+          />
+        )}
+        {journey?.template !== true && (
+          <MenuItem
+            label="Description"
+            icon={<File5Icon />}
+            onClick={handleUpdateDescription}
+          />
         )}
         {(journey?.template !== true || isPublisher != null) && (
           <LanguageMenuItem onClose={handleCloseMenu} />
@@ -197,11 +197,10 @@ export function Menu(): ReactElement {
           <CreateTemplateMenuItem />
         )}
         {journey != null &&
+          (journey?.template !== true || isPublisher != null) && <Divider />}
+        {journey != null &&
           (journey?.template !== true || isPublisher != null) && (
-            <>
-              <Divider />
-              <CopyMenuItem journey={journey} onClose={handleCloseMenu} />
-            </>
+            <CopyMenuItem journey={journey} onClose={handleCloseMenu} />
           )}
       </MuiMenu>
       <TitleDialog open={showTitleDialog} onClose={handleCloseTitle} />
