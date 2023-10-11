@@ -60,7 +60,7 @@ interface FormiumFormProps extends FormiumProviderContext {
   form: Form
   userId: string | null
   email: string | null
-  handleClick: () => Promise<void>
+  onSubmit?: () => void
 }
 
 export function FormiumForm({
@@ -70,7 +70,7 @@ export function FormiumForm({
   hiddenPageTitle,
   submitText,
   submitIcon,
-  handleClick
+  onSubmit
 }: FormiumFormProps): ReactElement {
   async function handleSubmit(values: FormikValues): Promise<void> {
     await formiumClient.submitForm(form.slug, {
@@ -78,7 +78,7 @@ export function FormiumForm({
       hiddenUserId: userId,
       hiddenUserEmail: email
     })
-    await handleClick()
+    onSubmit?.()
   }
 
   return (

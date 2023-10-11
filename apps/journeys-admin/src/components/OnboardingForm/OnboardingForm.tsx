@@ -41,7 +41,7 @@ export function OnboardingForm({
       JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE
     )
 
-  async function handleClick(): Promise<void> {
+  async function handleSubmit(): Promise<void> {
     await journeyProfileOnboardingFormComplete()
     await router?.push({
       pathname: '/teams/new',
@@ -64,7 +64,7 @@ export function OnboardingForm({
         hiddenPageTitle
         submitText={t('Next')}
         submitIcon={<ArrowRightIcon />}
-        handleClick={handleClick}
+        onSubmit={handleSubmit}
       />
     </Stack>
   )

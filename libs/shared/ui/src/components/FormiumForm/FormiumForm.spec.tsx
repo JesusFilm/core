@@ -66,12 +66,7 @@ const form: Form = {
 describe('FormiumForm', () => {
   it('should render default form', () => {
     const { getByText, getByRole, getByTestId } = render(
-      <FormiumForm
-        form={form}
-        userId="user.id"
-        email="user.email"
-        handleClick={jest.fn()}
-      />
+      <FormiumForm form={form} userId="user.id" email="user.email" />
     )
 
     expect(getByText('single-page-test')).toBeInTheDocument()
@@ -80,13 +75,13 @@ describe('FormiumForm', () => {
   })
 
   it('should submit form', async () => {
-    const handleClick = jest.fn()
+    const handleSubmit = jest.fn()
     const { getByRole } = render(
       <FormiumForm
         form={form}
         userId="user.id"
         email="user.email"
-        handleClick={handleClick}
+        onSubmit={handleSubmit}
       />
     )
 
@@ -102,7 +97,7 @@ describe('FormiumForm', () => {
         }
       )
     })
-    expect(handleClick).toHaveBeenCalled()
+    expect(handleSubmit).toHaveBeenCalled()
   })
 
   it('should hide page title', () => {
@@ -111,7 +106,6 @@ describe('FormiumForm', () => {
         form={form}
         userId="user.id"
         email="user.email"
-        handleClick={jest.fn()}
         hiddenPageTitle
       />
     )
@@ -119,13 +113,12 @@ describe('FormiumForm', () => {
     expect(queryByText('single-page-test')).not.toBeInTheDocument()
   })
 
-  it('should hide show custom submit button', () => {
+  it('should show custom submit button', () => {
     const { getByRole, getByTestId } = render(
       <FormiumForm
         form={form}
         userId="user.id"
         email="user.email"
-        handleClick={jest.fn()}
         submitText="custom submit text"
         submitIcon={<ArrowRight />}
       />
