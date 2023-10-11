@@ -30,6 +30,23 @@ describe('TermsAndConditions', () => {
     jest.resetAllMocks()
   })
 
+  it('should enable next button when box is checked', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <TermsAndConditions />
+      </MockedProvider>
+    )
+    expect(getByRole('button', { name: 'Next' })).toBeDisabled()
+    fireEvent.click(getByRole('checkbox'))
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Next' })).not.toBeDisabled()
+    )
+    fireEvent.click(getByRole('checkbox'))
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Next' })).toBeDisabled()
+    )
+  })
+
   it('should create profile and redirect on next button click', async () => {
     mockUseRouter.mockReturnValue({
       push,
