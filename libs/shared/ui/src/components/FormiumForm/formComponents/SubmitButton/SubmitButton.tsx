@@ -1,14 +1,17 @@
 import Button from '@mui/material/Button'
 import { ComponentProps, ReactElement } from 'react'
 
-import ArrowRightIcon from '../../icons/ArrowRight'
+import CheckBrokenIcon from '../../../icons/CheckBroken'
+import { useFormium } from '../../FormiumProvider'
 
-export function NextButton({
+export function SubmitButton({
   type,
   onClick,
-  disabled,
-  children
+  children,
+  disabled
 }: ComponentProps<'button'>): ReactElement {
+  const { submitText, submitIcon } = useFormium()
+
   return (
     <Button
       variant="contained"
@@ -17,10 +20,10 @@ export function NextButton({
       onClick={onClick}
       fullWidth
       color="secondary"
-      endIcon={type === 'submit' && <ArrowRightIcon />}
+      endIcon={submitIcon ?? <CheckBrokenIcon />}
       sx={{ py: 3.25, borderRadius: '12px' }}
     >
-      {children}
+      {submitText ?? children}
     </Button>
   )
 }
