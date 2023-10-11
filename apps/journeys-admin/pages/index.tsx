@@ -92,13 +92,14 @@ function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale }) => {
+})(async ({ user, locale, resolvedUrl }) => {
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     user,
-    locale
+    locale,
+    resolvedUrl
   })
 
   if (redirect != null) return { redirect }
