@@ -1,6 +1,6 @@
 // note: all video.js players import these options, so take care with what is added here
 
-export const videoJsOptions = {
+export const defaultVideoJsOptions = {
   html5: {
     hls: {
       useDevicePixelRatio: true,

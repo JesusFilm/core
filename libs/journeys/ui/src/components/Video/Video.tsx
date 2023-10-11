@@ -13,8 +13,8 @@ import {
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { NextImage } from '@core/shared/ui/NextImage'
-import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
 
 import {
   VideoBlockObjectFit,
@@ -103,7 +103,7 @@ export function Video({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
-          ...videoJsOptions,
+          ...defaultVideoJsOptions,
           controls: false,
           controlBar: false,
           bigPlayButton: false,

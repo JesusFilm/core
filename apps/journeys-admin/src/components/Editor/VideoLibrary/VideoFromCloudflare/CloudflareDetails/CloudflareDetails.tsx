@@ -4,7 +4,7 @@ import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import 'video.js/dist/video-js.css'
@@ -18,7 +18,7 @@ export function CloudflareDetails({
   useEffect(() => {
     if (videoRef.current != null && id != null) {
       playerRef.current = videojs(videoRef.current, {
-        ...videoJsOptions,
+        ...defaultVideoJsOptions,
         fluid: true,
         controls: true,
         poster: `https://customer-${

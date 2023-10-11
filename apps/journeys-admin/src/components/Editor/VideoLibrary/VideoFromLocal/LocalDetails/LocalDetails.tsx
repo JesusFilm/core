@@ -9,11 +9,12 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import CheckIcon from '@core/shared/ui/icons/Check'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
-import { videoJsOptions } from '@core/shared/ui/videoJsOptions'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
@@ -139,7 +140,7 @@ export function LocalDetails({
   useEffect(() => {
     if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
-        ...videoJsOptions,
+        ...defaultVideoJsOptions,
         fluid: true,
         controls: true,
         poster: data.video?.image ?? undefined
