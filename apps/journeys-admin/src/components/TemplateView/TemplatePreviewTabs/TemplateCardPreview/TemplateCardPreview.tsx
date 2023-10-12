@@ -107,14 +107,15 @@ export function TemplateCardPreview({
   return (
     <Swiper
       freeMode
+      watchOverflow
       slidesPerView="auto"
       spaceBetween={smUp ? 28 : 12}
-      slidesOffsetAfter={smUp ? 40 : 70}
       mousewheel
       style={{
         marginLeft: smUp ? '-32px' : '-44px',
         marginRight: smUp ? '-36px' : '-44px',
         paddingLeft: smUp ? '32px' : '20px',
+        paddingRight: smUp ? '40px' : '70px',
         zIndex: 2
       }}
     >
