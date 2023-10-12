@@ -55,7 +55,7 @@ describe('TemplateViewHeader', () => {
     expect(getByRole('img', { name: 'image.jpg' })).toBeInTheDocument()
   })
 
-  it('should display the  title, and description', () => {
+  it('should display the title and description', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
