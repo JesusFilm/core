@@ -71,6 +71,14 @@ export const JOURNEY_FIELDS = gql`
     }
     tags {
       id
+      parentId
+      name {
+        value
+        language {
+          id
+        }
+        primary
+      }
     }
   }
 `

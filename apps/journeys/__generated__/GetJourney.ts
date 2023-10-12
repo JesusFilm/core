@@ -631,9 +631,23 @@ export interface GetJourney_journey_team {
   title: string;
 }
 
+export interface GetJourney_journey_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetJourney_journey_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: GetJourney_journey_tags_name_language;
+  primary: boolean;
+}
+
 export interface GetJourney_journey_tags {
   __typename: "Tag";
   id: string;
+  parentId: string | null;
+  name: GetJourney_journey_tags_name[];
 }
 
 export interface GetJourney_journey {
