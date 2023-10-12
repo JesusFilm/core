@@ -47,8 +47,6 @@ export function TemplateGalleryCard({
       aria-label="template-gallery-card"
       variant="outlined"
       sx={{
-        width: { xs: 130, lg: 180 },
-        height: { xs: 223, lg: 266 },
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer'
@@ -65,7 +63,6 @@ export function TemplateGalleryCard({
               <Box
                 sx={{
                   position: 'relative',
-                  width: { xs: 130, lg: 180 },
                   height: { xs: 130, lg: 180 }
                 }}
               >
@@ -80,7 +77,6 @@ export function TemplateGalleryCard({
               <CardMedia
                 component="div"
                 sx={{
-                  width: { xs: 130, lg: 180 },
                   height: { xs: 130, lg: 180 },
                   display: 'flex',
                   justifyContent: 'center',
@@ -97,7 +93,6 @@ export function TemplateGalleryCard({
             <Skeleton
               variant="rectangular"
               sx={{
-                width: { xs: 130, lg: 180 },
                 height: { xs: 130, lg: 180 },
                 borderColor: 'divider',
                 borderRadius: 2,

@@ -28,27 +28,33 @@ export function TemplateSection({
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       slidesPerGroup: 2,
-      slidesPerView: 2.4
+      slidesPerView: 2.4,
+      spaceBetween: 20
     },
     [breakpoints.values.sm]: {
       slidesPerGroup: 3,
-      slidesPerView: 3.4
+      slidesPerView: 3.4,
+      spaceBetween: 20
     },
     [breakpoints.values.md]: {
       slidesPerGroup: 4,
-      slidesPerView: 4.4
+      slidesPerView: 4.4,
+      spaceBetween: 20
     },
     [breakpoints.values.lg]: {
       slidesPerGroup: 7,
-      slidesPerView: 5.4
+      slidesPerView: 5.4,
+      spaceBetween: 48
     },
     [breakpoints.values.xl]: {
       slidesPerGroup: 6,
-      slidesPerView: 6.4
+      slidesPerView: 6.4,
+      spaceBetween: 48
     },
     [breakpoints.values.xxl]: {
       slidesPerGroup: 7,
-      slidesPerView: 7.4
+      slidesPerView: 7.4,
+      spaceBetween: 48
     }
   }
 
@@ -59,7 +65,6 @@ export function TemplateSection({
         autoHeight
         speed={850}
         watchOverflow
-        spaceBetween={25}
         breakpoints={swiperBreakpoints}
         navigation={{
           nextEl: nextRef.current,
