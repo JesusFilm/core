@@ -26,11 +26,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
     <Stack gap={4}>
       <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
       <TemplatePreviewTabs />
-      <Typography
-        variant="body2"
-        noWrap
-        sx={{ display: { xs: 'block', sm: 'none' } }}
-      >
+      <Typography variant="body2" sx={{ display: { xs: 'block', sm: 'none' } }}>
         {journey?.description}
       </Typography>
       {journey?.strategySlug != null && (
