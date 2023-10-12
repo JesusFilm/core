@@ -60,23 +60,67 @@ export function TemplateSection({
 
   return (
     <Stack spacing={4} justifyContent="center" sx={{ position: 'relative' }}>
-      <Typography variant="h5">{category}</Typography>
-      <Swiper
-        autoHeight
-        speed={850}
-        watchOverflow
-        breakpoints={swiperBreakpoints}
-        navigation={{
-          nextEl: nextRef.current,
-          prevEl: prevRef.current
-        }}
-      >
-        {journeys?.map((journey) => (
-          <SwiperSlide key={journey?.id} data-testId={`journey-${journey.id}`}>
-            <TemplateGalleryCard journey={journey} />
+      {journeys == null && (
+        <Swiper
+          spaceBetween={12}
+          slidesOffsetBefore={24}
+          slidesOffsetAfter={24}
+          breakpoints={swiperBreakpoints}
+        >
+          <SwiperSlide>
+            <TemplateGalleryCard />
           </SwiperSlide>
-        ))}
-      </Swiper>
+          <SwiperSlide>
+            <TemplateGalleryCard />
+          </SwiperSlide>
+          <SwiperSlide>
+            <TemplateGalleryCard />
+          </SwiperSlide>
+          <SwiperSlide>
+            <TemplateGalleryCard />
+          </SwiperSlide>
+          <SwiperSlide>
+            <TemplateGalleryCard />
+          </SwiperSlide>
+          <SwiperSlide>
+            <TemplateGalleryCard />
+          </SwiperSlide>
+          <SwiperSlide>
+            <TemplateGalleryCard />
+          </SwiperSlide>
+          <SwiperSlide>
+            <TemplateGalleryCard />
+          </SwiperSlide>
+        </Swiper>
+      )}
+      {journeys != null && (
+        <>
+          <Typography variant="h5" sx={{ pl: 5 }}>
+            {category}
+          </Typography>
+          <Swiper
+            autoHeight
+            speed={850}
+            watchOverflow
+            slidesOffsetBefore={20}
+            slidesOffsetAfter={20}
+            breakpoints={swiperBreakpoints}
+            navigation={{
+              nextEl: nextRef.current,
+              prevEl: prevRef.current
+            }}
+          >
+            {journeys?.map((journey) => (
+              <SwiperSlide
+                key={journey?.id}
+                data-testId={`journey-${journey.id}`}
+              >
+                <TemplateGalleryCard journey={journey} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </>
+      )}
       <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
       <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
     </Stack>

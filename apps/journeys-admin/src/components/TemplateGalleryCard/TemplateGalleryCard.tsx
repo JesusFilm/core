@@ -63,7 +63,7 @@ export function TemplateGalleryCard({
               <Box
                 sx={{
                   position: 'relative',
-                  height: { xs: 130, lg: 180 }
+                  aspectRatio: '1 / 1'
                 }}
               >
                 <Image
@@ -77,11 +77,11 @@ export function TemplateGalleryCard({
               <CardMedia
                 component="div"
                 sx={{
-                  height: { xs: 130, lg: 180 },
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderColor: 'divider',
+                  aspectRatio: 1,
                   borderRadius: 2,
                   backgroundColor: 'background.default'
                 }}
@@ -131,6 +131,9 @@ export function TemplateGalleryCard({
                   variant="subtitle3"
                   sx={{
                     fontFamily: 'Montserrat',
+                    whiteSpace: 'noWrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                     my: 1,
                     [theme.breakpoints.up('lg')]: { display: 'none' }
                   }}
@@ -139,10 +142,10 @@ export function TemplateGalleryCard({
                 </Typography>
               </>
             ) : (
-              <Box sx={{ height: '44px' }}>
-                <Skeleton variant="text" sx={{ width: { xs: 124, lg: 180 } }} />
-                <Skeleton variant="text" sx={{ width: { xs: 124, lg: 180 } }} />
-                <Skeleton variant="text" sx={{ width: { xs: 80, lg: 130 } }} />
+              <Box>
+                <Skeleton variant="text" sx={{ width: '100%' }} />
+                <Skeleton variant="text" sx={{ width: '100%' }} />
+                <Skeleton variant="text" sx={{ width: '60%' }} />
               </Box>
             )}
           </CardContent>

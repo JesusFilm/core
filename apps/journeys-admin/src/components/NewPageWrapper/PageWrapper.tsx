@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
@@ -30,7 +30,7 @@ interface PageWrapperProps {
   sidePanelChildren?: ReactNode
   user?: User
   initialState?: Partial<PageState>
-  bodyBackgroundColor?: string
+  mainPanelSx?: SxProps
 }
 
 export function PageWrapper({
@@ -45,7 +45,7 @@ export function PageWrapper({
   sidePanelChildren,
   user,
   initialState,
-  bodyBackgroundColor
+  mainPanelSx
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -105,7 +105,7 @@ export function PageWrapper({
               </MainPanelHeader>
               <MainPanelBody
                 bottomPanelChildren={bottomPanelChildren}
-                backgroundColor={bodyBackgroundColor}
+                sx={mainPanelSx}
               >
                 {children}
               </MainPanelBody>
