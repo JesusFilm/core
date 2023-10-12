@@ -13,9 +13,9 @@ describe('MainPanelBody', () => {
     expect(getByTestId('bottom-panel')).toHaveTextContent('Bottom Panel')
   })
 
-  it('should render the main body with a background color', () => {
+  it('should render the main body with custom css', () => {
     const { getByTestId } = render(
-      <MainPanelBody backgroundColor="background.paper">
+      <MainPanelBody sx={{ backgroundColor: 'background.paper' }}>
         <Typography variant="h1">Child</Typography>
       </MainPanelBody>
     )

@@ -9,6 +9,7 @@ import { Role } from '../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
 import { StrategySection } from '../StrategySection'
 
+import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import { TemplateViewHeader } from './TemplateViewHeader/TemplateViewHeader'
 
@@ -40,6 +41,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
           />
         </Stack>
       )}
+      <TemplateFooter signedIn={authUser?.id != null} />
     </Stack>
   )
 }
