@@ -8,6 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StrategySection } from '../StrategySection'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
+import { TemplateFooter } from './TemplateFooter'
 
 interface TemplateViewProps {
   authUser: User
@@ -29,6 +30,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
           />
         </Stack>
       )}
+      <TemplateFooter signedIn={authUser?.id != null} />
     </Stack>
   )
 }
