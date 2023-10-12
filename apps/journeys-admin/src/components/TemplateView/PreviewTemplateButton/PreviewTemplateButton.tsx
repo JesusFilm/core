@@ -1,5 +1,4 @@
 import Button from '@mui/material/Button'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -14,27 +13,21 @@ export function PreviewTemplateButton({
   slug
 }: PreviewTemplateButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
   const { data } = useUserRoleQuery()
+  const isPublisher =
+    data?.getUserRole?.roles?.includes(Role.publisher) === true
 
-  function handleClick(): void {
-    if (slug == null) return
-    const isPublisher =
-      data?.getUserRole?.roles?.includes(Role.publisher) === true
-
-    if (isPublisher) {
-      void router.push(`/api/preview?slug=${slug}`)
-    } else {
-      window.open(`${process.env.JOURNEYS_URL as string}/${slug}`)
-    }
-  }
+  const link = isPublisher
+    ? `/api/preview?slug=${slug ?? ''}`
+    : `${process.env.JOURNEYS_URL ?? 'https://your.nextstep.is'}/${slug ?? ''}`
 
   return (
     <Button
       variant="outlined"
       color="secondary"
       disabled={slug == null}
-      onClick={handleClick}
+      href={link}
+      target="_blank"
     >
       {t('Preview')}
     </Button>
