@@ -18,6 +18,11 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('TemplateView', () => {
   it('should render Strategy section if journey strategy slug is available', () => {
     const journeyWithStrategySlug: JourneyFields = {
