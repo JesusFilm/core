@@ -68,8 +68,10 @@ describe('useJourneysQuery', () => {
     renderHook(
       () =>
         useJourneysQuery({
-          where: {
-            template: true
+          variables: {
+            where: {
+              template: true
+            }
           }
         }),
       {
