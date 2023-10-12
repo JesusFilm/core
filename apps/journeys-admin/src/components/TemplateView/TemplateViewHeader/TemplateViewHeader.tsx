@@ -11,6 +11,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { SocialImage } from '../../JourneyView/SocialImage'
 import { CreateJourneyButton } from '../CreateJourneyButton'
+import { PreviewTemplateButton } from '../PreviewTemplateButton'
 
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
@@ -75,6 +76,7 @@ export function TemplateViewHeader({
             }}
           >
             <CreateJourneyButton signedIn={authUser?.id != null} />
+            <PreviewTemplateButton />
             {isPublisher != null && isPublisher && <TemplateEditButton />}
           </Box>
         </Box>
