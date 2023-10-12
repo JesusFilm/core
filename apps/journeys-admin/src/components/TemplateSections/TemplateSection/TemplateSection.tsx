@@ -48,7 +48,7 @@ export function TemplateSection({
       slidesOffsetAfter: 24
     },
     [breakpoints.values.lg]: {
-      slidesPerGroup: 7,
+      slidesPerGroup: 5,
       slidesPerView: 5.4,
       spaceBetween: 48,
       slidesOffsetBefore: 36,
