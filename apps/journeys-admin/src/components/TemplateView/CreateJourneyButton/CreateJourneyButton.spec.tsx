@@ -81,7 +81,8 @@ describe('CreateJourneyButton', () => {
     team: null,
     blocks: [],
     primaryImageBlock: null,
-    userJourneys: []
+    userJourneys: [],
+    tags: []
   }
 
   const teamResult = jest.fn(() => ({
