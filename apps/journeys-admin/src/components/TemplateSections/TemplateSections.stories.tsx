@@ -20,7 +20,11 @@ import { TemplateSections } from '.'
 const TemplateSectionsStory: Meta<typeof TemplateSections> = {
   ...journeysAdminConfig,
   component: TemplateSections,
-  title: 'Journeys-Admin/TemplateSections'
+  title: 'Journeys-Admin/TemplateSections',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const defaultTemplate: Journey = {
