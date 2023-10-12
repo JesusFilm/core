@@ -1,4 +1,3 @@
-
 import Box from '@mui/material/Box'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import { Theme } from '@mui/system/createTheme'
@@ -33,12 +32,8 @@ function bgColor(
   return theme.palette.background.paper
 }
 
-
-
 // This component is tested in Editor
-export function 
-JourneyEdit(): ReactElement {
-
+export function JourneyEdit(): ReactElement {
   const {
     state: {
       steps,
@@ -50,12 +45,10 @@ JourneyEdit(): ReactElement {
     },
     dispatch
   } = useEditor()
-  
 
   const selected = selectedComponent ?? selectedBlock ?? 'none'
 
   const [hasAction, setHasAction] = useState(false)
-
 
   const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
     if (step != null) {
@@ -80,18 +73,18 @@ JourneyEdit(): ReactElement {
     }
   }
 
+  // console.log({ journeyEditContentComponent })
   return (
     <>
-      <GlobalStyles styles={{ body: { overflow:'hidden' } }} />
+      <GlobalStyles styles={{ body: { overflow: 'hidden' } }} />
       <Box
         sx={{
           display: 'flex',
           height: 'calc(100vh - 87px)',
-          flexDirection: 'column',
+          flexDirection: 'column'
           // marginRight: { sm: `${DRAWER_WIDTH}px` }
         }}
       >
-       
         {/* <CardPreview
           selected={selectedStep}
           onSelect={handleSelectStepPreview}
@@ -107,7 +100,7 @@ JourneyEdit(): ReactElement {
             flexDirection: 'column',
             flexGrow: 1,
             overflow: 'auto',
-            borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+            borderBottom: (theme) => `1px solid ${theme.palette.divider}`
             // backgroundColor: (theme) =>
             //   bgColor(theme, journeyEditContentComponent, hasAction)
           }}
@@ -129,7 +122,7 @@ JourneyEdit(): ReactElement {
           </Box>
         </Box>
         {/* <Drawer /> */}
-        {/* <ControlPanel /> */}
+        <ControlPanel />
       </Box>
     </>
   )

@@ -127,7 +127,7 @@ export function ControlPanel(): ReactElement {
             />
           )}
       </Box>
-      <Box
+      {/* <Box
         sx={{
           borderBottom: 1,
           borderColor: 'divider',
@@ -196,7 +196,7 @@ export function ControlPanel(): ReactElement {
       </TabPanel>
       <TabPanel name="control-panel" value={activeTab} index={2}>
         <BlocksTab />
-      </TabPanel>
+      </TabPanel> */}
     </Box>
   )
 }
