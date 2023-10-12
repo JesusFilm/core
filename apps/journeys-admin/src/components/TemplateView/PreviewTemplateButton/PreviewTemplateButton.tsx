@@ -2,24 +2,23 @@ import Button from '@mui/material/Button'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Role } from '../../../../__generated__/globalTypes'
-import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-
 interface PreviewTemplateButtonProps {
   slug?: string
+  isPublisher?: boolean
 }
 
 export function PreviewTemplateButton({
-  slug
+  slug,
+  isPublisher
 }: PreviewTemplateButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { data } = useUserRoleQuery()
-  const isPublisher =
-    data?.getUserRole?.roles?.includes(Role.publisher) === true
 
-  const link = isPublisher
-    ? `/api/preview?slug=${slug ?? ''}`
-    : `${process.env.JOURNEYS_URL ?? 'https://your.nextstep.is'}/${slug ?? ''}`
+  const link =
+    isPublisher === true
+      ? `/api/preview?slug=${slug ?? ''}`
+      : `${
+          process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+        }/${slug ?? ''}`
 
   return (
     <Button
