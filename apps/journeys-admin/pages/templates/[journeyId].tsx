@@ -41,6 +41,7 @@ function TemplateDetails(): ReactElement {
           title={t('Journey Template')}
           user={user}
           backHref="/templates"
+          mainPanelSx={{ backgroundColor: 'background.paper' }}
         >
           {templates ? (
             <TemplateView authUser={user} />
