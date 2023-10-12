@@ -73,11 +73,7 @@ export function TemplateSection({
   return (
     <Stack spacing={4} justifyContent="center" sx={{ position: 'relative' }}>
       {journeys == null && (
-        <Swiper
-          slidesOffsetBefore={24}
-          slidesOffsetAfter={24}
-          breakpoints={swiperBreakpoints}
-        >
+        <Swiper breakpoints={swiperBreakpoints}>
           <SwiperSlide>
             <TemplateGalleryCard />
           </SwiperSlide>
