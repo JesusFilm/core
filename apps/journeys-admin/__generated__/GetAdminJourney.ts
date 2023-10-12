@@ -631,6 +631,25 @@ export interface GetAdminJourney_journey_team {
   title: string;
 }
 
+export interface GetAdminJourney_journey_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetAdminJourney_journey_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: GetAdminJourney_journey_tags_name_language;
+  primary: boolean;
+}
+
+export interface GetAdminJourney_journey_tags {
+  __typename: "Tag";
+  id: string;
+  parentId: string | null;
+  name: GetAdminJourney_journey_tags_name[];
+}
+
 export interface GetAdminJourney_journey {
   __typename: "Journey";
   id: string;
@@ -654,6 +673,7 @@ export interface GetAdminJourney_journey {
   chatButtons: GetAdminJourney_journey_chatButtons[];
   host: GetAdminJourney_journey_host | null;
   team: GetAdminJourney_journey_team | null;
+  tags: GetAdminJourney_journey_tags[];
 }
 
 export interface GetAdminJourney {

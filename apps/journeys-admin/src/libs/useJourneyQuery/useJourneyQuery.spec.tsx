@@ -66,7 +66,8 @@ describe('useJourneyQuery', () => {
             imageUrl: 'https://bit.ly/3Gth4Yf'
           }
         }
-      ]
+      ],
+      tags: []
     }
 
     const result = jest.fn(() => ({ data: { journey } }))

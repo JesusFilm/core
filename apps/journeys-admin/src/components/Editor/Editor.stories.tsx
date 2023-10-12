@@ -640,7 +640,8 @@ const journey: Journey = {
   template: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 const Template: StoryObj<typeof Editor> = {
