@@ -5,7 +5,6 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
-import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -22,8 +21,6 @@ export interface TemplateGalleryCardProps {
 export function TemplateGalleryCard({
   journey
 }: TemplateGalleryCardProps): ReactElement {
-  const theme = useTheme()
-
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
   )?.value
@@ -47,8 +44,6 @@ export function TemplateGalleryCard({
       aria-label="template-gallery-card"
       variant="outlined"
       sx={{
-        width: { xs: 124, lg: 180 },
-        height: { xs: 223, lg: 266 },
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer'
@@ -65,8 +60,7 @@ export function TemplateGalleryCard({
               <Box
                 sx={{
                   position: 'relative',
-                  width: { xs: 124, lg: 180 },
-                  height: { xs: 130, lg: 180 }
+                  aspectRatio: 1
                 }}
               >
                 <Image
@@ -80,12 +74,11 @@ export function TemplateGalleryCard({
               <CardMedia
                 component="div"
                 sx={{
-                  width: { xs: 124, lg: 180 },
-                  height: { xs: 130, lg: 180 },
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderColor: 'divider',
+                  aspectRatio: 1,
                   borderRadius: 2,
                   backgroundColor: 'background.default'
                 }}
@@ -97,7 +90,6 @@ export function TemplateGalleryCard({
             <Skeleton
               variant="rectangular"
               sx={{
-                width: { xs: 124, lg: 180 },
                 height: { xs: 130, lg: 180 },
                 borderColor: 'divider',
                 borderRadius: 2,
@@ -113,7 +105,6 @@ export function TemplateGalleryCard({
                 <Typography
                   variant="overline2"
                   sx={{
-                    fontFamily: 'Montserrat',
                     whiteSpace: 'noWrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -125,9 +116,8 @@ export function TemplateGalleryCard({
                 <Typography
                   variant="subtitle2"
                   sx={{
-                    fontFamily: 'Montserrat',
                     my: 1,
-                    [theme.breakpoints.down('lg')]: { display: 'none' }
+                    display: { xs: 'none', lg: 'block' }
                   }}
                 >
                   {journey.title}
@@ -135,19 +125,21 @@ export function TemplateGalleryCard({
                 <Typography
                   variant="subtitle3"
                   sx={{
-                    fontFamily: 'Montserrat',
+                    whiteSpace: 'noWrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                     my: 1,
-                    [theme.breakpoints.up('lg')]: { display: 'none' }
+                    display: { xs: 'block', lg: 'none' }
                   }}
                 >
                   {journey.title}
                 </Typography>
               </>
             ) : (
-              <Box sx={{ height: '44px' }}>
-                <Skeleton variant="text" sx={{ width: { xs: 124, lg: 180 } }} />
-                <Skeleton variant="text" sx={{ width: { xs: 124, lg: 180 } }} />
-                <Skeleton variant="text" sx={{ width: { xs: 80, lg: 130 } }} />
+              <Box>
+                <Skeleton variant="text" sx={{ width: '100%' }} />
+                <Skeleton variant="text" sx={{ width: '100%' }} />
+                <Skeleton variant="text" sx={{ width: '60%' }} />
               </Box>
             )}
           </CardContent>
