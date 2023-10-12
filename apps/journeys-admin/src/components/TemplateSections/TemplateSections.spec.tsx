@@ -193,6 +193,15 @@ describe('TemplateSections', () => {
     }
   }
 
+  const getJourneysEmptyMock: MockedResponse<GetJourneys> = {
+    ...getJourneysMock,
+    result: {
+      data: {
+        journeys: []
+      }
+    }
+  }
+
   describe('Featured & New Templates', () => {
     it('should render Featured & New templates if tagIds are not present', async () => {
       const { getByRole, getAllByRole } = render(
@@ -200,14 +209,14 @@ describe('TemplateSections', () => {
           <TemplateSections />
         </MockedProvider>
       )
-      expect(
-        getByRole('heading', { name: 'Featured & New' })
-      ).toBeInTheDocument()
       await waitFor(() =>
         expect(
-          getAllByRole('heading', { name: 'Featured Template 2' })[0]
+          getByRole('heading', { name: 'Featured & New' })
         ).toBeInTheDocument()
       )
+      expect(
+        getAllByRole('heading', { name: 'Featured Template 2' })[0]
+      ).toBeInTheDocument()
       expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
     })
   })
@@ -219,14 +228,14 @@ describe('TemplateSections', () => {
           <TemplateSections tagIds={[addiction.id]} />
         </MockedProvider>
       )
-      expect(
-        getByRole('heading', { name: 'Most Relevant' })
-      ).toBeInTheDocument()
       await waitFor(() =>
         expect(
-          getAllByRole('heading', { name: 'Featured Template 2' })[0]
+          getByRole('heading', { name: 'Most Relevant' })
         ).toBeInTheDocument()
       )
+      expect(
+        getAllByRole('heading', { name: 'Featured Template 2' })[0]
+      ).toBeInTheDocument()
       expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
     })
   })
@@ -243,6 +252,31 @@ describe('TemplateSections', () => {
       })
       expect(
         queryByRole('heading', { name: 'Acceptance' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Empty', () => {
+    it('should render empty state', async () => {
+      const { getByRole, getByText, queryByRole } = render(
+        <MockedProvider mocks={[getJourneysEmptyMock]}>
+          <TemplateSections />
+        </MockedProvider>
+      )
+      await waitFor(async () => {
+        expect(
+          getByRole('heading', {
+            name: 'No template fully matches your search criteria.'
+          })
+        ).toBeInTheDocument()
+      })
+      expect(
+        getByText(
+          "Try using fewer filters or look below for templates related to the categories you've selected to search"
+        )
+      ).toBeInTheDocument()
+      expect(
+        queryByRole('heading', { name: 'Featured & New' })
       ).not.toBeInTheDocument()
     })
   })
