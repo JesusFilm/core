@@ -9,6 +9,7 @@ import { Role } from '../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
 import { StrategySection } from '../StrategySection'
 
+import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import { TemplateViewHeader } from './TemplateViewHeader/TemplateViewHeader'
 
 interface TemplateViewProps {
@@ -26,8 +27,11 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
       <Typography variant="body2" sx={{ display: { xs: 'block', sm: 'none' } }}>
         {journey?.description}
       </Typography>
+      <Stack sx={{ pt: 4 }}>
+        <TemplatePreviewTabs />
+      </Stack>
       {journey?.strategySlug != null && (
-        <Stack sx={{ pt: 4 }}>
+        <Stack sx={{ pt: { xs: 0, sm: 4 } }}>
           <StrategySection
             strategySlug={journey?.strategySlug}
             variant="full"

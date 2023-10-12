@@ -25,7 +25,7 @@ const Template: StoryObj<
   render: (args) => (
     <Container>
       {args.variants.map((variant) => (
-        <MuiTypography {...args} variant={variant}>
+        <MuiTypography key={variant} {...args} variant={variant}>
           {variant}
           <br />
         </MuiTypography>

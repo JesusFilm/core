@@ -1,13 +1,13 @@
 import Button from '@mui/material/Button'
 import { ComponentProps, ReactElement } from 'react'
 
-import CheckBrokenIcon from '../../icons/CheckBroken'
+import ArrowRightIcon from '../../../icons/ArrowRight'
 
-export function SubmitButton({
+export function NextButton({
   type,
   onClick,
-  children,
-  disabled
+  disabled,
+  children
 }: ComponentProps<'button'>): ReactElement {
   return (
     <Button
@@ -17,7 +17,7 @@ export function SubmitButton({
       onClick={onClick}
       fullWidth
       color="secondary"
-      endIcon={<CheckBrokenIcon />}
+      endIcon={type === 'submit' && <ArrowRightIcon />}
       sx={{ py: 3.25, borderRadius: '12px' }}
     >
       {children}
