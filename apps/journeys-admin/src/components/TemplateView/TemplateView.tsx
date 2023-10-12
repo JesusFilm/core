@@ -42,7 +42,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   return (
     <Stack gap={4}>
       <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
-      <TemplateTags />
+      <TemplateTags tags={journey?.tags} />
       <TemplatePreviewTabs />
       <Typography variant="body2" sx={{ display: { xs: 'block', sm: 'none' } }}>
         {journey?.description}
