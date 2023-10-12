@@ -4,7 +4,10 @@ import { User } from 'next-firebase-auth'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
+import {
+  JourneyFields as Journey,
+  JourneyFields_tags as Tag
+} from '../../../__generated__/JourneyFields'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { defaultJourney } from '../JourneyView/data'
 
@@ -25,6 +28,20 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('TemplateView', () => {
+  const tag: Tag = {
+    __typename: 'Tag',
+    id: 'tag.id',
+    parentId: 'parentTag.id',
+    name: [
+      {
+        __typename: 'Translation',
+        primary: true,
+        value: 'tag.name',
+        language: { __typename: 'Language', id: 'language.id' }
+      }
+    ]
+  }
+
   const getJourneyMock = {
     request: {
       query: GET_JOURNEYS,
@@ -42,7 +59,7 @@ describe('TemplateView', () => {
           {
             ...defaultJourney,
             id: 'taggedJourney.id',
-            tags: [{ __typename: 'Tag', id: 'tag.id' }]
+            tags: [tag]
           }
         ]
       }
@@ -53,7 +70,7 @@ describe('TemplateView', () => {
     const journeyWithStrategySlug: Journey = {
       ...defaultJourney,
       strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
-      tags: [{ __typename: 'Tag', id: 'tag.id' }]
+      tags: [tag]
     }
     const { getByText } = render(
       <MockedProvider mocks={[getJourneyMock]}>
@@ -75,7 +92,7 @@ describe('TemplateView', () => {
     const journeyWithoutStrategySlug: Journey = {
       ...defaultJourney,
       strategySlug: null,
-      tags: [{ __typename: 'Tag', id: 'tag.id' }]
+      tags: [tag]
     }
     const { queryByText } = render(
       <MockedProvider mocks={[getJourneyMock]}>
@@ -97,7 +114,7 @@ describe('TemplateView', () => {
     const journeyWithTags: Journey = {
       ...defaultJourney,
       strategySlug: null,
-      tags: [{ __typename: 'Tag', id: 'tag.id' }]
+      tags: [tag]
     }
 
     const result = jest.fn(() => ({
@@ -107,7 +124,7 @@ describe('TemplateView', () => {
           {
             ...defaultJourney,
             id: 'taggedJourney.id',
-            tags: [{ __typename: 'Tag', id: 'tag.id' }]
+            tags: [tag]
           }
         ]
       }
