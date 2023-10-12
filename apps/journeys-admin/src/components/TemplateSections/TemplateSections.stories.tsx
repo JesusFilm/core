@@ -200,6 +200,15 @@ const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
   }
 }
 
+const getJourneysEmptyMock: MockedResponse<GetJourneys> = {
+  ...getJourneysMock,
+  result: {
+    data: {
+      journeys: []
+    }
+  }
+}
+
 const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
   render: ({ ...args }) => <TemplateSections {...args} />
 }
@@ -221,6 +230,15 @@ export const TagIds = {
   parameters: {
     apolloClient: {
       mocks: [getJourneysWithTagIdsMock]
+    }
+  }
+}
+
+export const Empty = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getJourneysEmptyMock]
     }
   }
 }
