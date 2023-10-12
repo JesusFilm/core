@@ -1,5 +1,6 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { intlFormat, parseISO } from 'date-fns'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
@@ -24,6 +25,22 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
 
   return (
     <Stack gap={4}>
+      {journey?.featuredAt != null && (
+        <Typography
+          data-testId="featuredAtTemplatePreviewPage"
+          variant="overline"
+          sx={{
+            color: 'secondary.light',
+            display: { xs: 'block', sm: 'none' }
+          }}
+          noWrap
+        >
+          {intlFormat(parseISO(journey?.featuredAt), {
+            month: 'long',
+            year: 'numeric'
+          })}
+        </Typography>
+      )}
       <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
       <TemplatePreviewTabs />
       <Typography variant="body2" sx={{ display: { xs: 'block', sm: 'none' } }}>

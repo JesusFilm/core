@@ -47,7 +47,7 @@ export function TemplateViewHeader({
             height: { xs: 107, sm: 244 }
           }}
         >
-          {journey?.featuredAt != null && (
+          {journey?.featuredAt != null && smUp && (
             <Typography
               variant="overline"
               sx={{ color: 'secondary.light' }}
@@ -60,14 +60,21 @@ export function TemplateViewHeader({
             </Typography>
           )}
           <Typography variant={smUp ? 'h1' : 'h6'}>{journey?.title}</Typography>
-          <Typography
-            variant="body1"
+          <Box
             sx={{
-              display: { xs: 'none', sm: 'block' }
+              maxHeight: '144px',
+              overflow: 'auto'
             }}
           >
-            {journey?.description}
-          </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                display: { xs: 'none', sm: 'block' }
+              }}
+            >
+              {journey?.description}
+            </Typography>
+          </Box>
           <Box
             sx={{
               display: { xs: 'none', sm: 'flex' },

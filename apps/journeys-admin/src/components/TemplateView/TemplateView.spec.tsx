@@ -65,4 +65,25 @@ describe('TemplateView', () => {
 
     expect(queryByText('Strategy')).not.toBeInTheDocument()
   })
+
+  it('should show featured date if journey is featured', () => {
+    const journeyWithoutStrategySlug: JourneyFields = {
+      ...defaultJourney,
+      featuredAt: '2023-10-12T08:00:00Z'
+    }
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: journeyWithoutStrategySlug,
+            variant: 'admin'
+          }}
+        >
+          <TemplateView authUser={{} as unknown as User} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('featuredAtTemplatePreviewPage')).toBeInTheDocument()
+  })
 })

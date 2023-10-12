@@ -12,7 +12,7 @@ import { TemplateViewHeader } from './TemplateViewHeader'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: () => true
 }))
 
 describe('TemplateViewHeader', () => {
@@ -156,7 +156,7 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should render preview button', () => {
-    const { getByRole } = render(
+    const { getAllByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -173,6 +173,6 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('link', { name: 'Preview' })).toBeInTheDocument()
+    expect(getAllByRole('link', { name: 'Preview' })[0]).toBeInTheDocument()
   })
 })
