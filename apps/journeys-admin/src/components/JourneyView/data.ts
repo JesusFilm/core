@@ -86,7 +86,8 @@ export const defaultJourney: Journey = {
         imageUrl: 'https://bit.ly/3nlwUwJ'
       }
     }
-  ]
+  ],
+  tags: []
 }
 
 export const publishedJourney: Journey = {
