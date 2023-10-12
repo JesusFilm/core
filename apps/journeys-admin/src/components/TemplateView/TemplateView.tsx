@@ -24,12 +24,14 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   return (
     <Stack gap={4}>
       <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
-      <Typography variant="body2" sx={{ display: { xs: 'block', sm: 'none' } }}>
+      <TemplatePreviewTabs />
+      <Typography
+        variant="body2"
+        noWrap
+        sx={{ display: { xs: 'block', sm: 'none' } }}
+      >
         {journey?.description}
       </Typography>
-      <Stack sx={{ pt: 4 }}>
-        <TemplatePreviewTabs />
-      </Stack>
       {journey?.strategySlug != null && (
         <Stack sx={{ pt: { xs: 0, sm: 4 } }}>
           <StrategySection
