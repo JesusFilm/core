@@ -12,7 +12,7 @@ import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 const TemplatePreviewTabsStory: Meta<typeof TemplatePreviewTabs> = {
   ...simpleComponentConfig,
   component: TemplatePreviewTabs,
-  title: 'Journeys-Admin/TemplatePreviewTabs'
+  title: 'Journeys-Admin/TemplateView/TemplatePreviewTabs'
 }
 
 const journey = {

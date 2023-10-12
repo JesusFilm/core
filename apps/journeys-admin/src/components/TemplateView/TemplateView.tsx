@@ -11,6 +11,7 @@ import { StrategySection } from '../StrategySection'
 import { TemplateSection } from '../TemplateSections/TemplateSection'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
+import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 
 interface TemplateViewProps {
@@ -55,6 +56,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
           journeys={relatedJourneys}
         />
       )}
+      <TemplateFooter signedIn={authUser?.id != null} />
     </Stack>
   )
 }
