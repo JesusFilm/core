@@ -76,7 +76,7 @@ export function TemplateViewHeader({
             }}
           >
             <CreateJourneyButton signedIn={authUser?.id != null} />
-            <PreviewTemplateButton />
+            <PreviewTemplateButton slug={journey?.slug} />
             {isPublisher != null && isPublisher && <TemplateEditButton />}
           </Box>
         </Box>

@@ -154,4 +154,25 @@ describe('TemplateViewHeader', () => {
 
     expect(queryByTestId('EditTemplateSettings')).not.toBeInTheDocument()
   })
+
+  it('should render preview button', () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey
+            }}
+          >
+            <TemplateViewHeader
+              isPublisher={false}
+              authUser={{ id: '123' } as unknown as User}
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('link', { name: 'Preview' })).toBeInTheDocument()
+  })
 })
