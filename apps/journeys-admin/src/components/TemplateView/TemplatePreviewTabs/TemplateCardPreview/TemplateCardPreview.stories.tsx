@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 
-import { GetJourney_journey_blocks_StepBlock } from '../../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { journeyVideoBlocks } from '../data'
 
@@ -19,9 +19,7 @@ const TemplateCardPreviewStory: Meta<typeof TemplateCardPreview> = {
   }
 }
 
-const steps = transformer(journeyVideoBlocks) as Array<
-  TreeBlock<GetJourney_journey_blocks_StepBlock>
->
+const steps = transformer(journeyVideoBlocks) as Array<TreeBlock<StepBlock>>
 
 const Template: StoryObj<typeof TemplateCardPreview> = {
   render: () => <TemplateCardPreview steps={steps} />
