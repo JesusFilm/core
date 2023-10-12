@@ -11,8 +11,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { SocialImage } from '../../JourneyView/SocialImage'
 import { CreateJourneyButton } from '../CreateJourneyButton'
-import { PreviewTemplateButton } from '../PreviewTemplateButton'
 
+import { PreviewTemplateButton } from './PreviewTemplateButton'
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
 interface TemplateViewHeaderProps {
@@ -29,28 +29,46 @@ export function TemplateViewHeader({
 
   return (
     <Stack>
-      <Stack gap={4} sx={{ display: 'flex', flexDirection: 'row' }}>
+      {journey?.featuredAt != null && (
+        <Typography
+          data-testId="featuredAtTemplatePreviewPage"
+          variant="overline"
+          sx={{
+            color: 'secondary.light',
+            display: { xs: 'block', sm: 'none' },
+            pb: 6
+          }}
+          noWrap
+        >
+          {intlFormat(parseISO(journey?.featuredAt), {
+            month: 'long',
+            year: 'numeric'
+          })}
+        </Typography>
+      )}
+      <Stack gap={4} direction="row">
         <Box
           sx={{
-            width: { xs: 107, sm: 244 },
-            height: { xs: 107, sm: 244 },
             flexShrink: 0
           }}
         >
-          <SocialImage variant="large" />
+          <SocialImage height={smUp ? 244 : 107} width={smUp ? 244 : 107} />
         </Box>
-        <Box
+        <Stack
+          direction="column"
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
             flexShrink: 1,
             height: { xs: 107, sm: 244 }
           }}
         >
-          {journey?.featuredAt != null && smUp && (
+          {journey?.featuredAt != null && (
             <Typography
               variant="overline"
-              sx={{ color: 'secondary.light' }}
+              sx={{
+                color: 'secondary.light',
+                display: { xs: 'none', sm: 'block' }
+              }}
+              data-testId="featuredAtTemplatePreviewPage"
               noWrap
             >
               {intlFormat(parseISO(journey?.featuredAt), {
@@ -84,14 +102,14 @@ export function TemplateViewHeader({
           >
             <CreateJourneyButton signedIn={authUser?.id != null} />
             <PreviewTemplateButton slug={journey?.slug} />
-            {isPublisher != null && isPublisher && <TemplateEditButton />}
+            {isPublisher === true && <TemplateEditButton />}
           </Box>
-        </Box>
+        </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
         <CreateJourneyButton signedIn={authUser?.id != null} />
         <PreviewTemplateButton slug={journey?.slug} />
-        {isPublisher != null && isPublisher && <TemplateEditButton />}
+        {isPublisher === true && <TemplateEditButton />}
       </Box>
     </Stack>
   )

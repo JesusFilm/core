@@ -5,7 +5,10 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields_primaryImageBlock as PrimaryImageBlock } from '../../../../__generated__/JourneyFields'
+import {
+  JourneyFields as Journey,
+  JourneyFields_primaryImageBlock as PrimaryImageBlock
+} from '../../../../__generated__/JourneyFields'
 import { journey } from '../../Editor/ActionDetails/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
@@ -17,24 +20,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TemplateViewHeader', () => {
   const featuredJourney = { ...journey, featuredAt: '2023-10-12T08:00:00Z' }
-
-  it('should render the social image placeholder', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey
-            }}
-          >
-            <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(getByTestId('GridEmptyIcon')).toBeInTheDocument()
-  })
 
   it('should render the social image', () => {
     const primaryImageBlock: PrimaryImageBlock = {
@@ -70,7 +55,7 @@ describe('TemplateViewHeader', () => {
     expect(getByRole('img', { name: 'image.jpg' })).toBeInTheDocument()
   })
 
-  it('should display the featured date, title, and description', () => {
+  it('should display the  title, and description', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -85,12 +70,11 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(getByText('October 2023')).toBeInTheDocument()
     expect(getByText('my journey')).toBeInTheDocument()
     expect(getByText('my cool journey')).toBeInTheDocument()
   })
 
-  it('should render Use Template button for authenticated users', async () => {
+  it('should render Use Template button', async () => {
     const { getAllByText } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -174,5 +158,31 @@ describe('TemplateViewHeader', () => {
     )
 
     expect(getAllByRole('link', { name: 'Preview' })[0]).toBeInTheDocument()
+  })
+
+  it('should show featured date if journey is featured', () => {
+    const journeyWithoutStrategySlug: Journey = {
+      ...journey,
+      featuredAt: '2023-10-12T08:00:00Z'
+    }
+    const { getAllByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: journeyWithoutStrategySlug,
+            variant: 'admin'
+          }}
+        >
+          <TemplateViewHeader
+            isPublisher={false}
+            authUser={{} as unknown as User}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      getAllByTestId('featuredAtTemplatePreviewPage')[0]
+    ).toBeInTheDocument()
   })
 })

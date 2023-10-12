@@ -6,11 +6,13 @@ import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 interface SocialImageProps {
-  variant?: 'default' | 'large'
+  height?: number
+  width?: number
 }
 
 export function SocialImage({
-  variant = 'default'
+  height = 213,
+  width = 167
 }: SocialImageProps): ReactElement {
   const { journey } = useJourney()
 
@@ -28,8 +30,8 @@ export function SocialImage({
           alt={journey?.primaryImageBlock.alt}
           placeholder="blur"
           blurDataURL={journey?.primaryImageBlock.blurhash}
-          width={variant === 'default' ? 213 : 244}
-          height={variant === 'default' ? 167 : 244}
+          width={width}
+          height={height}
           objectFit="cover"
           style={{
             borderRadius: 12
@@ -42,8 +44,8 @@ export function SocialImage({
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 3,
-            width: variant === 'default' ? 213 : 244,
-            height: variant === 'default' ? 167 : { xs: 107, sm: 244 },
+            width,
+            height,
             backgroundColor: 'background.default'
           }}
         >

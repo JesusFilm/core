@@ -24,7 +24,7 @@ export function TemplateEditButton(): ReactElement {
         onClick={handleTemplateSettingsOpen}
       >
         <Edit2Icon />
-        <Typography sx={{ display: { xs: 'none', sm: 'block' } }}>
+        <Typography sx={{ display: { xs: 'none', sm: 'block' }, pl: '6px' }}>
           {t('Edit')}
         </Typography>
       </Button>
