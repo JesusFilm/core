@@ -199,6 +199,7 @@
     "cosmiconfig-toml-loader": "^1.0.0",
     "cosmiconfig-typescript-loader": "^4.4.0",
     "css-mediaquery": "^0.1.2",
+    "csv-parser": "^3.0.0",
     "danger": "^11.2.8",
     "dotenv": "^16.3.1",
     "eslint": "8.46.0",

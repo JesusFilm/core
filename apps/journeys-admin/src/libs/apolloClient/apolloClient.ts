@@ -11,11 +11,12 @@ import { useMemo } from 'react'
 import { cache } from './cache'
 
 export function createApolloClient(
-  token: string
+  token: string,
+  uri?: string
 ): ApolloClient<NormalizedCacheObject> {
   const isSsrMode = typeof window === 'undefined'
   const httpLink = createHttpLink({
-    uri: process.env.NEXT_PUBLIC_GATEWAY_URL
+    uri: uri ?? process.env.NEXT_PUBLIC_GATEWAY_URL
   })
 
   const authLink = setContext(async (_, { headers }) => {

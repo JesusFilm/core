@@ -65,6 +65,12 @@
         "parallel": false
       }
     },
+    "add-tags": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node apps/journeys-admin/src/libs/addTags/addTags.ts"
+      }
+    },
     "serve": {
       "executor": "@nx/next:server",
       "options": {
