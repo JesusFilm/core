@@ -60,7 +60,7 @@ export function TemplateGalleryCard({
               <Box
                 sx={{
                   position: 'relative',
-                  aspectRatio: '1 / 1'
+                  aspectRatio: '1'
                 }}
               >
                 <Image
