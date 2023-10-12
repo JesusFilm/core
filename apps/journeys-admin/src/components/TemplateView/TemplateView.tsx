@@ -31,6 +31,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
       }
     }
   })
+  const relatedJourneys = data?.journeys.filter(({ id }) => id !== journey?.id)
 
   return (
     <Stack gap={4}>
@@ -48,10 +49,10 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
           />
         </Stack>
       )}
-      {data?.journeys != null && data.journeys.length > 1 && (
+      {relatedJourneys != null && relatedJourneys.length > 1 && (
         <TemplateSection
           category={t('Related Templates')}
-          journeys={data.journeys}
+          journeys={relatedJourneys}
         />
       )}
     </Stack>
