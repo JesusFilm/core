@@ -38,13 +38,13 @@ export function StrategySection({
   return (
     <>
       {variant === 'full' && (
-        <Typography variant="h5" sx={{ mb: 7 }}>
+        <Typography variant="h5" sx={{ mb: { xs: 3, sm: 7 } }}>
           {t('Strategy')}
         </Typography>
       )}
       <Card
         sx={{
-          borderRadius: 5,
+          borderRadius: { xs: 3, sm: 5 },
           boxShadow: 'none',
           border: '1px solid',
           borderColor: 'divider'
