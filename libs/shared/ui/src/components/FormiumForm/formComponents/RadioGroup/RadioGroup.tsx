@@ -5,8 +5,8 @@ import Radio from '@mui/material/Radio'
 import MuiRadioGroup from '@mui/material/RadioGroup'
 import { ReactElement } from 'react'
 
-import CheckContainedIcon from '../../icons/CheckContained'
-import CircleIcon from '../../icons/Circle'
+import CheckContainedIcon from '../../../icons/CheckContained'
+import CircleIcon from '../../../icons/Circle'
 
 export function RadioGroup({
   disabled,
