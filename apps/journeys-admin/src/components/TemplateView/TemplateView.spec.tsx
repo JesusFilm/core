@@ -103,6 +103,7 @@ describe('TemplateView', () => {
     const result = jest.fn(() => ({
       data: {
         journeys: [
+          defaultJourney,
           {
             ...defaultJourney,
             id: 'taggedJourney.id',
