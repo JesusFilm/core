@@ -44,8 +44,7 @@ export function SocialImage({
             borderRadius: 3,
             width: variant === 'default' ? 213 : 244,
             height: variant === 'default' ? 167 : { xs: 107, sm: 244 },
-            backgroundColor: 'background.default',
-            border: variant === 'default' ? null : '1px solid'
+            backgroundColor: 'background.default'
           }}
         >
           {journey != null ? <GridEmptyIcon fontSize="large" /> : <></>}
