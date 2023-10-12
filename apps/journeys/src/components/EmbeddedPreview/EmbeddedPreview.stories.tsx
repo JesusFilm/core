@@ -85,7 +85,8 @@ const journey: Journey = {
     src2: 'https://tinyurl.com/mr4a78kb'
   },
   team: null,
-  blocks: basic
+  blocks: basic,
+  tags: []
 }
 
 const Template: StoryObj<typeof EmbeddedPreview> = {

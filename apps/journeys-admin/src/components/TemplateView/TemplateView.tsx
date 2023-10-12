@@ -3,10 +3,13 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { StrategySection } from '../StrategySection'
+import { TemplateSection } from '../TemplateSections/TemplateSection'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
 import { TemplateFooter } from './TemplateFooter'
@@ -18,6 +21,19 @@ interface TemplateViewProps {
 
 export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
+
+  const tagIds = journey?.tags.map((tag) => tag.id)
+  const { data } = useJourneysQuery({
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true,
+        tagIds
+      }
+    }
+  })
+  const relatedJourneys = data?.journeys.filter(({ id }) => id !== journey?.id)
 
   return (
     <Container disableGutters>
@@ -35,6 +51,12 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
               variant="full"
             />
           </Stack>
+        )}
+        {relatedJourneys != null && relatedJourneys.length > 1 && (
+          <TemplateSection
+            category={t('Related Templates')}
+            journeys={relatedJourneys}
+          />
         )}
         <TemplateFooter signedIn={authUser?.id != null} />
       </Stack>

@@ -60,7 +60,8 @@ describe('NavigateToJourneyAction', () => {
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it('shows no journey selected by default', () => {
