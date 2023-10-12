@@ -13,6 +13,7 @@ import { TemplateSection } from '../TemplateSections/TemplateSection'
 import { CreateJourneyButton } from './CreateJourneyButton'
 import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
+import { TemplateTags } from './TemplateTags'
 
 interface TemplateViewProps {
   authUser: User
@@ -39,6 +40,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
       <Typography variant="h1">{journey?.title}</Typography>
       <Typography variant="body1">{journey?.description}</Typography>
       <CreateJourneyButton signedIn={authUser?.id != null} />
+      <TemplateTags />
       <Stack sx={{ pt: 4 }}>
         <TemplatePreviewTabs />
       </Stack>
