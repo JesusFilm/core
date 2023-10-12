@@ -5,7 +5,6 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
-import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -22,8 +21,6 @@ export interface TemplateGalleryCardProps {
 export function TemplateGalleryCard({
   journey
 }: TemplateGalleryCardProps): ReactElement {
-  const theme = useTheme()
-
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
   )?.value
@@ -108,7 +105,6 @@ export function TemplateGalleryCard({
                 <Typography
                   variant="overline2"
                   sx={{
-                    fontFamily: 'Montserrat',
                     whiteSpace: 'noWrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -120,9 +116,8 @@ export function TemplateGalleryCard({
                 <Typography
                   variant="subtitle2"
                   sx={{
-                    fontFamily: 'Montserrat',
                     my: 1,
-                    [theme.breakpoints.down('lg')]: { display: 'none' }
+                    display: { xs: 'none', lg: 'block' }
                   }}
                 >
                   {journey.title}
@@ -130,12 +125,11 @@ export function TemplateGalleryCard({
                 <Typography
                   variant="subtitle3"
                   sx={{
-                    fontFamily: 'Montserrat',
                     whiteSpace: 'noWrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     my: 1,
-                    [theme.breakpoints.up('lg')]: { display: 'none' }
+                    display: { xs: 'block', lg: 'none' }
                   }}
                 >
                   {journey.title}

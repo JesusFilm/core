@@ -29,32 +29,44 @@ export function TemplateSection({
     [breakpoints.values.xs]: {
       slidesPerGroup: 2,
       slidesPerView: 2.4,
-      spaceBetween: 20
+      spaceBetween: 20,
+      slidesOffsetBefore: 24,
+      slidesOffsetAfter: 24
     },
     [breakpoints.values.sm]: {
       slidesPerGroup: 3,
       slidesPerView: 3.4,
-      spaceBetween: 20
+      spaceBetween: 20,
+      slidesOffsetBefore: 24,
+      slidesOffsetAfter: 24
     },
     [breakpoints.values.md]: {
       slidesPerGroup: 4,
       slidesPerView: 4.4,
-      spaceBetween: 20
+      spaceBetween: 20,
+      slidesOffsetBefore: 24,
+      slidesOffsetAfter: 24
     },
     [breakpoints.values.lg]: {
       slidesPerGroup: 7,
       slidesPerView: 5.4,
-      spaceBetween: 48
+      spaceBetween: 48,
+      slidesOffsetBefore: 36,
+      slidesOffsetAfter: 36
     },
     [breakpoints.values.xl]: {
       slidesPerGroup: 6,
       slidesPerView: 6.4,
-      spaceBetween: 48
+      spaceBetween: 48,
+      slidesOffsetBefore: 36,
+      slidesOffsetAfter: 36
     },
     [breakpoints.values.xxl]: {
       slidesPerGroup: 7,
       slidesPerView: 7.4,
-      spaceBetween: 48
+      spaceBetween: 48,
+      slidesOffsetBefore: 36,
+      slidesOffsetAfter: 36
     }
   }
 
@@ -62,7 +74,6 @@ export function TemplateSection({
     <Stack spacing={4} justifyContent="center" sx={{ position: 'relative' }}>
       {journeys == null && (
         <Swiper
-          spaceBetween={12}
           slidesOffsetBefore={24}
           slidesOffsetAfter={24}
           breakpoints={swiperBreakpoints}
@@ -95,20 +106,19 @@ export function TemplateSection({
       )}
       {journeys != null && (
         <>
-          <Typography variant="h5" sx={{ pl: 5 }}>
+          <Typography variant="h5" sx={{ pl: { xs: 6, lg: 9 } }}>
             {category}
           </Typography>
           <Swiper
             autoHeight
             speed={850}
             watchOverflow
-            slidesOffsetBefore={20}
-            slidesOffsetAfter={20}
             breakpoints={swiperBreakpoints}
             navigation={{
               nextEl: nextRef.current,
               prevEl: prevRef.current
             }}
+            virtual
           >
             {journeys?.map((journey) => (
               <SwiperSlide
