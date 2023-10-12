@@ -12,7 +12,7 @@ import { TemplateCardPreview } from './TemplateCardPreview'
 const TemplateCardPreviewStory: Meta<typeof TemplateCardPreview> = {
   ...journeysAdminConfig,
   component: TemplateCardPreview,
-  title: 'Journeys-Admin/TemplateCardPreview',
+  title: 'Journeys-Admin/TemplateView/TemplatePreviewTab/TemplateCardPreview',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
