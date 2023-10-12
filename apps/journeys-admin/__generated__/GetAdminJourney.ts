@@ -631,6 +631,11 @@ export interface GetAdminJourney_journey_team {
   title: string;
 }
 
+export interface GetAdminJourney_journey_tags {
+  __typename: "Tag";
+  id: string;
+}
+
 export interface GetAdminJourney_journey {
   __typename: "Journey";
   id: string;
@@ -654,6 +659,7 @@ export interface GetAdminJourney_journey {
   chatButtons: GetAdminJourney_journey_chatButtons[];
   host: GetAdminJourney_journey_host | null;
   team: GetAdminJourney_journey_team | null;
+  tags: GetAdminJourney_journey_tags[];
 }
 
 export interface GetAdminJourney {

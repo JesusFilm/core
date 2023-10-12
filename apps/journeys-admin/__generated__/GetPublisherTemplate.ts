@@ -631,6 +631,11 @@ export interface GetPublisherTemplate_publisherTemplate_team {
   title: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_tags {
+  __typename: "Tag";
+  id: string;
+}
+
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -654,6 +659,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   chatButtons: GetPublisherTemplate_publisherTemplate_chatButtons[];
   host: GetPublisherTemplate_publisherTemplate_host | null;
   team: GetPublisherTemplate_publisherTemplate_team | null;
+  tags: GetPublisherTemplate_publisherTemplate_tags[];
 }
 
 export interface GetPublisherTemplate {

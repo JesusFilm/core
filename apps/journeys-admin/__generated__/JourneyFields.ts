@@ -631,6 +631,11 @@ export interface JourneyFields_team {
   title: string;
 }
 
+export interface JourneyFields_tags {
+  __typename: "Tag";
+  id: string;
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -654,4 +659,5 @@ export interface JourneyFields {
   chatButtons: JourneyFields_chatButtons[];
   host: JourneyFields_host | null;
   team: JourneyFields_team | null;
+  tags: JourneyFields_tags[];
 }

@@ -2,10 +2,13 @@ import Stack from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { StrategySection } from '../StrategySection'
+import { TemplateSection } from '../TemplateSections/TemplateSection'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
@@ -16,6 +19,18 @@ interface TemplateViewProps {
 
 export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
+
+  const tagIds = journey?.tags.map((tag) => tag.id)
+  const { data } = useJourneysQuery({
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true,
+        tagIds
+      }
+    }
+  })
 
   return (
     <Stack gap={4}>
@@ -32,6 +47,12 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
             variant="full"
           />
         </Stack>
+      )}
+      {data?.journeys != null && data.journeys.length > 1 && (
+        <TemplateSection
+          category={t('Related Templates')}
+          journeys={data.journeys}
+        />
       )}
     </Stack>
   )
