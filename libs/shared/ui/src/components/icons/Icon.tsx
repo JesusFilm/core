@@ -33,6 +33,7 @@ import Bible from './Bible'
 import Book from './Book'
 import Box from './Box'
 import Calendar1 from './Calendar1'
+import Calendar4 from './Calendar4'
 import Check from './Check'
 import CheckBroken from './CheckBroken'
 import CheckContained from './CheckContained'
@@ -149,6 +150,7 @@ import Send1 from './Send1'
 import Settings from './Settings'
 import Share from './Share'
 import Skype from './Skype'
+import SmileyNeutral from './SmileyNeutral'
 import Snapchat from './Snapchat'
 import SpaceHeight from './SpaceHeight'
 import SpaceHorizontal from './SpaceHorizontal'
@@ -222,6 +224,7 @@ export type IconName =
   | 'Book'
   | 'Box'
   | 'Calendar1'
+  | 'Calendar4'
   | 'CheckBroken'
   | 'CheckContained'
   | 'CheckSquareBroken'
@@ -338,6 +341,7 @@ export type IconName =
   | 'Settings'
   | 'Share'
   | 'Skype'
+  | 'SmileyNeutral'
   | 'Snapchat'
   | 'SpaceHeight'
   | 'SpaceHorizontal'
@@ -415,6 +419,7 @@ const iconComponents: IconComponents = {
   Book,
   Box,
   Calendar1,
+  Calendar4,
   CheckBroken,
   CheckContained,
   CheckSquareBroken,
@@ -531,6 +536,7 @@ const iconComponents: IconComponents = {
   Settings,
   Share,
   Skype,
+  SmileyNeutral,
   Snapchat,
   SpaceHeight,
   SpaceHorizontal,
