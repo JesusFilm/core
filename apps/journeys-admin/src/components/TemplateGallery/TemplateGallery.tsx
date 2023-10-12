@@ -1,19 +1,17 @@
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
+import castArray from 'lodash/castArray'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { TemplateSections } from '../TemplateSections'
 
 export function TemplateGallery(): ReactElement {
+  const { query } = useRouter()
   return (
     <Box>
-      <Typography variant="h3">
-        This is a placeholder for the new template gallery
-      </Typography>
-      <Typography variant="h3">
-        Your email is currently under a launch darkly flag
-      </Typography>
-      <TemplateSections />
+      <TemplateSections
+        tagIds={query.tagIds != null ? castArray(query.tagIds) : undefined}
+      />
     </Box>
   )
 }

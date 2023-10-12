@@ -23,6 +23,11 @@ import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { BackgroundMedia } from './BackgroundMedia'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const journey: Journey = {
   __typename: 'Journey',
   id: 'journeyId',

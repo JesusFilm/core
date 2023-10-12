@@ -150,6 +150,7 @@ const iconNames: IconName[] = [
   'Plus1',
   'Plus2',
   'Plus3',
+  'Presentation1',
   'Search1',
   'Search2',
   'Send1',
@@ -251,6 +252,7 @@ const Template: StoryObj<typeof Icon> = {
               'disabled'
             ].map((color) => (
               <Typography
+                key={color}
                 variant="caption"
                 color={`${
                   color === 'action ' || color === 'disabled'
@@ -266,7 +268,7 @@ const Template: StoryObj<typeof Icon> = {
         </Stack>
 
         {[...iconNames].slice(1).map((name) => (
-          <Stack direction="row" gap={10}>
+          <Stack key={name} direction="row" gap={10}>
             <Stack
               direction="row"
               gap={7}
@@ -296,7 +298,7 @@ const Template: StoryObj<typeof Icon> = {
                 'action',
                 'disabled'
               ].map((color) => (
-                <Icon name={name} color={color as Color} />
+                <Icon key={name} name={name} color={color as Color} />
               ))}
             </Stack>
           </Stack>

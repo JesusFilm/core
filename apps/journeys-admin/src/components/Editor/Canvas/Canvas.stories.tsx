@@ -595,18 +595,19 @@ type Story = StoryObj<
   ComponentProps<typeof Canvas> & {
     journey: Partial<Journey>
     state: Partial<EditorState>
+    steps?: Array<TreeBlock<StepBlock>>
   }
 >
 
 const Template: Story = {
-  render: ({ journey, state }) => {
+  render: ({ journey, state, steps }) => {
     return (
       <MockedProvider>
         <JourneyProvider
           value={{
             journey: {
               id: 'journeyId',
-              themeMode: ThemeMode.light,
+              themeMode: ThemeMode.dark,
               themeName: ThemeName.base,
               seoTitle: 'my journey',
               language: {
@@ -633,13 +634,51 @@ const Template: Story = {
         </JourneyProvider>
       </MockedProvider>
     )
+  },
+  args: {
+    steps
   }
 }
-export const Default = { ...Template }
+
+export const Default = {
+  ...Template
+}
+
+export const EmptyCard = {
+  ...Template,
+  args: {
+    ...Template.args,
+    steps: [
+      {
+        id: 'step1.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 1,
+        locked: false,
+        nextBlockId: 'step2.id',
+        children: [
+          {
+            id: 'card1.id',
+            __typename: 'CardBlock',
+            parentBlockId: 'step1.id',
+            coverBlockId: 'image1.id',
+            parentOrder: 0,
+            backgroundColor: null,
+            themeMode: null,
+            themeName: null,
+            fullscreen: false,
+            children: []
+          }
+        ]
+      }
+    ]
+  }
+}
 
 export const RTL = {
   ...Template,
   args: {
+    ...Template.args,
     journey: {
       language: {
         __typename: 'Language',
@@ -660,6 +699,7 @@ export const RTL = {
 export const FooterEdit = {
   ...Template,
   args: {
+    ...Template.args,
     state: {
       selectedBlock: {},
       selectedComponent: 'Footer'
