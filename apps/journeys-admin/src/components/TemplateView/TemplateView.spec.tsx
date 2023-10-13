@@ -162,4 +162,25 @@ describe('TemplateView', () => {
       expect(result).toHaveBeenCalled()
     })
   })
+
+  it('should render template tags', () => {
+    const journeyWithTags: Journey = {
+      ...defaultJourney,
+      tags: [tag]
+    }
+    const { getByTestId } = render(
+      <MockedProvider mocks={[getJourneyMock]}>
+        <JourneyProvider
+          value={{
+            journey: journeyWithTags,
+            variant: 'admin'
+          }}
+        >
+          <TemplateView authUser={{} as unknown as User} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('TemplateTags')).toBeInTheDocument()
+  })
 })
