@@ -629,6 +629,7 @@ export interface GetPublisherTemplate_publisherTemplate_team {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_tags_name_language {

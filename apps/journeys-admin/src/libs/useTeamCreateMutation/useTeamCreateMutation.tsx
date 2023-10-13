@@ -16,6 +16,7 @@ export const TEAM_CREATE = gql`
     teamCreate(input: $input) {
       id
       title
+      publicTitle
       userTeams {
         id
         user {
