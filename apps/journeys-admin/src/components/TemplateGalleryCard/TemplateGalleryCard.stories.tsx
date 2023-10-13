@@ -60,7 +60,9 @@ const Template: StoryObj<ComponentProps<typeof TemplateGalleryCard>> = {
       <Box
         sx={{
           backgroundColor: 'background.paper',
-          p: 5
+          p: 5,
+          width: 250,
+          height: 320
         }}
       >
         <TemplateGalleryCard journey={args.journey} />
