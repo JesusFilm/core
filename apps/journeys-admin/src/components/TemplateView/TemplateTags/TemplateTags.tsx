@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import { ReactElement, useMemo } from 'react'
 
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import Grid1Icon from '@core/shared/ui/icons/Grid1'
+import Laptop1Icon from '@core/shared/ui/icons/Laptop1'
 
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 
@@ -27,7 +27,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
       name: tag.name[0].value,
       icon: parentTagsWithIcons.find(
         (parentTag) => parentTag.id === tag.parentId
-      )?.icon ?? <Grid1Icon />
+      )?.icon ?? <Laptop1Icon />
     }
   })
 

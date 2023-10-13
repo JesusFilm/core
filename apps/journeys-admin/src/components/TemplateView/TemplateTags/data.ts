@@ -88,6 +88,23 @@ export const parentTags: Tag[] = [
   },
   {
     __typename: 'Tag',
+    id: 'tags.collections.id',
+    parentId: null,
+    service: null,
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'Collections',
+        primary: true,
+        language: {
+          __typename: 'Language',
+          id: '529'
+        }
+      }
+    ]
+  },
+  {
+    __typename: 'Tag',
     id: 'tags.other.id',
     parentId: null,
     service: null,
@@ -194,6 +211,23 @@ export const tags: Tag[] = [
   {
     __typename: 'Tag',
     id: 'tag6.id',
+    parentId: 'tags.collections.id',
+    service: null,
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'Collections sub-tag',
+        primary: true,
+        language: {
+          __typename: 'Language',
+          id: '529'
+        }
+      }
+    ]
+  },
+  {
+    __typename: 'Tag',
+    id: 'tag7.id',
     parentId: 'otherTag.id',
     service: null,
     name: [
