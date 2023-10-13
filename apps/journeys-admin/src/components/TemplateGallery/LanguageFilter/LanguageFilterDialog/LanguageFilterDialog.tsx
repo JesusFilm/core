@@ -35,16 +35,13 @@ export function LanguageFilterDialog({
   loading
 }: LangaugeFilterDialogProps): ReactElement {
   const router = useRouter()
+  // update language autocomplete to design
 
   const handleSubmit = (values: FormikValues): void => {
-    void router.push(
-      {
-        pathname: '/templates',
-        query: { languageIds: [values.language.id] }
-      },
-      undefined,
-      { shallow: true }
-    )
+    void router.push({
+      pathname: '/templates',
+      query: { languageIds: [values.language.id] }
+    })
     onClose()
   }
 
@@ -103,6 +100,8 @@ export function LanguageFilterDialog({
               value={values.language}
               languages={languages}
               loading={loading}
+              // add renderOption
+              // ability to choose multiple things
             />
           </Form>
         </Dialog>
