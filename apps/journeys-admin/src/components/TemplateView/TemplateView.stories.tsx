@@ -5,7 +5,7 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey_primaryImageBlock as ImageBlock } from '../../../__generated__/GetJourney'
+import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../../__generated__/GetJourney'
 import { GetJourneys } from '../../../__generated__/GetJourneys'
 import { GetUserRole } from '../../../__generated__/GetUserRole'
 import { Role } from '../../../__generated__/globalTypes'
@@ -38,7 +38,7 @@ const tags: Tag = {
   ]
 }
 
-const primaryImageBlock: ImageBlock = {
+const primaryImageBlock: PrimaryImageBlock = {
   parentBlockId: '1',
   id: 'pImage.id',
   __typename: 'ImageBlock' as const,
