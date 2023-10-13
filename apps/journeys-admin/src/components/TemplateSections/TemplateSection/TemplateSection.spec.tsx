@@ -53,7 +53,6 @@ describe('TemplateSection', () => {
       />
     )
     expect(getByRole('heading', { name: 'Easter' })).toBeInTheDocument()
-    // if possible: update test to check via MUI card(s) role instead of data-testId
     const cards = getAllByTestId(/journey-/)
     expect(cards[0]).toHaveTextContent('Featured Template 1')
     expect(cards[1]).toHaveTextContent('Featured Template 2')

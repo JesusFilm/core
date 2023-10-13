@@ -144,4 +144,17 @@ describe.skip('Admin Video', () => {
     )
     expect(video).toHaveClass('vjs-paused')
   })
+
+  it('should set container to 16:9', () => {
+    const { getByTestId } = render(<Video {...block} />)
+
+    // Expect container to have 16:9 aspect ratio
+    expect(getByTestId('video-container')).toHaveStyle('position: absolute')
+    expect(getByTestId('video-container')).toHaveStyle(
+      'margin-left: calc((100vh * 16 / 9) * -0.355)'
+    )
+    expect(getByTestId('video-container')).toHaveStyle('overflow: hidden')
+
+    // Jest height/width are not rendered by jest dom for testing
+  })
 })

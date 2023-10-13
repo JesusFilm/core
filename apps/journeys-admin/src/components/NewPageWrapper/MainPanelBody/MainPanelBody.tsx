@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
@@ -6,13 +7,13 @@ import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 export interface MainPanelBodyProps {
   children: ReactNode
   bottomPanelChildren?: ReactNode
-  backgroundColor?: string
+  sx?: SxProps
 }
 
 export function MainPanelBody({
   children,
   bottomPanelChildren,
-  backgroundColor
+  sx
 }: MainPanelBodyProps): ReactElement {
   const { navbar, bottomPanel } = usePageWrapperStyles()
 
@@ -31,14 +32,13 @@ export function MainPanelBody({
         data-testid="main-body"
         flexGrow={1}
         sx={{
-          // Make optional or remove during cooldown
-          backgroundColor,
           px: { xs: 6, md: 8 },
           py: { xs: 6, md: 9 },
           mb: {
             xs: 0,
             md: bottomPanelChildren != null ? bottomPanel.height : 0
-          }
+          },
+          ...sx
         }}
       >
         {children}
