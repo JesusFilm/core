@@ -632,6 +632,25 @@ export interface JourneyFields_team {
   publicTitle: string | null;
 }
 
+export interface JourneyFields_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface JourneyFields_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: JourneyFields_tags_name_language;
+  primary: boolean;
+}
+
+export interface JourneyFields_tags {
+  __typename: "Tag";
+  id: string;
+  parentId: string | null;
+  name: JourneyFields_tags_name[];
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -655,4 +674,5 @@ export interface JourneyFields {
   chatButtons: JourneyFields_chatButtons[];
   host: JourneyFields_host | null;
   team: JourneyFields_team | null;
+  tags: JourneyFields_tags[];
 }

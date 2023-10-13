@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
+import { use100vh } from 'react-div-100vh'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
@@ -37,6 +38,7 @@ export function BackgroundVideo({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
   const isYouTube = source === VideoBlockSource.youTube
+  const hundredVh = use100vh()
 
   // Initiate Video
   useEffect(() => {
@@ -117,7 +119,7 @@ export function BackgroundVideo({
 
   return (
     <Box
-      height={{ xs: isFillAndNotYoutube() ? '100vh' : '100%', sm: '100%' }}
+      height={{ xs: isFillAndNotYoutube() ? hundredVh : '100%', sm: '100%' }}
       width={{
         xs: isFillAndNotYoutube() ? '300%' : '100%',
         sm: '100%'

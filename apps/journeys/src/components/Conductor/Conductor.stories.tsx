@@ -85,7 +85,8 @@ const defaultJourney: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 type Story = StoryObj<ComponentProps<typeof Conductor> & { journey?: Journey }>
