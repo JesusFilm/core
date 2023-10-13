@@ -9,10 +9,16 @@ import { Service } from "./globalTypes";
 // GraphQL query operation: GetTags
 // ====================================================
 
+export interface GetTags_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
 export interface GetTags_tags_name {
   __typename: "Translation";
   value: string;
   primary: boolean;
+  language: GetTags_tags_name_language;
 }
 
 export interface GetTags_tags {

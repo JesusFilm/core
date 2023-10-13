@@ -3,7 +3,11 @@ import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import Grid1Icon from '@core/shared/ui/icons/Grid1'
 
+import { useTagsQuery } from '../../../libs/useTagsQuery'
+
+import { getParentTagsWithIcon } from './getParentTagsWithIcon'
 import { TagItem } from './TagItem'
 
 interface TemplateTagsProps {
@@ -11,7 +15,17 @@ interface TemplateTagsProps {
 }
 
 export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
-  return (
+  const { parentTags } = useTagsQuery()
+  const parentTagsWithIcons = getParentTagsWithIcon(parentTags)
+
+  const tagItems = tags?.map((tag) => ({
+    id: tag.id,
+    name: tag.name[0].value,
+    icon: parentTagsWithIcons.find((parentTag) => parentTag.id === tag.parentId)
+      ?.icon ?? <Grid1Icon />
+  }))
+
+  return tagItems != null ? (
     <Stack
       direction="row"
       alignItems="center"
@@ -26,14 +40,16 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
         }
       }}
     >
-      {tags?.map((tag, index) => (
+      {tagItems?.map(({ id, name, icon }, index) => (
         <>
-          <TagItem key={tag.id} tag={tag} />
-          {index < tags.length - 1 && (
+          <TagItem key={id} name={name} icon={icon} />
+          {index < tagItems.length - 1 && (
             <Divider orientation="vertical" sx={{ height: '48px' }} />
           )}
         </>
       ))}
     </Stack>
+  ) : (
+    <></>
   )
 }
