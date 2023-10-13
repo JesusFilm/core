@@ -36,7 +36,7 @@ export function StrategySection({
   const renderEmbed = !isError && embedURL !== ''
 
   return (
-    <>
+    <Stack sx={{ pb: { xs: 0, sm: 6 } }}>
       {variant === 'full' && (
         <Typography variant="h5" sx={{ mb: { xs: 3, sm: 7 } }}>
           {t('Strategy')}
@@ -103,6 +103,6 @@ export function StrategySection({
           </Stack>
         )}
       </Card>
-    </>
+    </Stack>
   )
 }

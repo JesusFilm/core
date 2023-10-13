@@ -53,7 +53,7 @@ export function TemplatePreviewTabs(): ReactElement {
         />
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
-        <Stack sx={{ py: { xs: 3, sm: 6 } }}>
+        <Stack sx={{ pb: { xs: 0, sm: 6 } }}>
           <TemplateCardPreview steps={steps} />
         </Stack>
       </TabPanel>

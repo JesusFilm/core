@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -35,13 +36,15 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
       }
     }
   })
+
   const relatedJourneys = data?.journeys.filter(({ id }) => id !== journey?.id)
+
   const { data: userData } = useUserRoleQuery()
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
 
   return (
     <Container disableGutters>
-      <Stack gap={4}>
+      <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
         <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
         <TemplatePreviewTabs />
         <Typography
@@ -51,42 +54,18 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
           {journey?.description}
         </Typography>
         {journey?.strategySlug != null && (
-          <Stack sx={{ pt: { xs: 0, sm: 4 } }}>
-            <StrategySection
-              strategySlug={journey?.strategySlug}
-              variant="full"
-            />
-          </Stack>
-        )}
-        {relatedJourneys != null && relatedJourneys.length > 1 && (
-          <TemplateSection
-            category={t('Related Templates')}
-            journeys={relatedJourneys}
+          <StrategySection
+            strategySlug={journey?.strategySlug}
+            variant="full"
           />
         )}
-        <TemplateFooter signedIn={authUser?.id != null} />
-      </Stack>
-
-      <Stack gap={4}>
-        <Typography variant="h1">{journey?.title}</Typography>
-        <Typography variant="body1">{journey?.description}</Typography>
-        <CreateJourneyButton signedIn={authUser?.id != null} />
-        <Stack sx={{ pt: 4 }}>
-          <TemplatePreviewTabs />
-        </Stack>
-        {journey?.strategySlug != null && (
-          <Stack sx={{ pt: { xs: 0, sm: 4 } }}>
-            <StrategySection
-              strategySlug={journey?.strategySlug}
-              variant="full"
-            />
-          </Stack>
-        )}
         {relatedJourneys != null && relatedJourneys.length > 1 && (
-          <TemplateSection
-            category={t('Related Templates')}
-            journeys={relatedJourneys}
-          />
+          <Box sx={{ ml: { xs: -6, lg: -9 } }}>
+            <TemplateSection
+              category={t('Related Templates')}
+              journeys={relatedJourneys}
+            />
+          </Box>
         )}
         <TemplateFooter signedIn={authUser?.id != null} />
       </Stack>
