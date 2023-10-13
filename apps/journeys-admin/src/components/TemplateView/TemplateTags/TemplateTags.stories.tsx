@@ -37,7 +37,7 @@ const Template: StoryObj<typeof TemplateTags> = {
 export const Default = {
   ...Template,
   args: {
-    tags: [tags]
+    tags
   }
 }
 

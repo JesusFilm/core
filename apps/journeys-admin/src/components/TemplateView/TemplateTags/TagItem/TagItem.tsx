@@ -9,9 +9,11 @@ interface TagItemProps {
 
 export function TagItem({ name, icon }: TagItemProps): ReactElement {
   return (
-    <Stack alignItems="center" gap={2} sx={{ minWidth: '99px', width: '99px' }}>
+    <Stack alignItems="center" gap={2} sx={{ minWidth: '99px' }}>
       {icon}
-      <Typography variant="body2">{name}</Typography>
+      <Typography variant="body2" align="center">
+        {name}
+      </Typography>
     </Stack>
   )
 }

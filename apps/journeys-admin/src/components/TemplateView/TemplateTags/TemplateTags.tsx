@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useMemo } from 'react'
@@ -22,12 +21,15 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
     [parentTags]
   )
 
-  const tagItems = tags?.map((tag) => ({
-    id: tag.id,
-    name: tag.name[0].value,
-    icon: parentTagsWithIcons.find((parentTag) => parentTag.id === tag.parentId)
-      ?.icon ?? <Grid1Icon />
-  }))
+  const tagItems = tags?.map((tag) => {
+    return {
+      id: tag.id,
+      name: tag.name[0].value,
+      icon: parentTagsWithIcons.find(
+        (parentTag) => parentTag.id === tag.parentId
+      )?.icon ?? <Grid1Icon />
+    }
+  })
 
   return tagItems != null && tagItems?.length > 0 ? (
     <Stack
@@ -37,21 +39,16 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
       gap={14}
       sx={{
         height: '84px',
-        py: 2,
-        overflowX: 'auto',
-        '::-webkit-scrollbar': {
-          width: '0px',
-          background: 'transparent'
-        }
+        py: 2
       }}
     >
       {tagItems?.map(({ id, name, icon }, index) => (
-        <Box key={id}>
-          <TagItem name={name} icon={icon} />
+        <>
+          <TagItem key={id} name={name} icon={icon} />
           {index < tagItems.length - 1 && (
             <Divider orientation="vertical" sx={{ height: '48px' }} />
           )}
-        </Box>
+        </>
       ))}
     </Stack>
   ) : (

@@ -118,7 +118,7 @@ export const tags: Tag[] = [
         primary: true,
         language: {
           __typename: 'Language',
-          id: 'en'
+          id: '529'
         }
       }
     ]
@@ -135,7 +135,7 @@ export const tags: Tag[] = [
         primary: true,
         language: {
           __typename: 'Language',
-          id: 'en'
+          id: '529'
         }
       }
     ]
@@ -152,7 +152,7 @@ export const tags: Tag[] = [
         primary: true,
         language: {
           __typename: 'Language',
-          id: 'en'
+          id: '529'
         }
       }
     ]
@@ -169,7 +169,7 @@ export const tags: Tag[] = [
         primary: true,
         language: {
           __typename: 'Language',
-          id: 'en'
+          id: '529'
         }
       }
     ]
@@ -186,7 +186,7 @@ export const tags: Tag[] = [
         primary: true,
         language: {
           __typename: 'Language',
-          id: 'en'
+          id: '529'
         }
       }
     ]
@@ -203,7 +203,7 @@ export const tags: Tag[] = [
         primary: true,
         language: {
           __typename: 'Language',
-          id: 'en'
+          id: '529'
         }
       }
     ]
