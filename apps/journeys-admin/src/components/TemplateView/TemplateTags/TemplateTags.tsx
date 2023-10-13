@@ -36,10 +36,10 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
       data-testid="TemplateTags"
       direction="row"
       alignItems="center"
-      gap={14}
       sx={{
         height: '84px',
-        py: 2
+        py: 2,
+        gap: { xs: 2, sm: 14 }
       }}
     >
       {tagItems?.map(({ id, name, icon }, index) => (
