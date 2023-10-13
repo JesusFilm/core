@@ -68,7 +68,8 @@ describe('StepHeader', () => {
       id: 'teamId',
       title: 'Team Title',
       publicTitle: ''
-    }
+    },
+    tags: []
   }
 
   it('should have report contact button', () => {
