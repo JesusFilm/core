@@ -1,6 +1,6 @@
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
@@ -16,7 +16,10 @@ interface TemplateTagsProps {
 
 export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
   const { parentTags } = useTagsQuery()
-  const parentTagsWithIcons = getParentTagsWithIcon(parentTags)
+  const parentTagsWithIcons = useMemo(
+    () => getParentTagsWithIcon(parentTags),
+    [parentTags]
+  )
 
   const tagItems = tags?.map((tag) => ({
     id: tag.id,

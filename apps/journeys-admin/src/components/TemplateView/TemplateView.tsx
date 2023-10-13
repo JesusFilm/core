@@ -15,7 +15,6 @@ import { TemplateSection } from '../TemplateSections/TemplateSection'
 import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import { TemplateTags } from './TemplateTags'
-import { tags as tagData } from './TemplateTags/TemplateTags.spec'
 import { TemplateViewHeader } from './TemplateViewHeader/TemplateViewHeader'
 
 interface TemplateViewProps {
@@ -43,8 +42,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   return (
     <Stack gap={4}>
       <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
-      <TemplateTags tags={tagData} />
-      {/* <TemplateTags tags={journey?.tags} /> */}
+      <TemplateTags tags={journey?.tags} />
       <TemplatePreviewTabs />
       <Typography variant="body2" sx={{ display: { xs: 'block', sm: 'none' } }}>
         {journey?.description}
