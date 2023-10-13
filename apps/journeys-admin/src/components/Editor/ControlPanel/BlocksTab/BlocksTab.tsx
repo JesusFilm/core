@@ -15,7 +15,7 @@ export function BlocksTab(): ReactElement {
   return (
     <>
       <Stack
-        direction="row"
+        direction="column"
         spacing={4}
         sx={{
           overflowX: 'auto',

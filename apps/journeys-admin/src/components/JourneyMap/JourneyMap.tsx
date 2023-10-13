@@ -156,7 +156,7 @@ export const JourneyMap = ({
 
   const getLayoutedElements = (nodes, edges, direction = 'TB') => {
     const isHorizontal = direction === 'LR'
-    console.log('get layouted elements')
+    // console.log('get layouted elements')
     dagreGraph.setGraph({
       rankdir: direction,
       nodesep: 30, // vertical
@@ -194,7 +194,7 @@ export const JourneyMap = ({
   }
 
   const transformData = (data) => {
-    console.log('Transforming data')
+    // console.log('Transforming data')
     const nodes = []
     const links = []
     let x = 0

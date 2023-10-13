@@ -83,6 +83,10 @@ export function ControlPanel(): ReactElement {
 
   const handleAddFabClick = (): void => {
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Blocks })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Add Blocks'
+    })
   }
 
   const cardBlock = selectedStep?.children.find(

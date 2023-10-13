@@ -94,7 +94,7 @@ export default memo(({ data }: NodeProps<CustomNode>) => {
               >
                 {data.title}
               </Typography>
-              {data.subline && (
+              {/* {data.subline && (
                 <Typography
                   variant="body2"
                   sx={{
@@ -103,14 +103,14 @@ export default memo(({ data }: NodeProps<CustomNode>) => {
                 >
                   {data.subline}
                 </Typography>
-              )}
+              )} */}
               <Typography
                 variant="body2"
                 sx={{
                   fontSize: '12px'
                 }}
               >
-                Clicked:{randomPercentage}
+                Visitors:{randomPercentage}
               </Typography>
             </div>
           </div>

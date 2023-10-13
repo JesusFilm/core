@@ -13,6 +13,7 @@ import { ReactElement, ReactNode } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { Attributes } from '../ControlPanel/Attributes'
+import { BlocksTab } from '../ControlPanel/BlocksTab'
 
 export const DRAWER_WIDTH = 328
 
@@ -27,7 +28,6 @@ function DrawerContent({
   children,
   handleDrawerToggle
 }: DrawerContentProps): ReactElement {
-  
   return (
     <>
       <AppBar position="static" color="default">
@@ -81,6 +81,8 @@ export function Drawer(): ReactElement {
     })
   }
 
+  // console.log({ activeTab })
+
   return smUp ? (
     <Paper
       elevation={0}
@@ -96,13 +98,17 @@ export function Drawer(): ReactElement {
         borderRadius: 0,
         overflowY: 'auto',
         overflowX: 'hidden',
-        zIndex:999,
+        zIndex: 999
       }}
     >
       <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
-        {selected !== 'none' && selectedStep !== undefined && (
-        <Attributes selected={selected} step={selectedStep} />
-        )}
+        {selected !== 'none' &&
+          selectedStep !== undefined &&
+          (activeTab === 2 ? (
+            <BlocksTab />
+          ) : (
+            <Attributes selected={selected} step={selectedStep} />
+          ))}
         {children}
       </DrawerContent>
     </Paper>

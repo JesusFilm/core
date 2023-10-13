@@ -112,6 +112,7 @@ export function Canvas(): ReactElement {
     }
   }
 
+  // console.log({ selectedStep })
   return (
     <Box
       sx={{
@@ -125,14 +126,18 @@ export function Canvas(): ReactElement {
           justifyContent: 'center'
         }
       }}
-      onClick={() => {
+      onClick={(e) => {
+        console.log(e)
+        console.log({ selectedBlock })
         // Prevent losing focus on empty input
+        // console.log('Adding new block')
         if (
           selectedBlock?.__typename === 'TypographyBlock' &&
           selectedBlock.content === ''
         ) {
           return
         }
+
         dispatch({
           type: 'SetSelectedBlockAction',
           block: selectedStep
