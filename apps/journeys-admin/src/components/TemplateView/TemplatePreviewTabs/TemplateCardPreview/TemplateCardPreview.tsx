@@ -112,6 +112,7 @@ export function TemplateCardPreview({
       spaceBetween={smUp ? 28 : 12}
       mousewheel
       style={{
+        overflow: 'visible',
         marginLeft: smUp ? '-32px' : '-44px',
         marginRight: smUp ? '-36px' : '-44px',
         paddingLeft: smUp ? '32px' : '20px',

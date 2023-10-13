@@ -5,10 +5,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  JourneyFields as Journey,
-  JourneyFields_primaryImageBlock as PrimaryImageBlock
-} from '../../../../__generated__/JourneyFields'
+import { JourneyFields_primaryImageBlock as PrimaryImageBlock } from '../../../../__generated__/JourneyFields'
 import { journey } from '../../Editor/ActionDetails/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
@@ -19,8 +16,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('TemplateViewHeader', () => {
-  const featuredJourney = { ...journey, featuredAt: '2023-10-12T08:00:00Z' }
-
   it('should render the social image', () => {
     const primaryImageBlock: PrimaryImageBlock = {
       id: 'image1.id',
@@ -61,7 +56,7 @@ describe('TemplateViewHeader', () => {
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: featuredJourney
+              journey
             }}
           >
             <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
@@ -161,15 +156,11 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should show featured date if journey is featured', () => {
-    const journeyWithoutStrategySlug: Journey = {
-      ...journey,
-      featuredAt: '2023-10-12T08:00:00Z'
-    }
     const { getAllByTestId } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: journeyWithoutStrategySlug,
+            journey,
             variant: 'admin'
           }}
         >

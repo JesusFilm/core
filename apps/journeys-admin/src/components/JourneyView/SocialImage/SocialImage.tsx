@@ -11,8 +11,8 @@ interface SocialImageProps {
 }
 
 export function SocialImage({
-  height = 213,
-  width = 167
+  height = 167,
+  width = 213
 }: SocialImageProps): ReactElement {
   const { journey } = useJourney()
 
