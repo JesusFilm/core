@@ -23,12 +23,42 @@ export function LanguageFilter(): ReactElement {
     variables: { languageId: DEFAULT_LANGUAGE_ID }
   })
 
-  console.log(languageIds)
+  // make into a helper function?
+  function getLanguage(languageId: string): string | undefined {
+    const localName = data?.languages
+      ?.find((language) => language?.id === languageId)
+      ?.name?.find(({ primary }) => !primary)?.value
+    const nativeName = data?.languages
+      ?.find((language) => language?.id === languageId)
+      ?.name?.find(({ primary }) => primary)?.value
 
-  // update to be a function that loops through the languageIds array then renders the langauges
-  const defaultLanguage = data?.languages
-    .find((language) => language.id === DEFAULT_LANGUAGE_ID)
-    ?.name?.find(({ primary }) => primary)?.value
+    return localName ?? nativeName
+  }
+
+  // clean up
+  function getLanguageNames(): string | undefined {
+    const defaultLanguage = getLanguage(DEFAULT_LANGUAGE_ID)
+
+    const multipleLanguages = languageIds.map((languageId) =>
+      getLanguage(languageId)
+    )
+
+    if (multipleLanguages.length > 2) {
+      return `${multipleLanguages[0] ?? ''}, ${multipleLanguages[1] ?? ''}, +${
+        multipleLanguages.length - 2
+      }`
+    }
+    if (multipleLanguages.length === 2) {
+      return `${multipleLanguages[0] ?? ''}, ${multipleLanguages[1] ?? ''}`
+    }
+
+    if (multipleLanguages.length === 1) {
+      return multipleLanguages[0]
+    }
+    return defaultLanguage
+  }
+
+  const languages = getLanguageNames()
 
   return (
     <>
@@ -44,7 +74,7 @@ export function LanguageFilter(): ReactElement {
           }
         }}
       >
-        {defaultLanguage}
+        {languages}
       </Button>
       <LanguageFilterDialog
         open={open}
