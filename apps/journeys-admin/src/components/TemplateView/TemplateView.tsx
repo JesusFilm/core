@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { User } from 'next-firebase-auth'
@@ -35,33 +37,40 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
       }
     }
   })
+
   const relatedJourneys = data?.journeys.filter(({ id }) => id !== journey?.id)
+
   const { data: userData } = useUserRoleQuery()
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
 
   return (
-    <Stack gap={4}>
-      <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
-      <TemplateTags tags={journey?.tags} />
-      <TemplatePreviewTabs />
-      <Typography variant="body2" sx={{ display: { xs: 'block', sm: 'none' } }}>
-        {journey?.description}
-      </Typography>
-      {journey?.strategySlug != null && (
-        <Stack sx={{ pt: { xs: 0, sm: 4 } }}>
+    <Container disableGutters>
+      <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
+        <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
+        <TemplateTags tags={journey?.tags} />
+        <TemplatePreviewTabs />
+        <Typography
+          variant="body2"
+          sx={{ display: { xs: 'block', sm: 'none' } }}
+        >
+          {journey?.description}
+        </Typography>
+        {journey?.strategySlug != null && (
           <StrategySection
             strategySlug={journey?.strategySlug}
             variant="full"
           />
-        </Stack>
-      )}
-      {relatedJourneys != null && relatedJourneys.length > 1 && (
-        <TemplateSection
-          category={t('Related Templates')}
-          journeys={relatedJourneys}
-        />
-      )}
-      <TemplateFooter signedIn={authUser?.id != null} />
-    </Stack>
+        )}
+        {relatedJourneys != null && relatedJourneys.length > 1 && (
+          <Box sx={{ ml: { xs: -6, lg: -9 } }}>
+            <TemplateSection
+              category={t('Related Templates')}
+              journeys={relatedJourneys}
+            />
+          </Box>
+        )}
+        <TemplateFooter signedIn={authUser?.id != null} />
+      </Stack>
+    </Container>
   )
 }
