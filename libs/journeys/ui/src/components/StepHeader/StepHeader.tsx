@@ -67,7 +67,8 @@ export function StepHeader({ sx }: Props): ReactElement {
       >
         <MuiMenuItem disabled>
           <Typography color="text.primary" variant="body2">
-            {journey?.team?.publicTitle !== ''
+            {journey?.team?.publicTitle !== '' &&
+            journey?.team?.publicTitle !== null
               ? journey?.team?.publicTitle
               : journey?.team?.title ?? ''}
           </Typography>
@@ -115,7 +116,8 @@ export function StepHeader({ sx }: Props): ReactElement {
               'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".',
               {
                 teamTitle:
-                  journey?.team?.publicTitle !== ''
+                  journey?.team?.publicTitle !== '' &&
+                  journey?.team?.publicTitle !== null
                     ? journey?.team?.publicTitle
                     : journey?.team?.title ?? ''
               }
