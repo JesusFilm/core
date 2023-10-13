@@ -188,7 +188,7 @@ export const Publisher = {
 export const Complete = {
   ...Template,
   args: {
-    ...Publisher,
+    ...Publisher.args,
     getJourneyMock
   }
 }
