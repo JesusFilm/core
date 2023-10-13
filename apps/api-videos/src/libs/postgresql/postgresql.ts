@@ -14,12 +14,6 @@ import {
   VideoVariantSubtitle
 } from '.prisma/api-videos-client'
 
-import {
-  getArclightMediaComponent,
-  getArclightMediaComponentLanguages,
-  transformArclightMediaComponentToVideo
-} from '../arclight/arclight'
-
 type PrismaVideo = Omit<Video, 'childIds'> & {
   title: VideoTitle[]
   variants: Array<
@@ -402,64 +396,25 @@ export async function handleVideo(
 
   const existingVideo = await getExistingVideo(video)
 
-  if (existingVideo == null) {
-    const delta = jsondiffpatch.diff(existingVideo ?? {}, video) ?? {}
-    if (Object.keys(delta).length > 0) {
-      await prisma.$transaction(
-        async (tx) => {
-          if (video.id == null) return
-          await handlePrismaVideo(video, existingVideo, tx, delta)
+  const delta = jsondiffpatch.diff(existingVideo ?? {}, video) ?? {}
+  if (Object.keys(delta).length > 0) {
+    await prisma.$transaction(
+      async (tx) => {
+        if (video.id == null) return
+        await handlePrismaVideo(video, existingVideo, tx, delta)
 
-          if (delta.variants != null) {
-            await handlePrismaVideoVariants(video, existingVideo, tx, delta)
-          }
-        },
-        {
-          timeout: 6000000
+        if (delta.variants != null) {
+          await handlePrismaVideoVariants(video, existingVideo, tx, delta)
         }
-      )
-    } else {
-      console.log('no changes')
-    }
+      },
+      {
+        timeout: 6000000
+      }
+    )
+  } else {
+    console.log('no changes')
   }
   importedVideos.push(video.id)
-}
-
-export async function handleVideoChildren(
-  parentId: string,
-  childIds: string[],
-  importedVideos: string[],
-  languages,
-  usedVideoSlugs
-): Promise<void> {
-  for (let i = 0; i < childIds.length; i++) {
-    const childId = childIds[i]
-    if (childId != null && !importedVideos.includes(childId)) {
-      const mediaComponent = await getArclightMediaComponent(childId)
-
-      if (mediaComponent == null) continue
-      console.log(
-        `fetching child mediaComponent:`,
-        mediaComponent.mediaComponentId
-      )
-      const mediaComponentLanguages = await getArclightMediaComponentLanguages(
-        mediaComponent.mediaComponentId
-      )
-
-      const child = transformArclightMediaComponentToVideo(
-        mediaComponent,
-        mediaComponentLanguages,
-        languages,
-        usedVideoSlugs
-      )
-
-      await handleVideo(child, importedVideos)
-    }
-    await prisma.video.update({
-      where: { id: childId },
-      data: { parent: { connect: { id: parentId } } }
-    })
-  }
 }
 
 export async function getVideoIdsAndSlugs(): Promise<{
@@ -480,9 +435,22 @@ export async function getVideoIdsAndSlugs(): Promise<{
   return { slugs, ids }
 }
 
-export async function updateParentChild(parentId: string, childId: string) {
+export async function updateParentChild(
+  parentId: string,
+  childId: string
+): Promise<void> {
   await prisma.video.update({
     where: { id: childId },
     data: { parent: { connect: { id: parentId } } }
+  })
+}
+
+export async function updateChildIds(
+  id: string,
+  childIds: string[]
+): Promise<void> {
+  await prisma.video.update({
+    where: { id },
+    data: { childIds }
   })
 }

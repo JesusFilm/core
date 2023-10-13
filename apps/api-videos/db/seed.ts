@@ -17,6 +17,7 @@ import {
 import {
   getVideoIdsAndSlugs,
   handleVideo,
+  updateChildIds,
   updateParentChild
 } from '../src/libs/postgresql'
 
@@ -167,29 +168,34 @@ export async function handleArclightMediaComponent(
   if (mediaComponent.mediaComponentId === lastId) resumed = true
 
   try {
-    if (existingVideoIds?.includes(mediaComponent.mediaComponentId))
-      return { resumed, errors }
+    if (!existingVideoIds?.includes(mediaComponent.mediaComponentId)) {
+      if (
+        !importedVideos.includes(mediaComponent.mediaComponentId) &&
+        resumed
+      ) {
+        const video = await transformMediaComponentToVideo(
+          mediaComponent,
+          languages,
+          usedVideoSlugs
+        )
 
-    if (!importedVideos.includes(mediaComponent.mediaComponentId) && resumed) {
-      const video = await transformMediaComponentToVideo(
-        mediaComponent,
-        languages,
-        usedVideoSlugs
-      )
-
-      if (replace) {
-        await prisma.video.delete({
-          where: { id: video.id }
-        })
+        if (replace) {
+          await prisma.video.delete({
+            where: { id: video.id }
+          })
+        }
+        await handleVideo(video, importedVideos)
+      } else {
+        console.log(`${mediaComponent.mediaComponentId} already imported`)
       }
-      await handleVideo(video, importedVideos)
-    } else {
-      console.log('already imported')
     }
 
     const childIds = await getArclightMediaComponentLinks(
       mediaComponent.mediaComponentId
     )
+
+    if (childIds.length > 0)
+      await updateChildIds(mediaComponent.mediaComponentId, childIds)
 
     for (let i = 0; i < childIds.length; i++) {
       const child = await getArclightMediaComponent(childIds[i])
