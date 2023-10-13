@@ -29,7 +29,7 @@ export function TemplateViewHeader({
 
   return (
     <Stack>
-      {journey?.featuredAt != null && (
+      {journey?.createdAt != null && (
         <Typography
           data-testId="featuredAtTemplatePreviewPage"
           variant="overline"
@@ -40,13 +40,13 @@ export function TemplateViewHeader({
           }}
           noWrap
         >
-          {intlFormat(parseISO(journey?.featuredAt), {
+          {intlFormat(parseISO(journey?.createdAt), {
             month: 'long',
             year: 'numeric'
           })}
         </Typography>
       )}
-      <Stack gap={4} direction="row">
+      <Stack direction="row" sx={{ gap: { xs: 4, sm: 6 } }}>
         <Box
           sx={{
             flexShrink: 0
@@ -61,7 +61,7 @@ export function TemplateViewHeader({
             height: { xs: 107, sm: 244 }
           }}
         >
-          {journey?.featuredAt != null && (
+          {journey?.createdAt != null && (
             <Typography
               variant="overline"
               sx={{
@@ -71,13 +71,15 @@ export function TemplateViewHeader({
               data-testId="featuredAtTemplatePreviewPage"
               noWrap
             >
-              {intlFormat(parseISO(journey?.featuredAt), {
+              {intlFormat(parseISO(journey?.createdAt), {
                 month: 'long',
                 year: 'numeric'
               })}
             </Typography>
           )}
-          <Typography variant={smUp ? 'h1' : 'h6'}>{journey?.title}</Typography>
+          <Typography variant={smUp ? 'h1' : 'h6'} sx={{ pb: 4 }}>
+            {journey?.title}
+          </Typography>
           <Box
             sx={{
               maxHeight: '144px',
@@ -97,6 +99,7 @@ export function TemplateViewHeader({
             sx={{
               display: { xs: 'none', sm: 'flex' },
               gap: 4,
+              pt: 4,
               marginTop: 'auto'
             }}
           >

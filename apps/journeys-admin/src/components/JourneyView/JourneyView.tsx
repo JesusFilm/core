@@ -73,7 +73,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
           }}
         >
           {journeyType === 'Template' && <DatePreview />}
-          <TemplateSettings />
+          <TemplateSettings isPublisher={isPublisher} />
         </Stack>
       </Box>
       <Properties journeyType={journeyType} isPublisher={isPublisher} />
