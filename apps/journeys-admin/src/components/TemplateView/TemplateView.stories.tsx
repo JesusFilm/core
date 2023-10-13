@@ -50,6 +50,24 @@ const primaryImageBlock: PrimaryImageBlock = {
   parentOrder: 1
 }
 
+const getJourneyMockEmpty: MockedResponse<GetJourneys> = {
+  request: {
+    query: GET_JOURNEYS,
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true,
+        tagIds: ['tag.id']
+      }
+    }
+  },
+  result: {
+    data: {
+      journeys: []
+    }
+  }
+}
+
 const getJourneyMock: MockedResponse<GetJourneys> = {
   request: {
     query: GET_JOURNEYS,
@@ -104,7 +122,7 @@ const journey = {
   primaryImageBlock
 }
 
-const getUserRoleMock: MockedResponse<GetUserRole> = {
+const getUserRoleMockEmpty: MockedResponse<GetUserRole> = {
   request: {
     query: GET_USER_ROLE
   },
@@ -118,7 +136,7 @@ const getUserRoleMock: MockedResponse<GetUserRole> = {
     }
   }
 }
-const getUserRoleMockPublisher: MockedResponse<GetUserRole> = {
+const getUserRoleMock: MockedResponse<GetUserRole> = {
   request: {
     query: GET_USER_ROLE
   },
@@ -154,8 +172,8 @@ export const Default = {
   ...Template,
   args: {
     authUser: 'user.id',
-    getJourneyMock,
-    getUserRoleMock
+    getJourneyMock: getJourneyMockEmpty,
+    getUserRoleMock: getUserRoleMockEmpty
   }
 }
 
@@ -163,7 +181,15 @@ export const Publisher = {
   ...Template,
   args: {
     ...Default.args,
-    getUserRoleMock: getUserRoleMockPublisher
+    getUserRoleMock
+  }
+}
+
+export const Complete = {
+  ...Template,
+  args: {
+    ...Publisher,
+    getJourneyMock
   }
 }
 
