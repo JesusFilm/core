@@ -1,484 +1,60 @@
-import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { MockedProvider } from '@apollo/client/testing'
+import { render, waitFor } from '@testing-library/react'
 
-export const tags: Tag[] = [
-  {
-    __typename: 'Tag',
-    id: 'tag1.id',
-    parentId: '8b7bd2e6-6eb5-4b48-a94f-4506e3b7b01d',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag1',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
+import { GET_TAGS } from '../../../libs/useTagsQuery/useTagsQuery'
+
+import { parentTags, tags } from './data'
+import { TemplateTags } from './TemplateTags'
+
+describe('TemplateTags', () => {
+  it('should hide template tags if there are no tags', () => {
+    const { queryByTestId } = render(
+      <MockedProvider>
+        <TemplateTags tags={[]} />
+      </MockedProvider>
+    )
+    expect(queryByTestId('TemplateTags')).not.toBeInTheDocument()
+  })
+
+  it('should show tags', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        tags: [...parentTags, ...tags]
       }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag2.id',
-    parentId: '36af9642-7176-4e94-b61a-95d0b57ad0bc',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag2',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag3.id',
-    parentId: '1673bb82-b776-446f-a6f6-d69d72ac2be6',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag3',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag4.id',
-    parentId: '85471d1f-edc5-4477-a9cd-30af697749c4',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag4',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag5.id',
-    parentId: '9b45707a-123a-4331-8722-65b010532531',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag5',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag6.id',
-    parentId: 'otherTag.id',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag6',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag1.id',
-    parentId: '8b7bd2e6-6eb5-4b48-a94f-4506e3b7b01d',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag1',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag2.id',
-    parentId: '36af9642-7176-4e94-b61a-95d0b57ad0bc',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag2',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag3.id',
-    parentId: '1673bb82-b776-446f-a6f6-d69d72ac2be6',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag3',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag4.id',
-    parentId: '85471d1f-edc5-4477-a9cd-30af697749c4',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag4',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag5.id',
-    parentId: '9b45707a-123a-4331-8722-65b010532531',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag5',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag6.id',
-    parentId: 'otherTag.id',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag6',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag1.id',
-    parentId: '8b7bd2e6-6eb5-4b48-a94f-4506e3b7b01d',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag1',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag2.id',
-    parentId: '36af9642-7176-4e94-b61a-95d0b57ad0bc',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag2',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag3.id',
-    parentId: '1673bb82-b776-446f-a6f6-d69d72ac2be6',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag3',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag4.id',
-    parentId: '85471d1f-edc5-4477-a9cd-30af697749c4',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag4',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag5.id',
-    parentId: '9b45707a-123a-4331-8722-65b010532531',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag5',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag6.id',
-    parentId: 'otherTag.id',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag6',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag1.id',
-    parentId: '8b7bd2e6-6eb5-4b48-a94f-4506e3b7b01d',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag1',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag2.id',
-    parentId: '36af9642-7176-4e94-b61a-95d0b57ad0bc',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag2',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag3.id',
-    parentId: '1673bb82-b776-446f-a6f6-d69d72ac2be6',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag3',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag4.id',
-    parentId: '85471d1f-edc5-4477-a9cd-30af697749c4',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag4',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag5.id',
-    parentId: '9b45707a-123a-4331-8722-65b010532531',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag5',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag6.id',
-    parentId: 'otherTag.id',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag6',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag1.id',
-    parentId: '8b7bd2e6-6eb5-4b48-a94f-4506e3b7b01d',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag1',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag2.id',
-    parentId: '36af9642-7176-4e94-b61a-95d0b57ad0bc',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag2',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag3.id',
-    parentId: '1673bb82-b776-446f-a6f6-d69d72ac2be6',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag3',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag4.id',
-    parentId: '85471d1f-edc5-4477-a9cd-30af697749c4',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag4',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag5.id',
-    parentId: '9b45707a-123a-4331-8722-65b010532531',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag5',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  },
-  {
-    __typename: 'Tag',
-    id: 'tag6.id',
-    parentId: 'otherTag.id',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'tag6',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: 'en'
-        }
-      }
-    ]
-  }
-]
+    }))
+
+    const { getByTestId, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_TAGS
+            },
+            result
+          }
+        ]}
+      >
+        <TemplateTags tags={tags} />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(getByText('Topic sub-tag')).toBeInTheDocument()
+    expect(getByTestId('Hash2Icon')).toBeInTheDocument()
+
+    expect(getByText('Felt Needs sub-tag')).toBeInTheDocument()
+    expect(getByTestId('SmileyNeutralIcon')).toBeInTheDocument()
+
+    expect(getByText('Holidays sub-tag')).toBeInTheDocument()
+    expect(getByTestId('Calendar4Icon')).toBeInTheDocument()
+
+    expect(getByText('Audience sub-tag')).toBeInTheDocument()
+    expect(getByTestId('UsersProfiles2Icon')).toBeInTheDocument()
+
+    expect(getByText('Genre sub-tag')).toBeInTheDocument()
+    expect(getByTestId('MediaStrip1Icon')).toBeInTheDocument()
+
+    expect(getByText('Other Tag')).toBeInTheDocument()
+    expect(getByTestId('Grid1Icon')).toBeInTheDocument()
+  })
+})
