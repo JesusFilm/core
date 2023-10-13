@@ -17,10 +17,12 @@ interface Contents {
 
 interface TemplateSectionsProps {
   tagIds?: string[]
+  languageIds?: string[]
 }
 
 export function TemplateSections({
-  tagIds
+  tagIds,
+  languageIds
 }: TemplateSectionsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [contents, setContents] = useState<Contents>({})
@@ -34,19 +36,29 @@ export function TemplateSections({
       }
     },
     onCompleted(data) {
+      let filteredJourneys = data.journeys
+
+      if (languageIds != null && languageIds.length > 0) {
+        filteredJourneys = data.journeys.filter((journey) =>
+          languageIds.includes(journey.language.id)
+        )
+      }
+
       const collection =
         tagIds == null
           ? [
-              ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
+              ...filteredJourneys.filter(
+                ({ featuredAt }) => featuredAt != null
+              ),
               ...take(
-                data.journeys.filter(({ featuredAt }) => featuredAt == null),
+                filteredJourneys.filter(({ featuredAt }) => featuredAt == null),
                 10
               )
             ]
-          : data.journeys
+          : filteredJourneys
       setCollection(collection)
       const contents = {}
-      data.journeys.forEach((journey) => {
+      filteredJourneys.forEach((journey) => {
         journey.tags.forEach((tag) => {
           if (contents[tag.id] == null)
             contents[tag.id] = {
