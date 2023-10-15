@@ -6,6 +6,11 @@ import { GET_TAGS } from '../../../libs/useTagsQuery/useTagsQuery'
 import { parentTags, tags } from './data'
 import { TemplateTags } from './TemplateTags'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 describe('TemplateTags', () => {
   it('should hide template tags if there are no tags', () => {
     const { queryByTestId } = render(
