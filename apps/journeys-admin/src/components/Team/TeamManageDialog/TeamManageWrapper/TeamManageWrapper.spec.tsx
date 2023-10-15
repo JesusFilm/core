@@ -81,6 +81,7 @@ describe('TeamMembersList', () => {
           {
             id: 'teamId',
             title: 'Team Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }

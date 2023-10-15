@@ -629,6 +629,7 @@ export interface JourneyFields_team {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
 }
 
 export interface JourneyFields_tags_name_language {
