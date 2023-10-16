@@ -89,22 +89,6 @@ export function LanguageFilterDialog({
               value={values.language}
               languages={languages}
               loading={loading}
-              // renderOption={(props, option, { selected }) => {
-              //   const { localName, nativeName } = option
-              //   return (
-              //     <li {...props}>
-              //       <Checkbox sx={{ mr: 2 }} checked={selected} />
-              //       <Stack>
-              //         <Typography>{localName ?? nativeName}</Typography>
-              //         {localName != null && nativeName != null && (
-              //           <Typography variant="body2" color="text.secondary">
-              //             {nativeName}
-              //           </Typography>
-              //         )}
-              //       </Stack>
-              //     </li>
-              //   )
-              // }}
             />
           </Form>
         </Dialog>

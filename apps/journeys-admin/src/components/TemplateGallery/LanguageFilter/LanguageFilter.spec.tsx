@@ -69,7 +69,7 @@ describe('LanguageFilter', () => {
   it('should open the langauge filter dialog on button click', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[mock]}>
-        <LanguageFilter />
+        <LanguageFilter languageId="529" onChange={jest.fn} />
       </MockedProvider>
     )
     await waitFor(() =>

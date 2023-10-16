@@ -36,7 +36,6 @@ export function TemplateGallery(): ReactElement {
       </Stack>
       <TemplateSections
         tagIds={query.tagIds != null ? castArray(query.tagIds) : undefined}
-        languageId={languageId}
       />
     </Stack>
   )
