@@ -65,4 +65,14 @@ describe('TemplateTags', () => {
     expect(getByText('Other Tag')).toBeInTheDocument()
     expect(getByTestId('Grid1Icon')).toBeInTheDocument()
   })
+
+  it('should loading tags', () => {
+    const { getAllByTestId } = render(
+      <MockedProvider>
+        <TemplateTags />
+      </MockedProvider>
+    )
+
+    expect(getAllByTestId('TagIcon')).toHaveLength(3)
+  })
 })
