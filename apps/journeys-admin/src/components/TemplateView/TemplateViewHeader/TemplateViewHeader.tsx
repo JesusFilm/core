@@ -69,28 +69,29 @@ export function TemplateViewHeader({
             height: { xs: 107, sm: 244 }
           }}
         >
-          <Typography
-            variant="overline"
-            sx={{
-              color: 'secondary.light',
-              display: { xs: 'none', sm: 'block' }
-            }}
-            data-testId="featuredAtTemplatePreviewPage"
-            noWrap
-          >
-            {journey?.createdAt != null ? (
-              intlFormat(parseISO(journey?.createdAt), {
-                month: 'long',
-                year: 'numeric'
-              })
-            ) : (
-              <Skeleton
-                data-testid="header-skeleton"
-                sx={{ width: '35%', maxWidth: 150 }}
-              />
-            )}
-          </Typography>
-
+          <Box sx={{ height: 16, display: { xs: 'none', sm: 'block' } }}>
+            <Typography
+              variant="overline"
+              sx={{
+                color: 'secondary.light',
+                display: { xs: 'none', sm: 'block' }
+              }}
+              data-testId="featuredAtTemplatePreviewPage"
+              noWrap
+            >
+              {journey?.createdAt != null ? (
+                intlFormat(parseISO(journey?.createdAt), {
+                  month: 'long',
+                  year: 'numeric'
+                })
+              ) : (
+                <Skeleton
+                  data-testid="header-skeleton"
+                  sx={{ width: '35%', maxWidth: 150 }}
+                />
+              )}
+            </Typography>
+          </Box>
           <Typography variant={smUp ? 'h1' : 'h6'} sx={{ pb: 4 }}>
             {journey?.title != null ? (
               journey?.title
