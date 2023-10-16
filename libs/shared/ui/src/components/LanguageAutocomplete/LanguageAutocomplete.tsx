@@ -24,8 +24,10 @@ export interface LanguageOption {
 }
 
 export interface LanguageAutocompleteProps {
-  onChange: (value?: LanguageOption) => void
-  value?: LanguageOption
+  onChange: (value?: LanguageOption | readonly LanguageOption[]) => void
+  value?: LanguageOption | LanguageOption[]
+  multipleSelect?: boolean
+  limit?: number
   languages?: Language[]
   loading: boolean
   helperText?: string
@@ -36,6 +38,8 @@ export interface LanguageAutocompleteProps {
 export function LanguageAutocomplete({
   onChange: handleChange,
   value,
+  multipleSelect = false,
+  limit,
   languages,
   loading,
   renderInput,
@@ -108,9 +112,17 @@ export function LanguageAutocomplete({
 
   return (
     <Autocomplete
+      multiple={multipleSelect}
+      disableCloseOnSelect={multipleSelect}
+      limitTags={limit}
       disableClearable
-      value={value}
-      isOptionEqualToValue={(option, value) => option.id === value.id}
+      value={multipleSelect ? undefined : value}
+      isOptionEqualToValue={(option, value) => {
+        if (multipleSelect && Array.isArray(value)) {
+          return value.some((val) => val.id === option.id)
+        }
+        return option.id === value.id
+      }}
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
       }

@@ -23,7 +23,6 @@ export function LanguageFilter(): ReactElement {
     variables: { languageId: DEFAULT_LANGUAGE_ID }
   })
 
-  // make into a helper function?
   function getLanguage(languageId: string): string | undefined {
     const localName = data?.languages
       ?.find((language) => language?.id === languageId)
@@ -35,27 +34,18 @@ export function LanguageFilter(): ReactElement {
     return localName ?? nativeName
   }
 
-  // clean up
   function getLanguageNames(): string | undefined {
     const defaultLanguage = getLanguage(DEFAULT_LANGUAGE_ID)
-
-    const multipleLanguages = languageIds.map((languageId) =>
-      getLanguage(languageId)
-    )
+    const multipleLanguages = languageIds.map(getLanguage)
 
     if (multipleLanguages.length > 2) {
-      return `${multipleLanguages[0] ?? ''}, ${multipleLanguages[1] ?? ''}, +${
-        multipleLanguages.length - 2
-      }`
-    }
-    if (multipleLanguages.length === 2) {
-      return `${multipleLanguages[0] ?? ''}, ${multipleLanguages[1] ?? ''}`
+      const firstLanguages = multipleLanguages.slice(0, 2).join(', ')
+      return `${firstLanguages}, +${multipleLanguages.length - 2}`
+    } else if (multipleLanguages.length === 2) {
+      return multipleLanguages.join(', ')
     }
 
-    if (multipleLanguages.length === 1) {
-      return multipleLanguages[0]
-    }
-    return defaultLanguage
+    return multipleLanguages[0] ?? defaultLanguage
   }
 
   const languages = getLanguageNames()

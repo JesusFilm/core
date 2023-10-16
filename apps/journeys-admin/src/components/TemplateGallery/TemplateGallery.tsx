@@ -21,7 +21,12 @@ export function TemplateGallery(): ReactElement {
         justifyContent="space-between"
         sx={{ px: { xs: 6, lg: 9 } }}
       >
-        <Typography variant="h2">{t('Journey Templates')}</Typography>
+        <Typography variant="h2" sx={{ display: { xs: 'none', lg: 'block' } }}>
+          {t('Journey Templates')}
+        </Typography>
+        <Typography variant="h2" sx={{ display: { xs: 'block', lg: 'none' } }}>
+          {t('Templates')}
+        </Typography>
         <LanguageFilter />
       </Stack>
       <TemplateSections

@@ -1,19 +1,17 @@
+import Checkbox from '@mui/material/Checkbox'
+import Typography from '@mui/material/Typography'
+import Stack from '@mui/system/Stack'
 import { Form, Formik, FormikValues } from 'formik'
+import castArray from 'lodash/castArray'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
-
-interface Language {
-  id: string
-  name: Translation[]
-}
-
-interface Translation {
-  value: string
-  primary: boolean
-}
+import type {
+  Language,
+  LanguageOption
+} from '@core/shared/ui/LanguageAutocomplete'
 
 interface LangaugeFilterDialogProps {
   open: boolean
@@ -22,11 +20,7 @@ interface LangaugeFilterDialogProps {
   loading
 }
 
-export interface LanguageOption {
-  id: string
-  localName?: string
-  nativeName?: string
-}
+const DEFAULT_LANGUAGE_ID = '529'
 
 export function LanguageFilterDialog({
   open,
@@ -35,12 +29,14 @@ export function LanguageFilterDialog({
   loading
 }: LangaugeFilterDialogProps): ReactElement {
   const router = useRouter()
-  // update language autocomplete to design
-
   const handleSubmit = (values: FormikValues): void => {
+    const languageOptions = castArray(values.language)
+    const languageIds = languageOptions.map(
+      (languageOption) => languageOption.id
+    )
     void router.push({
       pathname: '/templates',
-      query: { languageIds: [values.language.id] }
+      query: { languageIds }
     })
     onClose()
   }
@@ -69,7 +65,7 @@ export function LanguageFilterDialog({
         () =>
           resetForm({
             values: {
-              language: getLanguage('529')
+              language: getLanguage(DEFAULT_LANGUAGE_ID)
             }
           }),
         500
@@ -80,7 +76,8 @@ export function LanguageFilterDialog({
   return (
     <Formik
       initialValues={{
-        language: languages != null ? getLanguage('529') : undefined
+        language:
+          languages != null ? getLanguage(DEFAULT_LANGUAGE_ID) : undefined
       }}
       onSubmit={handleSubmit}
     >
@@ -100,8 +97,24 @@ export function LanguageFilterDialog({
               value={values.language}
               languages={languages}
               loading={loading}
-              // add renderOption
-              // ability to choose multiple things
+              multipleSelect
+              limit={2}
+              renderOption={(props, option, { selected }) => {
+                const { localName, nativeName } = option
+                return (
+                  <li {...props}>
+                    <Checkbox sx={{ mr: 2 }} checked={selected} />
+                    <Stack>
+                      <Typography>{localName ?? nativeName}</Typography>
+                      {localName != null && nativeName != null && (
+                        <Typography variant="body2" color="text.secondary">
+                          {nativeName}
+                        </Typography>
+                      )}
+                    </Stack>
+                  </li>
+                )
+              }}
             />
           </Form>
         </Dialog>

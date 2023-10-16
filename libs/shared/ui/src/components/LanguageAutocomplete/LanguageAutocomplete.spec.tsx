@@ -144,4 +144,52 @@ describe('LanguageAutocomplete', () => {
 
     expect(getAllByTestId('test-option')).toHaveLength(3)
   })
+
+  it('allows multiple selections when multipleSelect is true', () => {
+    const handleChange = jest.fn()
+    const { getByRole } = render(
+      <LanguageAutocomplete
+        onChange={handleChange}
+        languages={languages}
+        multipleSelect
+        loading={false}
+      />
+    )
+
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'French Français' }))
+
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'English' }))
+
+    expect(handleChange).toHaveBeenCalledWith([
+      { id: '496', localName: 'French', nativeName: 'Français' },
+      { id: '529', localName: undefined, nativeName: 'English' }
+    ])
+  })
+
+  it('allows a single selection when multipleSelect is false or undefined', () => {
+    const handleChange = jest.fn()
+    const { getByRole } = render(
+      <LanguageAutocomplete
+        onChange={handleChange}
+        languages={languages}
+        loading={false}
+      />
+    )
+
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'French Français' }))
+
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'English' }))
+
+    expect(handleChange).toHaveBeenCalledWith({
+      id: '529',
+      localName: undefined,
+      nativeName: 'English'
+    })
+  })
 })
