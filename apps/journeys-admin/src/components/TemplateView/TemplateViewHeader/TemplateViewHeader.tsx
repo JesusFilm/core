@@ -65,8 +65,7 @@ export function TemplateViewHeader({
           direction="column"
           sx={{
             width: '100%',
-            flexShrink: 1,
-            height: { xs: 107, sm: 244 }
+            flexShrink: 1
           }}
         >
           <Box sx={{ height: 16, display: { xs: 'none', sm: 'block' } }}>
@@ -105,28 +104,22 @@ export function TemplateViewHeader({
               />
             )}
           </Typography>
-          <Box
+          <Typography
+            variant="body1"
             sx={{
-              maxHeight: '144px',
-              overflow: 'auto'
+              display: { xs: 'none', sm: 'block' }
             }}
           >
-            <Typography
-              variant="body1"
-              sx={{
-                display: { xs: 'none', sm: 'block' }
-              }}
-            >
-              {journey?.description != null ? (
-                journey.description
-              ) : (
-                <>
-                  <Skeleton data-testid="header-skeleton" width="100%" />
-                  <Skeleton data-testid="header-skeleton" width="100%" />
-                </>
-              )}
-            </Typography>
-          </Box>
+            {journey?.description != null ? (
+              journey.description
+            ) : (
+              <>
+                <Skeleton data-testid="header-skeleton" width="100%" />
+                <Skeleton data-testid="header-skeleton" width="100%" />
+              </>
+            )}
+          </Typography>
+
           <Box
             sx={{
               display: { xs: 'none', sm: 'flex' },
