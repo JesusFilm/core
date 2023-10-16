@@ -1,21 +1,16 @@
 import { useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
-import type { Language } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { GET_LANGUAGES } from '../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
 
-const DynamicLanguageFilterDialog = dynamic<{
-  open: boolean
-  onClose: () => void
-  languages?: Language[]
-  loading: boolean
-}>(
+import type { LanguageFilterDialogProps } from './LanguageFilterDialog'
+
+const DynamicLanguageFilterDialog = dynamic<LanguageFilterDialogProps>(
   async () =>
     await import(
       /* webpackChunkName: "AudioLanguageDialog" */
@@ -23,14 +18,19 @@ const DynamicLanguageFilterDialog = dynamic<{
     ).then((mod) => mod.LanguageFilterDialog)
 )
 
-const DEFAULT_LANGUAGE_ID = '529'
+interface LanguageFilterProps {
+  languageId: string
+  onChange: (value) => void
+}
 
-export function LanguageFilter(): ReactElement {
-  const { query } = useRouter()
+export function LanguageFilter({
+  languageId,
+  onChange
+}: LanguageFilterProps): ReactElement {
   const [open, setOpen] = useState(false)
 
   const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES, {
-    variables: { languageId: DEFAULT_LANGUAGE_ID }
+    variables: { languageId }
   })
 
   function getLanguage(languageId: string): string | undefined {
@@ -43,11 +43,6 @@ export function LanguageFilter(): ReactElement {
 
     return localName ?? nativeName
   }
-
-  const languageId =
-    query.languageId != null && !Array.isArray(query.languageId)
-      ? query.languageId
-      : DEFAULT_LANGUAGE_ID
 
   const language = getLanguage(languageId)
 
@@ -71,6 +66,7 @@ export function LanguageFilter(): ReactElement {
         <DynamicLanguageFilterDialog
           open={open}
           onClose={() => setOpen(false)}
+          onChange={onChange}
           languages={data?.languages}
           loading={loading}
         />

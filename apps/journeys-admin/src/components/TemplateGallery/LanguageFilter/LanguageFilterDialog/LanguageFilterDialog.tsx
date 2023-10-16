@@ -1,8 +1,7 @@
-import Checkbox from '@mui/material/Checkbox'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/system/Stack'
+// import Checkbox from '@mui/material/Checkbox'
+// import Typography from '@mui/material/Typography'
+// import Stack from '@mui/system/Stack'
 import { Form, Formik, FormikValues } from 'formik'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -12,9 +11,10 @@ import type {
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
-interface LangaugeFilterDialogProps {
+export interface LanguageFilterDialogProps {
   open: boolean
   onClose: () => void
+  onChange: (value) => void
   languages?: Language[]
   loading: boolean
 }
@@ -24,15 +24,12 @@ const DEFAULT_LANGUAGE_ID = '529'
 export function LanguageFilterDialog({
   open,
   onClose,
+  onChange,
   languages,
   loading
-}: LangaugeFilterDialogProps): ReactElement {
-  const router = useRouter()
+}: LanguageFilterDialogProps): ReactElement {
   const handleSubmit = (values: FormikValues): void => {
-    void router.push({
-      pathname: '/templates',
-      query: { languageId: values.language.id }
-    })
+    onChange(values.language.id)
     onClose()
   }
 
@@ -92,22 +89,22 @@ export function LanguageFilterDialog({
               value={values.language}
               languages={languages}
               loading={loading}
-              renderOption={(props, option, { selected }) => {
-                const { localName, nativeName } = option
-                return (
-                  <li {...props}>
-                    <Checkbox sx={{ mr: 2 }} checked={selected} />
-                    <Stack>
-                      <Typography>{localName ?? nativeName}</Typography>
-                      {localName != null && nativeName != null && (
-                        <Typography variant="body2" color="text.secondary">
-                          {nativeName}
-                        </Typography>
-                      )}
-                    </Stack>
-                  </li>
-                )
-              }}
+              // renderOption={(props, option, { selected }) => {
+              //   const { localName, nativeName } = option
+              //   return (
+              //     <li {...props}>
+              //       <Checkbox sx={{ mr: 2 }} checked={selected} />
+              //       <Stack>
+              //         <Typography>{localName ?? nativeName}</Typography>
+              //         {localName != null && nativeName != null && (
+              //           <Typography variant="body2" color="text.secondary">
+              //             {nativeName}
+              //           </Typography>
+              //         )}
+              //       </Stack>
+              //     </li>
+              //   )
+              // }}
             />
           </Form>
         </Dialog>

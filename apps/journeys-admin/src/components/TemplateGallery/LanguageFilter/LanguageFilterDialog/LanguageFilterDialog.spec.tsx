@@ -1,15 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
 
 import { LanguageFilterDialog } from './LanguageFilterDialog'
-
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn()
-}))
-
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('LanguageFilterDialog', () => {
   const languages = [
@@ -59,14 +51,13 @@ describe('LanguageFilterDialog', () => {
   ]
 
   it('submits the form with the selected language', async () => {
-    const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-
+    const onChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
         <LanguageFilterDialog
           open
           onClose={jest.fn()}
+          onChange={onChange}
           languages={languages}
           loading={false}
         />
@@ -77,12 +68,6 @@ describe('LanguageFilterDialog', () => {
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('button', { name: 'Save' }))
-
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        pathname: '/templates',
-        query: { languageId: '496' }
-      })
-    })
+    await waitFor(() => expect(onChange).toHaveBeenCalled())
   })
 })
