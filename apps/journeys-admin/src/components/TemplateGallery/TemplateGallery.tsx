@@ -28,6 +28,7 @@ export function TemplateGallery(): ReactElement {
       <Stack
         direction="row"
         justifyContent="space-between"
+        alignItems="center"
         sx={{
           pb: { xs: 6, md: 9 }
         }}
@@ -76,6 +77,7 @@ export function TemplateGallery(): ReactElement {
         tagIds={
           selectedTags.length > 0 ? selectedTags.map(({ id }) => id) : undefined
         }
+        languageId={languageId}
       />
     </Container>
   )

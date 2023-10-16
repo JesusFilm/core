@@ -59,6 +59,7 @@ describe('LanguageFilterDialog', () => {
           onClose={jest.fn()}
           onChange={onChange}
           languages={languages}
+          languageId="529"
           loading={false}
         />
       </MockedProvider>

@@ -3,7 +3,7 @@ import Button from '@mui/material/Button'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { GET_LANGUAGES } from '../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
@@ -29,9 +29,7 @@ export function LanguageFilter({
 }: LanguageFilterProps): ReactElement {
   const [open, setOpen] = useState(false)
 
-  const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES, {
-    variables: { languageId }
-  })
+  const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES)
 
   function getLanguage(languageId: string): string | undefined {
     const localName = data?.languages
@@ -49,15 +47,16 @@ export function LanguageFilter({
   return (
     <>
       <Button
-        data-testid="LanguageFilterButton"
         variant="outlined"
         onClick={() => setOpen(true)}
-        startIcon={<Globe1Icon />}
+        startIcon={<AddSquare4Icon />}
         sx={{
           border: 'none',
           '&:hover': {
             border: 'none'
-          }
+          },
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis'
         }}
       >
         {language}
@@ -68,6 +67,7 @@ export function LanguageFilter({
           onClose={() => setOpen(false)}
           onChange={onChange}
           languages={data?.languages}
+          languageId={languageId}
           loading={loading}
         />
       )}

@@ -1,6 +1,3 @@
-// import Checkbox from '@mui/material/Checkbox'
-// import Typography from '@mui/material/Typography'
-// import Stack from '@mui/system/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { ReactElement } from 'react'
 
@@ -16,16 +13,16 @@ export interface LanguageFilterDialogProps {
   onClose: () => void
   onChange: (value) => void
   languages?: Language[]
+  languageId: string
   loading: boolean
 }
-
-const DEFAULT_LANGUAGE_ID = '529'
 
 export function LanguageFilterDialog({
   open,
   onClose,
   onChange,
   languages,
+  languageId,
   loading
 }: LanguageFilterDialogProps): ReactElement {
   const handleSubmit = (values: FormikValues): void => {
@@ -57,7 +54,7 @@ export function LanguageFilterDialog({
         () =>
           resetForm({
             values: {
-              language: getLanguage(DEFAULT_LANGUAGE_ID)
+              language: getLanguage(languageId)
             }
           }),
         500
@@ -68,8 +65,7 @@ export function LanguageFilterDialog({
   return (
     <Formik
       initialValues={{
-        language:
-          languages != null ? getLanguage(DEFAULT_LANGUAGE_ID) : undefined
+        language: languages != null ? getLanguage(languageId) : undefined
       }}
       onSubmit={handleSubmit}
     >
