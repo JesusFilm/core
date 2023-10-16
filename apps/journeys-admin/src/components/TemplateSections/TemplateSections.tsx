@@ -17,14 +17,18 @@ interface Contents {
 
 interface TemplateSectionsProps {
   tagIds?: string[]
+  languageId?: string
 }
 
 export function TemplateSections({
-  tagIds
+  tagIds,
+  languageId
 }: TemplateSectionsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
+  const [languageMatch, setLanguageMatch] = useState<boolean>()
+
   const { data, loading } = useJourneysQuery({
     variables: {
       where: {
@@ -34,19 +38,29 @@ export function TemplateSections({
       }
     },
     onCompleted(data) {
+      let filteredJourneys = data.journeys
+      if (languageId != null) {
+        filteredJourneys = data.journeys.filter((journey) =>
+          languageId.includes(journey.language.id)
+        )
+        setLanguageMatch(false)
+      }
+
       const collection =
         tagIds == null
           ? [
-              ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
+              ...filteredJourneys.filter(
+                ({ featuredAt }) => featuredAt != null
+              ),
               ...take(
-                data.journeys.filter(({ featuredAt }) => featuredAt == null),
+                filteredJourneys.filter(({ featuredAt }) => featuredAt == null),
                 10
               )
             ]
-          : data.journeys
+          : filteredJourneys
       setCollection(collection)
       const contents = {}
-      data.journeys.forEach((journey) => {
+      filteredJourneys.forEach((journey) => {
         journey.tags.forEach((tag) => {
           if (contents[tag.id] == null)
             contents[tag.id] = {
@@ -71,31 +85,34 @@ export function TemplateSections({
       {map(
         contents,
         ({ category, journeys }, key) =>
-          ((tagIds == null && journeys.length >= 5) ||
+          ((languageId != null && journeys.length >= 0) ||
+            (tagIds == null && journeys.length >= 5) ||
             tagIds?.includes(key) === true) && (
             <TemplateSection category={category} journeys={journeys} />
           )
       )}
-      {!loading && data?.journeys != null && data.journeys.length === 0 && (
-        <Paper
-          elevation={0}
-          variant="outlined"
-          sx={{
-            borderRadius: 4,
-            width: '100%',
-            padding: 8
-          }}
-        >
-          <Typography variant="h6">
-            {t('No template fully matches your search criteria.')}
-          </Typography>
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            {t(
-              "Try using fewer filters or look below for templates related to the categories you've selected to search"
-            )}
-          </Typography>
-        </Paper>
-      )}
+      {!loading &&
+        ((data?.journeys != null && data.journeys.length === 0) ||
+          languageMatch === false) && (
+          <Paper
+            elevation={0}
+            variant="outlined"
+            sx={{
+              borderRadius: 4,
+              width: '100%',
+              padding: 8
+            }}
+          >
+            <Typography variant="h6">
+              {t('No template fully matches your search criteria.')}
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 2 }}>
+              {t(
+                "Try using fewer filters or look below for templates related to the categories you've selected to search"
+              )}
+            </Typography>
+          </Paper>
+        )}
     </Stack>
   )
 }
