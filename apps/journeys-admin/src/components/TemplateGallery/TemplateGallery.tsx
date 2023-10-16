@@ -25,7 +25,6 @@ export function TemplateGallery(): ReactElement {
         container
         spacing={2}
         sx={{
-          px: { xs: 6, lg: 9 },
           pb: { xs: 6, md: 9 }
         }}
       >

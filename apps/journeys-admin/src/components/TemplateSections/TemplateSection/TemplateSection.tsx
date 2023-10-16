@@ -28,45 +28,33 @@ export function TemplateSection({
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       slidesPerGroup: 2,
-      slidesPerView: 2.4,
-      spaceBetween: 20,
-      slidesOffsetBefore: 24,
-      slidesOffsetAfter: 24
+      slidesPerView: 2,
+      spaceBetween: 20
     },
     [breakpoints.values.sm]: {
       slidesPerGroup: 3,
-      slidesPerView: 3.4,
-      spaceBetween: 20,
-      slidesOffsetBefore: 24,
-      slidesOffsetAfter: 24
+      slidesPerView: 3,
+      spaceBetween: 20
     },
     [breakpoints.values.md]: {
       slidesPerGroup: 4,
-      slidesPerView: 4.4,
-      spaceBetween: 20,
-      slidesOffsetBefore: 24,
-      slidesOffsetAfter: 24
+      slidesPerView: 4,
+      spaceBetween: 20
     },
     [breakpoints.values.lg]: {
       slidesPerGroup: 5,
-      slidesPerView: 5.4,
-      spaceBetween: 48,
-      slidesOffsetBefore: 36,
-      slidesOffsetAfter: 36
+      slidesPerView: 5,
+      spaceBetween: 48
     },
     [breakpoints.values.xl]: {
       slidesPerGroup: 6,
-      slidesPerView: 6.4,
-      spaceBetween: 48,
-      slidesOffsetBefore: 36,
-      slidesOffsetAfter: 36
+      slidesPerView: 6,
+      spaceBetween: 48
     },
     [breakpoints.values.xxl]: {
       slidesPerGroup: 7,
-      slidesPerView: 7.4,
-      spaceBetween: 48,
-      slidesOffsetBefore: 36,
-      slidesOffsetAfter: 36
+      slidesPerView: 7,
+      spaceBetween: 48
     }
   }
 
@@ -102,9 +90,7 @@ export function TemplateSection({
       )}
       {journeys != null && (
         <>
-          <Typography variant="h5" sx={{ pl: { xs: 6, lg: 9 } }}>
-            {category}
-          </Typography>
+          <Typography variant="h5">{category}</Typography>
           <Swiper
             autoHeight
             speed={850}
