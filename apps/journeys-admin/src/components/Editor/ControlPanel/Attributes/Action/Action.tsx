@@ -61,10 +61,6 @@ export const actions = [
     label: 'Selected Card'
   },
   {
-    value: 'NavigateToJourneyAction',
-    label: 'Another Journey'
-  },
-  {
     value: 'LinkAction',
     label: 'URL/Website'
   },
