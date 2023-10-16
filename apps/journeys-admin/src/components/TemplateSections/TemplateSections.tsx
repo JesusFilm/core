@@ -17,12 +17,10 @@ interface Contents {
 
 interface TemplateSectionsProps {
   tagIds?: string[]
-  languageId?: string
 }
 
 export function TemplateSections({
-  tagIds,
-  languageId
+  tagIds
 }: TemplateSectionsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [contents, setContents] = useState<Contents>({})
