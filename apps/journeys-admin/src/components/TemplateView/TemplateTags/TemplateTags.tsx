@@ -44,7 +44,8 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
                 style={{
                   flexShrink: 1,
                   display: 'flex',
-                  alignContent: 'center'
+                  alignContent: 'center',
+                  width: 'auto'
                 }}
               >
                 <TagItem
@@ -63,6 +64,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
             <SwiperSlide
               key={item}
               style={{
+                flexShrink: 1,
                 display: 'flex',
                 alignContent: 'center',
                 width: '128px'
