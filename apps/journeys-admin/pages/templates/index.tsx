@@ -21,7 +21,7 @@ function LibraryIndex(): ReactElement {
       <PageWrapper
         title={t('Journey Templates')}
         user={user}
-        mainPanelSx={{ backgroundColor: 'background.paper', px: 0 }}
+        mainPanelSx={{ backgroundColor: 'background.paper' }}
         showPanelHeader={false}
       >
         {templates ? <TemplateGallery /> : <TemplateLibrary />}

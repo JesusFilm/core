@@ -1,1 +1,1 @@
-export { useTagsQuery } from './useTagsQuery'
+export { useTagsQuery, transformTagsIntoTreeTags } from './useTagsQuery'
