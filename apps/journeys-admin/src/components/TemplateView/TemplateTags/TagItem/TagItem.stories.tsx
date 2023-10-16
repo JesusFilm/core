@@ -24,4 +24,9 @@ export const Default = {
   }
 }
 
+export const Loading = {
+  ...Template,
+  args: { loading: true }
+}
+
 export default TagItemStory

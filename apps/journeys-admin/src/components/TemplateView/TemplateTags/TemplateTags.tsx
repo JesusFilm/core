@@ -1,6 +1,6 @@
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, ReactNode, useMemo } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -33,7 +33,61 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
     }
   })
 
-  return tagItems != null && tagItems?.length > 0 ? (
+  return (
+    <>
+      {tagItems != null ? (
+        tagItems.length > 0 && (
+          <SwiperWrapper smUp={smUp}>
+            {tagItems.map(({ id, name, icon }, index) => (
+              <SwiperSlide
+                key={id}
+                style={{
+                  flexShrink: 1,
+                  display: 'flex',
+                  alignContent: 'center'
+                }}
+              >
+                <TagItem
+                  key={id}
+                  name={name}
+                  icon={icon}
+                  showDivider={index < tagItems.length - 1}
+                />
+              </SwiperSlide>
+            ))}
+          </SwiperWrapper>
+        )
+      ) : (
+        <SwiperWrapper smUp={smUp}>
+          {[0, 1, 2].map((item, index, array) => (
+            <SwiperSlide
+              key={item}
+              style={{
+                display: 'flex',
+                alignContent: 'center',
+                width: '128px'
+              }}
+            >
+              <TagItem
+                icon={<Laptop1Icon />}
+                loading
+                showDivider={index < array.length - 1}
+              />
+            </SwiperSlide>
+          ))}
+        </SwiperWrapper>
+      )}
+    </>
+  )
+}
+
+interface SwiperWrapperProps {
+  smUp: boolean
+  children: ReactNode
+}
+
+function SwiperWrapper({ smUp, children }: SwiperWrapperProps): ReactElement {
+  return (
     <Swiper
       data-testid="TemplateTags"
       freeMode
@@ -53,21 +107,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
         zIndex: 2
       }}
     >
-      {tagItems.map(({ id, name, icon }, index) => (
-        <SwiperSlide
-          key={id}
-          style={{ flexShrink: 1, display: 'flex', alignContent: 'center' }}
-        >
-          <TagItem
-            key={id}
-            name={name}
-            icon={icon}
-            showDivider={index < tagItems.length - 1}
-          />
-        </SwiperSlide>
-      ))}
+      {children}
     </Swiper>
-  ) : (
-    <></>
   )
 }

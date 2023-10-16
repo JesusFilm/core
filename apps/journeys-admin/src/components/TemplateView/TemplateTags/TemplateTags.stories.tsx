@@ -1,14 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_TAGS } from '../../../libs/useTagsQuery/useTagsQuery'
 
 import { parentTags, tags } from './data'
 import { TemplateTags } from './TemplateTags'
 
 const TemplateTagsStory: Meta<typeof TemplateTags> = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: TemplateTags,
   title: 'Journeys-Admin/TemplateView/TemplateTags'
 }
@@ -39,6 +39,11 @@ export const Default = {
   args: {
     tags
   }
+}
+
+export const Loading = {
+  ...Template,
+  args: { tags: null }
 }
 
 export default TemplateTagsStory
