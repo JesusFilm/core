@@ -1,15 +1,28 @@
 import { useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import castArray from 'lodash/castArray'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import type { Language } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { GET_LANGUAGES } from '../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
 
-import { LanguageFilterDialog } from './LanguageFilterDialog'
+const DynamicLanguageFilterDialog = dynamic<{
+  open: boolean
+  onClose: () => void
+  languages?: Language[]
+  loading: boolean
+}>(
+  async () =>
+    await import(
+      /* webpackChunkName: "AudioLanguageDialog" */
+      './LanguageFilterDialog'
+    ).then((mod) => mod.LanguageFilterDialog)
+)
 
 const DEFAULT_LANGUAGE_ID = '529'
 
@@ -66,12 +79,14 @@ export function LanguageFilter(): ReactElement {
       >
         {languages}
       </Button>
-      <LanguageFilterDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        languages={data?.languages}
-        loading={loading}
-      />
+      {data?.languages != null && !loading && (
+        <DynamicLanguageFilterDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          languages={data?.languages}
+          loading={loading}
+        />
+      )}
     </>
   )
 }

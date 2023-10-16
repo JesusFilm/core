@@ -23,16 +23,25 @@ export interface LanguageOption {
   nativeName?: string
 }
 
+export type LanguageOptionVariant =
+  | LanguageOption
+  | LanguageOption[]
+  | readonly LanguageOption[]
+
 export interface LanguageAutocompleteProps {
-  onChange: (value?: LanguageOption | readonly LanguageOption[]) => void
-  value?: LanguageOption | LanguageOption[]
+  onChange: (value?: LanguageOptionVariant) => void
+  value?: LanguageOptionVariant
   multipleSelect?: boolean
   limit?: number
   languages?: Language[]
   loading: boolean
   helperText?: string
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
-  renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
+  renderOption?: (
+    props: HTMLAttributes<HTMLLIElement>,
+    option: LanguageOption,
+    { selected }: { selected: boolean }
+  ) => ReactNode
 }
 
 export function LanguageAutocomplete({
@@ -119,13 +128,19 @@ export function LanguageAutocomplete({
       value={multipleSelect ? undefined : value}
       isOptionEqualToValue={(option, value) => {
         if (multipleSelect && Array.isArray(value)) {
-          return value.some((val) => val.id === option.id)
+          return value.some((val) => (val as LanguageOption).id === option.id)
         }
         return option.id === value.id
       }}
-      getOptionLabel={({ localName, nativeName }) =>
-        localName ?? nativeName ?? ''
-      }
+      getOptionLabel={(option) => {
+        if (Array.isArray(option)) {
+          return option
+            .map((opt) => opt.localName ?? opt.nativeName ?? '')
+            .join(', ')
+        } else {
+          return option.localName ?? option.nativeName ?? ''
+        }
+      }}
       onChange={(_event, option) => handleChange(option)}
       options={sortedOptions}
       loading={loading}

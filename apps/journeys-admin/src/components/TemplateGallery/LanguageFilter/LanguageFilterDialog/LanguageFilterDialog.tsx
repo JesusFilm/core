@@ -10,14 +10,14 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import type {
   Language,
-  LanguageOption
+  LanguageOptionVariant
 } from '@core/shared/ui/LanguageAutocomplete'
 
 interface LangaugeFilterDialogProps {
   open: boolean
   onClose: () => void
   languages?: Language[]
-  loading
+  loading: boolean
 }
 
 const DEFAULT_LANGUAGE_ID = '529'
@@ -41,7 +41,7 @@ export function LanguageFilterDialog({
     onClose()
   }
 
-  function getLanguage(languageId: string): LanguageOption {
+  function getLanguage(languageId: string): LanguageOptionVariant {
     const id = languages?.find((language) => language?.id === languageId)?.id
     const localName = languages
       ?.find((language) => language?.id === id)

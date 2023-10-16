@@ -5,7 +5,9 @@ import { ReactElement, useState } from 'react'
 
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 
-import { Language, LanguageAutocomplete, LanguageOption } from '.'
+import type { LanguageOptionVariant } from './LanguageAutocomplete'
+
+import { Language, LanguageAutocomplete } from '.'
 
 const LanguageAutocompleteStory: Meta<typeof LanguageAutocomplete> = {
   ...simpleComponentConfig,
@@ -59,15 +61,15 @@ const languages: Language[] = [
 function LanguageAutocompleteTemplate({
   onChange
 }: {
-  onChange: (value: LanguageOption | undefined) => void
+  onChange: (value: LanguageOptionVariant | undefined) => void
 }): ReactElement {
-  const [value, setValue] = useState<LanguageOption | undefined>({
+  const [value, setValue] = useState<LanguageOptionVariant | undefined>({
     id: '529',
     localName: undefined,
     nativeName: 'English'
   })
 
-  const handleChange = (value?: LanguageOption): void => {
+  const handleChange = (value?: LanguageOptionVariant): void => {
     setValue(value)
     onChange(value)
   }
