@@ -60,7 +60,7 @@ describe('TemplateTags', () => {
     expect(getByTestId('MediaStrip1Icon')).toBeInTheDocument()
 
     expect(getByText('Collections sub-tag')).toBeInTheDocument()
-    expect(getByTestId('Laptop1Icon')).toBeInTheDocument()
+    expect(getByTestId('TagIcon')).toBeInTheDocument()
 
     expect(getByText('Other Tag')).toBeInTheDocument()
     expect(getByTestId('Grid1Icon')).toBeInTheDocument()

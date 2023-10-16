@@ -4,7 +4,7 @@ import { ReactElement, ReactNode, useMemo } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import Laptop1Icon from '@core/shared/ui/icons/Laptop1'
+import TagIcon from '@core/shared/ui/icons/Tag'
 
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 
@@ -29,7 +29,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
       name: tag.name[0].value,
       icon: parentTagsWithIcons.find(
         (parentTag) => parentTag.id === tag.parentId || tag.id === parentTag.id
-      )?.icon ?? <Laptop1Icon />
+      )?.icon ?? <TagIcon />
     }
   })
 
@@ -69,7 +69,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
               }}
             >
               <TagItem
-                icon={<Laptop1Icon />}
+                icon={<TagIcon />}
                 loading
                 showDivider={index < array.length - 1}
               />

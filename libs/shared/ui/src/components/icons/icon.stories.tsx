@@ -167,6 +167,7 @@ const iconNames: IconName[] = [
   'Star2',
   'Stars',
   'StopCircleContained',
+  'Tag',
   'Target',
   'Target2',
   'Telegram',

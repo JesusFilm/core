@@ -159,6 +159,7 @@ import Square from './Square'
 import Star2 from './Star2'
 import Stars from './Stars'
 import StopCircleContained from './StopCircleContained'
+import Tag from './Tag'
 import Target from './Target'
 import Target2 from './Target2'
 import Telegram from './Telegram'
@@ -350,6 +351,7 @@ export type IconName =
   | 'Star2'
   | 'Stars'
   | 'StopCircleContained'
+  | 'Tag'
   | 'Target'
   | 'Target2'
   | 'Telegram'
@@ -545,6 +547,7 @@ const iconComponents: IconComponents = {
   Star2,
   Stars,
   StopCircleContained,
+  Tag,
   Target,
   Target2,
   Telegram,
