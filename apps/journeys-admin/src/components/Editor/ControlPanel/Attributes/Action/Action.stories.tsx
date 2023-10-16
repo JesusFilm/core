@@ -169,12 +169,4 @@ export const NavigateToBlockAction = {
   }
 }
 
-export const NavigateToJourneyAction = {
-  ...Template,
-  args: {
-    steps,
-    selectedBlock: steps[0].children[0].children[3]
-  }
-}
-
 export default ActionStory
