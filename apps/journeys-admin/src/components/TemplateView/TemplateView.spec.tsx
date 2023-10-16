@@ -162,4 +162,17 @@ describe('TemplateView', () => {
       expect(result).toHaveBeenCalled()
     })
   })
+
+  it('should show skeleton if loading', async () => {
+    const { getAllByTestId } = render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{}}>
+          <TemplateView authUser={{} as unknown as User} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(getAllByTestId('template-view-skeleton')).toHaveLength(3)
+    })
+  })
 })

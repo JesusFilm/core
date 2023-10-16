@@ -1,6 +1,7 @@
 import 'swiper/swiper.min.css'
 
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -43,6 +44,7 @@ function TemplateCardPreviewItem({
   const cardBlock = step.children.find(
     (child) => child.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
+
   return (
     <Stack
       sx={{
@@ -115,24 +117,50 @@ export function TemplateCardPreview({
         overflow: 'visible',
         marginLeft: smUp ? '-32px' : '-44px',
         marginRight: smUp ? '-36px' : '-44px',
-        paddingLeft: smUp ? '32px' : '20px',
+        paddingLeft: smUp ? '32px' : steps == null ? '46px' : '20px',
         paddingRight: smUp ? '40px' : '70px',
         zIndex: 2
       }}
     >
-      {steps?.map((step) => (
-        <SwiperSlide
-          data-testid="templateCardsSwiperSlide"
-          key={step.id}
-          style={{
-            width: smUp ? '240px' : '177px',
-            height: smUp ? '380px' : '280px',
-            zIndex: 2
-          }}
-        >
-          <TemplateCardPreviewItem step={step} smUp={smUp} />
-        </SwiperSlide>
-      ))}
+      {steps != null
+        ? steps?.map((step) => {
+            return (
+              <SwiperSlide
+                data-testid="templateCardsSwiperSlide"
+                key={step.id}
+                style={{
+                  width: smUp ? '240px' : '177px',
+                  height: smUp ? '380px' : '280px',
+                  zIndex: 2
+                }}
+              >
+                <TemplateCardPreviewItem step={step} smUp={smUp} />
+              </SwiperSlide>
+            )
+          })
+        : [0, 1, 2, 3, 4, 5, 6].map((i) => {
+            return (
+              <SwiperSlide
+                data-testid="templateCardsSwiperSlide"
+                key={i}
+                style={{
+                  width: smUp ? '240px' : '177px',
+                  height: smUp ? '380px' : '280px',
+                  zIndex: 2
+                }}
+              >
+                <Skeleton
+                  data-testid="templateCardSkeleton"
+                  sx={{
+                    width: smUp ? 240 : 177,
+                    height: smUp ? 380 : 280,
+                    transform: 'scale(1)',
+                    borderRadius: 2
+                  }}
+                />
+              </SwiperSlide>
+            )
+          })}
     </Swiper>
   )
 }

@@ -10,7 +10,10 @@ import { GetJourneys } from '../../../__generated__/GetJourneys'
 // import { GetTags } from '../../../__generated__/GetTags'
 import { GetUserRole } from '../../../__generated__/GetUserRole'
 import { Role } from '../../../__generated__/globalTypes'
-import { JourneyFields_tags as Tag } from '../../../__generated__/JourneyFields'
+import {
+  JourneyFields as Journey,
+  JourneyFields_tags as Tag
+} from '../../../__generated__/JourneyFields'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 // import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
@@ -384,13 +387,14 @@ const Template: StoryObj<
   ComponentProps<typeof TemplateView> & {
     getJourneyMock: MockedResponse<GetJourneys>
     getUserRoleMock: MockedResponse<GetUserRole>
+    journey: Journey
     // getTagsMock: MockedResponse<GetTags>
   }
 > = {
   render: (args) => {
     return (
       <MockedProvider mocks={[args?.getJourneyMock, args?.getUserRoleMock]}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
           <TemplateView authUser={args.authUser as unknown as User} />
         </JourneyProvider>
       </MockedProvider>
@@ -403,7 +407,8 @@ export const Default = {
   args: {
     authUser: 'user.id',
     getJourneyMock: getJourneyMockEmpty,
-    getUserRoleMock: getUserRoleMockEmpty
+    getUserRoleMock: getUserRoleMockEmpty,
+    journey
     // getTagsMock: getTagsMockEmpty
   }
 }
@@ -430,6 +435,15 @@ export const Complete = {
     ...Publisher.args,
     getJourneyMock
     // getTagsMock
+  }
+}
+
+export const Loading = {
+  ...Template,
+  args: {
+    ...Default.args,
+    journey: undefined
+    // getTagsMock: []
   }
 }
 

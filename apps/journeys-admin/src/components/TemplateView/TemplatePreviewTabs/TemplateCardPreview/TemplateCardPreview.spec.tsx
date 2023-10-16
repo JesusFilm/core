@@ -49,4 +49,17 @@ describe('TemplateCardPreview', () => {
       expect(getAllByTestId('templateCardsSwiperSlide')).toHaveLength(3)
     )
   })
+
+  it('renders skeleton cards while loading', async () => {
+    const steps = undefined
+
+    const { getAllByTestId } = render(
+      <ThemeProvider theme={createTheme()}>
+        <TemplateCardPreview steps={steps} />
+      </ThemeProvider>
+    )
+    await waitFor(() =>
+      expect(getAllByTestId('templateCardSkeleton')).toHaveLength(7)
+    )
+  })
 })

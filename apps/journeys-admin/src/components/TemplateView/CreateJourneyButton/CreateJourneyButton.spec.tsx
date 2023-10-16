@@ -275,4 +275,23 @@ describe('CreateJourneyButton', () => {
       )
     })
   })
+
+  it('should disbable button while loading', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { createNew: false }
+    } as unknown as NextRouter)
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <TeamProvider>
+          <JourneyProvider value={{}}>
+            <CreateJourneyButton signedIn />
+          </JourneyProvider>
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Use Template' })).toBeDisabled()
+    )
+  })
 })

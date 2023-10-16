@@ -176,4 +176,21 @@ describe('TemplateViewHeader', () => {
       getAllByTestId('featuredAtTemplatePreviewPage')[0]
     ).toBeInTheDocument()
   })
+
+  it('should show skeletons while loading', async () => {
+    const { getAllByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider value={{}}>
+          <TemplateViewHeader
+            isPublisher={false}
+            authUser={{} as unknown as User}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getAllByTestId('header-skeleton')).toHaveLength(5)
+    )
+  })
 })

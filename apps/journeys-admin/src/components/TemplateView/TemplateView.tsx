@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { User } from 'next-firebase-auth'
@@ -51,7 +52,15 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
           variant="body2"
           sx={{ display: { xs: 'block', sm: 'none' } }}
         >
-          {journey?.description}
+          {journey?.description != null ? (
+            journey.description
+          ) : (
+            <>
+              <Skeleton data-testid="template-view-skeleton" width="100%" />
+              <Skeleton data-testid="template-view-skeleton" width="100%" />
+              <Skeleton data-testid="template-view-skeleton" width="100%" />
+            </>
+          )}
         </Typography>
         {journey?.strategySlug != null && (
           <StrategySection
