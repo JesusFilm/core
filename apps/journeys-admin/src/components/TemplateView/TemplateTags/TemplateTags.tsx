@@ -70,11 +70,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
                 width: '128px'
               }}
             >
-              <TagItem
-                icon={<TagIcon />}
-                loading
-                showDivider={index < array.length - 1}
-              />
+              <TagItem loading showDivider={index < array.length - 1} />
             </SwiperSlide>
           ))}
         </SwiperWrapper>

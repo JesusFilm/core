@@ -4,6 +4,8 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
+import TagIcon from '@core/shared/ui/icons/Tag'
+
 interface TagItemProps {
   name?: string
   icon?: ReactNode
@@ -20,13 +22,18 @@ export function TagItem({
   return (
     <Stack direction="row" alignItems="center" sx={{ width: 'max-content' }}>
       <Stack gap={2} alignItems="center" sx={{ minWidth: '77px' }}>
-        {icon}
         {loading === true ? (
-          <Skeleton variant="text" width={90} />
+          <>
+            <TagIcon />
+            <Skeleton variant="text" width={90} />
+          </>
         ) : (
-          <Typography variant="body2" align="center" sx={{ px: 2 }}>
-            {name}
-          </Typography>
+          <>
+            {icon}
+            <Typography variant="body2" align="center" sx={{ px: 2 }}>
+              {name}
+            </Typography>
+          </>
         )}
       </Stack>
       {showDivider === true && (

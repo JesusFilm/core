@@ -78,7 +78,7 @@ const primaryImageBlock: PrimaryImageBlock = {
   parentOrder: 1
 }
 
-const getJourneyMockEmpty: MockedResponse<GetJourneys> = {
+const getJourneysMockEmpty: MockedResponse<GetJourneys> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
@@ -96,14 +96,14 @@ const getJourneyMockEmpty: MockedResponse<GetJourneys> = {
   }
 }
 
-const getJourneyMock: MockedResponse<GetJourneys> = {
+const getJourneysMock: MockedResponse<GetJourneys> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
       where: {
         template: true,
         orderByRecent: true,
-        tagIds: ['tag1.id']
+        tagIds: [...tags].map((tag) => tag.id)
       }
     }
   },
@@ -182,7 +182,7 @@ const getUserRoleMock: MockedResponse<GetUserRole> = {
 const Template: StoryObj<
   ComponentProps<typeof TemplateView> & {
     journey: Journey
-    getJourneyMock: MockedResponse<GetJourneys>
+    getJourneysMock: MockedResponse<GetJourneys>
     getUserRoleMock: MockedResponse<GetUserRole>
     getTagsMock: MockedResponse<GetTags>
   }
@@ -190,7 +190,11 @@ const Template: StoryObj<
   render: (args) => {
     return (
       <MockedProvider
-        mocks={[args?.getJourneyMock, args?.getUserRoleMock, args?.getTagsMock]}
+        mocks={[
+          args?.getJourneysMock,
+          args?.getUserRoleMock,
+          args?.getTagsMock
+        ]}
       >
         <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
           <TemplateView authUser={args.authUser as unknown as User} />
@@ -205,13 +209,12 @@ export const Default = {
   args: {
     journey,
     authUser: 'user.id',
-    getJourneyMock: getJourneyMockEmpty,
+    getJourneysMock: getJourneysMockEmpty,
     getUserRoleMock: getUserRoleMockEmpty,
     getTagsMock: getTagsMockEmpty
   }
 }
 
-// fix related templates
 export const Complete = {
   ...Template,
   args: {
@@ -219,7 +222,7 @@ export const Complete = {
       ...journey,
       tags
     },
-    getJourneyMock,
+    getJourneysMock,
     getUserRoleMock,
     getTagsMock
   }
