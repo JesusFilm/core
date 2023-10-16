@@ -136,7 +136,9 @@ describe('CreateJourneyButton', () => {
           }
         ]}
       >
-        <CreateJourneyButton signedIn />
+        <JourneyProvider value={{ journey }}>
+          <CreateJourneyButton signedIn />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -174,7 +176,9 @@ describe('CreateJourneyButton', () => {
           }
         ]}
       >
-        <CreateJourneyButton />
+        <JourneyProvider value={{ journey }}>
+          <CreateJourneyButton />
+        </JourneyProvider>
       </MockedProvider>
     )
 
