@@ -2,6 +2,7 @@ import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { styled } from '@mui/material/styles'
 import {
+  ComponentProps,
   DetailedHTMLProps,
   IframeHTMLAttributes,
   ReactElement,
@@ -46,14 +47,7 @@ const StyledFrame = styled('iframe')(() => ({
   border: 0
 }))
 
-interface FrameProps
-  extends Omit<
-    DetailedHTMLProps<
-      IframeHTMLAttributes<HTMLIFrameElement>,
-      HTMLIFrameElement
-    >,
-    'css'
-  > {
+interface FrameProps extends ComponentProps<typeof StyledFrame> {
   children: ReactNode
 }
 
