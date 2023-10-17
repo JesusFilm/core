@@ -3,8 +3,6 @@ import { CacheProvider } from '@emotion/react'
 import { styled } from '@mui/material/styles'
 import {
   ComponentProps,
-  DetailedHTMLProps,
-  IframeHTMLAttributes,
   ReactElement,
   ReactNode,
   memo,

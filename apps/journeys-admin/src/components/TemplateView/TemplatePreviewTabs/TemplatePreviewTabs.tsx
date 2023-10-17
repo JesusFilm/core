@@ -1,7 +1,6 @@
 import 'swiper/swiper.min.css'
 import 'swiper/components/scrollbar/scrollbar.min.css'
 
-import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
