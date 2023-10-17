@@ -63,6 +63,7 @@ export function TagsFilter({
   return (
     <Box sx={{ width: '100%' }}>
       <Autocomplete
+        disableCloseOnSelect
         value={filteredSelectedTags}
         onChange={handleChange}
         options={filteredChildTags}
