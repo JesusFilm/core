@@ -13,7 +13,7 @@ import { getSortedTags } from './getSortedTags'
 import { TagItem } from './TagItem'
 
 interface TemplateTagsProps {
-  tags?: Array<Tag & { parentId: string }>
+  tags?: Tag[]
 }
 
 export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {

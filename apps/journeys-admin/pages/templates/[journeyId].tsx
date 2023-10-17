@@ -42,7 +42,8 @@ function TemplateDetails(): ReactElement {
           user={user}
           backHref="/templates"
           mainPanelSx={{
-            backgroundColor: 'background.paper'
+            backgroundColor: 'background.paper',
+            overflowX: 'hidden'
           }}
         >
           {templates ? (

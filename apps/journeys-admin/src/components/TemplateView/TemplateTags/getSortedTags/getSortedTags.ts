@@ -3,7 +3,7 @@ import compact from 'lodash/compact'
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 export function getSortedTags(
-  journeyTags?: Array<Tag & { parentId: string }>,
+  journeyTags?: Tag[],
   parentTags?: Tag[]
 ): Tag[] | null {
   if (journeyTags == null) return null
@@ -36,8 +36,8 @@ export function getSortedTags(
     .sort((a, b) => {
       if (a.parentId === b.parentId) return 0
       if (
-        sortedParentTagIds.indexOf(a.parentId) <
-        sortedParentTagIds.indexOf(b.parentId)
+        sortedParentTagIds.indexOf(a.parentId ?? '') <
+        sortedParentTagIds.indexOf(b.parentId ?? '')
       )
         return -1
       return 1

@@ -4,7 +4,7 @@ import { getSortedTags } from './getSortedTags'
 
 describe('getSortedTags', () => {
   it('should sort by parentTagId, alphabetically by tag name and filter out tags with non existent parent tags', () => {
-    expect(getSortedTags(tags, parentTags)).toEqual([
+    expect(getSortedTags([...tags, { ...parentTags[0] }], parentTags)).toEqual([
       {
         __typename: 'Tag',
         id: 'tag8.id',
