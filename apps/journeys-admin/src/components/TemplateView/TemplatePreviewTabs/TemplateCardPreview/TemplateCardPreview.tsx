@@ -124,7 +124,7 @@ export function TemplateCardPreview({
       }}
     >
       {steps != null
-        ? steps?.map((step) => {
+        ? steps.map((step) => {
             return (
               <SwiperSlide
                 data-testid="templateCardsSwiperSlide"

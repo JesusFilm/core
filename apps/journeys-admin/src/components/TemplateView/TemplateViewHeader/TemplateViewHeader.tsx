@@ -47,7 +47,7 @@ export function TemplateViewHeader({
           })
         ) : (
           <Skeleton
-            data-testid="header-skeleton"
+            data-testid="headerSkeleton"
             sx={{ width: '50%', maxWidth: 150 }}
           />
         )}
@@ -85,7 +85,7 @@ export function TemplateViewHeader({
                 })
               ) : (
                 <Skeleton
-                  data-testid="header-skeleton"
+                  data-testid="headerSkeleton"
                   sx={{ width: '35%', maxWidth: 150 }}
                 />
               )}
@@ -96,7 +96,7 @@ export function TemplateViewHeader({
               journey?.title
             ) : (
               <Skeleton
-                data-testid="header-skeleton"
+                data-testid="headerSkeleton"
                 sx={{
                   width: { xs: '100%', sm: '50%' },
                   maxWidth: { xs: 200, sm: 400 }
@@ -114,8 +114,9 @@ export function TemplateViewHeader({
               journey.description
             ) : (
               <>
-                <Skeleton data-testid="header-skeleton" width="100%" />
-                <Skeleton data-testid="header-skeleton" width="100%" />
+                {[0, 1].map((i) => (
+                  <Skeleton key={i} data-testid="headerSkeleton" width="100%" />
+                ))}
               </>
             )}
           </Typography>

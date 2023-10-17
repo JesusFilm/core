@@ -190,7 +190,7 @@ describe('TemplateViewHeader', () => {
     )
 
     await waitFor(() =>
-      expect(getAllByTestId('header-skeleton')).toHaveLength(5)
+      expect(getAllByTestId('headerSkeleton')).toHaveLength(5)
     )
   })
 })

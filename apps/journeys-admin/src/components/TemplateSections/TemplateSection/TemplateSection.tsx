@@ -116,7 +116,7 @@ export function TemplateSection({
             }}
             virtual
           >
-            {journeys.map((journey) => (
+            {journeys?.map((journey) => (
               <SwiperSlide
                 key={journey?.id}
                 data-testId={`journey-${journey.id}`}

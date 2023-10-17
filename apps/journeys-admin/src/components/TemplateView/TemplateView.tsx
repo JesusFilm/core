@@ -56,9 +56,13 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
             journey.description
           ) : (
             <>
-              <Skeleton data-testid="template-view-skeleton" width="100%" />
-              <Skeleton data-testid="template-view-skeleton" width="100%" />
-              <Skeleton data-testid="template-view-skeleton" width="100%" />
+              {[0, 1, 2].map((i) => (
+                <Skeleton
+                  key={i}
+                  data-testid="templateViewSkeleton"
+                  width="100%"
+                />
+              ))}
             </>
           )}
         </Typography>
@@ -68,7 +72,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
             variant="full"
           />
         )}
-        {relatedJourneys != null && relatedJourneys.length > 1 && (
+        {relatedJourneys != null && relatedJourneys.length >= 1 && (
           <Box sx={{ ml: { xs: -6, lg: -9 } }}>
             <TemplateSection
               category={t('Related Templates')}
