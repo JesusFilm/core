@@ -180,6 +180,8 @@ export class JourneyResolver {
       filter.featuredAt = where?.featured ? { not: null } : null
     if (where?.ids != null) filter.id = { in: where?.ids }
     if (where?.tagIds != null) filter.tagIds = { hasEvery: where?.tagIds }
+    if (where?.languageIds != null)
+      filter.languageId = { in: where?.languageIds }
 
     return await this.prismaService.journey.findMany({
       where: filter,

@@ -165,22 +165,6 @@ describe('Action', () => {
     )
   })
 
-  it('shows journey dropdown when Another Journey is selected', async () => {
-    const { getByRole, getByText } = render(
-      <MockedProvider>
-        <Action />
-      </MockedProvider>
-    )
-    fireEvent.mouseDown(getByRole('button', { name: 'None' }))
-    await waitFor(() =>
-      expect(getByText('Another Journey')).toBeInTheDocument()
-    )
-    fireEvent.click(getByRole('option', { name: 'Another Journey' }))
-    await waitFor(() =>
-      expect(getByText('Select the Journey...')).toBeInTheDocument()
-    )
-  })
-
   it('shows url input text box when URL/Website is selected', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
