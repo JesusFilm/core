@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
@@ -31,18 +32,12 @@ export function LanguageFilter({
 
   const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES)
 
-  function getLanguage(languageId: string): string | undefined {
-    const localName = data?.languages
-      ?.find((language) => language?.id === languageId)
-      ?.name?.find(({ primary }) => !primary)?.value
-    const nativeName = data?.languages
-      ?.find((language) => language?.id === languageId)
-      ?.name?.find(({ primary }) => primary)?.value
-
-    return localName ?? nativeName
-  }
-
-  const language = getLanguage(languageId)
+  const localName = data?.languages
+    ?.find((language) => language?.id === languageId)
+    ?.name?.find(({ primary }) => !primary)?.value
+  const nativeName = data?.languages
+    ?.find((language) => language?.id === languageId)
+    ?.name?.find(({ primary }) => primary)?.value
 
   return (
     <>
@@ -54,12 +49,19 @@ export function LanguageFilter({
           border: 'none',
           '&:hover': {
             border: 'none'
-          },
-          whiteSpace: 'nowrap',
-          textOverflow: 'ellipsis'
+          }
         }}
       >
-        {language}
+        <Typography
+          variant="subtitle2"
+          sx={{
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden'
+          }}
+        >
+          {localName ?? nativeName}
+        </Typography>
       </Button>
       {data?.languages != null && !loading && (
         <DynamicLanguageFilterDialog

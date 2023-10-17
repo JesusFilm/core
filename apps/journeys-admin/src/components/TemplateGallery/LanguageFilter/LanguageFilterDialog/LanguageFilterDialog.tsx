@@ -31,16 +31,14 @@ export function LanguageFilterDialog({
   }
 
   function getLanguage(languageId: string): LanguageOption {
-    const id = languages?.find((language) => language?.id === languageId)?.id
-    const localName = languages
-      ?.find((language) => language?.id === id)
-      ?.name?.find(({ primary }) => !primary)?.value
-    const nativeName = languages
-      ?.find((language) => language?.id === id)
-      ?.name?.find(({ primary }) => primary)?.value
+    const language = languages?.find((language) => language?.id === languageId)
+
+    const id = language?.id ?? ''
+    const localName = language?.name?.find(({ primary }) => !primary)?.value
+    const nativeName = language?.name?.find(({ primary }) => primary)?.value
 
     return {
-      id: id != null ? id : '',
+      id,
       localName,
       nativeName
     }
