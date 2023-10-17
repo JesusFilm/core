@@ -15,7 +15,7 @@ interface TagsFilterProps {
   label: string
   tagNames: string[]
   selectedTagIds: string[]
-  onChange: (selectedTagIds: string[]) => void
+  onChange: (selectedTagIds: string[], filteredTagIds: string[]) => void
 }
 
 export function TagsFilter({
@@ -45,21 +45,25 @@ export function TagsFilter({
         return -1
       return 1
     })
+  const filteredChildTagIds = filteredChildTags.map(({ id }) => id)
 
-  const selectedTags = compact(
+  const filteredSelectedTags = compact(
     selectedTagIds.map((tagId) =>
       filteredChildTags.find(({ id }) => id === tagId)
     )
   )
 
   function handleChange(_event, value: Tag[]): void {
-    onChange(value)
+    onChange(
+      value.map(({ id }) => id),
+      filteredChildTagIds
+    )
   }
 
   return (
     <Box sx={{ width: '100%' }}>
       <Autocomplete
-        value={selectedTags}
+        value={filteredSelectedTags}
         onChange={handleChange}
         options={filteredChildTags}
         groupBy={(option) => option.parentId ?? ''}

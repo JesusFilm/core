@@ -1,16 +1,34 @@
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
+import castArray from 'lodash/castArray'
+import difference from 'lodash/difference'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { GetTags_tags as Tag } from '../../../__generated__/GetTags'
 import { TemplateSections } from '../TemplateSections'
 
 import { TagsFilter } from './TagsFilter'
 
 export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
+  const router = useRouter()
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
+    router.query.tagIds != null ? castArray(router.query.tagIds) : []
+  )
+
+  function handleChange(
+    newSelectedTagIds: string[],
+    filteredTagIds: string[]
+  ): void {
+    const tagIds = [
+      ...difference(selectedTagIds, filteredTagIds),
+      ...newSelectedTagIds
+    ]
+    setSelectedTagIds(tagIds)
+    router.query.tagIds = tagIds
+    void router.push(router)
+  }
 
   return (
     <Container disableGutters>
@@ -25,7 +43,7 @@ export function TemplateGallery(): ReactElement {
           <TagsFilter
             label={t('Topics, holidays, felt needs, collections')}
             tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
-            onChange={(value) => setSelectedTagIds(value)}
+            onChange={handleChange}
             selectedTagIds={selectedTagIds}
           />
         </Grid>
@@ -33,7 +51,7 @@ export function TemplateGallery(): ReactElement {
           <TagsFilter
             label={t('Audience')}
             tagNames={['Audience']}
-            onChange={(value) => setSelectedTagIds(value)}
+            onChange={handleChange}
             selectedTagIds={selectedTagIds}
           />
         </Grid>
@@ -41,7 +59,7 @@ export function TemplateGallery(): ReactElement {
           <TagsFilter
             label={t('Genre')}
             tagNames={['Genre']}
-            onChange={(value) => setSelectedTagIds(value)}
+            onChange={handleChange}
             selectedTagIds={selectedTagIds}
           />
         </Grid>
