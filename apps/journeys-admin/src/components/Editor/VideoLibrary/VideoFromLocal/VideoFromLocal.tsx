@@ -26,7 +26,7 @@ export const GET_VIDEOS = gql`
         primary
         value
       }
-      variant {
+      variant(languageId: "529") {
         id
         duration
       }

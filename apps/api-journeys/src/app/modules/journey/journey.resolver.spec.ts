@@ -569,6 +569,18 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('returns a list of journeys filtered by languageId', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([])
+      await resolver.journeys({ languageIds: ['529'] })
+
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          languageId: { in: ['529'] },
+          status: 'published'
+        }
+      })
+    })
+
     it('returns limited number of published journeys', async () => {
       prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
       expect(await resolver.journeys({ limit: 2 })).toEqual([journey, journey])
