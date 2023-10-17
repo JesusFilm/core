@@ -4,15 +4,15 @@ import { ReactElement, ReactNode, useMemo } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import TagIcon from '@core/shared/ui/icons/Tag'
 
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 
 import { getParentTagsWithIcon } from './getParentTagsWithIcon'
+import { getSortedTags } from './getSortedTags'
 import { TagItem } from './TagItem'
 
 interface TemplateTagsProps {
-  tags?: Tag[]
+  tags?: Array<Tag & { parentId: string }>
 }
 
 export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
@@ -22,14 +22,17 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
     () => getParentTagsWithIcon(parentTags),
     [parentTags]
   )
-
-  const tagItems = tags?.map((tag) => {
+  const sortedTags = useMemo(
+    () => getSortedTags(tags, parentTags),
+    [tags, parentTags]
+  )
+  const tagItems = sortedTags?.map((tag) => {
     return {
       id: tag.id,
       name: tag.name[0].value,
       icon: parentTagsWithIcons.find(
         (parentTag) => parentTag.id === tag.parentId || tag.id === parentTag.id
-      )?.icon ?? <TagIcon />
+      )?.icon
     }
   })
 

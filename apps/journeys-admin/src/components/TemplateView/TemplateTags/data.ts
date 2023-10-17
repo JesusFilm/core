@@ -122,7 +122,7 @@ export const parentTags: Tag[] = [
   }
 ]
 
-export const tags: Tag[] = [
+export const tags: Array<Tag & { parentId: string }> = [
   {
     __typename: 'Tag',
     id: 'tag1.id',
@@ -234,6 +234,23 @@ export const tags: Tag[] = [
       {
         __typename: 'Translation',
         value: 'Other Tag',
+        primary: true,
+        language: {
+          __typename: 'Language',
+          id: '529'
+        }
+      }
+    ]
+  },
+  {
+    __typename: 'Tag',
+    id: 'tag8.id',
+    parentId: 'tags.topic.id',
+    service: null,
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'AAA sort test',
         primary: true,
         language: {
           __typename: 'Language',

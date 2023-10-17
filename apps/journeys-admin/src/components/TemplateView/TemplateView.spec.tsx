@@ -1,16 +1,19 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { GetTags } from '../../../__generated__/GetTags'
 import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
 } from '../../../__generated__/JourneyFields'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../JourneyView/data'
 
+import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
 
 jest.mock('react-i18next', () => ({
@@ -31,7 +34,7 @@ describe('TemplateView', () => {
   const tag: Tag = {
     __typename: 'Tag',
     id: 'tag.id',
-    parentId: 'parentTag.id',
+    parentId: 'tags.topic.id',
     name: [
       {
         __typename: 'Translation',
@@ -163,13 +166,24 @@ describe('TemplateView', () => {
     })
   })
 
-  it('should render template tags', () => {
+  it('should render template tags', async () => {
+    const getTagsMock: MockedResponse<GetTags> = {
+      request: {
+        query: GET_TAGS
+      },
+      result: {
+        data: {
+          tags: [...tags, ...parentTags]
+        }
+      }
+    }
+
     const journeyWithTags: Journey = {
       ...defaultJourney,
       tags: [tag]
     }
     const { getByTestId } = render(
-      <MockedProvider mocks={[getJourneyMock]}>
+      <MockedProvider mocks={[getTagsMock, getJourneyMock]}>
         <JourneyProvider
           value={{
             journey: journeyWithTags,
@@ -181,6 +195,6 @@ describe('TemplateView', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('TemplateTags')).toBeInTheDocument()
+    await waitFor(() => expect(getByTestId('TemplateTags')).toBeInTheDocument())
   })
 })
