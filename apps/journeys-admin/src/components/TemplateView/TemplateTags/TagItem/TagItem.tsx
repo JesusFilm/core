@@ -20,8 +20,17 @@ export function TagItem({
   loading
 }: TagItemProps): ReactElement {
   return (
-    <Stack direction="row" alignItems="center" sx={{ width: 'max-content' }}>
-      <Stack gap={2} alignItems="center" sx={{ minWidth: '77px' }}>
+    <Stack
+      direction="row"
+      alignItems="center"
+      sx={{ width: 'max-content', height: '93px' }}
+    >
+      <Stack
+        gap={2}
+        alignItems="center"
+        justifyContent="center"
+        sx={{ minWidth: '77px', height: '93px' }}
+      >
         {loading === true ? (
           <>
             <TagIcon />
