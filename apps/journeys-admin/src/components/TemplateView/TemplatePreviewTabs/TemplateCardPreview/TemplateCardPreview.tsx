@@ -49,7 +49,7 @@ function TemplateCardPreviewItem({
     >
       <Box
         sx={{
-          transform: { sm: 'scale(0.6)', xs: 'scale(0.4)' },
+          transform: { xs: 'scale(0.4)', sm: 'scale(0.6)' },
           transformOrigin: 'top left'
         }}
       >
