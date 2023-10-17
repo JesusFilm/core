@@ -17,46 +17,56 @@ export interface ParentTagWithIcon {
 
 export function getParentTagsWithIcon(parentTags?: Tag[]): ParentTagWithIcon[] {
   const parentTagsWithIcons: ParentTagWithIcon[] = []
+  const ENGLISH_LANGUAGE_ID = '529'
 
   parentTags?.forEach((tag) => {
-    const name = tag.name.find((name) => name.language.id === '529')?.value
+    const name = tag.name.find(
+      (name) => name.language.id === ENGLISH_LANGUAGE_ID
+    )?.value
 
-    if (name === 'Topics') {
-      parentTagsWithIcons.push({
-        id: tag.id,
-        name: tag.name[0].value,
-        icon: <Hash2Icon />
-      })
-    } else if (name === 'Felt Needs') {
-      parentTagsWithIcons.push({
-        id: tag.id,
-        name: tag.name[0].value,
-        icon: <SmileyNeutralIcon />
-      })
-    } else if (name === 'Holidays') {
-      parentTagsWithIcons.push({
-        id: tag.id,
-        name: tag.name[0].value,
-        icon: <Calendar4Icon />
-      })
-    } else if (name === 'Audience') {
-      parentTagsWithIcons.push({
-        id: tag.id,
-        name: tag.name[0].value,
-        icon: <UsersProfiles2Icon />
-      })
-    } else if (name === 'Genre') {
-      parentTagsWithIcons.push({
-        id: tag.id,
-        name: tag.name[0].value,
-        icon: <MediaStrip1Icon />
-      })
-    } else if (name === 'Collections') {
-      parentTagsWithIcons.push({
-        id: tag.id,
-        name: tag.name[0].value,
-        icon: <Grid1Icon />
-      })
+    switch (name) {
+      case 'Topics':
+        parentTagsWithIcons.push({
+          id: tag.id,
+          name: tag.name[0].value,
+          icon: <Hash2Icon />
+        })
+        break
+      case 'Felt Needs':
+        parentTagsWithIcons.push({
+          id: tag.id,
+          name: tag.name[0].value,
+          icon: <SmileyNeutralIcon />
+        })
+        break
+      case 'Holidays':
+        parentTagsWithIcons.push({
+          id: tag.id,
+          name: tag.name[0].value,
+          icon: <Calendar4Icon />
+        })
+        break
+      case 'Audience':
+        parentTagsWithIcons.push({
+          id: tag.id,
+          name: tag.name[0].value,
+          icon: <UsersProfiles2Icon />
+        })
+        break
+      case 'Genre':
+        parentTagsWithIcons.push({
+          id: tag.id,
+          name: tag.name[0].value,
+          icon: <MediaStrip1Icon />
+        })
+        break
+      case 'Collections':
+        parentTagsWithIcons.push({
+          id: tag.id,
+          name: tag.name[0].value,
+          icon: <Grid1Icon />
+        })
+        break
     }
   })
 
