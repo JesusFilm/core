@@ -6,7 +6,8 @@ import { GET_LANGUAGES } from '../../Editor/EditToolbar/Menu/LanguageMenuItem/La
 import { LanguageFilter } from '.'
 
 describe('LanguageFilter', () => {
-  it('should open the langauge filter dialog on button click', async () => {
+  it('should open the language filter dialog on button click', async () => {
+    const onChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -66,12 +67,17 @@ describe('LanguageFilter', () => {
           }
         ]}
       >
-        <LanguageFilter languageId="529" onChange={jest.fn} />
+        <LanguageFilter languageId="529" onChange={onChange} />
       </MockedProvider>
     )
     await waitFor(() =>
       fireEvent.click(getByRole('button', { name: 'English' }))
     )
     expect(getByRole('dialog')).toBeInTheDocument()
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'French Français' }))
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(onChange).toHaveBeenCalled())
   })
 })

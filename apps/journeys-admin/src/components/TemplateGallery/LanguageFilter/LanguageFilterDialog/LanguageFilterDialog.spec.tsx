@@ -71,4 +71,23 @@ describe('LanguageFilterDialog', () => {
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(onChange).toHaveBeenCalled())
   })
+
+  it('closes the form on cancel click', () => {
+    const onClose = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider>
+        <LanguageFilterDialog
+          open
+          onClose={onClose}
+          onChange={jest.fn()}
+          languages={languages}
+          languageId="529"
+          loading={false}
+        />
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    expect(onClose).toHaveBeenCalled()
+  })
 })
