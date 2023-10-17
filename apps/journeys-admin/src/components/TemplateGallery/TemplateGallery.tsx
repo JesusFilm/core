@@ -9,7 +9,7 @@ import { TemplateSections } from '../TemplateSections'
 export function TemplateGallery(): ReactElement {
   const { query } = useRouter()
   return (
-    <Container disableGutters maxWidth="xl" sx={{ px: { xs: 6, xl: 0 } }}>
+    <Container disableGutters>
       <Box>
         <TemplateSections
           tagIds={query.tagIds != null ? castArray(query.tagIds) : undefined}
