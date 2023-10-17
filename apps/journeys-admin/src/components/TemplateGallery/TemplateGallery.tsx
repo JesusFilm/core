@@ -1,6 +1,6 @@
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { GetTags_tags as Tag } from '../../../__generated__/GetTags'
@@ -10,14 +10,7 @@ import { TagsFilter } from './TagsFilter'
 
 export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [selectedTags1, setSelectedTags1] = useState<Tag[]>([])
-  const [selectedTags2, setSelectedTags2] = useState<Tag[]>([])
-  const [selectedTags3, setSelectedTags3] = useState<Tag[]>([])
-
-  const selectedTags = useMemo(
-    () => [...selectedTags1, ...selectedTags2, ...selectedTags3],
-    [selectedTags1, selectedTags2, selectedTags3]
-  )
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
 
   return (
     <Container disableGutters>
@@ -32,28 +25,29 @@ export function TemplateGallery(): ReactElement {
           <TagsFilter
             label={t('Topics, holidays, felt needs, collections')}
             tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
-            onChange={(value) => setSelectedTags1(value)}
+            onChange={(value) => setSelectedTagIds(value)}
+            selectedTagIds={selectedTagIds}
           />
         </Grid>
         <Grid item xs={6} md={2}>
           <TagsFilter
             label={t('Audience')}
             tagNames={['Audience']}
-            onChange={(value) => setSelectedTags2(value)}
+            onChange={(value) => setSelectedTagIds(value)}
+            selectedTagIds={selectedTagIds}
           />
         </Grid>
         <Grid item xs={6} md={2}>
           <TagsFilter
             label={t('Genre')}
             tagNames={['Genre']}
-            onChange={(value) => setSelectedTags3(value)}
+            onChange={(value) => setSelectedTagIds(value)}
+            selectedTagIds={selectedTagIds}
           />
         </Grid>
       </Grid>
       <TemplateSections
-        tagIds={
-          selectedTags.length > 0 ? selectedTags.map(({ id }) => id) : undefined
-        }
+        tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
       />
     </Container>
   )
