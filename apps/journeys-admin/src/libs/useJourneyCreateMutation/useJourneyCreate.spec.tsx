@@ -3,7 +3,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CREATE_JOURNEY, useJourneyCreate } from './useJourneyCreate'
+import {
+  CREATE_JOURNEY,
+  useJourneyCreateMutation
+} from './useJourneyCreateMutation'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -100,7 +103,7 @@ describe('useJourneyCreate', () => {
       }
     })
 
-    const { result } = renderHook(() => useJourneyCreate(), {
+    const { result } = renderHook(() => useJourneyCreateMutation(), {
       wrapper: ({ children }) => (
         <MockedProvider
           cache={cache}
@@ -134,7 +137,7 @@ describe('useJourneyCreate', () => {
   })
 
   it('returns a function which returns undefined if error', async () => {
-    const { result } = renderHook(() => useJourneyCreate(), {
+    const { result } = renderHook(() => useJourneyCreateMutation(), {
       wrapper: ({ children }) => (
         <MockedProvider
           addTypename={false}
@@ -161,7 +164,7 @@ describe('useJourneyCreate', () => {
   })
 
   it('returns a loading state', async () => {
-    const { result } = renderHook(() => useJourneyCreate(), {
+    const { result } = renderHook(() => useJourneyCreateMutation(), {
       wrapper: ({ children }) => (
         <MockedProvider
           addTypename={false}
