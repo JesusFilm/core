@@ -45,13 +45,9 @@ export function TemplateViewHeader({
             year: 'numeric'
           })
         ) : (
-          <Skeleton
-            data-testid="HeaderSkeleton"
-            sx={{ width: '50%', maxWidth: 150 }}
-          />
+          <Skeleton sx={{ width: '50%', maxWidth: 150 }} />
         )}
       </Typography>
-
       <Stack direction="row" sx={{ gap: { xs: 4, sm: 6 } }}>
         <Box
           sx={{
@@ -82,10 +78,7 @@ export function TemplateViewHeader({
                   year: 'numeric'
                 })
               ) : (
-                <Skeleton
-                  data-testid="HeaderSkeleton"
-                  sx={{ width: '35%', maxWidth: 150 }}
-                />
+                <Skeleton sx={{ width: '35%', maxWidth: 150 }} />
               )}
             </Typography>
           </Box>
@@ -94,7 +87,7 @@ export function TemplateViewHeader({
               journey?.title
             ) : (
               <Skeleton
-                data-testid="HeaderSkeleton"
+                data-testid="TemplateViewTitleSkeleton"
                 sx={{
                   width: { xs: '100%', sm: '50%' },
                   maxWidth: { xs: 200, sm: 400 }
@@ -113,11 +106,7 @@ export function TemplateViewHeader({
             ) : (
               <>
                 {[0, 1].map((value) => (
-                  <Skeleton
-                    key={value}
-                    data-testid="HeaderSkeleton"
-                    width="100%"
-                  />
+                  <Skeleton key={value} width="100%" />
                 ))}
               </>
             )}

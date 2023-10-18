@@ -176,7 +176,7 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should show skeletons while loading', async () => {
-    const { getAllByTestId } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider value={{}}>
           <TemplateViewHeader
@@ -188,7 +188,7 @@ describe('TemplateViewHeader', () => {
     )
 
     await waitFor(() =>
-      expect(getAllByTestId('HeaderSkeleton')).toHaveLength(5)
+      expect(getByTestId('TemplateViewTitleSkeleton')).toBeInTheDocument()
     )
   })
 })
