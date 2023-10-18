@@ -596,6 +596,7 @@ export class JourneysFilter {
     template?: Nullable<boolean>;
     ids?: Nullable<string[]>;
     tagIds?: Nullable<string[]>;
+    languageIds?: Nullable<string[]>;
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
 }

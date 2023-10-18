@@ -714,6 +714,7 @@ input JourneysFilter
   template: Boolean
   ids: [ID!]
   tagIds: [ID!]
+  languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
 }
