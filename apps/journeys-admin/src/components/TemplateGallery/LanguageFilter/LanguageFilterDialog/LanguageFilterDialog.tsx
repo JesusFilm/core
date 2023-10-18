@@ -8,7 +8,7 @@ import type {
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
-export interface LanguageFilterDialogProps {
+interface LanguageFilterDialogProps {
   open: boolean
   onClose: () => void
   onChange: (value) => void
