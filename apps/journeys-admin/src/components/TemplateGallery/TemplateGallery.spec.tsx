@@ -29,9 +29,13 @@ describe('TemplateGallery', () => {
         <TemplateGallery />
       </MockedProvider>
     )
+    expect(
+      getByRole('heading', { name: 'Journey Templates' })
+    ).toBeInTheDocument()
     await waitFor(() =>
-      expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'English' })).toBeInTheDocument()
     )
+    expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
     expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
   })
 
