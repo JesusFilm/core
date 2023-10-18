@@ -1,11 +1,7 @@
-name: watch-monitoring-every3mins
+name: watch-monitoring
 on:
   schedule:
-    - cron: '*/3 * * * *'
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+    - cron: '*/10 * * * *'
 jobs:
   test:
     timeout-minutes: 60
@@ -15,8 +11,16 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Install dependencies
-        run: npm ci
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: NPM Install
+        run: npm install --silent
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
