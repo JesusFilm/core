@@ -101,7 +101,9 @@ export function TemplateSection({
               prevEl: prevRef.current
             }}
             virtual
-            style={{ overflow: 'visible' }}
+            style={{
+              overflow: 'visible'
+            }}
           >
             {journeys?.map((journey) => (
               <SwiperSlide
