@@ -9,7 +9,7 @@ import {
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
-import { useCurrentUser } from '../../../../../../../libs/useCurrentUser'
+import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
@@ -27,12 +27,12 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-jest.mock('../../../../../../../libs/useCurrentUser', () => ({
+jest.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUser: jest.fn()
+  useCurrentUserLazyQuery: jest.fn()
 }))
 
-const useCurrentUserMock = useCurrentUser as jest.Mock
+const useCurrentUserMock = useCurrentUserLazyQuery as jest.Mock
 
 describe('HostSidePanel', () => {
   beforeEach(() => {
