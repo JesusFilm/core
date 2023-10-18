@@ -39,7 +39,7 @@ describe('PageWrapper', () => {
       const { getByText } = render(
         <MockedProvider>
           <FlagsProvider>
-            <PageWrapper title="Page Title" showPanelHeader />
+            <PageWrapper title="Page Title" />
           </FlagsProvider>
         </MockedProvider>
       )
