@@ -1,5 +1,4 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
-import FormGroup from '@mui/material/FormGroup'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
@@ -21,6 +20,7 @@ import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 
 import { AboutTabPanel } from './AboutTabPanel'
+import { CategoriesTabPanel } from './CategoriesTabPanel'
 import { FeaturedCheckbox } from './FeaturedCheckbox'
 
 export const JOURNEY_FEATURE_UPDATE = gql`
@@ -51,6 +51,10 @@ export function TemplateSettingsDialog({
   )
 
   const { journey } = useJourney()
+  const initialTags = journey?.tags.map((tag) => ({
+    id: tag.id,
+    parentId: tag.parentId
+  }))
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -58,17 +62,21 @@ export function TemplateSettingsDialog({
   const handleTemplateUpdate = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
 
-    const existingValues = (({ title, description, strategySlug }) => ({
+    const existingValues = (({ title, description, strategySlug, tags }) => ({
       title,
       description,
-      strategySlug
+      strategySlug,
+      tags
     }))(journey)
 
-    const formValues = (({ title, description, strategySlug }) => ({
+    const formValues = (({ title, description, strategySlug, tag }) => ({
       title,
       description,
-      strategySlug: strategySlug === '' ? null : strategySlug
+      strategySlug: strategySlug === '' ? null : strategySlug,
+      tags
     }))(values)
+
+    console.log()
 
     try {
       if (!isEqual(existingValues, formValues)) {
@@ -79,7 +87,8 @@ export function TemplateSettingsDialog({
               title: values.title,
               description: values.description,
               strategySlug:
-                values.strategySlug === '' ? null : values.strategySlug
+                values.strategySlug === '' ? null : values.strategySlug,
+              tagIds: values.tags.map((tag) => tag.id)
             }
           },
           optimisticResponse: {
@@ -88,7 +97,8 @@ export function TemplateSettingsDialog({
               __typename: 'Journey',
               title: values.title,
               description: values.description,
-              strategySlug: values.strategySlug
+              strategySlug: values.strategySlug,
+              tags: [values.tags.map((tag) => ({ id: tag.id }))]
             }
           },
           onCompleted: () =>
@@ -139,7 +149,8 @@ export function TemplateSettingsDialog({
             title: journey?.title,
             description: journey?.description,
             featuredAt: journey?.featuredAt != null,
-            strategySlug: journey?.strategySlug
+            strategySlug: journey?.strategySlug,
+            tags: initialTags
           }
         })
       )
@@ -174,12 +185,20 @@ export function TemplateSettingsDialog({
             title: journey.title ?? '',
             description: journey.description ?? '',
             featuredAt: journey.featuredAt != null,
-            strategySlug: journey?.strategySlug ?? ''
+            strategySlug: journey?.strategySlug ?? '',
+            tags: initialTags
           }}
           onSubmit={handleTemplateUpdate}
           validationSchema={validationSchema}
         >
-          {({ values, handleChange, handleSubmit, resetForm, errors }) => (
+          {({
+            values,
+            handleChange,
+            handleSubmit,
+            resetForm,
+            errors,
+            setFieldValue
+          }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
@@ -242,26 +261,19 @@ export function TemplateSettingsDialog({
                         'Publicly visible on template details page'
                       )}
                     />
-                    <FormGroup>
-                      <FeaturedCheckbox
-                        loading={loading}
-                        values={values.featuredAt}
-                        onChange={handleChange}
-                        name="featuredAt"
-                      />
-                    </FormGroup>
+                    <FeaturedCheckbox
+                      loading={loading}
+                      value={values.featuredAt}
+                      onChange={handleChange}
+                      name="featuredAt"
+                    />
                   </Stack>
                 </TabPanel>
-                <TabPanel
-                  name="template-categories-settings"
-                  value={tabValue}
-                  index={1}
-                >
-                  <Stack sx={{ pt: 6 }}>
-                    Categories - yet to be implemented - contact
-                    support@nextsteps.is for more info
-                  </Stack>
-                </TabPanel>
+                <CategoriesTabPanel
+                  tabValue={tabValue}
+                  initialTags={values.tags}
+                  onChange={setFieldValue}
+                />
                 <AboutTabPanel
                   name="strategySlug"
                   value={values.strategySlug}
