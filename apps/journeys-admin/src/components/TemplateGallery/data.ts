@@ -233,9 +233,21 @@ export const TemplateGalleryMock = [
         tags: [
           {
             __typename: 'Tag',
+            id: 'parentId1',
+            service: Service.apiJourneys,
+            parentId: null,
+            name: [
+              {
+                value: 'Felt Needs',
+                primary: true
+              }
+            ]
+          },
+          {
+            __typename: 'Tag',
             id: 'acceptanceTagId',
             service: Service.apiJourneys,
-            parentId: '73cb38e3-06b6-4f34-b1e1-8d2859e510b1',
+            parentId: 'parentId1',
             name: [
               {
                 value: 'Acceptance',
@@ -247,7 +259,7 @@ export const TemplateGalleryMock = [
             __typename: 'Tag',
             id: 'addictionTagId',
             service: Service.apiJourneys,
-            parentId: '73cb38e3-06b6-4f34-b1e1-8d2859e510a1',
+            parentId: 'parentId1',
             name: [
               {
                 value: 'Addiction',

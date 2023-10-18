@@ -2,10 +2,12 @@ import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useMemo, useState } from 'react'
+import castArray from 'lodash/castArray'
+import difference from 'lodash/difference'
+import { useRouter } from 'next/router'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { GetTags_tags as Tag } from '../../../__generated__/GetTags'
 import { TemplateSections } from '../TemplateSections'
 
 import { LanguageFilter } from './LanguageFilter'
@@ -13,15 +15,24 @@ import { TagsFilter } from './TagsFilter'
 
 export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
   const [languageId, setLanguageId] = useState('529')
-  const [selectedTags1, setSelectedTags1] = useState<Tag[]>([])
-  const [selectedTags2, setSelectedTags2] = useState<Tag[]>([])
-  const [selectedTags3, setSelectedTags3] = useState<Tag[]>([])
-
-  const selectedTags = useMemo(
-    () => [...selectedTags1, ...selectedTags2, ...selectedTags3],
-    [selectedTags1, selectedTags2, selectedTags3]
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
+    router.query.tagIds != null ? castArray(router.query.tagIds) : []
   )
+
+  function handleChange(
+    newSelectedTagIds: string[],
+    filteredTagIds: string[]
+  ): void {
+    const tagIds = [
+      ...difference(selectedTagIds, filteredTagIds),
+      ...newSelectedTagIds
+    ]
+    setSelectedTagIds(tagIds)
+    router.query.tagIds = tagIds
+    void router.push(router)
+  }
 
   return (
     <Container disableGutters>
@@ -55,28 +66,29 @@ export function TemplateGallery(): ReactElement {
           <TagsFilter
             label={t('Topics, holidays, felt needs, collections')}
             tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
-            onChange={(value) => setSelectedTags1(value)}
+            onChange={handleChange}
+            selectedTagIds={selectedTagIds}
           />
         </Grid>
         <Grid item xs={6} md={2}>
           <TagsFilter
             label={t('Audience')}
             tagNames={['Audience']}
-            onChange={(value) => setSelectedTags2(value)}
+            onChange={handleChange}
+            selectedTagIds={selectedTagIds}
           />
         </Grid>
         <Grid item xs={6} md={2}>
           <TagsFilter
             label={t('Genre')}
             tagNames={['Genre']}
-            onChange={(value) => setSelectedTags3(value)}
+            onChange={handleChange}
+            selectedTagIds={selectedTagIds}
           />
         </Grid>
       </Grid>
       <TemplateSections
-        tagIds={
-          selectedTags.length > 0 ? selectedTags.map(({ id }) => id) : undefined
-        }
+        tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
         languageId={languageId}
       />
     </Container>

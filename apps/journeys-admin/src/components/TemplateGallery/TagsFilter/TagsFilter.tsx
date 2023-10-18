@@ -6,7 +6,7 @@ import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { GetTags_tags as Tag } from '../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
@@ -14,27 +14,27 @@ import { useTagsQuery } from '../../../libs/useTagsQuery'
 interface TagsFilterProps {
   label: string
   tagNames: string[]
-  onChange: (value: Tag[]) => void
+  selectedTagIds: string[]
+  onChange: (selectedTagIds: string[], filteredTagIds: string[]) => void
 }
 
 export function TagsFilter({
   label,
   tagNames,
+  selectedTagIds,
   onChange
 }: TagsFilterProps): ReactElement {
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([])
   const { parentTags, childTags } = useTagsQuery()
-  const filteredParentTags = compact(
+  const filteredParentTagIds = compact(
     tagNames.map((tagName) => {
       return parentTags.find(({ name }) =>
         name.some(({ value }) => value === tagName)
-      )
+      )?.id
     })
   )
-  const filteredParentTagIds = filteredParentTags.map(({ id }) => id)
   const filteredChildTags = childTags
     .filter(({ parentId }) =>
-      filteredParentTags.some(({ id }) => id === parentId)
+      filteredParentTagIds.some((tagId) => tagId === parentId)
     )
     .sort((a, b) => {
       if (a.parentId === b.parentId) return 0
@@ -45,16 +45,26 @@ export function TagsFilter({
         return -1
       return 1
     })
+  const filteredChildTagIds = filteredChildTags.map(({ id }) => id)
+
+  const filteredSelectedTags = compact(
+    selectedTagIds.map((tagId) =>
+      filteredChildTags.find(({ id }) => id === tagId)
+    )
+  )
 
   function handleChange(_event, value: Tag[]): void {
-    setSelectedTags(value)
-    onChange?.(value)
+    onChange(
+      value.map(({ id }) => id),
+      filteredChildTagIds
+    )
   }
 
   return (
     <Box sx={{ width: '100%' }}>
       <Autocomplete
-        value={selectedTags}
+        disableCloseOnSelect
+        value={filteredSelectedTags}
         onChange={handleChange}
         options={filteredChildTags}
         groupBy={(option) => option.parentId ?? ''}
