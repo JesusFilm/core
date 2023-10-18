@@ -380,7 +380,6 @@ describe('arclight', () => {
         }
       }
     ]
-    const mediaComponentLinks = []
     const languages: Language[] = [
       {
         languageId: 529,
@@ -460,7 +459,6 @@ describe('arclight', () => {
         transformArclightMediaComponentToVideo(
           mediaComponent,
           mediaComponentLanguages,
-          mediaComponentLinks,
           languages,
           usedSlugs
         )
@@ -474,7 +472,6 @@ describe('arclight', () => {
         transformArclightMediaComponentToVideo(
           mediaComponent,
           mediaComponentLanguages,
-          mediaComponentLinks,
           languages,
           usedSlugs
         )
@@ -497,7 +494,6 @@ describe('arclight', () => {
         transformArclightMediaComponentToVideo(
           mediaComponent,
           mediaComponentLanguages,
-          mediaComponentLinks,
           [],
           usedSlugs
         )
@@ -511,7 +507,6 @@ describe('arclight', () => {
         transformArclightMediaComponentToVideo(
           { ...mediaComponent, studyQuestions: ['How can I know Jesus?'] },
           mediaComponentLanguages,
-          mediaComponentLinks,
           languages,
           usedSlugs
         )
@@ -538,7 +533,6 @@ describe('arclight', () => {
               'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Over 100 Characters'
           },
           mediaComponentLanguages,
-          mediaComponentLinks,
           languages,
           usedSlugs
         )
@@ -633,176 +627,6 @@ describe('arclight', () => {
           slug: 'english'
         }
       ])
-    })
-  })
-
-  describe('fetchMediaComponentsAndTransformToVideos', () => {
-    it('returns a collection of videos', async () => {
-      mockFetch.mockImplementation(async (url: string) => {
-        let response = {}
-        if (
-          url.startsWith(
-            'https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=1&apiKey='
-          )
-        )
-          response = {
-            _embedded: {
-              mediaComponents: [
-                {
-                  mediaComponentId: 'mediaComponentId',
-                  primaryLanguageId: 529,
-                  title: 'title',
-                  shortDescription: 'shortDescription',
-                  longDescription: 'longDescription',
-                  metadataLanguageTag: 'metadataLanguageTag',
-                  imageUrls: {
-                    mobileCinematicHigh: 'mobileCinematicHigh'
-                  },
-                  studyQuestions: [],
-                  subType: 'episode'
-                }
-              ]
-            }
-          }
-        else if (
-          url.startsWith(
-            'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey='
-          )
-        )
-          response = {
-            linkedMediaComponentIds: {
-              contains: ['otherMediaComponentId']
-            }
-          }
-        else if (
-          url.startsWith(
-            'https://api.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey='
-          )
-        )
-          response = {
-            _embedded: {
-              mediaComponentLanguage: [
-                {
-                  refId: 'refId',
-                  languageId: 529,
-                  lengthInMilliseconds: 1000,
-                  subtitleUrls: {
-                    vtt: [
-                      {
-                        languageId: 529,
-                        url: 'subtitleUrl529'
-                      },
-                      {
-                        languageId: 2048,
-                        url: 'subtitleUrl2048'
-                      }
-                    ]
-                  },
-                  streamingUrls: {
-                    hls: [
-                      {
-                        url: 'hlsUrl'
-                      }
-                    ]
-                  },
-                  downloadUrls: {
-                    low: {
-                      url: 'lowUrl',
-                      sizeInBytes: 1024
-                    },
-                    high: {
-                      url: 'highUrl',
-                      sizeInBytes: 1024
-                    }
-                  }
-                }
-              ]
-            }
-          }
-
-        return await Promise.resolve({
-          json: async () => await Promise.resolve(response)
-        } as unknown as Response)
-      })
-      const languages = [
-        {
-          name: 'English',
-          bcp47: 'en',
-          languageId: 529,
-          slug: 'english'
-        }
-      ]
-      expect(
-        await fetchMediaComponentsAndTransformToVideos(languages, {}, 1, [])
-      ).toEqual({
-        count: 1,
-        videos: [
-          {
-            id: 'mediaComponentId',
-            childIds: ['otherMediaComponentId'],
-            description: [
-              { languageId: '529', primary: true, value: 'longDescription' }
-            ],
-            image: 'mobileCinematicHigh',
-            imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
-            label: 'episode',
-            noIndex: false,
-            primaryLanguageId: '529',
-            seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
-            slug: 'title',
-            snippet: [
-              { languageId: '529', primary: true, value: 'shortDescription' }
-            ],
-            studyQuestions: [],
-            title: [
-              {
-                videoId: 'mediaComponentId',
-                languageId: '529',
-                primary: true,
-                value: 'title'
-              }
-            ],
-            variants: [
-              {
-                downloads: [
-                  {
-                    videoVariantId: 'refId',
-                    quality: 'low',
-                    size: 1024,
-                    url: 'lowUrl'
-                  },
-                  {
-                    videoVariantId: 'refId',
-                    quality: 'high',
-                    size: 1024,
-                    url: 'highUrl'
-                  }
-                ],
-                videoId: 'mediaComponentId',
-                duration: 1,
-                hls: 'hlsUrl',
-                id: 'refId',
-                languageId: '529',
-                slug: 'title/english',
-                subtitle: [
-                  {
-                    videoVariantId: 'refId',
-                    languageId: '529',
-                    primary: true,
-                    value: 'subtitleUrl529'
-                  },
-                  {
-                    videoVariantId: 'refId',
-                    languageId: '2048',
-                    primary: false,
-                    value: 'subtitleUrl2048'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      })
     })
   })
 })
