@@ -222,6 +222,7 @@ export const Complete = {
       ...journey,
       tags
     },
+    authUser: 'user.id',
     getJourneysMock,
     getUserRoleMock,
     getTagsMock
