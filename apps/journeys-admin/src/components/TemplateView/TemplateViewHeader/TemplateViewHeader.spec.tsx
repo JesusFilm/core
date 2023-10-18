@@ -173,7 +173,7 @@ describe('TemplateViewHeader', () => {
     )
 
     expect(
-      getAllByTestId('featuredAtTemplatePreviewPage')[0]
+      getAllByTestId('CreatedAtTemplatePreviewPage')[0]
     ).toBeInTheDocument()
   })
 
@@ -190,7 +190,7 @@ describe('TemplateViewHeader', () => {
     )
 
     await waitFor(() =>
-      expect(getAllByTestId('headerSkeleton')).toHaveLength(5)
+      expect(getAllByTestId('HeaderSkeleton')).toHaveLength(5)
     )
   })
 })

@@ -31,7 +31,7 @@ export function TemplateViewHeader({
   return (
     <Stack>
       <Typography
-        data-testId="featuredAtTemplatePreviewPage"
+        data-testId="CreatedAtTemplatePreviewPage"
         variant="overline"
         sx={{
           color: 'secondary.light',
@@ -47,7 +47,7 @@ export function TemplateViewHeader({
           })
         ) : (
           <Skeleton
-            data-testid="headerSkeleton"
+            data-testid="HeaderSkeleton"
             sx={{ width: '50%', maxWidth: 150 }}
           />
         )}
@@ -75,7 +75,7 @@ export function TemplateViewHeader({
                 color: 'secondary.light',
                 display: { xs: 'none', sm: 'block' }
               }}
-              data-testId="featuredAtTemplatePreviewPage"
+              data-testId="CreatedAtTemplatePreviewPage"
               noWrap
             >
               {journey?.createdAt != null ? (
@@ -85,7 +85,7 @@ export function TemplateViewHeader({
                 })
               ) : (
                 <Skeleton
-                  data-testid="headerSkeleton"
+                  data-testid="HeaderSkeleton"
                   sx={{ width: '35%', maxWidth: 150 }}
                 />
               )}
@@ -96,7 +96,7 @@ export function TemplateViewHeader({
               journey?.title
             ) : (
               <Skeleton
-                data-testid="headerSkeleton"
+                data-testid="HeaderSkeleton"
                 sx={{
                   width: { xs: '100%', sm: '50%' },
                   maxWidth: { xs: 200, sm: 400 }
@@ -114,8 +114,12 @@ export function TemplateViewHeader({
               journey.description
             ) : (
               <>
-                {[0, 1].map((i) => (
-                  <Skeleton key={i} data-testid="headerSkeleton" width="100%" />
+                {[0, 1].map((value) => (
+                  <Skeleton
+                    key={value}
+                    data-testid="HeaderSkeleton"
+                    width="100%"
+                  />
                 ))}
               </>
             )}

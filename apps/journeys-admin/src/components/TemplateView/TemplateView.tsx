@@ -56,10 +56,10 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
             journey.description
           ) : (
             <>
-              {[0, 1, 2].map((i) => (
+              {[0, 1, 2].map((value) => (
                 <Skeleton
-                  key={i}
-                  data-testid="templateViewSkeleton"
+                  key={value}
+                  data-testid="TemplateViewSkeleton"
                   width="100%"
                 />
               ))}

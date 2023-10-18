@@ -65,6 +65,6 @@ describe('SocialImage', () => {
         <SocialImage />
       </JourneyProvider>
     )
-    expect(getByTestId('socialImageSkeleton')).toBeInTheDocument()
+    expect(getByTestId('SocialImageSkeleton')).toBeInTheDocument()
   })
 })

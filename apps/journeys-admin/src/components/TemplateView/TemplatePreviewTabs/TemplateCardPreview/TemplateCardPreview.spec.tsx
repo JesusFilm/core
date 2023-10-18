@@ -28,7 +28,7 @@ describe('TemplateCardPreview', () => {
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('templateCardsSwiperSlide')).toHaveLength(3)
+      expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)
     )
   })
 
@@ -46,7 +46,7 @@ describe('TemplateCardPreview', () => {
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('templateCardsSwiperSlide')).toHaveLength(3)
+      expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)
     )
   })
 
@@ -59,7 +59,7 @@ describe('TemplateCardPreview', () => {
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('templateCardSkeleton')).toHaveLength(7)
+      expect(getAllByTestId('TemplateCardSkeleton')).toHaveLength(7)
     )
   })
 })

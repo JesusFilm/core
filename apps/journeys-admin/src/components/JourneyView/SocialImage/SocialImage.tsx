@@ -54,7 +54,7 @@ export function SocialImage({
             <GridEmptyIcon fontSize="large" />
           ) : (
             <Skeleton
-              data-testid="socialImageSkeleton"
+              data-testid="SocialImageSkeleton"
               variant="rounded"
               sx={{ borderRadius: 4, width, height }}
             />

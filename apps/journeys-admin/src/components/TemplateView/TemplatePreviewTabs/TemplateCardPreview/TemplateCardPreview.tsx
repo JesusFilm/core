@@ -127,7 +127,7 @@ export function TemplateCardPreview({
         ? steps.map((step) => {
             return (
               <SwiperSlide
-                data-testid="templateCardsSwiperSlide"
+                data-testid="TemplateCardsSwiperSlide"
                 key={step.id}
                 style={{
                   width: 'fit-content',
@@ -138,18 +138,18 @@ export function TemplateCardPreview({
               </SwiperSlide>
             )
           })
-        : [0, 1, 2, 3, 4, 5, 6].map((i) => {
+        : [0, 1, 2, 3, 4, 5, 6].map((value) => {
             return (
               <SwiperSlide
-                data-testid="templateCardsSwiperSlide"
-                key={i}
+                data-testid="TemplateCardsSwiperSlide"
+                key={value}
                 style={{
                   width: 'fit-content',
                   zIndex: 2
                 }}
               >
                 <Skeleton
-                  data-testid="templateCardSkeleton"
+                  data-testid="TemplateCardSkeleton"
                   sx={{
                     width: { xs: 177, sm: 240 },
                     height: { xs: 280, sm: 380 },
