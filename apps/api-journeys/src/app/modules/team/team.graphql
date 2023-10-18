@@ -1,6 +1,7 @@
 type Team @key(fields: "id") {
   id: ID!
   title: String!
+  publicTitle: String
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
@@ -13,10 +14,12 @@ extend type Query {
 
 input TeamCreateInput {
   title: String!
+  publicTitle: String
 }
 
 input TeamUpdateInput {
   title: String!
+  publicTitle: String
 }
 
 extend type Mutation {

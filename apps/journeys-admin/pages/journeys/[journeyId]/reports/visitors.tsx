@@ -4,9 +4,9 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ACCEPT_ALL_INVITES } from '../../..'
 import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
-import { GetJourney } from '../../../../__generated__/GetJourney'
+import { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
 import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
@@ -27,7 +27,7 @@ import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/Fil
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/NewPageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
-import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
+import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -79,7 +79,7 @@ export const GET_JOURNEY_VISITORS_COUNT = gql`
 
 function JourneyVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const router = useRouter()
   const journeyId = router.query.journeyId as string
 
@@ -182,7 +182,7 @@ function JourneyVisitorsPage(): ReactElement {
       <NextSeo title={t('Visitors')} />
       <PageWrapper
         title={t('Visitors')}
-        authUser={AuthUser}
+        user={user}
         backHref={`/journeys/${journeyId}/reports`}
         mainHeaderChildren={
           <Stack
@@ -238,15 +238,16 @@ function JourneyVisitorsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale, query }) => {
-  if (AuthUser == null)
+})(async ({ user, locale, query, resolvedUrl }) => {
+  if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
+    user,
+    locale,
+    resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -256,8 +257,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
   })
 
   try {
-    await apolloClient.query<GetJourney>({
-      query: GET_JOURNEY,
+    await apolloClient.query<GetAdminJourney>({
+      query: GET_ADMIN_JOURNEY,
       variables: {
         id: query?.journeyId
       }
@@ -284,6 +285,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(JourneyVisitorsPage)

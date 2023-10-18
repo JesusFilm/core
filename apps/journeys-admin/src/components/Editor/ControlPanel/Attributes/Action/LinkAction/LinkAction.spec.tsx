@@ -10,6 +10,11 @@ import { steps } from '../data'
 
 import { LINK_ACTION_UPDATE, LinkAction } from './LinkAction'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('LinkAction', () => {
   const selectedBlock = steps[1].children[0].children[3]
   const result = jest.fn(() => ({

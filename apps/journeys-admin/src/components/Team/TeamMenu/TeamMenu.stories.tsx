@@ -35,6 +35,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
         {
           id: 'teamId',
           title: 'Jesus Film Project',
+          publicTitle: null,
           __typename: 'Team',
           userTeams: []
         }

@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
@@ -19,6 +19,7 @@ interface PageWrapperProps {
   showAppHeader?: boolean
   title?: string
   mainHeaderChildren?: ReactNode
+  hiddenPanelHeader?: boolean
   backHref?: string
   backHrefHistory?: boolean
   children?: ReactNode
@@ -28,22 +29,25 @@ interface PageWrapperProps {
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */
   sidePanelChildren?: ReactNode
-  authUser?: AuthUser
+  user?: User
   initialState?: Partial<PageState>
+  mainPanelSx?: SxProps
 }
 
 export function PageWrapper({
   showAppHeader = true,
   title,
   mainHeaderChildren,
+  hiddenPanelHeader,
   backHref,
   backHrefHistory,
   children,
   bottomPanelChildren,
   sidePanelTitle,
   sidePanelChildren,
-  authUser,
-  initialState
+  user,
+  initialState,
+  mainPanelSx
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -64,7 +68,7 @@ export function PageWrapper({
           <NavigationDrawer
             open={open}
             onClose={setOpen}
-            authUser={authUser}
+            user={user}
             router={router}
           />
 
@@ -94,14 +98,19 @@ export function PageWrapper({
                 }
               }}
             >
-              <MainPanelHeader
-                title={title}
-                backHref={backHref}
-                backHrefHistory={backHrefHistory}
+              {hiddenPanelHeader !== true && (
+                <MainPanelHeader
+                  title={title}
+                  backHref={backHref}
+                  backHrefHistory={backHrefHistory}
+                >
+                  {mainHeaderChildren}
+                </MainPanelHeader>
+              )}
+              <MainPanelBody
+                bottomPanelChildren={bottomPanelChildren}
+                sx={mainPanelSx}
               >
-                {mainHeaderChildren}
-              </MainPanelHeader>
-              <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
                 {children}
               </MainPanelBody>
             </Stack>

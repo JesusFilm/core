@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import { ThemeProvider } from '../../../ThemeProvider'
@@ -25,7 +25,7 @@ jest.mock('react-i18next', () => ({
 
 describe('ActivePriorityList', () => {
   it('should show journeyCard in default priority for owners', () => {
-    const authUser = { id: 'user1.id' } as unknown as AuthUser
+    const user = { id: 'user1.id' } as unknown as User
     const { getAllByLabelText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -33,7 +33,7 @@ describe('ActivePriorityList', () => {
             <ActivePriorityList
               journeys={[defaultJourney, newJourney, pendingActionJourney]}
               refetch={jest.fn()}
-              authUser={authUser}
+              user={user}
             />
           </SnackbarProvider>
         </ThemeProvider>
@@ -52,7 +52,7 @@ describe('ActivePriorityList', () => {
   })
 
   it('should order journeyCards by alphabetical order', () => {
-    const authUser = { id: 'user1.id' } as unknown as AuthUser
+    const user = { id: 'user1.id' } as unknown as User
     const { getAllByLabelText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -66,7 +66,7 @@ describe('ActivePriorityList', () => {
               ]}
               sortOrder={SortOrder.TITLE}
               refetch={jest.fn()}
-              authUser={authUser}
+              user={user}
             />
           </SnackbarProvider>
         </ThemeProvider>
@@ -88,7 +88,7 @@ describe('ActivePriorityList', () => {
   })
 
   it('should show big divider if there is a new journey and normal journeys', () => {
-    const authUser = { id: 'user1.id' } as unknown as AuthUser
+    const user = { id: 'user1.id' } as unknown as User
     const { getByLabelText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -97,7 +97,7 @@ describe('ActivePriorityList', () => {
               journeys={[journey, newJourney]}
               sortOrder={SortOrder.TITLE}
               refetch={jest.fn()}
-              authUser={authUser}
+              user={user}
             />
           </SnackbarProvider>
         </ThemeProvider>
@@ -107,7 +107,7 @@ describe('ActivePriorityList', () => {
   })
 
   it('should show big divider if there is a journey with access requested and normal journeys', () => {
-    const authUser = { id: 'user1.id' } as unknown as AuthUser
+    const user = { id: 'user1.id' } as unknown as User
     const { getByLabelText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -116,7 +116,7 @@ describe('ActivePriorityList', () => {
               journeys={[journey, pendingActionJourney]}
               sortOrder={SortOrder.TITLE}
               refetch={jest.fn()}
-              authUser={authUser}
+              user={user}
             />
           </SnackbarProvider>
         </ThemeProvider>

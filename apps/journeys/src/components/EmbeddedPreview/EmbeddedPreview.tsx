@@ -23,7 +23,7 @@ interface EmbeddedPreviewProps {
 export function EmbeddedPreview({
   blocks
 }: EmbeddedPreviewProps): ReactElement {
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const maximizableElement = useRef(null)
   const [allowFullWindow, setAllowFullWindow] = useState(true)
   // Use full container / fullWindow mode over fullScreen to avoid video playback issues
@@ -128,7 +128,7 @@ export function EmbeddedPreview({
           box-shadow: none !important;
         }
       `}</style>
-      <Div100vh data-testid="embedded-preview">
+      <Div100vh data-testid="EmbeddedPreview">
         {!isFullWindow && <ClickableCard />}
         <Box
           id="embed-fullscreen-container"
@@ -154,7 +154,7 @@ export function EmbeddedPreview({
               >
                 <Close />
               </IconButton>
-              <JourneyProvider value={{ variant: 'default' }}>
+              <JourneyProvider value={{ journey, variant: 'default' }}>
                 <Conductor blocks={blocks} />
               </JourneyProvider>
             </>

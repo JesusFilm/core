@@ -5,12 +5,14 @@ import { Meta, StoryObj } from '@storybook/react'
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 
-import { Icon } from './Icon'
+// import { CenterCheck } from './CenterCheck'
+import { Icon, IconName } from './Icon'
 
-const iconNames = [
+const iconNames: IconName[] = [
   'AddSquare2',
   'AddSquare4',
   'AlertCircle',
+  'AlertTriangle',
   'AlignCenter',
   'AlignJustify',
   'AlignLeft',
@@ -30,11 +32,14 @@ const iconNames = [
   'ArrowUpContained1',
   'ArrowUpSm',
   'ArrowUp',
-  'Attatchment1',
+  'Attachment1',
   'Bag5',
+  'BarChartSquare3',
   'BarGroup3',
   'Bell2',
+  'Bible',
   'Book',
+  'Box',
   'Calendar1',
   'CheckBroken',
   'CheckContained',
@@ -46,16 +51,24 @@ const iconNames = [
   'ChevronRight',
   'ChevronUp',
   'Circle',
+  'Clock1',
+  'Code1',
   'ColorPicker',
   'Colors1',
   'Colors2',
   'Computer',
   'CopyLeft',
   'CopyRight',
+  'CopyTo',
   'Crop1',
+  'Cursor6',
+  'CursorPointer',
+  'Dash',
+  'DotVertical',
   'DownArrowSm',
   'DownArrow',
   'Download2',
+  'Drag',
   'DuplicateCard',
   'Edit2',
   'Email',
@@ -67,25 +80,38 @@ const iconNames = [
   'Facebook',
   'FacebookLogo',
   'Favourite',
+  'File5',
+  'FilePlus1',
+  'FileShred',
+  'Filter',
   'Flame',
+  'FlexAlignBottom1',
+  'FolderDown1',
+  'FolderUp1',
+  'Globe',
   'Globe1',
   'Globe2',
   'Globe3',
-  'Globe',
+  'Grid1',
+  'GridEmpty',
   'Hash1',
   'Hash2',
   'HelpCircleContained',
   'HelpSquareContained',
   'Home4',
   'Image3',
+  'ImageX',
   'InformationCircleContained',
   'InformationSquareContained',
   'Instagram',
+  'Iphone1',
   'Journey',
+  'Journeys',
   'Key1',
   'Key2',
   'Laptop1',
   'Layers4',
+  'Layout2',
   'LayoutScale',
   'Lightning2',
   'LightningCircleContained',
@@ -96,14 +122,17 @@ const iconNames = [
   'Link',
   'Lock1',
   'LockOpen1',
+  'Logout2',
   'Mail1',
   'Mail2',
   'Marker1',
   'Marker2',
   'Maximise1',
   'Maximise2',
+  'MediaStrip1',
   'Menu1',
   'MessageChat1',
+  'MessageCircle',
   'MessageText1',
   'MessageTyping',
   'Minimise1',
@@ -115,14 +144,17 @@ const iconNames = [
   'Pause1',
   'Pause2',
   'Pause3',
+  'Play1',
   'Play2',
   'Play3',
   'Plus1',
   'Plus2',
   'Plus3',
+  'Presentation1',
   'Search1',
   'Search2',
   'Send1',
+  'Settings',
   'Share',
   'Skype',
   'Snapchat',
@@ -131,14 +163,22 @@ const iconNames = [
   'SpaceVertical',
   'Square',
   'Star2',
+  'Stars',
+  'StopCircleContained',
   'Target',
   'Target2',
   'Telegram',
+  'TextInput1',
   'Trash2',
   'ThumbsDown',
   'ThumbsUp',
   'Tiktok',
+  'Transform',
   'TwitterLogo',
+  'Type2',
+  'Type3',
+  'Upload1',
+  'Upload2',
   'UserProfile2',
   'UserProfile3',
   'UserProfileAdd',
@@ -146,6 +186,7 @@ const iconNames = [
   'UsersProfiles2',
   'UsersProfiles3',
   'Viber',
+  'VideoOn',
   'Vk',
   'Web',
   'WhatsApp',
@@ -153,8 +194,9 @@ const iconNames = [
   'X2',
   'X3',
   'XCircleContained',
-  'XSquareContained'
-] as const
+  'XSquareContained',
+  'Youtube'
+]
 
 const IconDemo: Meta<typeof Icon> = {
   ...simpleComponentConfig,
@@ -210,6 +252,7 @@ const Template: StoryObj<typeof Icon> = {
               'disabled'
             ].map((color) => (
               <Typography
+                key={color}
                 variant="caption"
                 color={`${
                   color === 'action ' || color === 'disabled'
@@ -225,7 +268,7 @@ const Template: StoryObj<typeof Icon> = {
         </Stack>
 
         {[...iconNames].slice(1).map((name) => (
-          <Stack direction="row" gap={10}>
+          <Stack key={name} direction="row" gap={10}>
             <Stack
               direction="row"
               gap={7}
@@ -236,6 +279,8 @@ const Template: StoryObj<typeof Icon> = {
               <Typography variant="body2">
                 {<Icon name={name} /> != null ? name : null}
               </Typography>
+              {/* Use to test icon centering */}
+              {/* <CenterCheck name={name} /> */}
               {/* Use to test loading state locally */}
               {/* <CircularProgress size="16px" /> */}
               <Icon name={name} fontSize="small" />
@@ -253,7 +298,7 @@ const Template: StoryObj<typeof Icon> = {
                 'action',
                 'disabled'
               ].map((color) => (
-                <Icon name={name} color={color as Color} />
+                <Icon key={name} name={name} color={color as Color} />
               ))}
             </Stack>
           </Stack>

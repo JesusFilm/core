@@ -20,6 +20,11 @@ import {
 
 import { BLOCK_DELETE, DeleteBlock } from './DeleteBlock'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const selectedBlock: TreeBlock<TypographyBlock> = {
   id: 'typography0.id',
   __typename: 'TypographyBlock',
@@ -127,9 +132,7 @@ describe('DeleteBlock', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(
-      getByTestId('DeleteOutlineRoundedIcon')
-    )
+    expect(getByRole('button')).toContainElement(getByTestId('Trash2Icon'))
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
@@ -268,9 +271,7 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
 
-    expect(getByRole('button')).toContainElement(
-      getByTestId('DeleteOutlineRoundedIcon')
-    )
+    expect(getByRole('button')).toContainElement(getByTestId('Trash2Icon'))
     fireEvent.click(getByRole('button'))
 
     expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()

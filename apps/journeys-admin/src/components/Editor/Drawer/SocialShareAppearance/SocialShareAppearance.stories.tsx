@@ -38,7 +38,9 @@ const journey: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   title: 'my journey',
+  strategySlug: null,
   slug: 'my-journey',
+  featuredAt: null,
   language: {
     __typename: 'Language',
     id: '529',
@@ -64,7 +66,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 const image: ImageBlock = {
