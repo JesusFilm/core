@@ -3,6 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
+import { SnackbarProvider } from 'notistack'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
@@ -90,18 +91,21 @@ describe('NavigationDrawer', () => {
         ]}
       >
         <FlagsProvider flags={{ globalReports: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            user={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as User
-            }
-          />
+          <SnackbarProvider>
+            <NavigationDrawer
+              open
+              onClose={onClose}
+              user={
+                {
+                  id: 'userId',
+                  displayName: 'Amin One',
+                  photoURL: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com',
+                  signOut
+                } as unknown as User
+              }
+            />
+          </SnackbarProvider>
         </FlagsProvider>
       </MockedProvider>
     )
@@ -190,19 +194,22 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          user={
-            {
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut
-            } as unknown as User
-          }
-          router={getRouter('/publisher/[journeyId]')}
-        />
+        <SnackbarProvider>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            user={
+              {
+                id: 'userId',
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as User
+            }
+            router={getRouter('/publisher/[journeyId]')}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -215,6 +222,74 @@ describe('NavigationDrawer', () => {
 
   it('should show profile menu onClick', async () => {
     const { getByTestId, getByRole, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ME
+            },
+            result: {
+              data: {
+                me: {
+                  id: 'userId',
+                  firstName: 'Amin',
+                  lastName: 'One',
+                  imageUrl: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            user={
+              {
+                id: 'userId',
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as User
+            }
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
+    )
+    expect(getByTestId('Profile-list-item')).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
+    fireEvent.click(getByRole('img', { name: 'Amin One' }))
+    await waitFor(() => expect(getByText('Amin One')).toBeInTheDocument())
+    fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
+    await waitFor(() => expect(signOut).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(getByText('Logout successful')).toBeInTheDocument()
+    )
+  })
+
+  it('should not show user icon if logged out', async () => {
+    const { queryByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -263,16 +338,8 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
+      expect(queryByRole('img', { name: 'Amin One' })).not.toBeInTheDocument()
     )
-    expect(getByTestId('Profile-list-item')).toHaveAttribute(
-      'aria-selected',
-      'false'
-    )
-    fireEvent.click(getByRole('img', { name: 'Amin One' }))
-    await waitFor(() => expect(getByText('Amin One')).toBeInTheDocument())
-    fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
-    await waitFor(() => expect(signOut).toHaveBeenCalled())
   })
 
   it('should close the navigation drawer on chevron left click', () => {
