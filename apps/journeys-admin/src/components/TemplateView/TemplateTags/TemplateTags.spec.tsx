@@ -28,7 +28,7 @@ describe('TemplateTags', () => {
       }
     }))
 
-    const { getByTestId, getAllByTestId, getByText } = render(
+    const { getByTestId, getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -44,9 +44,8 @@ describe('TemplateTags', () => {
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(getByText('AAA sort test')).toBeInTheDocument()
-    expect(getAllByTestId('Hash2Icon')).toHaveLength(2)
     expect(getByText('Topic sub-tag')).toBeInTheDocument()
+    expect(getByTestId('Hash2Icon')).toBeInTheDocument()
 
     expect(getByText('Felt Needs sub-tag')).toBeInTheDocument()
     expect(getByTestId('SmileyNeutralIcon')).toBeInTheDocument()

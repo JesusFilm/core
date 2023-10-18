@@ -7,23 +7,6 @@ describe('getSortedTags', () => {
     expect(getSortedTags([...tags, { ...parentTags[0] }], parentTags)).toEqual([
       {
         __typename: 'Tag',
-        id: 'tag8.id',
-        parentId: 'tags.topic.id',
-        service: null,
-        name: [
-          {
-            __typename: 'Translation',
-            value: 'AAA sort test',
-            primary: true,
-            language: {
-              __typename: 'Language',
-              id: '529'
-            }
-          }
-        ]
-      },
-      {
-        __typename: 'Tag',
         id: 'tag1.id',
         parentId: 'tags.topic.id',
         service: null,

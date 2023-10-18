@@ -29,11 +29,6 @@ export function getSortedTags(
       sortedParentTagIds.some((tagId) => tagId === parentId)
     )
     .sort((a, b) => {
-      if (a.name[0].value === b.name[0].value) return 0
-      if (a.name[0].value < b.name[0].value) return -1
-      return 1
-    })
-    .sort((a, b) => {
       if (a.parentId === b.parentId) return 0
       if (
         sortedParentTagIds.indexOf(a.parentId ?? '') <
