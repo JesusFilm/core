@@ -1,32 +1,16 @@
-import { MockedResponse } from '@apollo/client/testing'
-import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { ComponentProps } from 'react'
-
 import {
-  GetJourneys,
   GetJourneys_journeys as Journey,
   GetJourneys_journeys_tags as Tag
 } from '../../../__generated__/GetJourneys'
 import {
   JourneyStatus,
+  Service,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
-
-import { TemplateSections } from '.'
-
-const TemplateSectionsStory: Meta<typeof TemplateSections> = {
-  ...journeysAdminConfig,
-  component: TemplateSections,
-  title: 'Journeys-Admin/TemplateSections',
-  parameters: {
-    ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
-  }
-}
+import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
+import { GET_LANGUAGES } from '../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
 
 const defaultTemplate: Journey = {
   __typename: 'Journey',
@@ -110,7 +94,7 @@ const journeys: Journey[] = [
     id: 'featuredId1',
     title: 'Featured Template 1',
     createdAt: '2023-09-05T23:27:45.596Z',
-    tags: [acceptance]
+    tags: [addiction]
   },
   {
     ...defaultTemplate,
@@ -139,6 +123,7 @@ const journeys: Journey[] = [
     id: 'newId2',
     title: 'New Template 2',
     createdAt: '2023-08-05T23:27:45.596Z',
+    tags: [acceptance, addiction],
     featuredAt: null
   },
   {
@@ -154,7 +139,7 @@ const journeys: Journey[] = [
     id: 'newId4',
     title: 'New Template 4',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [addiction],
+    tags: [acceptance, addiction],
     featuredAt: null
   },
   {
@@ -162,94 +147,127 @@ const journeys: Journey[] = [
     id: 'newId5',
     title: 'New Template 5',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [acceptance],
+    tags: [acceptance, addiction],
     featuredAt: null
   }
 ]
 
-const getJourneysMock: MockedResponse<GetJourneys> = {
-  request: {
-    query: GET_JOURNEYS,
-    variables: {
-      where: {
-        template: true,
-        orderByRecent: true
+export const TemplateGalleryMock = [
+  {
+    request: {
+      query: GET_JOURNEYS,
+      variables: {
+        where: {
+          template: true,
+          orderByRecent: true
+        }
+      }
+    },
+    result: {
+      data: {
+        journeys
       }
     }
   },
-  result: {
-    data: {
-      journeys
-    }
-  }
-}
-
-const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
-  ...getJourneysMock,
-  request: {
-    ...getJourneysMock.request,
-    variables: {
-      where: {
-        template: true,
-        orderByRecent: true,
-        tagIds: [addiction.id]
+  {
+    request: {
+      query: GET_LANGUAGES
+    },
+    result: {
+      data: {
+        languages: [
+          {
+            __typename: 'Language',
+            id: '529',
+            name: [
+              {
+                value: 'English',
+                primary: true,
+                __typename: 'Translation'
+              }
+            ]
+          },
+          {
+            id: '496',
+            __typename: 'Language',
+            name: [
+              {
+                value: 'Français',
+                primary: true,
+                __typename: 'Translation'
+              },
+              {
+                value: 'French',
+                primary: false,
+                __typename: 'Translation'
+              }
+            ]
+          },
+          {
+            id: '1106',
+            __typename: 'Language',
+            name: [
+              {
+                value: 'Deutsch',
+                primary: true,
+                __typename: 'Translation'
+              },
+              {
+                value: 'German, Standard',
+                primary: false,
+                __typename: 'Translation'
+              }
+            ]
+          }
+        ]
       }
     }
   },
-  result: {
-    data: {
-      journeys: journeys.filter(({ tags }) =>
-        tags.some(({ id }) => id === addiction.id)
-      )
+  {
+    request: {
+      query: GET_TAGS
+    },
+    result: {
+      data: {
+        tags: [
+          {
+            __typename: 'Tag',
+            id: 'parentId1',
+            service: Service.apiJourneys,
+            parentId: null,
+            name: [
+              {
+                value: 'Felt Needs',
+                primary: true
+              }
+            ]
+          },
+          {
+            __typename: 'Tag',
+            id: 'acceptanceTagId',
+            service: Service.apiJourneys,
+            parentId: 'parentId1',
+            name: [
+              {
+                value: 'Acceptance',
+                primary: true
+              }
+            ]
+          },
+          {
+            __typename: 'Tag',
+            id: 'addictionTagId',
+            service: Service.apiJourneys,
+            parentId: 'parentId1',
+            name: [
+              {
+                value: 'Addiction',
+                primary: true
+              }
+            ]
+          }
+        ]
+      }
     }
   }
-}
-
-const getJourneysEmptyMock: MockedResponse<GetJourneys> = {
-  ...getJourneysMock,
-  result: {
-    data: {
-      journeys: []
-    }
-  }
-}
-
-const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
-  render: ({ ...args }) => (
-    <Box sx={{ backgroundColor: 'background.paper', p: 5 }}>
-      <TemplateSections {...args} />
-    </Box>
-  )
-}
-
-export const Default = {
-  ...Template,
-  parameters: {
-    apolloClient: {
-      mocks: [getJourneysMock]
-    }
-  }
-}
-
-export const TagIds = {
-  ...Template,
-  args: {
-    tagIds: [addiction.id]
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [getJourneysWithTagIdsMock]
-    }
-  }
-}
-
-export const Empty = {
-  ...Template,
-  parameters: {
-    apolloClient: {
-      mocks: [getJourneysEmptyMock]
-    }
-  }
-}
-
-export default TemplateSectionsStory
+]
