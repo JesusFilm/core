@@ -1,5 +1,6 @@
 import { Form, Formik, FormikValues } from 'formik'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
@@ -25,6 +26,7 @@ export function LanguageFilterDialog({
   languageId,
   loading
 }: LanguageFilterDialogProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const handleSubmit = (values: FormikValues): void => {
     onChange(values.language.id)
     onClose()
@@ -71,10 +73,10 @@ export function LanguageFilterDialog({
         <Dialog
           open={open}
           onClose={handleClose(resetForm)}
-          dialogTitle={{ title: 'Edit Language' }}
+          dialogTitle={{ title: t('Filter By Language') }}
           dialogAction={{
             onSubmit: handleSubmit,
-            closeLabel: 'Cancel'
+            closeLabel: t('Cancel')
           }}
         >
           <Form>
