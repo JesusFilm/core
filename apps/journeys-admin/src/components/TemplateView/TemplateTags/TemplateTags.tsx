@@ -8,7 +8,7 @@ import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__g
 
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 
-import { getParentTagsWithIcon } from './getParentTagsWithIcon'
+import { getParentIcon } from './getParentIcon'
 import { getSortedTags } from './getSortedTags'
 import { TagItem } from './TagItem'
 
@@ -18,23 +18,18 @@ interface TemplateTagsProps {
 
 export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
   const { parentTags } = useTagsQuery()
-  const parentTagsWithIcons = useMemo(
-    () => getParentTagsWithIcon(parentTags),
-    [parentTags]
-  )
   const sortedTags = useMemo(
     () => getSortedTags(tags, parentTags),
     [tags, parentTags]
   )
-  const tagItems = sortedTags?.map((tag) => {
-    return {
-      id: tag.id,
-      name: tag.name[0].value,
-      icon: parentTagsWithIcons.find(
-        (parentTag) => parentTag.id === tag.parentId || tag.id === parentTag.id
-      )?.icon
-    }
-  })
+  const tagItems = sortedTags?.map((tag) => ({
+    id: tag.id,
+    name: tag.name[0].value,
+    icon: getParentIcon(
+      parentTags?.find((parentTag) => parentTag.id === tag.parentId)?.name[0]
+        .value
+    )
+  }))
 
   return (
     <>

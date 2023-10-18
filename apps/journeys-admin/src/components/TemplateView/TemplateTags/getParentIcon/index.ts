@@ -1,0 +1,1 @@
+export { getParentIcon } from './getParentIcon'
