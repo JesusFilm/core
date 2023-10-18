@@ -1,1 +1,0 @@
-export { getParentIcon } from './getParentIcon'

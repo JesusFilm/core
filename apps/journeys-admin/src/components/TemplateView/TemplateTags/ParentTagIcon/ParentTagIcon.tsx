@@ -8,7 +8,11 @@ import SmileyNeutralIcon from '@core/shared/ui/icons/SmileyNeutral'
 import TagIcon from '@core/shared/ui/icons/Tag'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-export function getParentIcon(name?: string): ReactNode {
+interface ParentTagIconProps {
+  name?: string
+}
+
+export function ParentTagIcon({ name }: ParentTagIconProps): ReactNode {
   switch (name) {
     case 'Topics':
       return <Hash2Icon />
