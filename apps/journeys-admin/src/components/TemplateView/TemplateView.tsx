@@ -40,6 +40,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   const relatedJourneys = data?.journeys.filter(({ id }) => id !== journey?.id)
 
   const { data: userData } = useUserRoleQuery()
+
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
 
   return (

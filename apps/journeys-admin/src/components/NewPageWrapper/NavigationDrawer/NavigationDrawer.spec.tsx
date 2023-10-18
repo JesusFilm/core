@@ -3,6 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
+import { SnackbarProvider } from 'notistack'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
@@ -90,19 +91,21 @@ describe('NavigationDrawer', () => {
         ]}
       >
         <FlagsProvider flags={{ globalReports: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            user={
-              {
-                id: 'userId',
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as User
-            }
-          />
+          <SnackbarProvider>
+            <NavigationDrawer
+              open
+              onClose={onClose}
+              user={
+                {
+                  id: 'userId',
+                  displayName: 'Amin One',
+                  photoURL: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com',
+                  signOut
+                } as unknown as User
+              }
+            />
+          </SnackbarProvider>
         </FlagsProvider>
       </MockedProvider>
     )
@@ -191,20 +194,22 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          user={
-            {
-              id: 'userId',
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut
-            } as unknown as User
-          }
-          router={getRouter('/publisher/[journeyId]')}
-        />
+        <SnackbarProvider>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            user={
+              {
+                id: 'userId',
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as User
+            }
+            router={getRouter('/publisher/[journeyId]')}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -250,19 +255,21 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          user={
-            {
-              id: 'userId',
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut
-            } as unknown as User
-          }
-        />
+        <SnackbarProvider>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            user={
+              {
+                id: 'userId',
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as User
+            }
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -276,6 +283,9 @@ describe('NavigationDrawer', () => {
     await waitFor(() => expect(getByText('Amin One')).toBeInTheDocument())
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
     await waitFor(() => expect(signOut).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(getByText('Logout successful')).toBeInTheDocument()
+    )
   })
 
   it('should not show user icon if logged out', async () => {
