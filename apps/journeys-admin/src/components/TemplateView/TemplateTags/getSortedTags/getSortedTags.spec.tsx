@@ -3,7 +3,7 @@ import { parentTags, tags } from '../data'
 import { getSortedTags } from './getSortedTags'
 
 describe('getSortedTags', () => {
-  it('should sort by parentTagId, alphabetically by tag name and filter out tags with non existent parent tags', () => {
+  it('should sort by parentTagId, filter out tags with non existent parent tags', () => {
     expect(getSortedTags([...tags, { ...parentTags[0] }], parentTags)).toEqual([
       {
         __typename: 'Tag',
@@ -14,11 +14,7 @@ describe('getSortedTags', () => {
           {
             __typename: 'Translation',
             value: 'Topic sub-tag',
-            primary: true,
-            language: {
-              __typename: 'Language',
-              id: '529'
-            }
+            primary: true
           }
         ]
       },
@@ -31,11 +27,7 @@ describe('getSortedTags', () => {
           {
             __typename: 'Translation',
             value: 'Felt Needs sub-tag',
-            primary: true,
-            language: {
-              __typename: 'Language',
-              id: '529'
-            }
+            primary: true
           }
         ]
       },
@@ -48,11 +40,7 @@ describe('getSortedTags', () => {
           {
             __typename: 'Translation',
             value: 'Holidays sub-tag',
-            primary: true,
-            language: {
-              __typename: 'Language',
-              id: '529'
-            }
+            primary: true
           }
         ]
       },
@@ -65,11 +53,7 @@ describe('getSortedTags', () => {
           {
             __typename: 'Translation',
             value: 'Audience sub-tag',
-            primary: true,
-            language: {
-              __typename: 'Language',
-              id: '529'
-            }
+            primary: true
           }
         ]
       },
@@ -82,11 +66,7 @@ describe('getSortedTags', () => {
           {
             __typename: 'Translation',
             value: 'Genre sub-tag',
-            primary: true,
-            language: {
-              __typename: 'Language',
-              id: '529'
-            }
+            primary: true
           }
         ]
       },
@@ -99,11 +79,7 @@ describe('getSortedTags', () => {
           {
             __typename: 'Translation',
             value: 'Collections sub-tag',
-            primary: true,
-            language: {
-              __typename: 'Language',
-              id: '529'
-            }
+            primary: true
           }
         ]
       }

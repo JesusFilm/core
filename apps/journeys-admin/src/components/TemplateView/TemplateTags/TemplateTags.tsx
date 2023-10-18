@@ -4,8 +4,7 @@ import { ReactElement, ReactNode, useMemo } from 'react'
 import { SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
-import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-
+import { GetTags_tags as Tag } from '../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 
 import { getSortedTags } from './getSortedTags'

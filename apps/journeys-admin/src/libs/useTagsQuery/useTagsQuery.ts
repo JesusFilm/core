@@ -12,9 +12,6 @@ export const GET_TAGS = gql`
       name {
         value
         primary
-        language {
-          id
-        }
       }
     }
   }

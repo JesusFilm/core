@@ -10,11 +10,7 @@ export const parentTags: Tag[] = [
       {
         __typename: 'Translation',
         value: 'Topics',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -27,11 +23,7 @@ export const parentTags: Tag[] = [
       {
         __typename: 'Translation',
         value: 'Felt Needs',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -44,11 +36,7 @@ export const parentTags: Tag[] = [
       {
         __typename: 'Translation',
         value: 'Holidays',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -61,11 +49,7 @@ export const parentTags: Tag[] = [
       {
         __typename: 'Translation',
         value: 'Audience',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -78,11 +62,7 @@ export const parentTags: Tag[] = [
       {
         __typename: 'Translation',
         value: 'Genre',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -95,11 +75,7 @@ export const parentTags: Tag[] = [
       {
         __typename: 'Translation',
         value: 'Collections',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -112,11 +88,7 @@ export const parentTags: Tag[] = [
       {
         __typename: 'Translation',
         value: 'Other',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   }
@@ -132,11 +104,7 @@ export const tags: Array<Tag & { parentId: string }> = [
       {
         __typename: 'Translation',
         value: 'Topic sub-tag',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -149,11 +117,7 @@ export const tags: Array<Tag & { parentId: string }> = [
       {
         __typename: 'Translation',
         value: 'Felt Needs sub-tag',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -166,11 +130,7 @@ export const tags: Array<Tag & { parentId: string }> = [
       {
         __typename: 'Translation',
         value: 'Holidays sub-tag',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -183,11 +143,7 @@ export const tags: Array<Tag & { parentId: string }> = [
       {
         __typename: 'Translation',
         value: 'Audience sub-tag',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -200,11 +156,7 @@ export const tags: Array<Tag & { parentId: string }> = [
       {
         __typename: 'Translation',
         value: 'Genre sub-tag',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -217,11 +169,7 @@ export const tags: Array<Tag & { parentId: string }> = [
       {
         __typename: 'Translation',
         value: 'Collections sub-tag',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   },
@@ -234,11 +182,7 @@ export const tags: Array<Tag & { parentId: string }> = [
       {
         __typename: 'Translation',
         value: 'Other Tag',
-        primary: true,
-        language: {
-          __typename: 'Language',
-          id: '529'
-        }
+        primary: true
       }
     ]
   }
