@@ -35,15 +35,15 @@ describe('PageWrapper', () => {
       expect(getByRole('link')).toHaveAttribute('href', '/')
     })
 
-    it('should show main panel header', () => {
-      const { getByText } = render(
+    it('should not show main panel header', () => {
+      const { queryByText } = render(
         <MockedProvider>
           <FlagsProvider>
-            <PageWrapper title="Page Title" />
+            <PageWrapper title="Page Title" hiddenPanelHeader />
           </FlagsProvider>
         </MockedProvider>
       )
-      expect(getByText('Page Title')).toBeInTheDocument()
+      expect(queryByText('Page Title')).not.toBeInTheDocument()
     })
 
     it('should show main header children', () => {
