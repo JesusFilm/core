@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { User } from 'next-firebase-auth'
-import { ReactElement } from 'react'
+import { Dispatch, ReactElement, SetStateAction } from 'react'
 
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
 
@@ -19,6 +19,7 @@ export interface UserMenuProps {
   profileAnchorEl: HTMLElement | null
   handleProfileClose: () => void
   user: User
+  onClick: Dispatch<SetStateAction<boolean>>
 }
 
 export function UserMenu({
@@ -26,7 +27,8 @@ export function UserMenu({
   profileOpen,
   profileAnchorEl,
   handleProfileClose,
-  user
+  user,
+  onClick
 }: UserMenuProps): ReactElement {
   return (
     <Menu
@@ -72,6 +74,7 @@ export function UserMenu({
         onClick={async () => {
           handleProfileClose()
           await user.signOut()
+          await onClick(false)
         }}
       />
     </Menu>

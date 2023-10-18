@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 
 import { UserMenu } from './UserMenu'
@@ -22,6 +22,7 @@ describe('UserMenu', () => {
           }}
           profileOpen
           profileAnchorEl={null}
+          onClick={jest.fn()}
           handleProfileClose={handleProfileClose}
           user={
             {
@@ -39,7 +40,8 @@ describe('UserMenu', () => {
     expect(getByRole('menuitem', { name: 'Logout' })).toBeInTheDocument()
   })
 
-  it('should call signOut on logout click', () => {
+  it('should call signOut on logout click', async () => {
+    const setIsLoggedInMock = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
         <UserMenu
@@ -53,6 +55,7 @@ describe('UserMenu', () => {
           }}
           profileOpen
           profileAnchorEl={null}
+          onClick={setIsLoggedInMock}
           handleProfileClose={handleProfileClose}
           user={
             {
@@ -68,5 +71,6 @@ describe('UserMenu', () => {
     expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
     expect(signOut).toHaveBeenCalled()
+    await waitFor(() => expect(setIsLoggedInMock).toHaveBeenCalled())
   })
 })

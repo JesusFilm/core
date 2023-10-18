@@ -14,7 +14,7 @@ import compact from 'lodash/compact'
 import Image from 'next/image'
 import { NextRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -112,6 +112,12 @@ export function NavigationDrawer({
   const { t } = useTranslation('apps-journeys-admin')
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    if (user?.id != null) setIsLoggedIn(true)
+  }, [isLoggedIn, setIsLoggedIn, user])
+
   const { globalReports } = useFlags()
 
   const selectedPage = router?.pathname?.split('/')[1]
@@ -181,7 +187,7 @@ export function NavigationDrawer({
           />
         )}
 
-        {user != null && data?.me != null && (
+        {user != null && data?.me != null && isLoggedIn && (
           <>
             <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
 
@@ -213,6 +219,7 @@ export function NavigationDrawer({
               profileAnchorEl={profileAnchorEl}
               handleProfileClose={handleProfileClose}
               user={user}
+              onClick={setIsLoggedIn}
             />
           </>
         )}

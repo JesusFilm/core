@@ -95,6 +95,7 @@ describe('NavigationDrawer', () => {
             onClose={onClose}
             user={
               {
+                id: 'userId',
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
@@ -195,6 +196,7 @@ describe('NavigationDrawer', () => {
           onClose={onClose}
           user={
             {
+              id: 'userId',
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
@@ -253,6 +255,7 @@ describe('NavigationDrawer', () => {
           onClose={onClose}
           user={
             {
+              id: 'userId',
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
@@ -273,6 +276,60 @@ describe('NavigationDrawer', () => {
     await waitFor(() => expect(getByText('Amin One')).toBeInTheDocument())
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
     await waitFor(() => expect(signOut).toHaveBeenCalled())
+  })
+
+  it('should not show user icon if logged out', async () => {
+    const { queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ME
+            },
+            result: {
+              data: {
+                me: {
+                  id: 'userId',
+                  firstName: 'Amin',
+                  lastName: 'One',
+                  imageUrl: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          user={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as User
+          }
+        />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(queryByRole('img', { name: 'Amin One' })).not.toBeInTheDocument()
+    )
   })
 
   it('should close the navigation drawer on chevron left click', () => {
