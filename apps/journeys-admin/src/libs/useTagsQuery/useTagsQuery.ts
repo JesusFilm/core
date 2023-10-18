@@ -1,7 +1,7 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
-import { useMemo } from 'react'
+import { useState } from 'react'
 
-import { GetTags, GetTags_tags as Tags } from '../../../__generated__/GetTags'
+import { GetTags, GetTags_tags as Tag } from '../../../__generated__/GetTags'
 
 export const GET_TAGS = gql`
   query GetTags {
@@ -17,19 +17,29 @@ export const GET_TAGS = gql`
   }
 `
 
+type ChildTag = Tag & { parentId: string }
+
 export function useTagsQuery(): QueryResult<GetTags> & {
-  parentTags?: Tags[]
-  childTags?: Tags[]
+  parentTags: Tag[]
+  childTags: ChildTag[]
 } {
-  const query = useQuery<GetTags>(GET_TAGS)
-
-  const parentTags = useMemo(() => {
-    return query.data?.tags?.filter((tag) => tag.parentId === null)
-  }, [query])
-
-  const childTags = useMemo(() => {
-    return query.data?.tags?.filter((tag) => tag.parentId !== null)
-  }, [query])
+  const [parentTags, setParentTags] = useState<Tag[]>([])
+  const [childTags, setChildTags] = useState<ChildTag[]>([])
+  const query = useQuery<GetTags>(GET_TAGS, {
+    onCompleted(data) {
+      const parentTags: Tag[] = []
+      const childTags: ChildTag[] = []
+      data.tags.forEach((tag) => {
+        if (tag.parentId == null) {
+          parentTags.push(tag)
+        } else {
+          childTags.push(tag as ChildTag)
+        }
+      })
+      setParentTags(parentTags)
+      setChildTags(childTags)
+    }
+  })
 
   return {
     ...query,
