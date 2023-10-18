@@ -1,4 +1,4 @@
-name: journeys-admin-monitoring-every10mins
+name: journeys-admin-monitoring
 on:
   schedule:
     - cron: '*/10 * * * *'
@@ -12,8 +12,15 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: NPM Install
+        run: npm install --silent
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
