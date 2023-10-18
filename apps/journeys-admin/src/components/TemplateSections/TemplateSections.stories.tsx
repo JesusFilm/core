@@ -1,4 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -214,7 +215,11 @@ const getJourneysEmptyMock: MockedResponse<GetJourneys> = {
 }
 
 const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
-  render: ({ ...args }) => <TemplateSections {...args} />
+  render: ({ ...args }) => (
+    <Box sx={{ backgroundColor: 'background.paper', p: 5 }}>
+      <TemplateSections {...args} />
+    </Box>
+  )
 }
 
 export const Default = {

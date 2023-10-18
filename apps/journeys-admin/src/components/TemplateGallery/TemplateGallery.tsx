@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import castArray from 'lodash/castArray'
 import { useRouter } from 'next/router'
@@ -10,11 +9,9 @@ export function TemplateGallery(): ReactElement {
   const { query } = useRouter()
   return (
     <Container disableGutters>
-      <Box>
-        <TemplateSections
-          tagIds={query.tagIds != null ? castArray(query.tagIds) : undefined}
-        />
-      </Box>
+      <TemplateSections
+        tagIds={query.tagIds != null ? castArray(query.tagIds) : undefined}
+      />
     </Container>
   )
 }
