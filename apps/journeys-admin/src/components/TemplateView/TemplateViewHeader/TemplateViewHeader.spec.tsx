@@ -172,7 +172,7 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(getAllByText('November 2021')[0]).toBeInTheDocument()
+    expect(getAllByText('November 2021')).toHaveLength(2)
   })
 
   it('should show skeletons while loading', async () => {
