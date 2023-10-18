@@ -1,10 +1,12 @@
 import compact from 'lodash/compact'
 
-import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
+import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
+import { GetTags_tags as ParentTag } from '../../../../../__generated__/GetTags'
 
 export function getSortedTags(
   journeyTags?: Tag[],
-  parentTags?: Tag[]
+  parentTags?: ParentTag[]
 ): Tag[] | null {
   if (journeyTags == null) return null
   if (journeyTags.length < 1) return []
