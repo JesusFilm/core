@@ -173,7 +173,8 @@ const getJourneysMock: MockedResponse<GetJourneys> = {
     variables: {
       where: {
         template: true,
-        orderByRecent: true
+        orderByRecent: true,
+        languageIds: ['529']
       }
     }
   },
@@ -192,7 +193,8 @@ const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
       where: {
         template: true,
         orderByRecent: true,
-        tagIds: [addiction.id]
+        tagIds: [addiction.id],
+        languageIds: ['529']
       }
     }
   },
@@ -224,6 +226,9 @@ const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
 
 export const Default = {
   ...Template,
+  args: {
+    languageId: '529'
+  },
   parameters: {
     apolloClient: {
       mocks: [getJourneysMock]
@@ -234,7 +239,8 @@ export const Default = {
 export const TagIds = {
   ...Template,
   args: {
-    tagIds: [addiction.id]
+    tagIds: [addiction.id],
+    languageId: '529'
   },
   parameters: {
     apolloClient: {
@@ -245,6 +251,9 @@ export const TagIds = {
 
 export const Empty = {
   ...Template,
+  args: {
+    languageId: '529'
+  },
   parameters: {
     apolloClient: {
       mocks: [getJourneysEmptyMock]
