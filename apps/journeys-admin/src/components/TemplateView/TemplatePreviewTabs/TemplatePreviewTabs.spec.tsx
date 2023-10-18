@@ -47,7 +47,7 @@ describe('TemplatePreviewTabs', () => {
 
     expect(getByText('{{cardBlockCount}} Cards')).toBeInTheDocument()
     await waitFor(() =>
-      expect(getAllByTestId('templateCardsSwiperSlide')).toHaveLength(5)
+      expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(5)
     )
   })
 })
