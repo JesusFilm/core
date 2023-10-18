@@ -155,8 +155,8 @@ describe('TemplateViewHeader', () => {
     expect(getAllByRole('link', { name: 'Preview' })[0]).toBeInTheDocument()
   })
 
-  it('should show featured date if journey is featured', () => {
-    const { getAllByTestId } = render(
+  it('should show created at date', () => {
+    const { getAllByText } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -172,9 +172,7 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(
-      getAllByTestId('CreatedAtTemplatePreviewPage')[0]
-    ).toBeInTheDocument()
+    expect(getAllByText('November 2021')[0]).toBeInTheDocument()
   })
 
   it('should show skeletons while loading', async () => {

@@ -29,9 +29,8 @@ export function TemplateViewHeader({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
-    <Stack>
+    <Stack data-testid="TemplateViewHeader">
       <Typography
-        data-testId="CreatedAtTemplatePreviewPage"
         variant="overline"
         sx={{
           color: 'secondary.light',
@@ -75,7 +74,6 @@ export function TemplateViewHeader({
                 color: 'secondary.light',
                 display: { xs: 'none', sm: 'block' }
               }}
-              data-testId="CreatedAtTemplatePreviewPage"
               noWrap
             >
               {journey?.createdAt != null ? (
