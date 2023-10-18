@@ -5,19 +5,19 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
-import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation'
+import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
 
-jest.mock('../../../../../../../../../libs/useHostUpdate', () => ({
+jest.mock('../../../../../../../../../libs/useHostUpdateMutation', () => ({
   __esModule: true,
-  useHostUpdate: jest.fn()
+  useHostUpdateMutation: jest.fn()
 }))
 
-const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
-  typeof useHostUpdate
+const mockUseHostUpdate = useHostUpdateMutation as jest.MockedFunction<
+  typeof useHostUpdateMutation
 >
 
 describe('HostAvatarsButton', () => {

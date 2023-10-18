@@ -2,7 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
-import { UPDATE_HOST, useHostUpdate } from './useHostUpdate'
+import { UPDATE_HOST, useHostUpdateMutation } from './useHostUpdateMutation'
 
 describe('useHostUpdate', () => {
   it('returns a function which updates a host by id and teamId', async () => {
@@ -14,7 +14,7 @@ describe('useHostUpdate', () => {
       }
     })
 
-    const { result } = renderHook(() => useHostUpdate(), {
+    const { result } = renderHook(() => useHostUpdateMutation(), {
       wrapper: ({ children }) => (
         <MockedProvider
           cache={cache}
@@ -85,7 +85,7 @@ describe('useHostUpdate', () => {
   })
 
   it('returns a function which returns undefined if error', async () => {
-    const { result } = renderHook(() => useHostUpdate(), {
+    const { result } = renderHook(() => useHostUpdateMutation(), {
       wrapper: ({ children }) => (
         <MockedProvider
           addTypename={false}
