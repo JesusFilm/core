@@ -173,7 +173,10 @@ describe('TemplateView', () => {
       },
       result: {
         data: {
-          tags: [...tags, ...parentTags]
+          tags: [
+            ...parentTags,
+            ...tags.map((tag) => ({ ...tag, service: null }))
+          ]
         }
       }
     }
