@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -60,12 +59,10 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
           />
         )}
         {relatedJourneys != null && relatedJourneys.length > 1 && (
-          <Box sx={{ ml: { xs: -6, lg: -9 } }}>
-            <TemplateSection
-              category={t('Related Templates')}
-              journeys={relatedJourneys}
-            />
-          </Box>
+          <TemplateSection
+            category={t('Related Templates')}
+            journeys={relatedJourneys}
+          />
         )}
         <TemplateFooter signedIn={authUser?.id != null} />
       </Stack>
