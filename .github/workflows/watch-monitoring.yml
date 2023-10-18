@@ -1,11 +1,7 @@
-name: watch-monitoring-every3mins
+name: watch-monitoring-every10mins
 on:
   schedule:
-    - cron: '*/3 * * * *'
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+    - cron: '*/10 * * * *'
 jobs:
   test:
     timeout-minutes: 60
