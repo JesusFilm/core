@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 
 import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../../../../__generated__/GetJourneyVisitors'
 
-interface Props {
+interface VisitorCardDetailsProps {
   name?: string | null
   events: Event[]
   loading: boolean
@@ -18,7 +18,7 @@ export function VisitorCardDetails({
   name,
   events,
   loading
-}: Props): ReactElement {
+}: VisitorCardDetailsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const eventsFilter: Array<Event['__typename']> = [

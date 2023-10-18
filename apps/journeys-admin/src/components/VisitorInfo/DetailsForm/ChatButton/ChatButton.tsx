@@ -6,7 +6,7 @@ import MessageText1Icon from '@core/shared/ui/icons/MessageText1'
 
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 
-interface Props {
+interface ChatButtonProps {
   messagePlatform?: MessagePlatform | null
   messagePlatformId?: string | null
 }
@@ -14,7 +14,7 @@ interface Props {
 export function ChatButton({
   messagePlatform,
   messagePlatformId
-}: Props): ReactElement {
+}: ChatButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   function handleClick(): void {
