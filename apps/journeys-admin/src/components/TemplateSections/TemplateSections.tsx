@@ -17,20 +17,24 @@ interface Contents {
 
 interface TemplateSectionsProps {
   tagIds?: string[]
+  languageId: string
 }
 
 export function TemplateSections({
-  tagIds
+  tagIds,
+  languageId
 }: TemplateSectionsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
+
   const { data, loading } = useJourneysQuery({
     variables: {
       where: {
         template: true,
         orderByRecent: true,
-        tagIds
+        tagIds,
+        languageIds: [languageId]
       }
     },
     onCompleted(data) {

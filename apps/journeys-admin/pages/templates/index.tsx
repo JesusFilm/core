@@ -25,6 +25,7 @@ function LibraryIndex(): ReactElement {
           backgroundColor: 'background.paper',
           overflowX: 'hidden'
         }}
+        hiddenPanelHeader={templates}
       >
         {templates ? <TemplateGallery /> : <TemplateLibrary />}
       </PageWrapper>

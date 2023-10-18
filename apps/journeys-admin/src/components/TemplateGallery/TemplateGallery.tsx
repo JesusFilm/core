@@ -1,5 +1,7 @@
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
 import { useRouter } from 'next/router'
@@ -8,11 +10,14 @@ import { useTranslation } from 'react-i18next'
 
 import { TemplateSections } from '../TemplateSections'
 
+import { LanguageFilter } from './LanguageFilter'
 import { TagsFilter } from './TagsFilter'
 
 export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+  const ENGLISH_LANGUAGE_ID = '529'
+  const [languageId, setLanguageId] = useState(ENGLISH_LANGUAGE_ID)
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     router.query.tagIds != null ? castArray(router.query.tagIds) : []
   )
@@ -32,6 +37,25 @@ export function TemplateGallery(): ReactElement {
 
   return (
     <Container disableGutters>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{
+          pb: { xs: 6, md: 9 }
+        }}
+      >
+        <Typography variant="h2" sx={{ display: { xs: 'none', lg: 'block' } }}>
+          {t('Journey Templates')}
+        </Typography>
+        <Typography variant="h2" sx={{ display: { xs: 'block', lg: 'none' } }}>
+          {t('Templates')}
+        </Typography>
+        <LanguageFilter
+          languageId={languageId}
+          onChange={(value) => setLanguageId(value)}
+        />
+      </Stack>
       <Grid
         container
         spacing={2}
@@ -66,6 +90,7 @@ export function TemplateGallery(): ReactElement {
       </Grid>
       <TemplateSections
         tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
+        languageId={languageId}
       />
     </Container>
   )

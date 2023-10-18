@@ -159,7 +159,8 @@ export const TemplateGalleryMock = [
       variables: {
         where: {
           template: true,
-          orderByRecent: true
+          orderByRecent: true,
+          languageIds: ['529']
         }
       }
     },
