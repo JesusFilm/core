@@ -146,7 +146,7 @@ jobs:
   deploy-status:
     runs-on: ubuntu-latest
     needs: [affected, deploy-preview]
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ always() && github.event_name == 'pull_request' }}
     steps:
       - name: Successful deploy
         if: ${{ !(contains(needs.*.result, 'failure')) }}
