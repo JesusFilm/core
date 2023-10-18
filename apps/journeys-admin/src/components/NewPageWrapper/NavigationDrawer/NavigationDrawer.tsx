@@ -112,6 +112,7 @@ export function NavigationDrawer({
   const { t } = useTranslation('apps-journeys-admin')
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+
   const { globalReports } = useFlags()
 
   const selectedPage = router?.pathname?.split('/')[1]
@@ -181,7 +182,7 @@ export function NavigationDrawer({
           />
         )}
 
-        {user != null && data?.me != null && (
+        {user?.id != null && data?.me != null && (
           <>
             <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
 
