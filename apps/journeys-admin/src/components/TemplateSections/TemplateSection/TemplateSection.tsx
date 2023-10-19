@@ -2,7 +2,7 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/system/Stack'
 import { ReactElement, useRef } from 'react'
-import SwiperCore, { A11y, Navigation, SwiperOptions, Virtual } from 'swiper'
+import SwiperCore, { A11y, Navigation, SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { GetJourneys_journeys as Journeys } from '../../../../__generated__/GetJourneys'
@@ -11,7 +11,7 @@ import { TemplateGalleryCard } from '../../TemplateGalleryCard'
 import 'swiper/swiper.min.css'
 import { NavButton } from './NavButton'
 
-SwiperCore.use([Navigation, A11y, Virtual])
+SwiperCore.use([Navigation, A11y])
 
 interface TemplateSectionProps {
   journeys?: Journeys[]
