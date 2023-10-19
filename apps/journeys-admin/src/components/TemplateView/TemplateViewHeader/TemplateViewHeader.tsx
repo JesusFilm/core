@@ -31,7 +31,7 @@ export function TemplateViewHeader({
     <Stack>
       {journey?.createdAt != null && (
         <Typography
-          data-testId="featuredAtTemplatePreviewPage"
+          data-testid="featuredAtTemplatePreviewPage"
           variant="overline"
           sx={{
             color: 'secondary.light',
@@ -67,7 +67,7 @@ export function TemplateViewHeader({
                 color: 'secondary.light',
                 display: { xs: 'none', sm: 'block' }
               }}
-              data-testId="featuredAtTemplatePreviewPage"
+              data-testid="featuredAtTemplatePreviewPage"
               noWrap
             >
               {intlFormat(parseISO(journey?.createdAt), {
