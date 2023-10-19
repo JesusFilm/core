@@ -210,7 +210,7 @@ export function TemplateSettingsDialog({
               divider
               fullscreen={!smUp}
             >
-              <Form data-testId="template-settings-dialog-form">
+              <Form data-testid="template-settings-dialog-form">
                 <Tabs
                   value={tabValue}
                   onChange={handleTabChange}
