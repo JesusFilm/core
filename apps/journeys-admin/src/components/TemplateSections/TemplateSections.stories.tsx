@@ -236,6 +236,18 @@ export const Default = {
   }
 }
 
+export const Loading = {
+  ...Template,
+  args: {
+    languageId: '529'
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [{ ...getJourneysMock, delay: 100000000000000 }]
+    }
+  }
+}
+
 export const TagIds = {
   ...Template,
   args: {
