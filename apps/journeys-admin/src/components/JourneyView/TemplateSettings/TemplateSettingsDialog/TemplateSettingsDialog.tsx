@@ -69,7 +69,7 @@ export function TemplateSettingsDialog({
       tags
     }))(journey)
 
-    const formValues = (({ title, description, strategySlug, tag }) => ({
+    const formValues = (({ title, description, strategySlug, tags }) => ({
       title,
       description,
       strategySlug: strategySlug === '' ? null : strategySlug,

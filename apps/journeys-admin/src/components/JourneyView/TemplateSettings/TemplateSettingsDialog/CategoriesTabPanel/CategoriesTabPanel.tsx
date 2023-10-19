@@ -60,13 +60,14 @@ export function CategoriesTabPanel({
     }
   })
 
+  // Ordered by name instead of id since id changes between environments
   const orderedTagLabels = [
     'Topics',
     'Felt Needs',
     'Holidays',
     'Audience',
     'Genre',
-    'Collection'
+    'Collections'
   ]
   const orderedTagsIds = orderedTagLabels.map(
     (tagName) => parentTags?.find((tag) => tagName === tag.name[0].value)?.id
