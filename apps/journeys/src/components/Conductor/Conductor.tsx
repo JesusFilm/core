@@ -183,12 +183,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       <Stack
         sx={{
           justifyContent: 'center',
-          height: '100vh',
+          height: '100%',
           background: theme.palette.grey[900]
         }}
         data-testid="Conductor"
       >
-        <Box sx={{ height: { xs: '100vh', lg: 'unset' } }}>
+        <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
           <StyledSwiperContainer
             dir={!rtl ? 'ltr' : 'rtl'}
             pagination={{ dynamicBullets: true }}
