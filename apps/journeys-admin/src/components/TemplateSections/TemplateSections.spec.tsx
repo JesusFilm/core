@@ -213,11 +213,11 @@ describe('TemplateSections', () => {
       )
       await waitFor(() =>
         expect(
-          getByRole('heading', { name: 'Featured & New' })
+          getAllByRole('heading', { name: 'Featured Template 2' })[0]
         ).toBeInTheDocument()
       )
       expect(
-        getAllByRole('heading', { name: 'Featured Template 2' })[0]
+        getByRole('heading', { name: 'Featured & New' })
       ).toBeInTheDocument()
       expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
     })
@@ -232,11 +232,11 @@ describe('TemplateSections', () => {
       )
       await waitFor(() =>
         expect(
-          getByRole('heading', { name: 'Most Relevant' })
+          getAllByRole('heading', { name: 'Featured Template 2' })[0]
         ).toBeInTheDocument()
       )
       expect(
-        getAllByRole('heading', { name: 'Featured Template 2' })[0]
+        getByRole('heading', { name: 'Most Relevant' })
       ).toBeInTheDocument()
       expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
     })
