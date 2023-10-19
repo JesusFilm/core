@@ -1,11 +1,10 @@
-import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '../../libs/storybook'
 
-import { TemplateGalleryMock } from './data'
+import { getJourneysMock, getLanguagesMock, getTagsMock } from './data'
 
 import { TemplateGallery } from '.'
 
@@ -20,22 +19,38 @@ const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
 
 const Template: StoryObj<ComponentProps<typeof TemplateGallery>> = {
   render: () => (
-    <MockedProvider mocks={TemplateGalleryMock}>
-      <Box
-        sx={{
-          backgroundColor: 'background.paper',
-          p: 5,
-          height: '100%'
-        }}
-      >
-        <TemplateGallery />
-      </Box>
-    </MockedProvider>
+    <Box
+      sx={{
+        backgroundColor: 'background.paper',
+        p: 5,
+        height: '100%'
+      }}
+    >
+      <TemplateGallery />
+    </Box>
   )
 }
 
 export const Default = {
-  ...Template
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getJourneysMock, getLanguagesMock, getTagsMock]
+    }
+  }
+}
+
+export const Loading = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [
+        { ...getJourneysMock, delay: 100000000000000 },
+        { ...getLanguagesMock, delay: 100000000000000 },
+        { ...getTagsMock, delay: 100000000000000 }
+      ]
+    }
+  }
 }
 
 export default TemplateGalleryStory
