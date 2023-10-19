@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
+import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 
@@ -51,7 +52,7 @@ export function LanguageFilter({
             overflow: 'hidden'
           }}
         >
-          {localName ?? nativeName}
+          {loading ? <Skeleton width={61} /> : localName ?? nativeName}
         </Typography>
       </Button>
       <LanguageFilterDialog

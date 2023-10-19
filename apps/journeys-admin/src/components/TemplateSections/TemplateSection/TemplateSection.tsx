@@ -16,11 +16,13 @@ SwiperCore.use([Navigation, A11y])
 interface TemplateSectionProps {
   journeys?: Journeys[]
   category: string
+  loading?: boolean
 }
 
 export function TemplateSection({
   journeys,
-  category
+  category,
+  loading
 }: TemplateSectionProps): ReactElement {
   const { breakpoints } = useTheme()
   const nextRef = useRef<HTMLButtonElement>(null)
@@ -60,7 +62,8 @@ export function TemplateSection({
 
   return (
     <Stack spacing={4} justifyContent="center" sx={{ position: 'relative' }}>
-      {journeys == null && (
+      <Typography variant="h5">{category}</Typography>
+      {loading === true && (journeys === null || journeys?.length === 0) && (
         <Swiper breakpoints={swiperBreakpoints}>
           <SwiperSlide>
             <TemplateGalleryCard />
@@ -89,29 +92,26 @@ export function TemplateSection({
         </Swiper>
       )}
       {journeys != null && (
-        <>
-          <Typography variant="h5">{category}</Typography>
-          <Swiper
-            autoHeight
-            speed={850}
-            watchOverflow
-            breakpoints={swiperBreakpoints}
-            navigation={{
-              nextEl: nextRef.current,
-              prevEl: prevRef.current
-            }}
-            style={{ overflow: 'visible' }}
-          >
-            {journeys?.map((journey) => (
-              <SwiperSlide
-                key={journey?.id}
-                data-testId={`journey-${journey.id}`}
-              >
-                <TemplateGalleryCard journey={journey} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </>
+        <Swiper
+          autoHeight
+          speed={850}
+          watchOverflow
+          breakpoints={swiperBreakpoints}
+          navigation={{
+            nextEl: nextRef.current,
+            prevEl: prevRef.current
+          }}
+          style={{ overflow: 'visible' }}
+        >
+          {journeys?.map((journey) => (
+            <SwiperSlide
+              key={journey?.id}
+              data-testId={`journey-${journey.id}`}
+            >
+              <TemplateGalleryCard journey={journey} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       )}
       <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
       <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
