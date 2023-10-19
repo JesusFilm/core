@@ -5,7 +5,10 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields_primaryImageBlock as PrimaryImageBlock } from '../../../../__generated__/JourneyFields'
+import {
+  JourneyFields as Journey,
+  JourneyFields_primaryImageBlock as PrimaryImageBlock
+} from '../../../../__generated__/JourneyFields'
 import { journey } from '../../Editor/ActionDetails/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
@@ -175,5 +178,87 @@ describe('TemplateViewHeader', () => {
     expect(
       getAllByTestId('featuredAtTemplatePreviewPage')[0]
     ).toBeInTheDocument()
+  })
+
+  it('should show collections buttons if part of a collection', () => {
+    const { getAllByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey,
+            variant: 'admin'
+          }}
+        >
+          <TemplateViewHeader
+            isPublisher={false}
+            authUser={{} as unknown as User}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      getAllByTestId('featuredAtTemplatePreviewPage')[0]
+    ).toBeInTheDocument()
+  })
+
+  it('should render collections button', async () => {
+    const journeyWithTags = {
+      ...journey,
+      tags: [
+        {
+          __typename: 'Tag',
+          id: 'a6b0080c-d2a5-4b92-945a-8e044c743139',
+          parentId: 'eff2c8a5-64d3-4f20-916d-270ff9ad5813',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Jesus Film',
+              language: {
+                __typename: 'Language',
+                id: '529'
+              },
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'eff2c8a5-64d3-4f20-916d-270ff9ad5813',
+          parentId: null,
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Collections',
+              language: {
+                __typename: 'Language',
+                id: '529'
+              },
+              primary: true
+            }
+          ]
+        }
+      ]
+    }
+
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: journeyWithTags as Journey,
+            variant: 'admin'
+          }}
+        >
+          <TemplateViewHeader
+            isPublisher={false}
+            authUser={{} as unknown as User}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      getAllByRole('button', { name: '{{ collectionsName }}' })
+    ).toHaveLength(2)
   })
 })

@@ -70,6 +70,50 @@ export const Publisher = {
   }
 }
 
+export const WithTags = {
+  ...Template,
+  args: {
+    ...Default.args,
+    journey: {
+      ...Default.args.journey,
+      tags: [
+        {
+          __typename: 'Tag',
+          id: 'a6b0080c-d2a5-4b92-945a-8e044c743139',
+          parentId: 'eff2c8a5-64d3-4f20-916d-270ff9ad5813',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Jesus Film',
+              language: {
+                __typename: 'Language',
+                id: '529'
+              },
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'eff2c8a5-64d3-4f20-916d-270ff9ad5813',
+          parentId: null,
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Collections',
+              language: {
+                __typename: 'Language',
+                id: '529'
+              },
+              primary: true
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
 export const EmptyImage = {
   ...Template,
   args: {
