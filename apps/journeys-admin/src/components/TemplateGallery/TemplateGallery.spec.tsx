@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import { TemplateGalleryMock } from './data'
+import { getJourneysMock, getLanguagesMock, getTagsMock } from './data'
 
 import { TemplateGallery } from '.'
 
@@ -25,7 +25,7 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 describe('TemplateGallery', () => {
   it('should render TemplateGallery', async () => {
     const { getByRole } = render(
-      <MockedProvider mocks={TemplateGalleryMock}>
+      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
         <TemplateGallery />
       </MockedProvider>
     )
@@ -47,7 +47,7 @@ describe('TemplateGallery', () => {
     } as unknown as NextRouter)
 
     const { getByRole, queryByRole } = render(
-      <MockedProvider mocks={TemplateGalleryMock}>
+      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
         <TemplateGallery />
       </MockedProvider>
     )
