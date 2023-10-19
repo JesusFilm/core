@@ -66,10 +66,11 @@ export function TemplateSections({
 
   return (
     <Stack spacing={8}>
-      {collection.length > 0 && (
+      {(loading || (data?.journeys != null && data.journeys.length > 0)) && (
         <TemplateSection
           category={tagIds == null ? t('Featured & New') : t('Most Relevant')}
           journeys={collection}
+          loading={loading}
         />
       )}
       {map(
