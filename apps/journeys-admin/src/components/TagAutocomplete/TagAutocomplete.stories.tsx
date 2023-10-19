@@ -33,8 +33,7 @@ export const Filled = {
     ...Default.args,
     initialTags: ['tag2', 'tag3'],
     label: 'Holidays',
-    placeholder: 'Add holidays',
-    limit: 1
+    placeholder: 'Add holidays'
   }
 }
 

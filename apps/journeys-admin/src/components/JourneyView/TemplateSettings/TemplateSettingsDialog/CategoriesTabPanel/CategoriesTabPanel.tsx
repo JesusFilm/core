@@ -110,7 +110,6 @@ export function CategoriesTabPanel({
                     parentId={tagId}
                     tags={tags[tagId].children}
                     selectedTagIds={selectedTags.map((tag) => tag.id)}
-                    limit={3}
                     onChange={handleOnChange}
                     label={!mdUp ? t(orderedTagLabels[index]) : undefined}
                     placeholder={

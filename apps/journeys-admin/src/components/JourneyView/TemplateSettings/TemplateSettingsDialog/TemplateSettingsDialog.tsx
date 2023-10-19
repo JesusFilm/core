@@ -76,8 +76,6 @@ export function TemplateSettingsDialog({
       tags
     }))(values)
 
-    console.log()
-
     try {
       if (!isEqual(existingValues, formValues)) {
         await journeySettingsUpdate({
