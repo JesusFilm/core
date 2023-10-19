@@ -1,4 +1,4 @@
-import { fireEvent, render, within } from '@testing-library/react'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 
 import { TagAutocomplete } from '.'
 
@@ -6,10 +6,11 @@ describe('TagAutocomplete', () => {
   it('should render label, placeholder and options', () => {
     const { getAllByRole, getByRole } = render(
       <TagAutocomplete
+        parentId="parentId"
         tags={[
-          { id: 'tag1', name: { value: 'Ramadan' } },
-          { id: 'tag2', name: { value: 'Christmas' } },
-          { id: 'tag3', name: { value: 'Easter' } }
+          { value: 'tag1', label: 'Ramadan' },
+          { value: 'tag2', label: 'Christmas' },
+          { value: 'tag3', label: 'Easter' }
         ]}
         label="label"
         placeholder="placeholder"
@@ -41,12 +42,13 @@ describe('TagAutocomplete', () => {
   it('should set initial tags and hide by limit', () => {
     const { getAllByRole, getByRole } = render(
       <TagAutocomplete
+        parentId="parentId"
         tags={[
-          { id: 'tag1', name: { value: 'Ramadan' } },
-          { id: 'tag2', name: { value: 'Christmas' } },
-          { id: 'tag3', name: { value: 'Easter' } }
+          { value: 'tag1', label: 'Ramadan' },
+          { value: 'tag2', label: 'Christmas' },
+          { value: 'tag3', label: 'Easter' }
         ]}
-        initialTags={['tag2', 'tag3']}
+        selectedTagIds={['tag2', 'tag3']}
         limit={1}
         onChange={jest.fn()}
       />
@@ -66,16 +68,17 @@ describe('TagAutocomplete', () => {
     )
   })
 
-  it('should call onChange with selected tag values', () => {
+  it('should call onChange with selected tag values when deleting option', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <TagAutocomplete
+        parentId="parentId"
         tags={[
-          { id: 'tag1', name: { value: 'Ramadan' } },
-          { id: 'tag2', name: { value: 'Christmas' } },
-          { id: 'tag3', name: { value: 'Easter' } }
+          { value: 'tag2', label: 'Christmas' },
+          { value: 'tag3', label: 'Easter' },
+          { value: 'tag1', label: 'Ramadan' }
         ]}
-        initialTags={['tag2', 'tag3']}
+        selectedTagIds={['tag2', 'tag3']}
         onChange={onChange}
       />
     )
@@ -83,24 +86,46 @@ describe('TagAutocomplete', () => {
     fireEvent.click(
       within(getByRole('button', { name: 'Easter' })).getByTestId('CancelIcon')
     )
-    expect(onChange).toHaveBeenCalledWith([
-      {
-        value: 'tag2',
-        label: 'Christmas'
-      }
-    ])
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith('parentId', [
+        {
+          value: 'tag2',
+          label: 'Christmas'
+        }
+      ])
+    })
+  })
+
+  it('should call onChange with selected tag values when selecting option', async () => {
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <TagAutocomplete
+        parentId="parentId"
+        tags={[
+          { value: 'tag2', label: 'Christmas' },
+          { value: 'tag3', label: 'Easter' },
+          { value: 'tag1', label: 'Ramadan' }
+        ]}
+        selectedTagIds={['tag2']}
+        onChange={onChange}
+      />
+    )
+    fireEvent.click(getByRole('button', { name: 'Open' }))
+
     fireEvent.click(
       within(getByRole('option', { name: 'Ramadan' })).getByRole('checkbox')
     )
-    expect(onChange).toHaveBeenCalledWith([
-      {
-        value: 'tag2',
-        label: 'Christmas'
-      },
-      {
-        value: 'tag1',
-        label: 'Ramadan'
-      }
-    ])
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith('parentId', [
+        {
+          value: 'tag2',
+          label: 'Christmas'
+        },
+        {
+          value: 'tag1',
+          label: 'Ramadan'
+        }
+      ])
+    })
   })
 })
