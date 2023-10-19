@@ -22,31 +22,27 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
     () => getSortedTags(tags, parentTags),
     [tags, parentTags]
   )
-  const tagItems = sortedTags?.map((tag) => ({
-    id: tag.id,
-    name: tag.name[0].value,
-    icon: (
-      <ParentTagIcon
-        name={
-          parentTags?.find((parentTag) => parentTag.id === tag.parentId)
-            ?.name[0].value
-        }
-      />
-    )
-  }))
 
   return (
     <>
-      {tagItems != null ? (
-        tagItems.length > 0 && (
+      {sortedTags != null ? (
+        sortedTags.length > 0 && (
           <SwiperWrapper>
-            {tagItems.map(({ id, name, icon }, index) => (
+            {sortedTags.map(({ id, name, parentId }, index) => (
               <SwiperSlide key={id} style={{ width: 'fit-content', zIndex: 2 }}>
                 <TagItem
                   key={id}
-                  name={name}
-                  icon={icon}
-                  showDivider={index < tagItems.length - 1}
+                  name={name[0].value}
+                  icon={
+                    <ParentTagIcon
+                      name={
+                        parentTags?.find(
+                          (parentTag) => parentTag.id === parentId
+                        )?.name[0].value
+                      }
+                    />
+                  }
+                  showDivider={index < sortedTags.length - 1}
                 />
               </SwiperSlide>
             ))}
