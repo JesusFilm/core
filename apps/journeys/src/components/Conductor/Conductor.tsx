@@ -4,7 +4,7 @@ import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { SxProps, styled, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useState } from 'react'
-import Div100vh from 'react-div-100vh'
+// import Div100vh from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
 import SwiperCore, { Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -179,7 +179,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   return (
-    <Div100vh style={{ overflow: 'hidden', height: '2000px' }}>
+    // <Div100vh style={{ overflow: 'hidden' }}>
+    <Box>
       <Stack
         sx={{
           justifyContent: 'center',
@@ -259,6 +260,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           </StyledSwiperContainer>
         </Box>
       </Stack>
-    </Div100vh>
+    </Box>
   )
 }
