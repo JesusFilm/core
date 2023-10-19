@@ -92,31 +92,29 @@ export function TemplateSection({
         </Swiper>
       )}
       {loading !== true && journeys != null && journeys?.length > 0 && (
-        <>
-          <Swiper
-            autoHeight
-            speed={850}
-            watchOverflow
-            breakpoints={swiperBreakpoints}
-            navigation={{
-              nextEl: nextRef.current,
-              prevEl: prevRef.current
-            }}
-            style={{ overflow: 'visible' }}
-          >
-            {journeys?.map((journey) => (
-              <SwiperSlide
-                key={journey?.id}
-                data-testId={`journey-${journey.id}`}
-              >
-                <TemplateGalleryCard journey={journey} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-          <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
-          <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
-        </>
+        <Swiper
+          autoHeight
+          speed={850}
+          watchOverflow
+          breakpoints={swiperBreakpoints}
+          navigation={{
+            nextEl: nextRef.current,
+            prevEl: prevRef.current
+          }}
+          style={{ overflow: 'visible' }}
+        >
+          {journeys?.map((journey) => (
+            <SwiperSlide
+              key={journey?.id}
+              data-testId={`journey-${journey.id}`}
+            >
+              <TemplateGalleryCard journey={journey} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       )}
+      <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
+      <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
     </Stack>
   )
 }
