@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import Box from '@mui/material/Box'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -78,9 +79,11 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           rtl={rtl}
           locale={locale}
         >
-          {journey.blocks != null && (
-            <Conductor blocks={transformer(journey.blocks)} />
-          )}
+          <Box sx={{ border: '1px solid red' }}>
+            {journey.blocks != null && (
+              <Conductor blocks={transformer(journey.blocks)} />
+            )}
+          </Box>
         </ThemeProvider>
       </JourneyProvider>
     </>
