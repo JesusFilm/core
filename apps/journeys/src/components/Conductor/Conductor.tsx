@@ -179,7 +179,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   return (
-    <Div100vh style={{ overflow: 'hidden' }}>
+    <Div100vh style={{ overflow: 'hidden', height: '2000px' }}>
       <Stack
         sx={{
           justifyContent: 'center',
