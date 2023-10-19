@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
-import SwiperCore, { A11y, Mousewheel, SwiperOptions } from 'swiper'
+import { SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -21,8 +21,6 @@ import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { CardWrapper } from '../../../CardPreview/CardList/CardWrapper'
 import { VideoWrapper } from '../../../Editor/Canvas/VideoWrapper'
 import { FramePortal } from '../../../FramePortal'
-
-SwiperCore.use([Mousewheel, A11y])
 
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
@@ -116,7 +114,6 @@ export function TemplateCardPreview({
       slidesPerView="auto"
       spaceBetween={12}
       breakpoints={swiperBreakpoints}
-      mousewheel
       autoHeight
       style={{
         overflow: 'visible',
