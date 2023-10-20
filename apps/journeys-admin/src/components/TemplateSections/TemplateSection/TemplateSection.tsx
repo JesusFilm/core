@@ -91,7 +91,7 @@ export function TemplateSection({
           </SwiperSlide>
         </Swiper>
       )}
-      {loading !== true && journeys != null && journeys?.length > 0 && (
+      {journeys != null && journeys?.length > 0 && (
         <Swiper
           autoHeight
           speed={850}
