@@ -57,8 +57,7 @@ export function TemplateViewHeader({
         <Stack
           direction="column"
           sx={{
-            flexShrink: 1,
-            height: { xs: 107, sm: 244 }
+            flexShrink: 1
           }}
         >
           {journey?.createdAt != null && (
@@ -80,21 +79,15 @@ export function TemplateViewHeader({
           <Typography variant={smUp ? 'h1' : 'h6'} sx={{ pb: 4 }}>
             {journey?.title}
           </Typography>
-          <Box
+          <Typography
+            variant="body1"
             sx={{
-              maxHeight: '144px',
-              overflow: 'auto'
+              display: { xs: 'none', sm: 'block' }
             }}
           >
-            <Typography
-              variant="body1"
-              sx={{
-                display: { xs: 'none', sm: 'block' }
-              }}
-            >
-              {journey?.description}
-            </Typography>
-          </Box>
+            {journey?.description}
+          </Typography>
+
           <Box
             sx={{
               display: { xs: 'none', sm: 'flex' },
