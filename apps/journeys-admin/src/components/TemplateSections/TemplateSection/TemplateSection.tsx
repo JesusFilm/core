@@ -91,7 +91,7 @@ export function TemplateSection({
           </SwiperSlide>
         </Swiper>
       )}
-      {journeys != null && journeys?.length > 0 && (
+      {loading !== true && journeys != null && journeys?.length > 0 && (
         <Swiper
           autoHeight
           speed={850}
@@ -113,8 +113,8 @@ export function TemplateSection({
           ))}
         </Swiper>
       )}
-      <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
-      <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
+      <NavButton variant="prev" ref={prevRef} />
+      <NavButton variant="next" ref={nextRef} />
     </Stack>
   )
 }

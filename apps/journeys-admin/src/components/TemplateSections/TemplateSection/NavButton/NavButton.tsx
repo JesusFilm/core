@@ -7,11 +7,10 @@ import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 
 interface NavButtonProps {
   variant: 'prev' | 'next'
-  disabled?: boolean
 }
 
 export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
-  function NavButton({ variant, disabled = false }, ref): ReactElement {
+  function NavButton({ variant }, ref): ReactElement {
     const theme = useTheme()
 
     return (
@@ -22,7 +21,7 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
           cursor: 'pointer',
           position: 'absolute',
           boxShadow: theme.shadows[2],
-          opacity: { xs: 0, lg: disabled ? 0 : 1 },
+          opacity: { xs: 0, lg: 1 },
           left: variant === 'prev' ? -20 : undefined,
           right: variant === 'next' ? -20 : undefined,
           mt: 0,
