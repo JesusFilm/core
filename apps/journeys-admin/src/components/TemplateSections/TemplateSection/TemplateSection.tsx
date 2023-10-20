@@ -106,7 +106,7 @@ export function TemplateSection({
           {journeys?.map((journey) => (
             <SwiperSlide
               key={journey?.id}
-              data-testId={`journey-${journey.id}`}
+              data-testid={`journey-${journey.id}`}
             >
               <TemplateGalleryCard journey={journey} />
             </SwiperSlide>
