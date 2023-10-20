@@ -96,6 +96,8 @@ export function TemplateSection({
           autoHeight
           speed={850}
           watchOverflow
+          observer
+          observeParents
           breakpoints={swiperBreakpoints}
           navigation={{
             nextEl: nextRef.current,
@@ -113,8 +115,16 @@ export function TemplateSection({
           ))}
         </Swiper>
       )}
-      <NavButton variant="prev" ref={prevRef} />
-      <NavButton variant="next" ref={nextRef} />
+      <NavButton
+        variant="prev"
+        ref={prevRef}
+        disabled={journeys == null || loading === true}
+      />
+      <NavButton
+        variant="next"
+        ref={nextRef}
+        disabled={journeys == null || loading === true}
+      />
     </Stack>
   )
 }
