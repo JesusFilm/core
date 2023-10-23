@@ -183,7 +183,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     // <Div100vh style={{ overflow: 'hidden' }}>
     <Box
       sx={{
-        height: viewportHeight
+        height: viewportHeight,
+        [theme.breakpoints.down('md')]: { overflowY: 'auto' }
         //  overflow: 'hidden'
       }}
     >
