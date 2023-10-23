@@ -24,7 +24,10 @@ const Template: StoryObj<typeof Menu> = {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: { status: JourneyStatus.draft } as unknown as Journey,
+            journey: {
+              status: JourneyStatus.draft,
+              tags: []
+            } as unknown as Journey,
             variant: 'admin'
           }}
         >

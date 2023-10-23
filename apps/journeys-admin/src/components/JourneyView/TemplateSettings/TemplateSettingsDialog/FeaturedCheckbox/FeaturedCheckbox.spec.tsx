@@ -17,7 +17,7 @@ describe('FeaturedCheckbox', () => {
     const { getByRole } = render(
       <FeaturedCheckbox
         loading={false}
-        values={false}
+        value={false}
         name="test"
         onChange={onClick}
       />
@@ -32,7 +32,7 @@ describe('FeaturedCheckbox', () => {
   it('is disabled when loading is true', () => {
     const onClick = jest.fn()
     const { getByRole } = render(
-      <FeaturedCheckbox loading values={false} name="test" onChange={onClick} />
+      <FeaturedCheckbox loading value={false} name="test" onChange={onClick} />
     )
 
     const checkbox = getByRole('checkbox')
