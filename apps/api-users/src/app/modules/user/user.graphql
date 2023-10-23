@@ -4,8 +4,13 @@ type User @key(fields: "id") {
   lastName: String
   email: String!
   imageUrl: String
+  superAdmin: Boolean
 }
 
 extend type Query {
   me: User
+}
+
+extend type Mutation {
+  userImpersonate(email: String!): String
 }
