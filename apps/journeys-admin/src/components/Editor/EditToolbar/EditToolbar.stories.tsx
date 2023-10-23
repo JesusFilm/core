@@ -39,7 +39,10 @@ export const Default: StoryObj<typeof EditToolbar> = {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: { status: JourneyStatus.published } as unknown as Journey,
+            journey: {
+              status: JourneyStatus.published,
+              tags: []
+            } as unknown as Journey,
             variant: 'admin'
           }}
         >
