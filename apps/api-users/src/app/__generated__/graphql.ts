@@ -15,6 +15,7 @@ export class User {
     lastName?: Nullable<string>;
     email: string;
     imageUrl?: Nullable<string>;
+    superAdmin?: Nullable<boolean>;
 }
 
 export abstract class IQuery {
@@ -28,6 +29,10 @@ export class Translation {
     value: string;
     language: Language;
     primary: boolean;
+}
+
+export abstract class IMutation {
+    abstract userImpersonate(email: string): Nullable<string> | Promise<Nullable<string>>;
 }
 
 export class Language {
