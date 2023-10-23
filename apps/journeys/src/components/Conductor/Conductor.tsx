@@ -271,7 +271,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           </StyledSwiperContainer>
         </Box>
       </Stack>
-      <Typography>{`Viewport: ${
+      <Typography>{`Journey Viewport: ${
         viewportHeight as unknown as string
       }`}</Typography>
     </Box>
