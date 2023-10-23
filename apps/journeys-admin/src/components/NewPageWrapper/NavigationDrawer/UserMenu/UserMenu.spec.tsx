@@ -20,7 +20,8 @@ describe('UserMenu', () => {
               firstName: 'Amin',
               lastName: 'One',
               imageUrl: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com'
+              email: 'amin@email.com',
+              superAdmin: false
             }}
             profileOpen
             profileAnchorEl={null}
@@ -53,7 +54,8 @@ describe('UserMenu', () => {
               firstName: 'Amin',
               lastName: 'One',
               imageUrl: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com'
+              email: 'amin@email.com',
+              superAdmin: false
             }}
             profileOpen
             profileAnchorEl={null}
