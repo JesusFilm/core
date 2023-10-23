@@ -54,7 +54,14 @@ export function TemplateGalleryCard({
         passHref
         legacyBehavior
       >
-        <CardActionArea sx={{ height: 'inherit' }}>
+        <CardActionArea
+          sx={{
+            height: 'inherit',
+            '&>.MuiCardActionArea-focusHighlight': {
+              backgroundColor: 'transparent'
+            }
+          }}
+        >
           {journey != null ? (
             journey?.primaryImageBlock?.src != null ? (
               <Box
@@ -98,7 +105,12 @@ export function TemplateGalleryCard({
             />
           )}
           <CardContent
-            sx={{ display: 'flex', flexDirection: 'column', px: 0, py: 3 }}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              px: 0,
+              py: 3
+            }}
           >
             {journey != null ? (
               <>
@@ -113,27 +125,46 @@ export function TemplateGalleryCard({
                 >
                   {date} ● {displayLanguage}
                 </Typography>
-                <Typography
-                  variant="subtitle2"
+                <Box
                   sx={{
-                    my: 1,
-                    display: { xs: 'none', lg: 'block' }
-                  }}
-                >
-                  {journey.title}
-                </Typography>
-                <Typography
-                  variant="subtitle3"
-                  sx={{
-                    whiteSpace: 'noWrap',
+                    display: { xs: 'none', lg: '-webkit-box' },
+                    height: '66px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    my: 1,
-                    display: { xs: 'block', lg: 'none' }
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 3
                   }}
                 >
-                  {journey.title}
-                </Typography>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      my: 1,
+                      display: { xs: 'none', lg: 'block' }
+                    }}
+                  >
+                    {journey.title}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: { xs: '-webkit-box', lg: 'none' },
+                    height: '63px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 3
+                  }}
+                >
+                  <Typography
+                    variant="subtitle3"
+                    sx={{
+                      my: 1,
+                      display: { xs: 'block', lg: 'none' }
+                    }}
+                  >
+                    {journey.title}
+                  </Typography>
+                </Box>
               </>
             ) : (
               <Box>

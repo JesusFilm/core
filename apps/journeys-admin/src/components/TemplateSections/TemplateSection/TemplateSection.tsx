@@ -1,6 +1,6 @@
+import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import Stack from '@mui/system/Stack'
 import { ReactElement, useRef } from 'react'
 import SwiperCore, { A11y, Navigation, SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -61,7 +61,7 @@ export function TemplateSection({
   }
 
   return (
-    <Stack spacing={4} justifyContent="center" sx={{ position: 'relative' }}>
+    <Box sx={{ position: 'relative' }}>
       <Typography variant="h5">{category}</Typography>
       {loading === true && (journeys === null || journeys?.length === 0) && (
         <Swiper breakpoints={swiperBreakpoints}>
@@ -101,7 +101,7 @@ export function TemplateSection({
             nextEl: nextRef.current,
             prevEl: prevRef.current
           }}
-          style={{ overflow: 'visible' }}
+          style={{ overflow: 'visible', marginTop: 16 }}
         >
           {journeys?.map((journey) => (
             <SwiperSlide
@@ -113,8 +113,18 @@ export function TemplateSection({
           ))}
         </Swiper>
       )}
-      <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
-      <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
-    </Stack>
+      <NavButton
+        variant="prev"
+        ref={prevRef}
+        disabled={journeys == null}
+        sx={{ mt: { lg: '-19%', xl: '-17%' } }}
+      />
+      <NavButton
+        variant="next"
+        ref={nextRef}
+        disabled={journeys == null}
+        sx={{ mt: { lg: '-19%', xl: '-17%' } }}
+      />
+    </Box>
   )
 }
