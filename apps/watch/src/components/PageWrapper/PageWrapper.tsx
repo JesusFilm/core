@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { ReactElement, ReactNode } from 'react'
-import Div100vh from 'react-div-100vh'
+import { use100vh } from 'react-div-100vh'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 // Used to resolve dynamic viewport height on Safari
@@ -24,8 +24,14 @@ export function PageWrapper({
   hideHeader,
   testId
 }: PageWrapperProps): ReactElement {
+  const viewportHeight = use100vh()
   return (
-    <Div100vh>
+    <Box
+      sx={{
+        height: viewportHeight ?? '100vh',
+        minHeight: '-webkit-fill-available'
+      }}
+    >
       <Stack
         justifyContent="space-between"
         sx={{ width: '100%', height: '100%' }}
@@ -44,6 +50,6 @@ export function PageWrapper({
         <Box sx={{ flexGrow: 1 }}>{children}</Box>
         <Footer />
       </Stack>
-    </Div100vh>
+    </Box>
   )
 }
