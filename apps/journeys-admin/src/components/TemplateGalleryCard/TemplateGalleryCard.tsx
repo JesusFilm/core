@@ -40,7 +40,7 @@ export function TemplateGalleryCard({
 
   return (
     <Card
-      aria-label="template-gallery-card"
+      aria-label="templateGalleryCard"
       variant="outlined"
       sx={{
         border: 'none',

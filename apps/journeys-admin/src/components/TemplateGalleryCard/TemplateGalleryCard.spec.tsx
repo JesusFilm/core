@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import {
@@ -92,8 +92,12 @@ describe('TemplateGalleryCard', () => {
     expect(getByText('Aug, 2023 ● Kalagan (TK)')).toBeInTheDocument()
   })
 
-  it('should link to template details', () => {
-    const { getByRole } = render(<TemplateGalleryCard journey={journey} />)
-    expect(getByRole('link')).toHaveAttribute('href', '/templates/template-id')
+  it('should link to template details', async () => {
+    const { container } = render(<TemplateGalleryCard journey={journey} />)
+    await waitFor(() =>
+      expect(
+        container.querySelector('div[href="/templates/template-id"]')
+      ).toHaveAttribute('href', '/templates/template-id')
+    )
   })
 })
