@@ -1,9 +1,10 @@
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/system/Stack'
-import { ReactElement, useRef } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import SwiperCore, { A11y, Navigation, SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { NavigationOptions } from 'swiper/types/components/navigation'
 
 import { GetJourneys_journeys as Journeys } from '../../../../__generated__/GetJourneys'
 import { TemplateGalleryCard } from '../../TemplateGalleryCard'
@@ -25,8 +26,22 @@ export function TemplateSection({
   loading
 }: TemplateSectionProps): ReactElement {
   const { breakpoints } = useTheme()
+  const [swiper, setSwiper] = useState<SwiperCore>()
   const nextRef = useRef<HTMLButtonElement>(null)
   const prevRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (swiper != null) {
+      const navigation = swiper.params.navigation as NavigationOptions
+      navigation.nextEl = nextRef.current
+      navigation.prevEl = prevRef.current
+
+      swiper.navigation.destroy()
+      swiper.navigation.init()
+      swiper.navigation.update()
+    }
+  }, [swiper])
+
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       slidesPerGroup: 2,
@@ -96,14 +111,12 @@ export function TemplateSection({
           autoHeight
           speed={850}
           watchOverflow
+          allowTouchMove
           observer
           observeParents
           breakpoints={swiperBreakpoints}
-          navigation={{
-            nextEl: nextRef.current,
-            prevEl: prevRef.current
-          }}
           style={{ overflow: 'visible' }}
+          onSwiper={(swiper) => setSwiper(swiper)}
         >
           {journeys?.map((journey) => (
             <SwiperSlide
@@ -115,16 +128,8 @@ export function TemplateSection({
           ))}
         </Swiper>
       )}
-      <NavButton
-        variant="prev"
-        ref={prevRef}
-        disabled={journeys == null || loading === true}
-      />
-      <NavButton
-        variant="next"
-        ref={nextRef}
-        disabled={journeys == null || loading === true}
-      />
+      <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
+      <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
     </Stack>
   )
 }
