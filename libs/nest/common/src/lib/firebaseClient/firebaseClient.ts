@@ -21,7 +21,7 @@ export const firebaseClient = initializeApp(
     : undefined
 )
 
-const auth = getAuth(firebaseClient)
+export const auth = getAuth(firebaseClient)
 
 export async function contextToUserId(
   context: ExecutionContext
@@ -53,4 +53,8 @@ export async function contextToUser(
     }
   }
   return null
+}
+
+export async function impersonateUser(userId: string): Promise<string> {
+  return await auth.createCustomToken(userId)
 }
