@@ -2,7 +2,6 @@ import { ApolloProvider } from '@apollo/client'
 import { datadogRum } from '@datadog/browser-rum'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import Box from '@mui/material/Box'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
@@ -77,30 +76,28 @@ function JourneysApp({
   const apolloClient = useApollo()
 
   return (
-    <Box sx={{ border: '1px solid red' }}>
-      <CacheProvider value={emotionCache}>
-        <DefaultSeo
-          titleTemplate={t('%s | Next Steps')}
-          defaultTitle={t('Next Steps')}
+    <CacheProvider value={emotionCache}>
+      <DefaultSeo
+        titleTemplate={t('%s | Next Steps')}
+        defaultTitle={t('Next Steps')}
+      />
+      <Head>
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, viewport-fit=cover"
         />
-        <Head>
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width, viewport-fit=cover"
-          />
-        </Head>
-        <ApolloProvider client={apolloClient}>
-          <SnackbarProvider
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-          >
-            <Component {...pageProps} />
-          </SnackbarProvider>
-        </ApolloProvider>
-      </CacheProvider>
-    </Box>
+      </Head>
+      <ApolloProvider client={apolloClient}>
+        <SnackbarProvider
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+        >
+          <Component {...pageProps} />
+        </SnackbarProvider>
+      </ApolloProvider>
+    </CacheProvider>
   )
 }
 

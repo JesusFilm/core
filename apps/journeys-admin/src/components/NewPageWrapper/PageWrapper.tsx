@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
@@ -61,8 +60,9 @@ export function PageWrapper({
       <Box
         sx={{
           height: viewportHeight ?? '100vh',
-          overflow: 'hidden',
-          [theme.breakpoints.down('md')]: { overflowY: 'auto' }
+          minHeight: '-webkit-fill-available',
+          [theme.breakpoints.down('md')]: { overflowY: 'auto' },
+          overflow: 'hidden'
         }}
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
@@ -121,9 +121,6 @@ export function PageWrapper({
           </Stack>
         </Stack>
       </Box>
-      <Typography>
-        {`Admin Viewport: ${viewportHeight as unknown as string}`}
-      </Typography>
     </PageProvider>
   )
 }

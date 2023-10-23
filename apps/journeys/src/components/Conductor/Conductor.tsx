@@ -3,9 +3,8 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { SxProps, styled, useTheme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useState } from 'react'
-import Div100vh, { use100vh } from 'react-div-100vh'
+import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
 import SwiperCore, { Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -181,13 +180,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   return (
-    // <Div100vh style={{ overflow: 'hidden' }}>
     <Box
       sx={{
-        height: viewportHeight,
+        height: viewportHeight ?? '100vh',
         minHeight: '-webkit-fill-available',
-        [theme.breakpoints.down('md')]: { overflowY: 'auto' }
-        //  overflow: 'hidden'
+        [theme.breakpoints.down('md')]: { overflowY: 'auto' },
+        overflow: 'hidden'
       }}
     >
       <Stack
@@ -272,9 +270,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           </StyledSwiperContainer>
         </Box>
       </Stack>
-      <Typography>{`Journey Viewport: ${
-        viewportHeight as unknown as string
-      }`}</Typography>
     </Box>
   )
 }
