@@ -185,7 +185,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     <Box
       sx={{
         height: viewportHeight,
-        minHeight: '100rvh',
+        minHeight: '-webkit-fill-available',
         [theme.breakpoints.down('md')]: { overflowY: 'auto' }
         //  overflow: 'hidden'
       }}
