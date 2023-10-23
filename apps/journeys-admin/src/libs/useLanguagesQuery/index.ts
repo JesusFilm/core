@@ -1,0 +1,1 @@
+export { useLanguagesQuery } from './useLanguagesQuery'
