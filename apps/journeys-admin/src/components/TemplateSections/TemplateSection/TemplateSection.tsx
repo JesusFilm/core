@@ -113,18 +113,8 @@ export function TemplateSection({
           ))}
         </Swiper>
       )}
-      <NavButton
-        variant="prev"
-        ref={prevRef}
-        disabled={journeys == null}
-        sx={{ mt: { lg: '-19%', xl: '-17%' } }}
-      />
-      <NavButton
-        variant="next"
-        ref={nextRef}
-        disabled={journeys == null}
-        sx={{ mt: { lg: '-19%', xl: '-17%' } }}
-      />
+      <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
+      <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
     </Box>
   )
 }

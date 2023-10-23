@@ -1,7 +1,6 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
@@ -54,12 +53,9 @@ export function TemplateGalleryCard({
         passHref
         legacyBehavior
       >
-        <CardActionArea
+        <Box
           sx={{
-            height: 'inherit',
-            '&>.MuiCardActionArea-focusHighlight': {
-              backgroundColor: 'transparent'
-            }
+            height: 'inherit'
           }}
         >
           {journey != null ? (
@@ -174,7 +170,7 @@ export function TemplateGalleryCard({
               </Box>
             )}
           </CardContent>
-        </CardActionArea>
+        </Box>
       </NextLink>
     </Card>
   )
