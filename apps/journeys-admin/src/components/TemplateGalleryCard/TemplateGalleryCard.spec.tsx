@@ -97,7 +97,7 @@ describe('TemplateGalleryCard', () => {
     await waitFor(() =>
       expect(
         container.querySelector('div[href="/templates/template-id"]')
-      ).toHaveAttribute('href', '/templates/template-id')
+      ).toBeInTheDocument()
     )
   })
 })
