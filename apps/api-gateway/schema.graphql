@@ -1002,6 +1002,7 @@ enum MessagePlatform
 type Mutation
   @join__type(graph: JOURNEYS)
   @join__type(graph: MEDIA)
+  @join__type(graph: USERS)
 {
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @join__field(graph: JOURNEYS)
@@ -1218,6 +1219,7 @@ type Mutation
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
+  userImpersonate(email: String!): String @join__field(graph: USERS)
 }
 
 """
@@ -2024,6 +2026,7 @@ type User
   lastName: String @join__field(graph: USERS)
   email: String! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
+  superAdmin: Boolean @join__field(graph: USERS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""
