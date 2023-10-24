@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { GET_CURRENT_USER } from '../../src/libs/useCurrentUser'
+import { GET_CURRENT_USER } from '../../src/libs/useCurrentUserLazyQuery'
 
 function TeamsNewPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

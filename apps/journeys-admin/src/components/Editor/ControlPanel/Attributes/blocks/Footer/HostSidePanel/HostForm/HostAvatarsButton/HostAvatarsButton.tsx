@@ -8,7 +8,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/GetJourney'
-import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
+import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation'
 import { ImageLibrary } from '../../../../../../../ImageLibrary'
 
 interface HostAvatarsButtonProps {
@@ -21,7 +21,7 @@ export function HostAvatarsButton({
   const [open, setOpen] = useState(false)
   const { journey } = useJourney()
   const [host, setHost] = useState(journey?.host ?? undefined)
-  const { updateHost } = useHostUpdate()
+  const { updateHost } = useHostUpdateMutation()
   const [avatarNumber, setAvatarNumber] = useState<number>(1)
 
   useEffect(() => {
