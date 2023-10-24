@@ -1,7 +1,6 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
@@ -100,7 +99,7 @@ export function TemplateGalleryCard({
               }}
             />
           )}
-          <CardContent
+          <Box
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -124,7 +123,7 @@ export function TemplateGalleryCard({
                 <Box
                   sx={{
                     display: { xs: 'none', lg: '-webkit-box' },
-                    height: '66px',
+                    maxHeight: '66px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     WebkitBoxOrient: 'vertical',
@@ -144,7 +143,7 @@ export function TemplateGalleryCard({
                 <Box
                   sx={{
                     display: { xs: '-webkit-box', lg: 'none' },
-                    height: '63px',
+                    maxHeight: '63px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     WebkitBoxOrient: 'vertical',
@@ -169,7 +168,7 @@ export function TemplateGalleryCard({
                 <Skeleton variant="text" sx={{ width: '60%' }} />
               </Box>
             )}
-          </CardContent>
+          </Box>
         </Box>
       </NextLink>
     </Card>
