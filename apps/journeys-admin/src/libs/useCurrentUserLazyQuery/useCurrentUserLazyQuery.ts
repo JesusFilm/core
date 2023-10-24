@@ -19,7 +19,7 @@ export const GET_CURRENT_USER = gql`
   }
 `
 
-export function useCurrentUser(): {
+export function useCurrentUserLazyQuery(): {
   loadUser: LazyQueryExecFunction<GetCurrentUser, OperationVariables>
   data: ApiUser
 } {
