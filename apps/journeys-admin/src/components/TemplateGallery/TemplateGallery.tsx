@@ -68,6 +68,7 @@ export function TemplateGallery(): ReactElement {
             label={t('Topics, holidays, felt needs, collections')}
             tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
             onChange={handleChange}
+            limitTags={2}
             selectedTagIds={selectedTagIds}
           />
         </Grid>
@@ -76,6 +77,7 @@ export function TemplateGallery(): ReactElement {
             label={t('Audience')}
             tagNames={['Audience']}
             onChange={handleChange}
+            limitTags={1}
             selectedTagIds={selectedTagIds}
           />
         </Grid>
@@ -84,6 +86,7 @@ export function TemplateGallery(): ReactElement {
             label={t('Genre')}
             tagNames={['Genre']}
             onChange={handleChange}
+            limitTags={1}
             selectedTagIds={selectedTagIds}
           />
         </Grid>

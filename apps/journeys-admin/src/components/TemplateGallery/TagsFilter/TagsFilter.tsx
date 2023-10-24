@@ -16,6 +16,7 @@ interface TagsFilterProps {
   label: string
   tagNames: string[]
   selectedTagIds: string[]
+  limitTags?: number
   onChange: (selectedTagIds: string[], filteredTagIds: string[]) => void
 }
 
@@ -23,6 +24,7 @@ export function TagsFilter({
   label,
   tagNames,
   selectedTagIds,
+  limitTags,
   onChange
 }: TagsFilterProps): ReactElement {
   const { parentTags, childTags, loading } = useTagsQuery()
@@ -67,6 +69,7 @@ export function TagsFilter({
         loading={loading}
         disableCloseOnSelect
         value={filteredSelectedTags}
+        limitTags={limitTags}
         onChange={handleChange}
         options={filteredChildTags}
         groupBy={(option) => option.parentId ?? ''}
