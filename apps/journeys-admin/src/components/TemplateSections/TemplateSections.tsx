@@ -38,17 +38,17 @@ export function TemplateSections({
       }
     },
     onCompleted(data) {
-      const collection =
-        tagIds == null
-          ? [
-              ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
-              ...take(
-                data.journeys.filter(({ featuredAt }) => featuredAt == null),
-                10
-              )
-            ]
-          : data.journeys
-      setCollection(collection)
+      const featuredAndNew = [
+        ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
+        ...take(
+          data.journeys.filter(({ featuredAt }) => featuredAt == null),
+          10
+        )
+      ]
+      const mostRelevant = data.journeys.filter(({ tags }) =>
+        tagIds?.every((tagId) => tags.find((tag) => tag.id === tagId))
+      )
+      setCollection(tagIds == null ? featuredAndNew : mostRelevant)
       const contents = {}
       data.journeys.forEach((journey) => {
         journey.tags.forEach((tag) => {
