@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -99,10 +100,8 @@ export function TemplateGalleryCard({
               }}
             />
           )}
-          <Box
+          <Stack
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
               px: 0,
               py: 3
             }}
@@ -168,7 +167,7 @@ export function TemplateGalleryCard({
                 <Skeleton variant="text" sx={{ width: '60%' }} />
               </Box>
             )}
-          </Box>
+          </Stack>
         </Box>
       </NextLink>
     </Card>
