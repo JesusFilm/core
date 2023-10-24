@@ -4,7 +4,7 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 
 import { UPDATE_HOST, useHostUpdateMutation } from './useHostUpdateMutation'
 
-describe('useHostUpdate', () => {
+describe('useHostUpdateMutation', () => {
   it('returns a function which updates a host by id and teamId', async () => {
     const cache = new InMemoryCache()
     cache.restore({

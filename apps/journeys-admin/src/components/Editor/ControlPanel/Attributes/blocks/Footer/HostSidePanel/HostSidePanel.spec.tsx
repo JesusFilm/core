@@ -32,11 +32,14 @@ jest.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
   useCurrentUserLazyQuery: jest.fn()
 }))
 
-const useCurrentUserMock = useCurrentUserLazyQuery as jest.Mock
+const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
 
 describe('HostSidePanel', () => {
   beforeEach(() => {
-    useCurrentUserMock.mockReturnValue({ loadUser: jest.fn(), data: user1 })
+    mockUseCurrentUserLazyQuery.mockReturnValue({
+      loadUser: jest.fn(),
+      data: user1
+    })
   })
 
   afterAll(() => {
@@ -169,7 +172,7 @@ describe('HostSidePanel', () => {
   })
 
   it('should disable editing hosts if current user does not have access', async () => {
-    useCurrentUserMock.mockReturnValue({
+    mockUseCurrentUserLazyQuery.mockReturnValue({
       loadUser: jest.fn(),
       data: { id: 'otherUser', email: 'otherUser@test.com' }
     })

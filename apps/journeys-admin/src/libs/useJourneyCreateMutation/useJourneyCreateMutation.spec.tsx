@@ -88,7 +88,7 @@ const data = {
   }
 }
 
-describe('useJourneyCreate', () => {
+describe('useJourneyCreateMutation', () => {
   it('returns a function which creates a journey by id', async () => {
     mockUuidv4.mockReturnValueOnce(variables.journeyId)
     mockUuidv4.mockReturnValueOnce(variables.stepId)

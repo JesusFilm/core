@@ -16,7 +16,7 @@ jest.mock('../../../../../../../../../libs/useHostUpdateMutation', () => ({
   useHostUpdateMutation: jest.fn()
 }))
 
-const mockUseHostUpdate = useHostUpdateMutation as jest.MockedFunction<
+const mockUseHostUpdateMutation = useHostUpdateMutation as jest.MockedFunction<
   typeof useHostUpdateMutation
 >
 
@@ -24,7 +24,7 @@ describe('HostAvatarsButton', () => {
   const updateHost = jest.fn()
 
   beforeEach(() => {
-    mockUseHostUpdate.mockReturnValue({
+    mockUseHostUpdateMutation.mockReturnValue({
       updateHost
     })
   })
