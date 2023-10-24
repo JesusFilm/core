@@ -181,7 +181,6 @@ const getUserRoleMock: MockedResponse<GetUserRole> = {
 
 const Template: StoryObj<
   ComponentProps<typeof TemplateView> & {
-    journey: Journey
     getJourneysMock: MockedResponse<GetJourneys>
     getUserRoleMock: MockedResponse<GetUserRole>
     journey: Journey
@@ -227,15 +226,6 @@ export const Complete = {
     getJourneysMock,
     getUserRoleMock,
     getTagsMock
-  }
-}
-
-export const Loading = {
-  ...Template,
-  args: {
-    ...Default.args,
-    journey: undefined
-    // getTagsMock: []
   }
 }
 
