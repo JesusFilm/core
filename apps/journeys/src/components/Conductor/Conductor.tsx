@@ -197,7 +197,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             centeredSlidesBounds
             resizeObserver
             onSwiper={(swiper) => setSwiper(swiper)}
-            allowTouchMove={false}
+            allowTouchMove
             onSlideChange={() => setShowHeaderFooter(true)}
             sx={{
               '.swiper-pagination': {
