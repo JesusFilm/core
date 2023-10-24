@@ -20,13 +20,15 @@ import {
 } from '../../utils'
 import { GenericEvent } from '../GenericEvent'
 
-interface Props {
+interface TimelineEventProps {
   timelineItem: TimelineItem
 }
 
 type GenericEventProps = ComponentProps<typeof GenericEvent>
 
-export function TimelineEvent({ timelineItem }: Props): ReactElement {
+export function TimelineEvent({
+  timelineItem
+}: TimelineEventProps): ReactElement {
   const { event, duration } = timelineItem
 
   const { t } = useTranslation('apps-journeys-admin')

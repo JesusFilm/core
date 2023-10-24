@@ -4,11 +4,11 @@ import { ReactElement } from 'react'
 
 import { Icon, IconName } from '../Icon'
 
-interface Props {
+interface CenterCheckProps {
   name: IconName
 }
 
-export function CenterCheck({ name }: Props): ReactElement {
+export function CenterCheck({ name }: CenterCheckProps): ReactElement {
   return (
     <Box
       sx={{
