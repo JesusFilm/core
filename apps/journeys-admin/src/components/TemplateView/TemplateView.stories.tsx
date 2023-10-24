@@ -233,8 +233,7 @@ export const Loading = {
   ...Template,
   args: {
     ...Default.args,
-    journey: undefined,
-    getTagsMock: []
+    journey: undefined
   }
 }
 
