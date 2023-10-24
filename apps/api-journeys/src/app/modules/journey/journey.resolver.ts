@@ -559,8 +559,7 @@ export class JourneyResolver {
         userJourneys: true,
         team: {
           include: { userTeams: true }
-        },
-        journeyTags: true
+        }
       }
     })
     if (journey == null)
