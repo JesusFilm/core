@@ -5,6 +5,10 @@ import { initAuth } from '../../src/libs/firebaseClient/initAuth'
 
 initAuth()
 
+export const config = {
+  runtime: 'edge'
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
