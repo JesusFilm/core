@@ -133,8 +133,7 @@ export function TemplateGalleryCard({
                   <Typography
                     variant="subtitle2"
                     sx={{
-                      my: 1,
-                      display: { xs: 'none', lg: 'block' }
+                      my: 1
                     }}
                   >
                     {journey.title}
@@ -153,8 +152,7 @@ export function TemplateGalleryCard({
                   <Typography
                     variant="subtitle3"
                     sx={{
-                      my: 1,
-                      display: { xs: 'block', lg: 'none' }
+                      my: 1
                     }}
                   >
                     {journey.title}

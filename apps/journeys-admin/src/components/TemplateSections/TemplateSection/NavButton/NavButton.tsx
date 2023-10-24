@@ -1,5 +1,5 @@
 import IconButton from '@mui/material/IconButton'
-import { useTheme } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import { ReactElement, forwardRef } from 'react'
 
 import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
@@ -8,10 +8,11 @@ import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 interface NavButtonProps {
   variant: 'prev' | 'next'
   disabled?: boolean
+  sx?: SxProps
 }
 
 export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
-  function NavButton({ variant, disabled = false }, ref): ReactElement {
+  function NavButton({ variant, disabled = false, sx }, ref): ReactElement {
     const theme = useTheme()
 
     return (
@@ -25,7 +26,6 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
           opacity: { xs: 0, lg: disabled ? 0 : 1 },
           left: variant === 'prev' ? -20 : undefined,
           right: variant === 'next' ? -20 : undefined,
-          mt: 0,
           backgroundColor: theme.palette.background.paper,
           '&:hover': {
             backgroundColor: theme.palette.background.paper
@@ -34,7 +34,8 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
             opacity: 0,
             cursor: 'auto',
             pointerEvents: 'none'
-          }
+          },
+          ...sx
         }}
       >
         {variant === 'prev' ? <ChevronLeft /> : <ChevronRight />}
