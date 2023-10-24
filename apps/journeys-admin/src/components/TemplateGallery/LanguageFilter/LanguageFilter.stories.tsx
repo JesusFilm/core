@@ -5,7 +5,7 @@ import { ComponentProps } from 'react'
 
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GET_LANGUAGES } from '../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
+import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
 
 import { LanguageFilter } from '.'
 
