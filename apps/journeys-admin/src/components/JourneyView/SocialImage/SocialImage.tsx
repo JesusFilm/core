@@ -5,7 +5,15 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
-export function SocialImage(): ReactElement {
+interface SocialImageProps {
+  height?: number
+  width?: number
+}
+
+export function SocialImage({
+  height = 167,
+  width = 213
+}: SocialImageProps): ReactElement {
   const { journey } = useJourney()
 
   return (
@@ -22,8 +30,8 @@ export function SocialImage(): ReactElement {
           alt={journey?.primaryImageBlock.alt}
           placeholder="blur"
           blurDataURL={journey?.primaryImageBlock.blurhash}
-          width={213}
-          height={167}
+          width={width}
+          height={height}
           objectFit="cover"
           style={{
             borderRadius: 12
@@ -36,8 +44,8 @@ export function SocialImage(): ReactElement {
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 3,
-            width: 213,
-            height: 167,
+            width,
+            height,
             backgroundColor: 'background.default'
           }}
         >

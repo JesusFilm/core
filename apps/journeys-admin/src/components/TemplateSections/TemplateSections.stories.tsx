@@ -1,4 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -172,7 +173,8 @@ const getJourneysMock: MockedResponse<GetJourneys> = {
     variables: {
       where: {
         template: true,
-        orderByRecent: true
+        orderByRecent: true,
+        languageIds: ['529']
       }
     }
   },
@@ -191,7 +193,8 @@ const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
       where: {
         template: true,
         orderByRecent: true,
-        tagIds: [addiction.id]
+        tagIds: [addiction.id],
+        languageIds: ['529']
       }
     }
   },
@@ -214,11 +217,18 @@ const getJourneysEmptyMock: MockedResponse<GetJourneys> = {
 }
 
 const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
-  render: ({ ...args }) => <TemplateSections {...args} />
+  render: ({ ...args }) => (
+    <Box sx={{ backgroundColor: 'background.paper', p: 5 }}>
+      <TemplateSections {...args} />
+    </Box>
+  )
 }
 
 export const Default = {
   ...Template,
+  args: {
+    languageId: '529'
+  },
   parameters: {
     apolloClient: {
       mocks: [getJourneysMock]
@@ -226,10 +236,23 @@ export const Default = {
   }
 }
 
+export const Loading = {
+  ...Template,
+  args: {
+    languageId: '529'
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [{ ...getJourneysMock, delay: 100000000000000 }]
+    }
+  }
+}
+
 export const TagIds = {
   ...Template,
   args: {
-    tagIds: [addiction.id]
+    tagIds: [addiction.id],
+    languageId: '529'
   },
   parameters: {
     apolloClient: {
@@ -240,6 +263,9 @@ export const TagIds = {
 
 export const Empty = {
   ...Template,
+  args: {
+    languageId: '529'
+  },
   parameters: {
     apolloClient: {
       mocks: [getJourneysEmptyMock]

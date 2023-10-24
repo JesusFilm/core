@@ -161,7 +161,8 @@ describe('TemplateSections', () => {
       variables: {
         where: {
           template: true,
-          orderByRecent: true
+          orderByRecent: true,
+          languageIds: ['529']
         }
       }
     },
@@ -180,7 +181,8 @@ describe('TemplateSections', () => {
         where: {
           template: true,
           orderByRecent: true,
-          tagIds: [addiction.id]
+          tagIds: [addiction.id],
+          languageIds: ['529']
         }
       }
     },
@@ -206,16 +208,16 @@ describe('TemplateSections', () => {
     it('should render Featured & New templates if tagIds are not present', async () => {
       const { getByRole, getAllByRole } = render(
         <MockedProvider mocks={[getJourneysMock]}>
-          <TemplateSections />
+          <TemplateSections languageId="529" />
         </MockedProvider>
       )
       await waitFor(() =>
         expect(
-          getByRole('heading', { name: 'Featured & New' })
+          getAllByRole('heading', { name: 'Featured Template 2' })[0]
         ).toBeInTheDocument()
       )
       expect(
-        getAllByRole('heading', { name: 'Featured Template 2' })[0]
+        getByRole('heading', { name: 'Featured & New' })
       ).toBeInTheDocument()
       expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
     })
@@ -225,16 +227,16 @@ describe('TemplateSections', () => {
     it('should render relevant templates if tagIds are present', async () => {
       const { getByRole, getAllByRole } = render(
         <MockedProvider mocks={[getJourneysWithTagIdsMock]}>
-          <TemplateSections tagIds={[addiction.id]} />
+          <TemplateSections tagIds={[addiction.id]} languageId="529" />
         </MockedProvider>
       )
       await waitFor(() =>
         expect(
-          getByRole('heading', { name: 'Most Relevant' })
+          getAllByRole('heading', { name: 'Featured Template 2' })[0]
         ).toBeInTheDocument()
       )
       expect(
-        getAllByRole('heading', { name: 'Featured Template 2' })[0]
+        getByRole('heading', { name: 'Most Relevant' })
       ).toBeInTheDocument()
       expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
     })
@@ -244,7 +246,7 @@ describe('TemplateSections', () => {
     it('should render tag templates', async () => {
       const { getByRole, queryByRole } = render(
         <MockedProvider mocks={[getJourneysWithTagIdsMock]}>
-          <TemplateSections tagIds={[addiction.id]} />
+          <TemplateSections tagIds={[addiction.id]} languageId="529" />
         </MockedProvider>
       )
       await waitFor(async () => {
@@ -260,7 +262,7 @@ describe('TemplateSections', () => {
     it('should render empty state', async () => {
       const { getByRole, getByText, queryByRole } = render(
         <MockedProvider mocks={[getJourneysEmptyMock]}>
-          <TemplateSections />
+          <TemplateSections languageId="529" />
         </MockedProvider>
       )
       await waitFor(async () => {

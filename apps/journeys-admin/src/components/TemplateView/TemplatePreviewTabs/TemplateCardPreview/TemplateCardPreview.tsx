@@ -1,11 +1,9 @@
 import 'swiper/swiper.min.css'
 
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
-import SwiperCore, { A11y, Mousewheel } from 'swiper'
+import { SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -23,20 +21,16 @@ import { CardWrapper } from '../../../CardPreview/CardList/CardWrapper'
 import { VideoWrapper } from '../../../Editor/Canvas/VideoWrapper'
 import { FramePortal } from '../../../FramePortal'
 
-SwiperCore.use([Mousewheel, A11y])
-
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
 }
 
 interface TemplateCardPreviewItemProps {
   step: TreeBlock<StepBlock>
-  smUp: boolean
 }
 
 function TemplateCardPreviewItem({
-  step,
-  smUp
+  step
 }: TemplateCardPreviewItemProps): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
@@ -44,32 +38,34 @@ function TemplateCardPreviewItem({
     (child) => child.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
   return (
-    <Stack
+    <Box
       sx={{
         position: 'relative',
-        width: smUp ? 240 : 177,
-        height: smUp ? 380 : 280
+        width: { xs: 177, sm: 240 },
+        height: { xs: 280, sm: 380 }
       }}
     >
       <Box
         sx={{
-          transform: smUp ? 'scale(0.6)' : 'scale(0.4)',
-          transformOrigin: smUp ? 'top left' : '22.5% top'
+          transform: { xs: 'scale(0.4)', sm: 'scale(0.6)' },
+          transformOrigin: 'top left'
         }}
       >
         <Box
           sx={{
             position: 'absolute',
             display: 'block',
-            width: smUp ? 405 : 445,
-            height: '100%',
+            width: { xs: 445, sm: 405 },
+            height: { xs: 698, sm: 633 },
             zIndex: 2,
             cursor: 'grab'
           }}
         />
         <FramePortal
-          width={smUp ? 405 : 445}
-          height={smUp ? 633 : 698}
+          sx={{
+            width: { xs: 445, sm: 405 },
+            height: { xs: 698, sm: 633 }
+          }}
           dir={rtl ? 'rtl' : 'ltr'}
         >
           <ThemeProvider
@@ -95,27 +91,30 @@ function TemplateCardPreviewItem({
           </ThemeProvider>
         </FramePortal>
       </Box>
-    </Stack>
+    </Box>
   )
 }
 
 export function TemplateCardPreview({
   steps
 }: TemplateCardPreviewProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme?.breakpoints?.up('sm'))
+  const { breakpoints } = useTheme()
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.sm]: {
+      spaceBetween: 28
+    }
+  }
 
   return (
     <Swiper
       freeMode
       watchOverflow
       slidesPerView="auto"
-      spaceBetween={smUp ? 28 : 12}
-      mousewheel
+      spaceBetween={12}
+      breakpoints={swiperBreakpoints}
+      autoHeight
       style={{
-        marginLeft: smUp ? '-32px' : '-44px',
-        marginRight: smUp ? '-36px' : '-44px',
-        paddingLeft: smUp ? '32px' : '20px',
-        paddingRight: smUp ? '40px' : '70px',
+        overflow: 'visible',
         zIndex: 2
       }}
     >
@@ -124,12 +123,11 @@ export function TemplateCardPreview({
           data-testid="templateCardsSwiperSlide"
           key={step.id}
           style={{
-            width: smUp ? '240px' : '177px',
-            height: smUp ? '380px' : '280px',
+            width: 'fit-content',
             zIndex: 2
           }}
         >
-          <TemplateCardPreviewItem step={step} smUp={smUp} />
+          <TemplateCardPreviewItem step={step} />
         </SwiperSlide>
       ))}
     </Swiper>

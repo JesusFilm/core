@@ -17,20 +17,24 @@ interface Contents {
 
 interface TemplateSectionsProps {
   tagIds?: string[]
+  languageId: string
 }
 
 export function TemplateSections({
-  tagIds
+  tagIds,
+  languageId
 }: TemplateSectionsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
+
   const { data, loading } = useJourneysQuery({
     variables: {
       where: {
         template: true,
         orderByRecent: true,
-        tagIds
+        tagIds,
+        languageIds: [languageId]
       }
     },
     onCompleted(data) {
@@ -62,10 +66,11 @@ export function TemplateSections({
 
   return (
     <Stack spacing={8}>
-      {collection.length > 0 && (
+      {(loading || (data?.journeys != null && data.journeys.length > 0)) && (
         <TemplateSection
           category={tagIds == null ? t('Featured & New') : t('Most Relevant')}
           journeys={collection}
+          loading={loading}
         />
       )}
       {map(

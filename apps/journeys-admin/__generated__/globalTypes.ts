@@ -386,6 +386,7 @@ export interface JourneysFilter {
   template?: boolean | null;
   ids?: string[] | null;
   tagIds?: string[] | null;
+  languageIds?: string[] | null;
   limit?: number | null;
   orderByRecent?: boolean | null;
 }

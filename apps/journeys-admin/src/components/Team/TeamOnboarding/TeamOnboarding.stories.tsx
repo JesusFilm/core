@@ -37,6 +37,7 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
       teamCreate: {
         id: 'teamId',
         title: 'Jesus Film Project',
+        publicTitle: null,
         __typename: 'Team',
         userTeams: []
       }
@@ -54,6 +55,7 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
         {
           id: 'teamId',
           title: 'Team Title',
+          publicTitle: null,
           __typename: 'Team',
           userTeams: []
         }
@@ -122,7 +124,10 @@ export const Default = {
     }
   },
   play: async () => {
-    await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+    await userEvent.type(
+      screen.getAllByRole('textbox')[0],
+      'Jesus Film Project'
+    )
   }
 }
 

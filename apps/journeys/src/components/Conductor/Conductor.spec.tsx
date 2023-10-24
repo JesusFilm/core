@@ -153,7 +153,8 @@ describe('Conductor', () => {
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it('should create a journeyViewEvent', async () => {

@@ -41,7 +41,8 @@ export const Default = {
       firstName: 'Amin',
       lastName: 'One',
       imageUrl: 'https://bit.ly/3Gth4Yf',
-      email: 'amin@email.com'
+      email: 'amin@email.com',
+      superAdmin: false
     },
     user: {
       displayName: 'Amin One',
