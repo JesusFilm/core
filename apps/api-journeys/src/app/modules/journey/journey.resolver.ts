@@ -593,6 +593,15 @@ export class JourneyResolver {
     }
     try {
       return await this.prismaService.$transaction(async (tx) => {
+        // Delete all tags and create with new input tags
+        if (input.tagIds != null) {
+          await tx.journeyTag.deleteMany({
+            where: {
+              journeyId: journey.id
+            }
+          })
+        }
+
         const updatedJourney = await tx.journey.update({
           where: { id },
           data: {
@@ -600,22 +609,12 @@ export class JourneyResolver {
             title: input.title ?? undefined,
             languageId: input.languageId ?? undefined,
             slug: input.slug ?? undefined,
-            // Add new tags
             journeyTags:
               input.tagIds != null
                 ? { create: input.tagIds.map((tagId) => ({ tagId })) }
                 : undefined
           }
         })
-        // Delete existing tags not specified in the update
-        if (input.tagIds != null) {
-          await tx.journeyTag.deleteMany({
-            where: {
-              journeyId: journey.id,
-              NOT: { tagId: { in: input.tagIds } }
-            }
-          })
-        }
         return updatedJourney
       })
     } catch (err) {
