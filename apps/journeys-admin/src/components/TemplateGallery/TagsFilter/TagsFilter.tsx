@@ -3,6 +3,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
+import CircularProgress from '@mui/material/CircularProgress'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
@@ -24,7 +25,7 @@ export function TagsFilter({
   selectedTagIds,
   onChange
 }: TagsFilterProps): ReactElement {
-  const { parentTags, childTags } = useTagsQuery()
+  const { parentTags, childTags, loading } = useTagsQuery()
   const filteredParentTagIds = compact(
     tagNames.map((tagName) => {
       return parentTags.find(({ name }) =>
@@ -63,6 +64,7 @@ export function TagsFilter({
   return (
     <Box sx={{ width: '100%' }}>
       <Autocomplete
+        loading={loading}
         disableCloseOnSelect
         value={filteredSelectedTags}
         onChange={handleChange}
@@ -71,7 +73,23 @@ export function TagsFilter({
         getOptionLabel={(option) =>
           option.name.find(({ primary }) => primary)?.value ?? ''
         }
-        renderInput={(params) => <TextField {...params} label={label} />}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={label}
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {loading ? (
+                    <CircularProgress color="inherit" size={20} />
+                  ) : null}
+                  {params.InputProps.endAdornment}
+                </>
+              )
+            }}
+          />
+        )}
         renderGroup={(params) => (
           <li key={params.key}>
             {tagNames.length > 1 && (

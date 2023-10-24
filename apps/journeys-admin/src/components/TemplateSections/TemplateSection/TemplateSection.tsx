@@ -1,9 +1,10 @@
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/system/Stack'
-import { ReactElement, useRef } from 'react'
-import SwiperCore, { A11y, Navigation, SwiperOptions, Virtual } from 'swiper'
+import { ReactElement, useEffect, useRef, useState } from 'react'
+import SwiperCore, { A11y, Navigation, SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { NavigationOptions } from 'swiper/types/components/navigation'
 
 import { GetJourneys_journeys as Journeys } from '../../../../__generated__/GetJourneys'
 import { TemplateGalleryCard } from '../../TemplateGalleryCard'
@@ -11,20 +12,36 @@ import { TemplateGalleryCard } from '../../TemplateGalleryCard'
 import 'swiper/swiper.min.css'
 import { NavButton } from './NavButton'
 
-SwiperCore.use([Navigation, A11y, Virtual])
+SwiperCore.use([Navigation, A11y])
 
 interface TemplateSectionProps {
   journeys?: Journeys[]
   category: string
+  loading?: boolean
 }
 
 export function TemplateSection({
   journeys,
-  category
+  category,
+  loading
 }: TemplateSectionProps): ReactElement {
   const { breakpoints } = useTheme()
+  const [swiper, setSwiper] = useState<SwiperCore>()
   const nextRef = useRef<HTMLButtonElement>(null)
   const prevRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (swiper != null) {
+      const navigation = swiper.params.navigation as NavigationOptions
+      navigation.nextEl = nextRef.current
+      navigation.prevEl = prevRef.current
+
+      swiper.navigation.destroy()
+      swiper.navigation.init()
+      swiper.navigation.update()
+    }
+  }, [swiper])
+
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       slidesPerGroup: 2,
@@ -60,7 +77,8 @@ export function TemplateSection({
 
   return (
     <Stack spacing={4} justifyContent="center" sx={{ position: 'relative' }}>
-      {journeys == null && (
+      <Typography variant="h5">{category}</Typography>
+      {loading === true && (journeys === null || journeys?.length === 0) && (
         <Swiper breakpoints={swiperBreakpoints}>
           <SwiperSlide>
             <TemplateGalleryCard />
@@ -88,31 +106,27 @@ export function TemplateSection({
           </SwiperSlide>
         </Swiper>
       )}
-      {journeys != null && (
-        <>
-          <Typography variant="h5">{category}</Typography>
-          <Swiper
-            autoHeight
-            speed={850}
-            watchOverflow
-            breakpoints={swiperBreakpoints}
-            navigation={{
-              nextEl: nextRef.current,
-              prevEl: prevRef.current
-            }}
-            virtual
-            style={{ overflow: 'visible' }}
-          >
-            {journeys?.map((journey) => (
-              <SwiperSlide
-                key={journey?.id}
-                data-testId={`journey-${journey.id}`}
-              >
-                <TemplateGalleryCard journey={journey} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </>
+      {loading !== true && journeys != null && journeys?.length > 0 && (
+        <Swiper
+          autoHeight
+          speed={850}
+          watchOverflow
+          allowTouchMove
+          observer
+          observeParents
+          breakpoints={swiperBreakpoints}
+          style={{ overflow: 'visible' }}
+          onSwiper={(swiper) => setSwiper(swiper)}
+        >
+          {journeys?.map((journey) => (
+            <SwiperSlide
+              key={journey?.id}
+              data-testid={`journey-${journey.id}`}
+            >
+              <TemplateGalleryCard journey={journey} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       )}
       <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
       <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
