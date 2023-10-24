@@ -17,7 +17,10 @@ const LanguageFilterStory: Meta<typeof LanguageFilter> = {
 
 const getLanguagesMock: MockedResponse<GetLanguages> = {
   request: {
-    query: GET_LANGUAGES
+    query: GET_LANGUAGES,
+    variables: {
+      languageId: '529'
+    }
   },
   result: {
     data: {
