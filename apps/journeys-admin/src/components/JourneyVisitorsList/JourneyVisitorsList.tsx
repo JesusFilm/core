@@ -14,7 +14,7 @@ import VisitorsPlaceholder from '../../../public/VisitorsPlaceholder.svg'
 
 import { VisitorCard } from './VisitorCard'
 
-interface Props {
+interface JourneyVisitorsListProps {
   visitorEdges?: VisitorEdge[]
   visitorsCount?: number
   fetchNext: () => void
@@ -28,7 +28,7 @@ export function JourneyVisitorsList({
   fetchNext,
   loading,
   hasNextPage = false
-}: Props): ReactElement {
+}: JourneyVisitorsListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const hasVisitors = visitorEdges != null && visitorEdges.length > 0
   return (

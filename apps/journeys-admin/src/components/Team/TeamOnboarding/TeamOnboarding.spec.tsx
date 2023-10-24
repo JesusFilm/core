@@ -35,9 +35,9 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('apps/journeys-admin/src/libs/useCurrentUser', () => ({
+jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUser: jest.fn().mockReturnValue({
+  useCurrentUserLazyQuery: jest.fn().mockReturnValue({
     loadUser: jest.fn(),
     data: {
       __typename: 'User',
