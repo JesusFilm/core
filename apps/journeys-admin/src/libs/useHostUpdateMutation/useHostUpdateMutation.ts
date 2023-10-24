@@ -24,7 +24,7 @@ interface updateHostProps {
   input: HostUpdateInput
 }
 
-export function useHostUpdate(): {
+export function useHostUpdateMutation(): {
   updateHost: ({
     id,
     teamId,

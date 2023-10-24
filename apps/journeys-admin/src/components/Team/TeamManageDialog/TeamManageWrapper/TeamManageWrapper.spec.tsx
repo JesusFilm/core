@@ -21,9 +21,9 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-jest.mock('../../../../libs/useCurrentUser', () => ({
+jest.mock('../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUser: jest.fn().mockReturnValue({
+  useCurrentUserLazyQuery: jest.fn().mockReturnValue({
     loadUser: jest.fn(),
     data: {
       __typename: 'User',

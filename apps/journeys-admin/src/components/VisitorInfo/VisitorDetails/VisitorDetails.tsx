@@ -26,11 +26,11 @@ export const GET_VISITOR_FOR_DETAILS = gql`
   }
 `
 
-interface Props {
+interface VisitorDetailsProps {
   id: string
 }
 
-export function VisitorDetails({ id }: Props): ReactElement {
+export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
   const { data } = useQuery<GetVisitorForDetails>(GET_VISITOR_FOR_DETAILS, {
     variables: { id }
   })

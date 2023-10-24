@@ -11,7 +11,7 @@ import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
-interface Props {
+interface InitAndAuthAppProps {
   user?: User
   locale: string | undefined
   resolvedUrl: string
@@ -30,7 +30,7 @@ export async function initAndAuthApp({
   user,
   locale,
   resolvedUrl
-}: Props): Promise<InitAndAuth> {
+}: InitAndAuthAppProps): Promise<InitAndAuth> {
   const ldUser =
     user?.id != null
       ? {
