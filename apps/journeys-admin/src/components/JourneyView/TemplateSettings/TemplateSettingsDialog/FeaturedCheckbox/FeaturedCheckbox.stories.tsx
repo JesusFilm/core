@@ -21,7 +21,7 @@ export const Default = {
   ...Template,
   args: {
     loading: false,
-    values: false
+    value: false
   }
 }
 
@@ -29,7 +29,7 @@ export const Disabled = {
   ...Template,
   args: {
     loading: true,
-    values: true
+    value: true
   }
 }
 
@@ -37,7 +37,7 @@ export const Checked = {
   ...Template,
   args: {
     loading: false,
-    values: true
+    value: true
   }
 }
 

@@ -266,6 +266,16 @@ model UserJourney {
   @@index(role)
 }
 
+model JourneyTag {
+  id        String  @id @default(uuid())
+  tagId     String
+  journeyId String
+  journey   Journey @relation(fields: [journeyId], references: [id])
+
+  @@unique([journeyId, tagId])
+  @@index([tagId])
+}
+
 enum JourneyStatus {
   archived
   deleted
@@ -311,7 +321,7 @@ model Journey {
   blocks              Block[]
   chatButtons         ChatButton[]
   host                Host?            @relation(fields: [hostId], references: [id])
-  tagIds              String[]
+  journeyTags         JourneyTag[]
   actions             Action[]
   primaryImageBlock   Block?           @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
   journeyVisitors     JourneyVisitor[]

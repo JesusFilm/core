@@ -17,6 +17,9 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       title
       description
       strategySlug
+      tags {
+        id
+      }
     }
   }
 `
