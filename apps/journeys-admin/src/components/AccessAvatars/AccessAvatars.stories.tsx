@@ -9,7 +9,7 @@ import {
 } from '../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../libs/storybook'
-import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
+import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../AccessDialog/AccessDialog'
 
 import {
