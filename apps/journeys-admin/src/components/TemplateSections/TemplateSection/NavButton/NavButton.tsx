@@ -23,9 +23,9 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
           position: 'absolute',
           boxShadow: theme.shadows[2],
           opacity: { xs: 0, lg: disabled ? 0 : 1 },
-          mt: { lg: '-20%', xl: '-18%' },
           left: variant === 'prev' ? -20 : undefined,
           right: variant === 'next' ? -20 : undefined,
+          mt: 0,
           backgroundColor: theme.palette.background.paper,
           '&:hover': {
             backgroundColor: theme.palette.background.paper

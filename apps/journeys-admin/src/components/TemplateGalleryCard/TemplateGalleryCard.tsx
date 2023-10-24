@@ -54,6 +54,7 @@ export function TemplateGalleryCard({
         legacyBehavior
       >
         <Box
+          data-testid="templateGalleryCard"
           sx={{
             height: 'inherit'
           }}
