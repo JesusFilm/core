@@ -73,15 +73,7 @@ export function TemplateSections({
           loading={loading}
         />
       )}
-      {map(
-        contents,
-        ({ category, journeys }, key) =>
-          ((tagIds == null && journeys.length >= 5) ||
-            tagIds?.includes(key) === true) && (
-            <TemplateSection category={category} journeys={journeys} />
-          )
-      )}
-      {!loading && data?.journeys != null && data.journeys.length === 0 && (
+      {!loading && collection != null && collection.length === 0 && (
         <Paper
           elevation={0}
           variant="outlined"
@@ -100,6 +92,14 @@ export function TemplateSections({
             )}
           </Typography>
         </Paper>
+      )}
+      {map(
+        contents,
+        ({ category, journeys }, key) =>
+          ((tagIds == null && journeys.length >= 5) ||
+            tagIds?.includes(key) === true) && (
+            <TemplateSection category={category} journeys={journeys} />
+          )
       )}
     </Stack>
   )
