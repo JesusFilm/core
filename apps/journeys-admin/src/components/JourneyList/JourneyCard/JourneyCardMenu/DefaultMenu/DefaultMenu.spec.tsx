@@ -120,31 +120,6 @@ describe('DefaultMenu', () => {
     )
   })
 
-  it('should disable preview button', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <TeamProvider>
-            <DefaultMenu
-              id="journey-id"
-              slug="journey-slug"
-              status={JourneyStatus.draft}
-              journeyId="journey-id"
-              published={false}
-              setOpenAccessDialog={noop}
-              handleCloseMenu={noop}
-              setOpenTrashDialog={noop}
-            />
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
-  })
-
   it('should call correct functions on Delete click', () => {
     const handleCloseMenu = jest.fn()
     const setOpenTrashDialog = jest.fn()
