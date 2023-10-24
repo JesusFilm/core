@@ -181,7 +181,10 @@ export const getJourneysMock: MockedResponse<
 
 export const getLanguagesMock: MockedResponse<GetLanguages> = {
   request: {
-    query: GET_LANGUAGES
+    query: GET_LANGUAGES,
+    variables: {
+      languageId: '529'
+    }
   },
   result: {
     data: {
