@@ -68,7 +68,6 @@ export function DefaultMenu({
         <MenuItem
           label="Preview"
           icon={<EyeOpenIcon color="secondary" />}
-          disabled={!published}
           openInNew
         />
       </NextLink>
