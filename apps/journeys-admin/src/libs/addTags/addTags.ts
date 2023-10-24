@@ -72,7 +72,7 @@ Usage: nx add-tags journeys-admin <GATEWAY_URL> <API_TOKEN> <CSV_FILE_PATH>
   const { data } = await client.query<AddTagsScriptGetTags>({ query: GET_TAGS })
 
   await Promise.all(
-    rows.map(async ({ journeyId, tagNames }) => {
+    rows.map(async ({ journeyId, tagNames }, index) => {
       const tags = compact(
         tagNames.split(',').map((tagName) => {
           const tidyTagName = tagName.trim()
@@ -83,14 +83,28 @@ Usage: nx add-tags journeys-admin <GATEWAY_URL> <API_TOKEN> <CSV_FILE_PATH>
           return undefined
         })
       )
-      console.log('journeyId', journeyId, 'tags', tags)
-      await client.mutate<
-        AddTagsScriptJourneyTagsUpdate,
-        AddTagsScriptJourneyTagsUpdateVariables
-      >({
-        mutation: JOURNEY_TAGS_UPDATE,
-        variables: { journeyId, input: { tagIds: tags.map(({ id }) => id) } }
-      })
+      if (tags.length === 0) return
+      console.log(
+        `UPDATING (${index}):\n`,
+        `  journeyId: ${journeyId}\n`,
+        `  tags: ${tags.map(({ name }) => name).join(', ')}\n`
+      )
+      try {
+        await client.mutate<
+          AddTagsScriptJourneyTagsUpdate,
+          AddTagsScriptJourneyTagsUpdateVariables
+        >({
+          mutation: JOURNEY_TAGS_UPDATE,
+          variables: { journeyId, input: { tagIds: tags.map(({ id }) => id) } }
+        })
+      } catch (err) {
+        console.log(
+          `ERROR (${index}):\n`,
+          `  journeyId: ${journeyId}\n`,
+          `  tags: ${tags.map(({ name }) => name).join(', ')}\n`,
+          `  message: ${err.message as string}\n`
+        )
+      }
     })
   )
 }
