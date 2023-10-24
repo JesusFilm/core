@@ -7,17 +7,21 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../../__generated__/GetJourney'
 import { GetJourneys } from '../../../__generated__/GetJourneys'
-// import { GetTags } from '../../../__generated__/GetTags'
+import { GetTags } from '../../../__generated__/GetTags'
 import { GetUserRole } from '../../../__generated__/GetUserRole'
 import { Role } from '../../../__generated__/globalTypes'
-import { JourneyFields_tags as Tag } from '../../../__generated__/JourneyFields'
+import {
+  JourneyFields as Journey,
+  JourneyFields_tags as Tag
+} from '../../../__generated__/JourneyFields'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
-// import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
+import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
 import { defaultJourney, publishedJourney } from '../JourneyView/data'
 
 import { journeyVideoBlocks } from './TemplatePreviewTabs/data'
+import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
 
 const TemplateViewStory: Meta<typeof TemplateView> = {
@@ -26,7 +30,7 @@ const TemplateViewStory: Meta<typeof TemplateView> = {
   title: 'Journeys-Admin/TemplateView'
 }
 
-const tags: Tag = {
+const tag: Tag = {
   __typename: 'Tag',
   id: 'tag1.id',
   parentId: 'parentTag.id',
@@ -40,232 +44,27 @@ const tags: Tag = {
   ]
 }
 
-// const getTagsMockEmpty: MockedResponse<GetTags> = {
-//   request: {
-//     query: GET_TAGS
-//   },
-//   result: {
-//     data: {
-//       tags: []
-//     }
-//   }
-// }
+const getTagsMockEmpty: MockedResponse<GetTags> = {
+  request: {
+    query: GET_TAGS
+  },
+  result: {
+    data: {
+      tags: []
+    }
+  }
+}
 
-// const getTagsMock: MockedResponse<GetTags> = {
-//   request: {
-//     query: GET_TAGS
-//   },
-//   result: {
-//     data: {
-//       tags: [
-//         {
-//           __typename: 'Tag',
-//           id: 'tag1.id',
-//           service: null,
-//           parentId: null,
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Topics',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag2.id',
-//           parentId: null,
-//           service: null,
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Felt Needs',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag3.id',
-//           parentId: null,
-//           service: null,
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Holidays',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag4.id',
-//           parentId: null,
-//           service: null,
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Audience',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag5.id',
-//           parentId: null,
-//           service: null,
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Genre',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag6.id',
-//           parentId: null,
-//           service: null,
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Collection',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag7.id',
-//           service: Service.apiJourneys,
-//           parentId: 'tag1.id',
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Addiction',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag8.id',
-//           service: Service.apiJourneys,
-//           parentId: 'tag2.id',
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Love',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag9.id',
-//           service: Service.apiJourneys,
-//           parentId: 'tag3.id',
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Christmas',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag10.id',
-//           service: Service.apiJourneys,
-//           parentId: 'tag4.id',
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Christian',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag11.id',
-//           service: Service.apiJourneys,
-//           parentId: 'tag5.id',
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Drama',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         },
-//         {
-//           __typename: 'Tag',
-//           id: 'tag12.id',
-//           service: Service.apiJourneys,
-//           parentId: 'tag6.id',
-//           name: [
-//             {
-//               __typename: 'Translation',
-//               value: 'Jesus Film',
-//               primary: true,
-//               language: {
-//                 __typename: 'Language',
-//                 id: '529'
-//               }
-//             }
-//           ]
-//         }
-//       ]
-//     }
-//   }
-// }
+const getTagsMock: MockedResponse<GetTags> = {
+  request: {
+    query: GET_TAGS
+  },
+  result: {
+    data: {
+      tags: [...parentTags, ...tags.map((tag) => ({ ...tag, service: null }))]
+    }
+  }
+}
 
 const primaryImageBlock: PrimaryImageBlock = {
   parentBlockId: '1',
@@ -279,14 +78,14 @@ const primaryImageBlock: PrimaryImageBlock = {
   parentOrder: 1
 }
 
-const getJourneyMockEmpty: MockedResponse<GetJourneys> = {
+const getJourneysMockEmpty: MockedResponse<GetJourneys> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
       where: {
         template: true,
         orderByRecent: true,
-        tagIds: ['tag.id']
+        tagIds: []
       }
     }
   },
@@ -297,14 +96,14 @@ const getJourneyMockEmpty: MockedResponse<GetJourneys> = {
   }
 }
 
-const getJourneyMock: MockedResponse<GetJourneys> = {
+const getJourneysMock: MockedResponse<GetJourneys> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
       where: {
         template: true,
         orderByRecent: true,
-        tagIds: ['tag1.id']
+        tagIds: [...tags].map((tag) => tag.id)
       }
     }
   },
@@ -314,28 +113,28 @@ const getJourneyMock: MockedResponse<GetJourneys> = {
         {
           ...defaultJourney,
           id: 'taggedJourney3.id',
-          tags: [tags],
+          tags: [tag],
           trashedAt: null,
           primaryImageBlock
         },
         {
           ...defaultJourney,
           id: 'taggedJourney3.id',
-          tags: [tags],
+          tags: [tag],
           trashedAt: null,
           primaryImageBlock
         },
         {
           ...defaultJourney,
           id: 'taggedJourney3.id',
-          tags: [tags],
+          tags: [tag],
           trashedAt: null,
           primaryImageBlock
         },
         {
           ...defaultJourney,
           id: 'taggedJourney3.id',
-          tags: [tags],
+          tags: [tag],
           trashedAt: null,
           primaryImageBlock
         }
@@ -347,7 +146,7 @@ const getJourneyMock: MockedResponse<GetJourneys> = {
 const journey = {
   ...publishedJourney,
   blocks: journeyVideoBlocks,
-  tags: [tags],
+  tags: [],
   primaryImageBlock
 }
 
@@ -382,15 +181,22 @@ const getUserRoleMock: MockedResponse<GetUserRole> = {
 
 const Template: StoryObj<
   ComponentProps<typeof TemplateView> & {
-    getJourneyMock: MockedResponse<GetJourneys>
+    journey: Journey
+    getJourneysMock: MockedResponse<GetJourneys>
     getUserRoleMock: MockedResponse<GetUserRole>
-    // getTagsMock: MockedResponse<GetTags>
+    getTagsMock: MockedResponse<GetTags>
   }
 > = {
   render: (args) => {
     return (
-      <MockedProvider mocks={[args?.getJourneyMock, args?.getUserRoleMock]}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <MockedProvider
+        mocks={[
+          args?.getJourneysMock,
+          args?.getUserRoleMock,
+          args?.getTagsMock
+        ]}
+      >
+        <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
           <TemplateView authUser={args.authUser as unknown as User} />
         </JourneyProvider>
       </MockedProvider>
@@ -401,35 +207,25 @@ const Template: StoryObj<
 export const Default = {
   ...Template,
   args: {
+    journey,
     authUser: 'user.id',
-    getJourneyMock: getJourneyMockEmpty,
-    getUserRoleMock: getUserRoleMockEmpty
-    // getTagsMock: getTagsMockEmpty
-  }
-}
-
-export const Publisher = {
-  ...Template,
-  args: {
-    ...Default.args,
-    getUserRoleMock
-  }
-}
-
-export const WithTags = {
-  ...Template,
-  args: {
-    ...Publisher.args
-    // getTagsMock
+    getJourneysMock: getJourneysMockEmpty,
+    getUserRoleMock: getUserRoleMockEmpty,
+    getTagsMock: getTagsMockEmpty
   }
 }
 
 export const Complete = {
   ...Template,
   args: {
-    ...Publisher.args,
-    getJourneyMock
-    // getTagsMock
+    journey: {
+      ...journey,
+      tags
+    },
+    authUser: 'user.id',
+    getJourneysMock,
+    getUserRoleMock,
+    getTagsMock
   }
 }
 

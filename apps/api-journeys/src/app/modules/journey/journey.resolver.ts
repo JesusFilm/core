@@ -179,12 +179,27 @@ export class JourneyResolver {
     if (where?.featured != null)
       filter.featuredAt = where?.featured ? { not: null } : null
     if (where?.ids != null) filter.id = { in: where?.ids }
-    if (where?.tagIds != null) filter.tagIds = { hasEvery: where?.tagIds }
+    if (where?.tagIds != null) {
+      // find every journey which has a journeyTag matching at least 1 tagId
+      filter.OR = where.tagIds.map((tagId) => ({
+        journeyTags: {
+          some: {
+            tagId
+          }
+        }
+      }))
+    }
     if (where?.languageIds != null)
       filter.languageId = { in: where?.languageIds }
 
     return await this.prismaService.journey.findMany({
       where: filter,
+      include:
+        where?.tagIds != null
+          ? {
+              journeyTags: true
+            }
+          : undefined,
       take: where?.limit ?? undefined,
       orderBy:
         where?.orderByRecent === true ? { publishedAt: 'desc' } : undefined
@@ -235,7 +250,6 @@ export class JourneyResolver {
               status: JourneyStatus.published,
               publishedAt: new Date(),
               team: { connect: { id: teamId } },
-              tagIds: [],
               userJourneys: {
                 create: {
                   userId,
@@ -319,6 +333,7 @@ export class JourneyResolver {
       where: { id },
       include: {
         userJourneys: true,
+        journeyTags: true,
         team: {
           include: { userTeams: true }
         }
@@ -424,7 +439,16 @@ export class JourneyResolver {
                 featuredAt: null,
                 template: false,
                 team: { connect: { id: teamId } },
-                tagIds: journey.template === true ? journey.tagIds : [],
+                journeyTags:
+                  journey.template === true
+                    ? {
+                        create: journey.journeyTags.map((tag) => ({
+                          tagId: tag.tagId,
+                          journeyId: duplicateJourneyId,
+                          journey: { connect: { id: duplicateJourneyId } }
+                        }))
+                      }
+                    : undefined,
                 userJourneys: {
                   create: {
                     userId,
@@ -568,15 +592,31 @@ export class JourneyResolver {
         )
     }
     try {
-      return await this.prismaService.journey.update({
-        where: { id },
-        data: {
-          ...input,
-          title: input.title ?? undefined,
-          languageId: input.languageId ?? undefined,
-          slug: input.slug ?? undefined,
-          tagIds: input.tagIds ?? []
+      return await this.prismaService.$transaction(async (tx) => {
+        const updatedJourney = await tx.journey.update({
+          where: { id },
+          data: {
+            ...omit(input, ['tagIds']),
+            title: input.title ?? undefined,
+            languageId: input.languageId ?? undefined,
+            slug: input.slug ?? undefined,
+            // Add new tags
+            journeyTags:
+              input.tagIds != null
+                ? { create: input.tagIds.map((tagId) => ({ tagId })) }
+                : undefined
+          }
+        })
+        // Delete existing tags not specified in the update
+        if (input.tagIds != null) {
+          await tx.journeyTag.deleteMany({
+            where: {
+              journeyId: journey.id,
+              NOT: { tagId: { in: input.tagIds } }
+            }
+          })
         }
+        return updatedJourney
       })
     } catch (err) {
       if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED)
@@ -830,16 +870,24 @@ export class JourneyResolver {
 
   @ResolveField('language')
   async language(
-    @Parent() journey
+    @Parent() journey: Journey
   ): Promise<{ __typename: 'Language'; id: string }> {
-    //  529 (english) is default if not set
-    return { __typename: 'Language', id: journey.languageId ?? '529' }
+    return { __typename: 'Language', id: journey.languageId }
   }
 
   @ResolveField('tags')
-  async tags(@Parent() journey): Promise<[{ __typename: 'Tag'; id: string }]> {
-    return journey.tagIds.map((tagId) => {
-      return { __typename: 'Tag', id: tagId }
+  async tags(
+    @Parent() journey: Journey
+  ): Promise<Array<{ __typename: 'Tag'; id: string }>> {
+    const journeyTags =
+      (await this.prismaService.journey
+        .findUnique({
+          where: { id: journey.id }
+        })
+        .journeyTags()) ?? []
+
+    return journeyTags.map((tag) => {
+      return { __typename: 'Tag', id: tag.tagId }
     })
   }
 }
