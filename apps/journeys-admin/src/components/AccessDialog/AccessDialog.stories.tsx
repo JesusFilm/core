@@ -4,7 +4,7 @@ import { ReactNode, useState } from 'react'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
+import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
 import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
 
 import { GET_JOURNEY_WITH_PERMISSIONS } from './AccessDialog'

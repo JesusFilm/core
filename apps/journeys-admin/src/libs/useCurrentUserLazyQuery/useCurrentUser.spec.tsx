@@ -1,11 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 
-import { GET_CURRENT_USER, useCurrentUser } from './useCurrentUser'
+import {
+  GET_CURRENT_USER,
+  useCurrentUserLazyQuery
+} from './useCurrentUserLazyQuery'
 
-describe('useCurrentUser', () => {
+describe('useCurrentUserLazyQuery', () => {
   it('should return current user when called', async () => {
-    const { result } = renderHook(() => useCurrentUser(), {
+    const { result } = renderHook(() => useCurrentUserLazyQuery(), {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
@@ -40,7 +43,7 @@ describe('useCurrentUser', () => {
   })
 
   it('should return placeholder user by default', async () => {
-    const { result } = renderHook(() => useCurrentUser(), {
+    const { result } = renderHook(() => useCurrentUserLazyQuery(), {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[

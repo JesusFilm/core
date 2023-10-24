@@ -14,7 +14,7 @@ import UserProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { Hosts_hosts as Host } from '../../../../../../../../__generated__/Hosts'
-import { useCurrentUser } from '../../../../../../../libs/useCurrentUser'
+import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { ContainedIconButton } from '../../../../../../ContainedIconButton'
 import { SidePanel } from '../../../../../../NewPageWrapper/SidePanel'
@@ -41,7 +41,7 @@ export function HostSidePanel(): ReactElement {
 
   // Get all team members of journey team, check if user in team
   // TODO: Replace with CASL authorisation check
-  const { loadUser, data: user } = useCurrentUser()
+  const { loadUser, data: user } = useCurrentUserLazyQuery()
   useEffect(() => {
     void loadUser()
     // eslint-disable-next-line react-hooks/exhaustive-deps

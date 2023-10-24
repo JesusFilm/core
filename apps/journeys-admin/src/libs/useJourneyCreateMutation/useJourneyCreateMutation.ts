@@ -111,7 +111,7 @@ export const CREATE_JOURNEY = gql`
   }
 `
 
-export function useJourneyCreate(): {
+export function useJourneyCreateMutation(): {
   createJourney: () => Promise<Journey | undefined>
   loading: boolean
 } {
