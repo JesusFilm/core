@@ -1,1 +1,1 @@
-export { useLanguagesQuery } from './useLanguagesQuery'
+export { useLanguagesQuery, GET_LANGUAGES } from './useLanguagesQuery'
