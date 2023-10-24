@@ -92,8 +92,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     JOURNEY_VISITOR_UPDATE
   )
 
-  console.log('force gh actions')
-
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
       const id = uuidv4()
