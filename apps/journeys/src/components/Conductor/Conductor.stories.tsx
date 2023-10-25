@@ -57,6 +57,7 @@ const defaultJourney: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   title: 'my journey',
+  featuredAt: null,
   strategySlug: null,
   slug: 'my-journey',
   language: {
@@ -84,7 +85,8 @@ const defaultJourney: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 type Story = StoryObj<ComponentProps<typeof Conductor> & { journey?: Journey }>
@@ -131,11 +133,11 @@ export const WithContent = {
     blocks: imageBlocks
   },
   play: async () => {
-    const nextButton = screen.getAllByTestId('conductorNextButton')[0]
+    const nextButton = screen.getAllByTestId('ConductorNavigationButtonNext')[0]
     await userEvent.click(nextButton)
     await waitFor(async () => {
       await expect(
-        screen.getAllByTestId('prevNavContainer')[1]
+        screen.getAllByTestId('ConductorNavigationContainerPrev')[1]
       ).toBeInTheDocument()
     })
   }

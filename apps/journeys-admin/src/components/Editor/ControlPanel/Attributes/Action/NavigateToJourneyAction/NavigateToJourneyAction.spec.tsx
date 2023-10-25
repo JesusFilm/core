@@ -20,12 +20,18 @@ import {
   NavigateToJourneyAction
 } from './NavigateToJourneyAction'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('NavigateToJourneyAction', () => {
   const journey: Journey = {
     __typename: 'Journey',
     id: 'journeyId',
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
+    featuredAt: null,
     title: 'my journey',
     slug: 'my-journey',
     strategySlug: null,
@@ -54,7 +60,8 @@ describe('NavigateToJourneyAction', () => {
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it('shows no journey selected by default', () => {

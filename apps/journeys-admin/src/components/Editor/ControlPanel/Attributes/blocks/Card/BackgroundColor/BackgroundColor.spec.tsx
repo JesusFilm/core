@@ -22,11 +22,17 @@ import {
   CARD_BLOCK_BACKGROUND_COLOR_UPDATE
 } from './BackgroundColor'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const journey: Journey = {
   __typename: 'Journey',
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  featuredAt: null,
   strategySlug: null,
   title: 'my journey',
   slug: 'my-journey',
@@ -55,7 +61,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 describe('BackgroundColor', () => {

@@ -33,6 +33,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
         {
           id: 'teamId',
           title: 'My Team',
+          publicTitle: '',
           __typename: 'Team',
           userTeams: []
         }
@@ -51,7 +52,8 @@ const teamUpdateMock: MockedResponse<TeamUpdate> = {
     variables: {
       id: 'teamId',
       input: {
-        title: 'Jesus Film Project'
+        title: 'Jesus Film Project',
+        publicTitle: ''
       }
     }
   },
@@ -60,6 +62,7 @@ const teamUpdateMock: MockedResponse<TeamUpdate> = {
       teamUpdate: {
         id: 'teamId',
         title: 'Jesus Film Project',
+        publicTitle: '',
         __typename: 'Team'
       }
     }
@@ -91,10 +94,13 @@ export const Default = {
   play: async () => {
     await waitFor(
       async () =>
-        await expect(screen.getByRole('textbox')).toHaveValue('My Team')
+        await expect(screen.getAllByRole('textbox')[0]).toHaveValue('My Team')
     )
-    await userEvent.clear(screen.getByRole('textbox'))
-    await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+    await userEvent.clear(screen.getAllByRole('textbox')[0])
+    await userEvent.type(
+      screen.getAllByRole('textbox')[0],
+      'Jesus Film Project'
+    )
   }
 }
 

@@ -14,7 +14,7 @@ import X2Icon from '@core/shared/ui/icons/X2'
 
 import { ClearAllButton } from './ClearAllButton'
 
-interface Props {
+interface FilterDrawerProps {
   handleClose?: () => void
   handleChange?: (e) => void
   sortSetting?: 'date' | 'duration'
@@ -36,7 +36,7 @@ export function FilterDrawer({
   withIcon,
   hideInteractive,
   handleClearAll
-}: Props): ReactElement {
+}: FilterDrawerProps): ReactElement {
   return (
     <Box sx={{ height: '100vh' }}>
       <Box sx={{ display: { sm: 'block', md: 'none' } }}>

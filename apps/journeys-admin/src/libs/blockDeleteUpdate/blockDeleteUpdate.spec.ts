@@ -74,6 +74,7 @@ const journey: Journey = {
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  featuredAt: null,
   strategySlug: null,
   title: 'my journey',
   slug: 'my-journey',
@@ -102,7 +103,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 const response = [{ ...image, parentOrder: 0 }]

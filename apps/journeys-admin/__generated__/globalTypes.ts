@@ -133,6 +133,15 @@ export enum SegmindModel {
   tinysd1__5_txt2img = "tinysd1__5_txt2img",
 }
 
+export enum Service {
+  apiJourneys = "apiJourneys",
+  apiLanguages = "apiLanguages",
+  apiMedia = "apiMedia",
+  apiTags = "apiTags",
+  apiUsers = "apiUsers",
+  apiVideos = "apiVideos",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
@@ -247,6 +256,16 @@ export interface ButtonClickEventCreateInput {
   value?: string | null;
   action?: ButtonAction | null;
   actionValue?: string | null;
+}
+
+export interface CardBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  backgroundColor?: string | null;
+  fullscreen?: boolean | null;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
 }
 
 export interface CardBlockUpdateInput {
@@ -367,6 +386,7 @@ export interface JourneysFilter {
   template?: boolean | null;
   ids?: string[] | null;
   tagIds?: string[] | null;
+  languageIds?: string[] | null;
   limit?: number | null;
   orderByRecent?: boolean | null;
 }
@@ -437,6 +457,13 @@ export interface SignUpSubmissionEventCreateInput {
   stepId?: string | null;
   name: string;
   email: string;
+}
+
+export interface StepBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  nextBlockId?: string | null;
+  locked?: boolean | null;
 }
 
 export interface StepBlockUpdateInput {

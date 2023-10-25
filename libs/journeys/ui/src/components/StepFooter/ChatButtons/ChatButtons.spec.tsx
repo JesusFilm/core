@@ -48,6 +48,7 @@ describe('ChatButtons', () => {
     id: 'journeyId',
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
+    featuredAt: null,
     title: 'my journey',
     strategySlug: null,
     slug: 'my-journey',
@@ -76,7 +77,8 @@ describe('ChatButtons', () => {
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   const result = jest.fn(() => ({

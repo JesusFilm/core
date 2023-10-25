@@ -33,6 +33,7 @@ describe('TeamCreateForm', () => {
         teamCreate: {
           id: 'teamId',
           title: 'Team Title',
+          publicTitle: null,
           __typename: 'Team',
           userTeams: []
         }
@@ -58,6 +59,7 @@ describe('TeamCreateForm', () => {
           {
             id: 'teamId',
             title: 'Team 1 Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }
@@ -122,6 +124,7 @@ describe('TeamCreateForm', () => {
             __typename: 'Team',
             id: 'teamId',
             title: 'Team Title',
+            publicTitle: null,
             userTeams: []
           }
         }

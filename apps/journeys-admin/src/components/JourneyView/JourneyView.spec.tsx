@@ -37,6 +37,7 @@ describe('JourneyView', () => {
     title: 'title',
     description: 'description',
     createdAt: '2021-11-19T12:34:56.647Z',
+    featuredAt: null,
     blocks: [],
     language: {
       __typename: 'Language',
@@ -62,7 +63,8 @@ describe('JourneyView', () => {
     userJourneys: [],
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it.skip('should have edit button', () => {

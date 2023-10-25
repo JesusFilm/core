@@ -16,6 +16,7 @@ export const defaultJourney: Journey = {
   __typename: 'Journey',
   id: 'journey-id',
   title: 'Journey Heading',
+  featuredAt: null,
   description: 'Description',
   strategySlug: null,
   slug: 'default',
@@ -85,7 +86,8 @@ export const defaultJourney: Journey = {
         imageUrl: 'https://bit.ly/3nlwUwJ'
       }
     }
-  ]
+  ],
+  tags: []
 }
 
 export const publishedJourney: Journey = {

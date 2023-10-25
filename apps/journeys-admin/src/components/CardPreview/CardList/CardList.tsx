@@ -33,12 +33,13 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { useSocialPreview } from '../../Editor/SocialProvider'
 import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
+
+import { CardWrapper } from './CardWrapper'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -288,7 +289,7 @@ const CardItem = ({
         <FramePortal width={380} height={560} dir={rtl ? 'rtl' : 'ltr'}>
           <ThemeProvider
             themeName={cardBlock?.themeName ?? ThemeName.base}
-            themeMode={cardBlock?.themeMode ?? ThemeMode.light}
+            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
             rtl={rtl}
             locale={locale}
           >

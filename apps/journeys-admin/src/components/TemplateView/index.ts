@@ -1,1 +1,1 @@
-export { TemplateView } from './TempateView'
+export { TemplateView } from './TemplateView'

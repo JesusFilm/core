@@ -33,6 +33,7 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   strategySlug: null,
+  featuredAt: null,
   slug: 'my-journey',
   language: {
     __typename: 'Language',
@@ -59,7 +60,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 export const NavigateToJourney: StoryObj<typeof NavigateToJourneyAction> = {

@@ -34,6 +34,7 @@ const journey: Journey = {
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  featuredAt: null,
   title: 'my journey',
   strategySlug: null,
   slug: 'my-journey',
@@ -62,7 +63,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 export const Default: StoryObj<typeof CardStyling> = {

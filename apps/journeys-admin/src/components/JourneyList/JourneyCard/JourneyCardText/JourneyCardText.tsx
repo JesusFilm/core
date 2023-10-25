@@ -10,7 +10,7 @@ import { ReactElement } from 'react'
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
-interface Props {
+interface JourneyCardTextProps {
   journey?: Journey
   variant: JourneyCardVariant
 }
@@ -24,7 +24,10 @@ const StyledBadge = styled(Badge)(() => ({
   }
 }))
 
-export function JourneyCardText({ journey, variant }: Props): ReactElement {
+export function JourneyCardText({
+  journey,
+  variant
+}: JourneyCardTextProps): ReactElement {
   return (
     <>
       <StyledBadge

@@ -35,6 +35,7 @@ describe('HostAvatars', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     title: 'my journey',
+    featuredAt: null,
     strategySlug: null,
     slug: 'my-journey',
     language: {
@@ -62,7 +63,8 @@ describe('HostAvatars', () => {
     seoDescription: null,
     chatButtons: [],
     host: hostData,
-    team: null
+    team: null,
+    tags: []
   }
 
   it('renders both avatars if both images are set', () => {
@@ -72,7 +74,7 @@ describe('HostAvatars', () => {
       </JourneyProvider>
     )
 
-    const avatarGroupElement = getByTestId('host-avatars')
+    const avatarGroupElement = getByTestId('StepFooterHostAvatars')
     expect(avatarGroupElement).toBeInTheDocument()
     const avatars = getAllByRole('img')
     expect(avatars).toHaveLength(2)
