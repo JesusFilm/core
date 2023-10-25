@@ -200,4 +200,17 @@ describe('TemplateView', () => {
 
     await waitFor(() => expect(getByTestId('TemplateTags')).toBeInTheDocument())
   })
+
+  it('should show skeleton if loading', async () => {
+    const { getAllByTestId } = render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{}}>
+          <TemplateView authUser={{} as unknown as User} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(getAllByTestId('TemplateViewDescriptionSkeleton')).toHaveLength(3)
+    })
+  })
 })

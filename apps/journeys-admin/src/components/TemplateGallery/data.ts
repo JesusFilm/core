@@ -15,8 +15,8 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
-import { GET_LANGUAGES } from '../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
 
 const defaultTemplate: Journey = {
   __typename: 'Journey',
@@ -181,7 +181,10 @@ export const getJourneysMock: MockedResponse<
 
 export const getLanguagesMock: MockedResponse<GetLanguages> = {
   request: {
-    query: GET_LANGUAGES
+    query: GET_LANGUAGES,
+    variables: {
+      languageId: '529'
+    }
   },
   result: {
     data: {

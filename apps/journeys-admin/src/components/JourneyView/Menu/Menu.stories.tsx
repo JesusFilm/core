@@ -6,7 +6,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { GET_LANGUAGES } from '../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
+import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
 import { TeamProvider } from '../../Team/TeamProvider'
 import { defaultJourney } from '../data'
 
