@@ -1,16 +1,20 @@
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+
+import LingAngledIcon from '@core/shared/ui/icons/LinkAngled'
 
 import { JourneyFields as Journey } from '../../../../../../__generated__/JourneyFields'
 import { MenuItem } from '../../../../MenuItem'
 
-interface Props {
+interface CopyMenuItemProps {
   journey: Journey
   onClose?: () => void
 }
 
-export function CopyMenuItem({ journey, onClose }: Props): ReactElement {
+export function CopyMenuItem({
+  journey,
+  onClose
+}: CopyMenuItemProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   const handleCopyLink = async (): Promise<void> => {
@@ -31,7 +35,7 @@ export function CopyMenuItem({ journey, onClose }: Props): ReactElement {
   return (
     <MenuItem
       label="Copy Link"
-      icon={<ContentCopyIcon />}
+      icon={<LingAngledIcon />}
       onClick={handleCopyLink}
     />
   )

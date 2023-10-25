@@ -16,6 +16,11 @@ import {
 
 import { Color, ICON_BLOCK_COLOR_UPDATE } from './Color'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Color', () => {
   it('should change the icon color', async () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {

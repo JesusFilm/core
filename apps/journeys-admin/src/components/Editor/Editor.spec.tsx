@@ -37,6 +37,8 @@ describe('Editor', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     title: 'my journey',
+    featuredAt: null,
+    strategySlug: null,
     slug: 'my-journey',
     language: {
       __typename: 'Language',
@@ -80,7 +82,8 @@ describe('Editor', () => {
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it('should render the element', () => {

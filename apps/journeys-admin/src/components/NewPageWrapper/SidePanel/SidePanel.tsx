@@ -1,4 +1,3 @@
-import Close from '@mui/icons-material/Close'
 import AppBar from '@mui/material/AppBar'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -6,6 +5,8 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
+
+import X2Icon from '@core/shared/ui/icons/X2'
 
 import { usePage } from '../../../libs/PageWrapperProvider'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
@@ -59,7 +60,7 @@ function DrawerContent({
                 sx={{ display: 'inline-flex' }}
                 edge="end"
               >
-                <Close />
+                <X2Icon />
               </IconButton>
             )}
           </>

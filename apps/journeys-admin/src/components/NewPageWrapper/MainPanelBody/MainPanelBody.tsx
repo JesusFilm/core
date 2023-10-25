@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
@@ -7,6 +8,7 @@ export interface MainPanelBodyProps {
   children: ReactNode
   mainBodyPadding?: boolean
   bottomPanelChildren?: ReactNode
+  sx?: SxProps
 }
 
 export function MainPanelBody({

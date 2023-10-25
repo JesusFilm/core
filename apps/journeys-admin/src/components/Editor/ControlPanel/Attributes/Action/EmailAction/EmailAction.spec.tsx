@@ -12,6 +12,11 @@ import { EMAIL_ACTION_UPDATE } from './EmailAction'
 
 import { EmailAction } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('EmailAction', () => {
   const selectedBlock = steps[1].children[0].children[4]
   const result = jest.fn(() => ({

@@ -629,6 +629,26 @@ export interface JourneyFields_team {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
+}
+
+export interface JourneyFields_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface JourneyFields_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: JourneyFields_tags_name_language;
+  primary: boolean;
+}
+
+export interface JourneyFields_tags {
+  __typename: "Tag";
+  id: string;
+  parentId: string | null;
+  name: JourneyFields_tags_name[];
 }
 
 export interface JourneyFields {
@@ -640,9 +660,11 @@ export interface JourneyFields {
   status: JourneyStatus;
   language: JourneyFields_language;
   createdAt: any;
+  featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  strategySlug: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
@@ -652,4 +674,5 @@ export interface JourneyFields {
   chatButtons: JourneyFields_chatButtons[];
   host: JourneyFields_host | null;
   team: JourneyFields_team | null;
+  tags: JourneyFields_tags[];
 }

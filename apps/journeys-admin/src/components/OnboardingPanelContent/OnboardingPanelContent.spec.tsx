@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { CREATE_JOURNEY } from '../../libs/useJourneyCreate'
+import { CREATE_JOURNEY } from '../../libs/useJourneyCreateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider

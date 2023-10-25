@@ -19,6 +19,11 @@ import {
 
 import { BLOCK_DUPLICATE, DuplicateBlock } from './DuplicateBlock'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('DuplicateBlock', () => {
   const block: TreeBlock<TypographyBlock> = {
     id: 'typography0.id',
@@ -97,7 +102,7 @@ describe('DuplicateBlock', () => {
       </MockedProvider>
     )
     const button = getByRole('button')
-    expect(button).toContainElement(getByTestId('ContentCopyRoundedIcon'))
+    expect(button).toContainElement(getByTestId('CopyLeftIcon'))
     fireEvent.click(button)
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -185,7 +190,7 @@ describe('DuplicateBlock', () => {
       </MockedProvider>
     )
     const button = getByRole('button')
-    expect(button).toContainElement(getByTestId('ContentCopyRoundedIcon'))
+    expect(button).toContainElement(getByTestId('CopyLeftIcon'))
     fireEvent.click(button)
     await waitFor(() => expect(result).toHaveBeenCalled())
   })

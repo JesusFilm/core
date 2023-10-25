@@ -30,6 +30,7 @@ export interface GetLastActiveTeamIdAndTeams_teams {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
   userTeams: GetLastActiveTeamIdAndTeams_teams_userTeams[];
 }
 

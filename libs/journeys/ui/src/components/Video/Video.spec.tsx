@@ -9,6 +9,11 @@ import { VideoFields } from './__generated__/VideoFields'
 
 import { Video } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const block: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
   id: 'video0.id',
@@ -138,5 +143,18 @@ describe.skip('Admin Video', () => {
       'outline: 2px solid #C52D3A'
     )
     expect(video).toHaveClass('vjs-paused')
+  })
+
+  it('should set container to 16:9', () => {
+    const { getByTestId } = render(<Video {...block} />)
+
+    // Expect container to have 16:9 aspect ratio
+    expect(getByTestId('video-container')).toHaveStyle('position: absolute')
+    expect(getByTestId('video-container')).toHaveStyle(
+      'margin-left: calc((100vh * 16 / 9) * -0.355)'
+    )
+    expect(getByTestId('video-container')).toHaveStyle('overflow: hidden')
+
+    // Jest height/width are not rendered by jest dom for testing
   })
 })

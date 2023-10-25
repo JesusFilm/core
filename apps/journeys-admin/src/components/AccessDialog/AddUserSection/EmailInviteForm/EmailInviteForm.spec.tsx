@@ -173,4 +173,48 @@ describe('EmailInviteForm', () => {
       ])
     })
   })
+
+  it('should trim and normalize email to lowercase', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        userInviteCreate: {
+          id: 'inviteId',
+          email: 'test@email.com',
+          acceptedAt: null,
+          removedAt: null
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: CREATE_USER_INVITE,
+                variables: {
+                  journeyId: 'journeyId',
+                  input: {
+                    email: 'test@email.com'
+                  }
+                }
+              },
+              result
+            }
+          ]}
+        >
+          <EmailInviteForm users={[]} journeyId="journeyId" />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const email = getByRole('textbox', { name: 'Email' })
+
+    fireEvent.change(email, {
+      target: { value: '     TEST@EMAIL.com     ' }
+    })
+    fireEvent.click(getByRole('button', { name: 'add user' }))
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
 })

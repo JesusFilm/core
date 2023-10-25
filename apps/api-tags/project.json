@@ -117,7 +117,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma reset --schema apps/api-tags/db/schema.prisma --force"
+          "npx prisma migrate reset --schema apps/api-tags/db/schema.prisma --force"
         ]
       }
     },

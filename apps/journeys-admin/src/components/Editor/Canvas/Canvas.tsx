@@ -24,7 +24,9 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { FramePortal } from '../../FramePortal'
+import { Properties } from '../../JourneyView/Properties'
 import { usePageWrapperStyles } from '../../NewPageWrapper/utils/usePageWrapperStyles'
+import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 
@@ -116,6 +118,61 @@ export function Canvas(): ReactElement {
     width: 362
   }
 
+  function handleSlideChange(swiper: SwiperCore): void {
+    const step = steps?.[swiper.activeIndex]
+    if (step == null || step.id === selectedStep?.id) return
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Journey })
+    // this is mirrored in the editor control panel handleSelectStepPreview fn
+    dispatch({ type: 'SetSelectedStepAction', step })
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    if (step.children[0].children.length === 0) {
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: undefined
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        mobileOpen: false,
+        title: t('Card Templates'),
+        children: <CardTemplateDrawer />
+      })
+    } else {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        mobileOpen: false,
+        title: t('Properties'),
+        children: <Properties journeyType="Journey" isPublisher={false} />
+      })
+    }
+  }
+
+  function handleFooterClick(): void {
+    if (editableStepFooter) {
+      dispatch({
+        type: 'SetSelectedComponentAction',
+        component: 'Footer'
+      })
+      dispatch({
+        type: 'SetActiveFabAction',
+        activeFab: ActiveFab.Add
+      })
+      dispatch({
+        type: 'SetActiveTabAction',
+        activeTab: ActiveTab.Properties
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: t('Hosted By'),
+        mobileOpen: true,
+        children: <HostSidePanel />
+      })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: 'hosted-by'
+      })
+    }
+  }
+
   return (
     <Box onClick={handleSelectCard}>
       <StyledSwiperContainer
@@ -126,13 +183,7 @@ export function Canvas(): ReactElement {
         shortSwipes={false}
         slideToClickedSlide={steps != null}
         onSwiper={(swiper) => setSwiper(swiper)}
-        onSlideChange={(swiper) => {
-          if (steps == null) return
-          dispatch({
-            type: 'SetSelectedStepAction',
-            step: steps[swiper.activeIndex]
-          })
-        }}
+        onSlideChange={handleSlideChange}
         sx={{ height: { xs: 580, md: 640 } }}
       >
         {steps != null ? (
@@ -148,7 +199,7 @@ export function Canvas(): ReactElement {
                     position: 'relative',
                     overflow: 'hidden',
                     outline: (theme) =>
-                      step.parentOrder === swiper?.activeIndex
+                      step.id === selectedStep?.id
                         ? step.id === selectedBlock?.id
                           ? `2px solid ${theme.palette.primary.main}`
                           : `2px solid ${theme.palette.background.default}`
@@ -221,32 +272,7 @@ export function Canvas(): ReactElement {
                               borderRadius: 5,
                               cursor: 'pointer'
                             }}
-                            onFooterClick={() => {
-                              if (editableStepFooter) {
-                                dispatch({
-                                  type: 'SetSelectedComponentAction',
-                                  component: 'Footer'
-                                })
-                                dispatch({
-                                  type: 'SetActiveFabAction',
-                                  activeFab: ActiveFab.Add
-                                })
-                                dispatch({
-                                  type: 'SetActiveTabAction',
-                                  activeTab: ActiveTab.Properties
-                                })
-                                dispatch({
-                                  type: 'SetDrawerPropsAction',
-                                  title: t('Hosted By'),
-                                  mobileOpen: true,
-                                  children: <HostSidePanel />
-                                })
-                                dispatch({
-                                  type: 'SetSelectedAttributeIdAction',
-                                  id: 'hosted-by'
-                                })
-                              }
-                            }}
+                            onFooterClick={handleFooterClick}
                           />
                         </Stack>
                       </Fade>

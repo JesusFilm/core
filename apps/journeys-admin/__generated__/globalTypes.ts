@@ -133,6 +133,15 @@ export enum SegmindModel {
   tinysd1__5_txt2img = "tinysd1__5_txt2img",
 }
 
+export enum Service {
+  apiJourneys = "apiJourneys",
+  apiLanguages = "apiLanguages",
+  apiMedia = "apiMedia",
+  apiTags = "apiTags",
+  apiUsers = "apiUsers",
+  apiVideos = "apiVideos",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
@@ -249,6 +258,16 @@ export interface ButtonClickEventCreateInput {
   actionValue?: string | null;
 }
 
+export interface CardBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  backgroundColor?: string | null;
+  fullscreen?: boolean | null;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
+}
+
 export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   backgroundColor?: string | null;
@@ -348,6 +367,8 @@ export interface JourneyUpdateInput {
   seoTitle?: string | null;
   seoDescription?: string | null;
   hostId?: string | null;
+  strategySlug?: string | null;
+  tagIds?: string[] | null;
 }
 
 export interface JourneyVisitorFilter {
@@ -364,6 +385,10 @@ export interface JourneysFilter {
   featured?: boolean | null;
   template?: boolean | null;
   ids?: string[] | null;
+  tagIds?: string[] | null;
+  languageIds?: string[] | null;
+  limit?: number | null;
+  orderByRecent?: boolean | null;
 }
 
 export interface LinkActionInput {
@@ -434,6 +459,13 @@ export interface SignUpSubmissionEventCreateInput {
   email: string;
 }
 
+export interface StepBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  nextBlockId?: string | null;
+  locked?: boolean | null;
+}
+
 export interface StepBlockUpdateInput {
   nextBlockId?: string | null;
   locked?: boolean | null;
@@ -447,10 +479,12 @@ export interface StepViewEventCreateInput {
 
 export interface TeamCreateInput {
   title: string;
+  publicTitle?: string | null;
 }
 
 export interface TeamUpdateInput {
   title: string;
+  publicTitle?: string | null;
 }
 
 export interface TextResponseBlockCreateInput {

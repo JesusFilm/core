@@ -1,0 +1,56 @@
+import Box from '@mui/material/Box'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
+
+import { journeysAdminConfig } from '../../libs/storybook'
+
+import { getJourneysMock, getLanguagesMock, getTagsMock } from './data'
+
+import { TemplateGallery } from '.'
+
+const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
+  ...journeysAdminConfig,
+  component: TemplateGallery,
+  title: 'Journeys-Admin/TemplateGallery',
+  parameters: {
+    layout: 'fullscreen'
+  }
+}
+
+const Template: StoryObj<ComponentProps<typeof TemplateGallery>> = {
+  render: () => (
+    <Box
+      sx={{
+        backgroundColor: 'background.paper',
+        p: 5,
+        height: '100%'
+      }}
+    >
+      <TemplateGallery />
+    </Box>
+  )
+}
+
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getJourneysMock, getLanguagesMock, getTagsMock]
+    }
+  }
+}
+
+export const Loading = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [
+        { ...getJourneysMock, delay: 100000000000000 },
+        { ...getLanguagesMock, delay: 100000000000000 },
+        { ...getTagsMock, delay: 100000000000000 }
+      ]
+    }
+  }
+}
+
+export default TemplateGalleryStory

@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -11,6 +10,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
 import {
@@ -59,10 +59,6 @@ export const actions = [
   {
     value: 'NavigateToBlockAction',
     label: 'Selected Card'
-  },
-  {
-    value: 'NavigateToJourneyAction',
-    label: 'Another Journey'
   },
   {
     value: 'LinkAction',
@@ -181,7 +177,7 @@ export function Action(): ReactElement {
           <Select
             onChange={handleChange}
             value={action}
-            IconComponent={KeyboardArrowDownRoundedIcon}
+            IconComponent={ChevronDownIcon}
           >
             {actions.map((action) => {
               return (

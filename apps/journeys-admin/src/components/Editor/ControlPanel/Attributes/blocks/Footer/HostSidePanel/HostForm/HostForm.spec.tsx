@@ -68,11 +68,11 @@ describe('HostForm', () => {
     ).toHaveAttribute('value', '')
     expect(sidePanel.getByTestId('avatar1').firstChild).toHaveAttribute(
       'data-testid',
-      'UserProfileAddIcon'
+      'UserProfile2Icon'
     )
     expect(sidePanel.getByTestId('avatar2').firstChild).toHaveAttribute(
       'data-testid',
-      'UserProfileAddIcon'
+      'Plus2Icon'
     )
   })
 

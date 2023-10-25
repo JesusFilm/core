@@ -45,9 +45,8 @@ import {
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
-
-export const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
 @Resolver('Journey')
 export class JourneyResolver {
@@ -176,11 +175,34 @@ export class JourneyResolver {
   @Query()
   async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
-    if (where?.template === true) filter.template = true
-    if (where?.featured === true) filter.featuredAt = { not: null }
+    if (where?.template != null) filter.template = where.template
+    if (where?.featured != null)
+      filter.featuredAt = where?.featured ? { not: null } : null
     if (where?.ids != null) filter.id = { in: where?.ids }
+    if (where?.tagIds != null) {
+      // find every journey which has a journeyTag matching at least 1 tagId
+      filter.OR = where.tagIds.map((tagId) => ({
+        journeyTags: {
+          some: {
+            tagId
+          }
+        }
+      }))
+    }
+    if (where?.languageIds != null)
+      filter.languageId = { in: where?.languageIds }
+
     return await this.prismaService.journey.findMany({
-      where: filter
+      where: filter,
+      include:
+        where?.tagIds != null
+          ? {
+              journeyTags: true
+            }
+          : undefined,
+      take: where?.limit ?? undefined,
+      orderBy:
+        where?.orderByRecent === true ? { publishedAt: 'desc' } : undefined
     })
   }
 
@@ -311,6 +333,7 @@ export class JourneyResolver {
       where: { id },
       include: {
         userJourneys: true,
+        journeyTags: true,
         team: {
           include: { userTeams: true }
         }
@@ -405,15 +428,27 @@ export class JourneyResolver {
                   'publishedAt',
                   'hostId',
                   'teamId',
-                  'createdAt'
+                  'createdAt',
+                  'strategySlug'
                 ]),
                 id: duplicateJourneyId,
                 slug,
                 title: duplicateTitle,
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
+                featuredAt: null,
                 template: false,
                 team: { connect: { id: teamId } },
+                journeyTags:
+                  journey.template === true
+                    ? {
+                        create: journey.journeyTags.map((tag) => ({
+                          tagId: tag.tagId,
+                          journeyId: duplicateJourneyId,
+                          journey: { connect: { id: duplicateJourneyId } }
+                        }))
+                      }
+                    : undefined,
                 userJourneys: {
                   create: {
                     userId,
@@ -557,14 +592,30 @@ export class JourneyResolver {
         )
     }
     try {
-      return await this.prismaService.journey.update({
-        where: { id },
-        data: {
-          ...input,
-          title: input.title ?? undefined,
-          languageId: input.languageId ?? undefined,
-          slug: input.slug ?? undefined
+      return await this.prismaService.$transaction(async (tx) => {
+        // Delete all tags and create with new input tags
+        if (input.tagIds != null) {
+          await tx.journeyTag.deleteMany({
+            where: {
+              journeyId: journey.id
+            }
+          })
         }
+
+        const updatedJourney = await tx.journey.update({
+          where: { id },
+          data: {
+            ...omit(input, ['tagIds']),
+            title: input.title ?? undefined,
+            languageId: input.languageId ?? undefined,
+            slug: input.slug ?? undefined,
+            journeyTags:
+              input.tagIds != null
+                ? { create: input.tagIds.map((tagId) => ({ tagId })) }
+                : undefined
+          }
+        })
+        return updatedJourney
       })
     } catch (err) {
       if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED)
@@ -603,6 +654,38 @@ export class JourneyResolver {
       data: {
         status: JourneyStatus.published,
         publishedAt: new Date()
+      }
+    })
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async journeyFeature(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string,
+    @Args('feature') feature: boolean
+  ): Promise<Journey> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id },
+      include: {
+        userJourneys: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
+    })
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+      throw new GraphQLError('user is not allowed to update featured date', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.prismaService.journey.update({
+      where: { id },
+      data: {
+        featuredAt: feature ? new Date() : null
       }
     })
   }
@@ -786,9 +869,24 @@ export class JourneyResolver {
 
   @ResolveField('language')
   async language(
-    @Parent() journey
+    @Parent() journey: Journey
   ): Promise<{ __typename: 'Language'; id: string }> {
-    // 529 (english) is default if not set
-    return { __typename: 'Language', id: journey.languageId ?? '529' }
+    return { __typename: 'Language', id: journey.languageId }
+  }
+
+  @ResolveField('tags')
+  async tags(
+    @Parent() journey: Journey
+  ): Promise<Array<{ __typename: 'Tag'; id: string }>> {
+    const journeyTags =
+      (await this.prismaService.journey
+        .findUnique({
+          where: { id: journey.id }
+        })
+        .journeyTags()) ?? []
+
+    return journeyTags.map((tag) => {
+      return { __typename: 'Tag', id: tag.tagId }
+    })
   }
 }

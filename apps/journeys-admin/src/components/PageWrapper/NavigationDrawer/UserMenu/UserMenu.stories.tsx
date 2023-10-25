@@ -35,15 +35,16 @@ const Template: StoryObj<typeof UserMenu> = {
 export const Default = {
   ...Template,
   args: {
-    user: {
+    apiUser: {
       __typename: 'User',
       id: 'userId',
       firstName: 'Amin',
       lastName: 'One',
       imageUrl: 'https://bit.ly/3Gth4Yf',
-      email: 'amin@email.com'
+      email: 'amin@email.com',
+      superAdmin: false
     },
-    authUser: {
+    user: {
       displayName: 'Amin One',
       photoURL: 'https://bit.ly/3Gth4Yf',
       email: 'amin@email.com',
