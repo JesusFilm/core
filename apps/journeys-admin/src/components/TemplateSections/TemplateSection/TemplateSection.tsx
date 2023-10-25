@@ -27,6 +27,7 @@ export function TemplateSection({
 }: TemplateSectionProps): ReactElement {
   const { breakpoints } = useTheme()
   const [swiper, setSwiper] = useState<SwiperCore>()
+
   const nextRef = useRef<HTMLButtonElement>(null)
   const prevRef = useRef<HTMLButtonElement>(null)
 
@@ -128,18 +129,8 @@ export function TemplateSection({
           ))}
         </Swiper>
       )}
-      <NavButton
-        variant="prev"
-        ref={prevRef}
-        disabled={journeys == null}
-        sx={{ mt: '-19%' }}
-      />
-      <NavButton
-        variant="next"
-        ref={nextRef}
-        disabled={journeys == null}
-        sx={{ mt: '-20%' }}
-      />
+      <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
+      <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
     </Box>
   )
 }
