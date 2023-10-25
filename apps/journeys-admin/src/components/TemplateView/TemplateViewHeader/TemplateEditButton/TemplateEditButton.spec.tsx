@@ -24,7 +24,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TemplateEditButton', () => {
   it('should open and close the TemplateSettingsDialog when the button is clicked', async () => {
-    const { getByTestId,  getByRole, queryByRole } = render(
+    const { getByTestId, getByRole, queryByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey }}>
