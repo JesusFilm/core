@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -7,8 +7,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetLanguages } from '../../../../../../../__generated__/GetLanguages'
 import { JourneyLanguageUpdate } from '../../../../../../../__generated__/JourneyLanguageUpdate'
+import { useLanguagesQuery } from '../../../../../../libs/useLanguagesQuery'
 
 export const JOURNEY_LANGUAGE_UPDATE = gql`
   mutation JourneyLanguageUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -20,18 +20,6 @@ export const JOURNEY_LANGUAGE_UPDATE = gql`
           value
           primary
         }
-      }
-    }
-  }
-`
-
-export const GET_LANGUAGES = gql`
-  query GetLanguages($languageId: ID) {
-    languages(limit: 5000) {
-      id
-      name(languageId: $languageId, primary: true) {
-        value
-        primary
       }
     }
   }
@@ -49,9 +37,7 @@ export function LanguageDialog({
   const [journeyUpdate] = useMutation<JourneyLanguageUpdate>(
     JOURNEY_LANGUAGE_UPDATE
   )
-  const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES, {
-    variables: { languageId: '529' }
-  })
+  const { data, loading } = useLanguagesQuery({ languageId: '529' })
 
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
