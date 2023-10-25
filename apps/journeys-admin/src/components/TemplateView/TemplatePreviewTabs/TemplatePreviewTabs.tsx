@@ -41,7 +41,7 @@ export function TemplatePreviewTabs(): ReactElement {
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
-        sx={{ borderBottom: 1, borderColor: 'divider' }}
+        sx={{ borderBottom: 1, borderColor: 'divider', mb: { xs: 3, sm: 7 } }}
       >
         <Tab
           disableRipple
