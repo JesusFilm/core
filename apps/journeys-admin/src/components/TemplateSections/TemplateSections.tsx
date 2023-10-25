@@ -28,7 +28,7 @@ export function TemplateSections({
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
 
-  const { data, loading } = useJourneysQuery({
+  const { loading } = useJourneysQuery({
     variables: {
       where: {
         template: true,
@@ -66,7 +66,7 @@ export function TemplateSections({
 
   return (
     <Stack spacing={8}>
-      {(loading || (data?.journeys != null && data.journeys.length > 0)) && (
+      {(loading || (collection != null && collection.length > 0)) && (
         <TemplateSection
           category={tagIds == null ? t('Featured & New') : t('Most Relevant')}
           journeys={collection}
