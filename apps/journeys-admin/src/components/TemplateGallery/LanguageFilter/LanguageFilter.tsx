@@ -1,9 +1,9 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
-
-import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
+import { useTranslation } from 'react-i18next'
 
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
@@ -18,6 +18,7 @@ export function LanguageFilter({
   languageId,
   onChange
 }: LanguageFilterProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [open, setOpen] = useState(false)
 
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
@@ -31,28 +32,42 @@ export function LanguageFilter({
 
   return (
     <>
-      <Button
-        variant="outlined"
-        onClick={() => setOpen(true)}
-        startIcon={<AddSquare4Icon />}
+      <Box
         sx={{
-          border: 'none',
-          '&:hover': {
-            border: 'none'
-          }
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
-        <Typography
-          variant="subtitle2"
+        {!loading && (
+          <Typography variant="subtitle3">
+            {t('Filter by language:')}
+          </Typography>
+        )}
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => setOpen(true)}
           sx={{
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden'
+            border: 'none',
+            '&:hover': {
+              border: 'none'
+            }
           }}
         >
-          {loading ? <Skeleton width={61} /> : localName ?? nativeName}
-        </Typography>
-      </Button>
+          <Typography
+            variant="subtitle3"
+            sx={{
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden'
+            }}
+          >
+            {loading ? <Skeleton width={61} /> : localName ?? nativeName}
+          </Typography>
+        </Button>
+      </Box>
       <LanguageFilterDialog
         open={open}
         onClose={() => setOpen(false)}

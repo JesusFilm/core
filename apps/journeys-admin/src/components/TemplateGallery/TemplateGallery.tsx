@@ -38,18 +38,19 @@ export function TemplateGallery(): ReactElement {
   return (
     <Container disableGutters>
       <Stack
-        direction="row"
+        gap={1}
         justifyContent="space-between"
-        alignItems="center"
         sx={{
-          pb: { xs: 6, md: 9 }
+          pb: { xs: 6, md: 9 },
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: { xs: 'start', md: 'center' }
         }}
       >
         <Typography variant="h2" sx={{ display: { xs: 'none', lg: 'block' } }}>
           {t('Journey Templates')}
         </Typography>
-        <Typography variant="h2" sx={{ display: { xs: 'block', lg: 'none' } }}>
-          {t('Templates')}
+        <Typography variant="h4" sx={{ display: { xs: 'block', lg: 'none' } }}>
+          {t('Journey Templates')}
         </Typography>
         <LanguageFilter
           languageId={languageId}
