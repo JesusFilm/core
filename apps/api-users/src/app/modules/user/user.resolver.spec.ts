@@ -124,6 +124,31 @@ describe('UserResolver', () => {
         await resolver.resolveReference({ __typename: 'User', id: 'userId' })
       ).toEqual(user)
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { userId: user.id }
+      })
+    })
+
+    it('fetches user from firebase', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(null)
+      prismaService.user.upsert.mockResolvedValueOnce(user)
+      expect(
+        await resolver.resolveReference({ __typename: 'User', id: 'userId' })
+      ).toEqual(user)
+      expect(prismaService.user.upsert).toHaveBeenCalledWith({
+        create: {
+          email: 'tho@no.co',
+          firstName: 'fo',
+          imageUrl: 'p',
+          lastName: 'sho',
+          userId: 'userId'
+        },
+        update: {
+          email: 'tho@no.co',
+          firstName: 'fo',
+          imageUrl: 'p',
+          lastName: 'sho',
+          userId: 'userId'
+        },
         where: { userId: 'userId' }
       })
     })
