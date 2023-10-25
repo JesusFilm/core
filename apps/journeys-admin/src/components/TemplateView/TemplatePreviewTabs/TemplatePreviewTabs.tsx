@@ -1,6 +1,7 @@
 import 'swiper/swiper.min.css'
 import 'swiper/components/scrollbar/scrollbar.min.css'
 
+import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -36,7 +37,7 @@ export function TemplatePreviewTabs(): ReactElement {
   }
 
   return (
-    <>
+    <Box sx={{ pb: { xs: 3, sm: 7 } }}>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
@@ -54,6 +55,6 @@ export function TemplatePreviewTabs(): ReactElement {
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
         <TemplateCardPreview steps={steps} />
       </TabPanel>
-    </>
+    </Box>
   )
 }
