@@ -42,7 +42,7 @@ window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')`}</Script>
             left: 0px;
             max-height: 100%;
             right: 0px;
-            top: 0px;
+            top: 40px;
             width: 100%;
           }
         }
