@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
@@ -6,8 +5,7 @@ import { ReactElement, useState } from 'react'
 
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 
-import { GetLanguages } from '../../../../__generated__/GetLanguages'
-import { GET_LANGUAGES } from '../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
+import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { LanguageFilterDialog } from './LanguageFilterDialog'
 
@@ -22,7 +20,7 @@ export function LanguageFilter({
 }: LanguageFilterProps): ReactElement {
   const [open, setOpen] = useState(false)
 
-  const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES)
+  const { data, loading } = useLanguagesQuery({ languageId: '529' })
 
   const localName = data?.languages
     ?.find((language) => language?.id === languageId)
