@@ -261,6 +261,7 @@ extend type Mutation {
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
+  journeyProfileOnboardingFormComplete: JourneyProfile!
   teamCreate(input: TeamCreateInput): Team!
   teamUpdate(id: ID!, input: TeamUpdateInput): Team!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
@@ -1781,6 +1782,7 @@ input JourneysFilter {
   template: Boolean
   ids: [ID!]
   tagIds: [ID!]
+  languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
 }
@@ -1871,6 +1873,7 @@ type JourneyProfile
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
+  onboardingFormCompletedAt: DateTime
 }
 
 input JourneyProfileUpdateInput {

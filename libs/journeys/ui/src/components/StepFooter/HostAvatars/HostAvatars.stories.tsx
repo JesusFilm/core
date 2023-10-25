@@ -68,7 +68,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: hostData,
-  team: null
+  team: null,
+  tags: []
 }
 
 type Story = StoryObj<

@@ -2,17 +2,10 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import MuiTypography from '@mui/material/Typography'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveJourneyEditContent,
-  ActiveTab,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
-
-import { Properties } from '../../../JourneyView/Properties'
 
 import {
   Button,
@@ -118,25 +111,6 @@ interface AttributesProps {
 
 export function Attributes({ selected, step }: AttributesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const {
-    state: { activeTab, journeyEditContentComponent },
-    dispatch
-  } = useEditor()
-
-  useEffect(() => {
-    if (
-      activeTab === ActiveTab.Journey &&
-      journeyEditContentComponent !== ActiveJourneyEditContent.Action &&
-      journeyEditContentComponent !== ActiveJourneyEditContent.SocialPreview
-    ) {
-      dispatch({
-        type: 'SetDrawerPropsAction',
-        title: 'Properties',
-        children: <Properties journeyType="Journey" isPublisher={false} />,
-        mobileOpen: false
-      })
-    }
-  }, [activeTab, dispatch, journeyEditContentComponent])
 
   // Map typename to labels when we have translation keys
   const blockLabel =

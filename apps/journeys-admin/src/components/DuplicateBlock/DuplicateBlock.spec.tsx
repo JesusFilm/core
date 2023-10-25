@@ -19,6 +19,11 @@ import {
 
 import { BLOCK_DUPLICATE, DuplicateBlock } from './DuplicateBlock'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('DuplicateBlock', () => {
   const block: TreeBlock<TypographyBlock> = {
     id: 'typography0.id',

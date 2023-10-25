@@ -1,0 +1,43 @@
+name: journeys-monitoring
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: NPM Install
+        run: npm install --silent
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx playwright test apps/journeys-e2e/src/monitoring/monitor.spec.ts
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: journeys-monitoring
+          path: |
+            playwright-report/
+          retention-days: 5
+      - name: Slack Notification
+        uses: act10ns/slack@v1
+        with:
+          status: ${{ job.status }}
+          channel: '#apps-monitoring'
+          message: journeys app(https://your.nextstep.is/) is down.
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -1,6 +1,6 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { Redirect } from 'next'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { v4 as uuidv4 } from 'uuid'
@@ -11,12 +11,13 @@ import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
-interface props {
-  AuthUser?: AuthUser
+interface InitAndAuthAppProps {
+  user?: User
   locale: string | undefined
+  resolvedUrl: string
 }
 
-interface initAndAuth {
+interface InitAndAuth {
   apolloClient: ApolloClient<NormalizedCacheObject>
   flags: {
     [key: string]: boolean | undefined
@@ -26,15 +27,16 @@ interface initAndAuth {
 }
 
 export async function initAndAuthApp({
-  AuthUser,
-  locale
-}: props): Promise<initAndAuth> {
+  user,
+  locale,
+  resolvedUrl
+}: InitAndAuthAppProps): Promise<InitAndAuth> {
   const ldUser =
-    AuthUser?.id != null
+    user?.id != null
       ? {
-          key: AuthUser.id,
-          firstName: AuthUser.displayName ?? undefined,
-          email: AuthUser.email ?? undefined
+          key: user.id,
+          firstName: user.displayName ?? undefined,
+          email: user.email ?? undefined
         }
       : {
           key: uuidv4(),
@@ -49,7 +51,7 @@ export async function initAndAuthApp({
       i18nConfig
     ),
     getLaunchDarklyClient(ldUser),
-    AuthUser?.id != null ? AuthUser.getIdToken() : null
+    user?.id != null ? user.getIdToken() : null
   ])
 
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
@@ -59,7 +61,10 @@ export async function initAndAuthApp({
   const apolloClient = createApolloClient(token != null ? token : '')
   const redirect =
     token != null
-      ? await checkConditionalRedirect(apolloClient, flags)
+      ? await checkConditionalRedirect({
+          apolloClient,
+          resolvedUrl
+        })
       : undefined
 
   return { apolloClient, flags, redirect, translations }

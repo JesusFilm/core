@@ -1,8 +1,4 @@
-import {
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
-} from 'next-firebase-auth'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,25 +12,36 @@ import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const { templates } = useFlags()
 
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
-      <PageWrapper title={t('Journey Templates')} authUser={AuthUser}>
+      <PageWrapper
+        title={t('Journey Templates')}
+        user={user}
+        mainPanelSx={{
+          backgroundColor: 'background.paper',
+          overflowX: 'hidden'
+        }}
+        hiddenPanelHeader={templates}
+      >
         {templates ? <TemplateGallery /> : <TemplateLibrary />}
       </PageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR()(
-  async ({ AuthUser, locale }) => {
-    const { flags, translations } = await initAndAuthApp({
-      AuthUser,
-      locale
+export const getServerSideProps = withUserTokenSSR()(
+  async ({ user, locale, resolvedUrl }) => {
+    const { flags, redirect, translations } = await initAndAuthApp({
+      user,
+      locale,
+      resolvedUrl
     })
+
+    if (redirect != null) return { redirect }
 
     return {
       props: {
@@ -45,4 +52,4 @@ export const getServerSideProps = withAuthUserTokenSSR()(
   }
 )
 
-export default withAuthUser()(LibraryIndex)
+export default withUser()(LibraryIndex)

@@ -2,6 +2,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps, ReactElement, useState } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+
+import {
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../__generated__/GetJourney'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
@@ -66,7 +72,7 @@ const languages: Language[] = [
 const VideoDetailsComponent = ({
   id,
   onSelect,
-  activeVideo,
+  activeVideoBlock,
   videoDescription
 }: ComponentProps<typeof VideoDetails> & {
   videoDescription: string
@@ -121,7 +127,7 @@ const VideoDetailsComponent = ({
         onClose={() => setOpen(false)}
         onSelect={onSelect}
         source={VideoBlockSource.internal}
-        activeVideo={activeVideo}
+        activeVideoBlock={activeVideoBlock}
       />
     </MockedProvider>
   )
@@ -151,11 +157,47 @@ export const LongDescription = {
   }
 }
 
+const imageBlock: TreeBlock<ImageBlock> = {
+  id: 'imageBlockId',
+  __typename: 'ImageBlock',
+  parentBlockId: 'videoBlockId',
+  parentOrder: 0,
+  src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+  alt: 'Default Image Icon',
+  width: 0,
+  height: 0,
+  blurhash: '',
+  children: []
+}
+const videoBlock: TreeBlock<VideoBlock> = {
+  id: 'videoBlockId',
+  __typename: 'VideoBlock',
+  parentBlockId: 'card1.id',
+  parentOrder: 0,
+  startAt: 0,
+  endAt: null,
+  muted: true,
+  autoplay: true,
+  fullsize: true,
+  action: null,
+  videoId: null,
+  videoVariantLanguageId: null,
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
+  video: null,
+  posterBlockId: 'imageBlockId',
+  objectFit: null,
+  children: [imageBlock]
+}
+
 export const Selected = {
   ...Template,
   args: {
     ...Default.args,
-    activeVideo: true
+    activeVideoBlock: videoBlock
   }
 }
 

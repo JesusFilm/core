@@ -63,7 +63,8 @@ describe('HostAvatars', () => {
     seoDescription: null,
     chatButtons: [],
     host: hostData,
-    team: null
+    team: null,
+    tags: []
   }
 
   it('renders both avatars if both images are set', () => {

@@ -31,6 +31,11 @@ describe('useJourneysQuery', () => {
                   __typename: 'Translation',
                   value: 'English',
                   primary: true
+                },
+                {
+                  __typename: 'Translation',
+                  value: 'English',
+                  primary: false
                 }
               ]
             },
@@ -63,8 +68,10 @@ describe('useJourneysQuery', () => {
     renderHook(
       () =>
         useJourneysQuery({
-          where: {
-            template: true
+          variables: {
+            where: {
+              template: true
+            }
           }
         }),
       {

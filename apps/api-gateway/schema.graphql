@@ -698,6 +698,7 @@ type JourneyProfile
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
+  onboardingFormCompletedAt: DateTime
 }
 
 input JourneyProfileUpdateInput
@@ -713,6 +714,7 @@ input JourneysFilter
   template: Boolean
   ids: [ID!]
   tagIds: [ID!]
+  languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
 }
@@ -1000,6 +1002,7 @@ enum MessagePlatform
 type Mutation
   @join__type(graph: JOURNEYS)
   @join__type(graph: MEDIA)
+  @join__type(graph: USERS)
 {
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @join__field(graph: JOURNEYS)
@@ -1175,6 +1178,7 @@ type Mutation
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
+  journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
@@ -1215,6 +1219,7 @@ type Mutation
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
+  userImpersonate(email: String!): String @join__field(graph: USERS)
 }
 
 """
@@ -2021,6 +2026,7 @@ type User
   lastName: String @join__field(graph: USERS)
   email: String! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
+  superAdmin: Boolean @join__field(graph: USERS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""

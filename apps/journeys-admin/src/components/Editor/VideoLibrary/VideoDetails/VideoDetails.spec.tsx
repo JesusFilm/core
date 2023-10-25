@@ -211,7 +211,7 @@ describe('VideoDetails', () => {
           open
           onClose={onClose}
           onSelect={onSelect}
-          activeVideo
+          activeVideoBlock={videoBlock}
         />
       </MockedProvider>
     )
@@ -236,9 +236,9 @@ describe('VideoDetails', () => {
             request: {
               query: BLOCK_DELETE_FOR_COVER_IMAGE,
               variables: {
-                blockDeleteId: imageBlock?.id,
+                blockDeleteId: imageBlock.id,
                 journeyId: 'journeyId',
-                parentBlockId: imageBlock?.parentBlockId
+                parentBlockId: imageBlock.parentBlockId
               }
             },
             result
@@ -283,7 +283,7 @@ describe('VideoDetails', () => {
               open
               onClose={onClose}
               onSelect={onSelect}
-              activeVideo
+              activeVideoBlock={videoBlock}
             />
           </EditorProvider>
         </JourneyProvider>

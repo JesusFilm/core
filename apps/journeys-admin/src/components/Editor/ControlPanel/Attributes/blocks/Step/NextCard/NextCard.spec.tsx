@@ -16,6 +16,11 @@ import {
 
 import { NextCard } from './NextCard'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('NextCard', () => {
   it('changes between cards and conditions tabs', () => {
     const selectedBlock: TreeBlock<StepBlock> = {

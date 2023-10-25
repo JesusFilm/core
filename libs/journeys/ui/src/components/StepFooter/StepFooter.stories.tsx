@@ -66,7 +66,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: { __typename: 'Team', id: 'teamId', title: 'My Team' }
+  team: { __typename: 'Team', id: 'teamId', title: 'My Team', publicTitle: '' },
+  tags: []
 }
 
 const rtlLanguage = {

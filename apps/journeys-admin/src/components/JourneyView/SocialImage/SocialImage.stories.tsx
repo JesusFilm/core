@@ -62,4 +62,11 @@ export const NoImageSource = {
   }
 }
 
+export const Loading = {
+  ...Template,
+  args: {
+    journey: undefined
+  }
+}
+
 export default SocialImageStory

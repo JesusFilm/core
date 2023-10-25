@@ -40,6 +40,7 @@ describe('TeamCreateDialog', () => {
         teamCreate: {
           id: 'teamId',
           title: 'Team Title',
+          publicTitle: null,
           __typename: 'Team',
           userTeams: []
         }
@@ -65,6 +66,7 @@ describe('TeamCreateDialog', () => {
           {
             id: 'teamId1',
             title: 'Team 1 Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }
@@ -92,7 +94,7 @@ describe('TeamCreateDialog', () => {
         teams: [{ __ref: 'Team:teamId1' }]
       }
     })
-    const { getByRole, getByTestId, getByText } = render(
+    const { getByRole, getByTestId, getByText, getAllByRole } = render(
       <MockedProvider mocks={[teamCreateMock, getTeamsMock]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
@@ -106,7 +108,9 @@ describe('TeamCreateDialog', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'Team Title' }
+    })
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() =>
       expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
@@ -122,7 +126,7 @@ describe('TeamCreateDialog', () => {
 
   it('validates form', async () => {
     const handleCreate = jest.fn()
-    const { getByText, getByRole } = render(
+    const { getByText, getByRole, getAllByRole } = render(
       <MockedProvider mocks={[teamCreateErrorMock]}>
         <SnackbarProvider>
           <TeamProvider>
@@ -135,14 +139,16 @@ describe('TeamCreateDialog', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), { target: { value: '' } })
+    fireEvent.change(getAllByRole('textbox')[0], { target: { value: '' } })
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() =>
       expect(
         getByText('Team Name must be at least one character.')
       ).toBeInTheDocument()
     )
-    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'Team Title' }
+    })
     await waitFor(() =>
       expect(getByRole('button', { name: 'Create' })).not.toBeDisabled()
     )

@@ -2,9 +2,9 @@ import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -23,7 +23,7 @@ import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const router = useRouter()
 
   const journeyId = router.query.journeyId as string
@@ -33,7 +33,7 @@ function JourneyReportsPage(): ReactElement {
       <NextSeo title={t('Journey Report')} />
       <PageWrapper
         title={t('Journey Report')}
-        authUser={AuthUser}
+        user={user}
         backHref={`/journeys/${journeyId}`}
       >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
@@ -52,15 +52,16 @@ function JourneyReportsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale, query }) => {
-  if (AuthUser == null)
+})(async ({ user, locale, query, resolvedUrl }) => {
+  if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
+    user,
+    locale,
+    resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -98,6 +99,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(JourneyReportsPage)

@@ -18,6 +18,11 @@ import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('EditToolbar Menu', () => {
   it('should disable duplicate button when video block is selected', async () => {
     const { getByRole } = render(
@@ -26,7 +31,8 @@ describe('EditToolbar Menu', () => {
           <JourneyProvider
             value={{
               journey: {
-                status: JourneyStatus.draft
+                status: JourneyStatus.draft,
+                tags: []
               } as unknown as Journey,
               variant: 'admin'
             }}
@@ -68,7 +74,8 @@ describe('EditToolbar Menu', () => {
             value={{
               journey: {
                 id: 'journeyId',
-                slug: 'my-journey'
+                slug: 'my-journey',
+                tags: []
               } as unknown as Journey
             }}
           >
@@ -126,7 +133,8 @@ describe('EditToolbar Menu', () => {
             value={{
               journey: {
                 id: 'journeyId',
-                slug: 'my-journey'
+                slug: 'my-journey',
+                tags: []
               } as unknown as Journey
             }}
           >
@@ -190,7 +198,8 @@ describe('EditToolbar Menu', () => {
               journey: {
                 id: 'journeyId',
                 slug: 'my-journey',
-                template: true
+                template: true,
+                tags: []
               } as unknown as Journey
             }}
           >
@@ -237,7 +246,8 @@ describe('EditToolbar Menu', () => {
           <JourneyProvider
             value={{
               journey: {
-                status: JourneyStatus.draft
+                status: JourneyStatus.draft,
+                tags: []
               } as unknown as Journey,
               variant: 'admin'
             }}
@@ -273,7 +283,8 @@ describe('EditToolbar Menu', () => {
           <JourneyProvider
             value={{
               journey: {
-                status: JourneyStatus.draft
+                status: JourneyStatus.draft,
+                tags: []
               } as unknown as Journey,
               variant: 'admin'
             }}
@@ -311,7 +322,8 @@ describe('EditToolbar Menu', () => {
               journey: {
                 id: 'journeyId',
                 slug: 'my-journey',
-                template: true
+                template: true,
+                tags: []
               } as unknown as Journey,
               variant: 'admin'
             }}
@@ -338,7 +350,8 @@ describe('EditToolbar Menu', () => {
             value={{
               journey: {
                 id: 'journeyId',
-                slug: 'my-journey'
+                slug: 'my-journey',
+                tags: []
               } as unknown as Journey
             }}
           >
@@ -365,7 +378,8 @@ describe('EditToolbar Menu', () => {
             value={{
               journey: {
                 id: 'journeyId',
-                slug: 'my-journey'
+                slug: 'my-journey',
+                tags: []
               } as unknown as Journey
             }}
           >
@@ -410,7 +424,8 @@ describe('EditToolbar Menu', () => {
               journey: {
                 id: 'journeyId',
                 slug: 'my-journey',
-                template: true
+                template: true,
+                tags: []
               } as unknown as Journey
             }}
           >
