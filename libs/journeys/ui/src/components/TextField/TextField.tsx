@@ -28,6 +28,7 @@ export function TextField({
       variant="outlined"
       error={hasError}
       helperText={hasError ? meta.error : hint}
+      data-testid="JourneysTextField"
     />
   )
 }

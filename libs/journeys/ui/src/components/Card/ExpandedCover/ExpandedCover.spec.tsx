@@ -35,10 +35,10 @@ describe('ExpandedCover', () => {
         {children}
       </ExpandedCover>
     )
-    expect(getByTestId('ExpandedImageCover')).toHaveStyle(
+    expect(getByTestId('CardExpandedImageCover')).toHaveStyle(
       `background-image: url(${blurUrl})`
     )
-    expect(getByTestId('ExpandedImageCover')).toHaveAccessibleName(
+    expect(getByTestId('CardExpandedImageCover')).toHaveAccessibleName(
       imageBlock.alt
     )
   })

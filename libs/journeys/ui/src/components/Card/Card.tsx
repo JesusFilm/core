@@ -100,7 +100,7 @@ export function Card({
 
   return (
     <Paper
-      data-testid={id}
+      data-testid={`JourneysCard-${id}`}
       sx={{
         display: 'flex',
         flexDirection: 'column',
