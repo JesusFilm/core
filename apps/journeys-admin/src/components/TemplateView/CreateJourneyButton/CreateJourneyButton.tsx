@@ -103,7 +103,7 @@ export function CreateJourneyButton({
         sx={{ flex: 'none' }}
         disabled={journey == null}
       >
-        {t('Use Template')}
+        {t('Use This Template')}
       </Button>
       <CopyToTeamDialog
         submitLabel="Add"

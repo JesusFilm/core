@@ -142,7 +142,7 @@ describe('CreateJourneyButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Use Template' }))
+    fireEvent.click(getByRole('button', { name: 'Use This Template' }))
 
     expect(
       getByRole('dialog', { name: 'Add Journey to Team' })
@@ -186,9 +186,11 @@ describe('CreateJourneyButton', () => {
       expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
     })
 
-    expect(getByRole('button', { name: 'Use Template' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Use This Template' })
+    ).toBeInTheDocument()
 
-    fireEvent.click(getByRole('button', { name: 'Use Template' }))
+    fireEvent.click(getByRole('button', { name: 'Use This Template' }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -251,7 +253,7 @@ describe('CreateJourneyButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Use Template' }))
+    fireEvent.click(getByRole('button', { name: 'Use This Template' }))
 
     await waitFor(() => expect(teamResult).toHaveBeenCalled())
 
@@ -280,7 +282,7 @@ describe('CreateJourneyButton', () => {
     })
   })
 
-  it('should disbable button while loading', async () => {
+  it('should disable button while loading', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: false }
     } as unknown as NextRouter)
@@ -295,7 +297,7 @@ describe('CreateJourneyButton', () => {
     )
 
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Use Template' })).toBeDisabled()
+      expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
     )
   })
 })

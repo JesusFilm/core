@@ -69,7 +69,7 @@ describe('TemplateViewHeader', () => {
     expect(getByText('my cool journey')).toBeInTheDocument()
   })
 
-  it('should render Use Template button', async () => {
+  it('should render Use This Template button', async () => {
     const { getAllByText } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -88,7 +88,7 @@ describe('TemplateViewHeader', () => {
     )
 
     await waitFor(() =>
-      expect(getAllByText('Use Template')[0]).toBeInTheDocument()
+      expect(getAllByText('Use This Template')[0]).toBeInTheDocument()
     )
   })
 
