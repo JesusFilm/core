@@ -109,7 +109,6 @@ export function TemplateSection({
       )}
       {loading !== true && journeys != null && journeys?.length > 0 && (
         <Swiper
-          autoHeight
           speed={850}
           watchOverflow
           allowTouchMove
