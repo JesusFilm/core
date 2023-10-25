@@ -72,11 +72,13 @@ export const GET_VISITOR_EVENTS = gql`
   }
 `
 
-interface Props {
+interface VisitorJourneysListProps {
   id: string
 }
 
-export function VisitorJourneysList({ id }: Props): ReactElement {
+export function VisitorJourneysList({
+  id
+}: VisitorJourneysListProps): ReactElement {
   const { data } = useQuery<GetVisitorEvents>(GET_VISITOR_EVENTS, {
     variables: { id }
   })

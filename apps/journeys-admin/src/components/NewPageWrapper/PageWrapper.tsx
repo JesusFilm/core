@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
@@ -19,6 +19,7 @@ interface PageWrapperProps {
   showAppHeader?: boolean
   title?: string
   mainHeaderChildren?: ReactNode
+  hiddenPanelHeader?: boolean
   backHref?: string
   backHrefHistory?: boolean
   children?: ReactNode
@@ -30,12 +31,14 @@ interface PageWrapperProps {
   sidePanelChildren?: ReactNode
   user?: User
   initialState?: Partial<PageState>
+  mainPanelSx?: SxProps
 }
 
 export function PageWrapper({
   showAppHeader = true,
   title,
   mainHeaderChildren,
+  hiddenPanelHeader,
   backHref,
   backHrefHistory,
   children,
@@ -43,7 +46,8 @@ export function PageWrapper({
   sidePanelTitle,
   sidePanelChildren,
   user,
-  initialState
+  initialState,
+  mainPanelSx
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -56,8 +60,9 @@ export function PageWrapper({
       <Box
         sx={{
           height: viewportHeight ?? '100vh',
-          overflow: 'hidden',
-          [theme.breakpoints.down('md')]: { overflowY: 'auto' }
+          minHeight: '-webkit-fill-available',
+          [theme.breakpoints.down('md')]: { overflowY: 'auto' },
+          overflow: 'hidden'
         }}
         data-testid="JourneysAdminNewPageWrapper"
       >
@@ -95,14 +100,19 @@ export function PageWrapper({
                 }
               }}
             >
-              <MainPanelHeader
-                title={title}
-                backHref={backHref}
-                backHrefHistory={backHrefHistory}
+              {hiddenPanelHeader !== true && (
+                <MainPanelHeader
+                  title={title}
+                  backHref={backHref}
+                  backHrefHistory={backHrefHistory}
+                >
+                  {mainHeaderChildren}
+                </MainPanelHeader>
+              )}
+              <MainPanelBody
+                bottomPanelChildren={bottomPanelChildren}
+                sx={mainPanelSx}
               >
-                {mainHeaderChildren}
-              </MainPanelHeader>
-              <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
                 {children}
               </MainPanelBody>
             </Stack>

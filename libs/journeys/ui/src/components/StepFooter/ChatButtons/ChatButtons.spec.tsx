@@ -77,7 +77,8 @@ describe('ChatButtons', () => {
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   const result = jest.fn(() => ({

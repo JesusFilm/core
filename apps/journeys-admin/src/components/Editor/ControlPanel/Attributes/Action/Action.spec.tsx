@@ -14,6 +14,11 @@ import {
 import { ACTION_DELETE, Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
@@ -156,22 +161,6 @@ describe('Action', () => {
     await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
     fireEvent.click(getByRole('option', { name: 'Selected Card' }))
     await waitFor(() => expect(getByTestId('CardList')).toBeInTheDocument())
-  })
-
-  it('shows journey dropdown when Another Journey is selected', async () => {
-    const { getByRole, getByText } = render(
-      <MockedProvider>
-        <Action />
-      </MockedProvider>
-    )
-    fireEvent.mouseDown(getByRole('button', { name: 'None' }))
-    await waitFor(() =>
-      expect(getByText('Another Journey')).toBeInTheDocument()
-    )
-    fireEvent.click(getByRole('option', { name: 'Another Journey' }))
-    await waitFor(() =>
-      expect(getByText('Select the Journey...')).toBeInTheDocument()
-    )
   })
 
   it('shows url input text box when URL/Website is selected', async () => {

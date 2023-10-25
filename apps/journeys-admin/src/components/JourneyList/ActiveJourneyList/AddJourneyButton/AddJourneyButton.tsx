@@ -6,11 +6,11 @@ import { useTranslation } from 'react-i18next'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
-import { useJourneyCreate } from '../../../../libs/useJourneyCreate'
+import { useJourneyCreateMutation } from '../../../../libs/useJourneyCreateMutation'
 import { useTeam } from '../../../Team/TeamProvider'
 
 export function AddJourneyButton(): ReactElement {
-  const { createJourney } = useJourneyCreate()
+  const { createJourney } = useJourneyCreateMutation()
   const router = useRouter()
   const { activeTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')

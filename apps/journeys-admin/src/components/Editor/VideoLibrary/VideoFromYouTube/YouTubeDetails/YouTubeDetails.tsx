@@ -9,6 +9,7 @@ import useSWR from 'swr'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
@@ -65,6 +66,7 @@ export function YouTubeDetails({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
         fluid: true,
         controls: true,
         poster: data?.snippet?.thumbnails?.default?.url ?? undefined

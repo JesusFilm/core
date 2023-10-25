@@ -80,8 +80,7 @@ describe('JourneyResolver', () => {
     seoDescription: null,
     template: false,
     hostId: null,
-    strategySlug: null,
-    tagIds: []
+    strategySlug: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -563,7 +562,23 @@ describe('JourneyResolver', () => {
 
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
-          tagIds: { hasEvery: ['tagId1', 'tagId2'] },
+          OR: [
+            { journeyTags: { some: { tagId: 'tagId1' } } },
+            { journeyTags: { some: { tagId: 'tagId2' } } }
+          ],
+          status: 'published'
+        },
+        include: { journeyTags: true }
+      })
+    })
+
+    it('returns a list of journeys filtered by languageId', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([])
+      await resolver.journeys({ languageIds: ['529'] })
+
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          languageId: { in: ['529'] },
           status: 'published'
         }
       })
@@ -661,8 +676,7 @@ describe('JourneyResolver', () => {
               role: 'owner',
               userId: 'userId'
             }
-          },
-          tagIds: []
+          }
         }
       })
     })
@@ -705,8 +719,7 @@ describe('JourneyResolver', () => {
               role: 'owner',
               userId: 'userId'
             }
-          },
-          tagIds: []
+          }
         }
       })
     })
@@ -949,22 +962,29 @@ describe('JourneyResolver', () => {
               role: UserJourneyRole.owner
             }
           },
-          tagIds: []
+          journeyTags: undefined
         }
       })
     })
 
     it('duplicates a template journey', async () => {
+      const journeyTags = [
+        {
+          id: 'id',
+          tagId: 'tagId',
+          journeyId: 'journeyId'
+        }
+      ]
+      const journeyWithTags = { ...journeyWithUserTeam, journeyTags }
       prismaService.journey.findUnique
         .mockReset()
         // lookup journey to duplicate and authorize
         .mockResolvedValueOnce({
-          ...journeyWithUserTeam,
-          template: true,
-          tagIds: ['tagId1']
-        })
+          ...journeyWithTags,
+          template: true
+        } as unknown as Prisma.Prisma__JourneyClient<Journey>)
         // lookup duplicate journey once created and authorize
-        .mockResolvedValueOnce(journeyWithUserTeam)
+        .mockResolvedValueOnce(journeyWithTags)
       prismaService.journey.findMany
         .mockReset()
         // lookup existing duplicate active journeys
@@ -1004,7 +1024,15 @@ describe('JourneyResolver', () => {
             role: UserJourneyRole.owner
           }
         },
-        tagIds: ['tagId1']
+        journeyTags: {
+          create: [
+            {
+              journey: { connect: { id: 'duplicateJourneyId' } },
+              journeyId: 'duplicateJourneyId',
+              tagId: 'tagId'
+            }
+          ]
+        }
       }
 
       expect(prismaService.journey.create).toHaveBeenNthCalledWith(1, { data })
@@ -1274,9 +1302,14 @@ describe('JourneyResolver', () => {
       updatedAt: new Date()
     }
 
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
     it('updates a journey', async () => {
       prismaService.host.findUnique.mockResolvedValueOnce(host)
-
       prismaService.journey.findUnique.mockResolvedValueOnce(
         journeyWithUserTeam
       )
@@ -1296,8 +1329,8 @@ describe('JourneyResolver', () => {
           languageId: '529',
           slug: 'new-slug',
           hostId: 'hostId',
-          tagIds: ['tagId1'],
-          strategySlug: 'https://docs.google.com/presentation/slidesId'
+          strategySlug: 'https://docs.google.com/presentation/slidesId',
+          journeyTags: { create: [{ tagId: 'tagId1' }] }
         }
       })
     })
@@ -1318,7 +1351,7 @@ describe('JourneyResolver', () => {
           title: undefined,
           languageId: undefined,
           slug: undefined,
-          tagIds: []
+          journeyTags: undefined
         }
       })
     })
@@ -1771,17 +1804,43 @@ describe('JourneyResolver', () => {
 
   describe('language', () => {
     it('returns object for federation', async () => {
-      expect(await resolver.language({ languageId: 'languageId' })).toEqual({
-        __typename: 'Language',
-        id: 'languageId'
-      })
-    })
-
-    it('returns object for federation with default when no languageId', async () => {
-      expect(await resolver.language({})).toEqual({
+      expect(await resolver.language(journey)).toEqual({
         __typename: 'Language',
         id: '529'
       })
+    })
+  })
+
+  describe('tags', () => {
+    it('returns object for federation', async () => {
+      const journeyTags = jest.fn().mockResolvedValue([
+        {
+          id: 'id',
+          tagId: 'tagId',
+          journeyId: 'journeyId'
+        }
+      ])
+      prismaService.journey.findUnique.mockReturnValue({
+        ...journey,
+        journeyTags
+      } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+
+      expect(await resolver.tags(journey)).toEqual([
+        {
+          __typename: 'Tag',
+          id: 'tagId'
+        }
+      ])
+    })
+
+    it('returns object for federation with default when no tags', async () => {
+      const journeyTags = jest.fn().mockResolvedValue(null)
+      prismaService.journey.findUnique.mockReturnValue({
+        ...journey,
+        journeyTags
+      } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+
+      expect(await resolver.tags({ ...journey })).toEqual([])
     })
   })
 })

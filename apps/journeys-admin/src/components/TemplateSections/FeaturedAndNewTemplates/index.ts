@@ -1,1 +1,0 @@
-export { FeaturedAndNewTemplates } from './FeaturedAndNewTemplates'

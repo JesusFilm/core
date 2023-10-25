@@ -17,6 +17,11 @@ import {
   NavigateToBlockAction
 } from './NavigateToBlockAction'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('NavigateToBlockAction', () => {
   it('updates the action on card click', async () => {
     const selectedBlock = steps[1].children[0].children[3]

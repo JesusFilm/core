@@ -12,6 +12,11 @@ import { IMAGE_BLOCK_CREATE } from './NewImageButton'
 
 import { NewImageButton } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('NewImageButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',

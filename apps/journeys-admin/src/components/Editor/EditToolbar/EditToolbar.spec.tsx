@@ -44,7 +44,10 @@ describe('Edit Toolbar', () => {
         <MockedProvider>
           <JourneyProvider
             value={{
-              journey: { slug: 'untitled-journey' } as unknown as Journey,
+              journey: {
+                slug: 'untitled-journey',
+                tags: []
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -66,7 +69,10 @@ describe('Edit Toolbar', () => {
         <MockedProvider>
           <JourneyProvider
             value={{
-              journey: { slug: 'untitled-journey' } as unknown as Journey,
+              journey: {
+                slug: 'untitled-journey',
+                tags: []
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -92,7 +98,10 @@ describe('Edit Toolbar', () => {
         <MockedProvider>
           <JourneyProvider
             value={{
-              journey: { slug: 'untitled-journey' } as unknown as Journey,
+              journey: {
+                slug: 'untitled-journey',
+                tags: []
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >

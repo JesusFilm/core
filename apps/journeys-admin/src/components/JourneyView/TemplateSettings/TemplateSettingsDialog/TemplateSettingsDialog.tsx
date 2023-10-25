@@ -1,5 +1,4 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
-import FormGroup from '@mui/material/FormGroup'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
@@ -11,25 +10,18 @@ import isEqual from 'lodash/isEqual'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
-import { TitleDescriptionUpdate } from '../../../../../__generated__/TitleDescriptionUpdate'
+import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 
+import { AboutTabPanel } from './AboutTabPanel'
+import { CategoriesTabPanel } from './CategoriesTabPanel'
 import { FeaturedCheckbox } from './FeaturedCheckbox'
-
-export const TITLE_DESCRIPTION_UPDATE = gql`
-  mutation TitleDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
-    journeyUpdate(id: $id, input: $input) {
-      id
-      title
-      description
-    }
-  }
-`
 
 export const JOURNEY_FEATURE_UPDATE = gql`
   mutation JourneyFeature($id: ID!, $feature: Boolean!) {
@@ -53,15 +45,16 @@ export function TemplateSettingsDialog({
     setTabValue(newValue)
   }
 
-  const [titleDescriptionUpdate] = useMutation<TitleDescriptionUpdate>(
-    TITLE_DESCRIPTION_UPDATE
-  )
-
+  const [journeySettingsUpdate] = useJourneyUpdateMutation()
   const [journeyFeature, { loading }] = useMutation<JourneyFeature>(
     JOURNEY_FEATURE_UPDATE
   )
 
   const { journey } = useJourney()
+  const initialTags = journey?.tags.map((tag) => ({
+    id: tag.id,
+    parentId: tag.parentId
+  }))
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -69,29 +62,41 @@ export function TemplateSettingsDialog({
   const handleTemplateUpdate = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
 
-    const existingValues = (({ title, description }) => ({
+    const existingValues = (({ title, description, strategySlug, tags }) => ({
       title,
-      description
+      description,
+      strategySlug,
+      tags
     }))(journey)
 
-    const formValues = (({ title, description }) => ({
+    const formValues = (({ title, description, strategySlug, tags }) => ({
       title,
-      description
+      description,
+      strategySlug: strategySlug === '' ? null : strategySlug,
+      tags
     }))(values)
 
     try {
       if (!isEqual(existingValues, formValues)) {
-        await titleDescriptionUpdate({
+        await journeySettingsUpdate({
           variables: {
             id: journey.id,
-            input: { title: values.title, description: values.description }
+            input: {
+              title: values.title,
+              description: values.description,
+              strategySlug:
+                values.strategySlug === '' ? null : values.strategySlug,
+              tagIds: values.tags.map((tag) => tag.id)
+            }
           },
           optimisticResponse: {
             journeyUpdate: {
               id: journey.id,
               __typename: 'Journey',
               title: values.title,
-              description: values.description
+              description: values.description,
+              strategySlug: values.strategySlug,
+              tags: [values.tags.map((tag) => ({ id: tag.id }))]
             }
           },
           onCompleted: () =>
@@ -141,12 +146,34 @@ export function TemplateSettingsDialog({
           values: {
             title: journey?.title,
             description: journey?.description,
-            featuredAt: journey?.featuredAt != null
+            featuredAt: journey?.featuredAt != null,
+            strategySlug: journey?.strategySlug,
+            tags: initialTags
           }
         })
       )
     }
   }
+
+  const validationSchema = object({
+    strategySlug: string()
+      .trim()
+      .test('valid-embed-url', t('Invalid embed link'), (value) => {
+        if (value == null) return true
+        const canvaRegex =
+          /^https:\/\/www\.canva\.com\/design\/[A-Za-z0-9]+\/(view|watch)$/
+
+        const googleSlidesRegex =
+          /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[A-Za-z0-9-_]+\/pub\?(start=true|start=false)&(loop=true|loop=false)&delayms=\d+$/
+
+        const isValidCanvaLink = canvaRegex.test(value)
+        const isValidGoogleLink = googleSlidesRegex.test(value)
+        if (!isValidCanvaLink && !isValidGoogleLink) {
+          return false
+        }
+        return true
+      })
+  })
 
   return (
     <Stack>
@@ -155,11 +182,21 @@ export function TemplateSettingsDialog({
           initialValues={{
             title: journey.title ?? '',
             description: journey.description ?? '',
-            featuredAt: journey.featuredAt != null
+            featuredAt: journey.featuredAt != null,
+            strategySlug: journey?.strategySlug ?? '',
+            tags: initialTags
           }}
           onSubmit={handleTemplateUpdate}
+          validationSchema={validationSchema}
         >
-          {({ values, handleChange, handleSubmit, resetForm }) => (
+          {({
+            values,
+            handleChange,
+            handleSubmit,
+            resetForm,
+            errors,
+            setFieldValue
+          }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
@@ -172,7 +209,7 @@ export function TemplateSettingsDialog({
               fullscreen={!smUp}
               testId="TemplateSettingsDialog"
             >
-              <Form data-testId="template-settings-dialog-form">
+              <Form data-testid="template-settings-dialog-form">
                 <Tabs
                   value={tabValue}
                   onChange={handleTabChange}
@@ -223,36 +260,26 @@ export function TemplateSettingsDialog({
                         'Publicly visible on template details page'
                       )}
                     />
-                    <FormGroup>
-                      <FeaturedCheckbox
-                        loading={loading}
-                        values={values.featuredAt}
-                        onChange={handleChange}
-                        name="featuredAt"
-                      />
-                    </FormGroup>
+                    <FeaturedCheckbox
+                      loading={loading}
+                      value={values.featuredAt}
+                      onChange={handleChange}
+                      name="featuredAt"
+                    />
                   </Stack>
                 </TabPanel>
-                <TabPanel
-                  name="template-categories-settings"
-                  value={tabValue}
-                  index={1}
-                >
-                  <Stack sx={{ pt: 6 }}>
-                    Categories - yet to be implemented - contact
-                    support@nextsteps.is for more info
-                  </Stack>
-                </TabPanel>
-                <TabPanel
-                  name="template-about-settings"
-                  value={tabValue}
-                  index={2}
-                >
-                  <Stack sx={{ pt: 6 }}>
-                    About - yet to be implemented - contact support@nextsteps.is
-                    for more info
-                  </Stack>
-                </TabPanel>
+                <CategoriesTabPanel
+                  tabValue={tabValue}
+                  initialTags={values.tags}
+                  onChange={setFieldValue}
+                />
+                <AboutTabPanel
+                  name="strategySlug"
+                  value={values.strategySlug}
+                  errors={errors}
+                  onChange={handleChange}
+                  tabValue={tabValue}
+                />
               </Form>
             </Dialog>
           )}

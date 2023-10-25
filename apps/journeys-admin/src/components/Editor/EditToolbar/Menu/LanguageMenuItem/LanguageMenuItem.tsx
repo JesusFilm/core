@@ -16,11 +16,13 @@ const DynamicLanguageDialog = dynamic<{
     ).then((mod) => mod.LanguageDialog)
 )
 
-interface Props {
+interface LanguageMenuItemProps {
   onClose?: () => void
 }
 
-export function LanguageMenuItem({ onClose }: Props): ReactElement {
+export function LanguageMenuItem({
+  onClose
+}: LanguageMenuItemProps): ReactElement {
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
 
   const handleUpdateLanguage = (): void => {

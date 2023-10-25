@@ -1,70 +1,106 @@
+import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import Typography from '@mui/material/Typography'
+import map from 'lodash/map'
+import take from 'lodash/take'
+import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTagsQuery } from '../../libs/useTagsQuery'
+import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { useJourneysQuery } from '../../libs/useJourneysQuery'
 
-import { CategoryTemplates } from './CategoryTemplates'
-import { FeaturedAndNewTemplates } from './FeaturedAndNewTemplates'
-import { MostRelevantTemplates } from './MostRelevantTemplates'
+import { TemplateSection } from './TemplateSection'
 
-interface TagDetailsProps {
-  id: string
-  name: string
+interface Contents {
+  [key: string]: { category: string; journeys: Journey[] }
 }
 
-export function TemplateSections(): ReactElement {
-  const router = useRouter()
-  const paramTags = router.query.tags
-  const { childTags } = useTagsQuery()
+interface TemplateSectionsProps {
+  tagIds?: string[]
+  languageId: string
+}
 
-  const [tagsFilter, setTagsFilter] = useState<string[]>([])
+export function TemplateSections({
+  tagIds,
+  languageId
+}: TemplateSectionsProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const [contents, setContents] = useState<Contents>({})
+  const [collection, setCollection] = useState<Journey[]>([])
 
-  useEffect(() => {
-    // add logic to update state with tags from filter component
-    if (paramTags != null) {
-      const tagsArray = Array.isArray(paramTags) ? paramTags : [paramTags]
-      setTagsFilter(tagsArray)
+  const { data, loading } = useJourneysQuery({
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true,
+        tagIds,
+        languageIds: [languageId]
+      }
+    },
+    onCompleted(data) {
+      const featuredAndNew = [
+        ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
+        ...take(
+          data.journeys.filter(({ featuredAt }) => featuredAt == null),
+          10
+        )
+      ]
+      const mostRelevant = data.journeys.filter(({ tags }) =>
+        tagIds?.every((tagId) => tags.find((tag) => tag.id === tagId))
+      )
+      setCollection(tagIds == null ? featuredAndNew : mostRelevant)
+      const contents = {}
+      data.journeys.forEach((journey) => {
+        journey.tags.forEach((tag) => {
+          if (contents[tag.id] == null)
+            contents[tag.id] = {
+              category: tag.name.find(({ primary }) => primary)?.value ?? '',
+              journeys: []
+            }
+          contents[tag.id].journeys.push(journey)
+        })
+      })
+      setContents(contents)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  function transformTagsValue(tagsFilter, childTags): TagDetailsProps[] {
-    if (tagsFilter.length > 0) {
-      return tagsFilter.map((id) => ({
-        id,
-        name: childTags
-          ?.find((tag) => tag.id === id)
-          ?.name.find(({ primary }) => primary)?.value
-      }))
-    }
-
-    return childTags?.map((tag) => ({
-      id: tag.id,
-      name: tag?.name.find(({ primary }) => primary)?.value
-    }))
-  }
-
-  const tags = useMemo(
-    () => transformTagsValue(tagsFilter, childTags),
-    [tagsFilter, childTags]
-  )
+  })
 
   return (
     <Stack spacing={8}>
-      {tagsFilter.length > 0 ? (
-        <MostRelevantTemplates />
-      ) : (
-        <FeaturedAndNewTemplates />
-      )}
-      {tags?.map(({ id, name }) => (
-        <CategoryTemplates
-          key={`category-${id}`}
-          id={id}
-          name={name}
-          filtered={tagsFilter.length > 0}
+      {(loading || (data?.journeys != null && data.journeys.length > 0)) && (
+        <TemplateSection
+          category={tagIds == null ? t('Featured & New') : t('Most Relevant')}
+          journeys={collection}
+          loading={loading}
         />
-      ))}
+      )}
+      {!loading && collection != null && collection.length === 0 && (
+        <Paper
+          elevation={0}
+          variant="outlined"
+          sx={{
+            borderRadius: 4,
+            width: '100%',
+            padding: 8
+          }}
+        >
+          <Typography variant="h6">
+            {t('No template fully matches your search criteria.')}
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            {t(
+              "Try using fewer filters or look below for templates related to the categories you've selected to search"
+            )}
+          </Typography>
+        </Paper>
+      )}
+      {map(
+        contents,
+        ({ category, journeys }, key) =>
+          ((tagIds == null && journeys.length >= 5) ||
+            tagIds?.includes(key) === true) && (
+            <TemplateSection category={category} journeys={journeys} />
+          )
+      )}
     </Stack>
   )
 }

@@ -35,12 +35,12 @@ const TimelineEventStory: Meta<typeof TimelineEvent> = {
   component: TimelineEvent
 }
 
-interface Props {
+interface StoryItemProps {
   title?: string
   event: TimelineItem
 }
 
-function StoryItem({ title, event }: Props): ReactElement {
+function StoryItem({ title, event }: StoryItemProps): ReactElement {
   return (
     <>
       {title != null && (

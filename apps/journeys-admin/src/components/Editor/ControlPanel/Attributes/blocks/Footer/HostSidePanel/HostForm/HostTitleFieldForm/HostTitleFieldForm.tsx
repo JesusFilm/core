@@ -6,7 +6,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { CreateHost } from '../../../../../../../../../../__generated__/CreateHost'
 import { UpdateJourneyHost } from '../../../../../../../../../../__generated__/UpdateJourneyHost'
-import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
 export const CREATE_HOST = gql`
@@ -40,7 +40,7 @@ export function HostTitleFieldForm({
   const [journeyHostUpdate] =
     useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
 
-  const { updateHost } = useHostUpdate()
+  const { updateHost } = useHostUpdateMutation()
   const { journey } = useJourney()
   const host = journey?.host
 

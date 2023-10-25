@@ -97,7 +97,12 @@ export function CreateJourneyButton({
 
   return (
     <>
-      <Button onClick={handleCheckSignIn} variant="contained">
+      <Button
+        onClick={handleCheckSignIn}
+        variant="contained"
+        sx={{ flex: 'none' }}
+        disabled={journey == null}
+      >
         {t('Use Template')}
       </Button>
       <CopyToTeamDialog

@@ -64,7 +64,7 @@ export function AccessAvatars({
   )
 }
 
-interface Props {
+interface WithRenderLogicProps {
   size: 'small' | 'medium' | 'large'
   max: number
   setOpen: (open: boolean) => void
@@ -86,7 +86,7 @@ const withRenderLogic = ({
   max,
   setOpen,
   showManageButton
-}: Props): ((values?: UserJourney[]) => ReactElement) => {
+}: WithRenderLogicProps): ((values?: UserJourney[]) => ReactElement) => {
   // small default sizes
   let diameter: number
   let fontSize: number | undefined

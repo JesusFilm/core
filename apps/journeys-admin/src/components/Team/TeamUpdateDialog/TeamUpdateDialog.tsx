@@ -1,5 +1,7 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -7,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
 import { useTeam } from '../TeamProvider'
@@ -16,6 +19,7 @@ export const TEAM_UPDATE = gql`
     teamUpdate(id: $id, input: $input) {
       id
       title
+      publicTitle
     }
   }
 `
@@ -37,6 +41,11 @@ export function TeamUpdateDialog({
     title: string()
       .required(t('Team Name must be at least one character.'))
       .max(40, t('Max {{ count }} Characters', { count: 40 }))
+      .matches(/^(?!\s+$).*/g, 'This field cannot contain only blankspaces'),
+    publicTitle: string().max(
+      40,
+      t('Max {{ count }} Characters', { count: 40 })
+    )
   })
 
   async function handleSubmit(
@@ -45,9 +54,13 @@ export function TeamUpdateDialog({
   ): Promise<void> {
     try {
       const { data } = await teamUpdate({
-        variables: { id: activeTeam?.id, input: { title: values.title } }
+        variables: {
+          id: activeTeam?.id,
+          input: { title: values.title, publicTitle: values.publicTitle }
+        }
       })
       handleClose(resetForm)()
+
       enqueueSnackbar(t(`${data?.teamUpdate.title ?? 'Team'} updated.`), {
         variant: 'success',
         preventDuplicate: true
@@ -82,7 +95,10 @@ export function TeamUpdateDialog({
 
   return (
     <Formik
-      initialValues={{ title: activeTeam?.title ?? '' }}
+      initialValues={{
+        title: activeTeam?.title ?? '',
+        publicTitle: activeTeam?.publicTitle ?? ''
+      }}
       onSubmit={handleSubmit}
       validationSchema={teamSchema}
       enableReinitialize
@@ -100,17 +116,54 @@ export function TeamUpdateDialog({
           testId="TeamUpdateDialog"
         >
           <Form>
-            <TextField
-              id="title"
-              name="title"
-              fullWidth
-              value={values.title}
-              variant="filled"
-              error={Boolean(errors.title)}
-              onChange={handleChange}
-              helperText={errors.title as string}
-              label="Team Name"
-            />
+            <Stack spacing={4}>
+              <TextField
+                id="title"
+                name="title"
+                fullWidth
+                value={values.title}
+                variant="filled"
+                error={Boolean(errors.title)}
+                onChange={handleChange}
+                helperText={
+                  errors.title !== undefined
+                    ? (errors.title as string)
+                    : 'Private: Visible only to your team'
+                }
+                label="Team Name"
+              />
+              <TextField
+                id="publicTitle"
+                name="publicTitle"
+                fullWidth
+                value={values.publicTitle}
+                variant="filled"
+                error={Boolean(errors.publicTitle)}
+                onChange={handleChange}
+                helperText={
+                  errors.publicTitle !== undefined
+                    ? (errors.publicTitle as string)
+                    : 'Public: Anyone can view it'
+                }
+                label="Legal Name"
+                placeholder={values.title}
+              />
+
+              <Stack direction="row" spacing={3} color="text.secondary">
+                <InformationCircleContainedIcon
+                  sx={{ color: 'secondary.light' }}
+                />
+                <Typography
+                  variant="caption"
+                  color="secondary.light"
+                  gutterBottom
+                >
+                  {t(
+                    'When visitors click the info icon, they will see text from the Legal Name box. This text can be a mission name, website title, or other public information.'
+                  )}
+                </Typography>
+              </Stack>
+            </Stack>
           </Form>
         </Dialog>
       )}
