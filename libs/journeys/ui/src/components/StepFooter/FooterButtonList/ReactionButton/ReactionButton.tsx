@@ -20,7 +20,11 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
   }
 
   return (
-    <StyledFooterButton onClick={handleClick} clicked={clicked}>
+    <StyledFooterButton
+      onClick={handleClick}
+      clicked={clicked}
+      data-testid="ReactionButton"
+    >
       {variant === 'thumbsup' && <ThumbsUp sx={{ fontSize: 18 }} />}
       {variant === 'thumbsdown' && <ThumbsDown sx={{ fontSize: 18 }} />}
     </StyledFooterButton>

@@ -32,7 +32,7 @@ export function ShareButton(): ReactElement {
 
   return (
     <>
-      <StyledFooterButton onClick={handleShare}>
+      <StyledFooterButton onClick={handleShare} data-testid="ShareButton">
         <ShareIcon sx={{ fontSize: 20 }} />
       </StyledFooterButton>
       <ShareDialog

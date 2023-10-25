@@ -6,7 +6,7 @@ import { ShareButton } from './ShareButton'
 
 export function FooterButtonList(): ReactElement {
   return (
-    <Stack direction="row" gap={2.5} data-testid="footer-buttons">
+    <Stack direction="row" gap={2.5} data-testid="StepFooterButtonList">
       <ShareButton />
       <ReactionButton variant="thumbsup" />
       <ReactionButton variant="thumbsdown" />
