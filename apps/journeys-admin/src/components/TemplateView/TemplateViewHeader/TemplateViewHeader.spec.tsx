@@ -155,8 +155,8 @@ describe('TemplateViewHeader', () => {
     expect(getAllByRole('link', { name: 'Preview' })[0]).toBeInTheDocument()
   })
 
-  it('should show featured date if journey is featured', () => {
-    const { getAllByTestId } = render(
+  it('should show created at date', () => {
+    const { getAllByText } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -172,8 +172,23 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(
-      getAllByTestId('featuredAtTemplatePreviewPage')[0]
-    ).toBeInTheDocument()
+    expect(getAllByText('November 2021')).toHaveLength(2)
+  })
+
+  it('should show skeletons while loading', async () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider value={{}}>
+          <TemplateViewHeader
+            isPublisher={false}
+            authUser={{} as unknown as User}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByTestId('TemplateViewTitleSkeleton')).toBeInTheDocument()
+    )
   })
 })
