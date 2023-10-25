@@ -128,8 +128,8 @@ export function TemplateSection({
           ))}
         </Swiper>
       )}
-      <NavButton variant="prev" ref={prevRef} disabled={journeys == null} />
-      <NavButton variant="next" ref={nextRef} disabled={journeys == null} />
+      <NavButton variant="prev" ref={prevRef} disabled={loading} />
+      <NavButton variant="next" ref={nextRef} disabled={loading} />
     </Stack>
   )
 }
