@@ -210,7 +210,7 @@ describe('TemplateView', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(getAllByTestId('TemplateViewSkeleton')).toHaveLength(3)
+      expect(getAllByTestId('TemplateViewDescriptionSkeleton')).toHaveLength(3)
     })
   })
 })
