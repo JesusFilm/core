@@ -110,6 +110,7 @@ export function TemplateGalleryCard({
             {journey != null ? (
               <>
                 <Typography
+                  fontFamily={['Montserrat']}
                   variant="overline2"
                   sx={{
                     whiteSpace: 'noWrap',
@@ -123,7 +124,7 @@ export function TemplateGalleryCard({
                 <Box
                   sx={{
                     display: { xs: 'none', lg: '-webkit-box' },
-                    maxHeight: '66px',
+                    height: '66px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     WebkitBoxOrient: 'vertical',
@@ -142,7 +143,7 @@ export function TemplateGalleryCard({
                 <Box
                   sx={{
                     display: { xs: '-webkit-box', lg: 'none' },
-                    maxHeight: '63px',
+                    height: '63px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     WebkitBoxOrient: 'vertical',
