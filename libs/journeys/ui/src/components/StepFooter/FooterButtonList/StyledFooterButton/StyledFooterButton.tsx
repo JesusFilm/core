@@ -7,7 +7,9 @@ const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
   ({ theme, clicked }) => ({
     minWidth: 46,
     minHeight: 30,
-    borderRadius: 100,
+    height: 30,
+    paddingLeft: 14,
+    paddingRight: 14,
     backgroundColor: theme.palette.grey[800],
     color: theme.palette.grey[100],
     [theme.breakpoints.down('lg')]: {
@@ -56,12 +58,7 @@ export function StyledFooterButton({
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   return (
-    <StyledButton
-      onClick={onClick}
-      disableRipple={lgUp}
-      clicked={clicked}
-      sx={{ px: 3.5, py: 1 }}
-    >
+    <StyledButton onClick={onClick} disableRipple={lgUp} clicked={clicked}>
       {children}
     </StyledButton>
   )
