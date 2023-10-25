@@ -1,5 +1,5 @@
 import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -19,15 +19,21 @@ export function TemplateEditButton(): ReactElement {
   return (
     <>
       <Button
-        data-testid="EditTemplateSettings"
-        size="small"
+        data-testid="EditTemplateSettingsButton"
+        size="medium"
         onClick={handleTemplateSettingsOpen}
+        startIcon={<Edit2Icon />}
+        sx={{ display: { xs: 'none', sm: 'flex' } }}
+      >
+        {t('Edit')}
+      </Button>
+      <IconButton
+        data-testid="EditTemplateSettingsIconButton"
+        color="primary"
+        sx={{ display: { xs: 'flex', sm: 'none' } }}
       >
         <Edit2Icon />
-        <Typography sx={{ display: { xs: 'none', sm: 'block' }, pl: '6px' }}>
-          {t('Edit')}
-        </Typography>
-      </Button>
+      </IconButton>
       <TemplateSettingsDialog
         open={showTemplateSettingsDialog}
         onClose={() => setTemplateSettingsDialog(false)}

@@ -15,6 +15,15 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('TemplateViewHeader', () => {
   it('should render the social image', () => {
     const primaryImageBlock: PrimaryImageBlock = {
@@ -110,7 +119,7 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(getAllByTestId('EditTemplateSettings')[0]).toBeInTheDocument()
+    expect(getAllByTestId('EditTemplateSettingsButton')[0]).toBeInTheDocument()
   })
 
   it('should not render Template Edit button for non-publishers', () => {

@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import React from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -25,7 +24,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TemplateEditButton', () => {
   it('should open and close the TemplateSettingsDialog when the button is clicked', async () => {
-    const { getByTestId, getByText, getByRole, queryByRole } = render(
+    const { getByTestId,  getByRole, queryByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey }}>
@@ -35,8 +34,7 @@ describe('TemplateEditButton', () => {
       </MockedProvider>
     )
 
-    expect(getByText('Edit')).toBeInTheDocument()
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('button', { name: 'Edit' }))
     expect(getByTestId('template-settings-dialog-form')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     expect(queryByRole('template-settings-dialog-form')).not.toBeInTheDocument()
