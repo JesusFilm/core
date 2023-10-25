@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -28,24 +29,25 @@ export function TemplateViewHeader({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
-    <Stack>
-      {journey?.createdAt != null && (
-        <Typography
-          data-testid="featuredAtTemplatePreviewPage"
-          variant="overline"
-          sx={{
-            color: 'secondary.light',
-            display: { xs: 'block', sm: 'none' },
-            pb: 6
-          }}
-          noWrap
-        >
-          {intlFormat(parseISO(journey?.createdAt), {
+    <Stack data-testid="TemplateViewHeader">
+      <Typography
+        variant="overline"
+        sx={{
+          color: 'secondary.light',
+          display: { xs: 'block', sm: 'none' },
+          pb: 6
+        }}
+        noWrap
+      >
+        {journey?.createdAt != null ? (
+          intlFormat(parseISO(journey?.createdAt), {
             month: 'long',
             year: 'numeric'
-          })}
-        </Typography>
-      )}
+          })
+        ) : (
+          <Skeleton sx={{ width: '50%', maxWidth: 150 }} />
+        )}
+      </Typography>
       <Stack direction="row" sx={{ gap: { xs: 4, sm: 6 } }}>
         <Box
           sx={{
@@ -57,27 +59,41 @@ export function TemplateViewHeader({
         <Stack
           direction="column"
           sx={{
+            width: '100%',
             flexShrink: 1
           }}
         >
-          {journey?.createdAt != null && (
+          <Box sx={{ height: 16, display: { xs: 'none', sm: 'block' } }}>
             <Typography
               variant="overline"
               sx={{
                 color: 'secondary.light',
                 display: { xs: 'none', sm: 'block' }
               }}
-              data-testid="featuredAtTemplatePreviewPage"
               noWrap
             >
-              {intlFormat(parseISO(journey?.createdAt), {
-                month: 'long',
-                year: 'numeric'
-              })}
+              {journey?.createdAt != null ? (
+                intlFormat(parseISO(journey?.createdAt), {
+                  month: 'long',
+                  year: 'numeric'
+                })
+              ) : (
+                <Skeleton sx={{ width: '35%', maxWidth: 150 }} />
+              )}
             </Typography>
-          )}
+          </Box>
           <Typography variant={smUp ? 'h1' : 'h6'} sx={{ pb: 4 }}>
-            {journey?.title}
+            {journey?.title != null ? (
+              journey?.title
+            ) : (
+              <Skeleton
+                data-testid="TemplateViewTitleSkeleton"
+                sx={{
+                  width: { xs: '100%', sm: '50%' },
+                  maxWidth: { xs: 200, sm: 400 }
+                }}
+              />
+            )}
           </Typography>
           <Typography
             variant="body1"
@@ -85,7 +101,15 @@ export function TemplateViewHeader({
               display: { xs: 'none', sm: 'block' }
             }}
           >
-            {journey?.description}
+            {journey?.description != null ? (
+              journey.description
+            ) : (
+              <>
+                {[0, 1].map((value) => (
+                  <Skeleton key={value} width="100%" />
+                ))}
+              </>
+            )}
           </Typography>
 
           <Box

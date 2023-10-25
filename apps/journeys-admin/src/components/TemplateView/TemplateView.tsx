@@ -1,4 +1,5 @@
 import Container from '@mui/material/Container'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { User } from 'next-firebase-auth'
@@ -52,7 +53,19 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
           variant="body2"
           sx={{ display: { xs: 'block', sm: 'none' } }}
         >
-          {journey?.description}
+          {journey?.description != null ? (
+            journey.description
+          ) : (
+            <>
+              {[0, 1, 2].map((value) => (
+                <Skeleton
+                  key={value}
+                  data-testid="TemplateViewDescriptionSkeleton"
+                  width="100%"
+                />
+              ))}
+            </>
+          )}
         </Typography>
         {journey?.strategySlug != null && (
           <StrategySection
@@ -60,7 +73,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
             variant="full"
           />
         )}
-        {relatedJourneys != null && relatedJourneys.length > 1 && (
+        {relatedJourneys != null && relatedJourneys.length >= 1 && (
           <TemplateSection
             category={t('Related Templates')}
             journeys={relatedJourneys}
