@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 
 import { UserMenu } from './UserMenu'
 
@@ -12,24 +12,25 @@ describe('UserMenu', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
         <UserMenu
-          user={{
+          apiUser={{
             __typename: 'User',
             id: 'userId',
             firstName: 'Amin',
             lastName: 'One',
             imageUrl: 'https://bit.ly/3Gth4Yf',
-            email: 'amin@email.com'
+            email: 'amin@email.com',
+            superAdmin: false
           }}
           profileOpen
           profileAnchorEl={null}
           handleProfileClose={handleProfileClose}
-          authUser={
+          user={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
               signOut
-            } as unknown as AuthUser
+            } as unknown as User
           }
         />
       </MockedProvider>
@@ -43,24 +44,25 @@ describe('UserMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <UserMenu
-          user={{
+          apiUser={{
             __typename: 'User',
             id: 'userId',
             firstName: 'Amin',
             lastName: 'One',
             imageUrl: 'https://bit.ly/3Gth4Yf',
-            email: 'amin@email.com'
+            email: 'amin@email.com',
+            superAdmin: false
           }}
           profileOpen
           profileAnchorEl={null}
           handleProfileClose={handleProfileClose}
-          authUser={
+          user={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
               signOut
-            } as unknown as AuthUser
+            } as unknown as User
           }
         />
       </MockedProvider>

@@ -10,6 +10,8 @@ import fscreen from 'fscreen'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+
 import { VideoControls } from './VideoControls'
 
 describe('VideoControls', () => {
@@ -19,6 +21,7 @@ describe('VideoControls', () => {
     const video = document.createElement('video')
     document.body.appendChild(video)
     player = videojs(video, {
+      ...defaultVideoJsOptions,
       autoplay: true,
       controls: false,
       controlBar: false,

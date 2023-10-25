@@ -83,6 +83,10 @@ export function VideoControls({
   // Handle play event
   useEffect(() => {
     const handleVideoPlay = (): void => {
+      // Always mute first video
+      if (player.muted()) {
+        setMuted(true)
+      }
       setPlaying(true)
       if (startAt > 0 && player.currentTime() < startAt) {
         setProgress(startAt)
@@ -245,6 +249,7 @@ export function VideoControls({
   function handleVolume(e: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       player.muted(false)
+      setMuted(false)
       setVolume(value)
       player.volume(value / 100)
     }
@@ -450,7 +455,7 @@ export function VideoControls({
                   }}
                 >
                   <IconButton onClick={handleMute} sx={{ p: 0 }}>
-                    {player.muted() || volume === 0 ? (
+                    {muted || volume === 0 ? (
                       <VolumeOffOutlined />
                     ) : volume > 60 ? (
                       <VolumeUpOutlined />

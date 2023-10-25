@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
@@ -173,7 +173,7 @@ describe('ArchivedJourneyList', () => {
             <SnackbarProvider>
               <ArchivedJourneyList
                 event="restoreAllArchived"
-                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -199,7 +199,7 @@ describe('ArchivedJourneyList', () => {
               <SnackbarProvider>
                 <ArchivedJourneyList
                   event="restoreAllArchived"
-                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                  user={{ id: 'user-id1' } as unknown as User}
                 />
               </SnackbarProvider>
             </ThemeProvider>
@@ -251,7 +251,7 @@ describe('ArchivedJourneyList', () => {
             <SnackbarProvider>
               <ArchivedJourneyList
                 event="trashAllArchived"
-                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -277,7 +277,7 @@ describe('ArchivedJourneyList', () => {
               <SnackbarProvider>
                 <ArchivedJourneyList
                   event="trashAllArchived"
-                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                  user={{ id: 'user-id1' } as unknown as User}
                 />
               </SnackbarProvider>
             </ThemeProvider>

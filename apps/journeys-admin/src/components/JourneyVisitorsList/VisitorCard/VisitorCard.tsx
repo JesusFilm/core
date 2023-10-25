@@ -10,12 +10,15 @@ import { GetJourneyVisitors_visitors_edges_node as VisitorNode } from '../../../
 import { VisitorCardDetails } from './VisitorCardDetails'
 import { VisitorCardHeader } from './VisitorCardHeader'
 
-interface Props {
+interface VisitorCardProps {
   visitorNode?: VisitorNode
   loading: boolean
 }
 
-export function VisitorCard({ visitorNode, loading }: Props): ReactElement {
+export function VisitorCard({
+  visitorNode,
+  loading
+}: VisitorCardProps): ReactElement {
   const withLink = (block: ReactElement): ReactElement => {
     return (
       <NextLink

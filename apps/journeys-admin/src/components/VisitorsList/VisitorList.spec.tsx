@@ -75,6 +75,7 @@ describe('VisitorList', () => {
           {
             id: 'teamId',
             title: 'Team Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }

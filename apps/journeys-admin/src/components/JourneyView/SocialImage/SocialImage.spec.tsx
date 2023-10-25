@@ -58,4 +58,13 @@ describe('SocialImage', () => {
     )
     expect(getByTestId('GridEmptyIcon')).toBeInTheDocument()
   })
+
+  it('should display skeleton when loading', () => {
+    const { getByTestId } = render(
+      <JourneyProvider value={{}}>
+        <SocialImage />
+      </JourneyProvider>
+    )
+    expect(getByTestId('SocialImageSkeleton')).toBeInTheDocument()
+  })
 })

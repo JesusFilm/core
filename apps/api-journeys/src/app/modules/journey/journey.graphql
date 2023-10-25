@@ -26,6 +26,7 @@ type Journey @key(fields: "id") {
   template: Boolean
   host: Host
   team: Team
+  strategySlug: String
   tags: [Tag!]!
 }
 
@@ -47,6 +48,9 @@ input JourneysFilter {
   template: Boolean
   ids: [ID!]
   tagIds: [ID!]
+  languageIds: [ID!]
+  limit: Int
+  orderByRecent: Boolean
 }
 
 enum JourneysReportType {
@@ -129,6 +133,7 @@ input JourneyUpdateInput {
   seoTitle: String
   seoDescription: String
   hostId: String
+  strategySlug: String
   tagIds: [ID!]
 }
 

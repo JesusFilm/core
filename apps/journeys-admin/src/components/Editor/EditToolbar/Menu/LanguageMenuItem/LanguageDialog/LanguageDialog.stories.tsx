@@ -6,9 +6,10 @@ import { ReactElement, useState } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { GET_LANGUAGES } from '../../../../../../libs/useLanguagesQuery'
 import { defaultJourney } from '../../../../../JourneyView/data'
 
-import { GET_LANGUAGES, JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
+import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
 
 import { LanguageDialog } from '.'
 

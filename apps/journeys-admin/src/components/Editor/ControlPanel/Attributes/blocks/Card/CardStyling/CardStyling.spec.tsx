@@ -19,6 +19,11 @@ import {
 
 import { CARD_BLOCK_THEME_MODE_UPDATE, CardStyling } from './CardStyling'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const initialBlock: TreeBlock<CardBlock> = {
   id: 'card1.id',
   __typename: 'CardBlock',
@@ -37,8 +42,10 @@ const journey: Journey = {
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  featuredAt: null,
   title: 'my journey',
   slug: 'my-journey',
+  strategySlug: null,
   language: {
     __typename: 'Language',
     id: '529',
@@ -64,7 +71,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 describe('CardStyling', () => {

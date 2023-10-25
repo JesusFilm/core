@@ -10,6 +10,7 @@ import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import CheckIcon from '@core/shared/ui/icons/Check'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
@@ -138,6 +139,7 @@ export function LocalDetails({
   useEffect(() => {
     if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
         fluid: true,
         controls: true,
         poster: data.video?.image ?? undefined

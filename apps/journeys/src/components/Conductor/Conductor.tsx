@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import { SxProps, styled, useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useEffect, useState } from 'react'
-import Div100vh from 'react-div-100vh'
+import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
 import SwiperCore, { Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -84,6 +84,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const theme = useTheme()
+  const viewportHeight = use100vh()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
@@ -187,13 +188,21 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const currentTheme = getStepTheme(activeBlock, journey)
 
   return (
-    <Div100vh style={{ overflow: 'hidden' }}>
+    <Box
+      sx={{
+        height: viewportHeight ?? '100vh',
+        minHeight: '-webkit-fill-available',
+        [theme.breakpoints.down('md')]: { overflowY: 'auto' },
+        overflow: 'hidden'
+      }}
+    >
       <Stack
         sx={{
           justifyContent: 'center',
           height: '100%',
           background: theme.palette.grey[900]
         }}
+        data-testid="Conductor"
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
           <ThemeProvider
@@ -233,7 +242,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                       <Stack
                         justifyContent="center"
                         sx={{
-                          maxHeight: { xs: '100vh', lg: 'calc(100vh - 80px)' },
+                          maxHeight: {
+                            xs: '100vh',
+                            lg: 'calc(100vh - 80px)'
+                          },
                           height: {
                             xs: 'inherit',
                             lg: 'calc(54.25vw + 102px)'
@@ -268,6 +280,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           </ThemeProvider>
         </Box>
       </Stack>
-    </Div100vh>
+    </Box>
   )
 }

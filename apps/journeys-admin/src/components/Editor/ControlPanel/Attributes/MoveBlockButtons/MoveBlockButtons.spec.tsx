@@ -9,6 +9,11 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 
 import { BLOCK_ORDER_UPDATE, MoveBlockButtons } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('MoveBlockButton', () => {
   const block1: TreeBlock = {
     id: 'typographyBlockId1',

@@ -36,6 +36,8 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
+  featuredAt: null,
+  strategySlug: null,
   language: {
     __typename: 'Language',
     id: '529',
@@ -61,7 +63,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 export const Default: StoryObj<typeof CardLayout> = {

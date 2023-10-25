@@ -6,11 +6,11 @@ import { DetailsForm } from './DetailsForm'
 import { VisitorDetails } from './VisitorDetails'
 import { VisitorJourneysList } from './VisitorJourneysList'
 
-interface Props {
+interface VisitorInfoProps {
   id: string
 }
 
-export function VisitorInfo({ id }: Props): ReactElement {
+export function VisitorInfo({ id }: VisitorInfoProps): ReactElement {
   return (
     <Container disableGutters>
       <VisitorDetails id={id} />

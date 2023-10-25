@@ -78,7 +78,9 @@ describe('ActionsTable', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     title: 'my journey',
+    featuredAt: null,
     slug: 'my-journey',
+    strategySlug: null,
     language: {
       __typename: 'Language',
       id: '529',
@@ -104,7 +106,8 @@ describe('ActionsTable', () => {
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it('should render placeholder', () => {
