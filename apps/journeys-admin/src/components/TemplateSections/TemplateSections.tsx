@@ -28,7 +28,7 @@ export function TemplateSections({
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
 
-  const { data, loading } = useJourneysQuery({
+  const { loading } = useJourneysQuery({
     variables: {
       where: {
         template: true,
