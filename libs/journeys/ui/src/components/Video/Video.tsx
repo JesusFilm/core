@@ -255,7 +255,7 @@ export function Video({
 
   return (
     <Box
-      data-testid={`video-${blockId}`}
+      data-testid={`JourneysVideo-${blockId}`}
       sx={{
         display: 'flex',
         width: '100%',

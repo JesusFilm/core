@@ -616,7 +616,9 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByTestId('video-main')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByTestId('JourneysVideo-main')).toBeInTheDocument()
+    )
   })
 
   it('should render Video with general wrapper and specific wrapper', () => {
@@ -678,7 +680,7 @@ describe('BlockRenderer', () => {
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
     ).toBe('video-wrapper')
     expect(getByTestId('video-wrapper')).toContainElement(
-      getByTestId('video-main')
+      getByTestId('JourneysVideo-main')
     )
   })
 })
