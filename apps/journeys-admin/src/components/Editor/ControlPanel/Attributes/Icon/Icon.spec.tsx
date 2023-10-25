@@ -16,6 +16,11 @@ import { ICON_BLOCK_NAME_UPDATE } from './Icon'
 
 import { Icon } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Icon', () => {
   const icon: TreeBlock<IconFields> = {
     id: 'iconBlock.id',

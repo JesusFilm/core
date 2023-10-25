@@ -5,9 +5,18 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockDeleteForBackgroundImage } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
-import { CardBlockImageBlockCreate } from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
-import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
+import {
+  BlockDeleteForBackgroundImage,
+  BlockDeleteForBackgroundImageVariables
+} from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
+import {
+  CardBlockImageBlockCreate,
+  CardBlockImageBlockCreateVariables
+} from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
+import {
+  CardBlockImageBlockUpdate,
+  CardBlockImageBlockUpdateVariables
+} from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -19,8 +28,8 @@ import { ImageSource } from '../../../../../../ImageSource'
 export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
   mutation BlockDeleteForBackgroundImage(
     $id: ID!
-    $parentBlockId: ID!
     $journeyId: ID!
+    $parentBlockId: ID
   ) {
     blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
       id
@@ -76,12 +85,17 @@ export function BackgroundMediaImage({
   const imageCover = coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
 
   const [imageBlockCreate, { loading: createLoading, error: createError }] =
-    useMutation<CardBlockImageBlockCreate>(CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE)
+    useMutation<CardBlockImageBlockCreate, CardBlockImageBlockCreateVariables>(
+      CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE
+    )
   const [imageBlockUpdate, { loading: updateLoading, error: updateError }] =
-    useMutation<CardBlockImageBlockUpdate>(CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE)
-  const [blockDelete] = useMutation<BlockDeleteForBackgroundImage>(
-    BLOCK_DELETE_FOR_BACKGROUND_IMAGE
-  )
+    useMutation<CardBlockImageBlockUpdate, CardBlockImageBlockUpdateVariables>(
+      CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE
+    )
+  const [imageBlockDelete] = useMutation<
+    BlockDeleteForBackgroundImage,
+    BlockDeleteForBackgroundImageVariables
+  >(BLOCK_DELETE_FOR_BACKGROUND_IMAGE)
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
@@ -99,7 +113,7 @@ export function BackgroundMediaImage({
   const deleteCoverBlock = async (): Promise<void> => {
     if (journey == null) return
 
-    await blockDelete({
+    await imageBlockDelete({
       variables: {
         id: coverBlock.id,
         parentBlockId: cardBlock.parentBlockId,

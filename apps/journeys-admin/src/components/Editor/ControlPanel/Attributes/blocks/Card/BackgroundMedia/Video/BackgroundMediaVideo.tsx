@@ -6,15 +6,39 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
-import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
-import { CardBlockVideoBlockUpdate } from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
+import {
+  BlockDeleteForBackgroundVideo,
+  BlockDeleteForBackgroundVideoVariables
+} from '../../../../../../../../../__generated__/BlockDeleteForBackgroundVideo'
+import {
+  CardBlockVideoBlockCreate,
+  CardBlockVideoBlockCreateVariables
+} from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
+import {
+  CardBlockVideoBlockUpdate,
+  CardBlockVideoBlockUpdateVariables
+} from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
+import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
+
+export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
+  mutation BlockDeleteForBackgroundVideo(
+    $id: ID!
+    $journeyId: ID!
+    $parentBlockId: ID
+  ) {
+    blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
+      id
+      parentOrder
+    }
+  }
+`
 
 export const CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE = gql`
   ${VIDEO_FIELDS}
@@ -50,12 +74,18 @@ export function BackgroundMediaVideo({
       (child) => child.id === cardBlock?.coverBlockId
     ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
 
-  const [videoBlockCreate] = useMutation<CardBlockVideoBlockCreate>(
-    CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE
-  )
-  const [videoBlockUpdate] = useMutation<CardBlockVideoBlockUpdate>(
-    CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE
-  )
+  const [videoBlockCreate] = useMutation<
+    CardBlockVideoBlockCreate,
+    CardBlockVideoBlockCreateVariables
+  >(CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE)
+  const [videoBlockUpdate] = useMutation<
+    CardBlockVideoBlockUpdate,
+    CardBlockVideoBlockUpdateVariables
+  >(CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE)
+  const [videoBlockDelete] = useMutation<
+    BlockDeleteForBackgroundVideo,
+    BlockDeleteForBackgroundVideoVariables
+  >(BLOCK_DELETE_FOR_BACKGROUND_VIDEO)
 
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
@@ -113,13 +143,26 @@ export function BackgroundMediaVideo({
   ): Promise<void> => {
     if (journey == null) return
 
-    await videoBlockUpdate({
-      variables: {
-        id: coverBlock.id,
-        journeyId: journey.id,
-        input
-      }
-    })
+    if (input.videoId === null) {
+      await videoBlockDelete({
+        variables: {
+          id: coverBlock.id,
+          parentBlockId: cardBlock.parentBlockId,
+          journeyId: journey.id
+        },
+        update(cache, { data }) {
+          blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
+        }
+      })
+    } else {
+      await videoBlockUpdate({
+        variables: {
+          id: coverBlock.id,
+          journeyId: journey.id,
+          input
+        }
+      })
+    }
   }
 
   const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {

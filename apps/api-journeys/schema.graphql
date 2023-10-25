@@ -242,6 +242,9 @@ extend type Mutation {
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey
 
+  """Sets journey status to featured"""
+  journeyFeature(id: ID!, feature: Boolean!): Journey
+
   """Sets journeys statuses to archived"""
   journeysArchive(ids: [ID!]!): [Journey]
 
@@ -258,6 +261,7 @@ extend type Mutation {
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
+  journeyProfileOnboardingFormComplete: JourneyProfile!
   teamCreate(input: TeamCreateInput): Team!
   teamUpdate(id: ID!, input: TeamUpdateInput): Team!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
@@ -323,6 +327,8 @@ type Journey
   template: Boolean
   host: Host
   team: Team
+  strategySlug: String
+  tags: [Tag!]!
   userJourneys: [UserJourney!]
 }
 
@@ -1752,6 +1758,12 @@ input HostCreateInput {
   src2: String
 }
 
+extend type Tag
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
 enum IdType {
   databaseId
   slug
@@ -1769,6 +1781,10 @@ input JourneysFilter {
   featured: Boolean
   template: Boolean
   ids: [ID!]
+  tagIds: [ID!]
+  languageIds: [ID!]
+  limit: Int
+  orderByRecent: Boolean
 }
 
 enum JourneysReportType {
@@ -1828,6 +1844,8 @@ input JourneyUpdateInput {
   seoTitle: String
   seoDescription: String
   hostId: String
+  strategySlug: String
+  tagIds: [ID!]
 }
 
 type UserJourney
@@ -1855,6 +1873,7 @@ type JourneyProfile
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
+  onboardingFormCompletedAt: DateTime
 }
 
 input JourneyProfileUpdateInput {
@@ -2323,4 +2342,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor

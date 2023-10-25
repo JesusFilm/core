@@ -15,6 +15,11 @@ import { BUTTON_BLOCK_UPDATE } from './Size'
 
 import { Size } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('Button size selector', () => {
   it('should show button size properties', () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {

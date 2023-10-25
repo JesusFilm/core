@@ -7,6 +7,28 @@ declare module '@mui/material' {
   }
 }
 
+// https://mui.com/material-ui/customization/typography/#adding-amp-disabling-variants
+declare module '@mui/material/styles' {
+  interface TypographyVariants {
+    subtitle3: React.CSSProperties
+    overline2: React.CSSProperties
+  }
+
+  // allow configuration using `createTheme`
+  interface TypographyVariantsOptions {
+    subtitle3?: React.CSSProperties
+    overline2?: React.CSSProperties
+  }
+}
+
+// Update the Typography's variant prop options
+declare module '@mui/material/Typography' {
+  interface TypographyPropsVariantOverrides {
+    subtitle3: true
+    overline2: true
+  }
+}
+
 export const adminTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
     fontFamily: [
@@ -53,6 +75,11 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       fontSize: 16,
       lineHeight: '21px'
     },
+    subtitle3: {
+      fontSize: 14,
+      fontWeight: 600,
+      lineHeight: '19px'
+    },
     body1: {
       fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
       fontWeight: 400,
@@ -70,6 +97,13 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       fontSize: 11,
       lineHeight: '16px',
       letterSpacing: 3,
+      textTransform: 'uppercase'
+    },
+    overline2: {
+      fontWeight: 600,
+      fontSize: 10,
+      lineHeight: '16px',
+      letterSpacing: 1,
       textTransform: 'uppercase'
     },
     caption: {

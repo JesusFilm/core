@@ -662,6 +662,8 @@ type Journey
   template: Boolean
   host: Host
   team: Team
+  strategySlug: String
+  tags: [Tag!]!
   userJourneys: [UserJourney!]
 }
 
@@ -696,6 +698,7 @@ type JourneyProfile
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
+  onboardingFormCompletedAt: DateTime
 }
 
 input JourneyProfileUpdateInput
@@ -710,6 +713,10 @@ input JourneysFilter
   featured: Boolean
   template: Boolean
   ids: [ID!]
+  tagIds: [ID!]
+  languageIds: [ID!]
+  limit: Int
+  orderByRecent: Boolean
 }
 
 enum JourneysReportType
@@ -750,6 +757,8 @@ input JourneyUpdateInput
   seoTitle: String
   seoDescription: String
   hostId: String
+  strategySlug: String
+  tagIds: [ID!]
 }
 
 type JourneyViewEvent implements Event
@@ -993,6 +1002,7 @@ enum MessagePlatform
 type Mutation
   @join__type(graph: JOURNEYS)
   @join__type(graph: MEDIA)
+  @join__type(graph: USERS)
 {
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @join__field(graph: JOURNEYS)
@@ -1149,6 +1159,9 @@ type Mutation
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
 
+  """Sets journey status to featured"""
+  journeyFeature(id: ID!, feature: Boolean!): Journey @join__field(graph: JOURNEYS)
+
   """Sets journeys statuses to archived"""
   journeysArchive(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
 
@@ -1165,6 +1178,7 @@ type Mutation
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
+  journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
@@ -1205,6 +1219,7 @@ type Mutation
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
+  userImpersonate(email: String!): String @join__field(graph: USERS)
 }
 
 """
@@ -1477,6 +1492,17 @@ enum SegmindModel
   tinysd1__5_txt2img @join__enumValue(graph: MEDIA)
 }
 
+enum Service
+  @join__type(graph: TAGS)
+{
+  apiJourneys @join__enumValue(graph: TAGS)
+  apiLanguages @join__enumValue(graph: TAGS)
+  apiMedia @join__enumValue(graph: TAGS)
+  apiTags @join__enumValue(graph: TAGS)
+  apiUsers @join__enumValue(graph: TAGS)
+  apiVideos @join__enumValue(graph: TAGS)
+}
+
 type SignUpBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -1659,11 +1685,13 @@ input StepViewEventCreateInput
 }
 
 type Tag
+  @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: TAGS, key: "id")
 {
   id: ID!
-  name: [Translation!]!
-  parentId: ID
+  name: [Translation!]! @join__field(graph: TAGS)
+  parentId: ID @join__field(graph: TAGS)
+  service: Service @join__field(graph: TAGS)
 }
 
 type Team
@@ -1998,6 +2026,7 @@ type User
   lastName: String @join__field(graph: USERS)
   email: String! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
+  superAdmin: Boolean @join__field(graph: USERS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""

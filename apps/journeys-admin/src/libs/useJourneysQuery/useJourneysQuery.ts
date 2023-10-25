@@ -1,4 +1,10 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import {
+  NoInfer,
+  QueryHookOptions,
+  QueryResult,
+  gql,
+  useQuery
+} from '@apollo/client'
 
 import {
   GetJourneys,
@@ -12,6 +18,7 @@ export const GET_JOURNEYS = gql`
       title
       createdAt
       publishedAt
+      featuredAt
       trashedAt
       description
       slug
@@ -19,7 +26,7 @@ export const GET_JOURNEYS = gql`
       themeMode
       language {
         id
-        name(primary: true) {
+        name {
           value
           primary
         }
@@ -39,13 +46,6 @@ export const GET_JOURNEYS = gql`
           imageUrl
         }
       }
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
       primaryImageBlock {
         id
         parentBlockId
@@ -56,16 +56,31 @@ export const GET_JOURNEYS = gql`
         height
         blurhash
       }
+      tags {
+        id
+        parentId
+        name {
+          value
+          language {
+            id
+          }
+          primary
+        }
+      }
     }
   }
 `
 
 export function useJourneysQuery(
-  variables?: GetJourneysVariables
+  options?: QueryHookOptions<
+    NoInfer<GetJourneys>,
+    NoInfer<GetJourneysVariables>
+  >
 ): QueryResult<GetJourneys, GetJourneysVariables> {
-  const query = useQuery<GetJourneys, GetJourneysVariables>(GET_JOURNEYS, {
-    variables
-  })
+  const query = useQuery<GetJourneys, GetJourneysVariables>(
+    GET_JOURNEYS,
+    options
+  )
 
   return query
 }

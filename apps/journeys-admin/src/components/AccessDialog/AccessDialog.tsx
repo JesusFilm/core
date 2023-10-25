@@ -14,7 +14,7 @@ import {
 } from '../../../__generated__/GetJourneyWithPermissions'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import { useCurrentUser } from '../../libs/useCurrentUser'
+import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
 import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
@@ -74,15 +74,15 @@ export function AccessDialog({
   const [, { data: userInviteData, refetch: refetchInvites }] =
     useUserInvitesLazyQuery({ journeyId })
 
-  const { loadUser, data: authUser } = useCurrentUser()
+  const { loadUser, data: user } = useCurrentUserLazyQuery()
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const currentUser = useMemo(() => {
     return data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === authUser.email
+      (userJourney) => userJourney.user?.email === user.email
     )
-  }, [data?.journey?.userJourneys, authUser])
+  }, [data?.journey?.userJourneys, user])
 
   const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []

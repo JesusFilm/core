@@ -63,6 +63,8 @@ describe('Card', () => {
       id: 'journeyId',
       themeName: ThemeName.base,
       themeMode: ThemeMode.dark,
+      strategySlug: null,
+      featuredAt: null,
       title: 'my journey',
       slug: 'my-journey',
       language: {
@@ -90,7 +92,8 @@ describe('Card', () => {
       seoDescription: null,
       chatButtons: [],
       host: null,
-      team: null
+      team: null,
+      tags: []
     }
 
     it('shows background color from prop', () => {

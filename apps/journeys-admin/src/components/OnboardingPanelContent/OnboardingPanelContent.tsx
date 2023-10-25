@@ -1,6 +1,3 @@
-import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
-import DashboardRounded from '@mui/icons-material/DashboardRounded'
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
@@ -11,9 +8,12 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
+import FilePlus1Icon from '@core/shared/ui/icons/FilePlus1'
+import Grid1Icon from '@core/shared/ui/icons/Grid1'
 
 import { GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys } from '../../../__generated__/GetOnboardingJourneys'
-import { useJourneyCreate } from '../../libs/useJourneyCreate/useJourneyCreate'
+import { useJourneyCreateMutation } from '../../libs/useJourneyCreateMutation/useJourneyCreateMutation'
 import { ContainedIconButton } from '../ContainedIconButton'
 import { MediaListItem } from '../MediaListItem'
 import { SidePanelContainer } from '../NewPageWrapper/SidePanelContainer'
@@ -39,7 +39,7 @@ export function OnboardingPanelContent({
   const router = useRouter()
   const { teams } = useFlags()
 
-  const { createJourney, loading } = useJourneyCreate()
+  const { createJourney, loading } = useJourneyCreateMutation()
 
   const templates: OnboardingJourneys[] = []
   onboardingJourneys.forEach((onboardingJourney) => {
@@ -66,7 +66,7 @@ export function OnboardingPanelContent({
         <SidePanelContainer>
           <ContainedIconButton
             label={t('Create Custom Journey')}
-            thumbnailIcon={<ViewCarouselIcon />}
+            thumbnailIcon={<FilePlus1Icon />}
             onClick={handleCreateJourneyClick}
             loading={loading}
           />
@@ -82,7 +82,7 @@ export function OnboardingPanelContent({
               sx={{ display: 'flex', alignItems: 'center' }}
             >
               {t('See all')}
-              <ChevronRightRounded />
+              <ChevronRightIcon />
             </Link>
           </NextLink>
         </Stack>
@@ -106,7 +106,7 @@ export function OnboardingPanelContent({
         <NextLink href="/templates" passHref legacyBehavior>
           <Button
             variant="outlined"
-            startIcon={<DashboardRounded />}
+            startIcon={<Grid1Icon />}
             sx={{ width: 'max-content', alignSelf: 'center' }}
           >
             {t('See all templates')}

@@ -1,5 +1,3 @@
-import PlayCircle from '@mui/icons-material/PlayCircle'
-import StopCircle from '@mui/icons-material/StopCircle'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -16,6 +14,8 @@ import { ReactElement } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import Play2Icon from '@core/shared/ui/icons/Play2'
+import StopCircleContainedIcon from '@core/shared/ui/icons/StopCircleContained'
 import {
   secondsToTimeFormat,
   timeFormatToSeconds
@@ -129,7 +129,7 @@ export function VideoBlockEditorSettings({
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <PlayCircle />
+                        <Play2Icon />
                       </InputAdornment>
                     )
                   }}
@@ -151,7 +151,7 @@ export function VideoBlockEditorSettings({
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <StopCircle />
+                        <StopCircleContainedIcon />
                       </InputAdornment>
                     )
                   }}

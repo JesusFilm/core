@@ -42,7 +42,7 @@ const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
   })
 )
 
-interface Props {
+interface StyledFooterButtonProps {
   onClick: () => void
   children: ReactNode
   clicked?: boolean
@@ -52,7 +52,7 @@ export function StyledFooterButton({
   onClick,
   children,
   clicked = false
-}: Props): ReactElement {
+}: StyledFooterButtonProps): ReactElement {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   return (

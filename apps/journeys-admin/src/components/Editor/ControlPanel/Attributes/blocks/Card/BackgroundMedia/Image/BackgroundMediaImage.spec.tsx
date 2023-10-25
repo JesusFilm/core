@@ -38,6 +38,8 @@ const journey: Journey = {
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  strategySlug: null,
+  featuredAt: null,
   title: 'my journey',
   slug: 'my-journey',
   language: {
@@ -65,7 +67,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 const card: TreeBlock<CardBlock> = {

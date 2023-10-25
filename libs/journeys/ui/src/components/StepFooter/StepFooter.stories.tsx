@@ -38,6 +38,8 @@ const journey: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   title: 'my journey',
+  featuredAt: null,
+  strategySlug: null,
   slug: 'my-journey',
   language: {
     __typename: 'Language',
@@ -64,7 +66,8 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: { __typename: 'Team', id: 'teamId', title: 'My Team' }
+  team: { __typename: 'Team', id: 'teamId', title: 'My Team', publicTitle: '' },
+  tags: []
 }
 
 const rtlLanguage = {
