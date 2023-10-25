@@ -54,11 +54,11 @@ export const VISITOR_UPDATE = gql`
   }
 `
 
-interface Props {
+interface DetailsFormProps {
   id: string
 }
 
-export function DetailsForm({ id }: Props): ReactElement {
+export function DetailsForm({ id }: DetailsFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [visitorUpdate] = useMutation<VisitorUpdate>(VISITOR_UPDATE)
   // 529 (english) should be changed when adding internalization

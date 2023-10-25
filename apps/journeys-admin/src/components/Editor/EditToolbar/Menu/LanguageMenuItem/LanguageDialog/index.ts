@@ -1,1 +1,1 @@
-export { LanguageDialog, GET_LANGUAGES } from './LanguageDialog'
+export { LanguageDialog } from './LanguageDialog'
