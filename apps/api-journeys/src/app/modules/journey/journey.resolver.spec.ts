@@ -1023,13 +1023,6 @@ describe('JourneyResolver', () => {
             userId: 'userId',
             role: UserJourneyRole.owner
           }
-        },
-        journeyTags: {
-          create: [
-            {
-              tagId: 'tagId'
-            }
-          ]
         }
       }
 
