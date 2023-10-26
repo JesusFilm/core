@@ -110,7 +110,6 @@ export function TemplateGalleryCard({
             {journey != null ? (
               <>
                 <Typography
-                  fontFamily="Montserrat"
                   variant="overline2"
                   sx={{
                     whiteSpace: 'noWrap',
