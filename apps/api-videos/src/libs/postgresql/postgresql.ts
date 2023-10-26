@@ -243,12 +243,16 @@ async function handlePrismaVideoVariants(
             // ignore moved items
             if (isMovedItem(subtitle)) continue
 
-            const languageId = sKey.startsWith('_')
-              ? existingVideo?.variants[toNumber(key)]?.subtitle?.[
-                  toNumber(sKey)
-                ].languageId
-              : video.variants[toNumber(key)]?.subtitle?.[toNumber(sKey)]
-                  ?.languageId
+            const languageId =
+              sKey.startsWith('_') &&
+              existingVideo?.variants[toNumber(key)]?.subtitle?.[
+                toNumber(sKey)
+              ] != null
+                ? existingVideo?.variants[toNumber(key)]?.subtitle?.[
+                    toNumber(sKey)
+                  ].languageId
+                : video.variants[toNumber(key)]?.subtitle?.[toNumber(sKey)]
+                    ?.languageId
 
             if (isArray(subtitle) && subtitle.length === 1) {
               // handle create
