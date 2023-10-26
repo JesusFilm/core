@@ -23,7 +23,8 @@ import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
 import '../public/swiper-pagination-override.css'
 
-initAuth()
+void initAuth()
+
 const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{

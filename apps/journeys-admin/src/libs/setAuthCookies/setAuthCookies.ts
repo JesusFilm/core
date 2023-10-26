@@ -4,7 +4,7 @@ import { getFirebaseAuth } from 'next-firebase-auth-edge/lib/auth'
 
 import { getFirebasePrivateKey } from '@core/shared/ui/getFirebasePrivateKey'
 
-import { authConfig } from '../firebaseClient/initAuth'
+import { cookies } from '../firebaseClient/initAuth'
 
 import { getUserCookieName, getUserTokensCookieName } from './authCookies'
 import { setCookie } from './cookies'
@@ -55,7 +55,7 @@ export const setAuthCookies: SetAuthCookies = async (
 
   const { createUser, getCustomIdAndRefreshTokens, getUser } = getFirebaseAuth(
     {
-      privateKey: getFirebasePrivateKey(),
+      privateKey: await getFirebasePrivateKey(),
       projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? '',
       clientEmail: process.env.PRIVATE_FIREBASE_CLIENT_EMAIL ?? ''
     },
@@ -102,7 +102,7 @@ export const setAuthCookies: SetAuthCookies = async (
     sameSite,
     secure,
     signed
-  }))(authConfig.cookies)
+  }))(cookies)
 
   // Store the ID and refresh tokens in a cookie. This
   // cookie will be available to future requests to pages,
