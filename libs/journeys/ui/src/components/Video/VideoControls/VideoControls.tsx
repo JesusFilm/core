@@ -347,7 +347,7 @@ export function VideoControls({
                   playing ? 'center-pause-button' : 'center-play-button'
                 }
                 sx={{
-                  fontSize: 50,
+                  fontSize: playing ? 52 : 56,
                   display: { xs: 'flex', lg: 'none' },
                   p: { xs: 2, sm: 0, md: 2 }
                 }}
