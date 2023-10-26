@@ -37,7 +37,7 @@ window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')`}</Script>
 
         ${breakpoints.down('md')} {
           .hsds-beacon .BeaconContainer.is-configDisplayLeft {
-            height: calc(100% - 80px);
+            height: 100%;
             border-radius: 0px;
             left: 0px;
             max-height: 100%;
