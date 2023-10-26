@@ -68,6 +68,7 @@ export function RadioOption({
             }
           : undefined
       }
+      data-testid="JourneysRadioOption"
     >
       {editableLabel ?? label}
     </StyledRadioOption>
