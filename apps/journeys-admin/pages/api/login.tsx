@@ -1,13 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-// import { setAuthCookies } from 'next-firebase-auth'
-// import { getFirebaseAuth } from 'next-firebase-auth-edge/lib/auth'
-
-// import { initAuth } from '../../src/libs/firebaseClient/initAuth'
-// import { getFirebasePrivateKey } from '@core/shared/ui/getFirebasePrivateKey'
 
 import { setAuthCookies } from '../../src/libs/setAuthCookies'
 
-// initAuth()
+export const config = {
+  runtime: 'edge'
+}
 
 export default async function handler(
   req: NextApiRequest,
