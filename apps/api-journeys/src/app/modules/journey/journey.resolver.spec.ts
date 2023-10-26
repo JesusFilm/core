@@ -1027,8 +1027,6 @@ describe('JourneyResolver', () => {
         journeyTags: {
           create: [
             {
-              journey: { connect: { id: 'duplicateJourneyId' } },
-              journeyId: 'duplicateJourneyId',
               tagId: 'tagId'
             }
           ]

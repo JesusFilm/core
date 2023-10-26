@@ -416,8 +416,6 @@ export class JourneyResolver {
       strict: true
     })
 
-    console.log('duplicateJourneyId', duplicateJourneyId)
-
     let retry = true
     while (retry) {
       try {
@@ -445,9 +443,7 @@ export class JourneyResolver {
                   journey.template === true
                     ? {
                         create: journey.journeyTags.map((tag) => ({
-                          tagId: tag.tagId,
-                          id: duplicateJourneyId,
-                          journey: { connect: { id: duplicateJourneyId } }
+                          tagId: tag.tagId
                         }))
                       }
                     : undefined,
@@ -484,6 +480,8 @@ export class JourneyResolver {
             return duplicateJourney
           }
         )
+
+        console.log('duplicateJourney', duplicateJourney)
         // save base blocks
         await this.blockService.saveAll(
           duplicateBlocks.map((block) => ({
