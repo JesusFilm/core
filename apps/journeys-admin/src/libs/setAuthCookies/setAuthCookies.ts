@@ -1,5 +1,4 @@
 // this file modified from https://github.com/gladly-team/next-firebase-auth/blob/v1.x/src/setAuthCookies.ts to use next-firebase-auth-edge on api routes
-import omit from 'lodash/omit'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getFirebaseAuth } from 'next-firebase-auth-edge/lib/auth'
 
@@ -15,6 +14,28 @@ export type SetAuthCookies = (
   res: NextApiResponse,
   options: { token?: string }
 ) => Promise<void>
+
+interface User {
+  readonly id: string
+  readonly email?: string
+  readonly emailVerified: boolean
+  readonly displayName?: string
+  readonly photoURL?: string
+  readonly phoneNumber?: string
+  readonly disabled: boolean
+}
+
+function firebaseEdgeUserTofirebaseAuthUser(firebaseUser): User {
+  return {
+    id: firebaseUser.uid,
+    email: firebaseUser.email,
+    emailVerified: firebaseUser.emailVerified,
+    displayName: firebaseUser.displayName,
+    photoURL: firebaseUser.photoURL,
+    phoneNumber: firebaseUser.phoneNumber,
+    disabled: firebaseUser.disabled
+  }
+}
 
 export const setAuthCookies: SetAuthCookies = async (
   req: NextApiRequest,
@@ -47,20 +68,14 @@ export const setAuthCookies: SetAuthCookies = async (
   let idToken: string | null = null
   let refreshToken: string | null = null
   let firebaseUser = await createUser({}) // default to an unauthed user
-  let user = {
-    ...omit(firebaseUser, 'uid'),
-    id: firebaseUser.uid
-  }
+  let user = firebaseEdgeUserTofirebaseAuthUser(firebaseUser)
   try {
     ;({ idToken, refreshToken } = await getCustomIdAndRefreshTokens(
       token,
       process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? ''
     ))
     firebaseUser = await getUser(idToken)
-    user = {
-      ...omit(firebaseUser, 'uid'),
-      id: firebaseUser.uid
-    }
+    user = firebaseEdgeUserTofirebaseAuthUser(firebaseUser)
   } catch (e) {
     // logDebug(
     //   '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
