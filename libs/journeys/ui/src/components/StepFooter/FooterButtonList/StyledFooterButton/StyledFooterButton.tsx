@@ -10,6 +10,7 @@ const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
     height: 30,
     paddingLeft: 14,
     paddingRight: 14,
+    borderRadius: 100,
     backgroundColor: theme.palette.grey[800],
     color: theme.palette.grey[100],
     [theme.breakpoints.down('lg')]: {
