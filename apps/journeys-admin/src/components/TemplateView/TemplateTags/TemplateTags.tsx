@@ -81,7 +81,6 @@ function SwiperWrapper({ children }: SwiperWrapperProps): ReactElement {
         slidesPerView="auto"
         spaceBetween={8}
         breakpoints={swiperBreakpoints}
-        mousewheel
         autoHeight
         style={{
           overflow: 'visible',
