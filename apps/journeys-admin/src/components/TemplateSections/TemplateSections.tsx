@@ -28,7 +28,7 @@ export function TemplateSections({
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
 
-  const { data, loading } = useJourneysQuery({
+  const { loading } = useJourneysQuery({
     variables: {
       where: {
         template: true,
@@ -38,17 +38,17 @@ export function TemplateSections({
       }
     },
     onCompleted(data) {
-      const collection =
-        tagIds == null
-          ? [
-              ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
-              ...take(
-                data.journeys.filter(({ featuredAt }) => featuredAt == null),
-                10
-              )
-            ]
-          : data.journeys
-      setCollection(collection)
+      const featuredAndNew = [
+        ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
+        ...take(
+          data.journeys.filter(({ featuredAt }) => featuredAt == null),
+          10
+        )
+      ]
+      const mostRelevant = data.journeys.filter(({ tags }) =>
+        tagIds?.every((tagId) => tags.find((tag) => tag.id === tagId))
+      )
+      setCollection(tagIds == null ? featuredAndNew : mostRelevant)
       const contents = {}
       data.journeys.forEach((journey) => {
         journey.tags.forEach((tag) => {
@@ -66,22 +66,14 @@ export function TemplateSections({
 
   return (
     <Stack spacing={8}>
-      {(loading || (data?.journeys != null && data.journeys.length > 0)) && (
+      {(loading || (collection != null && collection.length > 0)) && (
         <TemplateSection
           category={tagIds == null ? t('Featured & New') : t('Most Relevant')}
           journeys={collection}
           loading={loading}
         />
       )}
-      {map(
-        contents,
-        ({ category, journeys }, key) =>
-          ((tagIds == null && journeys.length >= 5) ||
-            tagIds?.includes(key) === true) && (
-            <TemplateSection category={category} journeys={journeys} />
-          )
-      )}
-      {!loading && data?.journeys != null && data.journeys.length === 0 && (
+      {!loading && collection != null && collection.length === 0 && (
         <Paper
           elevation={0}
           variant="outlined"
@@ -100,6 +92,14 @@ export function TemplateSections({
             )}
           </Typography>
         </Paper>
+      )}
+      {map(
+        contents,
+        ({ category, journeys }, key) =>
+          ((tagIds == null && journeys.length >= 5) ||
+            tagIds?.includes(key) === true) && (
+            <TemplateSection category={category} journeys={journeys} />
+          )
       )}
     </Stack>
   )

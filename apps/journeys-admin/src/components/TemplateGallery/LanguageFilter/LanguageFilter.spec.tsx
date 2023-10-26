@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { GET_LANGUAGES } from '../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
+import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery/useLanguagesQuery'
 
 import { LanguageFilter } from '.'
 
@@ -13,7 +13,10 @@ describe('LanguageFilter', () => {
         mocks={[
           {
             request: {
-              query: GET_LANGUAGES
+              query: GET_LANGUAGES,
+              variables: {
+                languageId: '529'
+              }
             },
             result: {
               data: {

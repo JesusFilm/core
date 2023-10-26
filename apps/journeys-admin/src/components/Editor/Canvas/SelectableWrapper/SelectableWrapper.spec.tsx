@@ -194,7 +194,9 @@ describe('SelectableWrapper', () => {
         zIndex: '1'
       })
     )
-    fireEvent.click(getByTestId(`radioQuestion-${radioQuestionBlock.id}`))
+    fireEvent.click(
+      getByTestId(`JourneysRadioQuestion-${radioQuestionBlock.id}`)
+    )
     expect(getByTestId(`selected-${radioQuestionBlock.id}`)).toHaveStyle({
       outline: '2px solid #C52D3A',
       zIndex: '1'
