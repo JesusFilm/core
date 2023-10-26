@@ -310,6 +310,7 @@ export function VideoControls({
         }
         player.userActive(true)
       }}
+      data-testid="JourneysVideoControls"
     >
       <Fade
         in={visible}
