@@ -416,6 +416,8 @@ export class JourneyResolver {
       strict: true
     })
 
+    console.log('duplicateJourneyId', duplicateJourneyId)
+
     let retry = true
     while (retry) {
       try {
@@ -444,7 +446,7 @@ export class JourneyResolver {
                     ? {
                         create: journey.journeyTags.map((tag) => ({
                           tagId: tag.tagId,
-                          journeyId: duplicateJourneyId,
+                          id: duplicateJourneyId,
                           journey: { connect: { id: duplicateJourneyId } }
                         }))
                       }
