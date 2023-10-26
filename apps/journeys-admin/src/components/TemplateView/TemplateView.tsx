@@ -1,4 +1,5 @@
 import Container from '@mui/material/Container'
+import Paper from '@mui/material/Paper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -44,43 +45,50 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
 
   return (
-    <Container disableGutters>
-      <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
-        <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
-        <TemplateTags tags={journey?.tags} />
-        <TemplatePreviewTabs />
-        <Typography
-          variant="body2"
-          sx={{ display: { xs: 'block', sm: 'none' } }}
-        >
-          {journey?.description != null ? (
-            journey.description
-          ) : (
-            <>
-              {[0, 1, 2].map((value) => (
-                <Skeleton
-                  key={value}
-                  data-testid="TemplateViewDescriptionSkeleton"
-                  width="100%"
-                />
-              ))}
-            </>
+    <Paper elevation={0} square sx={{ height: '100%' }}>
+      <Container
+        sx={{
+          px: { xs: 6, sm: 8 },
+          py: { xs: 6, sm: 9 }
+        }}
+      >
+        <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
+          <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
+          <TemplateTags tags={journey?.tags} />
+          <TemplatePreviewTabs />
+          <Typography
+            variant="body2"
+            sx={{ display: { xs: 'block', sm: 'none' } }}
+          >
+            {journey?.description != null ? (
+              journey.description
+            ) : (
+              <>
+                {[0, 1, 2].map((value) => (
+                  <Skeleton
+                    key={value}
+                    data-testid="TemplateViewDescriptionSkeleton"
+                    width="100%"
+                  />
+                ))}
+              </>
+            )}
+          </Typography>
+          {journey?.strategySlug != null && (
+            <StrategySection
+              strategySlug={journey?.strategySlug}
+              variant="full"
+            />
           )}
-        </Typography>
-        {journey?.strategySlug != null && (
-          <StrategySection
-            strategySlug={journey?.strategySlug}
-            variant="full"
-          />
-        )}
-        {relatedJourneys != null && relatedJourneys.length >= 1 && (
-          <TemplateSection
-            category={t('Related Templates')}
-            journeys={relatedJourneys}
-          />
-        )}
-        <TemplateFooter signedIn={authUser?.id != null} />
-      </Stack>
-    </Container>
+          {relatedJourneys != null && relatedJourneys.length >= 1 && (
+            <TemplateSection
+              category={t('Related Templates')}
+              journeys={relatedJourneys}
+            />
+          )}
+          <TemplateFooter signedIn={authUser?.id != null} />
+        </Stack>
+      </Container>
+    </Paper>
   )
 }
