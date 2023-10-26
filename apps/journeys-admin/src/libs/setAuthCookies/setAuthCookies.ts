@@ -47,6 +47,8 @@ export const setAuthCookies: SetAuthCookies = async (
   // This should be the original Firebase ID token from
   // the Firebase JS SDK.
 
+  console.log(req.headers)
+  console.log(req.headers.authorization)
   const token = userProvidedToken ?? req.headers.authorization
   if (token == null) {
     throw new Error(
