@@ -18,7 +18,7 @@ export const cookies = {
   signed: true
 }
 
-export async function initAuth(): Promise<void> {
+export function initAuth(): void {
   init({
     loginAPIEndpoint: '/api/login',
     logoutAPIEndpoint: '/api/logout',
@@ -26,7 +26,7 @@ export async function initAuth(): Promise<void> {
       credential: {
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? '',
         clientEmail: process.env.PRIVATE_FIREBASE_CLIENT_EMAIL ?? '',
-        privateKey: await getFirebasePrivateKey()
+        privateKey: getFirebasePrivateKey()
       },
       databaseURL: ''
     },

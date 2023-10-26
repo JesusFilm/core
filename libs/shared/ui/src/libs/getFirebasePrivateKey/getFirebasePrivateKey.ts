@@ -1,4 +1,5 @@
 import { decrypt } from '../crypto'
+import { webDecrypt } from '../crypto/webDecrypt'
 
 /** Encrypted Firebase Private Keys
  *
@@ -45,6 +46,25 @@ export function getFirebasePrivateKey(): string {
   ) {
     const encrypted = FIREBASE_PRIVATE_KEY_ENC[process.env.DOPPLER_ENVIRONMENT]
     return decrypt([key, iv, encrypted])
+  }
+
+  return ''
+}
+
+export async function getFirebasePrivateKeyWeb(): Promise<string> {
+  const key = process.env.PRIVATE_FIREBASE_PRIVATE_KEY_ENC_KEY
+  const iv = process.env.PRIVATE_FIREBASE_PRIVATE_KEY_ENC_IV
+
+  if (key == null || iv == null) return ''
+
+  if (
+    process.env.DOPPLER_ENVIRONMENT === 'test' ||
+    process.env.DOPPLER_ENVIRONMENT === 'dev' ||
+    process.env.DOPPLER_ENVIRONMENT === 'stg' ||
+    process.env.DOPPLER_ENVIRONMENT === 'prd'
+  ) {
+    const encrypted = FIREBASE_PRIVATE_KEY_ENC[process.env.DOPPLER_ENVIRONMENT]
+    return await webDecrypt([key, iv, encrypted])
   }
 
   return ''

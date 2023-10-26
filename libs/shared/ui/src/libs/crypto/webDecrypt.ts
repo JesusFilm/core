@@ -2,17 +2,21 @@ export async function webDecrypt(
   encrypt: [key: string, iv: string, encrypted: string]
 ): Promise<string> {
   const [key, iv, encrypted] = encrypt
-  const pwUtf8 = new TextEncoder().encode(key)
-  const ptUtf8 = new TextEncoder().encode(encrypted)
-  const pwHash = await crypto.subtle.digest('SHA-256', pwUtf8)
-  const alg = { name: 'AES-GCM', iv }
-  const decryptKey = await crypto.subtle.importKey('raw', pwHash, alg, false, [
-    'decrypt'
-  ])
+  // console.log('key', key)
+  // console.log('iv', iv)
+  // console.log('encrypted', encrypted)
+  const alg = { name: 'AES-CBC', iv: Buffer.from(iv, 'hex') }
+  const decryptKey = await crypto.subtle.importKey(
+    'raw',
+    Buffer.from(key, 'utf8'),
+    alg,
+    false,
+    ['decrypt']
+  )
   const decipher = await crypto.subtle.decrypt(
-    'aes-256-cbc',
+    alg,
     decryptKey,
-    ptUtf8
+    Buffer.from(encrypted, 'hex')
   )
 
   return new TextDecoder().decode(decipher)

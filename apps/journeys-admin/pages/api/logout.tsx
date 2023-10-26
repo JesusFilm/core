@@ -3,7 +3,7 @@ import { unsetAuthCookies } from 'next-firebase-auth'
 
 import { initAuth } from '../../src/libs/firebaseClient/initAuth'
 
-void initAuth()
+initAuth()
 
 export default async function handler(
   req: NextApiRequest,

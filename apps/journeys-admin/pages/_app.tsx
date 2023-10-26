@@ -23,7 +23,7 @@ import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
 import '../public/swiper-pagination-override.css'
 
-// void initAuth()
+initAuth()
 
 const clientSideEmotionCache = createEmotionCache({})
 
@@ -35,12 +35,11 @@ type JourneysAdminAppProps = NextJsAppProps<{
   emotionCache?: EmotionCache
 }
 
-async function JourneysAdminApp({
+function JourneysAdminApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
-}: JourneysAdminAppProps): Promise<ReactElement> {
-  await initAuth()
+}: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const token =
     (pageProps.userSerialized != null

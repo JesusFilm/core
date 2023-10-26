@@ -4,7 +4,7 @@ import fetch from 'node-fetch'
 
 import { initAuth } from '../../src/libs/firebaseClient/initAuth'
 
-void initAuth()
+initAuth()
 
 async function sleep(ms): Promise<void> {
   return await new Promise((resolve) => {

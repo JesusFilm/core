@@ -1,1 +1,4 @@
-export { getFirebasePrivateKey } from './getFirebasePrivateKey'
+export {
+  getFirebasePrivateKey,
+  getFirebasePrivateKeyWeb
+} from './getFirebasePrivateKey'

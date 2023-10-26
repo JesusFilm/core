@@ -2,7 +2,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getFirebaseAuth } from 'next-firebase-auth-edge/lib/auth'
 
-import { getFirebasePrivateKey } from '@core/shared/ui/getFirebasePrivateKey'
+import { getFirebasePrivateKeyWeb } from '@core/shared/ui/getFirebasePrivateKey'
 
 import { cookies } from '../firebaseClient/initAuth'
 
@@ -46,6 +46,7 @@ export const setAuthCookies: SetAuthCookies = async (
 
   // This should be the original Firebase ID token from
   // the Firebase JS SDK.
+
   const token = userProvidedToken ?? req.headers.authorization
   if (token == null) {
     throw new Error(
@@ -55,7 +56,7 @@ export const setAuthCookies: SetAuthCookies = async (
 
   const { createUser, getCustomIdAndRefreshTokens, getUser } = getFirebaseAuth(
     {
-      privateKey: await getFirebasePrivateKey(),
+      privateKey: await getFirebasePrivateKeyWeb(),
       projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? '',
       clientEmail: process.env.PRIVATE_FIREBASE_CLIENT_EMAIL ?? ''
     },
