@@ -39,9 +39,12 @@ export const Typography = {
       'h6',
       'subtitle1',
       'subtitle2',
+      'subtitle3',
       'body1',
       'body2',
-      'overline'
+      'overline',
+      'overline2',
+      'caption'
     ]
   }
 }
