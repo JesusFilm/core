@@ -78,4 +78,13 @@ export const EmptyImage = {
   }
 }
 
+export const Loading = {
+  ...Template,
+  args: {
+    isPublisher: undefined,
+    authUser: undefined,
+    journey: undefined
+  }
+}
+
 export default TemplateViewHeaderStory

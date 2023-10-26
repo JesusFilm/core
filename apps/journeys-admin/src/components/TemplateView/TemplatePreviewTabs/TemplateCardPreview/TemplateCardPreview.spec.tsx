@@ -28,7 +28,7 @@ describe('TemplateCardPreview', () => {
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('templateCardsSwiperSlide')).toHaveLength(3)
+      expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)
     )
   })
 
@@ -46,7 +46,20 @@ describe('TemplateCardPreview', () => {
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('templateCardsSwiperSlide')).toHaveLength(3)
+      expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)
+    )
+  })
+
+  it('renders skeleton cards while loading', async () => {
+    const steps = undefined
+
+    const { getAllByTestId } = render(
+      <ThemeProvider theme={createTheme()}>
+        <TemplateCardPreview steps={steps} />
+      </ThemeProvider>
+    )
+    await waitFor(() =>
+      expect(getAllByTestId('TemplateCardSkeleton')).toHaveLength(7)
     )
   })
 })

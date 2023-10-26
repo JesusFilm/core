@@ -1,10 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
+import { GET_TAGS } from '../../../../libs/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../../data'
 
 import {
@@ -43,7 +44,8 @@ describe('TemplateSettingsDialog', () => {
         journeyUpdate: {
           id: defaultJourney.id,
           __typename: 'Journey',
-          ...updatedJourney
+          ...updatedJourney,
+          tags: [{ __typeName: 'Tag', id: 'tagId' }]
         }
       }
     }))
@@ -58,15 +60,53 @@ describe('TemplateSettingsDialog', () => {
       }
     }))
 
+    const tagResult = jest.fn(() => ({
+      data: {
+        tags: [
+          {
+            __typename: 'Tag',
+            id: 'parentTagId',
+            service: null,
+            parentId: null,
+            name: [
+              {
+                value: 'Felt Needs',
+                primary: true
+              }
+            ]
+          },
+          {
+            __typename: 'Tag',
+            id: 'tagId',
+            service: null,
+            parentId: 'parentTagId',
+            name: [
+              {
+                value: 'Acceptance',
+                primary: true
+              }
+            ]
+          }
+        ]
+      }
+    }))
+
     const { getByRole, getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
             request: {
+              query: GET_TAGS
+            },
+            result: tagResult
+          },
+
+          {
+            request: {
               query: JOURNEY_SETTINGS_UPDATE,
               variables: {
                 id: defaultJourney.id,
-                input: updatedJourney
+                input: { ...updatedJourney, tagIds: ['tagId'] }
               }
             },
             result
@@ -109,6 +149,16 @@ describe('TemplateSettingsDialog', () => {
       target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
     })
 
+    fireEvent.click(getByRole('tab', { name: 'Categories' }))
+
+    await waitFor(() => {
+      expect(getByRole('combobox')).toBeInTheDocument()
+    })
+    fireEvent.click(getAllByRole('button', { name: 'Open' })[0])
+    fireEvent.click(
+      within(getByRole('option', { name: 'Acceptance' })).getByRole('checkbox')
+    )
+
     fireEvent.click(getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
@@ -123,7 +173,8 @@ describe('TemplateSettingsDialog', () => {
       title: defaultJourney.title,
       description: defaultJourney.description,
       strategySlug:
-        'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
+        'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000',
+      tagIds: []
     }
 
     const result = jest.fn(() => ({
@@ -219,7 +270,8 @@ describe('TemplateSettingsDialog', () => {
     const updatedJourney = {
       title: journeyWithStrategySlug.title,
       description: journeyWithStrategySlug.description,
-      strategySlug: null
+      strategySlug: null,
+      tagIds: []
     }
 
     const result = jest.fn(() => ({

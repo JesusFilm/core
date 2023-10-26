@@ -18,7 +18,7 @@ export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
   }
 `
 
-interface Props {
+interface CheckConditionalRedirectProps {
   apolloClient: ApolloClient<NormalizedCacheObject>
   resolvedUrl: string
 }
@@ -26,7 +26,7 @@ interface Props {
 export async function checkConditionalRedirect({
   apolloClient,
   resolvedUrl
-}: Props): Promise<Redirect | undefined> {
+}: CheckConditionalRedirectProps): Promise<Redirect | undefined> {
   const { data } = await apolloClient.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })

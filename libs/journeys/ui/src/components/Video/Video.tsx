@@ -255,7 +255,7 @@ export function Video({
 
   return (
     <Box
-      data-testid={`video-${blockId}`}
+      data-testid={`JourneysVideo-${blockId}`}
       sx={{
         display: 'flex',
         width: '100%',
@@ -302,6 +302,7 @@ export function Video({
               xs: isFillAndNotYoutube() ? '300%' : '100%',
               sm: '100%'
             }}
+            minHeight="-webkit-fill-available"
             overflow="hidden"
             marginX={{
               xs: isFillAndNotYoutube() ? '-100%' : 0,

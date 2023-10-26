@@ -1,9 +1,10 @@
 import 'swiper/swiper.min.css'
 
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
-import SwiperCore, { A11y, Mousewheel, SwiperOptions } from 'swiper'
+import { SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -21,8 +22,6 @@ import { CardWrapper } from '../../../CardPreview/CardList/CardWrapper'
 import { VideoWrapper } from '../../../Editor/Canvas/VideoWrapper'
 import { FramePortal } from '../../../FramePortal'
 
-SwiperCore.use([Mousewheel, A11y])
-
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
 }
@@ -39,6 +38,7 @@ function TemplateCardPreviewItem({
   const cardBlock = step.children.find(
     (child) => child.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
+
   return (
     <Box
       sx={{
@@ -114,25 +114,49 @@ export function TemplateCardPreview({
       slidesPerView="auto"
       spaceBetween={12}
       breakpoints={swiperBreakpoints}
-      mousewheel
       autoHeight
       style={{
         overflow: 'visible',
         zIndex: 2
       }}
     >
-      {steps?.map((step) => (
-        <SwiperSlide
-          data-testid="templateCardsSwiperSlide"
-          key={step.id}
-          style={{
-            width: 'fit-content',
-            zIndex: 2
-          }}
-        >
-          <TemplateCardPreviewItem step={step} />
-        </SwiperSlide>
-      ))}
+      {steps != null
+        ? steps.map((step) => {
+            return (
+              <SwiperSlide
+                data-testid="TemplateCardsSwiperSlide"
+                key={step.id}
+                style={{
+                  width: 'fit-content',
+                  zIndex: 2
+                }}
+              >
+                <TemplateCardPreviewItem step={step} />
+              </SwiperSlide>
+            )
+          })
+        : [0, 1, 2, 3, 4, 5, 6].map((value) => {
+            return (
+              <SwiperSlide
+                data-testid="TemplateCardsSwiperSlide"
+                key={value}
+                style={{
+                  width: 'fit-content',
+                  zIndex: 2
+                }}
+              >
+                <Skeleton
+                  data-testid="TemplateCardSkeleton"
+                  sx={{
+                    width: { xs: 177, sm: 240 },
+                    height: { xs: 280, sm: 380 },
+                    transform: 'scale(1)',
+                    borderRadius: 2
+                  }}
+                />
+              </SwiperSlide>
+            )
+          })}
     </Swiper>
   )
 }

@@ -13,7 +13,7 @@ import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
 import { SortOrder } from '../../JourneySort'
 import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
 
-interface Props {
+interface ActivePriorityListProps {
   journeys: Journey[]
   sortOrder?: SortOrder
   refetch?: (
@@ -27,7 +27,7 @@ export function ActivePriorityList({
   sortOrder,
   refetch,
   user
-}: Props): ReactElement {
+}: ActivePriorityListProps): ReactElement {
   const { newJourneys, actionRequiredJourneys, activeJourneys } =
     useMemo(() => {
       const newJourneys: Journey[] = []

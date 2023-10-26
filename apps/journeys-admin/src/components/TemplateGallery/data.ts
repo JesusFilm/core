@@ -1,7 +1,13 @@
+import { MockedResponse } from '@apollo/client/testing'
+
 import {
+  GetJourneys,
+  GetJourneysVariables,
   GetJourneys_journeys as Journey,
   GetJourneys_journeys_tags as Tag
 } from '../../../__generated__/GetJourneys'
+import { GetLanguages } from '../../../__generated__/GetLanguages'
+import { GetTags } from '../../../__generated__/GetTags'
 import {
   JourneyStatus,
   Service,
@@ -9,8 +15,8 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
-import { GET_LANGUAGES } from '../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
 
 const defaultTemplate: Journey = {
   __typename: 'Journey',
@@ -152,123 +158,132 @@ const journeys: Journey[] = [
   }
 ]
 
-export const TemplateGalleryMock = [
-  {
-    request: {
-      query: GET_JOURNEYS,
-      variables: {
-        where: {
-          template: true,
-          orderByRecent: true,
-          languageIds: ['529']
-        }
-      }
-    },
-    result: {
-      data: {
-        journeys
+export const getJourneysMock: MockedResponse<
+  GetJourneys,
+  GetJourneysVariables
+> = {
+  request: {
+    query: GET_JOURNEYS,
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true,
+        languageIds: ['529']
       }
     }
   },
-  {
-    request: {
-      query: GET_LANGUAGES
-    },
-    result: {
-      data: {
-        languages: [
-          {
-            __typename: 'Language',
-            id: '529',
-            name: [
-              {
-                value: 'English',
-                primary: true,
-                __typename: 'Translation'
-              }
-            ]
-          },
-          {
-            id: '496',
-            __typename: 'Language',
-            name: [
-              {
-                value: 'Français',
-                primary: true,
-                __typename: 'Translation'
-              },
-              {
-                value: 'French',
-                primary: false,
-                __typename: 'Translation'
-              }
-            ]
-          },
-          {
-            id: '1106',
-            __typename: 'Language',
-            name: [
-              {
-                value: 'Deutsch',
-                primary: true,
-                __typename: 'Translation'
-              },
-              {
-                value: 'German, Standard',
-                primary: false,
-                __typename: 'Translation'
-              }
-            ]
-          }
-        ]
-      }
-    }
-  },
-  {
-    request: {
-      query: GET_TAGS
-    },
-    result: {
-      data: {
-        tags: [
-          {
-            __typename: 'Tag',
-            id: 'parentId1',
-            service: Service.apiJourneys,
-            parentId: null,
-            name: [
-              {
-                value: 'Felt Needs',
-                primary: true
-              }
-            ]
-          },
-          {
-            __typename: 'Tag',
-            id: 'acceptanceTagId',
-            service: Service.apiJourneys,
-            parentId: 'parentId1',
-            name: [
-              {
-                value: 'Acceptance',
-                primary: true
-              }
-            ]
-          },
-          {
-            __typename: 'Tag',
-            id: 'addictionTagId',
-            service: Service.apiJourneys,
-            parentId: 'parentId1',
-            name: [
-              {
-                value: 'Addiction',
-                primary: true
-              }
-            ]
-          }
-        ]
-      }
+  result: {
+    data: {
+      journeys
     }
   }
-]
+}
+
+export const getLanguagesMock: MockedResponse<GetLanguages> = {
+  request: {
+    query: GET_LANGUAGES,
+    variables: {
+      languageId: '529'
+    }
+  },
+  result: {
+    data: {
+      languages: [
+        {
+          __typename: 'Language',
+          id: '529',
+          name: [
+            {
+              value: 'English',
+              primary: true,
+              __typename: 'Translation'
+            }
+          ]
+        },
+        {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        },
+        {
+          id: '1106',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Deutsch',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'German, Standard',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+export const getTagsMock: MockedResponse<GetTags> = {
+  request: {
+    query: GET_TAGS
+  },
+  result: {
+    data: {
+      tags: [
+        {
+          __typename: 'Tag',
+          id: 'parentId1',
+          service: Service.apiJourneys,
+          parentId: null,
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Felt Needs',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'acceptanceTagId',
+          service: Service.apiJourneys,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Acceptance',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'addictionTagId',
+          service: Service.apiJourneys,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Addiction',
+              primary: true
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -126,7 +126,7 @@ export const SignUp = ({
   } = useEditor()
 
   return (
-    <Box sx={{ mb: 4 }}>
+    <Box sx={{ mb: 4 }} data-testid="JourneysSignUp">
       <Formik
         initialValues={initialValues}
         validationSchema={

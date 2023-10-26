@@ -7,7 +7,7 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
-import Div100vh from 'react-div-100vh'
+import { use100vh } from 'react-div-100vh'
 
 import { allowedHost } from '@core/journeys/ui/allowedHost'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -17,6 +17,7 @@ import logo from '../../../public/logo.svg'
 
 export function IFrameTest(): ReactElement {
   const { query } = useRouter()
+  const viewportHeight = use100vh()
   useEffect(() => {
     const makeIframeFullWindow = (event: MessageEvent): void => {
       // Use this page for basic local testing
@@ -48,7 +49,12 @@ export function IFrameTest(): ReactElement {
 
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      <Div100vh>
+      <Box
+        sx={{
+          height: viewportHeight ?? '100vh',
+          minHeight: '-webkit-fill-available'
+        }}
+      >
         <Container sx={{ height: '100%' }} maxWidth="sm">
           <Stack spacing={5} alignItems="center" sx={{ height: '100%', pt: 5 }}>
             <Image
@@ -105,7 +111,7 @@ export function IFrameTest(): ReactElement {
             </Box>
           </Stack>
         </Container>
-      </Div100vh>
+      </Box>
     </ThemeProvider>
   )
 }
