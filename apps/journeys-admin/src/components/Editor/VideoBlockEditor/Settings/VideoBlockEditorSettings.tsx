@@ -99,9 +99,9 @@ export function VideoBlockEditorSettings({
   })
 
   return (
-    <Box sx={{ px: 6, py: 3, width: '100%' }}>
-      <Stack direction="column" spacing={3}>
-        <Stack direction="column" spacing={3}>
+    <Box sx={{ px: 6, width: '100%' }}>
+      <Stack direction="column" spacing={6}>
+        <Stack direction="column" spacing={2}>
           <Typography
             variant="subtitle2"
             sx={{
@@ -160,7 +160,7 @@ export function VideoBlockEditorSettings({
             />
           </Stack>
         </Stack>
-        <Stack direction="column" spacing={3}>
+        <Stack direction="column" spacing={2}>
           <Stack>
             <Typography
               variant="subtitle2"
@@ -227,88 +227,89 @@ export function VideoBlockEditorSettings({
             </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
-        <Divider />
-        <Stack direction="row" justifyContent="space-between">
-          <Stack direction="column">
-            <Typography
-              variant="subtitle2"
-              sx={{
-                color:
-                  selectedBlock == null || selectedBlock.parentOrder == null
-                    ? 'action.disabled'
-                    : undefined
+        <Stack direction="column" spacing={4}>
+          <Stack direction="row" justifyContent="space-between">
+            <Stack direction="column">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color:
+                    selectedBlock == null || selectedBlock.parentOrder == null
+                      ? 'action.disabled'
+                      : undefined
+                }}
+              >
+                Autoplay
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color:
+                    selectedBlock == null || selectedBlock.parentOrder == null
+                      ? 'action.disabled'
+                      : undefined
+                }}
+              >
+                Start video automatically when card appears
+              </Typography>
+            </Stack>
+            <Switch
+              checked={values.autoplay}
+              name="autoplay"
+              onChange={handleChange}
+              disabled={
+                selectedBlock == null || selectedBlock.parentOrder == null
+              }
+              inputProps={{
+                'aria-label': 'Autoplay'
               }}
-            >
-              Autoplay
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                color:
-                  selectedBlock == null || selectedBlock.parentOrder == null
-                    ? 'action.disabled'
-                    : undefined
-              }}
-            >
-              Start video automatically when card appears
-            </Typography>
+            />
           </Stack>
-          <Switch
-            checked={values.autoplay}
-            name="autoplay"
-            onChange={handleChange}
-            disabled={
-              selectedBlock == null || selectedBlock.parentOrder == null
-            }
-            inputProps={{
-              'aria-label': 'Autoplay'
-            }}
+          <Divider />
+          <Stack direction="row" justifyContent="space-between">
+            <Stack direction="column">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color:
+                    selectedBlock == null || selectedBlock.parentOrder == null
+                      ? 'action.disabled'
+                      : undefined
+                }}
+              >
+                Muted
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color:
+                    selectedBlock == null || selectedBlock.parentOrder == null
+                      ? 'action.disabled'
+                      : undefined
+                }}
+              >
+                Video always muted on the first card
+              </Typography>
+            </Stack>
+            <Switch
+              checked={values.muted}
+              name="muted"
+              onChange={handleChange}
+              disabled={
+                selectedBlock == null || selectedBlock.parentOrder == null
+              }
+              inputProps={{
+                'aria-label': 'Muted'
+              }}
+            />
+          </Stack>
+          <Divider />
+          <VideoBlockEditorSettingsPoster
+            selectedBlock={posterBlock}
+            parentBlockId={selectedBlock?.id}
+            disabled={selectedBlock == null}
           />
         </Stack>
-        <Divider />
-        <Stack direction="row" justifyContent="space-between">
-          <Stack direction="column">
-            <Typography
-              variant="subtitle2"
-              sx={{
-                color:
-                  selectedBlock == null || selectedBlock.parentOrder == null
-                    ? 'action.disabled'
-                    : undefined
-              }}
-            >
-              Muted
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                color:
-                  selectedBlock == null || selectedBlock.parentOrder == null
-                    ? 'action.disabled'
-                    : undefined
-              }}
-            >
-              Video always muted on the first card
-            </Typography>
-          </Stack>
-          <Switch
-            checked={values.muted}
-            name="muted"
-            onChange={handleChange}
-            disabled={
-              selectedBlock == null || selectedBlock.parentOrder == null
-            }
-            inputProps={{
-              'aria-label': 'Muted'
-            }}
-          />
-        </Stack>
-        <Divider />
-        <VideoBlockEditorSettingsPoster
-          selectedBlock={posterBlock}
-          parentBlockId={selectedBlock?.id}
-          disabled={selectedBlock == null}
-        />
       </Stack>
     </Box>
   )
