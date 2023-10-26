@@ -31,7 +31,7 @@ const FIREBASE_PRIVATE_KEY_ENC = {
  *
  * To be used primarily on Vercel to overcome environment variable
  * 4kb max total size constraint.  */
-export async function getFirebasePrivateKey(): Promise<string> {
+export function getFirebasePrivateKey(): string {
   const key = process.env.PRIVATE_FIREBASE_PRIVATE_KEY_ENC_KEY
   const iv = process.env.PRIVATE_FIREBASE_PRIVATE_KEY_ENC_IV
 
@@ -44,7 +44,7 @@ export async function getFirebasePrivateKey(): Promise<string> {
     process.env.DOPPLER_ENVIRONMENT === 'prd'
   ) {
     const encrypted = FIREBASE_PRIVATE_KEY_ENC[process.env.DOPPLER_ENVIRONMENT]
-    return await decrypt([key, iv, encrypted])
+    return decrypt([key, iv, encrypted])
   }
 
   return ''
