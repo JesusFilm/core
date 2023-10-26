@@ -100,7 +100,7 @@ export function TagsFilter({
                 variant="subtitle1"
                 sx={{
                   position: 'sticky',
-                  top: 0,
+                  top: -8,
                   py: 2,
                   px: 5,
                   backgroundColor: 'background.paper',
@@ -134,7 +134,7 @@ export function TagsFilter({
           popper: {
             sx: {
               '& .MuiAutocomplete-listbox': {
-                display: 'flex',
+                display: { lg: 'flex' },
                 '> li': {
                   flexGrow: 1
                 }

@@ -63,7 +63,7 @@ export function TemplateGallery(): ReactElement {
           pb: { xs: 6, md: 9 }
         }}
       >
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={7}>
           <TagsFilter
             label={t('Topics, holidays, felt needs, collections')}
             tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
@@ -72,7 +72,7 @@ export function TemplateGallery(): ReactElement {
             selectedTagIds={selectedTagIds}
           />
         </Grid>
-        <Grid item xs={6} md={2}>
+        <Grid item xs={6} md={2.5}>
           <TagsFilter
             label={t('Audience')}
             tagNames={['Audience']}
@@ -81,7 +81,7 @@ export function TemplateGallery(): ReactElement {
             selectedTagIds={selectedTagIds}
           />
         </Grid>
-        <Grid item xs={6} md={2}>
+        <Grid item xs={6} md={2.5}>
           <TagsFilter
             label={t('Genre')}
             tagNames={['Genre']}
