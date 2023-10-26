@@ -62,6 +62,7 @@ export function ShareDialog({
         closeButton: true
       }}
       container={element}
+      testId="ShareDialog"
     >
       <Stack direction="row" justifyContent="space-around">
         <Stack

@@ -30,7 +30,7 @@ export function HostAvatars({
   return (
     <AvatarGroup
       spacing={size === 'small' ? (rtl ? 0 : 12) : 24}
-      data-testid="host-avatars"
+      data-testid="StepFooterHostAvatars"
       sx={{
         '.MuiAvatar-root': {
           borderWidth: '1px',

@@ -153,6 +153,7 @@ export function Button({
             ? 4
             : 5
       }}
+      data-testid={`JourneysButton-${blockId}`}
     >
       <MuiButton
         variant={buttonVariant ?? ButtonVariant.contained}

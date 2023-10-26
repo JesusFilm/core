@@ -22,41 +22,7 @@ export class UserResolver {
   @Query()
   @UseGuards(GqlAuthGuard)
   async me(@CurrentUserId() userId: string): Promise<User> {
-    const existingUser = await this.prismaService.user.findUnique({
-      where: {
-        userId
-      }
-    })
-
-    if (existingUser != null) return existingUser
-
-    const {
-      displayName,
-      email,
-      photoURL: imageUrl
-    } = await auth.getUser(userId)
-
-    const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
-    const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''
-
-    const data = {
-      userId,
-      firstName,
-      lastName,
-      email: email ?? '',
-      imageUrl
-    }
-
-    // this function can run in parallel as such it is possible for multiple
-    // calls to reach this point and try to create the same user
-    // due to the earlier firebase async call.
-    return await this.prismaService.user.upsert({
-      where: {
-        userId
-      },
-      create: data,
-      update: data
-    })
+    return await this.findOrFetchUser(userId)
   }
 
   @Mutation()
@@ -93,13 +59,47 @@ export class UserResolver {
 
   @ResolveReference()
   async resolveReference(reference: {
-    __typename: string
+    __typename: 'User'
     id: string
-  }): Promise<User | null> {
-    return await this.prismaService.user.findUnique({
+  }): Promise<User> {
+    return await this.findOrFetchUser(reference.id)
+  }
+
+  private async findOrFetchUser(userId: string): Promise<User> {
+    const existingUser = await this.prismaService.user.findUnique({
       where: {
-        userId: reference.id
+        userId
       }
+    })
+
+    if (existingUser != null) return existingUser
+
+    const {
+      displayName,
+      email,
+      photoURL: imageUrl
+    } = await auth.getUser(userId)
+
+    const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
+    const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''
+
+    const data = {
+      userId,
+      firstName,
+      lastName,
+      email: email ?? '',
+      imageUrl
+    }
+
+    // this function can run in parallel as such it is possible for multiple
+    // calls to reach this point and try to create the same user
+    // due to the earlier firebase async call.
+    return await this.prismaService.user.upsert({
+      where: {
+        userId
+      },
+      create: data,
+      update: data
     })
   }
 }
