@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -49,7 +50,15 @@ export function SocialImage({
             backgroundColor: 'background.default'
           }}
         >
-          {journey != null ? <GridEmptyIcon fontSize="large" /> : <></>}
+          {journey != null ? (
+            <GridEmptyIcon fontSize="large" />
+          ) : (
+            <Skeleton
+              data-testid="SocialImageSkeleton"
+              variant="rounded"
+              sx={{ borderRadius: 4, width, height }}
+            />
+          )}
         </Box>
       )}
     </Box>

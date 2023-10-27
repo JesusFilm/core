@@ -34,7 +34,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
 
   return (
     <Stack
-      data-testid="stepHeader"
+      data-testid="JourneysStepHeader"
       sx={{
         position: { xs: 'absolute', lg: 'relative' },
         mt: { xs: 1, lg: 0 },

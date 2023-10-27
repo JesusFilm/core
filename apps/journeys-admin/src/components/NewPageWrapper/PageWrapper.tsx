@@ -60,8 +60,9 @@ export function PageWrapper({
       <Box
         sx={{
           height: viewportHeight ?? '100vh',
-          overflow: 'hidden',
-          [theme.breakpoints.down('md')]: { overflowY: 'auto' }
+          minHeight: '-webkit-fill-available',
+          [theme.breakpoints.down('md')]: { overflowY: 'auto' },
+          overflow: 'hidden'
         }}
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>

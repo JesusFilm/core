@@ -101,6 +101,7 @@ export function CreateJourneyButton({
         onClick={handleCheckSignIn}
         variant="contained"
         sx={{ flex: 'none' }}
+        disabled={journey == null}
       >
         {t('Use Template')}
       </Button>

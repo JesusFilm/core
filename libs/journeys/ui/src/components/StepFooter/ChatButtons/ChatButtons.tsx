@@ -102,7 +102,7 @@ export function ChatButtons(): ReactElement {
 
   return (
     <Stack
-      data-testid="chat-widgets-container"
+      data-testid="StepFooterChatButtons"
       direction={rtl ? 'row' : 'row-reverse'}
       gap={2}
     >
