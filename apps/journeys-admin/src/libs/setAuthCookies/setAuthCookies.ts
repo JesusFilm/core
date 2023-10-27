@@ -1,5 +1,5 @@
 // this file modified from https://github.com/gladly-team/next-firebase-auth/blob/v1.x/src/setAuthCookies.ts to use next-firebase-auth-edge on api routes
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextRequest, NextResponse } from 'next/server'
 import { getFirebaseAuth } from 'next-firebase-auth-edge/lib/auth'
 
 import { getFirebasePrivateKeyWeb } from '@core/shared/ui/getFirebasePrivateKey'
@@ -7,13 +7,28 @@ import { getFirebasePrivateKeyWeb } from '@core/shared/ui/getFirebasePrivateKey'
 import { cookies } from '../firebaseClient/initAuth'
 
 import { getUserCookieName, getUserTokensCookieName } from './authCookies'
-import { setCookie } from './cookies'
+// import { setCookie } from './cookies'
 
 export type SetAuthCookies = (
-  req: NextApiRequest,
-  res: NextApiResponse,
+  req: NextRequest,
+  res: NextResponse,
   options: { token?: string }
-) => Promise<void>
+) => Promise<{
+  cookies: Array<{
+    name: string
+    value: string
+  }>
+  options: {
+    httpOnly: boolean
+    keys: string[]
+    maxAge: string
+    overwrite: boolean
+    path: string
+    sameSite: string
+    secure: boolean
+    signed: boolean
+  }
+}>
 
 interface User {
   readonly id: string
@@ -38,8 +53,8 @@ function firebaseEdgeUserTofirebaseAuthUser(firebaseUser): User {
 }
 
 export const setAuthCookies: SetAuthCookies = async (
-  req: NextApiRequest,
-  res: NextApiResponse,
+  req: NextRequest,
+  res: NextResponse,
   { token: userProvidedToken }: { token?: string } = {}
 ) => {
   // logDebug('[setAuthCookies] Attempting to set auth cookies.')
@@ -47,9 +62,7 @@ export const setAuthCookies: SetAuthCookies = async (
   // This should be the original Firebase ID token from
   // the Firebase JS SDK.
 
-  console.log(req.headers)
-  console.log(req.headers.authorization)
-  const token = userProvidedToken ?? req.headers.authorization
+  const token = userProvidedToken ?? req.headers.get('authorization')
   if (token == null) {
     throw new Error(
       'The request must have an Authorization header value, or you should explicitly provide an ID token to "setAuthCookies".'
@@ -107,42 +120,58 @@ export const setAuthCookies: SetAuthCookies = async (
     signed
   }))(cookies)
 
+  return {
+    cookies: [
+      {
+        name: getUserTokensCookieName(),
+        value: JSON.stringify({
+          idToken,
+          refreshToken
+        })
+      },
+      {
+        name: getUserCookieName(),
+        value: JSON.stringify(user)
+      }
+    ],
+    options: cookieOptions
+  }
   // Store the ID and refresh tokens in a cookie. This
   // cookie will be available to future requests to pages,
   // providing a valid Firebase ID token (refreshed as needed)
   // for server-side rendering.
-  setCookie(
-    getUserTokensCookieName(),
-    // Note: any change to cookie data structure needs to be
-    // backwards-compatible.
-    JSON.stringify({
-      idToken,
-      refreshToken
-    }),
-    { req, res },
-    cookieOptions
-  )
+  // setCookie(
+  //   getUserTokensCookieName(),
+  //   // Note: any change to cookie data structure needs to be
+  //   // backwards-compatible.
+  //   JSON.stringify({
+  //     idToken,
+  //     refreshToken
+  //   }),
+  //   { req, res },
+  //   cookieOptions
+  // )
 
   // Store the user data. This cookie will be available
   // to future requests to pages, providing the user data. It
   // will *not* include a Firebase ID token, because it may have
   // expired, but provides the user data without any
   // additional server-side requests.
-  setCookie(
-    getUserCookieName(),
-    // Note: any change to cookie data structure needs to be
-    // backwards-compatible.
-    // Don't include the token in the user cookie, because
-    // the token should only be used from the "userTokens"
-    // cookie. Here, it is redundant information, and we don't
-    // want the token to be used if it's expired.
-    JSON.stringify(user),
-    {
-      req,
-      res
-    },
-    cookieOptions
-  )
+  // setCookie(
+  //   getUserCookieName(),
+  //   // Note: any change to cookie data structure needs to be
+  //   // backwards-compatible.
+  //   // Don't include the token in the user cookie, because
+  //   // the token should only be used from the "userTokens"
+  //   // cookie. Here, it is redundant information, and we don't
+  //   // want the token to be used if it's expired.
+  //   JSON.stringify(user),
+  //   {
+  //     req,
+  //     res
+  //   },
+  //   cookieOptions
+  // )
 
   // if (user.id != null) {
   //   logDebug('[setAuthCookies] Set auth cookies for an authenticated user.')

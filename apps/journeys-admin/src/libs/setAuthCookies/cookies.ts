@@ -1,60 +1,51 @@
 // https://github.com/gladly-team/next-firebase-auth/blob/v1.x/src/cookies.ts
 import Cookies from 'cookies'
-import {
-  GetServerSidePropsContext,
-  NextApiRequest,
-  NextApiResponse
-} from 'next'
+import { GetServerSidePropsContext } from 'next'
+import { NextRequest, NextResponse } from 'next/server'
 
 import { decodeBase64, encodeBase64 } from './encoding'
 
 interface ReqResObj {
-  req: NextApiRequest | GetServerSidePropsContext['req']
-  res: NextApiResponse | GetServerSidePropsContext['res']
+  req: NextRequest | GetServerSidePropsContext['req']
+  res?: NextResponse | GetServerSidePropsContext['res']
 }
 
 interface ReqResOptionalObj {
-  req: NextApiRequest | GetServerSidePropsContext['req']
-  res?: NextApiResponse | GetServerSidePropsContext['res']
+  req: NextRequest | GetServerSidePropsContext['req']
+  res?: NextResponse | GetServerSidePropsContext['res']
 }
 
 type CookieOptions = Omit<Cookies.Option & Cookies.SetOption, 'sameSite'> & {
   sameSite?: string
 }
 
-const createCookieMgr = (
-  { req, res }: ReqResObj,
-  {
-    keys,
-    secure
-  }: { keys?: Cookies.Option['keys']; secure?: Cookies.Option['secure'] } = {}
-): Cookies => {
-  // https://github.com/pillarjs/cookies
-  const cookies = Cookies(req, res, {
-    keys,
-    secure
-  })
-  return cookies
-}
+// const createCookieMgr = (
+//   { req, res }: ReqResObj,
+//   {
+//     keys,
+//     secure
+//   }: { keys?: Cookies.Option['keys']; secure?: Cookies.Option['secure'] } = {}
+// ): Cookies => {
+//   // https://github.com/pillarjs/cookies
+//   const cookies = Cookies(req, res, {
+//     keys,
+//     secure
+//   })
+//   return cookies
+// }
 
 export const getCookie = (
   name: string,
   // The request object is mandatory. The response object is optional.
   {
-    req,
-    // The "cookies" package still interacts with the response object when
-    // initializing. As a convenience, default to a minimal response object
-    // that avoids unhelpful "cookies" errors when a response object is not
-    // provided.
-    // https://github.com/pillarjs/cookies/blob/master/index.js
-    res = {
-      getHeader: () => [],
-      setHeader: () => ({
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        call: () => {}
-      })
-    } as unknown as NextApiResponse
-  }: ReqResOptionalObj,
+    req
+  }: // The "cookies" package still interacts with the response object when
+  // initializing. As a convenience, default to a minimal response object
+  // that avoids unhelpful "cookies" errors when a response object is not
+  // provided.
+  // https://github.com/pillarjs/cookies/blob/master/index.js
+  // res = {} as unknown as NextResponse
+  ReqResOptionalObj,
   {
     keys,
     secure,
@@ -82,10 +73,10 @@ export const getCookie = (
     throw new Error('The "req" argument is required when calling `getCookie`.')
   }
 
-  const cookies = createCookieMgr({ req, res }, { keys, secure })
+  // const cookies = createCookieMgr({ req, res }, { keys, secure })
 
   // https://github.com/pillarjs/cookies#cookiesget-name--options--
-  const cookieVal = cookies.get(name, { signed })
+  const cookieVal = req.cookies.get(name, { signed })?.value
   return cookieVal != null ? decodeBase64(cookieVal) : undefined
 }
 
@@ -93,7 +84,7 @@ export const setCookie = (
   name: string,
   cookieVal: string | undefined,
   // The response object is mandatory. The request is optional and unused.
-  { req, res }: ReqResObj,
+  { res }: ReqResObj,
   {
     keys,
     domain,
@@ -115,14 +106,14 @@ export const setCookie = (
     throw new Error('The "res" argument is required when calling `setCookie`.')
   }
 
-  const cookies = createCookieMgr({ req, res }, { keys, secure })
+  // const cookies = createCookieMgr({ req, res }, { keys, secure })
 
   // If the value is not defined, set the value to undefined
   // so that the cookie will be deleted.
   const valToSet = cookieVal == null ? undefined : encodeBase64(cookieVal)
 
   // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
-  cookies.set(name, valToSet, {
+  res.cookies.set(name, valToSet, {
     domain,
     httpOnly,
     maxAge,
