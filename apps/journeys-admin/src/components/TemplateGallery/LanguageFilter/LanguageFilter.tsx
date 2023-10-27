@@ -32,7 +32,7 @@ export function LanguageFilter({
 
   return (
     <>
-      <Stack alignItems="center" justifyContent="center">
+      <Stack direction="row" alignItems="center" justifyContent="center">
         {!loading && (
           <Typography variant="subtitle3">
             {t('Filter by language:')}
