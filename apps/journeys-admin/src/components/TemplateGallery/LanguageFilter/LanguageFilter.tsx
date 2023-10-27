@@ -1,6 +1,6 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -32,14 +32,7 @@ export function LanguageFilter({
 
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
+      <Stack alignItems="center" justifyContent="center">
         {!loading && (
           <Typography variant="subtitle3">
             {t('Filter by language:')}
@@ -67,7 +60,7 @@ export function LanguageFilter({
             {loading ? <Skeleton width={61} /> : localName ?? nativeName}
           </Typography>
         </Button>
-      </Box>
+      </Stack>
       <LanguageFilterDialog
         open={open}
         onClose={() => setOpen(false)}
