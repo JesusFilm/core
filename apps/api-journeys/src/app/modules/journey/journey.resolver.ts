@@ -429,7 +429,8 @@ export class JourneyResolver {
                   'hostId',
                   'teamId',
                   'createdAt',
-                  'strategySlug'
+                  'strategySlug',
+                  'journeyTags'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -439,16 +440,6 @@ export class JourneyResolver {
                 featuredAt: null,
                 template: false,
                 team: { connect: { id: teamId } },
-                journeyTags:
-                  journey.template === true
-                    ? {
-                        create: journey.journeyTags.map((tag) => ({
-                          tagId: tag.tagId,
-                          journeyId: duplicateJourneyId,
-                          journey: { connect: { id: duplicateJourneyId } }
-                        }))
-                      }
-                    : undefined,
                 userJourneys: {
                   create: {
                     userId,
@@ -482,6 +473,7 @@ export class JourneyResolver {
             return duplicateJourney
           }
         )
+
         // save base blocks
         await this.blockService.saveAll(
           duplicateBlocks.map((block) => ({
