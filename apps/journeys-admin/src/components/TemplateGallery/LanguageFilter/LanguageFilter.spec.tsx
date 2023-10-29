@@ -5,10 +5,19 @@ import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery/useLanguagesQuery
 
 import { LanguageFilter } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('LanguageFilter', () => {
   it('should open the language filter dialog on button click', async () => {
     const onChange = jest.fn()
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -73,9 +82,10 @@ describe('LanguageFilter', () => {
         <LanguageFilter languageId="529" onChange={onChange} />
       </MockedProvider>
     )
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(getByText('Filter by language:')).toBeInTheDocument()
       fireEvent.click(getByRole('button', { name: 'English' }))
-    )
+    })
     expect(getByRole('dialog')).toBeInTheDocument()
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
