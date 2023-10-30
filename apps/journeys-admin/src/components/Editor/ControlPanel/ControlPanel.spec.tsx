@@ -892,11 +892,11 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('button', { name: 'Button' }))
     await waitFor(() => {
       expect(getByRole('button', { name: 'Done' })).toBeInTheDocument()
-      expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
-        'aria-selected',
-        'true'
-      )
     })
+    expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 
   it('should keep Journey tab open when selecting a card', async () => {

@@ -117,7 +117,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "options": {
         "lintFilePatterns": ["apps/watch/**/*.{ts,tsx,js,jsx}"]
       },
