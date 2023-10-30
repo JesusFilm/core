@@ -9,11 +9,11 @@ import { TabPanel } from '@core/shared/ui/TabPanel'
 
 import { GetTags_tags as Tags } from '../../../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../../../libs/useTagsQuery'
+import { ParentTagIcon } from '../../../../ParentTagIcon'
 import {
   AutocompleteOption,
   TagAutocomplete
 } from '../../../../TagAutocomplete'
-import { ParentTagIcon } from '../../../../TemplateView/TemplateTags/ParentTagIcon'
 
 interface TagOptionsData {
   [id: string]: { label: string; children: AutocompleteOption[] }
