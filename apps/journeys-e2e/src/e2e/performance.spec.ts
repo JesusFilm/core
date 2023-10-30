@@ -20,7 +20,7 @@ const config = {
 test.describe('Perform lighthouse audit', () => {
   test.use({ viewport: null })
 
-  test('Check home page performance', async ({}) => {
+  test('Check home page performance', async () => {
     const browser = await chromium.launch({
       args: ['--remote-debugging-port=9222', '--start-maximized']
     })
@@ -34,7 +34,7 @@ test.describe('Perform lighthouse audit', () => {
         accessibility: 94,
         'best-practices': 83,
         seo: 82,
-        pwa: 78,        
+        pwa: 78
       },
       reports: {
         formats: { html: true },
