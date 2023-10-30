@@ -119,6 +119,7 @@ export function LanguageDialog({
             >
               <Form>
                 <LanguageAutocomplete
+                  multiple={false}
                   onChange={async (value) =>
                     await setFieldValue('language', value)
                   }

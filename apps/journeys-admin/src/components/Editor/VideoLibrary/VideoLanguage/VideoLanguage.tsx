@@ -75,6 +75,7 @@ export function VideoLanguage({
       </AppBar>
       <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 6 }}>
         <LanguageAutocomplete
+          multiple={false}
           onChange={handleChange}
           value={language}
           languages={languages}

@@ -81,6 +81,8 @@ export function LanguageFilterDialog({
         >
           <Form>
             <LanguageAutocomplete
+              // update to be true on multiple language changes
+              multiple={false}
               onChange={async (value) => await setFieldValue('language', value)}
               value={values.language}
               languages={languages}

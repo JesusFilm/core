@@ -24,12 +24,7 @@ export interface LanguageOption {
   nativeName?: string
 }
 
-type LanguageOptionVariant = LanguageOption | readonly LanguageOption[]
-
-export interface LanguageAutocompleteProps {
-  onChange: (value?: LanguageOptionVariant) => void
-  value?: LanguageOptionVariant
-  multiple?: boolean
+interface BaseLanguageAutocompleteProps {
   languages?: Language[]
   loading: boolean
   helperText?: string
@@ -40,6 +35,24 @@ export interface LanguageAutocompleteProps {
     state: AutocompleteRenderOptionState
   ) => ReactNode
 }
+
+interface SingleLanguageAutocompleteProps
+  extends BaseLanguageAutocompleteProps {
+  onChange: (value?: LanguageOption) => void
+  value?: LanguageOption
+  multiple: false | undefined
+}
+
+interface MultipleLanguageAutocompleteProps
+  extends BaseLanguageAutocompleteProps {
+  onChange: (value?: readonly LanguageOption[]) => void
+  value?: LanguageOption[]
+  multiple: true
+}
+
+export type LanguageAutocompleteProps =
+  | SingleLanguageAutocompleteProps
+  | MultipleLanguageAutocompleteProps
 
 export function LanguageAutocomplete({
   onChange: handleChange,
@@ -125,7 +138,13 @@ export function LanguageAutocomplete({
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
       }
-      onChange={(_event, option) => handleChange(option)}
+      onChange={(_event, value) => {
+        if (multiple === true) {
+          handleChange(value as readonly LanguageOption[])
+        } else {
+          handleChange(value as LanguageOption | undefined)
+        }
+      }}
       options={sortedOptions}
       loading={loading}
       disablePortal={process.env.NODE_ENV === 'test'}
