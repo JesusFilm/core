@@ -15,7 +15,6 @@ test('sample journeys-admin e2e test', async ({ page }) => {
   // await expect(page).toHaveURL(/.*journeys-admin/)
 
   await expect(page).toHaveScreenshot('home-page.png', {
-    animations: 'disabled',
     fullPage: true
   })
 })
