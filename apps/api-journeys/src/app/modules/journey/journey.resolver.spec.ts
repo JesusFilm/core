@@ -67,6 +67,8 @@ describe('JourneyResolver', () => {
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
+    creatorDescription: null,
+    creatorImageBlockId: null,
     primaryImageBlockId: null,
     teamId: 'teamId',
     publishedAt: new Date('2021-11-19T12:34:56.647Z'),
@@ -941,6 +943,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'hostId',
             'primaryImageBlockId',
+            'creatorImageBlockId',
+            'creatorDescription',
             'publishedAt',
             'teamId',
             'createdAt',
@@ -1003,6 +1007,8 @@ describe('JourneyResolver', () => {
           'nextBlockId',
           'hostId',
           'primaryImageBlockId',
+          'creatorImageBlockId',
+          'creatorDescription',
           'publishedAt',
           'teamId',
           'createdAt',
@@ -1104,6 +1110,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'hostId',
             'primaryImageBlockId',
+            'creatorImageBlockId',
+            'creatorDescription',
             'publishedAt',
             'teamId',
             'createdAt',
@@ -1626,7 +1634,54 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { not: 'primaryImageBlockId' }
+          id: { notIn: ['primaryImageBlockId'] }
+        }
+      })
+    })
+
+    it('returns blocks without creatorImageBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        creatorImageBlockId: 'creatorImageBlockId'
+      }
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
+        { ...block, __typename: 'ImageBlock', typename: undefined }
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        include: {
+          action: true
+        },
+        orderBy: {
+          parentOrder: 'asc'
+        },
+        where: {
+          journeyId: 'journeyId',
+          id: { notIn: ['creatorImageBlockId'] }
+        }
+      })
+    })
+
+    it('returns blocks without primaryImageBlock or creatorImageBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        primaryImageBlockId: 'primaryImageBlockId',
+        creatorImageBlockId: 'creatorImageBlockId'
+      }
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
+        { ...block, __typename: 'ImageBlock', typename: undefined }
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        include: {
+          action: true
+        },
+        orderBy: {
+          parentOrder: 'asc'
+        },
+        where: {
+          journeyId: 'journeyId',
+          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] }
         }
       })
     })
