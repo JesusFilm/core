@@ -1,5 +1,6 @@
 import Autocomplete, {
-  AutocompleteRenderInputParams
+  AutocompleteRenderInputParams,
+  AutocompleteRenderOptionState
 } from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
@@ -23,19 +24,27 @@ export interface LanguageOption {
   nativeName?: string
 }
 
+type LanguageOptionVariant = LanguageOption | readonly LanguageOption[]
+
 export interface LanguageAutocompleteProps {
-  onChange: (value?: LanguageOption) => void
-  value?: LanguageOption
+  onChange: (value?: LanguageOptionVariant) => void
+  value?: LanguageOptionVariant
+  multiple?: boolean
   languages?: Language[]
   loading: boolean
   helperText?: string
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
-  renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
+  renderOption?: (
+    props: HTMLAttributes<HTMLLIElement>,
+    option: LanguageOption,
+    state: AutocompleteRenderOptionState
+  ) => ReactNode
 }
 
 export function LanguageAutocomplete({
   onChange: handleChange,
   value,
+  multiple,
   languages,
   loading,
   renderInput,
@@ -110,6 +119,8 @@ export function LanguageAutocomplete({
     <Autocomplete
       disableClearable
       value={value}
+      multiple={multiple}
+      disableCloseOnSelect={multiple}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
