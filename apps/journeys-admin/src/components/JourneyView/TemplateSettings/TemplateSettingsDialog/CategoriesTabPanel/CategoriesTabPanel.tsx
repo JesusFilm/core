@@ -13,6 +13,7 @@ import {
   AutocompleteOption,
   TagAutocomplete
 } from '../../../../TagAutocomplete'
+import { ParentTagIcon } from '../../../../TemplateView/TemplateTags/ParentTagIcon'
 
 interface TagOptionsData {
   [id: string]: { label: string; children: AutocompleteOption[] }
@@ -35,7 +36,7 @@ export function CategoriesTabPanel({
   onChange
 }: CategoriesTabPanelProps): ReactElement {
   const { t } = useTranslation()
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { parentTags, childTags } = useTagsQuery()
   const [selectedTags, setSelectedTags] = useState<TagValue[]>(
     initialTags ?? []
@@ -97,12 +98,20 @@ export function CategoriesTabPanel({
             if (tagId != null) {
               return (
                 <Stack
+                  gap={4}
                   key={`${tags[tagId].label}-tag-autocomplete`}
                   direction="row"
                   alignItems="center"
                 >
-                  {mdUp && (
-                    <Typography variant="subtitle2" sx={{ width: 140 }}>
+                  <ParentTagIcon
+                    name={orderedTagLabels[index]}
+                    sx={{ color: 'secondary.light' }}
+                  />
+                  {smUp && (
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ width: 140, color: 'secondary.light' }}
+                    >
                       {t(orderedTagLabels[index])}
                     </Typography>
                   )}
@@ -111,9 +120,9 @@ export function CategoriesTabPanel({
                     tags={tags[tagId].children}
                     selectedTagIds={selectedTags.map((tag) => tag.id)}
                     onChange={handleOnChange}
-                    label={!mdUp ? t(orderedTagLabels[index]) : undefined}
+                    label={!smUp ? t(orderedTagLabels[index]) : undefined}
                     placeholder={
-                      mdUp
+                      smUp
                         ? `${t('Add')} ${t(
                             orderedTagLabels[index]
                           ).toLowerCase()}`
