@@ -5,7 +5,7 @@ import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
@@ -21,6 +21,8 @@ interface TagsFilterProps {
   selectedTagIds: string[]
   onChange: (selectedTagIds: string[], filteredTagIds: string[]) => void
 }
+
+const StyledLi = styled('li')({})
 
 export function TagsFilter({
   label,
@@ -64,7 +66,7 @@ export function TagsFilter({
       filteredChildTagIds
     )
   }
-
+  const hasMultipleColumns = tagNames.length > 1
   return (
     <Box sx={{ width: '100%' }}>
       <Autocomplete
@@ -99,25 +101,35 @@ export function TagsFilter({
             .find(({ id }) => id === params.group)
             ?.name.find(({ primary }) => primary)?.value
           return (
-            <li
+            <StyledLi
               key={params.key}
-              style={{
-                paddingLeft: parentTagName === 'Topics' ? 0 : 12,
-                paddingRight: 12,
-                marginLeft: parentTagName === 'Collections' ? 16 : 0,
-                borderRadius: 8,
-                backgroundColor:
-                  parentTagName === 'Collections'
-                    ? theme.palette.grey[100]
-                    : 'background.paper',
+              sx={{
+                '&:last-of-type': {
+                  pl: { xs: 0, md: hasMultipleColumns ? 3 : 0 },
 
-                border:
-                  parentTagName === 'Collections' ? '1px solid #EFEFEF' : 'none'
+                  backgroundColor: {
+                    xs: 'background.paper',
+                    md: hasMultipleColumns
+                      ? theme.palette.grey[100]
+                      : 'background.paper'
+                  },
+                  borderWidth: '1px',
+                  borderColor: {
+                    xs: 'background.paper',
+                    md: hasMultipleColumns
+                      ? 'background.default'
+                      : 'background.paper'
+                  }
+                },
+                pt: hasMultipleColumns ? 6 : 0,
+                pl: 0,
+                pr: hasMultipleColumns ? 3 : 0,
+                borderRadius: 2
               }}
             >
               {tagNames.length > 1 && (
                 <Stack direction="row" alignItems="center" gap={3}>
-                  <ParentTagIcon name={parentTagName} sx={{ ml: 2 }} />
+                  <ParentTagIcon name={parentTagName} sx={{ ml: 1 }} />
                   <Typography
                     variant="subtitle1"
                     sx={{
@@ -131,32 +143,39 @@ export function TagsFilter({
                 </Stack>
               )}
               <Box>{params.children}</Box>
-            </li>
+            </StyledLi>
           )
         }}
         renderOption={(props, option, { selected }) => (
-          <li
+          <StyledLi
             {...props}
-            style={{ padding: 0, paddingTop: 6, paddingBottom: 6 }}
+            sx={{
+              '&.MuiAutocomplete-option': {
+                p: 0,
+                pt: '6px',
+                pb: '6px'
+              }
+            }}
           >
             <Checkbox
               icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
               checkedIcon={<CheckBoxIcon fontSize="small" />}
-              sx={{ mr: 2 }}
+              sx={{ mr: 2, ml: 1, p: 0 }}
               checked={selected}
             />
-            {option.name.find(({ primary }) => primary)?.value ?? ''}
-          </li>
+            <Typography variant="body2">
+              {option.name.find(({ primary }) => primary)?.value ?? ''}
+            </Typography>
+          </StyledLi>
         )}
         multiple
         fullWidth
         slotProps={{
           popper: {
             sx: {
-              zIndex: 1,
               '& .MuiAutocomplete-listbox': {
                 maxHeight: { xs: 'auto', sm: '100%' },
-                display: { xs: 'block', sm: 'flex' },
+                display: { xs: 'block', md: 'flex' },
                 '> li': {
                   flexGrow: 1
                 }
@@ -165,7 +184,9 @@ export function TagsFilter({
           },
           paper: {
             sx: {
-              p: { xs: 0, sm: 4 }
+              px: { xs: 0, sm: hasMultipleColumns ? 6 : 4 },
+              py: { xs: 0, sm: hasMultipleColumns ? 3 : 0 },
+              minWidth: { sm: 'auto', md: 'max-content' }
             }
           }
         }}
