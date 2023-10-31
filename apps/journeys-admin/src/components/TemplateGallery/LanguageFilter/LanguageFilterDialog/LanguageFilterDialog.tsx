@@ -8,14 +8,14 @@ import {
   MultipleLanguageAutocomplete
 } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
-import { getLanguage } from '../getLanguages'
+import { getLanguages } from '../getLanguages'
 
 interface LanguageFilterDialogProps {
   open: boolean
   onClose: () => void
   onChange: (values: string[]) => void
   languages?: Language[]
-  languageId: string
+  languageIds: string[]
   loading: boolean
 }
 
@@ -24,11 +24,11 @@ export function LanguageFilterDialog({
   onClose,
   onChange,
   languages,
-  languageId,
+  languageIds,
   loading
 }: LanguageFilterDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  // update to be taking in languageIds
+  const ENGLISH_LANGUAGE_ID = '529'
 
   const handleSubmit = (values: FormikValues): void => {
     const ids = values.languages.map((language) => language.id)
@@ -37,6 +37,9 @@ export function LanguageFilterDialog({
   }
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
+    if (languageIds.length === 0) {
+      onChange([ENGLISH_LANGUAGE_ID])
+    }
     return () => {
       onClose()
       // wait for dialog animation to complete
@@ -44,7 +47,10 @@ export function LanguageFilterDialog({
         () =>
           resetForm({
             values: {
-              language: getLanguage(languageId, languages)
+              languages:
+                languageIds.length > 0
+                  ? getLanguages(languageIds, languages)
+                  : getLanguages([ENGLISH_LANGUAGE_ID], languages)
             }
           }),
         500
@@ -53,35 +59,41 @@ export function LanguageFilterDialog({
   }
 
   return (
-    <Formik
-      initialValues={{
-        languages:
-          languages != null ? getLanguage(languageId, languages) : undefined
-      }}
-      onSubmit={handleSubmit}
-    >
-      {({ values, handleSubmit, resetForm, setFieldValue }) => (
-        <Dialog
-          open={open}
-          onClose={handleClose(resetForm)}
-          dialogTitle={{ title: t('Filter By Language') }}
-          dialogAction={{
-            onSubmit: handleSubmit,
-            closeLabel: t('Cancel')
+    <>
+      {languages != null && (
+        <Formik
+          initialValues={{
+            languages:
+              languages != null
+                ? getLanguages(languageIds, languages)
+                : undefined
           }}
+          onSubmit={handleSubmit}
         >
-          <Form>
-            <MultipleLanguageAutocomplete
-              onChange={async (values) =>
-                await setFieldValue('languages', values)
-              }
-              value={values.languages}
-              languages={languages}
-              loading={loading}
-            />
-          </Form>
-        </Dialog>
+          {({ values, handleSubmit, resetForm, setFieldValue }) => (
+            <Dialog
+              open={open}
+              onClose={handleClose(resetForm)}
+              dialogTitle={{ title: t('Filter By Language') }}
+              dialogAction={{
+                onSubmit: handleSubmit,
+                closeLabel: t('Cancel')
+              }}
+            >
+              <Form>
+                <MultipleLanguageAutocomplete
+                  onChange={async (values) =>
+                    await setFieldValue('languages', values)
+                  }
+                  values={values.languages}
+                  languages={languages}
+                  loading={loading}
+                />
+              </Form>
+            </Dialog>
+          )}
+        </Formik>
       )}
-    </Formik>
+    </>
   )
 }

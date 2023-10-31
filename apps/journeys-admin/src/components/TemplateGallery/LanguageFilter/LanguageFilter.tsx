@@ -24,7 +24,11 @@ export function LanguageFilter({
 
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
 
-  const languageName = getLanguages(languageIds, data?.languages)
+  const languageNames = getLanguages(languageIds, data?.languages)
+    ?.map(
+      (languageName) => languageName.localName ?? languageName.nativeName ?? ' '
+    )
+    .join(', ')
 
   return (
     <>
@@ -53,7 +57,7 @@ export function LanguageFilter({
               overflow: 'hidden'
             }}
           >
-            {loading ? <Skeleton width={61} /> : languageName}
+            {loading ? <Skeleton width={61} /> : languageNames}
           </Typography>
         </Button>
       </Stack>
@@ -62,7 +66,7 @@ export function LanguageFilter({
         onClose={() => setOpen(false)}
         onChange={onChange}
         languages={data?.languages}
-        languageId={languageIds[0]}
+        languageIds={languageIds}
         loading={loading}
       />
     </>

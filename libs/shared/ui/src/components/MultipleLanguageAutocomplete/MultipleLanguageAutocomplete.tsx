@@ -26,7 +26,7 @@ export interface LanguageOption {
 
 interface MultipleLanguageAutocompleteProps {
   onChange: (value?: readonly LanguageOption[]) => void
-  value?: LanguageOption[]
+  values?: LanguageOption[]
   languages?: Language[]
   loading: boolean
   helperText?: string
@@ -34,7 +34,7 @@ interface MultipleLanguageAutocompleteProps {
 
 export function MultipleLanguageAutocomplete({
   onChange: handleChange,
-  value,
+  values,
   languages,
   loading
 }: MultipleLanguageAutocompleteProps): ReactElement {
@@ -68,7 +68,7 @@ export function MultipleLanguageAutocomplete({
     <Autocomplete
       multiple
       disableCloseOnSelect
-      value={value}
+      value={values}
       onChange={(_event, option) => handleChange(option)}
       options={sortedOptions}
       loading={loading}

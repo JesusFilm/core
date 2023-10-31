@@ -1,1 +1,1 @@
-export { getLanguages, getLanguage } from './getLanguages'
+export { getLanguages } from './getLanguages'
