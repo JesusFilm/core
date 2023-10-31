@@ -4,6 +4,8 @@ import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
+import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
@@ -11,6 +13,7 @@ import { ReactElement } from 'react'
 
 import { GetTags_tags as Tag } from '../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
+import { ParentTagIcon } from '../../ParentTagIcon'
 
 interface TagsFilterProps {
   label: string
@@ -26,6 +29,7 @@ export function TagsFilter({
   onChange
 }: TagsFilterProps): ReactElement {
   const { parentTags, childTags, loading } = useTagsQuery()
+  const theme = useTheme()
   const filteredParentTagIds = compact(
     tagNames.map((tagName) => {
       return parentTags.find(({ name }) =>
@@ -64,6 +68,7 @@ export function TagsFilter({
   return (
     <Box sx={{ width: '100%' }}>
       <Autocomplete
+        open
         loading={loading}
         disableCloseOnSelect
         value={filteredSelectedTags}
@@ -90,36 +95,55 @@ export function TagsFilter({
             }}
           />
         )}
-        renderGroup={(params) => (
-          <li key={params.key}>
-            {tagNames.length > 1 && (
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  position: 'sticky',
-                  top: 0,
-                  py: 2,
-                  px: 5,
-                  backgroundColor: 'background.paper',
-                  zIndex: 99999
-                }}
-              >
-                {
-                  parentTags
-                    .find(({ id }) => id === params.group)
-                    ?.name.find(({ primary }) => primary)?.value
-                }
-              </Typography>
-            )}
-            <Box>{params.children}</Box>
-          </li>
-        )}
+        renderGroup={(params) => {
+          const parentTagName = parentTags
+            .find(({ id }) => id === params.group)
+            ?.name.find(({ primary }) => primary)?.value
+          return (
+            <li
+              key={params.key}
+              style={{
+                paddingLeft: 12,
+                paddingRight: 12,
+                marginLeft: parentTagName === 'Collections' ? 16 : 0,
+                borderRadius: 8,
+                backgroundColor:
+                  parentTagName === 'Collections'
+                    ? theme.palette.grey[100]
+                    : 'background.paper',
+
+                border:
+                  parentTagName === 'Collections' ? '1px solid #EFEFEF' : 'none'
+              }}
+            >
+              {tagNames.length > 1 && (
+                <Stack direction="row" alignItems="center" gap={3}>
+                  <ParentTagIcon name={parentTagName} sx={{ ml: 2 }} />
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      flex: 'none',
+                      top: 0,
+                      py: 2
+                    }}
+                  >
+                    {parentTagName}
+                  </Typography>
+                </Stack>
+              )}
+              <Box>{params.children}</Box>
+            </li>
+          )
+        }}
         renderOption={(props, option, { selected }) => (
-          <li {...props}>
+          <li
+            {...props}
+            style={{ padding: 0, paddingTop: 6, paddingBottom: 6 }}
+          >
             <Checkbox
               icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
               checkedIcon={<CheckBoxIcon fontSize="small" />}
-              style={{ marginRight: 8 }}
+              sx={{ mr: 2 }}
               checked={selected}
             />
             {option.name.find(({ primary }) => primary)?.value ?? ''}
@@ -130,12 +154,19 @@ export function TagsFilter({
         slotProps={{
           popper: {
             sx: {
+              zIndex: 1,
               '& .MuiAutocomplete-listbox': {
-                display: 'flex',
+                maxHeight: { xs: 'auto', sm: '100%' },
+                display: { xs: 'block', sm: 'flex' },
                 '> li': {
                   flexGrow: 1
                 }
               }
+            }
+          },
+          paper: {
+            sx: {
+              p: { xs: 0, sm: 4 }
             }
           }
         }}
