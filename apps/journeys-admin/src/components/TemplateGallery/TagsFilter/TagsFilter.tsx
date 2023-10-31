@@ -68,7 +68,6 @@ export function TagsFilter({
   return (
     <Box sx={{ width: '100%' }}>
       <Autocomplete
-        open
         loading={loading}
         disableCloseOnSelect
         value={filteredSelectedTags}
@@ -103,7 +102,7 @@ export function TagsFilter({
             <li
               key={params.key}
               style={{
-                paddingLeft: 12,
+                paddingLeft: parentTagName === 'Topics' ? 0 : 12,
                 paddingRight: 12,
                 marginLeft: parentTagName === 'Collections' ? 16 : 0,
                 borderRadius: 8,
