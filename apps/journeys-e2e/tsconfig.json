@@ -6,9 +6,5 @@
     {
       "path": "./tsconfig.e2e.json"
     }
-  ],
-  "compilerOptions": {
-    "importHelpers": true,
-    "types": ["@playwright/test"]
-  }
+  ]
 }
