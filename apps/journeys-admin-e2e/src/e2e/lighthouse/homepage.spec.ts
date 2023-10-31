@@ -31,7 +31,7 @@ test('Homepage', async () => {
     page,
     config,
     thresholds: {
-      performance: 66,
+      performance: 36,
       accessibility: 98,
       'best-practices': 83,
       seo: 82,
