@@ -40,17 +40,17 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-    {
-      name: 'chrome-desktop',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' }
-    },
+    // {
+    //   name: 'chrome-desktop',
+    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' }
+    // },
 
     // /* Test against mobile viewports. */
     // // By default it's using chromium channel, changed it to chrome so it can play the video
-    {
-      name: 'chrome-mobile',
-      use: { ...devices['Pixel 5'], channel: 'chrome' }
-    }
+    // {
+    //   name: 'chrome-mobile',
+    //   use: { ...devices['Pixel 5'], channel: 'chrome' }
+    // }
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },
@@ -67,10 +67,10 @@ export default defineConfig({
     //   use: { ...devices['Desktop Safari'] },
     // },
     // Video is not playing on chromium, so we use chrome instead
-    // {
-    //   name: 'chromium',
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
   ]
 
   /* Run your local dev server before starting the tests */
