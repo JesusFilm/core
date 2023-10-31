@@ -17,11 +17,14 @@ const config = {
   }
 }
 
+// Set test time out to 4 minutes as it has to run lighthouse audit
+test.setTimeout(4 * 60 * 1000)
+
 test('Homepage', async () => {
   const browser = await chromium.launch({
     args: ['--remote-debugging-port=9222', '--start-maximized']
   })
-  
+
   const page = await browser.newPage()
   await page.goto('/')
   await playAudit({
