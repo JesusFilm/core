@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { TemplateSections } from '../TemplateSections'
 
 import { LanguageFilter } from './LanguageFilter'
+import { TagCarousels } from './TagCarousels'
 import { TagsFilter } from './TagsFilter'
 
 export function TemplateGallery(): ReactElement {
@@ -61,7 +62,7 @@ export function TemplateGallery(): ReactElement {
         container
         spacing={2}
         sx={{
-          pb: { xs: 6, md: 9 }
+          pb: { xs: 4, md: 7 }
         }}
       >
         <Grid item xs={12} md={8}>
@@ -89,6 +90,7 @@ export function TemplateGallery(): ReactElement {
           />
         </Grid>
       </Grid>
+      <TagCarousels />
       <TemplateSections
         tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
         languageId={languageId}
