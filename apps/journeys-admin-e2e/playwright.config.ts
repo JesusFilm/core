@@ -69,8 +69,8 @@ export default defineConfig({
     // Video is not playing on chromium, so we use chrome instead
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+      use: { ...devices['Desktop Chrome'] }
+    }
   ]
 
   /* Run your local dev server before starting the tests */
