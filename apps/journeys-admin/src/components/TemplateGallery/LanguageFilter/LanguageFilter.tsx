@@ -7,15 +7,16 @@ import { useTranslation } from 'react-i18next'
 
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
+import { getLanguages } from './getLanguages'
 import { LanguageFilterDialog } from './LanguageFilterDialog'
 
 interface LanguageFilterProps {
-  languageId: string
-  onChange: (value) => void
+  languageIds: string[]
+  onChange: (values: string[]) => void
 }
 
 export function LanguageFilter({
-  languageId,
+  languageIds,
   onChange
 }: LanguageFilterProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -23,12 +24,7 @@ export function LanguageFilter({
 
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
 
-  const localName = data?.languages
-    ?.find((language) => language?.id === languageId)
-    ?.name?.find(({ primary }) => !primary)?.value
-  const nativeName = data?.languages
-    ?.find((language) => language?.id === languageId)
-    ?.name?.find(({ primary }) => primary)?.value
+  const languageName = getLanguages(languageIds, data?.languages)
 
   return (
     <>
@@ -57,7 +53,7 @@ export function LanguageFilter({
               overflow: 'hidden'
             }}
           >
-            {loading ? <Skeleton width={61} /> : localName ?? nativeName}
+            {loading ? <Skeleton width={61} /> : languageName}
           </Typography>
         </Button>
       </Stack>
@@ -66,7 +62,7 @@ export function LanguageFilter({
         onClose={() => setOpen(false)}
         onChange={onChange}
         languages={data?.languages}
-        languageId={languageId}
+        languageId={languageIds[0]}
         loading={loading}
       />
     </>

@@ -17,12 +17,12 @@ interface Contents {
 
 interface TemplateSectionsProps {
   tagIds?: string[]
-  languageId: string
+  languageIds: string[]
 }
 
 export function TemplateSections({
   tagIds,
-  languageId
+  languageIds
 }: TemplateSectionsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [contents, setContents] = useState<Contents>({})
@@ -34,7 +34,7 @@ export function TemplateSections({
         template: true,
         orderByRecent: true,
         tagIds,
-        languageIds: [languageId]
+        languageIds
       }
     },
     onCompleted(data) {
