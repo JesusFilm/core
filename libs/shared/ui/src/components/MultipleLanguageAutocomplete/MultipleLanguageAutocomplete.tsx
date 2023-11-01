@@ -69,10 +69,11 @@ export function MultipleLanguageAutocomplete({
       multiple
       disableCloseOnSelect
       value={values}
+      limitTags={2}
       onChange={(_event, option) => handleChange(option)}
       options={sortedOptions}
       loading={loading}
-      disablePortal={process.env.NODE_ENV === 'test'}
+      isOptionEqualToValue={(option, values) => option.id === values.id}
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
       }

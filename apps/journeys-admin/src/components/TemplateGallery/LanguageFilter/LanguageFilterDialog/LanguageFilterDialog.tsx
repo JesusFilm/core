@@ -48,9 +48,9 @@ export function LanguageFilterDialog({
           resetForm({
             values: {
               languages:
-                languageIds.length > 0
-                  ? getLanguages(languageIds, languages)
-                  : getLanguages([ENGLISH_LANGUAGE_ID], languages)
+                languages != null
+                  ? getLanguages([ENGLISH_LANGUAGE_ID], languages)
+                  : undefined
             }
           }),
         500
@@ -69,6 +69,7 @@ export function LanguageFilterDialog({
                 : undefined
           }}
           onSubmit={handleSubmit}
+          enableReinitialize
         >
           {({ values, handleSubmit, resetForm, setFieldValue }) => (
             <Dialog

@@ -24,11 +24,17 @@ export function LanguageFilter({
 
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
 
-  const languageNames = getLanguages(languageIds, data?.languages)
-    ?.map(
+  const formatLanguages = (): string => {
+    const languageNames = getLanguages(languageIds, data?.languages)?.map(
       (languageName) => languageName.localName ?? languageName.nativeName ?? ' '
     )
-    .join(', ')
+    if (languageNames.length > 2) {
+      const remaining = languageNames.length - 2
+      return `${languageNames.slice(0, 2).join(', ')}, +${remaining}`
+    }
+    return languageNames.join(', ')
+  }
+  const languageNames = formatLanguages()
 
   return (
     <>
