@@ -167,7 +167,7 @@ export function Canvas(): ReactElement {
     <Box
       sx={{
         backgroundColor: (theme) => theme.palette.background.paper,
-        '& .swiper-container': {
+        '& .swiper': {
           paddingX: 6,
           paddingY: 2
         },
