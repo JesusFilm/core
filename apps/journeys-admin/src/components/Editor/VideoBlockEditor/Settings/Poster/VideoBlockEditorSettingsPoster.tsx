@@ -36,6 +36,7 @@ export function VideoBlockEditorSettingsPoster({
     <Stack
       direction="row"
       justifyContent="space-between"
+      spacing={3}
       data-testid="VideoBlockEditorSettingsPoster"
     >
       <Stack direction="column" justifyContent="center">

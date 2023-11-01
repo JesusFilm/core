@@ -123,7 +123,7 @@ export const TextResponse = ({
   } = useEditor()
 
   return (
-    <Box sx={{ mb: 4 }}>
+    <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
       <Formik
         initialValues={initialValues}
         onSubmit={(values) => {

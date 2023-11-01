@@ -65,13 +65,13 @@ describe('BackgroundVideo', () => {
       )
 
       // Expect container to have 16:9 aspect ratio
-      expect(getByTestId('background-video-container')).toHaveStyle(
+      expect(getByTestId('CardContainedBackgroundVideo')).toHaveStyle(
         'position: absolute'
       )
-      expect(getByTestId('background-video-container')).toHaveStyle(
+      expect(getByTestId('CardContainedBackgroundVideo')).toHaveStyle(
         'margin-left: calc((100vh * 16 / 9) * -0.355)'
       )
-      expect(getByTestId('background-video-container')).toHaveStyle(
+      expect(getByTestId('CardContainedBackgroundVideo')).toHaveStyle(
         'overflow: hidden'
       )
 
