@@ -24,13 +24,13 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('TemplateGallery', () => {
   it('should render TemplateGallery', async () => {
-    const { getByRole } = render(
+    const { getByRole, getAllByRole } = render(
       <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
         <TemplateGallery />
       </MockedProvider>
     )
     expect(
-      getByRole('heading', { name: 'Journey Templates' })
+      getAllByRole('heading', { name: 'Journey Templates' })[0]
     ).toBeInTheDocument()
     await waitFor(() =>
       expect(getByRole('button', { name: 'English' })).toBeInTheDocument()

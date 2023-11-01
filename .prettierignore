@@ -9,3 +9,4 @@ schema.graphql
 .prettierignore
 .docusaurus/
 .storybook/static/mockServiceWorker.js
+/.nx/cache

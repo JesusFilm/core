@@ -114,7 +114,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "options": {
         "lintFilePatterns": ["apps/journeys/**/*.{ts,tsx,js,jsx}"]
       },
