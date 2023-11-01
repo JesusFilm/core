@@ -64,10 +64,10 @@ export function Step({
   return (
     <>
       {(variant === 'default' || variant === 'embed') &&
-        (treeBlocks[0].id === blockId ? (
-          <NextSeo title={`${journey?.title ?? ''} (${heading})`} />
-        ) : (
+        (treeBlocks[0]?.id !== blockId ? (
           <NextSeo title={`${heading} (${journey?.title ?? ''})`} />
+        ) : (
+          <NextSeo title={`${journey?.title ?? ''} (${heading})`} />
         ))}
       {children.map((block) => (
         <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
