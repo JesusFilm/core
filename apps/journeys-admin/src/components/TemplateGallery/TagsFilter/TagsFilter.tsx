@@ -71,7 +71,10 @@ export function TagsFilter({
     <Box sx={{ width: '100%' }}>
       <Autocomplete
         loading={loading}
+        limitTags={hasMultipleColumns ? 4 : 1}
         disableCloseOnSelect
+        multiple
+        fullWidth
         value={filteredSelectedTags}
         onChange={handleChange}
         options={filteredChildTags}
@@ -85,6 +88,7 @@ export function TagsFilter({
             label={label}
             InputProps={{
               ...params.InputProps,
+
               endAdornment: (
                 <>
                   {loading ? (
@@ -106,7 +110,6 @@ export function TagsFilter({
               sx={{
                 '&:last-of-type': {
                   pl: { xs: 0, md: hasMultipleColumns ? 3 : 0 },
-
                   backgroundColor: {
                     xs: 'background.paper',
                     md: hasMultipleColumns
@@ -158,18 +161,35 @@ export function TagsFilter({
             }}
           >
             <Checkbox
-              icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+              icon={
+                <CheckBoxOutlineBlankIcon
+                  fontSize="small"
+                  sx={{ color: 'divider' }}
+                />
+              }
               checkedIcon={<CheckBoxIcon fontSize="small" />}
               sx={{ mr: 2, ml: 1, p: 0 }}
               checked={selected}
             />
-            <Typography variant="body2">
+            <Typography
+              variant="body2"
+              sx={{
+                pr: 1,
+                color: 'secondary.main'
+              }}
+            >
               {option.name.find(({ primary }) => primary)?.value ?? ''}
             </Typography>
           </StyledLi>
         )}
-        multiple
-        fullWidth
+        ChipProps={{
+          size: 'small',
+          sx: {
+            '&.MuiChip-root': {
+              maxWidth: 'calc(100% - 70px)'
+            }
+          }
+        }}
         slotProps={{
           popper: {
             sx: {
@@ -185,6 +205,7 @@ export function TagsFilter({
           paper: {
             sx: {
               px: { xs: 0, sm: hasMultipleColumns ? 6 : 4 },
+              pl: { xs: 4 },
               py: { xs: 0, sm: hasMultipleColumns ? 3 : 0 },
               minWidth: { sm: 'auto', md: 'max-content' }
             }
