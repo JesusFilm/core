@@ -1,7 +1,7 @@
 const { initialize: mswInitialize, mswLoader } = require('msw-storybook-addon')
 const { MockedProvider } = require('@apollo/client/testing')
-require('swiper/swiper.min.css')
-require('swiper/components/pagination/pagination.min.css')
+require('swiper/css')
+require('swiper/css/pagination')
 
 const customViewports = {
   mobileMin: {

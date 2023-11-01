@@ -1,11 +1,11 @@
-import 'swiper/swiper.min.css'
+import 'swiper/css'
 
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
-import { SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { SwiperOptions } from 'swiper/types'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'

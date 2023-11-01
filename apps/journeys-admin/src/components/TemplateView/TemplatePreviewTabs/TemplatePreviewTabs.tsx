@@ -1,5 +1,5 @@
-import 'swiper/swiper.min.css'
-import 'swiper/components/scrollbar/scrollbar.min.css'
+import 'swiper/css'
+import 'swiper/css/scrollbar'
 
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
@@ -7,7 +7,8 @@ import Tabs from '@mui/material/Tabs'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import SwiperCore, { A11y, Mousewheel, Scrollbar } from 'swiper'
+import SwiperCore from 'swiper'
+import { A11y, Mousewheel, Scrollbar } from 'swiper/modules'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'

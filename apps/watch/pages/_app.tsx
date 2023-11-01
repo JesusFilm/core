@@ -12,7 +12,7 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import 'swiper/swiper.min.css'
+import 'swiper/css'
 import '../public/fonts/fonts.css'
 import { useApolloClient } from '../src/libs/apolloClient'
 

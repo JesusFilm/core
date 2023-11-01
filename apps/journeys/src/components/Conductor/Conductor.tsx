@@ -6,7 +6,8 @@ import { SxProps, styled, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
-import SwiperCore, { Pagination } from 'swiper'
+import SwiperCore from 'swiper'
+import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -26,8 +27,8 @@ import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
-import 'swiper/swiper.min.css'
-import 'swiper/components/pagination/pagination.min.css'
+import 'swiper/css'
+import 'swiper/css/pagination'
 import { NavigationButton } from './NavigationButton'
 
 SwiperCore.use([Pagination])

@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement, ReactNode, useMemo } from 'react'
-import { SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { SwiperOptions } from 'swiper/types'
 
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 

@@ -2,14 +2,16 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useRef, useState } from 'react'
-import SwiperCore, { A11y, Navigation, SwiperOptions } from 'swiper'
+import SwiperCore from 'swiper'
+import { A11y, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { NavigationOptions } from 'swiper/types/components/navigation'
+import { SwiperOptions } from 'swiper/types'
+import { NavigationOptions } from 'swiper/types/modules/navigation'
 
 import { GetJourneys_journeys as Journeys } from '../../../../__generated__/GetJourneys'
 import { TemplateGalleryCard } from '../../TemplateGalleryCard'
 
-import 'swiper/swiper.min.css'
+import 'swiper/css'
 import { NavButton } from './NavButton'
 
 SwiperCore.use([Navigation, A11y])
