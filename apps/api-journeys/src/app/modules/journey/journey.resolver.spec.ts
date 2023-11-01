@@ -1023,15 +1023,6 @@ describe('JourneyResolver', () => {
             userId: 'userId',
             role: UserJourneyRole.owner
           }
-        },
-        journeyTags: {
-          create: [
-            {
-              journey: { connect: { id: 'duplicateJourneyId' } },
-              journeyId: 'duplicateJourneyId',
-              tagId: 'tagId'
-            }
-          ]
         }
       }
 
