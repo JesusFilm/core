@@ -8,6 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { TemplateSettingsDialog } from './TemplateSettingsDialog'
+import { TemplateSettingsForm } from './TemplateSettingsForm/TemplateSettingsForm'
 
 interface TemplateSettingsProps {
   isPublisher?: boolean
@@ -18,11 +19,14 @@ export function TemplateSettings({
 }: TemplateSettingsProps): ReactElement {
   const { journey } = useJourney()
 
-  const [showTemplateSettingsDialog, setTemplateSettingsDialog] =
-    useState(false)
+  const [open, setOpen] = useState(false)
 
-  const handleTemplateSettingsOpen = (): void => {
-    setTemplateSettingsDialog(true)
+  function handleOpen(): void {
+    setOpen(true)
+  }
+
+  function handleClose(): void {
+    setOpen(false)
   }
 
   return (
@@ -46,7 +50,7 @@ export function TemplateSettings({
             <IconButton
               data-testid="EditTemplateSettings"
               size="small"
-              onClick={handleTemplateSettingsOpen}
+              onClick={handleOpen}
             >
               <Edit2Icon />
             </IconButton>
@@ -60,10 +64,11 @@ export function TemplateSettings({
           )}
         </Typography>
       </Stack>
-      <TemplateSettingsDialog
-        open={showTemplateSettingsDialog}
-        onClose={() => setTemplateSettingsDialog(false)}
-      />
+      {journey != null && (
+        <TemplateSettingsForm onSubmit={handleClose}>
+          <TemplateSettingsDialog open={open} onClose={handleClose} />
+        </TemplateSettingsForm>
+      )}
     </>
   )
 }

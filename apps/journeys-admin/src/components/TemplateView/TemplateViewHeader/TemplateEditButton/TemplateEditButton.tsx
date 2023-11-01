@@ -6,14 +6,18 @@ import { useTranslation } from 'react-i18next'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { TemplateSettingsDialog } from '../../../JourneyView/TemplateSettings/TemplateSettingsDialog'
+import { TemplateSettingsForm } from '../../../JourneyView/TemplateSettings/TemplateSettingsForm'
 
 export function TemplateEditButton(): ReactElement {
   const { t } = useTranslation()
-  const [showTemplateSettingsDialog, setTemplateSettingsDialog] =
-    useState(false)
+  const [open, setOpen] = useState(false)
 
-  const handleTemplateSettingsOpen = (): void => {
-    setTemplateSettingsDialog(true)
+  function handleOpen(): void {
+    setOpen(true)
+  }
+
+  function handleClose(): void {
+    setOpen(false)
   }
 
   return (
@@ -21,17 +25,16 @@ export function TemplateEditButton(): ReactElement {
       <Button
         data-testid="EditTemplateSettings"
         size="small"
-        onClick={handleTemplateSettingsOpen}
+        onClick={handleOpen}
       >
         <Edit2Icon />
         <Typography sx={{ display: { xs: 'none', sm: 'block' }, pl: '6px' }}>
           {t('Edit')}
         </Typography>
       </Button>
-      <TemplateSettingsDialog
-        open={showTemplateSettingsDialog}
-        onClose={() => setTemplateSettingsDialog(false)}
-      />
+      <TemplateSettingsForm onSubmit={handleClose}>
+        <TemplateSettingsDialog open={open} onClose={handleClose} />
+      </TemplateSettingsForm>
     </>
   )
 }

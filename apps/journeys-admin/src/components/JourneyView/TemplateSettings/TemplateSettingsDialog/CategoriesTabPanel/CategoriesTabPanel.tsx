@@ -2,10 +2,9 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ReactElement, useState } from 'react'
+import { useFormikContext } from 'formik'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { TabPanel } from '@core/shared/ui/TabPanel'
 
 import { GetTags_tags as Tags } from '../../../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../../../libs/useTagsQuery'
@@ -13,33 +12,18 @@ import {
   AutocompleteOption,
   TagAutocomplete
 } from '../../../../TagAutocomplete'
+import { TemplateSettingsFormValues } from '../../TemplateSettingsForm'
 
 interface TagOptionsData {
   [id: string]: { label: string; children: AutocompleteOption[] }
 }
 
-interface TagValue {
-  id: string
-  parentId: string
-}
-
-interface CategoriesTabPanelProps {
-  tabValue: number
-  initialTags?: TagValue[]
-  onChange: (field: string, value: TagValue[]) => void
-}
-
-export function CategoriesTabPanel({
-  tabValue,
-  initialTags,
-  onChange
-}: CategoriesTabPanelProps): ReactElement {
+export function CategoriesTabPanel(): ReactElement {
   const { t } = useTranslation()
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const { parentTags, childTags } = useTagsQuery()
-  const [selectedTags, setSelectedTags] = useState<TagValue[]>(
-    initialTags ?? []
-  )
+  const { values, setFieldValue } =
+    useFormikContext<TemplateSettingsFormValues>()
 
   // TODO: Update when supporting multiple languages for tags
   const populateTagDataByParentId = (
@@ -73,59 +57,49 @@ export function CategoriesTabPanel({
     (tagName) => parentTags?.find((tag) => tagName === tag.name[0].value)?.id
   )
 
-  const handleOnChange = (
-    parentId,
-    changedTags: readonly AutocompleteOption[]
-  ): void => {
-    const unchangedTagGroups = selectedTags.filter(
-      (tag) => parentId !== tag.parentId
-    )
-    const updatedTags = changedTags.map((tag) => ({ parentId, id: tag.value }))
+  function handleOnChange(parentId, changedTagIds: readonly string[]): void {
+    const tagIdsOfParentId = tags[parentId].children.map(({ value }) => value)
+    const selectedIds =
+      values.tagIds?.filter((tagId) => !tagIdsOfParentId.includes(tagId)) ?? []
 
-    // Combine unique selected tags from all autocompletes
-    const selected = [...unchangedTagGroups, ...updatedTags]
-    setSelectedTags(selected)
-
-    onChange('tags', selected)
+    void setFieldValue('tagIds', [...selectedIds, ...changedTagIds])
   }
 
   return (
-    <TabPanel name="template-categories-settings" value={tabValue} index={1}>
-      <Stack gap={4} sx={{ pt: 6 }}>
-        {tags != null &&
-          orderedTagsIds.map((tagId, index) => {
-            if (tagId != null) {
-              return (
-                <Stack
-                  key={`${tags[tagId].label}-tag-autocomplete`}
-                  direction="row"
-                  alignItems="center"
-                >
-                  {mdUp && (
-                    <Typography variant="subtitle2" sx={{ width: 140 }}>
-                      {t(orderedTagLabels[index])}
-                    </Typography>
-                  )}
-                  <TagAutocomplete
-                    parentId={tagId}
-                    tags={tags[tagId].children}
-                    selectedTagIds={selectedTags.map((tag) => tag.id)}
-                    onChange={handleOnChange}
-                    label={!mdUp ? t(orderedTagLabels[index]) : undefined}
-                    placeholder={
-                      mdUp
-                        ? `${t('Add')} ${t(
-                            orderedTagLabels[index]
-                          ).toLowerCase()}`
-                        : undefined
-                    }
-                  />
-                </Stack>
-              )
-            }
-            return null
-          })}
-      </Stack>
-    </TabPanel>
+    <>
+      {tags != null &&
+        orderedTagsIds.map((tagId, index) => {
+          if (tagId != null) {
+            return (
+              <Stack
+                key={`${tags[tagId].label}-tag-autocomplete`}
+                direction="row"
+                alignItems="center"
+              >
+                {mdUp && (
+                  <Typography variant="subtitle2" sx={{ width: 140 }}>
+                    {t(orderedTagLabels[index])}
+                  </Typography>
+                )}
+                <TagAutocomplete
+                  parentId={tagId}
+                  tags={tags[tagId].children}
+                  selectedTagIds={values.tagIds}
+                  onChange={handleOnChange}
+                  label={!mdUp ? t(orderedTagLabels[index]) : undefined}
+                  placeholder={
+                    mdUp
+                      ? `${t('Add')} ${t(
+                          orderedTagLabels[index]
+                        ).toLowerCase()}`
+                      : undefined
+                  }
+                />
+              </Stack>
+            )
+          }
+          return null
+        })}
+    </>
   )
 }
