@@ -58,8 +58,8 @@ describe('LanguageFilterDialog', () => {
           open
           onClose={jest.fn()}
           onChange={onChange}
+          languageIds={['529']}
           languages={languages}
-          languageId="529"
           loading={false}
         />
       </MockedProvider>
@@ -67,6 +67,7 @@ describe('LanguageFilterDialog', () => {
 
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'German, Standard Deutsch' }))
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(onChange).toHaveBeenCalled())
@@ -81,7 +82,7 @@ describe('LanguageFilterDialog', () => {
           onClose={onClose}
           onChange={jest.fn()}
           languages={languages}
-          languageId="529"
+          languageIds={['529']}
           loading={false}
         />
       </MockedProvider>

@@ -79,7 +79,7 @@ describe('LanguageFilter', () => {
           }
         ]}
       >
-        <LanguageFilter languageId="529" onChange={onChange} />
+        <LanguageFilter languageIds={['529']} onChange={onChange} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -89,6 +89,7 @@ describe('LanguageFilter', () => {
     expect(getByRole('dialog')).toBeInTheDocument()
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'German, Standard Deutsch' }))
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(onChange).toHaveBeenCalled())
