@@ -722,7 +722,7 @@ describe('ControlPanel', () => {
               variables: {
                 input: {
                   journeyId: 'journeyId',
-                  parentBlockId: 'card2.id',
+                  parentBlockId: 'card3.id',
                   autoplay: true,
                   muted: false,
                   fullsize: true
