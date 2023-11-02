@@ -70,7 +70,6 @@ export function TagsFilter({
   return (
     <Box sx={{ width: '100%' }}>
       <Autocomplete
-        open
         loading={loading}
         limitTags={hasMultipleColumns ? 4 : 1}
         disableCloseOnSelect
