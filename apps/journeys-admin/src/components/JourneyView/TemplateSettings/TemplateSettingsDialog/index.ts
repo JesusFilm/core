@@ -1,1 +1,0 @@
-export { TemplateSettingsDialog } from './TemplateSettingsDialog'

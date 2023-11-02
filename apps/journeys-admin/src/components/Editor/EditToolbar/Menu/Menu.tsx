@@ -2,6 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
+import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
 
@@ -16,7 +17,6 @@ import SettingsIcon from '@core/shared/ui/icons/Settings'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
-import { TemplateSettingsDialog } from '../../../JourneyView/TemplateSettings/TemplateSettingsDialog'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
 
@@ -36,6 +36,22 @@ export const GET_ROLE = gql`
     }
   }
 `
+
+const TemplateSettingsForm = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TemplateSettingsForm" */
+      '../../../JourneyView/TemplateSettings/TemplateSettingsForm'
+    ).then((mod) => mod.TemplateSettingsForm)
+)
+
+const TemplateSettingsDrawer = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TemplateSettingsDrawer" */
+      '../../../JourneyView/TemplateSettings/TemplateSettingsDrawer'
+    ).then((mod) => mod.TemplateSettingsDrawer)
+)
 
 export function Menu(): ReactElement {
   const {
@@ -208,10 +224,15 @@ export function Menu(): ReactElement {
         open={showDescriptionDialog}
         onClose={handleCloseDescription}
       />
-      <TemplateSettingsDialog
-        open={showTemplateSettingsDialog}
-        onClose={handleCloseTemplateSettings}
-      />
+      {journey != null &&
+        (journey?.template !== true || isPublisher != null) && (
+          <TemplateSettingsForm onSubmit={handleCloseTemplateSettings}>
+            <TemplateSettingsDrawer
+              open={showTemplateSettingsDialog}
+              onClose={handleCloseTemplateSettings}
+            />
+          </TemplateSettingsForm>
+        )}
     </>
   )
 }

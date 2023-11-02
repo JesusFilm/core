@@ -1,4 +1,4 @@
-import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -71,13 +71,9 @@ export function CategoriesTabPanel(): ReactElement {
         orderedTagsIds.map((tagId, index) => {
           if (tagId != null) {
             return (
-              <Stack
-                key={`${tags[tagId].label}-tag-autocomplete`}
-                direction="row"
-                alignItems="center"
-              >
+              <Box key={`${tags[tagId].label}-tag-autocomplete`}>
                 {mdUp && (
-                  <Typography variant="subtitle2" sx={{ width: 140 }}>
+                  <Typography variant="subtitle2" gutterBottom>
                     {t(orderedTagLabels[index])}
                   </Typography>
                 )}
@@ -95,7 +91,7 @@ export function CategoriesTabPanel(): ReactElement {
                       : undefined
                   }
                 />
-              </Stack>
+              </Box>
             )
           }
           return null
