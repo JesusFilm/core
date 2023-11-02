@@ -15,6 +15,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import {
+  GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
@@ -35,11 +36,22 @@ export function TemplatePreviewTabs(): ReactElement {
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
       : undefined
 
-  const videoBlocks = useMemo(() => {
-    return journey?.blocks?.filter(
+  const videos = useMemo(() => {
+    // filter backgrond videos from interactive videos
+    const videoBlocks = journey?.blocks?.filter(
       (block) => block.__typename === 'VideoBlock'
     ) as Array<TreeBlock<VideoBlock>>
-  }, [journey])
+
+    const cardBlocksWithVideos = journey?.blocks?.filter(
+      (block) => block.__typename === 'CardBlock' && block.coverBlockId != null
+    ) as Array<TreeBlock<CardBlock>>
+
+    const cardBlockCoverIds = cardBlocksWithVideos?.map(
+      (block) => block.coverBlockId
+    )
+
+    return videoBlocks?.filter(({ id }) => !cardBlockCoverIds?.includes(id))
+  }, [journey?.blocks])
 
   const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
@@ -61,9 +73,9 @@ export function TemplatePreviewTabs(): ReactElement {
           sx={{ width: smUp ? 200 : undefined }}
         />
         <Tab
-          disabled={videoBlocks?.length === 0 || videoBlocks == null}
+          disabled={videos?.length === 0 || videos == null}
           label={t('{{videoBlockCount}} Videos', {
-            videoBlockCount: videoBlocks?.length ?? 0
+            videoBlockCount: videos?.length ?? 0
           })}
           {...tabA11yProps('videos-preview-tab', 1)}
           sx={{ width: smUp ? 200 : undefined }}
@@ -73,8 +85,8 @@ export function TemplatePreviewTabs(): ReactElement {
         <TemplateCardPreview steps={steps} />
       </TabPanel>
       <TabPanel name="videos-preview-tab" value={tabValue} index={1}>
-        {tabValue === 1 && videoBlocks?.length > 0 && (
-          <TemplateVideoPreview videoBlocks={videoBlocks} />
+        {tabValue === 1 && videos?.length > 0 && (
+          <TemplateVideoPreview videoBlocks={videos} />
         )}
       </TabPanel>
     </>
