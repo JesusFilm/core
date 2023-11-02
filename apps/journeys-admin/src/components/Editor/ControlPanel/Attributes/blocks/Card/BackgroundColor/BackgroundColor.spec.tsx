@@ -92,7 +92,7 @@ describe('BackgroundColor', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('bg-color-#FEFEFE')).toHaveStyle({
+    expect(getByTestId('Swatch-bg-color-#FEFEFE')).toHaveStyle({
       backgroundColor: '#FEFEFE'
     })
     expect(getByRole('textbox')).toHaveValue('#FEFEFE')

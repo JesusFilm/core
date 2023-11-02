@@ -275,7 +275,7 @@ describe('NavigationDrawer', () => {
     await waitFor(() =>
       expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     )
-    expect(getByTestId('Profile-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemDiscover')).toHaveAttribute(
       'aria-selected',
       'false'
     )

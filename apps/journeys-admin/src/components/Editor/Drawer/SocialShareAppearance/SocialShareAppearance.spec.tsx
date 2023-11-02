@@ -31,7 +31,7 @@ describe('SocialShareAppearance', () => {
       </MockedProvider>
     )
     expect(getByText('Social Image')).toBeInTheDocument()
-    expect(getByTestId('social-image-edit')).toBeInTheDocument()
+    expect(getByTestId('ImageEdit')).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Description' })).toBeInTheDocument()
   })

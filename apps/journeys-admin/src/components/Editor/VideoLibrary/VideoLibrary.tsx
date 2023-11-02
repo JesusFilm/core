@@ -91,7 +91,6 @@ export function VideoLibrary({
             display: 'flex'
           }
         }}
-        data-testid="VideoLibrary"
       >
         <AppBar position="static" color="default">
           <Toolbar>

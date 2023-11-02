@@ -1056,7 +1056,7 @@ describe('ControlPanel', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     expect(getByText('selectedBlock: step3.id')).toBeInTheDocument()
     expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
     expect(getByText('drawerTitle: Properties')).toBeInTheDocument()
@@ -1098,7 +1098,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step2.id'))
+    fireEvent.click(getByTestId('CardItem-step2.id'))
     expect(getByText('selectedBlock: step2.id')).toBeInTheDocument()
     expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
     expect(getByText('drawerTitle: Card Templates')).toBeInTheDocument()
