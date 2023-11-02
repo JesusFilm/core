@@ -19,7 +19,7 @@ export function TemplateEditButton(): ReactElement {
   return (
     <>
       <Button
-        data-testid="EditTemplateSettings"
+        data-testid="TemplateEditButton"
         size="small"
         onClick={handleTemplateSettingsOpen}
       >

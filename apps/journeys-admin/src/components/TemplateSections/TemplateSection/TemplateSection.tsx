@@ -77,7 +77,7 @@ export function TemplateSection({
   }
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ position: 'relative' }} data-testid="TemplateSection">
       <Typography variant="h5">{category}</Typography>
       {loading === true && (journeys === null || journeys?.length === 0) && (
         <Swiper breakpoints={swiperBreakpoints}>

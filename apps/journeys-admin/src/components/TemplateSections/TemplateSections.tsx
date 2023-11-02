@@ -65,7 +65,7 @@ export function TemplateSections({
   })
 
   return (
-    <Stack spacing={8}>
+    <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {(loading || (collection != null && collection.length > 0)) && (
         <TemplateSection
           category={tagIds == null ? t('Featured & New') : t('Most Relevant')}

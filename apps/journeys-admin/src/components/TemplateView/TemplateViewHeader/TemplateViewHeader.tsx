@@ -29,7 +29,7 @@ export function TemplateViewHeader({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
-    <Stack data-testid="TemplateViewHeader">
+    <Stack data-testid="JourneysAdminTemplateViewHeader">
       <Typography
         variant="overline"
         sx={{
