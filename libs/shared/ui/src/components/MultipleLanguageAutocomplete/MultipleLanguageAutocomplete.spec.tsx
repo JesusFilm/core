@@ -54,8 +54,10 @@ describe('LanguageAutocomplete', () => {
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     expect(queryAllByRole('option')[0]).toHaveTextContent('English')
-    expect(queryAllByRole('option')[1]).toHaveTextContent('French')
-    expect(queryAllByRole('option')[2]).toHaveTextContent('German')
+    expect(queryAllByRole('option')[1]).toHaveTextContent('FrenchFrançais')
+    expect(queryAllByRole('option')[2]).toHaveTextContent(
+      'German, StandardDeutsch'
+    )
   })
 
   it('should enable multiple language select via option click', async () => {

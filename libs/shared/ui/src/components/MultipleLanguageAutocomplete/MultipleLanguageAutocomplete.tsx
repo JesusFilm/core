@@ -64,6 +64,21 @@ export function MultipleLanguageAutocomplete({
     return []
   }, [options])
 
+  const filteredOptions = (
+    options: LanguageOption[],
+    { inputValue }: { inputValue: string }
+  ): LanguageOption[] => {
+    const userInput = inputValue.toLowerCase()
+    const filteredOptions = options.filter((option) =>
+      (
+        (option.localName?.toLowerCase() ?? '') +
+        (option.nativeName?.toLowerCase() ?? '')
+      ).includes(userInput)
+    )
+
+    return filteredOptions.length > 0 ? filteredOptions : options
+  }
+
   return (
     <Autocomplete
       multiple
@@ -73,6 +88,7 @@ export function MultipleLanguageAutocomplete({
       onChange={(_event, option) => handleChange(option)}
       options={sortedOptions}
       loading={loading}
+      filterOptions={filteredOptions}
       isOptionEqualToValue={(option, values) => option.id === values.id}
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
@@ -104,7 +120,7 @@ export function MultipleLanguageAutocomplete({
             <Checkbox
               icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
               checkedIcon={<CheckBoxIcon fontSize="small" />}
-              style={{ marginRight: 8 }}
+              sx={{ mr: 2 }}
               checked={selected}
             />
             <Stack>

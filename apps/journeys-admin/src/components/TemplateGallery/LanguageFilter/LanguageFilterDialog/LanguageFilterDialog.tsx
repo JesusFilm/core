@@ -1,3 +1,5 @@
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikValues } from 'formik'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,6 +29,7 @@ export function LanguageFilterDialog({
   languageIds,
   loading
 }: LanguageFilterDialogProps): ReactElement {
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
   const ENGLISH_LANGUAGE_ID = '529'
 
@@ -75,11 +78,12 @@ export function LanguageFilterDialog({
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: t('Filter By Language') }}
+              dialogTitle={{ title: t('Available Languages') }}
               dialogAction={{
                 onSubmit: handleSubmit,
                 closeLabel: t('Cancel')
               }}
+              fullscreen={!smUp}
             >
               <Form>
                 <MultipleLanguageAutocomplete

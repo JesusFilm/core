@@ -3,6 +3,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { LanguageFilterDialog } from './LanguageFilterDialog'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('LanguageFilterDialog', () => {
   const languages = [
     {
