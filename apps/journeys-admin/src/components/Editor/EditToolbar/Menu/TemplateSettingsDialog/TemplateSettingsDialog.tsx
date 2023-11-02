@@ -171,12 +171,12 @@ export function TemplateSettingsDialog({
                 </Stack>
               </TabPanel>
               <TabPanel name="categories" value={tab} index={1}>
-                <Stack gap={4} sx={{ pt: 6 }}>
+                <Stack sx={{ pt: 6 }} gap={5}>
                   <CategoriesTabPanel />
                 </Stack>
               </TabPanel>
               <TabPanel name="about" value={tab} index={2}>
-                <Stack sx={{ pt: 6 }} gap={6}>
+                <Stack sx={{ pt: 6 }} gap={5}>
                   <AboutTabPanel />
                 </Stack>
               </TabPanel>

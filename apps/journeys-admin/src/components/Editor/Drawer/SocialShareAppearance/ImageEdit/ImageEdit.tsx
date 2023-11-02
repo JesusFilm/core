@@ -3,47 +3,54 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
-import { BlockDeletePrimaryImage } from '../../../../../../__generated__/BlockDeletePrimaryImage'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
-import { JourneyPrimaryImageUpdate } from '../../../../../../__generated__/JourneyPrimaryImageUpdate'
-import { PrimaryImageBlockCreate } from '../../../../../../__generated__/PrimaryImageBlockCreate'
-import { PrimaryImageBlockUpdate } from '../../../../../../__generated__/PrimaryImageBlockUpdate'
+import {
+  JourneyImageBlockAssociationUpdate,
+  JourneyImageBlockAssociationUpdateVariables
+} from '../../../../../../__generated__/JourneyImageBlockAssociationUpdate'
+import {
+  JourneyImageBlockCreate,
+  JourneyImageBlockCreateVariables
+} from '../../../../../../__generated__/JourneyImageBlockCreate'
+import {
+  JourneyImageBlockDelete,
+  JourneyImageBlockDeleteVariables
+} from '../../../../../../__generated__/JourneyImageBlockDelete'
+import {
+  JourneyImageBlockUpdate,
+  JourneyImageBlockUpdateVariables
+} from '../../../../../../__generated__/JourneyImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { ImageLibrary } from '../../../ImageLibrary'
-import { useSocialPreview } from '../../../SocialProvider'
 
-export const BLOCK_DELETE_PRIMARY_IMAGE = gql`
-  mutation BlockDeletePrimaryImage(
-    $id: ID!
-    $parentBlockId: ID!
-    $journeyId: ID!
-  ) {
-    blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
+export const JOURNEY_IMAGE_BLOCK_DELETE = gql`
+  mutation JourneyImageBlockDelete($id: ID!, $journeyId: ID!) {
+    blockDelete(id: $id, journeyId: $journeyId) {
       id
       parentOrder
     }
   }
 `
 
-export const PRIMARY_IMAGE_BLOCK_CREATE = gql`
+export const JOURNEY_IMAGE_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
-  mutation PrimaryImageBlockCreate($input: ImageBlockCreateInput!) {
+  mutation JourneyImageBlockCreate($input: ImageBlockCreateInput!) {
     imageBlockCreate(input: $input) {
       ...ImageFields
     }
   }
 `
 
-export const PRIMARY_IMAGE_BLOCK_UPDATE = gql`
+export const JOURNEY_IMAGE_BLOCK_UPDATE = gql`
   ${IMAGE_FIELDS}
-  mutation PrimaryImageBlockUpdate(
+  mutation JourneyImageBlockUpdate(
     $id: ID!
     $journeyId: ID!
     $input: ImageBlockUpdateInput!
@@ -54,45 +61,56 @@ export const PRIMARY_IMAGE_BLOCK_UPDATE = gql`
   }
 `
 
-export const JOURNEY_PRIMARY_IMAGE_UPDATE = gql`
-  mutation JourneyPrimaryImageUpdate($id: ID!, $input: JourneyUpdateInput!) {
+export const JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE = gql`
+  mutation JourneyImageBlockAssociationUpdate(
+    $id: ID!
+    $input: JourneyUpdateInput!
+  ) {
     journeyUpdate(id: $id, input: $input) {
       id
       primaryImageBlock {
+        id
+      }
+      creatorImageBlock {
         id
       }
     }
   }
 `
 
-export function ImageEdit(): ReactElement {
-  const [blockDeletePrimaryImage] = useMutation<BlockDeletePrimaryImage>(
-    BLOCK_DELETE_PRIMARY_IMAGE
-  )
+interface ImageEditProps {
+  variant?: 'primary' | 'creator'
+}
+
+export function ImageEdit({
+  variant = 'primary'
+}: ImageEditProps): ReactElement {
+  const [journeyImageBlockDelete] = useMutation<
+    JourneyImageBlockDelete,
+    JourneyImageBlockDeleteVariables
+  >(JOURNEY_IMAGE_BLOCK_DELETE)
   const [
-    primaryImageBlockCreate,
+    journeyImageBlockCreate,
     { loading: createLoading, error: createError }
-  ] = useMutation<PrimaryImageBlockCreate>(PRIMARY_IMAGE_BLOCK_CREATE)
-  const [
-    primaryImageBlockUpdate,
-    { loading: updateLoading, error: updateError }
-  ] = useMutation<PrimaryImageBlockUpdate>(PRIMARY_IMAGE_BLOCK_UPDATE)
-  const [journeyPrimaryImageUpdate] = useMutation<JourneyPrimaryImageUpdate>(
-    JOURNEY_PRIMARY_IMAGE_UPDATE
+  ] = useMutation<JourneyImageBlockCreate, JourneyImageBlockCreateVariables>(
+    JOURNEY_IMAGE_BLOCK_CREATE
   )
-
+  const [
+    journeyImageBlockUpdate,
+    { loading: updateLoading, error: updateError }
+  ] = useMutation<JourneyImageBlockUpdate, JourneyImageBlockUpdateVariables>(
+    JOURNEY_IMAGE_BLOCK_UPDATE
+  )
+  const [journeyImageBlockAssociationUpdate] = useMutation<
+    JourneyImageBlockAssociationUpdate,
+    JourneyImageBlockAssociationUpdateVariables
+  >(JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE)
   const { journey } = useJourney()
-
-  const { primaryImageBlock, setPrimaryImageBlock } = useSocialPreview()
-  const once = useRef(false)
-  useEffect(() => {
-    if (!once.current && journey != null) {
-      setPrimaryImageBlock(journey?.primaryImageBlock)
-      once.current = true
-    }
-  }, [journey, setPrimaryImageBlock])
-
   const [open, setOpen] = useState(false)
+  const variantImageBlock =
+    variant === 'primary'
+      ? journey?.primaryImageBlock
+      : journey?.creatorImageBlock
 
   function handleOpen(): void {
     setOpen(true)
@@ -102,54 +120,41 @@ export function ImageEdit(): ReactElement {
   }
 
   async function createImageBlock(imageBlock: ImageBlock): Promise<void> {
-    const { data } = await primaryImageBlockCreate({
+    if (journey == null) return
+
+    const { data } = await journeyImageBlockCreate({
       variables: {
         input: {
-          journeyId: journey?.id,
+          journeyId: journey.id,
           src: imageBlock.src,
           alt: imageBlock.alt,
           blurhash: imageBlock.blurhash,
           width: imageBlock.width,
           height: imageBlock.height
         }
-      },
-      update(cache, { data }) {
-        if (data?.imageBlockCreate != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journey?.id }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const newBlockRef = cache.writeFragment({
-                  data: data.imageBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [...existingBlockRefs, newBlockRef]
-              }
-            }
-          })
-        }
       }
     })
-
     if (data?.imageBlockCreate != null) {
-      await journeyPrimaryImageUpdate({
+      await journeyImageBlockAssociationUpdate({
         variables: {
-          id: journey?.id,
-          input: {
-            primaryImageBlockId: data?.imageBlockCreate.id
-          }
+          id: journey.id,
+          input:
+            variant === 'primary'
+              ? {
+                  primaryImageBlockId: data.imageBlockCreate.id
+                }
+              : {
+                  creatorImageBlockId: data.imageBlockCreate.id
+                }
         }
       })
-      setPrimaryImageBlock(data.imageBlockCreate)
     }
   }
 
   async function updateImageBlock(imageBlock: ImageBlock): Promise<void> {
-    await primaryImageBlockUpdate({
+    if (journey == null) return
+
+    await journeyImageBlockUpdate({
       variables: {
         id: imageBlock.id,
         journeyId: journey?.id,
@@ -162,20 +167,19 @@ export function ImageEdit(): ReactElement {
         }
       }
     })
-    setPrimaryImageBlock(imageBlock)
   }
 
   async function handleDelete(): Promise<void> {
-    if (journey == null || primaryImageBlock == null) return
+    if (journey == null || variantImageBlock == null) return
 
-    const { data } = await blockDeletePrimaryImage({
+    const { data } = await journeyImageBlockDelete({
       variables: {
-        id: primaryImageBlock.id,
+        id: variantImageBlock.id,
         journeyId: journey.id
       },
       update(cache, { data }) {
         blockDeleteUpdate(
-          primaryImageBlock as ImageBlock,
+          variantImageBlock,
           data?.blockDelete,
           cache,
           journey.id
@@ -183,26 +187,32 @@ export function ImageEdit(): ReactElement {
       }
     })
     if (data?.blockDelete != null) {
-      await journeyPrimaryImageUpdate({
+      await journeyImageBlockAssociationUpdate({
         variables: {
           id: journey.id,
-          input: {
-            primaryImageBlockId: null
-          }
+          input:
+            variant === 'primary'
+              ? {
+                  primaryImageBlockId: null
+                }
+              : {
+                  creatorImageBlockId: null
+                }
         }
       })
-      setPrimaryImageBlock(null)
     }
   }
 
-  async function handleChange(primaryImageBlock: ImageBlock): Promise<void> {
-    if (primaryImageBlock.src === '') return
+  async function handleChange(imageBlock: ImageBlock): Promise<void> {
+    if (imageBlock.src === '') return
 
-    if (primaryImageBlock.id == null) {
-      await createImageBlock(primaryImageBlock)
+    if (imageBlock.id == null) {
+      await createImageBlock(imageBlock)
     } else {
-      await updateImageBlock(primaryImageBlock)
+      await updateImageBlock(imageBlock)
     }
+
+    handleClose()
   }
 
   return (
@@ -227,11 +237,11 @@ export function ImageEdit(): ReactElement {
           data-testid="social-image-edit"
           onClick={handleOpen}
         >
-          {primaryImageBlock?.src != null ? (
+          {variantImageBlock?.src != null ? (
             <Box
               component="img"
-              src={primaryImageBlock.src}
-              alt={primaryImageBlock.alt}
+              src={variantImageBlock.src}
+              alt={variantImageBlock.alt}
               sx={{
                 width: '100%',
                 height: '194px',
@@ -301,7 +311,7 @@ export function ImageEdit(): ReactElement {
         </Box>
       )}
       <ImageLibrary
-        selectedBlock={(primaryImageBlock as ImageBlock) ?? null}
+        selectedBlock={variantImageBlock ?? null}
         open={open}
         onClose={handleClose}
         onChange={handleChange}

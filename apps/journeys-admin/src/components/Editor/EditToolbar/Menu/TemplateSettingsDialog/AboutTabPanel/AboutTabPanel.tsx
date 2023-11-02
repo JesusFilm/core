@@ -1,3 +1,5 @@
+import Divider from '@mui/material/Divider'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -5,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
 import { StrategySection } from '../../../../../StrategySection'
+import { ImageEdit } from '../../../../Drawer/SocialShareAppearance/ImageEdit/ImageEdit'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 export function AboutTabPanel(): ReactElement {
@@ -12,6 +15,28 @@ export function AboutTabPanel(): ReactElement {
   const { t } = useTranslation()
   return (
     <>
+      <Stack direction="row">
+        <ImageEdit />
+        <TextField
+          id="creatorDescription"
+          name="creatorDescription"
+          value={values.creatorDescription}
+          error={Boolean(errors?.creatorDescription)}
+          variant="filled"
+          helperText={
+            errors?.creatorDescription != null
+              ? errors?.creatorDescription
+              : t(
+                  'Public information about a person or a team created this journey'
+                )
+          }
+          onChange={handleChange}
+          label={t("Creator's Info")}
+          multiline
+          rows={3}
+        />
+      </Stack>
+      <Divider />
       <TextField
         id="strategySlug"
         name="strategySlug"
