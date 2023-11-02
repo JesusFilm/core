@@ -12,7 +12,8 @@ import { Role } from '../../../__generated__/globalTypes'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
 import { StrategySection } from '../StrategySection'
-import { TemplateSection } from '../TemplateSections/TemplateSection'
+import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
+import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
@@ -74,9 +75,10 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
           />
         )}
         {relatedJourneys != null && relatedJourneys.length >= 1 && (
-          <TemplateSection
-            category={t('Related Templates')}
-            journeys={relatedJourneys}
+          <TemplateGalleryCarousel
+            heading={t('Related Templates')}
+            item={relatedJourneys}
+            renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
           />
         )}
         <TemplateFooter signedIn={authUser?.id != null} />

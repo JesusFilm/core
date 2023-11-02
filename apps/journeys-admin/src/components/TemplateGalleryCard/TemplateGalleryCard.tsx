@@ -14,11 +14,11 @@ import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourn
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 
 export interface TemplateGalleryCardProps {
-  journey?: Journey
+  item?: Journey
 }
 
 export function TemplateGalleryCard({
-  journey
+  item: journey
 }: TemplateGalleryCardProps): ReactElement {
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary

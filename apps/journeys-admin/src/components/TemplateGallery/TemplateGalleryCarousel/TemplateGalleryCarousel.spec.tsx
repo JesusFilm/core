@@ -7,9 +7,9 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 
-import { TemplateSection } from './TemplateSection'
+import { TemplateGalleryCarousel } from './TemplateGalleryCarousel'
 
-describe('TemplateSection', () => {
+describe('TemplateGalleryCarousel', () => {
   const journey: Journey = {
     __typename: 'Journey',
     id: '1',
@@ -42,9 +42,9 @@ describe('TemplateSection', () => {
     featuredAt: '2023-08-14T04:24:24.392Z'
   }
 
-  it('should render TemplateSection', () => {
+  it('should render TemplateGalleryCarousel', () => {
     const { getAllByTestId, getByRole } = render(
-      <TemplateSection
+      <TemplateGalleryCarousel
         category="Easter"
         journeys={[
           journey,

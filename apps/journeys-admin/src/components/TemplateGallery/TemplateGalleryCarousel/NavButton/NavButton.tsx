@@ -22,7 +22,7 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
           cursor: 'pointer',
           position: 'absolute',
           boxShadow: theme.shadows[2],
-          opacity: { xs: 0, lg: disabled ? 0 : 1 },
+          opacity: { xs: 0, md: disabled ? 0 : 1 },
           left: variant === 'prev' ? -20 : undefined,
           right: variant === 'next' ? -20 : undefined,
           top: '35%',
