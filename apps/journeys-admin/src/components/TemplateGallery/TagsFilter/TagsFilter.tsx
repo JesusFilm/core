@@ -88,7 +88,12 @@ export function TagsFilter({
             label={label}
             InputProps={{
               ...params.InputProps,
-
+              sx: {
+                minWidth: 0,
+                '.MuiInputBase-input.MuiOutlinedInput-input': {
+                  minWidth: 0
+                }
+              },
               endAdornment: (
                 <>
                   {loading ? (
@@ -131,7 +136,7 @@ export function TagsFilter({
               }}
             >
               {tagNames.length > 1 && (
-                <Stack direction="row" alignItems="center" gap={3}>
+                <Stack direction="row" alignItems="center" gap={1}>
                   <ParentTagIcon name={parentTagName} sx={{ ml: 1 }} />
                   <Typography
                     variant="subtitle1"
@@ -186,7 +191,7 @@ export function TagsFilter({
           size: 'small',
           sx: {
             '&.MuiChip-root': {
-              maxWidth: 'calc(100% - 70px)'
+              maxWidth: 'calc(100% - 40px)'
             }
           }
         }}
@@ -205,9 +210,7 @@ export function TagsFilter({
           paper: {
             sx: {
               px: { xs: 0, sm: hasMultipleColumns ? 6 : 4 },
-              pl: { xs: 4 },
-              py: { xs: 0, sm: hasMultipleColumns ? 3 : 0 },
-              minWidth: { sm: 'auto', md: 'max-content' }
+              pl: { xs: 4 }
             }
           }
         }}
