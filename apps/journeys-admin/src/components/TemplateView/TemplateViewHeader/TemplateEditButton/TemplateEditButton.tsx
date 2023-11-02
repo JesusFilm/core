@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { TemplateSettingsDrawer } from '../../../JourneyView/TemplateSettings/TemplateSettingsDrawer'
+import { TemplateSettingsDialog } from '../../../JourneyView/TemplateSettings/TemplateSettingsDialog'
 import { TemplateSettingsForm } from '../../../JourneyView/TemplateSettings/TemplateSettingsForm'
 
 export function TemplateEditButton(): ReactElement {
@@ -33,7 +33,7 @@ export function TemplateEditButton(): ReactElement {
         </Typography>
       </Button>
       <TemplateSettingsForm onSubmit={handleClose}>
-        <TemplateSettingsDrawer open={open} onClose={handleClose} />
+        <TemplateSettingsDialog open={open} onClose={handleClose} />
       </TemplateSettingsForm>
     </>
   )

@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
-import { ImageEdit } from '../../../../Editor/Drawer/SocialShareAppearance/ImageEdit/ImageEdit'
 import { StrategySection } from '../../../../StrategySection'
 import { TemplateSettingsFormValues } from '../../TemplateSettingsForm'
 
@@ -15,25 +14,6 @@ export function AboutTabPanel(): ReactElement {
   const { t } = useTranslation()
   return (
     <>
-      <ImageEdit />
-      <TextField
-        id="creatorDescription"
-        name="creatorDescription"
-        value={values.creatorDescription}
-        error={Boolean(errors?.creatorDescription)}
-        variant="filled"
-        helperText={
-          errors?.creatorDescription != null
-            ? errors?.creatorDescription
-            : t(
-                'Public information about a person or a team created this journey'
-              )
-        }
-        onChange={handleChange}
-        label={t("Creator's Info")}
-        multiline
-        rows={3}
-      />
       <TextField
         id="strategySlug"
         name="strategySlug"

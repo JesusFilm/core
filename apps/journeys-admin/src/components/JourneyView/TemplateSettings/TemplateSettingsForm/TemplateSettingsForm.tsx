@@ -106,9 +106,7 @@ export function TemplateSettingsForm({
     description: journey?.description,
     featured: journey?.featuredAt != null,
     strategySlug: journey?.strategySlug,
-    tagIds: journey?.tags.map(({ id }) => id),
-    creatorDescription: journey?.creatorDescription,
-    creatorImageBlockId: journey?.creatorImageBlockId
+    tagIds: journey?.tags.map(({ id }) => id)
   }
 
   return (

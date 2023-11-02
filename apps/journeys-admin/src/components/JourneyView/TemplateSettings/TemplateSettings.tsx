@@ -7,8 +7,8 @@ import { ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { TemplateSettingsDrawer } from './TemplateSettingsDrawer'
-import { TemplateSettingsForm } from './TemplateSettingsForm'
+import { TemplateSettingsDialog } from './TemplateSettingsDialog'
+import { TemplateSettingsForm } from './TemplateSettingsForm/TemplateSettingsForm'
 
 interface TemplateSettingsProps {
   isPublisher?: boolean
@@ -66,7 +66,7 @@ export function TemplateSettings({
       </Stack>
       {journey != null && (
         <TemplateSettingsForm onSubmit={handleClose}>
-          <TemplateSettingsDrawer open={open} onClose={handleClose} />
+          <TemplateSettingsDialog open={open} onClose={handleClose} />
         </TemplateSettingsForm>
       )}
     </>
