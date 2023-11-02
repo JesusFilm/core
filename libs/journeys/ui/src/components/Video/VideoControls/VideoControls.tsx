@@ -425,7 +425,7 @@ export function VideoControls({
                   color="secondary.main"
                   noWrap
                   overflow="unset"
-                  sx={{ p: 2 }}
+                  sx={{ px: { xs: 4, lg: 2 }, py: 2 }}
                 >
                   {displayTime} / {duration}
                 </Typography>
@@ -514,7 +514,7 @@ export function VideoControls({
               sx={{
                 width: 'initial',
                 height: 5,
-                mx: 2.5,
+                mx: 4,
                 py: 2,
                 display: { xs: 'flex', lg: 'none' },
                 '& .MuiSlider-thumb': {
