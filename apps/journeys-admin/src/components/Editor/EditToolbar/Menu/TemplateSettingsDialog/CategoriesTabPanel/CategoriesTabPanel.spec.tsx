@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 
-import { Service } from '../../../../../../__generated__/globalTypes'
-import { GET_TAGS } from '../../../../../libs/useTagsQuery/useTagsQuery'
+import { Service } from '../../../../../../../__generated__/globalTypes'
+import { GET_TAGS } from '../../../../../../libs/useTagsQuery/useTagsQuery'
 
 import { CategoriesTabPanel } from './CategoriesTabPanel'
 

@@ -122,14 +122,18 @@ export function TemplateViewHeader({
           >
             <CreateJourneyButton signedIn={authUser?.id != null} />
             <PreviewTemplateButton slug={journey?.slug} />
-            {isPublisher === true && <TemplateEditButton />}
+            {journey != null && isPublisher === true && (
+              <TemplateEditButton journeyId={journey.id} />
+            )}
           </Box>
         </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
         <CreateJourneyButton signedIn={authUser?.id != null} />
         <PreviewTemplateButton slug={journey?.slug} />
-        {isPublisher === true && authUser.id != null && <TemplateEditButton />}
+        {journey != null && isPublisher === true && (
+          <TemplateEditButton journeyId={journey.id} />
+        )}
       </Box>
     </Stack>
   )

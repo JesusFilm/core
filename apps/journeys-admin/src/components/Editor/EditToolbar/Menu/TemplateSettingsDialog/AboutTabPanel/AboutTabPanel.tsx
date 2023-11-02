@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
-import { StrategySection } from '../../../../StrategySection'
+import { StrategySection } from '../../../../../StrategySection'
 import { TemplateSettingsFormValues } from '../../TemplateSettingsForm'
 
 export function AboutTabPanel(): ReactElement {

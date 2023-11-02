@@ -6,12 +6,12 @@ import { useFormikContext } from 'formik'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { GetTags_tags as Tags } from '../../../../../../__generated__/GetTags'
-import { useTagsQuery } from '../../../../../libs/useTagsQuery'
+import { GetTags_tags as Tags } from '../../../../../../../__generated__/GetTags'
+import { useTagsQuery } from '../../../../../../libs/useTagsQuery'
 import {
   AutocompleteOption,
   TagAutocomplete
-} from '../../../../TagAutocomplete'
+} from '../../../../../TagAutocomplete'
 import { TemplateSettingsFormValues } from '../../TemplateSettingsForm'
 
 interface TagOptionsData {

@@ -8,9 +8,9 @@ import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyUpdateInput } from '../../../../../__generated__/globalTypes'
-import { JourneyFeature } from '../../../../../__generated__/JourneyFeature'
-import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
+import { JourneyUpdateInput } from '../../../../../../__generated__/globalTypes'
+import { JourneyFeature } from '../../../../../../__generated__/JourneyFeature'
+import { useJourneyUpdateMutation } from '../../../../../libs/useJourneyUpdateMutation'
 
 export const JOURNEY_FEATURE_UPDATE = gql`
   mutation JourneyFeature($id: ID!, $feature: Boolean!) {
