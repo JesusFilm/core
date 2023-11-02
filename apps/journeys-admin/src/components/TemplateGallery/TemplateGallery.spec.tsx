@@ -6,6 +6,11 @@ import { getJourneysMock, getLanguagesMock, getTagsMock } from './data'
 
 import { TemplateGallery } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {

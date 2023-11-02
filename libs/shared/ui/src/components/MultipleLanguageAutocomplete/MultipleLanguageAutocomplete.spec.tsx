@@ -82,6 +82,49 @@ describe('LanguageAutocomplete', () => {
     ])
   })
 
+  it('should enable users to enter custom text and get related options', async () => {
+    const handleChange = jest.fn()
+    const { getByRole, queryByRole } = render(
+      <MultipleLanguageAutocomplete
+        onChange={handleChange}
+        values={[]}
+        languages={[
+          ...languages,
+          {
+            id: '20615',
+            name: [
+              {
+                value: '普通話 ',
+                primary: true
+              },
+              {
+                value: 'Chinese, Mandarin',
+                primary: false
+              }
+            ]
+          }
+        ]}
+        loading={false}
+      />
+    )
+    const combobox = getByRole('combobox')
+    fireEvent.focus(combobox)
+    fireEvent.change(combobox, {
+      target: { value: '普通話 ' }
+    })
+    expect(
+      queryByRole('option', { name: 'French Français' })
+    ).not.toBeInTheDocument()
+    fireEvent.click(getByRole('option', { name: 'Chinese, Mandarin 普通話' }))
+    expect(handleChange).toHaveBeenCalledWith([
+      {
+        id: '20615',
+        localName: 'Chinese, Mandarin',
+        nativeName: '普通話 '
+      }
+    ])
+  })
+
   it('should show loading animation if loading', async () => {
     const { getByRole } = render(
       <MultipleLanguageAutocomplete
