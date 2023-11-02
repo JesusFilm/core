@@ -70,6 +70,7 @@ export function TagsFilter({
   return (
     <Box sx={{ width: '100%' }}>
       <Autocomplete
+        open
         loading={loading}
         limitTags={hasMultipleColumns ? 4 : 1}
         disableCloseOnSelect
@@ -114,7 +115,7 @@ export function TagsFilter({
               key={params.key}
               sx={{
                 '&:last-of-type': {
-                  pl: { xs: 0, md: hasMultipleColumns ? 3 : 0 },
+                  pl: { xs: 0, md: hasMultipleColumns ? 6 : 0 },
                   backgroundColor: {
                     xs: 'background.paper',
                     md: hasMultipleColumns
@@ -130,8 +131,8 @@ export function TagsFilter({
                   }
                 },
                 pt: hasMultipleColumns ? 6 : 0,
-                pl: 0,
-                pr: hasMultipleColumns ? 3 : 0,
+                pl: hasMultipleColumns ? 0 : 6,
+                pr: hasMultipleColumns ? 6 : 0,
                 borderRadius: 2
               }}
             >
@@ -188,17 +189,13 @@ export function TagsFilter({
           </StyledLi>
         )}
         ChipProps={{
-          size: 'small',
-          sx: {
-            '&.MuiChip-root': {
-              maxWidth: 'calc(100% - 40px)'
-            }
-          }
+          size: 'small'
         }}
         slotProps={{
           popper: {
             sx: {
               '& .MuiAutocomplete-listbox': {
+                pt: 3,
                 maxHeight: { xs: 'auto', sm: '100%' },
                 display: { xs: 'block', md: 'flex' },
                 '> li': {
