@@ -1,16 +1,14 @@
 import TextField from '@mui/material/TextField'
-import { useFormikContext } from 'formik'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
 import { StrategySection } from '../../../../../StrategySection'
-import { TemplateSettingsFormValues } from '../../TemplateSettingsForm'
+import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 export function AboutTabPanel(): ReactElement {
-  const { values, handleChange, errors } =
-    useFormikContext<TemplateSettingsFormValues>()
+  const { values, handleChange, errors } = useTemplateSettingsForm()
   const { t } = useTranslation()
   return (
     <>

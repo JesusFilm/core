@@ -2,15 +2,13 @@ import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import TextField from '@mui/material/TextField'
-import { useFormikContext } from 'formik'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { TemplateSettingsFormValues } from '../../TemplateSettingsForm'
+import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 export function MetadataTabPanel(): ReactElement {
-  const { values, handleChange } =
-    useFormikContext<TemplateSettingsFormValues>()
+  const { values, handleChange } = useTemplateSettingsForm()
   const { t } = useTranslation()
   return (
     <>

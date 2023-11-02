@@ -2,7 +2,6 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useFormikContext } from 'formik'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -12,7 +11,7 @@ import {
   AutocompleteOption,
   TagAutocomplete
 } from '../../../../../TagAutocomplete'
-import { TemplateSettingsFormValues } from '../../TemplateSettingsForm'
+import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 interface TagOptionsData {
   [id: string]: { label: string; children: AutocompleteOption[] }
@@ -22,8 +21,7 @@ export function CategoriesTabPanel(): ReactElement {
   const { t } = useTranslation()
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const { parentTags, childTags } = useTagsQuery()
-  const { values, setFieldValue } =
-    useFormikContext<TemplateSettingsFormValues>()
+  const { values, setFieldValue } = useTemplateSettingsForm()
 
   // TODO: Update when supporting multiple languages for tags
   const populateTagDataByParentId = (
