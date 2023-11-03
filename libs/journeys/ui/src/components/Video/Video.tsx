@@ -10,6 +10,7 @@ import {
   useRef,
   useState
 } from 'react'
+import { use100vh } from 'react-div-100vh'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
@@ -77,6 +78,7 @@ export function Video({
   const [player, setPlayer] = useState<Player>()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
+  const hundredVh = use100vh()
 
   const {
     state: { selectedBlock }
@@ -253,7 +255,7 @@ export function Video({
 
   return (
     <Box
-      data-testid={`video-${blockId}`}
+      data-testid={`JourneysVideo-${blockId}`}
       sx={{
         display: 'flex',
         width: '100%',
@@ -293,13 +295,14 @@ export function Video({
           <StyledVideoGradient />
           <Box
             height={{
-              xs: isFillAndNotYoutube() ? '100vh' : '100%',
+              xs: isFillAndNotYoutube() ? hundredVh : '100%',
               sm: '100%'
             }}
             width={{
               xs: isFillAndNotYoutube() ? '300%' : '100%',
               sm: '100%'
             }}
+            minHeight="-webkit-fill-available"
             overflow="hidden"
             marginX={{
               xs: isFillAndNotYoutube() ? '-100%' : 0,

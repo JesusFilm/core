@@ -15,11 +15,11 @@ import { CompactEvent } from './CompactEvent'
 import { GenericEvent } from './GenericEvent'
 import { TimelineEvent } from './TimelineEvent'
 
-interface Props {
+interface EventsCardProps {
   journey: JourneyWithEvents
 }
 
-export function EventsCard({ journey }: Props): ReactElement {
+export function EventsCard({ journey }: EventsCardProps): ReactElement {
   const [open, setOpen] = useState(false)
 
   function handleOpen(): void {

@@ -7,7 +7,7 @@ import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../..
 import { Details } from './Details'
 import { Summary } from './Summary'
 
-interface Props {
+interface ChatOptionProps {
   title: string
   chatButton?: ChatButton
   platform?: ChatPlatform
@@ -26,7 +26,7 @@ export function ChatOption({
   journeyId,
   disableSelection,
   enableIconSelect = false
-}: Props): ReactElement {
+}: ChatOptionProps): ReactElement {
   const [currentLink, setCurrentLink] = useState(chatButton?.link ?? '')
   const [currentPlatform, setCurrentPlatform] = useState(
     platform ?? chatButton?.platform ?? ChatPlatform.custom

@@ -85,7 +85,8 @@ const journey: Journey = {
     src2: 'https://tinyurl.com/mr4a78kb'
   },
   team: null,
-  blocks: basic
+  blocks: basic,
+  tags: []
 }
 
 const Template: StoryObj<typeof EmbeddedPreview> = {
@@ -120,9 +121,11 @@ export const Opened = {
   play: async () => {
     await waitFor(
       async () =>
-        await expect(screen.getAllByTestId('card0.id')[0]).toBeInTheDocument()
+        await expect(
+          screen.getAllByTestId('JourneysCard-card0.id')[0]
+        ).toBeInTheDocument()
     )
-    const card = screen.getAllByTestId('card0.id')[0]
+    const card = screen.getAllByTestId('JourneysCard-card0.id')[0]
     await userEvent.click(card)
   }
 }

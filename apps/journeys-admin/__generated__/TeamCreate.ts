@@ -27,6 +27,7 @@ export interface TeamCreate_teamCreate {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
   userTeams: TeamCreate_teamCreate_userTeams[];
 }
 

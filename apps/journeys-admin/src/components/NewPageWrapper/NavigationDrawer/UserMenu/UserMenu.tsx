@@ -6,7 +6,9 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { User } from 'next-firebase-auth'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
 
@@ -28,6 +30,8 @@ export function UserMenu({
   handleProfileClose,
   user
 }: UserMenuProps): ReactElement {
+  const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Menu
       anchorEl={profileAnchorEl}
@@ -72,6 +76,10 @@ export function UserMenu({
         onClick={async () => {
           handleProfileClose()
           await user.signOut()
+          await enqueueSnackbar(t('Logout successful'), {
+            variant: 'success',
+            preventDuplicate: true
+          })
         }}
       />
     </Menu>

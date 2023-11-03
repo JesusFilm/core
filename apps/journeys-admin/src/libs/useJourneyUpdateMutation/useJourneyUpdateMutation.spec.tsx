@@ -17,7 +17,8 @@ describe('useJourneyUpdateMutation', () => {
         input: {
           title: 'New Title',
           description: 'New Description',
-          strategySlug: 'www.example.com/embed'
+          strategySlug: 'www.example.com/embed',
+          tagIds: ['tagId']
         }
       }
     },
@@ -28,7 +29,8 @@ describe('useJourneyUpdateMutation', () => {
           id: 'journeyId',
           title: 'New Title',
           description: 'New Description',
-          strategySlug: 'www.example.com/embed'
+          strategySlug: 'www.example.com/embed',
+          tags: [{ __typename: 'Tag', id: 'tagId' }]
         }
       }
     }))
@@ -51,7 +53,8 @@ describe('useJourneyUpdateMutation', () => {
             input: {
               title: 'New Title',
               description: 'New Description',
-              strategySlug: 'www.example.com/embed'
+              strategySlug: 'www.example.com/embed',
+              tagIds: ['tagId']
             }
           }
         })

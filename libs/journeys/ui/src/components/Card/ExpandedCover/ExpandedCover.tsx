@@ -46,7 +46,7 @@ export function ExpandedCover({
       {/* Background Image */}
       {backgroundBlur != null && imageBlock != null && (
         <NextImage
-          data-testid="ExpandedImageCover"
+          data-testid="CardExpandedImageCover"
           src={imageBlock.src ?? backgroundBlur}
           alt={imageBlock.alt}
           placeholder="blur"
@@ -56,7 +56,7 @@ export function ExpandedCover({
         />
       )}
       <Stack
-        data-testid="ExpandedCover"
+        data-testid="CardExpandedCover"
         sx={{
           height: '100%',
           WebkitBackdropFilter: 'blur(20px)',

@@ -22,11 +22,19 @@ const TemplateCardPreviewStory: Meta<typeof TemplateCardPreview> = {
 const steps = transformer(journeyVideoBlocks) as Array<TreeBlock<StepBlock>>
 
 const Template: StoryObj<typeof TemplateCardPreview> = {
-  render: () => <TemplateCardPreview steps={steps} />
+  render: (args) => <TemplateCardPreview steps={args.steps} />
 }
 
 export const Default = {
-  ...Template
+  ...Template,
+  args: {
+    steps
+  }
+}
+
+export const Loading = {
+  ...Template,
+  args: { steps: undefined }
 }
 
 export default TemplateCardPreviewStory

@@ -31,6 +31,7 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
       teamCreate: {
         id: 'teamId',
         title: 'Jesus Film Project',
+        publicTitle: null,
         __typename: 'Team',
         userTeams: []
       }
@@ -65,7 +66,26 @@ export const Default = {
     }
   },
   play: async () => {
-    await userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+    await userEvent.type(
+      screen.getAllByRole('textbox')[0],
+      'Jesus Film Project'
+    )
+  }
+}
+
+export const LegalName = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [teamCreateMock]
+    }
+  },
+  play: async () => {
+    await userEvent.type(
+      screen.getAllByRole('textbox')[0],
+      'Jesus Film Project'
+    )
+    await userEvent.type(screen.getAllByRole('textbox')[1], 'Legal Name JFP')
   }
 }
 

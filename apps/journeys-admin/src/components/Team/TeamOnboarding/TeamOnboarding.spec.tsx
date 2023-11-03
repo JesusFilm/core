@@ -35,9 +35,9 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('apps/journeys-admin/src/libs/useCurrentUser', () => ({
+jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUser: jest.fn().mockReturnValue({
+  useCurrentUserLazyQuery: jest.fn().mockReturnValue({
     loadUser: jest.fn(),
     data: {
       __typename: 'User',
@@ -94,6 +94,7 @@ describe('TeamOnboarding', () => {
         teamCreate: {
           id: 'teamId1',
           title: 'Team Title',
+          publicTitle: null,
           __typename: 'Team',
           userTeams: []
         }
@@ -121,6 +122,7 @@ describe('TeamOnboarding', () => {
           {
             id: 'teamId',
             title: 'Team Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }
@@ -157,8 +159,31 @@ describe('TeamOnboarding', () => {
       }
     })
 
-    const { getByRole, getByTestId, getByText } = render(
-      <MockedProvider mocks={[teamCreateMock, getTeams]} cache={cache}>
+    const teamMock: MockedResponse<TeamCreate> = {
+      request: {
+        query: TEAM_CREATE,
+        variables: {
+          input: {
+            title: 'Team Title',
+            publicTitle: 'Public Title'
+          }
+        }
+      },
+      result: {
+        data: {
+          teamCreate: {
+            id: 'teamId1',
+            title: 'Team Title',
+            publicTitle: 'Public Title',
+            __typename: 'Team',
+            userTeams: []
+          }
+        }
+      }
+    }
+
+    const { getByRole, getByTestId, getByText, getAllByRole } = render(
+      <MockedProvider mocks={[teamMock, getTeams]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
             <TeamOnboarding />
@@ -167,7 +192,12 @@ describe('TeamOnboarding', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'Team Title' }
+    })
+    fireEvent.change(getAllByRole('textbox')[1], {
+      target: { value: 'Public Title' }
+    })
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() =>
       expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
@@ -203,7 +233,7 @@ describe('TeamOnboarding', () => {
       result
     }
 
-    const { getByRole } = render(
+    const { getByRole, getAllByRole } = render(
       <MockedProvider
         mocks={[
           teamCreateMock,
@@ -233,7 +263,9 @@ describe('TeamOnboarding', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'Team Title' }
+    })
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -255,7 +287,7 @@ describe('TeamOnboarding', () => {
   })
 
   it('validates form', async () => {
-    const { getByText, getByRole } = render(
+    const { getByText, getByRole, getAllByRole } = render(
       <MockedProvider mocks={[teamCreateErrorMock]}>
         <SnackbarProvider>
           <TeamProvider>
@@ -264,14 +296,16 @@ describe('TeamOnboarding', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), { target: { value: '' } })
+    fireEvent.change(getAllByRole('textbox')[0], { target: { value: '' } })
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() =>
       expect(
         getByText('Team Name must be at least one character.')
       ).toBeInTheDocument()
     )
-    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'Team Title' }
+    })
     await waitFor(() =>
       expect(getByRole('button', { name: 'Create' })).not.toBeDisabled()
     )

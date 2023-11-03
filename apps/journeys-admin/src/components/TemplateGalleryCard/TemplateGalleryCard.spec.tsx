@@ -93,7 +93,10 @@ describe('TemplateGalleryCard', () => {
   })
 
   it('should link to template details', () => {
-    const { getByRole } = render(<TemplateGalleryCard journey={journey} />)
-    expect(getByRole('link')).toHaveAttribute('href', '/templates/template-id')
+    const { getByTestId } = render(<TemplateGalleryCard journey={journey} />)
+    expect(getByTestId('templateGalleryCard')).toHaveAttribute(
+      'href',
+      '/templates/template-id'
+    )
   })
 })

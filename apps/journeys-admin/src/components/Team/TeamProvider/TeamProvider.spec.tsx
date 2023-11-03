@@ -36,12 +36,14 @@ const teams: Team[] = [
     __typename: 'Team',
     id: 'teamId1',
     title: 'my first team',
+    publicTitle: null,
     userTeams: []
   },
   {
     __typename: 'Team',
     id: 'teamId2',
     title: 'my second team',
+    publicTitle: null,
     userTeams: []
   }
 ]

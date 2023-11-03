@@ -63,7 +63,8 @@ describe('JourneyView', () => {
     userJourneys: [],
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it.skip('should have edit button', () => {

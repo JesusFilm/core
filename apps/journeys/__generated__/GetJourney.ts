@@ -629,6 +629,26 @@ export interface GetJourney_journey_team {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
+}
+
+export interface GetJourney_journey_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetJourney_journey_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: GetJourney_journey_tags_name_language;
+  primary: boolean;
+}
+
+export interface GetJourney_journey_tags {
+  __typename: "Tag";
+  id: string;
+  parentId: string | null;
+  name: GetJourney_journey_tags_name[];
 }
 
 export interface GetJourney_journey {
@@ -654,6 +674,7 @@ export interface GetJourney_journey {
   chatButtons: GetJourney_journey_chatButtons[];
   host: GetJourney_journey_host | null;
   team: GetJourney_journey_team | null;
+  tags: GetJourney_journey_tags[];
 }
 
 export interface GetJourney {

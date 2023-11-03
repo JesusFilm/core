@@ -19,6 +19,7 @@ interface PageWrapperProps {
   showAppHeader?: boolean
   title?: string
   mainHeaderChildren?: ReactNode
+  hiddenPanelHeader?: boolean
   backHref?: string
   backHrefHistory?: boolean
   children?: ReactNode
@@ -37,6 +38,7 @@ export function PageWrapper({
   showAppHeader = true,
   title,
   mainHeaderChildren,
+  hiddenPanelHeader,
   backHref,
   backHrefHistory,
   children,
@@ -58,8 +60,9 @@ export function PageWrapper({
       <Box
         sx={{
           height: viewportHeight ?? '100vh',
-          overflow: 'hidden',
-          [theme.breakpoints.down('md')]: { overflowY: 'auto' }
+          minHeight: '-webkit-fill-available',
+          [theme.breakpoints.down('md')]: { overflowY: 'auto' },
+          overflow: 'hidden'
         }}
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
@@ -96,13 +99,15 @@ export function PageWrapper({
                 }
               }}
             >
-              <MainPanelHeader
-                title={title}
-                backHref={backHref}
-                backHrefHistory={backHrefHistory}
-              >
-                {mainHeaderChildren}
-              </MainPanelHeader>
+              {hiddenPanelHeader !== true && (
+                <MainPanelHeader
+                  title={title}
+                  backHref={backHref}
+                  backHrefHistory={backHrefHistory}
+                >
+                  {mainHeaderChildren}
+                </MainPanelHeader>
+              )}
               <MainPanelBody
                 bottomPanelChildren={bottomPanelChildren}
                 sx={mainPanelSx}
