@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useRef, useState } from 'react'
@@ -80,32 +81,25 @@ export function TemplateSection({
     <Box sx={{ position: 'relative' }}>
       <Typography variant="h5">{category}</Typography>
       {loading === true && (journeys === null || journeys?.length === 0) && (
-        <Swiper breakpoints={swiperBreakpoints}>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-        </Swiper>
+        <Stack sx={{ mt: 4 }} spacing={{ xs: 5, lg: 12 }} direction="row">
+          <TemplateGalleryCard sx={{ flexGrow: 1 }} />
+          <TemplateGalleryCard sx={{ flexGrow: 1 }} />
+          <TemplateGalleryCard
+            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+          />
+          <TemplateGalleryCard
+            sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' } }}
+          />
+          <TemplateGalleryCard
+            sx={{ flexGrow: 1, display: { xs: 'none', lg: 'block' } }}
+          />
+          <TemplateGalleryCard
+            sx={{ flexGrow: 1, display: { xs: 'none', xl: 'block' } }}
+          />
+          <TemplateGalleryCard
+            sx={{ flexGrow: 1, display: { xs: 'none', xxl: 'block' } }}
+          />
+        </Stack>
       )}
       {loading !== true && journeys != null && journeys?.length > 0 && (
         <Swiper
