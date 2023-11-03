@@ -37,4 +37,14 @@ describe('getParentTagsWithIcon', () => {
     const { getByTestId } = render(<ParentTagIcon />)
     expect(getByTestId('TagIcon')).toBeInTheDocument()
   })
+
+  it('should render with custom style', () => {
+    const { getByTestId } = render(
+      <ParentTagIcon sx={{ backgroundColor: 'background.paper' }} />
+    )
+    expect(getByTestId('TagIcon')).toBeInTheDocument()
+    expect(getByTestId('TagIcon')).toHaveStyle({
+      backgroundColor: '#FFFFFF'
+    })
+  })
 })
