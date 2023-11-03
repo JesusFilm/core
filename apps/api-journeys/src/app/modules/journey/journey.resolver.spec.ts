@@ -1787,6 +1787,44 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('creatorImageBlock', () => {
+    it('returns creatorImageBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        creatorImageBlockId: 'blockId'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      expect(
+        await resolver.creatorImageBlock(journeyWithPrimaryImageBlock)
+      ).toEqual(block)
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+
+    it('returns null if no creatorImageBlockId', async () => {
+      expect(await resolver.creatorImageBlock(journey)).toBeNull()
+    })
+
+    it('returns null if creatorImageBlock journey is not current journey', async () => {
+      const journeyWithCreatorImageBlockFromDifferentJourney = {
+        ...journey,
+        id: 'differentJourneyId',
+        creatorImageBlockId: 'blockId'
+      }
+      expect(
+        await resolver.creatorImageBlock(
+          journeyWithCreatorImageBlockFromDifferentJourney
+        )
+      ).toBeNull()
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+  })
+
   describe('userJourneys', () => {
     it('returns userJourneys related to current journey', async () => {
       const userJourney = [
