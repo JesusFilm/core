@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
+import TagManager from 'react-gtm-module'
 
 import {
   GetLastActiveTeamIdAndTeams,
@@ -10,6 +11,17 @@ import {
 import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 
 import { TeamProvider, useTeam } from '.'
+
+jest.mock('react-gtm-module', () => ({
+  __esModule: true,
+  default: {
+    dataLayer: jest.fn()
+  }
+}))
+
+const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+  typeof TagManager.dataLayer
+>
 
 const TestComponent = (): ReactElement => {
   const { query, activeTeam, setActiveTeam } = useTeam()
@@ -115,5 +127,24 @@ describe('TeamProvider', () => {
     )
     fireEvent.click(getByRole('button'))
     expect(getByText('activeTeam: my second team')).toBeInTheDocument()
+  })
+
+  it('should create GA event', async () => {
+    render(
+      <MockedProvider mocks={[getTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'get_teams',
+          teams: 2
+        }
+      })
+    })
   })
 })
