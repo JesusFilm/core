@@ -15,8 +15,8 @@ export function AboutTabPanel(): ReactElement {
   const { t } = useTranslation()
   return (
     <>
-      <Stack direction="row">
-        <ImageEdit />
+      <Stack direction="row" spacing={5}>
+        <ImageEdit size="small" target="creator" />
         <TextField
           id="creatorDescription"
           name="creatorDescription"
@@ -34,6 +34,7 @@ export function AboutTabPanel(): ReactElement {
           label={t("Creator's Info")}
           multiline
           rows={3}
+          sx={{ flex: 1 }}
         />
       </Stack>
       <Divider />

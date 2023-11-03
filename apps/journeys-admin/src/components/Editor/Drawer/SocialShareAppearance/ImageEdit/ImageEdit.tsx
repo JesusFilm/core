@@ -1,14 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Skeleton from '@mui/material/Skeleton'
-import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Edit2Icon from '@core/shared/ui/icons/Edit2'
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import {
@@ -29,6 +23,9 @@ import {
 } from '../../../../../../__generated__/JourneyImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { ImageLibrary } from '../../../ImageLibrary'
+
+import { Large } from './Large'
+import { Small } from './Small'
 
 export const JOURNEY_IMAGE_BLOCK_DELETE = gql`
   mutation JourneyImageBlockDelete($id: ID!, $journeyId: ID!) {
@@ -79,11 +76,13 @@ export const JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE = gql`
 `
 
 interface ImageEditProps {
-  variant?: 'primary' | 'creator'
+  size?: 'small' | 'large'
+  target?: 'primary' | 'creator'
 }
 
 export function ImageEdit({
-  variant = 'primary'
+  size = 'large',
+  target = 'primary'
 }: ImageEditProps): ReactElement {
   const [journeyImageBlockDelete] = useMutation<
     JourneyImageBlockDelete,
@@ -107,8 +106,8 @@ export function ImageEdit({
   >(JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE)
   const { journey } = useJourney()
   const [open, setOpen] = useState(false)
-  const variantImageBlock =
-    variant === 'primary'
+  const targetImageBlock =
+    target === 'primary'
       ? journey?.primaryImageBlock
       : journey?.creatorImageBlock
 
@@ -139,7 +138,7 @@ export function ImageEdit({
         variables: {
           id: journey.id,
           input:
-            variant === 'primary'
+            target === 'primary'
               ? {
                   primaryImageBlockId: data.imageBlockCreate.id
                 }
@@ -170,16 +169,16 @@ export function ImageEdit({
   }
 
   async function handleDelete(): Promise<void> {
-    if (journey == null || variantImageBlock == null) return
+    if (journey == null || targetImageBlock == null) return
 
     const { data } = await journeyImageBlockDelete({
       variables: {
-        id: variantImageBlock.id,
+        id: targetImageBlock.id,
         journeyId: journey.id
       },
       update(cache, { data }) {
         blockDeleteUpdate(
-          variantImageBlock,
+          targetImageBlock,
           data?.blockDelete,
           cache,
           journey.id
@@ -191,7 +190,7 @@ export function ImageEdit({
         variables: {
           id: journey.id,
           input:
-            variant === 'primary'
+            target === 'primary'
               ? {
                   primaryImageBlockId: null
                 }
@@ -217,101 +216,21 @@ export function ImageEdit({
 
   return (
     <>
-      {journey != null ? (
-        <Box
-          overflow="hidden"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          position="relative"
-          borderRadius={2}
-          width="100%"
-          height={194}
-          mb={6}
-          bgcolor="#EFEFEF"
-          sx={{
-            cursor: 'pointer',
-            '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.1)' },
-            '&:active:hover': { bgcolor: 'rgba(0, 0, 0, 0.2)' }
-          }}
-          data-testid="social-image-edit"
+      {size === 'large' ? (
+        <Large
+          loading={journey == null}
+          imageBlock={targetImageBlock}
           onClick={handleOpen}
-        >
-          {variantImageBlock?.src != null ? (
-            <Box
-              component="img"
-              src={variantImageBlock.src}
-              alt={variantImageBlock.alt}
-              sx={{
-                width: '100%',
-                height: '194px',
-                objectFit: 'cover'
-              }}
-            />
-          ) : (
-            <GridEmptyIcon fontSize="large" />
-          )}
-
-          <Button
-            variant="contained"
-            size="small"
-            sx={{
-              position: 'absolute',
-              bottom: 16,
-              right: 10,
-              borderRadius: 4,
-              backgroundColor: 'background.paper'
-            }}
-            startIcon={
-              <Edit2Icon fontSize="small" sx={{ color: 'secondary.dark' }} />
-            }
-            onClick={handleOpen}
-          >
-            <Typography variant="caption" color="secondary.dark">
-              Change
-            </Typography>
-          </Button>
-        </Box>
+        />
       ) : (
-        <Box
-          sx={{ cursor: 'pointer' }}
-          mb={6}
-          position="relative"
+        <Small
+          loading={journey == null}
+          imageBlock={targetImageBlock}
           onClick={handleOpen}
-        >
-          <Skeleton
-            variant="rectangular"
-            width="100%"
-            height={194}
-            sx={{
-              borderRadius: 2,
-              root: { '&:hover': { backgroundColor: 'yellow' } }
-            }}
-          />
-          <Button
-            variant="contained"
-            size="small"
-            sx={{
-              position: 'absolute',
-              bottom: 16,
-              right: 10,
-              borderRadius: 4,
-              backgroundColor: 'background.paper'
-            }}
-            startIcon={
-              <Edit2Icon fontSize="small" sx={{ color: 'secondary.dark' }} />
-            }
-            onClick={handleOpen}
-            disabled
-          >
-            <Typography variant="caption" color="secondary.dark">
-              Change
-            </Typography>
-          </Button>
-        </Box>
+        />
       )}
       <ImageLibrary
-        selectedBlock={variantImageBlock ?? null}
+        selectedBlock={targetImageBlock ?? null}
         open={open}
         onClose={handleClose}
         onChange={handleChange}
