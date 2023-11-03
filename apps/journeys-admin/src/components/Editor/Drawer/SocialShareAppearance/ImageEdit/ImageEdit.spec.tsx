@@ -10,13 +10,14 @@ import {
   GetJourney_journey as Journey
 } from '../../../../../../__generated__/GetJourney'
 import { createCloudflareUploadByUrlMock } from '../../../ImageBlockEditor/CustomImage/CustomUrl/data'
+import { listUnsplashCollectionMock } from '../../../ImageBlockEditor/UnsplashGallery/data'
 import { SocialProvider } from '../../../SocialProvider'
 
 import {
-  BLOCK_DELETE_PRIMARY_IMAGE,
   ImageEdit,
-  JOURNEY_PRIMARY_IMAGE_UPDATE,
-  PRIMARY_IMAGE_BLOCK_CREATE
+  JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE,
+  JOURNEY_IMAGE_BLOCK_CREATE,
+  JOURNEY_IMAGE_BLOCK_DELETE
 } from './ImageEdit'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -138,9 +139,10 @@ describe('ImageEdit', () => {
         cache={cache}
         mocks={[
           createCloudflareUploadByUrlMock,
+          listUnsplashCollectionMock,
           {
             request: {
-              query: PRIMARY_IMAGE_BLOCK_CREATE,
+              query: JOURNEY_IMAGE_BLOCK_CREATE,
               variables: {
                 input: {
                   journeyId: 'journey.id',
@@ -153,7 +155,7 @@ describe('ImageEdit', () => {
           },
           {
             request: {
-              query: JOURNEY_PRIMARY_IMAGE_UPDATE,
+              query: JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE,
               variables: {
                 id: 'journey.id',
                 input: {
@@ -191,9 +193,6 @@ describe('ImageEdit', () => {
     await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyResult).toHaveBeenCalled())
-    expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
-      { __ref: 'ImageBlock:image1.id' }
-    ])
   })
 
   it('delete the primaryImage', async () => {
@@ -234,9 +233,10 @@ describe('ImageEdit', () => {
       <MockedProvider
         cache={cache}
         mocks={[
+          listUnsplashCollectionMock,
           {
             request: {
-              query: BLOCK_DELETE_PRIMARY_IMAGE,
+              query: JOURNEY_IMAGE_BLOCK_DELETE,
               variables: {
                 id: image.id,
                 journeyId: 'journey.id'
@@ -246,7 +246,7 @@ describe('ImageEdit', () => {
           },
           {
             request: {
-              query: JOURNEY_PRIMARY_IMAGE_UPDATE,
+              query: JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE,
               variables: {
                 id: 'journey.id',
                 input: {

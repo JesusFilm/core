@@ -230,6 +230,8 @@ describe('HostResolver', () => {
       description: null,
       primaryImageBlockId: null,
       publishedAt: null,
+      creatorImageBlockId: null,
+      creatorDescription: null,
       createdAt: new Date(),
       hostId: 'hostId',
       archivedAt: null,

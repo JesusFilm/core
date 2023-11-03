@@ -131,6 +131,8 @@ export const journey: Journey = {
     }
   ],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,

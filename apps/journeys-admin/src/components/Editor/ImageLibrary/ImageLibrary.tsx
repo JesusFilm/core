@@ -5,7 +5,7 @@ import { Theme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog as SharedUiDialog } from '@core/shared/ui/Dialog'
