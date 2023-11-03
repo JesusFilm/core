@@ -43,8 +43,6 @@ export function TemplateGalleryCarousel({
     }
   }, [swiper])
 
-  console.log('journeys', items, loading)
-
   return (
     <Box sx={{ position: 'relative' }}>
       {heading != null && <Typography variant="h5">{heading}</Typography>}
