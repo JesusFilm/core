@@ -9,12 +9,16 @@ interface TemplateVideoPreviewItemProps {
   id?: string | null
   source?: VideoBlockSource
   poster?: string
+  startAt: number
+  endAt: number
 }
 
 export function TemplateVideoPlayer({
   id,
   source,
-  poster
+  poster,
+  startAt = 0,
+  endAt
 }: TemplateVideoPreviewItemProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
@@ -51,7 +55,20 @@ export function TemplateVideoPlayer({
       ?.getChild('ControlBar')
       ?.getChild('VolumePanel')
       ?.addClass('swiper-no-swiping')
-  }, [player])
+
+    const startTime = startAt ?? 0
+    if (player != null) {
+      const handleVideoTimeChange = (): void => {
+        if (endAt > 0 && player.currentTime() > endAt) {
+          player.pause()
+          if (player.isFullscreen()) void player.exitFullscreen()
+        }
+      }
+      player.currentTime(startTime)
+      player.on('timeupdate', handleVideoTimeChange)
+    }
+  }, [player, startAt, endAt])
+
   return (
     <Box
       sx={{
@@ -81,7 +98,9 @@ export function TemplateVideoPlayer({
         )}
         {source === VideoBlockSource.youTube && id != null && (
           <source
-            src={`https://www.youtube.com/embed/${id}`}
+            src={`https://www.youtube.com/embed/${id}?start=${
+              startAt ?? 0
+            }&end=${endAt ?? 0}`}
             type="video/youtube"
           />
         )}

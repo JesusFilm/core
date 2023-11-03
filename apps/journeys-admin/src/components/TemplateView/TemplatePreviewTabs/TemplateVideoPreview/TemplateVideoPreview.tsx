@@ -21,6 +21,8 @@ const DynamicTemplateVideoPlayer = dynamic<{
   id?: string | null
   source?: VideoBlockSource
   poster?: string
+  startAt?: number
+  endAt?: number
 }>(
   async () =>
     await import(
@@ -44,6 +46,8 @@ export function TemplateVideoPreviewItem({
           id={block?.video?.variant?.hls ?? block?.videoId}
           source={block?.source}
           poster={(block?.image as string) ?? block?.video?.image}
+          startAt={block?.startAt ?? 0}
+          endAt={block?.endAt ?? 10000}
         />
       ) : (
         <Box
