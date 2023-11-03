@@ -37,7 +37,7 @@ export function TemplatePreviewTabs(): ReactElement {
       : undefined
 
   const videos = useMemo(() => {
-    // filter backgrond videos from interactive videos
+    // filter background videos from interactive videos
     const videoBlocks = journey?.blocks?.filter(
       (block) => block.__typename === 'VideoBlock'
     ) as Array<TreeBlock<VideoBlock>>

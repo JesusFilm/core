@@ -1,10 +1,12 @@
+import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import { useTheme } from '@mui/material/styles'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import { ReactElement, useState } from 'react'
 import { SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -15,88 +17,77 @@ interface TemplateVideoPreviewProps {
   videoBlocks: Array<TreeBlock<VideoBlock>>
 }
 
-interface TemplateVideoPreviewItemProps {
+const DynamicTemplateVideoPlayer = dynamic<{
   id?: string | null
   source?: VideoBlockSource
   poster?: string
+}>(
+  async () =>
+    await import(
+      /* webpackChunkName: "TemplateVideoPlayer" */ './TemplateVideoPlayer'
+    ).then((mod) => mod.TemplateVideoPlayer)
+)
+
+interface TemplateVideoPreviewItemProps {
+  block?: TreeBlock<VideoBlock>
 }
 
-function TemplateVideoPreviewItem({
-  id,
-  source,
-  poster
+export function TemplateVideoPreviewItem({
+  block
 }: TemplateVideoPreviewItemProps): ReactElement {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [player, setPlayer] = useState<Player>()
+  const [hasPlayed, setHasPlayed] = useState(false)
 
-  useEffect(() => {
-    if (videoRef.current != null) {
-      setPlayer(
-        videojs(videoRef.current, {
-          controls: true,
-          bigPlayButton: true,
-          fluid: true,
-          poster,
-          // Make video fill container instead of set aspect ratio
-          fill: true,
-          userActions: {
-            hotkeys: true,
-            doubleClick: true
-          },
-          responsive: true
-        })
-      )
-    }
-  }, [poster])
-
-  useEffect(() => {
-    // make sure swiper-js is not interrupting interaction with certain components of video-js
-    player
-      ?.getChild('ControlBar')
-      ?.getChild('ProgressControl')
-      ?.addClass('swiper-no-swiping')
-
-    player
-      ?.getChild('ControlBar')
-      ?.getChild('VolumePanel')
-      ?.addClass('swiper-no-swiping')
-  }, [player])
   return (
-    <Box
-      sx={{
-        width: '430px',
-        height: '239px',
-        overflow: 'hidden',
-        borderRadius: 4,
-        position: 'relative',
-        backgroundColor: 'red'
-      }}
-    >
-      <video
-        ref={videoRef}
-        className="video-js vjs-tech"
-        playsInline
-        style={{ height: '100%' }}
-      >
-        {source === VideoBlockSource.cloudflare && id != null && (
-          <source
-            src={`https://customer-${
-              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-            }.cloudflarestream.com/${id}/manifest/video.m3u8`}
-            type="application/x-mpegURL"
+    <>
+      {hasPlayed ? (
+        <DynamicTemplateVideoPlayer
+          id={block?.video?.variant?.hls ?? block?.videoId}
+          source={block?.source}
+          poster={(block?.image as string) ?? block?.video?.image}
+        />
+      ) : (
+        <Box
+          sx={{
+            width: '430px',
+            height: '239px',
+            cursor: 'grab',
+            borderRadius: 4
+          }}
+        >
+          <Image
+            src={(block?.image as string) ?? block?.video?.image}
+            alt={block?.video?.title[0]?.value ?? 'video' + ' image'}
+            fill
+            sizes="100vw"
+            style={{
+              objectFit: 'cover',
+              borderRadius: '16px'
+            }}
           />
-        )}
-        {source === VideoBlockSource.internal && id != null && (
-          <source src={id} type="application/x-mpegURL" />
-        )}
-        {source === VideoBlockSource.youTube && id != null && (
-          <source
-            src={`https://www.youtube.com/embed/${id}`}
-            type="video/youtube"
-          />
-        )}
-      </video>
-    </Box>
+          <Button
+            variant="contained"
+            onClick={() => setHasPlayed(true)}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: '68px',
+              height: '48px',
+              marginLeft: '-34px',
+              marginTop: '-24px'
+            }}
+          >
+            <PlayArrowRounded
+              sx={{
+                width: '100%',
+                height: '100%',
+                color: 'background.default'
+              }}
+            />
+          </Button>
+        </Box>
+      )}
+    </>
   )
 }
 
@@ -109,6 +100,7 @@ export function TemplateVideoPreview({
       spaceBetween: 28
     }
   }
+
   return (
     <Swiper
       freeMode
@@ -123,11 +115,7 @@ export function TemplateVideoPreview({
     >
       {videoBlocks?.map((block) => (
         <SwiperSlide key={block.id} style={{ width: 'fit-content', zIndex: 2 }}>
-          <TemplateVideoPreviewItem
-            id={block.video?.variant?.hls ?? block.videoId}
-            source={block.source}
-            poster={(block.image as string) ?? block.video?.image}
-          />
+          <TemplateVideoPreviewItem block={block} />
         </SwiperSlide>
       ))}
     </Swiper>
