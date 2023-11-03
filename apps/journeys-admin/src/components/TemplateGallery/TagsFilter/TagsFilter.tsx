@@ -4,12 +4,13 @@ import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
+import MuiPopper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
-import { ReactElement } from 'react'
+import { ReactElement, useCallback } from 'react'
 
 import { GetTags_tags as Tag } from '../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
@@ -20,6 +21,7 @@ interface TagsFilterProps {
   tagNames: string[]
   selectedTagIds: string[]
   onChange: (selectedTagIds: string[], filteredTagIds: string[]) => void
+  popperElementId?: string
 }
 
 const StyledLi = styled('li')({})
@@ -28,7 +30,8 @@ export function TagsFilter({
   label,
   tagNames,
   selectedTagIds,
-  onChange
+  onChange,
+  popperElementId
 }: TagsFilterProps): ReactElement {
   const { parentTags, childTags, loading } = useTagsQuery()
   const theme = useTheme()
@@ -66,10 +69,24 @@ export function TagsFilter({
       filteredChildTagIds
     )
   }
+
+  const Popper = useCallback((props) => {
+    const anchorEl = document.getElementById(popperElementId)
+    return (
+      <MuiPopper
+        {...props}
+        anchorEl={anchorEl}
+        style={{ width: anchorEl?.clientWidth }}
+        placement="bottom"
+      />
+    )
+  }, [popperElementId])
+
   const hasMultipleColumns = tagNames.length > 1
   return (
     <Box sx={{ width: '100%' }}>
       <Autocomplete
+        PopperComponent={popperElementId != null ? Popper : undefined}
         loading={loading}
         limitTags={hasMultipleColumns ? 4 : 1}
         disableCloseOnSelect
