@@ -124,6 +124,81 @@ describe('CategoriesTabPanel', () => {
     }
   ]
 
+  const parentTags = [
+    {
+      __typename: 'Tag',
+      id: 'parentId1',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Topics',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'parentId2',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Felt Needs',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'parentId3',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Holidays',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'parentId4',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Audience',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'parentId5',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Genre',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'parentId6',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Collections',
+          primary: true
+        }
+      ]
+    }
+  ]
+
   const tagsMock = {
     request: {
       query: GET_TAGS
@@ -131,6 +206,15 @@ describe('CategoriesTabPanel', () => {
     result: {
       data: {
         tags
+      }
+    }
+  }
+
+  const parentTagsMock = {
+    ...tagsMock,
+    result: {
+      data: {
+        tags: parentTags
       }
     }
   }
@@ -166,6 +250,27 @@ describe('CategoriesTabPanel', () => {
       expect(
         getByRole('option', { name: 'Anger', selected: false })
       ).toBeInTheDocument()
+    })
+  })
+
+  it('shows tag autocompletes with proper parent tag icons', async () => {
+    const { getByTestId } = render(
+      <MockedProvider mocks={[parentTagsMock]}>
+        <CategoriesTabPanel
+          tabValue={1}
+          onChange={jest.fn()}
+          initialTags={[{ id: topicTag.id, parentId: topicTag.parentId }]}
+        />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByTestId('Hash2Icon')).toBeInTheDocument()
+      expect(getByTestId('SmileyNeutralIcon')).toBeInTheDocument()
+      expect(getByTestId('Calendar4Icon')).toBeInTheDocument()
+      expect(getByTestId('UsersProfiles2Icon')).toBeInTheDocument()
+      expect(getByTestId('MediaStrip1Icon')).toBeInTheDocument()
+      expect(getByTestId('Grid1Icon')).toBeInTheDocument()
     })
   })
 
