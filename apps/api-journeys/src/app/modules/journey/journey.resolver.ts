@@ -847,6 +847,17 @@ export class JourneyResolver {
   }
 
   @ResolveField()
+  async creatorImageBlock(@Parent() journey: Journey): Promise<Block | null> {
+    if (journey.creatorImageBlockId == null) return null
+    const block = await this.prismaService.block.findUnique({
+      where: { id: journey.creatorImageBlockId },
+      include: { action: true }
+    })
+    if (block?.journeyId !== journey.id) return null
+    return block
+  }
+
+  @ResolveField()
   async userJourneys(
     @Parent() journey: Journey,
     @CaslAbility({ optional: true }) ability?: AppAbility
