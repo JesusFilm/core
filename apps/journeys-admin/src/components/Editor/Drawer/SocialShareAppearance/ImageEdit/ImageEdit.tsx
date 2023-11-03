@@ -78,11 +78,13 @@ export const JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE = gql`
 interface ImageEditProps {
   size?: 'small' | 'large'
   target?: 'primary' | 'creator'
+  variant?: 'drawer' | 'dialog'
 }
 
 export function ImageEdit({
   size = 'large',
-  target = 'primary'
+  target = 'primary',
+  variant = 'drawer'
 }: ImageEditProps): ReactElement {
   const [journeyImageBlockDelete] = useMutation<
     JourneyImageBlockDelete,
@@ -230,6 +232,7 @@ export function ImageEdit({
         />
       )}
       <ImageLibrary
+        variant={variant}
         selectedBlock={targetImageBlock ?? null}
         open={open}
         onClose={handleClose}

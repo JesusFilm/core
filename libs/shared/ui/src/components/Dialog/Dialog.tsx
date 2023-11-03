@@ -6,12 +6,12 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import MuiDialogTitle from '@mui/material/DialogTitle'
 import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material/styles'
+import { SxProps, styled } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
 interface DialogProps {
-  open: boolean
-  onClose: () => void
+  open?: boolean
+  onClose?: () => void
   dialogTitle?: DialogTitle
   dialogAction?: DialogAction
   /** Prefer `dialogAction` when child elements are buttons */
@@ -22,6 +22,7 @@ interface DialogProps {
   container?: HTMLElement
   loading?: boolean
   testId?: string
+  sx?: SxProps
 }
 
 interface DialogAction {
@@ -80,17 +81,19 @@ export function Dialog({
   children,
   container,
   loading = false,
-  testId
+  testId,
+  sx
 }: DialogProps): ReactElement {
   return (
     <StyledDialog
-      open={open}
+      open={open === true}
       fullScreen={fullscreen}
       maxWidth="sm"
       fullWidth
       onClose={onClose}
       container={container}
       data-testid={testId}
+      sx={sx}
     >
       {dialogTitle != null && (
         <MuiDialogTitle>

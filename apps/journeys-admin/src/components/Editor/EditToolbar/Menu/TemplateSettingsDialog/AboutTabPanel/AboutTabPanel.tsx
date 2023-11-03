@@ -16,7 +16,7 @@ export function AboutTabPanel(): ReactElement {
   return (
     <>
       <Stack direction="row" spacing={5}>
-        <ImageEdit size="small" target="creator" />
+        <ImageEdit size="small" target="creator" variant="dialog" />
         <TextField
           id="creatorDescription"
           name="creatorDescription"
