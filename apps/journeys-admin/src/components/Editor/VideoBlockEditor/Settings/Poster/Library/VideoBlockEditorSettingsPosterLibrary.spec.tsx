@@ -63,6 +63,8 @@ const journey: Journey = {
   primaryImageBlock: null,
   template: null,
   userJourneys: [],
+  creatorDescription: null,
+  creatorImageBlock: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
