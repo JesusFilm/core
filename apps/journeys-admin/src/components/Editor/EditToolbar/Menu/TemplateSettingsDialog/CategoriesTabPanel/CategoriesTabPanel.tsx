@@ -25,7 +25,6 @@ export function CategoriesTabPanel(): ReactElement {
 
   const { values, setFieldValue } = useTemplateSettingsForm()
 
-  console.log(values)
   // TODO: Update when supporting multiple languages for tags
   const populateTagDataByParentId = (
     previousTags: TagOptionsData,
