@@ -22,8 +22,10 @@ export function CategoriesTabPanel(): ReactElement {
   const { t } = useTranslation()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { parentTags, childTags } = useTagsQuery()
+
   const { values, setFieldValue } = useTemplateSettingsForm()
 
+  console.log(values)
   // TODO: Update when supporting multiple languages for tags
   const populateTagDataByParentId = (
     previousTags: TagOptionsData,

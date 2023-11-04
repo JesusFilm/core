@@ -1,4 +1,8 @@
-import { fireEvent, render } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { FormikContextType, FormikProvider } from 'formik'
+
+import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
 
@@ -11,51 +15,74 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 describe('AboutTabPanel', () => {
   afterEach(() => jest.clearAllMocks())
 
-  const handleChange = jest.fn()
-
   it('should call onChange on form change', async () => {
+    const handleChange = jest.fn()
     const { getByLabelText } = render(
-      <AboutTabPanel
-        name="strategySlug"
-        errors={{ strategySlug: '' }}
-        value=""
-        tabValue={2}
-        onChange={handleChange}
-      />
+      <MockedProvider>
+        <FormikProvider
+          value={
+            {
+              values: { creatorDescription: '', strategySlug: '' },
+              handleChange
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <AboutTabPanel />
+        </FormikProvider>
+      </MockedProvider>
     )
 
     fireEvent.change(getByLabelText('Paste URL here'), {
       target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
     })
-    expect(handleChange).toHaveBeenCalled()
+    await waitFor(() => expect(handleChange).toHaveBeenCalled())
   })
 
   it('should validate form on error', async () => {
     const { getByText } = render(
-      <AboutTabPanel
-        name="strategySlug"
-        errors={{ strategySlug: 'Invalid embed link' }}
-        value="some invalid value"
-        tabValue={2}
-        onChange={handleChange}
-      />
+      <MockedProvider>
+        <FormikProvider
+          value={
+            {
+              values: { creatorDescription: '', strategySlug: '' },
+              errors: { strategySlug: 'Invalid embed link' }
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <AboutTabPanel />
+        </FormikProvider>
+      </MockedProvider>
     )
 
-    expect(getByText('Invalid embed link')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('Invalid embed link')).toBeInTheDocument()
+    )
   })
 
   it('should render strategy section preview', async () => {
     const { queryByText, getByTestId } = render(
-      <AboutTabPanel
-        name="strategySlug"
-        errors={{ strategySlug: '' }}
-        value="https://www.canva.com/design/DAFvDBw1z1A/view"
-        tabValue={2}
-        onChange={handleChange}
-      />
+      <MockedProvider>
+        <FormikProvider
+          value={
+            {
+              values: {
+                creatorDescription: '',
+                strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view'
+              }
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <AboutTabPanel />
+        </FormikProvider>
+      </MockedProvider>
     )
 
     expect(queryByText('Strategy')).not.toBeInTheDocument()
