@@ -98,7 +98,11 @@ export function CategoriesTabPanel({
             if (tagId != null) {
               return (
                 <Stack
+<<<<<<< HEAD
                   gap={4}
+=======
+                  gap={2}
+>>>>>>> main
                   key={`${tags[tagId].label}-tag-autocomplete`}
                   direction="row"
                   alignItems="center"
