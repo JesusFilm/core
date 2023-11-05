@@ -70,17 +70,21 @@ export function TagsFilter({
     )
   }
 
-  const Popper = useCallback((props) => {
-    const anchorEl = document.getElementById(popperElementId)
-    return (
-      <MuiPopper
-        {...props}
-        anchorEl={anchorEl}
-        style={{ width: anchorEl?.clientWidth }}
-        placement="bottom"
-      />
-    )
-  }, [popperElementId])
+  const Popper = useCallback(
+    (props) => {
+      const anchorEl = document.getElementById(popperElementId as string)
+
+      return (
+        <MuiPopper
+          {...props}
+          anchorEl={anchorEl}
+          style={{ width: anchorEl?.clientWidth }}
+          placement="bottom"
+        />
+      )
+    },
+    [popperElementId]
+  )
 
   const hasMultipleColumns = tagNames.length > 1
   return (
