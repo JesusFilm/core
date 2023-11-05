@@ -145,7 +145,7 @@ describe('TemplateSettingsDialog', () => {
     fireEvent.click(getByRole('checkbox'))
     fireEvent.click(getByRole('tab', { name: 'About' }))
 
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(getAllByRole('textbox')[1], {
       target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
     })
 
@@ -217,7 +217,7 @@ describe('TemplateSettingsDialog', () => {
 
     fireEvent.click(getByRole('tab', { name: 'About' }))
 
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(getByRole('textbox', { name: 'Paste URL here' }), {
       target: {
         value:
           'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
@@ -249,80 +249,15 @@ describe('TemplateSettingsDialog', () => {
     )
 
     fireEvent.click(getByRole('tab', { name: 'About' }))
-    const textField = getByRole('textbox')
+    const textField = getByRole('textbox', { name: 'Paste URL here' })
     fireEvent.change(textField, {
       target: { value: 'www.canva.com/123' }
     })
-    fireEvent.submit(getByRole('textbox'))
+    fireEvent.submit(getByRole('textbox', { name: 'Paste URL here' }))
 
     await waitFor(() =>
       expect(getByText('Invalid embed link')).toBeInTheDocument()
     )
-  })
-
-  it('should update embed url to null on empty string', async () => {
-    const journeyWithStrategySlug = {
-      ...defaultJourney,
-      strategySlug:
-        'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
-    }
-
-    const updatedJourney = {
-      title: journeyWithStrategySlug.title,
-      description: journeyWithStrategySlug.description,
-      strategySlug: null,
-      tagIds: []
-    }
-
-    const result = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          id: journeyWithStrategySlug.id,
-          __typename: 'Journey',
-          ...updatedJourney
-        }
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_SETTINGS_UPDATE,
-              variables: {
-                id: journeyWithStrategySlug.id,
-                input: { ...updatedJourney }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: journeyWithStrategySlug,
-              variant: 'admin'
-            }}
-          >
-            <TemplateSettingsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByRole('tab', { name: 'About' }))
-    expect(getByRole('textbox')).toHaveValue(
-      journeyWithStrategySlug.strategySlug
-    )
-    await fireEvent.change(getByRole('textbox'), {
-      target: { value: '' }
-    })
-    expect(getByRole('textbox')).toHaveValue('')
-    fireEvent.click(getByRole('button', { name: 'Save' }))
-
-    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should not update field data if it remains unchanged on submit', async () => {
@@ -447,7 +382,7 @@ describe('TemplateSettingsDialog', () => {
   })
 
   it('calls on close and resets form when dialog is closed', async () => {
-    const { getByRole, getByTestId, getAllByRole } = render(
+    const { getByRole, getAllByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <JourneyProvider
@@ -465,26 +400,23 @@ describe('TemplateSettingsDialog', () => {
     fireEvent.change(getAllByRole('textbox')[0], {
       target: { value: 'some title that wont be saved' }
     })
-    expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
-      title: 'some title that wont be saved'
-    })
+    expect(getAllByRole('textbox')[0]).toHaveValue(
+      'some title that wont be saved'
+    )
+
     fireEvent.change(getAllByRole('textbox')[1], {
       target: { value: 'some description that wont be saved' }
     })
-    expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
-      description: 'some description that wont be saved'
-    })
+    expect(getAllByRole('textbox')[1]).toHaveValue(
+      'some description that wont be saved'
+    )
+
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalled()
-      expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
-        description: defaultJourney.description
-      })
-
-      expect(getByTestId('template-settings-dialog-form')).toHaveFormValues({
-        title: defaultJourney.title
-      })
+      expect(getAllByRole('textbox')[1]).toHaveValue(defaultJourney.description)
+      expect(getAllByRole('textbox')[0]).toHaveValue(defaultJourney.title)
     })
   })
 

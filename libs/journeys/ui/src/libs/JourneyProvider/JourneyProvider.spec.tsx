@@ -116,6 +116,8 @@ describe('JourneyContext', () => {
         }
       ] as TreeBlock[],
       primaryImageBlock: null,
+      creatorDescription: null,
+      creatorImageBlock: null,
       userJourneys: [],
       seoTitle: null,
       seoDescription: null,
