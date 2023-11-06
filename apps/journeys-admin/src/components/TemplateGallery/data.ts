@@ -179,6 +179,26 @@ export const getJourneysMock: MockedResponse<
   }
 }
 
+export const getJourneysWithoutLanguageIdsMock: MockedResponse<
+  GetJourneys,
+  GetJourneysVariables
+> = {
+  request: {
+    query: GET_JOURNEYS,
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true
+      }
+    }
+  },
+  result: {
+    data: {
+      journeys
+    }
+  }
+}
+
 export const getLanguagesMock: MockedResponse<GetLanguages> = {
   request: {
     query: GET_LANGUAGES,

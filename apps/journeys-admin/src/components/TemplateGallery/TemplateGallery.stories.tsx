@@ -4,7 +4,12 @@ import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '../../libs/storybook'
 
-import { getJourneysMock, getLanguagesMock, getTagsMock } from './data'
+import {
+  getJourneysMock,
+  getJourneysWithoutLanguageIdsMock,
+  getLanguagesMock,
+  getTagsMock
+} from './data'
 
 import { TemplateGallery } from '.'
 
@@ -35,7 +40,7 @@ export const Default = {
   ...Template,
   parameters: {
     apolloClient: {
-      mocks: [getJourneysMock, getLanguagesMock, getTagsMock]
+      mocks: [getJourneysWithoutLanguageIdsMock, getLanguagesMock, getTagsMock]
     }
   }
 }

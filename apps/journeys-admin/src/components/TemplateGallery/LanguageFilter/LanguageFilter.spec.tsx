@@ -84,12 +84,12 @@ describe('LanguageFilter', () => {
           }
         ]}
       >
-        <LanguageFilter languageIds={['529']} onChange={onChange} />
+        <LanguageFilter languageIds={[]} onChange={onChange} />
       </MockedProvider>
     )
     await waitFor(() => {
       expect(getByText('Filter by language:')).toBeInTheDocument()
-      fireEvent.click(getByRole('button', { name: 'English' }))
+      fireEvent.click(getByRole('button', { name: 'All Languages' }))
     })
     expect(getByRole('dialog')).toBeInTheDocument()
     fireEvent.focus(getByRole('combobox'))

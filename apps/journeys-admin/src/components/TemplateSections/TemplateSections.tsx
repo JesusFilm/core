@@ -34,7 +34,7 @@ export function TemplateSections({
         template: true,
         orderByRecent: true,
         tagIds,
-        languageIds
+        languageIds: languageIds.length > 0 ? languageIds : undefined
       }
     },
     onCompleted(data) {

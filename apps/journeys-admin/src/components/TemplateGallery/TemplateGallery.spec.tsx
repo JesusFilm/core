@@ -2,7 +2,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import { getJourneysMock, getLanguagesMock, getTagsMock } from './data'
+import {
+  getJourneysMock,
+  getJourneysWithoutLanguageIdsMock,
+  getLanguagesMock,
+  getTagsMock
+} from './data'
 
 import { TemplateGallery } from '.'
 
@@ -30,7 +35,13 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 describe('TemplateGallery', () => {
   it('should render TemplateGallery', async () => {
     const { getByRole, getAllByRole } = render(
-      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
+      <MockedProvider
+        mocks={[
+          getJourneysWithoutLanguageIdsMock,
+          getLanguagesMock,
+          getTagsMock
+        ]}
+      >
         <TemplateGallery />
       </MockedProvider>
     )
@@ -38,7 +49,7 @@ describe('TemplateGallery', () => {
       getAllByRole('heading', { name: 'Journey Templates' })[0]
     ).toBeInTheDocument()
     await waitFor(() =>
-      expect(getByRole('button', { name: 'English' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'All Languages' })).toBeInTheDocument()
     )
     expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
     expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
@@ -67,7 +78,6 @@ describe('TemplateGallery', () => {
     await waitFor(() =>
       fireEvent.click(getByRole('option', { name: 'Acceptance' }))
     )
-    expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
     expect(
       queryByRole('heading', { name: 'Addiction' })
     ).not.toBeInTheDocument()

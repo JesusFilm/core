@@ -80,7 +80,20 @@ const Template: StoryObj<ComponentProps<typeof LanguageFilter>> = {
 export const Default = {
   ...Template,
   args: {
-    languageId: '529',
+    languageIds: [],
+    onChange: noop
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [getLanguagesMock]
+    }
+  }
+}
+
+export const Selected = {
+  ...Template,
+  args: {
+    languageIds: ['529'],
     onChange: noop
   },
   parameters: {
@@ -93,7 +106,7 @@ export const Default = {
 export const Loading = {
   ...Template,
   args: {
-    languageId: '529',
+    languageIds: ['529'],
     onChange: noop
   },
   parameters: {

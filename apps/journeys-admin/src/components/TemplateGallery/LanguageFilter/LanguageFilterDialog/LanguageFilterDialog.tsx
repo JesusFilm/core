@@ -40,9 +40,6 @@ export function LanguageFilterDialog({
   }
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
-    if (languageIds.length === 0) {
-      onChange([ENGLISH_LANGUAGE_ID])
-    }
     return () => {
       onClose()
       // wait for dialog animation to complete

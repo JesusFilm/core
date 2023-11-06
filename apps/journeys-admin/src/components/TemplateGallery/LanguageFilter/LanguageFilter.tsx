@@ -28,6 +28,9 @@ export function LanguageFilter({
     const languageNames = getLanguages(languageIds, data?.languages)?.map(
       (languageName) => languageName.localName ?? languageName.nativeName ?? ' '
     )
+    if (languageNames.length === 0) {
+      return 'All Languages'
+    }
     if (languageNames.length > 2) {
       const remaining = languageNames.length - 2
       return `${languageNames.slice(0, 2).join(', ')}, +${remaining}`
