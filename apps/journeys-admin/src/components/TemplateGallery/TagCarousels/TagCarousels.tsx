@@ -19,19 +19,13 @@ export function TagCarousels({ onChange }: TagCarouselsProps): ReactElement {
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
-      slidesPerGroup: 1,
-      slidesPerView: 'auto',
-      spaceBetween: 20
+      slidesPerGroup: 1
     },
     [breakpoints.values.md]: {
-      slidesPerGroup: 3.8,
-      slidesPerView: 3.8,
-      spaceBetween: 20
+      slidesPerGroup: 3.5
     },
     [breakpoints.values.lg]: {
-      slidesPerGroup: 5,
-      slidesPerView: 5,
-      spaceBetween: 20
+      slidesPerGroup: 5
     }
   }
 

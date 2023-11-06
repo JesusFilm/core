@@ -55,7 +55,7 @@ export function FeltNeedsButton({ item: tag, index, onChange }): ReactElement {
     <StyledFeltNeedsButton
       key={`${tagLabel}-button}`}
       sx={{
-        width: { xs: '150px', md: '100%' },
+        width: { xs: '150px', md: '222px' },
         height: { xs: '56px', md: '110px' }
       }}
       onClick={() => onChange(tag.id)}
@@ -65,13 +65,27 @@ export function FeltNeedsButton({ item: tag, index, onChange }): ReactElement {
       )}
       <Typography
         variant="h3"
-        sx={{ zIndex: 1, display: { xs: 'none', md: 'flex' } }}
+        sx={{
+          zIndex: 1,
+          display: { xs: 'none', md: 'flex' },
+          position: 'absolute',
+          opacity: '80%',
+          left: 12,
+          bottom: 8
+        }}
       >
         {tagLabel}
       </Typography>
       <Typography
         variant="subtitle2"
-        sx={{ zIndex: 1, display: { md: 'none' } }}
+        sx={{
+          zIndex: 1,
+          display: { md: 'none' },
+          position: 'absolute',
+          opacity: '60%',
+          left: 8,
+          bottom: 4
+        }}
       >
         {tagLabel}
       </Typography>
