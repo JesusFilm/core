@@ -6,7 +6,7 @@ import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
 import MuiPopper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
-import { styled, useTheme } from '@mui/material/styles'
+import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
@@ -23,8 +23,6 @@ interface TagsFilterProps {
   onChange: (selectedTagIds: string[], filteredTagIds: string[]) => void
   popperElementId?: string
 }
-
-const StyledLi = styled('li')({})
 
 export function TagsFilter({
   label,
@@ -88,150 +86,141 @@ export function TagsFilter({
 
   const hasMultipleColumns = tagNames.length > 1
   return (
-    <Box sx={{ width: '100%' }}>
-      <Autocomplete
-        PopperComponent={popperElementId != null ? Popper : undefined}
-        loading={loading}
-        limitTags={hasMultipleColumns ? 4 : 1}
-        disableCloseOnSelect
-        multiple
-        fullWidth
-        value={filteredSelectedTags}
-        onChange={handleChange}
-        options={filteredChildTags}
-        groupBy={(option) => option.parentId ?? ''}
-        getOptionLabel={(option) =>
-          option.name.find(({ primary }) => primary)?.value ?? ''
-        }
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label={label}
-            InputProps={{
-              ...params.InputProps,
-              sx: {
-                minWidth: 0,
-                '.MuiInputBase-input.MuiOutlinedInput-input': {
-                  minWidth: 0
+    <Autocomplete
+      PopperComponent={popperElementId != null ? Popper : undefined}
+      loading={loading}
+      limitTags={hasMultipleColumns ? 4 : 1}
+      disableCloseOnSelect
+      multiple
+      fullWidth
+      value={filteredSelectedTags}
+      onChange={handleChange}
+      options={filteredChildTags}
+      groupBy={(option) => option.parentId ?? ''}
+      getOptionLabel={(option) =>
+        option.name.find(({ primary }) => primary)?.value ?? ''
+      }
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          InputProps={{
+            ...params.InputProps,
+            sx: {
+              minWidth: 0,
+              '.MuiInputBase-input.MuiOutlinedInput-input': {
+                minWidth: 0
+              }
+            },
+            endAdornment: (
+              <>
+                {loading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
+                {params.InputProps.endAdornment}
+              </>
+            )
+          }}
+        />
+      )}
+      renderGroup={(params) => {
+        const parentTagName = parentTags
+          .find(({ id }) => id === params.group)
+          ?.name.find(({ primary }) => primary)?.value
+        return (
+          <>
+            {tagNames.length > 1 ? (
+              <Box
+                component="li"
+                key={params.key}
+                sx={{
+                  '&:last-of-type': {
+                    backgroundColor: {
+                      md: hasMultipleColumns
+                        ? theme.palette.grey[50]
+                        : undefined
+                    },
+                    borderWidth: { md: '1px' },
+                    borderColor: 'background.default',
+                    borderRadius: 2
+                  }
+                }}
+              >
+                <Box component="ul" sx={{ p: 0 }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <ParentTagIcon name={parentTagName} sx={{ width: 38 }} />
+                    <Typography variant="subtitle1">{parentTagName}</Typography>
+                  </Stack>
+                  {params.children}
+                </Box>
+              </Box>
+            ) : (
+              params.children
+            )}
+          </>
+        )
+      }}
+      renderOption={(props, option, { selected }) => (
+        <Stack component="li" direction="row" spacing={2} {...props}>
+          <Checkbox
+            icon={
+              <CheckBoxOutlineBlankIcon
+                fontSize="small"
+                sx={{ color: 'divider' }}
+              />
+            }
+            checkedIcon={<CheckBoxIcon fontSize="small" />}
+            checked={selected}
+            size="small"
+            sx={{ p: 0 }}
+          />
+          <Typography
+            variant="body2"
+            color="secondary"
+            sx={{ lineHeight: '20px' }}
+          >
+            {option.name.find(({ primary }) => primary)?.value ?? ''}
+          </Typography>
+        </Stack>
+      )}
+      ChipProps={{ size: 'small' }}
+      slotProps={{
+        popper: {
+          sx: {
+            '& .MuiPaper-root': { ml: 2, mt: 1 },
+            '& .MuiAutocomplete-listbox': {
+              py: 2,
+              pb: { md: hasMultipleColumns ? 6 : undefined },
+              pr: { md: hasMultipleColumns ? 6 : undefined },
+              maxHeight: {
+                xs: 'calc(100vh - 300px)',
+                md: 'calc(100vh - 175px)'
+              },
+              display: {
+                xs: 'block',
+                md: hasMultipleColumns ? 'flex' : undefined
+              },
+              '> li': {
+                flexGrow: 1,
+                pt: hasMultipleColumns ? 6 : undefined,
+                '&:first-of-type': {
+                  pt: { xs: 0, md: hasMultipleColumns ? 6 : undefined }
                 }
               },
-              endAdornment: (
-                <>
-                  {loading ? (
-                    <CircularProgress color="inherit" size={20} />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </>
-              )
-            }}
-          />
-        )}
-        renderGroup={(params) => {
-          const parentTagName = parentTags
-            .find(({ id }) => id === params.group)
-            ?.name.find(({ primary }) => primary)?.value
-          return (
-            <StyledLi
-              key={params.key}
-              sx={{
-                '&:last-of-type': {
-                  pl: { xs: 0, md: hasMultipleColumns ? 6 : 0 },
-                  backgroundColor: {
-                    xs: 'background.paper',
-                    md: hasMultipleColumns
-                      ? theme.palette.grey[100]
-                      : 'background.paper'
-                  },
-                  borderWidth: '1px',
-                  borderColor: {
-                    xs: 'background.paper',
-                    md: hasMultipleColumns
-                      ? 'background.default'
-                      : 'background.paper'
-                  }
-                },
-                pt: hasMultipleColumns ? 6 : 0,
-                pl: hasMultipleColumns ? 0 : 6,
-                pr: hasMultipleColumns ? 6 : 0,
-                borderRadius: 2
-              }}
-            >
-              {tagNames.length > 1 && (
-                <Stack direction="row" alignItems="center" gap={1}>
-                  <ParentTagIcon name={parentTagName} sx={{ ml: 1 }} />
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      flex: 'none',
-                      top: 0,
-                      py: 2
-                    }}
-                  >
-                    {parentTagName}
-                  </Typography>
-                </Stack>
-              )}
-              <Box>{params.children}</Box>
-            </StyledLi>
-          )
-        }}
-        renderOption={(props, option, { selected }) => (
-          <StyledLi
-            {...props}
-            sx={{
-              '&.MuiAutocomplete-option': {
-                p: 0,
-                pt: '6px',
-                pb: '6px'
+              '& .MuiAutocomplete-option': {
+                px: 6,
+                py: 2,
+                minHeight: { xs: 40, md: 32 }
               }
-            }}
-          >
-            <Checkbox
-              icon={
-                <CheckBoxOutlineBlankIcon
-                  fontSize="small"
-                  sx={{ color: 'divider' }}
-                />
-              }
-              checkedIcon={<CheckBoxIcon fontSize="small" />}
-              sx={{ mr: 2, ml: 1, p: 0 }}
-              checked={selected}
-            />
-            <Typography
-              variant="body2"
-              sx={{
-                pr: 1,
-                color: 'secondary.main'
-              }}
-            >
-              {option.name.find(({ primary }) => primary)?.value ?? ''}
-            </Typography>
-          </StyledLi>
-        )}
-        ChipProps={{
-          size: 'small'
-        }}
-        slotProps={{
-          popper: {
-            sx: {
-              '& .MuiAutocomplete-listbox': {
-                pt: 3,
-                maxHeight: { xs: 'auto', sm: '100%' },
-                display: { xs: 'block', md: 'flex' },
-                '> li': {
-                  flexGrow: 1
-                }
-              }
-            }
-          },
-          paper: {
-            sx: {
-              px: { xs: 0, sm: hasMultipleColumns ? 6 : 4 },
-              pl: { xs: 4 }
             }
           }
-        }}
-      />
-    </Box>
+        }
+      }}
+    />
   )
 }
