@@ -14,6 +14,15 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('SocialShareAppearance', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
