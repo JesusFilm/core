@@ -19,6 +19,7 @@ export function ImageBlockThumbnail({
   Icon = GridEmptyIcon,
   error
 }: ImageBlockThumbnailProps): ReactElement {
+  console.log(loading)
   return (
     <Box
       sx={{

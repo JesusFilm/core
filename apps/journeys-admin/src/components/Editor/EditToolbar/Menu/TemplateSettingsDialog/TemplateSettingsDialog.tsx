@@ -73,7 +73,8 @@ export function TemplateSettingsDialog({
     description: journey?.description,
     featured: journey?.featuredAt != null,
     strategySlug: journey?.strategySlug,
-    tagIds: journey?.tags.map(({ id }) => id)
+    tagIds: journey?.tags.map(({ id }) => id),
+    creatorDescription: journey?.creatorDescription
   }
 
   function handleTabChange(_event, newValue): void {
