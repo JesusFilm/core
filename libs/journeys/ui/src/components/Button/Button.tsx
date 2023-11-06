@@ -130,14 +130,25 @@ export function Button({
       stepName: heading
     }
 
+    // TODO: also cover navigate to journey action
     if (action?.__typename === 'LinkAction') {
       TagManager.dataLayer({
         dataLayer: {
           ...eventProperties,
           event: 'outbound_action_click',
-          label,
+          buttonLabel: label,
           outboundActionType: getLinkActionGoal(action.url),
           outboundActionValue: action.url
+        }
+      })
+    } else if (action?.__typename === 'NavigateToJourneyAction') {
+      TagManager.dataLayer({
+        dataLayer: {
+          ...eventProperties,
+          event: 'outbound_action_click',
+          buttonLabel: label,
+          outboundActionType: 'Journey',
+          outboundActionValue: action.journey?.id
         }
       })
     } else {

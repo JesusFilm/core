@@ -19,16 +19,16 @@ const biblePlatforms = [
 ]
 
 export enum GoalType {
-  'Chat',
-  'Bible',
-  'Website'
+  Chat = 'Chat',
+  Bible = 'Bible',
+  Website = 'Website'
 }
 
 export function getLinkActionGoal(url: string): GoalType {
-  if (chatPlatforms.find((platform) => platform.url.includes(url)) != null) {
+  if (chatPlatforms.find((platform) => url.includes(platform.url)) != null) {
     return GoalType.Chat
   } else if (
-    biblePlatforms.find((platform) => platform.includes(url)) != null
+    biblePlatforms.find((platform) => url.includes(platform)) != null
   ) {
     return GoalType.Bible
   } else {

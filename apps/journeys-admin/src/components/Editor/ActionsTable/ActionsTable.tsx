@@ -1,5 +1,6 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   GoalType,
@@ -24,6 +25,7 @@ export interface Actions {
 }
 
 export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
+  const { t } = useTranslation('journeys-admin')
   const { journey } = useJourney()
 
   function countUrls(journey: Journey | undefined): Actions[] {
@@ -51,16 +53,14 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
 
   const goalLabel = (url: string): string => {
     if (url === '') return ''
-    const urlObject = new URL(url)
-    const hostname = urlObject.hostname.replace('www.', '') // Remove 'www.' and top-level domain suffixes
-    const hostActionType = getLinkActionGoal(hostname)
-    switch (hostActionType) {
+    const goalType = getLinkActionGoal(url)
+    switch (goalType) {
       case GoalType.Chat:
-        return 'Start a Conversation'
+        return t('Start a Conversation')
       case GoalType.Bible:
-        return 'Link to Bible'
+        return t('Link to Bible')
       default:
-        return 'Visit a Website'
+        return t('Visit a Website')
     }
   }
 
