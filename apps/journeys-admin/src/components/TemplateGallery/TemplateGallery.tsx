@@ -75,18 +75,14 @@ export function TemplateGallery(): ReactElement {
           />
         </Grid>
         <Grid item xs={12} md={5}>
-          <Grid
-            container
-            spacing={2}
-            id="TemplateGalleryAudienceAndGenreTagsFilter"
-          >
+          <Grid container spacing={2}>
             <Grid item xs={6}>
               <TagsFilter
                 label={t('Audience')}
                 tagNames={['Audience']}
                 onChange={handleChange}
                 selectedTagIds={selectedTagIds}
-                popperElementId="TemplateGalleryAudienceAndGenreTagsFilter"
+                popperElementId="TemplateGalleryAudienceTagsFilter"
               />
             </Grid>
             <Grid item xs={6}>
@@ -95,9 +91,23 @@ export function TemplateGallery(): ReactElement {
                 tagNames={['Genre']}
                 onChange={handleChange}
                 selectedTagIds={selectedTagIds}
-                popperElementId="TemplateGalleryAudienceAndGenreTagsFilter"
+                popperElementId="TemplateGalleryGenreTagsFilter"
               />
             </Grid>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              id="TemplateGalleryAudienceTagsFilter"
+              sx={{ p: '0 !important' }}
+            />
+            <Grid
+              item
+              xs={12}
+              md={6}
+              id="TemplateGalleryGenreTagsFilter"
+              sx={{ p: '0 !important' }}
+            />
           </Grid>
         </Grid>
       </Grid>
