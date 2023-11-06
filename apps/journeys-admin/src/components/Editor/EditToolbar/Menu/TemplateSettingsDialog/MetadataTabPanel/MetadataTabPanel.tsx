@@ -5,10 +5,14 @@ import TextField from '@mui/material/TextField'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+
+import { useLanguagesQuery } from '../../../../../../libs/useLanguagesQuery'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 export function MetadataTabPanel(): ReactElement {
-  const { values, handleChange } = useTemplateSettingsForm()
+  const { values, handleChange, setFieldValue } = useTemplateSettingsForm()
+  const { data, loading } = useLanguagesQuery({ languageId: '529' })
   const { t } = useTranslation()
   return (
     <>
@@ -33,6 +37,13 @@ export function MetadataTabPanel(): ReactElement {
         rows={3}
         onChange={handleChange}
         helperText={t('Publicly visible on template details page')}
+      />
+      <LanguageAutocomplete
+        onChange={async (value) => await setFieldValue('language', value)}
+        value={values.language}
+        languages={data?.languages}
+        loading={loading}
+        helperText={t('RTL languages will change the journey flow')}
       />
       <FormGroup>
         <FormControlLabel
