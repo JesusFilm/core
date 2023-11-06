@@ -21,6 +21,7 @@ import { ButtonFields } from './__generated__/ButtonFields'
 import { ChatOpenEventCreate } from './__generated__/ChatOpenEventCreate'
 import { findChatPlatform } from './utils/findChatPlatform'
 import { getActionLabel } from './utils/getActionLabel'
+import { getLinkActionGoal } from './utils/getLinkActionGoal'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -101,14 +102,7 @@ export function Button({
           }
         }
       })
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'button_click',
-          eventId: id,
-          blockId,
-          stepName: heading
-        }
-      })
+      addEventToDataLayer(id)
     }
   }
 
@@ -125,6 +119,34 @@ export function Button({
           }
         }
       })
+      addEventToDataLayer(id)
+    }
+  }
+
+  function addEventToDataLayer(id: string): void {
+    const eventProperties = {
+      eventId: id,
+      blockId,
+      stepName: heading
+    }
+
+    if (action?.__typename === 'LinkAction') {
+      TagManager.dataLayer({
+        dataLayer: {
+          ...eventProperties,
+          event: 'outbound_action_click',
+          label,
+          outboundActionType: getLinkActionGoal(action.url),
+          outboundActionValue: action.url
+        }
+      })
+    } else {
+      TagManager.dataLayer({
+        dataLayer: {
+          ...eventProperties,
+          event: 'button_click'
+        }
+      })
     }
   }
 
@@ -136,6 +158,7 @@ export function Button({
     } else {
       void createChatEvent()
     }
+
     handleAction(router, action)
   }
 
