@@ -30,14 +30,24 @@ export function LanguageFilter({
     const languageNames = getLanguages(languageIds, filteredLanguages)?.map(
       (languageName) => languageName.localName ?? languageName.nativeName ?? ' '
     )
-    if (languageNames.length === 0) {
-      return 'All Languages'
+    const remaining = languageNames.length - 2
+
+    switch (languageNames.length) {
+      case 0:
+        return t('All Languages')
+      case 1:
+        return t('One Language Selected', { first: languageNames[0] })
+      case 2:
+        return t('Two Languages Selected', {
+          first: languageNames[0],
+          second: languageNames[1]
+        })
+      default:
+        return t('Multiple Languages Selected', {
+          list: languageNames.slice(0, 2).join(', '),
+          count: remaining
+        })
     }
-    if (languageNames.length > 2) {
-      const remaining = languageNames.length - 2
-      return `${languageNames.slice(0, 2).join(', ')}, +${remaining}`
-    }
-    return languageNames.join(', ')
   }
   const languageNames = formatLanguages()
 

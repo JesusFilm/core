@@ -275,6 +275,11 @@
   "Save": "Save",
   "Only a manager can invite new members to the team": "Only a manager can invite new members to the team",
   "No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.": "No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.",
+  "All Languages": "All Languages",
+  "One Language Selected": "{{first}}",
+  "Two Languages Selected": "{{first}}, {{second}}",
+  "Multiple Languages Selected_one": "{{list}}, +{{count}}",
+  "Multiple Languages Selected_other": "{{list}}, +{{count}}",
   "Filter by language:": "Filter by language:",
   "Available Languages": "Available Languages",
   "Topics, holidays, felt needs, collections": "Topics, holidays, felt needs, collections",
@@ -332,5 +337,6 @@
   "Last Active": "Last Active",
   "Action": "Action",
   "User Data": "User Data",
-  "Polls": "Polls"
+  "Polls": "Polls",
+  "Multiple Languages Selected_few": "{{list}}, +{{count}}"
 }
