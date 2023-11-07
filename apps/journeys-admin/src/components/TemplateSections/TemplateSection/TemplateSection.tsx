@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useRef, useState } from 'react'
-import SwiperCore, { A11y, Navigation, SwiperOptions } from 'swiper'
+import SwiperCore, { A11y, Mousewheel, Navigation, SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { NavigationOptions } from 'swiper/types/components/navigation'
 
@@ -12,7 +13,7 @@ import { TemplateGalleryCard } from '../../TemplateGalleryCard'
 import 'swiper/swiper.min.css'
 import { NavButton } from './NavButton'
 
-SwiperCore.use([Navigation, A11y])
+SwiperCore.use([Navigation, A11y, Mousewheel])
 
 interface TemplateSectionProps {
   journeys?: Journeys[]
@@ -80,35 +81,29 @@ export function TemplateSection({
     <Box sx={{ position: 'relative' }}>
       <Typography variant="h5">{category}</Typography>
       {loading === true && (journeys === null || journeys?.length === 0) && (
-        <Swiper breakpoints={swiperBreakpoints}>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-          <SwiperSlide>
-            <TemplateGalleryCard />
-          </SwiperSlide>
-        </Swiper>
+        <Stack sx={{ mt: 4 }} spacing={{ xs: 5, lg: 12 }} direction="row">
+          <TemplateGalleryCard sx={{ flexGrow: 1 }} />
+          <TemplateGalleryCard sx={{ flexGrow: 1 }} />
+          <TemplateGalleryCard
+            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+          />
+          <TemplateGalleryCard
+            sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' } }}
+          />
+          <TemplateGalleryCard
+            sx={{ flexGrow: 1, display: { xs: 'none', lg: 'block' } }}
+          />
+          <TemplateGalleryCard
+            sx={{ flexGrow: 1, display: { xs: 'none', xl: 'block' } }}
+          />
+          <TemplateGalleryCard
+            sx={{ flexGrow: 1, display: { xs: 'none', xxl: 'block' } }}
+          />
+        </Stack>
       )}
       {loading !== true && journeys != null && journeys?.length > 0 && (
         <Swiper
+          mousewheel={{ forceToAxis: true }}
           freeMode
           speed={850}
           watchOverflow

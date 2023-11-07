@@ -81,6 +81,7 @@ const block: TreeBlock<StepFields> = {
 describe('Step', () => {
   it('should create a stepViewEvent', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+    treeBlocksVar([block])
     blockHistoryVar([block])
 
     const result = jest.fn(() => ({
@@ -102,7 +103,7 @@ describe('Step', () => {
                 input: {
                   id: 'uuid',
                   blockId: 'Step1',
-                  value: 'Untitled'
+                  value: 'Step {{number}}'
                 }
               }
             },

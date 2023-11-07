@@ -7,12 +7,12 @@ export function findChatPlatform(
   if (buttonAction?.__typename !== 'LinkAction') return undefined
 
   const link = buttonAction?.url
-  const platform = platforms.find(({ url }) => link.includes(url))
+  const platform = chatPlatforms.find(({ url }) => link.includes(url))
 
   return platform?.messagePlatform
 }
 
-const platforms = [
+export const chatPlatforms = [
   {
     url: 'm.me/',
     messagePlatform: MessagePlatform.facebook
