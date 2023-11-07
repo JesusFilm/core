@@ -1,5 +1,6 @@
-import Box from '@mui/material/Box'
+import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import ButtonBase from '@mui/material/ButtonBase'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -14,7 +15,7 @@ import nuaImage from '../assets/nua.png'
 type ChildTag = Tag & { parentId: string }
 
 interface CollectionButtonProps {
-  tag: ChildTag
+  item?: ChildTag
   onClick: (value: string) => void
 }
 
@@ -23,7 +24,7 @@ const StyledCollectionButton = styled(ButtonBase)(() => ({
 }))
 
 export function CollectionButton({
-  tag,
+  item: tag,
   onClick
 }: CollectionButtonProps): ReactElement {
   const theme = useTheme()
@@ -39,40 +40,63 @@ export function CollectionButton({
     }
   }, [])
 
-  const tagLabel: string = tag.name[0]?.value ?? ''
+  const tagLabel = tag?.name[0]?.value ?? ''
   const image = tagImage(tagLabel)
+
   return (
-    <StyledCollectionButton onClick={() => onClick(tag.id)}>
+    <StyledCollectionButton
+      disableRipple
+      disableTouchRipple
+      onClick={() => {
+        if (tag != null) onClick(tag.id)
+      }}
+    >
       <Stack
         gap={3}
         alignItems="center"
         sx={{ [theme.breakpoints.up('md')]: { flexDirection: 'row' } }}
       >
-        <Box
-          sx={{
-            position: 'relative',
-            backgroundColor: 'grey',
-            height: '64px',
-            width: '64px',
-            color: 'white',
-            borderRadius: 8
-          }}
-        >
-          {image != null && (
-            <NextImage src={image.src} layout="fill" sx={{ borderRadius: 8 }} />
-          )}
-        </Box>
+        {tag != null ? (
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            sx={{
+              position: 'relative',
+              backgroundColor: 'grey',
+              height: '64px',
+              width: '64px',
+              color: 'white',
+              borderRadius: 8
+            }}
+          >
+            {image != null ? (
+              <NextImage
+                src={image.src}
+                layout="fill"
+                sx={{ borderRadius: 8 }}
+              />
+            ) : (
+              <InsertPhotoRoundedIcon />
+            )}
+          </Stack>
+        ) : (
+          <Skeleton
+            data-testid="collections-button-loading"
+            variant="rounded"
+            sx={{ height: '64px', width: '64px', borderRadius: 8 }}
+          />
+        )}
         <Typography
           variant="subtitle2"
           sx={{ display: { xs: 'none', md: 'block' } }}
         >
-          {tag.name[0].value}
+          {tag != null ? tagLabel : <Skeleton width={80} />}
         </Typography>
         <Typography
           variant="subtitle3"
           sx={{ display: { xs: 'block', md: 'none' } }}
         >
-          {tag.name[0].value}
+          {tag != null ? tagLabel : <Skeleton width={80} />}
         </Typography>
       </Stack>
     </StyledCollectionButton>

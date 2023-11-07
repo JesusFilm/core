@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 import SwiperCore, { A11y, Mousewheel, Navigation, SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { NavigationOptions } from 'swiper/types/components/navigation'
@@ -23,7 +23,7 @@ const StyledSwiperContainer = styled(Swiper)(() => ({
 
 interface TemplateGalleryCarouselProps<T> {
   items: Array<T & { id: string }>
-  renderItem: (itemProps: { item?: T }) => JSX.Element
+  renderItem: (itemProps: { item?: T }) => ReactNode
   heading?: string
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
@@ -32,7 +32,7 @@ interface TemplateGalleryCarouselProps<T> {
 export function TemplateGalleryCarousel<T>({
   items,
   renderItem,
-  heading = '',
+  heading,
   breakpoints,
   loading
 }: TemplateGalleryCarouselProps<T>): ReactElement {
@@ -57,44 +57,43 @@ export function TemplateGalleryCarousel<T>({
   return (
     <Box sx={{ position: 'relative' }}>
       {heading != null && <Typography variant="h5">{heading}</Typography>}
-      {loading === true && (items === null || items?.length === 0) && (
-        <Swiper breakpoints={breakpoints}>
-          {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-            <SwiperSlide key={`${heading}-item-${index}`}>
-              {renderItem({})}
-            </SwiperSlide>
-          ))}
-        </Swiper>
+      <StyledSwiperContainer
+        freeMode
+        speed={850}
+        slidesPerView="auto"
+        spaceBetween={20}
+        watchOverflow
+        allowTouchMove
+        observer
+        observeParents
+        resizeObserver
+        mousewheel={{ forceToAxis: true }}
+        breakpoints={breakpoints}
+        onSwiper={(swiper) => setSwiper(swiper)}
+      >
+        {loading === true
+          ? [0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
+              <SwiperSlide key={`${heading ?? ''}-item-${index}`}>
+                {renderItem({})}
+              </SwiperSlide>
+            ))
+          : items.map((item) => (
+              <SwiperSlide
+                key={item.id}
+                data-testid={`journey-${item.id}`}
+                onMouseOver={() => setShowNav(true)}
+                onMouseLeave={() => setShowNav(false)}
+              >
+                {renderItem({ item })}
+              </SwiperSlide>
+            ))}
+      </StyledSwiperContainer>
+      {loading !== true && (
+        <>
+          <NavButton variant="prev" ref={prevRef} show={showNav} />
+          <NavButton variant="next" ref={nextRef} show={showNav} />
+        </>
       )}
-      {loading !== true && items != null && items?.length > 0 && (
-        <StyledSwiperContainer
-          freeMode
-          speed={850}
-          slidesPerView="auto"
-          spaceBetween={20}
-          watchOverflow
-          allowTouchMove
-          observer
-          observeParents
-          resizeObserver
-          mousewheel={{ forceToAxis: true }}
-          breakpoints={breakpoints}
-          onSwiper={(swiper) => setSwiper(swiper)}
-        >
-          {items.map((item, index) => (
-            <SwiperSlide
-              key={item.id}
-              data-testid={`journey-${item.id}`}
-              onMouseOver={() => setShowNav(true)}
-              onMouseLeave={() => setShowNav(false)}
-            >
-              {renderItem({ item })}
-            </SwiperSlide>
-          ))}
-        </StyledSwiperContainer>
-      )}
-      <NavButton variant="prev" ref={prevRef} show={showNav} />
-      <NavButton variant="next" ref={nextRef} show={showNav} />
     </Box>
   )
 }

@@ -45,7 +45,8 @@ export function TemplateGalleryCard({
       sx={{
         border: 'none',
         backgroundColor: 'transparent',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        width: { xs: 130, lg: 180 }
       }}
     >
       <NextLink
@@ -94,6 +95,7 @@ export function TemplateGalleryCard({
             <Skeleton
               variant="rectangular"
               sx={{
+                width: { xs: 130, lg: 180 },
                 height: { xs: 130, lg: 180 },
                 borderColor: 'divider',
                 borderRadius: 2,

@@ -60,50 +60,55 @@ export function FeltNeedsButton({
     }
   }, [])
 
-  const tagLabel: string = tag?.name[0]?.value ?? ''
+  const tagLabel = tag?.name[0]?.value ?? ''
   const image = tagImage(tagLabel)
 
   return tag != null ? (
-    <StyledFeltNeedsButton
-      key={`${tagLabel}-button}`}
-      sx={{
-        width: { xs: '150px', md: '222px' },
-        height: { xs: '56px', md: '110px' }
-      }}
-      onClick={() => onClick(tag?.id)}
-    >
-      {image != null && (
+    image != null ? (
+      <StyledFeltNeedsButton
+        key={`${tagLabel}-button}`}
+        sx={{
+          width: { xs: '150px', md: '222px' },
+          height: { xs: '56px', md: '110px' }
+        }}
+        onClick={() => onClick(tag.id)}
+      >
         <NextImage src={image.src} layout="fill" sx={{ borderRadius: 2 }} />
-      )}
-      <Typography
-        variant="h3"
-        sx={{
-          zIndex: 1,
-          display: { xs: 'none', md: 'flex' },
-          position: 'absolute',
-          opacity: '80%',
-          left: 12,
-          bottom: 8
-        }}
-      >
-        {tagLabel}
-      </Typography>
-      <Typography
-        variant="subtitle2"
-        sx={{
-          zIndex: 1,
-          display: { md: 'none' },
-          position: 'absolute',
-          opacity: '60%',
-          left: 8,
-          bottom: 4
-        }}
-      >
-        {tagLabel}
-      </Typography>
-    </StyledFeltNeedsButton>
+        <Typography
+          variant="h3"
+          sx={{
+            zIndex: 1,
+            display: { xs: 'none', md: 'flex' },
+            position: 'absolute',
+            opacity: '80%',
+            left: 12,
+            bottom: 8
+          }}
+        >
+          {tagLabel}
+        </Typography>
+        <Typography
+          variant="subtitle2"
+          sx={{
+            zIndex: 1,
+            display: { md: 'none' },
+            position: 'absolute',
+            opacity: '60%',
+            left: 8,
+            bottom: 4
+          }}
+        >
+          {tagLabel}
+        </Typography>
+      </StyledFeltNeedsButton>
+    ) : (
+      // Hack to return something since must return element with renderProps
+      <></>
+    )
   ) : (
     <Skeleton
+      data-testid="felt-needs-button-loading"
+      variant="rounded"
       sx={{
         width: { xs: '150px', md: '222px' },
         height: { xs: '56px', md: '110px' },

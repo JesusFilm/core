@@ -247,7 +247,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
         {
           __typename: 'Tag',
           id: 'parentId1',
-          service: Service.apiJourneys,
+          service: null,
           parentId: null,
           name: [
             {
@@ -260,7 +260,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
         {
           __typename: 'Tag',
           id: 'acceptanceTagId',
-          service: Service.apiJourneys,
+          service: null,
           parentId: 'parentId1',
           name: [
             {
@@ -272,13 +272,143 @@ export const getTagsMock: MockedResponse<GetTags> = {
         },
         {
           __typename: 'Tag',
-          id: 'addictionTagId',
-          service: Service.apiJourneys,
+          id: 'depressionTagId',
+          service: null,
           parentId: 'parentId1',
           name: [
             {
               __typename: 'Translation',
-              value: 'Addiction',
+              value: 'Depression',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'fearTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Fear/Anxiety',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'forgivenessTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Forgiveness',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'hopeTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Hope',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'lonelinessTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Loneliness',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'loveTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Love',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'securityTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Security',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'significanceTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Significance',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'parentId2',
+          service: null,
+          parentId: null,
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Collections',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'jesusFilmTagId',
+          service: Service.apiJourneys,
+          parentId: 'parentId2',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Jesus Film',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'nuaTagId',
+          service: Service.apiJourneys,
+          parentId: 'parentId2',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'NUA',
               primary: true
             }
           ]

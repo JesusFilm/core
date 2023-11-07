@@ -44,32 +44,62 @@ describe('TemplateGalleryCarousel', () => {
     featuredAt: '2023-08-14T04:24:24.392Z'
   }
 
-  it('should render TemplateGalleryCarousel', () => {
-    const swiperBreakpoints: SwiperOptions['breakpoints'] = {
-      '@media (min-width:0px)': {
-        slidesPerGroup: 1
-      },
-      '@media (min-width:600px)': {
-        slidesPerGroup: 3
-      },
-      '@media (min-width:1200px)': {
-        slidesPerGroup: 5
-      }
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    '@media (min-width:0px)': {
+      slidesPerGroup: 1
+    },
+    '@media (min-width:600px)': {
+      slidesPerGroup: 3
+    },
+    '@media (min-width:1200px)': {
+      slidesPerGroup: 5
     }
+  }
 
-    const { getAllByTestId, getByRole } = render(
+  it('should render TemplateGalleryCarousel with items', () => {
+    const { getAllByRole, getByRole } = render(
       <TemplateGalleryCarousel
         heading="Easter"
         items={[journey, { ...journey, id: '2', title: 'Featured Template 2' }]}
         renderItem={(itemProps) => (
-          <Typography>{itemProps.item?.id}</Typography>
+          <Typography variant="h6">
+            {itemProps.item != null ? itemProps.item.title : 'placeholder'}
+          </Typography>
         )}
         breakpoints={swiperBreakpoints}
       />
     )
     expect(getByRole('heading', { name: 'Easter' })).toBeInTheDocument()
-    const cards = getAllByTestId(/journey-/)
-    expect(cards[0]).toHaveTextContent('Featured Template 1')
-    expect(cards[1]).toHaveTextContent('Featured Template 2')
+    const items = getAllByRole('heading', { level: 6 })
+    expect(items).toHaveLength(2)
+    expect(items[0]).toHaveTextContent('Featured Template 1')
+    expect(items[1]).toHaveTextContent('Featured Template 2')
+    expect(getByRole('button', { name: 'prev-button' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'next-button' })).toBeInTheDocument()
+  })
+
+  it('should render TemplateGalleryCarousel with placeholder items', () => {
+    const { getAllByRole, queryByRole } = render(
+      <TemplateGalleryCarousel
+        items={[journey]}
+        renderItem={(itemProps) => (
+          <Typography variant="h6">
+            {itemProps.item != null ? itemProps.item.title : 'placeholder'}
+          </Typography>
+        )}
+        breakpoints={swiperBreakpoints}
+        loading
+      />
+    )
+    expect(queryByRole('heading', { level: 5 })).not.toBeInTheDocument()
+    const items = getAllByRole('heading', { level: 6 })
+    expect(items).toHaveLength(8)
+    expect(items[0]).toHaveTextContent('placeholder')
+    expect(
+      queryByRole('button', { name: 'prev-button' })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('button', { name: 'next-button' })
+    ).not.toBeInTheDocument()
   })
 })

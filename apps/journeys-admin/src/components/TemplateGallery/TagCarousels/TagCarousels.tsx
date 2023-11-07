@@ -19,7 +19,7 @@ export function TagCarousels({
   selectedTagIds,
   onChange
 }: TagCarouselsProps): ReactElement {
-  const { parentTags, childTags } = useTagsQuery()
+  const { parentTags, childTags, loading } = useTagsQuery()
   const { breakpoints } = useTheme()
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
@@ -78,11 +78,20 @@ export function TagCarousels({
           <FeltNeedsButton {...itemProps} onClick={handleChange} />
         )}
         breakpoints={swiperBreakpoints}
+        loading={loading}
       />
       <Stack direction="row" gap={10}>
-        {collectionTags.map((tag, index) => (
-          <CollectionButton key={index} tag={tag} onClick={handleChange} />
-        ))}
+        {loading
+          ? [0, 1].map((item, index) => (
+              <CollectionButton
+                key={index}
+                item={undefined}
+                onClick={handleChange}
+              />
+            ))
+          : collectionTags.map((tag, index) => (
+              <CollectionButton key={index} item={tag} onClick={handleChange} />
+            ))}
       </Stack>
     </Stack>
   )

@@ -70,18 +70,15 @@ export function TemplateSections({
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       slidesPerGroup: 2,
-      slidesPerView: 2,
-      spaceBetween: 20
+      slidesPerView: 2
     },
     [breakpoints.values.sm]: {
       slidesPerGroup: 3,
-      slidesPerView: 3,
-      spaceBetween: 20
+      slidesPerView: 3
     },
     [breakpoints.values.md]: {
       slidesPerGroup: 4,
-      slidesPerView: 4,
-      spaceBetween: 20
+      slidesPerView: 4
     },
     [breakpoints.values.lg]: {
       slidesPerGroup: 5,

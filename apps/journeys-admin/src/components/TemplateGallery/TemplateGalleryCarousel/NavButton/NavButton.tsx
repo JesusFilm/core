@@ -17,6 +17,7 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
     return (
       <IconButton
         ref={ref}
+        aria-label={`${variant}-button`}
         sx={{
           zIndex: 2,
           cursor: 'pointer',
