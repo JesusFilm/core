@@ -2,7 +2,11 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
 import { GET_LANGUAGES } from '../../../../../../libs/useLanguagesQuery'
+import { publishedJourney } from '../../../../../JourneyList/journeyListData'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { MetadataTabPanel } from './MetadataTabPanel'
@@ -18,6 +22,30 @@ jest.mock('react-i18next', () => ({
 
 describe('MetadataTabPanel', () => {
   afterEach(() => jest.clearAllMocks())
+
+  it('shows published date', () => {
+    const handleChange = jest.fn()
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: publishedJourney as unknown as Journey }}
+        >
+          <FormikProvider
+            value={
+              {
+                values: { title: '', description: '', featuredAt: false },
+                handleChange
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <MetadataTabPanel />
+          </FormikProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByText('01/01/2023')).toBeInTheDocument()
+  })
 
   it('should handle form change', () => {
     const handleChange = jest.fn()
