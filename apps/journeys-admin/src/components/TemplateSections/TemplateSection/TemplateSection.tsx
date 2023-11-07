@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useRef, useState } from 'react'
-import SwiperCore, { A11y, Navigation, SwiperOptions } from 'swiper'
+import SwiperCore, { A11y, Mousewheel, Navigation, SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { NavigationOptions } from 'swiper/types/components/navigation'
 
@@ -12,7 +12,7 @@ import { TemplateGalleryCard } from '../../TemplateGalleryCard'
 import 'swiper/swiper.min.css'
 import { NavButton } from './NavButton'
 
-SwiperCore.use([Navigation, A11y])
+SwiperCore.use([Navigation, A11y, Mousewheel])
 
 interface TemplateSectionProps {
   journeys?: Journeys[]
@@ -109,6 +109,7 @@ export function TemplateSection({
       )}
       {loading !== true && journeys != null && journeys?.length > 0 && (
         <Swiper
+          mousewheel={{ forceToAxis: true }}
           freeMode
           speed={850}
           watchOverflow
