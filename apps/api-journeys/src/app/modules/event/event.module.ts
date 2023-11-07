@@ -15,6 +15,7 @@ import { RadioQuestionSubmissionEventResolver } from './radioQuestion/radioQuest
 import { SignUpSubmissionEventResolver } from './signUp/signUp.resolver'
 import {
   StepNextEventResolver,
+  StepPrevEventResolver,
   StepViewEventResolver
 } from './step/step.resolver'
 import { TextResponseSubmissionEventResolver } from './textResponse/textResponse.resolver'
@@ -43,6 +44,7 @@ import {
     SignUpSubmissionEventResolver,
     StepViewEventResolver,
     StepNextEventResolver,
+    StepPrevEventResolver,
     TextResponseSubmissionEventResolver,
     VideoStartEventResolver,
     VideoPlayEventResolver,
