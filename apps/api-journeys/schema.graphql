@@ -307,6 +307,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  creatorImageBlock: ImageBlock
   chatButtons: [ChatButton!]!
   id: ID!
   title: String!
@@ -314,6 +315,7 @@ type Journey
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
+  creatorDescription: String
   slug: String!
   archivedAt: DateTime
   deletedAt: DateTime
@@ -1839,6 +1841,8 @@ input JourneyUpdateInput {
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
+  creatorDescription: String
+  creatorImageBlockId: ID
   primaryImageBlockId: ID
   slug: String
   seoTitle: String
