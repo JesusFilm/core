@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
+import { GET_LANGUAGES } from '../../../../../libs/useLanguagesQuery'
 import { GET_TAGS } from '../../../../../libs/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../../../../JourneyView/data'
 
@@ -37,7 +38,8 @@ describe('TemplateSettingsDialog', () => {
       title: 'New Title',
       description: 'New Description',
       strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
-      creatorDescription: null
+      creatorDescription: null,
+      languageId: '529'
     }
 
     const result = jest.fn(() => ({
@@ -92,6 +94,64 @@ describe('TemplateSettingsDialog', () => {
       }
     }))
 
+    const getLanguagesMock = {
+      request: {
+        query: GET_LANGUAGES,
+        variables: {
+          languageId: '529'
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          languages: [
+            {
+              __typename: 'Language',
+              id: '529',
+              name: [
+                {
+                  value: 'English',
+                  primary: true,
+                  __typename: 'Translation'
+                }
+              ]
+            },
+            {
+              id: '496',
+              __typename: 'Language',
+              name: [
+                {
+                  value: 'Français',
+                  primary: true,
+                  __typename: 'Translation'
+                },
+                {
+                  value: 'French',
+                  primary: false,
+                  __typename: 'Translation'
+                }
+              ]
+            },
+            {
+              id: '1106',
+              __typename: 'Language',
+              name: [
+                {
+                  value: 'Deutsch',
+                  primary: true,
+                  __typename: 'Translation'
+                },
+                {
+                  value: 'German, Standard',
+                  primary: false,
+                  __typename: 'Translation'
+                }
+              ]
+            }
+          ]
+        }
+      }))
+    }
+
     const { getByRole, getAllByRole } = render(
       <MockedProvider
         mocks={[
@@ -101,7 +161,6 @@ describe('TemplateSettingsDialog', () => {
             },
             result: tagResult
           },
-
           {
             request: {
               query: JOURNEY_SETTINGS_UPDATE,
@@ -110,7 +169,8 @@ describe('TemplateSettingsDialog', () => {
                 input: {
                   ...updatedJourney,
                   tagIds: ['tagId'],
-                  creatorDescription: null
+                  creatorDescription: null,
+                  languageId: '496'
                 }
               }
             },
@@ -125,7 +185,8 @@ describe('TemplateSettingsDialog', () => {
               }
             },
             result: result2
-          }
+          },
+          getLanguagesMock
         ]}
       >
         <SnackbarProvider>
@@ -148,6 +209,13 @@ describe('TemplateSettingsDialog', () => {
       target: { value: 'New Description' }
     })
     fireEvent.click(getByRole('checkbox'))
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    await waitFor(() =>
+      expect(getByRole('option', { name: 'English' })).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('option', { name: 'French Français' }))
+
     fireEvent.click(getByRole('tab', { name: 'About' }))
 
     fireEvent.change(getAllByRole('textbox')[1], {
@@ -180,7 +248,8 @@ describe('TemplateSettingsDialog', () => {
       strategySlug:
         'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000',
       tagIds: [],
-      creatorDescription: null
+      creatorDescription: null,
+      languageId: '529'
     }
 
     const result = jest.fn(() => ({

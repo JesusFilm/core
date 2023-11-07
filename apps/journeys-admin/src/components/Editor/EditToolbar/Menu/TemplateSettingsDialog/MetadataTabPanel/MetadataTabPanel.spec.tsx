@@ -1,7 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 
+import { GET_LANGUAGES } from '../../../../../../libs/useLanguagesQuery'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { MetadataTabPanel } from './MetadataTabPanel'
@@ -53,5 +54,98 @@ describe('MetadataTabPanel', () => {
 
     fireEvent.click(getByRole('checkbox', { name: 'Featured' }))
     expect(handleChange).toHaveBeenCalled()
+  })
+
+  it('should handle language selection change', async () => {
+    const getLanguagesMock = {
+      request: {
+        query: GET_LANGUAGES,
+        variables: {
+          languageId: '529'
+        }
+      },
+      result: {
+        data: {
+          languages: [
+            {
+              __typename: 'Language',
+              id: '529',
+              name: [
+                {
+                  value: 'English',
+                  primary: true,
+                  __typename: 'Translation'
+                }
+              ]
+            },
+            {
+              id: '496',
+              __typename: 'Language',
+              name: [
+                {
+                  value: 'Français',
+                  primary: true,
+                  __typename: 'Translation'
+                },
+                {
+                  value: 'French',
+                  primary: false,
+                  __typename: 'Translation'
+                }
+              ]
+            },
+            {
+              id: '1106',
+              __typename: 'Language',
+              name: [
+                {
+                  value: 'Deutsch',
+                  primary: true,
+                  __typename: 'Translation'
+                },
+                {
+                  value: 'German, Standard',
+                  primary: false,
+                  __typename: 'Translation'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+
+    const setFieldValue = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <FormikProvider
+          value={
+            {
+              values: {
+                title: '',
+                description: '',
+                featuredAt: false,
+                language: {
+                  id: '529',
+                  localName: 'English',
+                  nativeName: 'English'
+                }
+              },
+              setFieldValue
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <MetadataTabPanel />
+        </FormikProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    await waitFor(() =>
+      expect(getByRole('option', { name: 'English' })).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('option', { name: 'French Français' }))
+    expect(setFieldValue).toHaveBeenCalled()
   })
 })

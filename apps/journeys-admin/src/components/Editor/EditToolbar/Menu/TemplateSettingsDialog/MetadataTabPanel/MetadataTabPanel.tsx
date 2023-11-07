@@ -1,6 +1,7 @@
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -45,24 +46,26 @@ export function MetadataTabPanel(): ReactElement {
         loading={loading}
         helperText={t('RTL languages will change the journey flow')}
       />
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Checkbox
-              sx={{ mr: 1 }}
-              color="secondary"
-              defaultChecked={values.featured}
-              onChange={handleChange}
-              value={values.featured}
-              name="featured"
-            />
-          }
-          componentsProps={{
-            typography: { color: 'secondary.main', variant: 'subtitle2' }
-          }}
-          label={t('Featured')}
-        />
-      </FormGroup>
+      <Stack>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                sx={{ mr: 1 }}
+                color="secondary"
+                defaultChecked={values.featured}
+                onChange={handleChange}
+                value={values.featured}
+                name="featured"
+              />
+            }
+            componentsProps={{
+              typography: { color: 'secondary.main', variant: 'subtitle2' }
+            }}
+            label={t('Featured')}
+          />
+        </FormGroup>
+      </Stack>
     </>
   )
 }
