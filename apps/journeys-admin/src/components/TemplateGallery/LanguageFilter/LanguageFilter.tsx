@@ -22,10 +22,12 @@ export function LanguageFilter({
   const { t } = useTranslation('apps-journeys-admin')
   const [open, setOpen] = useState(false)
 
-  const { data, loading } = useLanguagesQuery({ languageId: '529' })
+  const { filteredLanguages, loading } = useLanguagesQuery({
+    languageId: '529'
+  })
 
   const formatLanguages = (): string => {
-    const languageNames = getLanguages(languageIds, data?.languages)?.map(
+    const languageNames = getLanguages(languageIds, filteredLanguages)?.map(
       (languageName) => languageName.localName ?? languageName.nativeName ?? ' '
     )
     if (languageNames.length === 0) {
@@ -74,7 +76,7 @@ export function LanguageFilter({
         open={open}
         onClose={() => setOpen(false)}
         onChange={onChange}
-        languages={data?.languages}
+        languages={filteredLanguages}
         languageIds={languageIds}
         loading={loading}
       />
