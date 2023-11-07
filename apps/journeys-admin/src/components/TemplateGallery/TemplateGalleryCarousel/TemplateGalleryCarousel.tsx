@@ -92,12 +92,8 @@ export function TemplateGalleryCarousel<T>({
               )
             })}
       </StyledSwiperContainer>
-      {loading !== true && (
-        <>
-          <NavButton variant="prev" ref={prevRef} show={showNav} />
-          <NavButton variant="next" ref={nextRef} show={showNav} />
-        </>
-      )}
+      <NavButton variant="prev" ref={prevRef} show={showNav} />
+      <NavButton variant="next" ref={nextRef} show={showNav} />
     </Box>
   )
 }
