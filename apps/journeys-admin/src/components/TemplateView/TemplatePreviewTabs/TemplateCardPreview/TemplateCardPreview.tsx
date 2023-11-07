@@ -4,6 +4,8 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
+import SwiperCore from 'swiper'
+import { Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
@@ -29,6 +31,8 @@ interface TemplateCardPreviewProps {
 interface TemplateCardPreviewItemProps {
   step: TreeBlock<StepBlock>
 }
+
+SwiperCore.use([Mousewheel])
 
 function TemplateCardPreviewItem({
   step
@@ -109,6 +113,9 @@ export function TemplateCardPreview({
 
   return (
     <Swiper
+      mousewheel={{
+        forceToAxis: true
+      }}
       freeMode
       watchOverflow
       slidesPerView="auto"
