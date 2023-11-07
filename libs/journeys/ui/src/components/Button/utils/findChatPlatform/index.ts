@@ -1,1 +1,1 @@
-export { findChatPlatform } from './findChatPlatform'
+export { findChatPlatform, chatPlatforms } from './findChatPlatform'
