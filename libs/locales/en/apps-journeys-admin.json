@@ -337,6 +337,5 @@
   "Last Active": "Last Active",
   "Action": "Action",
   "User Data": "User Data",
-  "Polls": "Polls",
-  "Multiple Languages Selected_few": "{{list}}, +{{count}}"
+  "Polls": "Polls"
 }
