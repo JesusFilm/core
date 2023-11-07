@@ -1,5 +1,6 @@
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
+import difference from 'lodash/difference'
 import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper'
 
@@ -10,10 +11,14 @@ import { CollectionButton } from './CollectionButton'
 import { FeltNeedsButton } from './FeltNeedsButton'
 
 interface TagCarouselsProps {
-  onChange: (value: string) => void
+  selectedTagIds: string[]
+  onChange: (selectedTagIds: string[], availableTagIds: string[]) => void
 }
 
-export function TagCarousels({ onChange }: TagCarouselsProps): ReactElement {
+export function TagCarousels({
+  selectedTagIds,
+  onChange
+}: TagCarouselsProps): ReactElement {
   const { parentTags, childTags } = useTagsQuery()
   const { breakpoints } = useTheme()
 
@@ -38,6 +43,10 @@ export function TagCarousels({ onChange }: TagCarouselsProps): ReactElement {
       ? childTags.filter((tag) => tag.parentId === feltNeedsTagId)
       : []
   }, [childTags, feltNeedsTagId])
+  const feltNeedsTagIds = useMemo(
+    () => feltNeedsTags.map(({ id }) => id),
+    [feltNeedsTags]
+  )
 
   const collectionTagId = useMemo(() => {
     return parentTags.find((tag) => tag.name[0].value === 'Collections')?.id
@@ -48,19 +57,31 @@ export function TagCarousels({ onChange }: TagCarouselsProps): ReactElement {
       ? childTags.filter((tag) => tag.parentId === collectionTagId)
       : []
   }, [childTags, collectionTagId])
+  const collectionTagIds = useMemo(
+    () => collectionTags.map(({ id }) => id),
+    [collectionTags]
+  )
+
+  const handleChange = (selectedTagId: string): void => {
+    const existingTagIds = difference(selectedTagIds, [selectedTagId])
+    onChange(
+      [...existingTagIds, selectedTagId],
+      [...feltNeedsTagIds, ...collectionTagIds]
+    )
+  }
 
   return (
     <Stack gap={7} sx={{ mb: { xs: 10, md: 16 } }}>
       <TemplateGalleryCarousel
         items={feltNeedsTags}
         renderItem={(itemProps) => (
-          <FeltNeedsButton {...itemProps} onChange={onChange} />
+          <FeltNeedsButton {...itemProps} onChange={handleChange} />
         )}
         breakpoints={swiperBreakpoints}
       />
       <Stack direction="row" gap={10}>
         {collectionTags.map((tag, index) => (
-          <CollectionButton key={index} tag={tag} onChange={onChange} />
+          <CollectionButton key={index} tag={tag} onChange={handleChange} />
         ))}
       </Stack>
     </Stack>

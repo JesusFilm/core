@@ -18,9 +18,6 @@ const StyledSwiperContainer = styled(Swiper)(() => ({
   '.swiper-slide': {
     // Use important otherwise swiper overrides width on resize
     width: 'unset !important'
-  },
-  '.swiper-wrapper': {
-    zIndex: 0
   }
 }))
 
@@ -89,20 +86,11 @@ export function TemplateGalleryCarousel({
               key={item?.id}
               data-testid={`journey-${(item?.id as string) ?? index}`}
               onMouseOver={() => setShowNav(true)}
+              onMouseLeave={() => setShowNav(false)}
             >
               {renderItem({ item, index })}
             </SwiperSlide>
           ))}
-          <Box
-            onMouseOver={() => setShowNav(true)}
-            onMouseOut={() => setShowNav(false)}
-            sx={{
-              position: 'absolute',
-              bottom: 0,
-              width: '100%',
-              height: '100%'
-            }}
-          />
         </StyledSwiperContainer>
       )}
       <NavButton variant="prev" ref={prevRef} show={showNav} />

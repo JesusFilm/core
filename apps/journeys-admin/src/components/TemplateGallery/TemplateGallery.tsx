@@ -25,10 +25,10 @@ export function TemplateGallery(): ReactElement {
 
   function handleChange(
     newSelectedTagIds: string[],
-    filteredTagIds: string[]
+    availableTagIds: string[]
   ): void {
     const tagIds = [
-      ...difference(selectedTagIds, filteredTagIds),
+      ...difference(selectedTagIds, availableTagIds),
       ...newSelectedTagIds
     ]
     setSelectedTagIds(tagIds)
@@ -90,7 +90,7 @@ export function TemplateGallery(): ReactElement {
           />
         </Grid>
       </Grid>
-      <TagCarousels onChange={(value) => setSelectedTagIds([value])} />
+      <TagCarousels selectedTagIds={selectedTagIds} onChange={handleChange} />
       <TemplateSections
         tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
         languageId={languageId}
