@@ -228,8 +228,8 @@ const getJourneysWithInvalidTagIdsMock: MockedResponse<GetJourneys> = {
 }
 
 const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
-  render: ({ ...args }) => (
-    <Box sx={{ backgroundColor: 'background.paper', p: 5 }}>
+  render: ({ args }) => (
+    <Box sx={{ backgroundColor: 'background.paper', p: 5, overflow: 'hidden' }}>
       <TemplateSections {...args} />
     </Box>
   )

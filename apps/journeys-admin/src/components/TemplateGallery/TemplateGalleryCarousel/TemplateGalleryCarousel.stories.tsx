@@ -19,9 +19,11 @@ const TemplateGalleryCarouselStory: Meta<typeof TemplateGalleryCarousel> = {
 }
 
 const Template: StoryObj<ComponentProps<typeof TemplateGalleryCarousel>> = {
-  render: ({ ...args }) => {
+  render: ({ args }) => {
     return (
-      <Stack sx={{ backgroundColor: 'background.paper', p: 10 }}>
+      <Stack
+        sx={{ backgroundColor: 'background.paper', p: 10, overflow: 'hidden' }}
+      >
         <TemplateGalleryCarousel {...args} />
         <Typography sx={{ mt: 16 }}>
           This component takes any item and renders it in a carousel.
