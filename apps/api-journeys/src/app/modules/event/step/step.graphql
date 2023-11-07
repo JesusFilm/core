@@ -122,4 +122,5 @@ type StepPrevEvent implements Event {
 extend type Mutation {
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
+  stepPrevEventCreate(input: StepPrevEventCreateInput!): StepPrevEvent!
 }

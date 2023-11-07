@@ -2,12 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import {
   StepNextEventCreateInput,
+  StepPrevEventCreateInput,
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
-import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
+import {
+  StepNextEventResolver,
+  StepPrevEventResolver,
+  StepViewEventResolver
+} from './step.resolver'
 
 describe('Step', () => {
   let prismaService: PrismaService, eService: EventService
@@ -146,6 +151,39 @@ describe('Step', () => {
         expect(await resolver.stepNextEventCreate('userId', input)).toEqual({
           ...input,
           typename: 'StepNextEvent',
+          visitor: {
+            connect: { id: 'visitor.id' }
+          },
+          createdAt: new Date().toISOString(),
+          journeyId: 'journey.id'
+        })
+      })
+    })
+  })
+
+  describe('StepPrevEventResolver', () => {
+    let resolver: StepPrevEventResolver
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [StepPrevEventResolver, eventService]
+      }).compile()
+      resolver = module.get<StepPrevEventResolver>(StepPrevEventResolver)
+    })
+
+    describe('stepPrevEventCreate', () => {
+      const input: StepPrevEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        prevStepId: 'step.id',
+        label: 'step name',
+        value: 'Prev step name'
+      }
+
+      it('should return step Prev event', async () => {
+        expect(await resolver.stepPrevEventCreate('userId', input)).toEqual({
+          ...input,
+          typename: 'StepPrevEvent',
           visitor: {
             connect: { id: 'visitor.id' }
           },
