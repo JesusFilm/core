@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -16,7 +17,9 @@ export function AboutTabPanel(): ReactElement {
   return (
     <>
       <Stack direction="row" spacing={5}>
-        <ImageEdit size="small" target="creator" variant="dialog" />
+        <Box>
+          <ImageEdit size="small" target="creator" variant="dialog" />
+        </Box>
         <TextField
           id="creatorDescription"
           name="creatorDescription"
@@ -33,7 +36,7 @@ export function AboutTabPanel(): ReactElement {
           onChange={handleChange}
           label={t("Creator's Info")}
           multiline
-          rows={3}
+          rows={2}
           sx={{ flex: 1 }}
         />
       </Stack>

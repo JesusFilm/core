@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
+import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
@@ -21,6 +22,7 @@ interface ImageBlockHeaderProps {
   loading?: boolean
   error?: boolean
   unsplashAuthor?: UnsplashAuthor
+  Icon?: typeof SvgIcon
 }
 
 export function ImageBlockHeader({
@@ -30,7 +32,8 @@ export function ImageBlockHeader({
   loading = false,
   selectedBlock,
   error,
-  unsplashAuthor
+  unsplashAuthor,
+  Icon
 }: ImageBlockHeaderProps): ReactElement {
   return (
     <Stack
@@ -56,6 +59,7 @@ export function ImageBlockHeader({
             selectedBlock={selectedBlock != null ? selectedBlock : undefined}
             loading={loading}
             error={error}
+            Icon={Icon}
           />
         </Box>
         {showTitle && (
