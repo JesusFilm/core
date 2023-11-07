@@ -76,10 +76,10 @@ export function TemplateSettingsDialog({
     tagIds: journey?.tags.map(({ id }) => id),
     creatorDescription: journey?.creatorDescription,
     language: {
-      id: journey?.language.id as string,
-      localName: journey?.language.name.find(({ primary }) => !primary)
+      id: journey?.language?.id as string,
+      localName: journey?.language?.name.find(({ primary }) => !primary)
         ?.value as string,
-      nativeName: journey?.language.name.find(({ primary }) => primary)
+      nativeName: journey?.language?.name.find(({ primary }) => primary)
         ?.value as string
     }
   }
