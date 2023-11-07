@@ -4,6 +4,7 @@ import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -15,10 +16,12 @@ import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 
 export interface TemplateGalleryCardProps {
   journey?: Journey
+  sx?: SxProps
 }
 
 export function TemplateGalleryCard({
-  journey
+  journey,
+  sx
 }: TemplateGalleryCardProps): ReactElement {
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
@@ -45,7 +48,8 @@ export function TemplateGalleryCard({
       sx={{
         border: 'none',
         backgroundColor: 'transparent',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        ...sx
       }}
     >
       <NextLink
@@ -94,10 +98,12 @@ export function TemplateGalleryCard({
             <Skeleton
               variant="rectangular"
               sx={{
-                height: { xs: 130, lg: 180 },
+                aspectRatio: 1,
                 borderColor: 'divider',
                 borderRadius: 2,
-                backgroundColor: 'background.default'
+                backgroundColor: 'background.default',
+                width: '100%',
+                height: 'auto'
               }}
             />
           )}
