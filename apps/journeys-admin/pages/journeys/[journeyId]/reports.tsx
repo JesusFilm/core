@@ -30,9 +30,9 @@ function JourneyReportsPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Journey Report')} />
+      <NextSeo title={t('Journey Analytics')} />
       <PageWrapper
-        title={t('Journey Report')}
+        title={t('Journey Analytics')}
         user={user}
         backHref={`/journeys/${journeyId}`}
       >
