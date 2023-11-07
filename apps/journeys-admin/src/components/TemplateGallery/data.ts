@@ -77,12 +77,12 @@ const acceptance: Tag = {
   parentId: 'parentId'
 }
 
-const addiction: Tag = {
+const hope: Tag = {
   __typename: 'Tag',
-  id: 'addictionTagId',
+  id: 'hopeTagId',
   name: [
     {
-      value: 'Addiction',
+      value: 'Hope',
       primary: true,
       __typename: 'Translation',
       language: {
@@ -100,14 +100,14 @@ const journeys: Journey[] = [
     id: 'featuredId1',
     title: 'Featured Template 1',
     createdAt: '2023-09-05T23:27:45.596Z',
-    tags: [addiction]
+    tags: [hope]
   },
   {
     ...defaultTemplate,
     id: 'featuredId2',
     title: 'Featured Template 2',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [addiction]
+    tags: [hope]
   },
   {
     ...defaultTemplate,
@@ -121,7 +121,7 @@ const journeys: Journey[] = [
     id: 'newId1',
     title: 'New Template 1',
     createdAt: '2023-09-05T23:27:45.596Z',
-    tags: [acceptance, addiction],
+    tags: [acceptance, hope],
     featuredAt: null
   },
   {
@@ -129,7 +129,7 @@ const journeys: Journey[] = [
     id: 'newId2',
     title: 'New Template 2',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [acceptance, addiction],
+    tags: [acceptance, hope],
     featuredAt: null
   },
   {
@@ -137,7 +137,7 @@ const journeys: Journey[] = [
     id: 'newId3',
     title: 'New Template 3',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [acceptance, addiction],
+    tags: [acceptance, hope],
     featuredAt: null
   },
   {
@@ -145,7 +145,7 @@ const journeys: Journey[] = [
     id: 'newId4',
     title: 'New Template 4',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [acceptance, addiction],
+    tags: [acceptance, hope],
     featuredAt: null
   },
   {
@@ -153,7 +153,7 @@ const journeys: Journey[] = [
     id: 'newId5',
     title: 'New Template 5',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [acceptance, addiction],
+    tags: [acceptance, hope],
     featuredAt: null
   }
 ]

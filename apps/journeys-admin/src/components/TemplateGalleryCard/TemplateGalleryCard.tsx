@@ -46,7 +46,7 @@ export function TemplateGalleryCard({
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer',
-        width: { xs: 130, lg: 180 }
+        width: { xs: 130, md: 180 }
       }}
     >
       <NextLink
@@ -95,8 +95,8 @@ export function TemplateGalleryCard({
             <Skeleton
               variant="rectangular"
               sx={{
-                width: { xs: 130, lg: 180 },
-                height: { xs: 130, lg: 180 },
+                width: { xs: 130, md: 180 },
+                height: { xs: 130, md: 180 },
                 borderColor: 'divider',
                 borderRadius: 2,
                 backgroundColor: 'background.default'
@@ -124,7 +124,7 @@ export function TemplateGalleryCard({
                 </Typography>
                 <Box
                   sx={{
-                    display: { xs: 'none', lg: '-webkit-box' },
+                    display: { xs: 'none', md: '-webkit-box' },
                     maxHeight: '66px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -143,7 +143,7 @@ export function TemplateGalleryCard({
                 </Box>
                 <Box
                   sx={{
-                    display: { xs: '-webkit-box', lg: 'none' },
+                    display: { xs: '-webkit-box', md: 'none' },
                     maxHeight: '63px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',

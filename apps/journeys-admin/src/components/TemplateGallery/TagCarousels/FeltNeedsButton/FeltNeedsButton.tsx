@@ -80,7 +80,7 @@ export function FeltNeedsButton({
             zIndex: 1,
             display: { xs: 'none', md: 'flex' },
             position: 'absolute',
-            opacity: '80%',
+            opacity: '60%',
             left: 12,
             bottom: 8
           }}

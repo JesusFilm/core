@@ -72,21 +72,25 @@ export function TemplateGalleryCarousel<T>({
         onSwiper={(swiper) => setSwiper(swiper)}
       >
         {loading === true
-          ? [0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-              <SwiperSlide key={`${heading ?? ''}-item-${index}`}>
-                {renderItem({})}
-              </SwiperSlide>
-            ))
-          : items.map((item) => (
-              <SwiperSlide
-                key={item.id}
-                data-testid={`journey-${item.id}`}
-                onMouseOver={() => setShowNav(true)}
-                onMouseLeave={() => setShowNav(false)}
-              >
-                {renderItem({ item })}
-              </SwiperSlide>
-            ))}
+          ? [0, 1, 2, 3, 4, 5, 6, 7].map((index) => {
+              return (
+                <SwiperSlide key={`${heading ?? ''}-item-${index}`}>
+                  {renderItem({})}
+                </SwiperSlide>
+              )
+            })
+          : items.map((item) => {
+              return (
+                <SwiperSlide
+                  key={item.id}
+                  data-testid={`journey-${item.id}`}
+                  onMouseOver={() => setShowNav(true)}
+                  onMouseLeave={() => setShowNav(false)}
+                >
+                  {renderItem({ item })}
+                </SwiperSlide>
+              )
+            })}
       </StyledSwiperContainer>
       {loading !== true && (
         <>

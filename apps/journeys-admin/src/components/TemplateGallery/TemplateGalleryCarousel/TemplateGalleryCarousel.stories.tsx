@@ -1,6 +1,5 @@
 import Stack from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
@@ -23,29 +22,7 @@ const Template: StoryObj<ComponentProps<typeof TemplateGalleryCarousel>> = {
   render: ({ ...args }) => {
     return (
       <Stack sx={{ backgroundColor: 'background.paper', p: 10 }}>
-        <TemplateGalleryCarousel
-          items={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((number) => {
-            return { id: `${number}`, title: `item ${number}` }
-          })}
-          renderItem={(itemProps) => (
-            <Stack sx={{ border: '1px solid grey' }} data-testid="item">
-              <Stack
-                sx={{ width: 200, height: 200, backgroundColor: 'divider' }}
-              />
-              <Typography variant="subtitle2" align="center">
-                {itemProps.item != null
-                  ? itemProps.item.title
-                  : 'custom placeholder'}
-              </Typography>
-            </Stack>
-          )}
-          breakpoints={{
-            '0': {
-              slidesPerGroup: 1
-            }
-          }}
-          {...args}
-        />
+        <TemplateGalleryCarousel {...args} />
         <Typography sx={{ mt: 16 }}>
           This component takes any item and renders it in a carousel.
         </Typography>
@@ -60,6 +37,24 @@ const Template: StoryObj<ComponentProps<typeof TemplateGalleryCarousel>> = {
 
 export const Default = {
   ...Template,
+  args: {
+    items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((number) => {
+      return { id: `${number}`, title: `item ${number}` }
+    }),
+    renderItem: (itemProps) => (
+      <Stack sx={{ border: '1px solid grey' }} data-testid="item">
+        <Stack sx={{ width: 200, height: 200, backgroundColor: 'divider' }} />
+        <Typography variant="subtitle2" align="center">
+          {itemProps.item != null ? itemProps.item.title : 'custom placeholder'}
+        </Typography>
+      </Stack>
+    ),
+    breakpoints: {
+      '0': {
+        slidesPerGroup: 1
+      }
+    }
+  },
   play: async () => {
     await waitFor(async () => {
       await userEvent.hover(screen.getByRole('group', { name: '1 / 12' }))
@@ -70,6 +65,7 @@ export const Default = {
 export const Loading = {
   ...Default,
   args: {
+    ...Default.args,
     loading: true
   },
   play: async () => {
@@ -82,6 +78,7 @@ export const Loading = {
 export const Heading = {
   ...Default,
   args: {
+    ...Default.args,
     heading: 'Heading'
   }
 }
@@ -89,6 +86,7 @@ export const Heading = {
 export const Breakpoints = {
   ...Default,
   args: {
+    ...Default.args,
     breakpoints: {
       '0': {
         slidesPerGroup: 1,

@@ -82,16 +82,24 @@ export function TagCarousels({
       />
       <Stack direction="row" gap={10}>
         {loading
-          ? [0, 1].map((item, index) => (
-              <CollectionButton
-                key={index}
-                item={undefined}
-                onClick={handleChange}
-              />
-            ))
-          : collectionTags.map((tag, index) => (
-              <CollectionButton key={index} item={tag} onClick={handleChange} />
-            ))}
+          ? [0, 1].map((item, index) => {
+              return (
+                <CollectionButton
+                  key={index}
+                  item={undefined}
+                  onClick={handleChange}
+                />
+              )
+            })
+          : collectionTags.map((tag, index) => {
+              return (
+                <CollectionButton
+                  key={index}
+                  item={tag}
+                  onClick={handleChange}
+                />
+              )
+            })}
       </Stack>
     </Stack>
   )
