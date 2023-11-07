@@ -1436,6 +1436,8 @@ export abstract class IMutation {
 
     abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
+    abstract stepPrevEventCreate(input: StepPrevEventCreateInput): StepPrevEvent | Promise<StepPrevEvent>;
+
     abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 
     abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
