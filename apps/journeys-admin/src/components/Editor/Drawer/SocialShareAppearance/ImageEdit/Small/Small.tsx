@@ -2,6 +2,8 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import { ReactElement } from 'react'
 
+import Image3Icon from '@core/shared/ui/icons/Image3'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../../../../ImageBlockHeader'
 
@@ -20,8 +22,9 @@ export function Small({
     <Card
       variant="outlined"
       sx={{
-        height: 73,
-        borderRadius: 2
+        border: 0,
+        borderRadius: 2,
+        backgroundColor: 'background.default'
       }}
     >
       <CardActionArea
@@ -38,6 +41,7 @@ export function Small({
           selectedBlock={imageBlock ?? null}
           showAdd
           showTitle={false}
+          Icon={Image3Icon}
         />
       </CardActionArea>
     </Card>
