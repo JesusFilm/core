@@ -6,6 +6,7 @@ import {
   useContext,
   useState
 } from 'react'
+import TagManager from 'react-gtm-module'
 
 import {
   GetLastActiveTeamIdAndTeams,
@@ -59,6 +60,12 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
     {
       onCompleted: (data) => {
         if (activeTeam != null || data.teams == null) return
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'get_teams',
+            teams: data.teams.length
+          }
+        })
         const lastActiveTeam = data.teams.find(
           (team) => team.id === data.getJourneyProfile?.lastActiveTeamId
         )
