@@ -16,7 +16,9 @@ import { TagsFilter } from './TagsFilter'
 export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const [languageIds, setLanguageIds] = useState<string[]>([])
+  const [languageIds, setLanguageIds] = useState<string[]>(
+    router.query.languageIds != null ? castArray(router.query.languageIds) : []
+  )
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     router.query.tagIds != null ? castArray(router.query.tagIds) : []
   )
@@ -31,6 +33,12 @@ export function TemplateGallery(): ReactElement {
     ]
     setSelectedTagIds(tagIds)
     router.query.tagIds = tagIds
+    void router.push(router)
+  }
+
+  function handleLanguageChange(values: string[]): void {
+    setLanguageIds(values)
+    router.query.languageIds = values
     void router.push(router)
   }
 
@@ -53,7 +61,7 @@ export function TemplateGallery(): ReactElement {
         </Typography>
         <LanguageFilter
           languageIds={languageIds}
-          onChange={(values) => setLanguageIds(values)}
+          onChange={handleLanguageChange}
         />
       </Stack>
       <Grid

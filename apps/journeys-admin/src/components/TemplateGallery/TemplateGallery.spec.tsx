@@ -88,4 +88,38 @@ describe('TemplateGallery', () => {
       }
     })
   })
+
+  it('should render templates filtered via language ids', async () => {
+    const push = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      push,
+      query: { languageIds: [] }
+    } as unknown as NextRouter)
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          getJourneysWithoutLanguageIdsMock,
+          getLanguagesMock,
+          getTagsMock
+        ]}
+      >
+        <TemplateGallery />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'All Languages' }))
+    )
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    await waitFor(() =>
+      fireEvent.click(getByRole('option', { name: 'French' }))
+    )
+    expect(push).toHaveBeenCalledWith({
+      push,
+      query: {
+        languageIds: ['496']
+      }
+    })
+  })
 })

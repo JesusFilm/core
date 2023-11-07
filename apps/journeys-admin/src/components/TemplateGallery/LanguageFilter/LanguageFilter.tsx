@@ -43,7 +43,7 @@ export function LanguageFilter({
     <>
       <Stack direction="row" alignItems="center" justifyContent="center">
         {!loading && (
-          <Typography variant="subtitle3">
+          <Typography variant="subtitle3" sx={{ flexShrink: 0 }}>
             {t('Filter by language:')}
           </Typography>
         )}
