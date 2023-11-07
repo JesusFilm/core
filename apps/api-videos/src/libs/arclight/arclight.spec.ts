@@ -1,5 +1,5 @@
 import omit from 'lodash/omit'
-import fetch, { Response } from 'node-fetch'
+import fetch, { FetchError, Response } from 'node-fetch'
 
 import {
   ArclightMediaComponent,
@@ -8,13 +8,15 @@ import {
   Language,
   MediaComponent,
   fetchMediaLanguagesAndTransformToLanguages,
+  fetchPlus,
   getArclightMediaComponentLanguages,
   getArclightMediaComponentLinks,
   getArclightMediaComponents,
   getArclightMediaLanguages,
   transformArclightMediaComponentLanguageToVideoVariant,
   transformArclightMediaComponentToVideo,
-  transformArclightMediaLanguageToLanguage
+  transformArclightMediaLanguageToLanguage,
+  transformMediaComponentToVideo
 } from './arclight'
 
 jest.mock('node-fetch', () => {
@@ -390,7 +392,6 @@ describe('arclight', () => {
     ]
     const video = {
       id: 'mediaComponentId',
-      childIds: [],
       description: [
         { languageId: '529', primary: true, value: 'longDescription' }
       ],
@@ -627,6 +628,181 @@ describe('arclight', () => {
           slug: 'english'
         }
       ])
+    })
+  })
+
+  describe('fetchPlus', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+
+    it('calls fetch with provided url and init', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => await Promise.resolve({})
+      } as unknown as Response)
+
+      const url = 'https://example.com'
+      const init = { method: 'POST' }
+      await expect(fetchPlus(url, init)).resolves.toEqual(
+        expect.objectContaining({ ok: true })
+      )
+      expect(mockFetch).toHaveBeenCalledWith(url, init)
+    })
+
+    it('retries up to 3 times on FetchError', async () => {
+      mockFetch.mockRejectedValue(new FetchError('FetchError', 'FetchError'))
+
+      const url = 'https://example.com'
+      const init = { method: 'POST' }
+      await expect(fetchPlus(url, init)).rejects.toThrow(Error)
+      expect(mockFetch).toHaveBeenCalledTimes(4)
+    })
+
+    it('throws error when retries are exhausted', async () => {
+      mockFetch.mockRejectedValueOnce(new Error('FetchError'))
+
+      const url = 'https://example.com'
+      const init = { method: 'POST' }
+      await expect(fetchPlus(url, init, 0)).rejects.toThrow(Error)
+      expect(mockFetch).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('transformMediaComponentToVideo', () => {
+    jest.mock('./arclight', () => {
+      const originalModule = jest.requireActual('./arclight')
+      return {
+        __esModule: true,
+        ...originalModule,
+        getArclightMediaComponentLanguages: jest.fn()
+      }
+    })
+    const mockGetArclightMediaComponentLanguages =
+      getArclightMediaComponentLanguages as jest.MockedFunction<
+        typeof getArclightMediaComponentLanguages
+      >
+    const mediaComponent: ArclightMediaComponent = {
+      mediaComponentId: 'mediaComponentId',
+      primaryLanguageId: 529,
+      title: 'title',
+      shortDescription: 'shortDescription',
+      longDescription: 'longDescription',
+      metadataLanguageTag: 'en',
+      imageUrls: {
+        mobileCinematicHigh: 'mobileCinematicHigh'
+      },
+      studyQuestions: [],
+      subType: 'episode'
+    }
+    const mediaComponentLanguages: ArclightMediaComponentLanguage[] = [
+      {
+        refId: 'refId',
+        languageId: 529,
+        lengthInMilliseconds: 1000,
+        subtitleUrls: {
+          vtt: [
+            {
+              languageId: 529,
+              url: 'subtitleUrl529'
+            },
+            {
+              languageId: 2048,
+              url: 'subtitleUrl2048'
+            }
+          ]
+        },
+        streamingUrls: {
+          hls: [
+            {
+              url: 'hlsUrl'
+            }
+          ]
+        },
+        downloadUrls: {
+          low: {
+            url: 'lowUrl',
+            sizeInBytes: 1024
+          },
+          high: {
+            url: 'highUrl',
+            sizeInBytes: 1024
+          }
+        }
+      }
+    ]
+    const languages: Language[] = [
+      {
+        languageId: 529,
+        bcp47: 'en',
+        name: 'English',
+        slug: 'english'
+      }
+    ]
+    const usedVideoSlugs = {}
+
+    beforeEach(() => {
+      mockGetArclightMediaComponentLanguages.mockClear()
+    })
+
+    it('transforms media component to video', async () => {
+      mockGetArclightMediaComponentLanguages.mockResolvedValueOnce(
+        mediaComponentLanguages
+      )
+      const video = await transformMediaComponentToVideo(
+        mediaComponent,
+        languages,
+        usedVideoSlugs
+      )
+      expect(video).toEqual({
+        id: mediaComponent.mediaComponentId,
+        description: [
+          { languageId: '529', primary: true, value: 'longDescription' }
+        ],
+        duration: 1,
+        hls: 'hlsUrl',
+        image: 'mobileCinematicHigh',
+        languageId: '529',
+        slug: 'title/english',
+        subType: 'episode',
+        title: 'title',
+        videoVariants: [
+          {
+            id: 'refId',
+            downloads: [
+              {
+                quality: 'low',
+                size: 1024,
+                url: 'lowUrl'
+              },
+              {
+                quality: 'high',
+                size: 1024,
+                url: 'highUrl'
+              }
+            ],
+            duration: 1,
+            hls: 'hlsUrl',
+            languageId: '529',
+            slug: 'title/english',
+            subtitle: [
+              {
+                languageId: '529',
+                primary: true,
+                value: 'subtitleUrl529'
+              },
+              {
+                languageId: '2048',
+                primary: false,
+                value: 'subtitleUrl2048'
+              }
+            ]
+          }
+        ]
+      })
+      expect(mockGetArclightMediaComponentLanguages).toHaveBeenCalledWith(
+        mediaComponent.mediaComponentId
+      )
     })
   })
 })

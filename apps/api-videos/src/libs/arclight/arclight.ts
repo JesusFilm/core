@@ -64,7 +64,7 @@ export interface ArclightMediaComponentLanguage {
   }
 }
 
-async function fetchPlus(
+export async function fetchPlus(
   url: RequestInfo,
   init?: RequestInit,
   retries = 3

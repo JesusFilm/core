@@ -184,9 +184,10 @@ async function handlePrismaVideoVariants(
       // ignore moved items
       if (isMovedItem(variant)) continue
 
-      const id = key.startsWith('_')
-        ? existingVideo?.variants[toNumber(key)].id
-        : video.variants[toNumber(key)]?.id
+      const id =
+        key.startsWith('_') && existingVideo?.variants[toNumber(key)] != null
+          ? existingVideo?.variants[toNumber(key)].id
+          : video.variants[toNumber(key)]?.id
 
       if (isArray(variant) && variant.length === 1) {
         // handle create
@@ -213,7 +214,7 @@ async function handlePrismaVideoVariants(
         // handle delete
         await tx.videoVariant.delete({
           where: {
-            id
+            id: variant[0].id
           }
         })
       } else if (Object.keys(variant).length > 0 && id != null) {
