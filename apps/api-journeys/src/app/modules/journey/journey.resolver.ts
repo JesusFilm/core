@@ -425,6 +425,8 @@ export class JourneyResolver {
               data: {
                 ...omit(journey, [
                   'primaryImageBlockId',
+                  'creatorImageBlockId',
+                  'creatorDescription',
                   'publishedAt',
                   'hostId',
                   'teamId',
@@ -790,9 +792,19 @@ export class JourneyResolver {
   @ResolveField()
   @FromPostgresql()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
-    const filter: Prisma.BlockWhereInput = { journeyId: journey.id }
-    if (journey.primaryImageBlockId != null)
-      filter.id = { not: journey.primaryImageBlockId }
+    const filter: Prisma.BlockWhereInput = {
+      journeyId: journey.id
+    }
+    const idNotIn: string[] = []
+    if (journey.primaryImageBlockId != null) {
+      idNotIn.push(journey.primaryImageBlockId)
+    }
+    if (journey.creatorImageBlockId != null) {
+      idNotIn.push(journey.creatorImageBlockId)
+    }
+    if (idNotIn.length > 0) {
+      filter.id = { notIn: idNotIn }
+    }
     return await this.prismaService.block.findMany({
       where: filter,
       orderBy: { parentOrder: 'asc' },
@@ -828,6 +840,17 @@ export class JourneyResolver {
     if (journey.primaryImageBlockId == null) return null
     const block = await this.prismaService.block.findUnique({
       where: { id: journey.primaryImageBlockId },
+      include: { action: true }
+    })
+    if (block?.journeyId !== journey.id) return null
+    return block
+  }
+
+  @ResolveField()
+  async creatorImageBlock(@Parent() journey: Journey): Promise<Block | null> {
+    if (journey.creatorImageBlockId == null) return null
+    const block = await this.prismaService.block.findUnique({
+      where: { id: journey.creatorImageBlockId },
       include: { action: true }
     })
     if (block?.journeyId !== journey.id) return null
