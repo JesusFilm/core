@@ -21,7 +21,8 @@ const biblePlatforms = [
 export enum GoalType {
   Chat = 'Chat',
   Bible = 'Bible',
-  Website = 'Website'
+  Website = 'Website',
+  Journey = 'Journey'
 }
 
 export function getLinkActionGoal(url: string): GoalType {

@@ -401,7 +401,7 @@ describe('Button', () => {
           blockId: 'button',
           stepName: 'stepName',
           buttonLabel: 'This is a button',
-          outboundActionType: 'Journey',
+          outboundActionType: GoalType.Journey,
           outboundActionValue: 'journey.id'
         }
       })
