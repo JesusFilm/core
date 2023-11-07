@@ -1,10 +1,12 @@
 import Container from '@mui/material/Container'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SwiperOptions } from 'swiper'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
@@ -26,6 +28,8 @@ interface TemplateViewProps {
 
 export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   const { journey } = useJourney()
+  const { breakpoints } = useTheme()
+
   const { t } = useTranslation('apps-journeys-admin')
 
   const tagIds = journey?.tags.map((tag) => tag.id)
@@ -43,6 +47,39 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
 
   const { data: userData } = useUserRoleQuery()
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
+
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      slidesPerGroup: 2,
+      slidesPerView: 2,
+      spaceBetween: 20
+    },
+    [breakpoints.values.sm]: {
+      slidesPerGroup: 3,
+      slidesPerView: 3,
+      spaceBetween: 20
+    },
+    [breakpoints.values.md]: {
+      slidesPerGroup: 4,
+      slidesPerView: 4,
+      spaceBetween: 20
+    },
+    [breakpoints.values.lg]: {
+      slidesPerGroup: 5,
+      slidesPerView: 5,
+      spaceBetween: 48
+    },
+    [breakpoints.values.xl]: {
+      slidesPerGroup: 6,
+      slidesPerView: 6,
+      spaceBetween: 48
+    },
+    [breakpoints.values.xxl]: {
+      slidesPerGroup: 7,
+      slidesPerView: 7,
+      spaceBetween: 48
+    }
+  }
 
   return (
     <Container disableGutters>
@@ -77,8 +114,9 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
         {relatedJourneys != null && relatedJourneys.length >= 1 && (
           <TemplateGalleryCarousel
             heading={t('Related Templates')}
-            item={relatedJourneys}
+            items={relatedJourneys}
             renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+            breakpoints={swiperBreakpoints}
           />
         )}
         <TemplateFooter signedIn={authUser?.id != null} />

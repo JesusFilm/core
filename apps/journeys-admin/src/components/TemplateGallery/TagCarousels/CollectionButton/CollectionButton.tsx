@@ -15,7 +15,7 @@ type ChildTag = Tag & { parentId: string }
 
 interface CollectionButtonProps {
   tag: ChildTag
-  onChange: (value: string) => void
+  onClick: (value: string) => void
 }
 
 const StyledCollectionButton = styled(ButtonBase)(() => ({
@@ -24,7 +24,7 @@ const StyledCollectionButton = styled(ButtonBase)(() => ({
 
 export function CollectionButton({
   tag,
-  onChange
+  onClick
 }: CollectionButtonProps): ReactElement {
   const theme = useTheme()
 
@@ -42,7 +42,7 @@ export function CollectionButton({
   const tagLabel: string = tag.name[0]?.value ?? ''
   const image = tagImage(tagLabel)
   return (
-    <StyledCollectionButton onClick={() => onChange(tag.id)}>
+    <StyledCollectionButton onClick={() => onClick(tag.id)}>
       <Stack
         gap={3}
         alignItems="center"

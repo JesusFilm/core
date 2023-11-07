@@ -75,13 +75,13 @@ export function TagCarousels({
       <TemplateGalleryCarousel
         items={feltNeedsTags}
         renderItem={(itemProps) => (
-          <FeltNeedsButton {...itemProps} onChange={handleChange} />
+          <FeltNeedsButton {...itemProps} onClick={handleChange} />
         )}
         breakpoints={swiperBreakpoints}
       />
       <Stack direction="row" gap={10}>
         {collectionTags.map((tag, index) => (
-          <CollectionButton key={index} tag={tag} onChange={handleChange} />
+          <CollectionButton key={index} tag={tag} onClick={handleChange} />
         ))}
       </Stack>
     </Stack>

@@ -22,20 +22,20 @@ const StyledSwiperContainer = styled(Swiper)(() => ({
 }))
 
 interface TemplateGalleryCarouselProps<T> {
-  items?: T[]
-  renderItem: (itemProps: T[keyof T]) => JSX.Element
+  items: Array<T & { id: string }>
+  renderItem: (itemProps: { item?: T }) => JSX.Element
   heading?: string
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
 }
 
-export function TemplateGalleryCarousel({
+export function TemplateGalleryCarousel<T>({
   items,
   renderItem,
   heading = '',
   breakpoints,
   loading
-}: TemplateGalleryCarouselProps): ReactElement {
+}: TemplateGalleryCarouselProps<T>): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [showNav, setShowNav] = useState(false)
 
@@ -60,7 +60,7 @@ export function TemplateGalleryCarousel({
       {loading === true && (items === null || items?.length === 0) && (
         <Swiper breakpoints={breakpoints}>
           {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-            <SwiperSlide key={`${heading as string}-item-${index}`}>
+            <SwiperSlide key={`${heading}-item-${index}`}>
               {renderItem({})}
             </SwiperSlide>
           ))}
@@ -81,14 +81,14 @@ export function TemplateGalleryCarousel({
           breakpoints={breakpoints}
           onSwiper={(swiper) => setSwiper(swiper)}
         >
-          {items?.map((item, index) => (
+          {items.map((item, index) => (
             <SwiperSlide
-              key={item?.id}
-              data-testid={`journey-${(item?.id as string) ?? index}`}
+              key={item.id}
+              data-testid={`journey-${item.id}`}
               onMouseOver={() => setShowNav(true)}
               onMouseLeave={() => setShowNav(false)}
             >
-              {renderItem({ item, index })}
+              {renderItem({ item })}
             </SwiperSlide>
           ))}
         </StyledSwiperContainer>

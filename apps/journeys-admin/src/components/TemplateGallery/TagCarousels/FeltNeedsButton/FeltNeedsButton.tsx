@@ -1,10 +1,12 @@
 import ButtonBase from '@mui/material/ButtonBase'
+import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useCallback } from 'react'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
+import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
 import acceptanceImage from '../assets/acceptance.png'
 import depressionImage from '../assets/depression.png'
 import fearAnxietyImage from '../assets/fearAnxiety.png'
@@ -15,6 +17,8 @@ import loveImage from '../assets/love.png'
 import securityImage from '../assets/security.png'
 import significanceImage from '../assets/significance.png'
 
+type ChildTag = Tag & { parentId: string }
+
 const StyledFeltNeedsButton = styled(ButtonBase)(() => ({
   backgroundColor: 'grey',
   padding: '32px 28px',
@@ -22,7 +26,15 @@ const StyledFeltNeedsButton = styled(ButtonBase)(() => ({
   borderRadius: '8px'
 }))
 
-export function FeltNeedsButton({ item: tag, index, onChange }): ReactElement {
+interface FeltNeedsButtonProps {
+  item?: ChildTag
+  onClick: (value: string) => void
+}
+
+export function FeltNeedsButton({
+  item: tag,
+  onClick
+}: FeltNeedsButtonProps): ReactElement {
   const tagImage = useCallback((tagLabel: string) => {
     switch (tagLabel) {
       case 'Acceptance':
@@ -48,17 +60,17 @@ export function FeltNeedsButton({ item: tag, index, onChange }): ReactElement {
     }
   }, [])
 
-  const tagLabel: string = tag.name[0].value ?? `felt-needs-${index as string}`
+  const tagLabel: string = tag?.name[0]?.value ?? ''
   const image = tagImage(tagLabel)
 
-  return (
+  return tag != null ? (
     <StyledFeltNeedsButton
       key={`${tagLabel}-button}`}
       sx={{
         width: { xs: '150px', md: '222px' },
         height: { xs: '56px', md: '110px' }
       }}
-      onClick={() => onChange(tag.id)}
+      onClick={() => onClick(tag?.id)}
     >
       {image != null && (
         <NextImage src={image.src} layout="fill" sx={{ borderRadius: 2 }} />
@@ -90,5 +102,13 @@ export function FeltNeedsButton({ item: tag, index, onChange }): ReactElement {
         {tagLabel}
       </Typography>
     </StyledFeltNeedsButton>
+  ) : (
+    <Skeleton
+      sx={{
+        width: { xs: '150px', md: '222px' },
+        height: { xs: '56px', md: '110px' },
+        borderRadius: 2
+      }}
+    />
   )
 }

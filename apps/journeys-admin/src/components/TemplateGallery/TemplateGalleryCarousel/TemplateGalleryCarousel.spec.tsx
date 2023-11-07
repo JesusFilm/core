@@ -1,4 +1,6 @@
+import Typography from '@mui/material/Typography'
 import { render } from '@testing-library/react'
+import { SwiperOptions } from 'swiper'
 
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import {
@@ -43,13 +45,26 @@ describe('TemplateGalleryCarousel', () => {
   }
 
   it('should render TemplateGalleryCarousel', () => {
+    const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+      '@media (min-width:0px)': {
+        slidesPerGroup: 1
+      },
+      '@media (min-width:600px)': {
+        slidesPerGroup: 3
+      },
+      '@media (min-width:1200px)': {
+        slidesPerGroup: 5
+      }
+    }
+
     const { getAllByTestId, getByRole } = render(
       <TemplateGalleryCarousel
-        category="Easter"
-        journeys={[
-          journey,
-          { ...journey, id: '2', title: 'Featured Template 2' }
-        ]}
+        heading="Easter"
+        items={[journey, { ...journey, id: '2', title: 'Featured Template 2' }]}
+        renderItem={(itemProps) => (
+          <Typography>{itemProps.item?.id}</Typography>
+        )}
+        breakpoints={swiperBreakpoints}
       />
     )
     expect(getByRole('heading', { name: 'Easter' })).toBeInTheDocument()
