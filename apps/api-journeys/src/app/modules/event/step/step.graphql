@@ -3,6 +3,9 @@ input StepViewEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  """
+  Id of the StepBlock
+  """
   blockId: ID!
   """
   stepName of the stepBlock
@@ -35,9 +38,12 @@ input StepNextEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  """
+  Id of the StepBlock
+  """
   blockId: ID!
   """
-  id of the mext stepBlock
+  id of the next stepBlock
   """
   nextStepId: ID!
   """
@@ -51,6 +57,49 @@ input StepNextEventCreateInput {
 }
 
 type StepNextEvent implements Event {
+  id: ID!
+  """
+  ID of the journey that the stepBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  stepName of the stepBlock
+  """
+  label: String
+  """
+  stepName of the next stepBlock
+  """
+  value: String
+}
+
+input StepPrevEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  """
+  Id of the StepBlock
+  """
+  blockId: ID!
+  """
+  id of the previous stepBlock
+  """
+  prevStepId: ID!
+  """
+  stepName of the stepBlock
+  """
+  label: String
+  """
+  stepName of the previous stepBlock
+  """
+  value: String
+}
+
+type StepPrevEvent implements Event {
   id: ID!
   """
   ID of the journey that the stepBlock belongs to

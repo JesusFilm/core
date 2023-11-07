@@ -505,6 +505,14 @@ export class StepNextEventCreateInput {
     value?: Nullable<string>;
 }
 
+export class StepPrevEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    prevStepId: string;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
 export class TextResponseSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -1012,6 +1020,15 @@ export class StepViewEvent implements Event {
 
 export class StepNextEvent implements Event {
     __typename?: 'StepNextEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
+export class StepPrevEvent implements Event {
+    __typename?: 'StepPrevEvent';
     id: string;
     journeyId: string;
     createdAt: DateTime;
