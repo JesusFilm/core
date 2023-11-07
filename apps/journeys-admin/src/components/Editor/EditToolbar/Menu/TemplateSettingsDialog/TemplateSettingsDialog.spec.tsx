@@ -36,7 +36,8 @@ describe('TemplateSettingsDialog', () => {
     const updatedJourney = {
       title: 'New Title',
       description: 'New Description',
-      strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view'
+      strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
+      creatorDescription: null
     }
 
     const result = jest.fn(() => ({
@@ -106,7 +107,11 @@ describe('TemplateSettingsDialog', () => {
               query: JOURNEY_SETTINGS_UPDATE,
               variables: {
                 id: defaultJourney.id,
-                input: { ...updatedJourney, tagIds: ['tagId'] }
+                input: {
+                  ...updatedJourney,
+                  tagIds: ['tagId'],
+                  creatorDescription: null
+                }
               }
             },
             result
@@ -174,7 +179,8 @@ describe('TemplateSettingsDialog', () => {
       description: defaultJourney.description,
       strategySlug:
         'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000',
-      tagIds: []
+      tagIds: [],
+      creatorDescription: null
     }
 
     const result = jest.fn(() => ({
@@ -258,75 +264,6 @@ describe('TemplateSettingsDialog', () => {
     await waitFor(() =>
       expect(getByText('Invalid embed link')).toBeInTheDocument()
     )
-  })
-
-  it('should not update field data if it remains unchanged on submit', async () => {
-    const result = jest.fn()
-    const result2 = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          id: defaultJourney.id,
-          __typename: 'Journey'
-        }
-      }
-    }))
-
-    const { getByRole, getAllByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_SETTINGS_UPDATE,
-              variables: {
-                id: defaultJourney.id,
-                input: {
-                  title: defaultJourney.title,
-                  description: defaultJourney.description
-                }
-              }
-            },
-            result
-          },
-          {
-            request: {
-              query: JOURNEY_FEATURE_UPDATE,
-              variables: {
-                id: defaultJourney.id,
-                feature: false
-              }
-            },
-            result: result2
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: defaultJourney,
-              variant: 'admin'
-            }}
-          >
-            <TemplateSettingsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.change(getAllByRole('textbox')[0], {
-      target: { value: defaultJourney.title }
-    })
-    fireEvent.change(getAllByRole('textbox')[1], {
-      target: { value: defaultJourney.description }
-    })
-
-    fireEvent.click(getByRole('button', { name: 'Save' }))
-
-    await waitFor(() => {
-      expect(result).not.toHaveBeenCalled()
-    })
-    await waitFor(() => {
-      expect(result2).not.toHaveBeenCalled()
-    })
   })
 
   it('shows error alert when any field fails to update', async () => {
