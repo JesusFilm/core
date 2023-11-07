@@ -76,11 +76,7 @@ function JourneysAdminApp({
       jssStyles.parentElement?.removeChild(jssStyles)
     }
 
-    if (user != null) {
-      TagManager.dataLayer({ dataLayer: { userId: user.id } })
-    } else {
-      TagManager.dataLayer({ dataLayer: { userId: undefined } })
-    }
+    TagManager.dataLayer({ dataLayer: { userId: user?.id } })
   }, [user])
 
   return (
