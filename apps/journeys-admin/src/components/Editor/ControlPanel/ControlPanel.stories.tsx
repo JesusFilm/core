@@ -1,11 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { BlockFields_StepBlock } from '../../../../__generated__/BlockFields'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
@@ -25,7 +27,7 @@ import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { ControlPanel } from '.'
 
-const ControlPanelStory = {
+const ControlPanelStory: Meta<typeof ControlPanel> = {
   ...journeysAdminConfig,
   component: ControlPanel,
   title: 'Journeys-Admin/Editor/ControlPanel',
@@ -616,54 +618,66 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = (args) => {
-  return (
-    <MockedProvider>
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journeyId',
-            themeMode: ThemeMode.dark,
-            themeName: ThemeName.base,
-            language: {
-              __typename: 'Language',
-              id: '529',
-              bcp47: 'en',
-              iso3: 'eng',
-              name: [
-                {
-                  __typename: 'Translation',
-                  value: 'English',
-                  primary: true
-                }
-              ]
-            }
-          } as unknown as Journey,
-          variant: 'admin'
-        }}
-      >
-        <EditorProvider
-          initialState={{
-            steps: args.steps
+type Story = StoryObj<
+  ComponentProps<typeof EditorProvider> & {
+    steps: Array<TreeBlock<BlockFields_StepBlock>>
+  }
+>
+
+const Template: Story = {
+  render: (args) => {
+    return (
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: 'English',
+                    primary: true
+                  }
+                ]
+              }
+            } as unknown as Journey,
+            variant: 'admin'
           }}
         >
-          <Box sx={{ mt: '80px' }}>
-            <ControlPanel />
-          </Box>
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
+          <EditorProvider
+            initialState={{
+              steps: args.steps
+            }}
+          >
+            <Box sx={{ mt: '80px' }}>
+              <ControlPanel />
+            </Box>
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  steps
+export const Default = {
+  ...Template,
+  args: {
+    steps
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  steps: undefined
+export const Loading = {
+  ...Template,
+  args: {
+    steps: undefined
+  }
 }
 
-export default ControlPanelStory as Meta
+export default ControlPanelStory

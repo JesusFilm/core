@@ -1,27 +1,31 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../libs/storybook'
 
 import { PublisherInvite } from './PublisherInvite'
 
-const PublisherInviteStory = {
+const PublisherInviteStory: Meta<typeof PublisherInvite> = {
   ...journeysAdminConfig,
   component: PublisherInvite,
   title: 'Journeys-Admin/PublisherInvite'
 }
 
-const Template: Story = ({ ...args }) => {
-  return (
-    <MockedProvider>
-      <PublisherInvite {...args} />
-    </MockedProvider>
-  )
+const Template: StoryObj<typeof PublisherInvite> = {
+  render: ({ ...args }) => {
+    return (
+      <MockedProvider>
+        <PublisherInvite {...args} />
+      </MockedProvider>
+    )
+  }
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  journeyId: 'journeyId'
+export const Default = {
+  ...Template,
+  args: {
+    journeyId: 'journeyId'
+  }
 }
 
-export default PublisherInviteStory as Meta
+export default PublisherInviteStory

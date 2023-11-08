@@ -28,8 +28,8 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure'
+    screenshot: 'only-on-failure'
+    //video: 'retain-on-failure'
     // video: 'on',
   },
 
@@ -41,14 +41,14 @@ export default defineConfig({
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
     {
-      name: 'Google Chrome',
+      name: 'chrome-desktop',
       use: { ...devices['Desktop Chrome'], channel: 'chrome' }
     },
 
-    /* Test against mobile viewports. */
-    // By default it's using chromium channel, changed it to chrome so it can play the video
+    // /* Test against mobile viewports. */
+    // // By default it's using chromium channel, changed it to chrome so it can play the video
     {
-      name: 'Mobile Chrome',
+      name: 'chrome-mobile',
       use: { ...devices['Pixel 5'], channel: 'chrome' }
     }
     // {
@@ -59,7 +59,7 @@ export default defineConfig({
     /* Others. */
     // {
     //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
+    //   use: { ...devices['Desktop Firefox'] }
     // },
 
     // {

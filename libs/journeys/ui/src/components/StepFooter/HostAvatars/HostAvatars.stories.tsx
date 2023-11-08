@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -15,7 +15,7 @@ import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
 
 import { HostAvatars } from './HostAvatars'
 
-const HostAvatarsDemo = {
+const HostAvatarsDemo: Meta<typeof HostAvatars> = {
   ...simpleComponentConfig,
   component: HostAvatars,
   title: 'Journeys-Ui/StepFooter/HostAvatars',
@@ -23,6 +23,7 @@ const HostAvatarsDemo = {
     ...simpleComponentConfig.parameters
   }
 }
+
 const hostData = {
   id: 'hostId',
   __typename: 'Host' as const,
@@ -38,7 +39,9 @@ const journey: Journey = {
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  featuredAt: null,
   title: 'my journey',
+  strategySlug: null,
   slug: 'my-journey',
   language: {
     __typename: 'Language',
@@ -59,70 +62,88 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: 'My awesome journey',
   seoDescription: null,
   chatButtons: [],
   host: hostData,
-  team: null
+  team: null,
+  tags: []
 }
 
-const Template: Story<
+type Story = StoryObj<
   ComponentProps<typeof HostAvatars> & {
     variant: 'default' | 'admin' | 'embed'
     journey: Journey
-    size: string
     editableStepFooter: boolean
   }
-> = ({ variant = 'default', journey, size, editableStepFooter }) => (
-  <FlagsProvider flags={{ editableStepFooter }}>
-    <JourneyProvider value={{ variant, journey }}>
-      <Stack direction="row">
-        <HostAvatars hasPlaceholder={variant === 'admin'} size={size} />
-      </Stack>
-    </JourneyProvider>
-  </FlagsProvider>
-)
+>
 
-export const Default = Template.bind({})
-Default.args = {
-  journey,
-  editableStepFooter: true
+const Template: Story = {
+  render: ({ variant = 'default', journey, editableStepFooter, ...args }) => (
+    <FlagsProvider flags={{ editableStepFooter }}>
+      <JourneyProvider value={{ variant, journey }}>
+        <Stack direction="row">
+          <HostAvatars hasPlaceholder={variant === 'admin'} {...args} />
+        </Stack>
+      </JourneyProvider>
+    </FlagsProvider>
+  )
 }
 
-export const Empty = Template.bind({})
-Empty.args = {
-  editableStepFooter: true,
-  variant: 'admin',
-  journey: { ...journey, host: { ...hostData, src1: null } }
-}
-
-export const WithPlaceholder = Template.bind({})
-WithPlaceholder.args = {
-  ...Empty.args,
-  journey
-}
-
-export const Placeholder = Template.bind({})
-Placeholder.args = {
-  ...Empty.args,
-  size: 'large'
-}
-
-export const TwoAvatars = Template.bind({})
-TwoAvatars.args = {
-  ...Empty.args,
-  journey: {
-    ...journey,
-    host: { ...hostData, src2: 'https://tinyurl.com/2nxtwn8v' }
+export const Default = {
+  ...Template,
+  args: {
+    journey,
+    editableStepFooter: true
   }
 }
 
-export const Large = Template.bind({})
-Large.args = {
-  ...Default.args,
-  size: 'large'
+export const Empty = {
+  ...Template,
+  args: {
+    editableStepFooter: true,
+    variant: 'admin',
+    journey: { ...journey, host: { ...hostData, src1: null } }
+  }
 }
 
-export default HostAvatarsDemo as Meta
+export const WithPlaceholder = {
+  ...Template,
+  args: {
+    ...Empty.args,
+    journey
+  }
+}
+
+export const Placeholder = {
+  ...Template,
+  args: {
+    ...Empty.args,
+    size: 'large'
+  }
+}
+
+export const TwoAvatars = {
+  ...Template,
+  args: {
+    ...Empty.args,
+    journey: {
+      ...journey,
+      host: { ...hostData, src2: 'https://tinyurl.com/2nxtwn8v' }
+    }
+  }
+}
+
+export const Large = {
+  ...Template,
+  args: {
+    ...Default.args,
+    size: 'large'
+  }
+}
+
+export default HostAvatarsDemo

@@ -1,22 +1,23 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
-import { useState } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ReactNode, useState } from 'react'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
+import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
+import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
 
-import { GET_JOURNEY_WITH_PERMISSIONS, GET_USER_INVITES } from './AccessDialog'
+import { GET_JOURNEY_WITH_PERMISSIONS } from './AccessDialog'
 
 import { AccessDialog } from '.'
 
-const Demo = {
+const Demo: Meta<typeof AccessDialog> = {
   ...journeysAdminConfig,
   component: AccessDialog,
   title: 'Journeys-Admin/AccessDialog'
 }
 
-export const Default: Story = () => {
+const DefaultAccessDialog = (): ReactNode => {
   const [open, setOpen] = useState(true)
   return (
     <MockedProvider
@@ -85,7 +86,7 @@ export const Default: Story = () => {
                     role: 'owner',
                     user: {
                       id: 'userId1',
-                      firstName: 'Amin',
+                      firstName: 'Admin',
                       lastName: 'One',
                       imageUrl: 'https://bit.ly/3Gth4Yf',
                       email: 'admin@email.com'
@@ -166,7 +167,11 @@ export const Default: Story = () => {
   )
 }
 
-export const Loading: Story = () => {
+export const Default: StoryObj<typeof AccessDialog> = {
+  render: () => <DefaultAccessDialog />
+}
+
+const LoadingAccessDialog = (): ReactNode => {
   const [open, setOpen] = useState(true)
   return (
     <ApolloLoadingProvider>
@@ -179,4 +184,8 @@ export const Loading: Story = () => {
   )
 }
 
-export default Demo as Meta
+export const Loading: StoryObj<typeof AccessDialog> = {
+  render: () => <LoadingAccessDialog />
+}
+
+export default Demo

@@ -2,10 +2,10 @@ import { ApolloProvider } from '@apollo/client'
 import { datadogRum } from '@datadog/browser-rum'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import { SSRConfig, appWithTranslation } from 'next-i18next'
-import { DefaultSeo } from 'next-seo'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
+import { SSRConfig, appWithTranslation } from 'next-i18next'
+import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
@@ -27,7 +27,7 @@ initAuth()
 const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
-  AuthUserSerialized?: string
+  userSerialized?: string
   flags?: { [key: string]: boolean }
 }> & {
   pageProps: SSRConfig
@@ -40,10 +40,13 @@ function JourneysAdminApp({
   emotionCache = clientSideEmotionCache
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const token =
-    (pageProps.AuthUserSerialized != null
-      ? (JSON.parse(pageProps.AuthUserSerialized)._token as string | null)
-      : '') ?? ''
+
+  const user =
+    pageProps.userSerialized != null
+      ? JSON.parse(pageProps.userSerialized)
+      : null
+
+  const token = user?._token ?? ''
   const apolloClient = useApollo(token)
 
   useEffect(() => {
@@ -72,7 +75,9 @@ function JourneysAdminApp({
     if (jssStyles != null) {
       jssStyles.parentElement?.removeChild(jssStyles)
     }
-  }, [])
+
+    TagManager.dataLayer({ dataLayer: { userId: user?.id } })
+  }, [user])
 
   return (
     <FlagsProvider flags={pageProps.flags}>

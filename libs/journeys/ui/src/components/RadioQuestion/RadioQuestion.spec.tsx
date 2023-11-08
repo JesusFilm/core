@@ -251,6 +251,7 @@ describe('RadioQuestion', () => {
           eventId: 'uuid',
           blockId: 'RadioQuestion1',
           radioOptionSelectedId: 'RadioOption1',
+          radioOptionSelectedLabel: 'Option 1',
           stepName: 'Step {{number}}'
         }
       })

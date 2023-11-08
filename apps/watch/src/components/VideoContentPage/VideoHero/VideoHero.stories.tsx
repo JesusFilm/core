@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -14,13 +14,13 @@ import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoHero } from './VideoHero'
 
-const VideoHeroStory = {
+const VideoHeroStory: Meta<typeof VideoHero> = {
   ...watchConfig,
   component: VideoHero,
   title: 'Watch/VideoContentPage/VideoHero'
 }
 
-const Template: Story = () => {
+const VideoHeroComponent = (): ReactElement => {
   const [hasPlayed, setHasPlayed] = useState(false)
   return (
     <MockedProvider mocks={[getLanguagesSlugMock, getSubtitleMock]}>
@@ -33,12 +33,18 @@ const Template: Story = () => {
   )
 }
 
-export const Default = Template.bind({})
-
-export const VideoPlayer = Template.bind({})
-VideoPlayer.play = async () => {
-  const CustomPlayButton = screen.getAllByRole('button')[1]
-  userEvent.click(CustomPlayButton)
+const Template: StoryObj<typeof VideoHero> = {
+  render: () => <VideoHeroComponent />
 }
 
-export default VideoHeroStory as Meta
+export const Default = { ...Template }
+
+export const VideoPlayer = {
+  ...Template,
+  play: async () => {
+    const CustomPlayButton = screen.getAllByRole('button')[1]
+    await userEvent.click(CustomPlayButton)
+  }
+}
+
+export default VideoHeroStory

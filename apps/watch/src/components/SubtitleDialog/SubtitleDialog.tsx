@@ -36,9 +36,9 @@ export const GET_SUBTITLES = gql`
   }
 `
 
-interface SubtitleDialogProps
+export interface SubtitleDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  player: Player & { textTracks: () => TextTrackList }
+  player: Player & { textTracks?: () => TextTrackList }
 }
 
 export function SubtitleDialog({
@@ -84,7 +84,7 @@ export function SubtitleDialog({
       },
       true
     )
-    const tracks = player.textTracks() ?? []
+    const tracks = player.textTracks?.() ?? []
 
     for (let i = 0; i < tracks.length; i++) {
       const track = tracks[i]
@@ -95,7 +95,7 @@ export function SubtitleDialog({
       }
     }
 
-    onClose()
+    onClose?.()
   }
 
   return (
@@ -113,6 +113,7 @@ export function SubtitleDialog({
           closeButton: true
         }}
         divider
+        testId="SubtitleDialog"
       >
         <LanguageAutocomplete
           onChange={handleChange}

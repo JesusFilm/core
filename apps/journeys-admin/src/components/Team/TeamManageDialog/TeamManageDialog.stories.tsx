@@ -1,10 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GET_CURRENT_USER } from '../../../libs/useCurrentUser'
+import { GET_CURRENT_USER } from '../../../libs/useCurrentUserLazyQuery'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -13,7 +13,7 @@ import {
 
 import { TeamManageDialog } from './TeamManageDialog'
 
-const Demo = {
+const Demo: Meta<typeof TeamManageDialog> = {
   ...journeysAdminConfig,
   component: TeamManageDialog,
   title: 'Journeys-Admin/Team/TeamManageDialog'
@@ -84,22 +84,26 @@ const mocks = [
   }
 ]
 
-export const Default: Story = () => {
-  return (
-    <MockedProvider mocks={mocks}>
-      <TeamProvider>
+export const Default: StoryObj<typeof TeamManageDialog> = {
+  render: () => {
+    return (
+      <MockedProvider mocks={mocks}>
+        <TeamProvider>
+          <TeamManageDialog open onClose={() => undefined} />
+        </TeamProvider>
+      </MockedProvider>
+    )
+  }
+}
+
+export const Loading: StoryObj<typeof TeamManageDialog> = {
+  render: () => {
+    return (
+      <ApolloLoadingProvider>
         <TeamManageDialog open onClose={() => undefined} />
-      </TeamProvider>
-    </MockedProvider>
-  )
+      </ApolloLoadingProvider>
+    )
+  }
 }
 
-export const Loading: Story = () => {
-  return (
-    <ApolloLoadingProvider>
-      <TeamManageDialog open onClose={() => undefined} />
-    </ApolloLoadingProvider>
-  )
-}
-
-export default Demo as Meta
+export default Demo

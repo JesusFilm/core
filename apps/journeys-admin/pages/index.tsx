@@ -1,12 +1,13 @@
 import { gql } from '@apollo/client'
+import Stack from '@mui/material/Stack'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -55,7 +56,7 @@ interface IndexPageProps {
 
 function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const { teams } = useFlags()
   const router = useRouter()
 
@@ -63,32 +64,42 @@ function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper
-        title={
-          teams ? (
-            <TeamSelect onboarding={router.query.onboarding === 'true'} />
-          ) : (
-            t('Journeys')
+        title={!teams ? t('Journeys') : undefined}
+        user={user}
+        mainHeaderChildren={
+          teams && (
+            <Stack
+              direction="row"
+              flexGrow={1}
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <TeamSelect onboarding={router.query.onboarding === 'true'} />
+              <TeamMenu />
+            </Stack>
           )
         }
-        authUser={AuthUser}
-        menu={teams && <TeamMenu />}
         sidePanelChildren={
           <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
         }
         sidePanelTitle={t('Create a New Journey')}
       >
-        <JourneyList authUser={AuthUser} />
+        <JourneyList user={user} />
       </PageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
+})(async ({ user, locale, resolvedUrl }) => {
+  if (user == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
+    user,
+    locale,
+    resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -121,6 +132,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser<IndexPageProps>({
+export default withUser<IndexPageProps>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(IndexPage)

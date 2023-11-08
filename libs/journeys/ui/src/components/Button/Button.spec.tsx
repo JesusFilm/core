@@ -23,6 +23,7 @@ import {
   ButtonFields_action_LinkAction as LinkAction
 } from './__generated__/ButtonFields'
 import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
+import { GoalType } from './utils/getLinkActionGoal'
 
 import { Button } from '.'
 
@@ -181,7 +182,7 @@ describe('Button', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('should add buttonClickEvent to dataLayer', async () => {
+  it('should add button_click event to dataLayer', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const activeBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
@@ -252,6 +253,156 @@ describe('Button', () => {
           eventId: 'uuid',
           blockId: 'button',
           stepName: 'Step {{number}}'
+        }
+      })
+    )
+  })
+
+  it('should add LinkAction outbound_action_click event to dataLayer', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
+    const action: ButtonFields_action = {
+      __typename: 'LinkAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      url: 'https://bible.com'
+    }
+
+    const buttonBlock = {
+      ...block,
+      action
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'stepName',
+                  value: buttonBlock.label,
+                  action: action.__typename,
+                  actionValue: action.url
+                }
+              }
+            },
+            result: {
+              data: {
+                buttonClickEventCreate: {
+                  __typename: 'ButtonClickEvent',
+                  id: 'uuid',
+                  action: action.__typename,
+                  actionValue: action.url
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'outbound_action_click',
+          eventId: 'uuid',
+          blockId: 'button',
+          stepName: 'stepName',
+          buttonLabel: 'This is a button',
+          outboundActionType: GoalType.Bible,
+          outboundActionValue: 'https://bible.com'
+        }
+      })
+    )
+  })
+
+  it('should add NavigateToJourneyAction outbound_action_click event to dataLayer', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
+    const action: ButtonFields_action = {
+      __typename: 'NavigateToJourneyAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      journey: {
+        __typename: 'Journey',
+        id: 'journey.id',
+        slug: 'journey-slug',
+        language: {
+          __typename: 'Language',
+          bcp47: 'en'
+        }
+      }
+    }
+
+    const buttonBlock = {
+      ...block,
+      action
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'stepName',
+                  value: buttonBlock.label,
+                  action: action.__typename,
+                  actionValue: 'journey-slug'
+                }
+              }
+            },
+            result: {
+              data: {
+                buttonClickEventCreate: {
+                  __typename: 'ButtonClickEvent',
+                  id: 'uuid',
+                  action: action.__typename,
+                  actionValue: 'journey-slug'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'outbound_action_click',
+          eventId: 'uuid',
+          blockId: 'button',
+          stepName: 'stepName',
+          buttonLabel: 'This is a button',
+          outboundActionType: GoalType.Journey,
+          outboundActionValue: 'journey.id'
         }
       })
     )

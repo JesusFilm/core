@@ -1,56 +1,24 @@
-import { gql, useQuery } from '@apollo/client'
-import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
-import CheckRounded from '@mui/icons-material/CheckRounded'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import DescriptionIcon from '@mui/icons-material/Description'
-import EditIcon from '@mui/icons-material/Edit'
-import MoreVert from '@mui/icons-material/MoreVert'
-import TranslateIcon from '@mui/icons-material/Translate'
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
-import VisibilityIcon from '@mui/icons-material/Visibility'
+import { useQuery } from '@apollo/client'
 import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
-import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
+import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../__generated__/GetRole'
 import { Role } from '../../../../__generated__/globalTypes'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { GET_ROLE } from '../../Editor/EditToolbar/Menu/Menu'
 import { MenuItem } from '../../MenuItem'
 import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
-import { TitleDescriptionDialog } from '../TitleDescription/TitleDescriptionDialog'
-
-import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
-import { DescriptionDialog } from './DescriptionDialog'
-import { TitleDialog } from './TitleDialog'
-
-const DynamicLanguageDialog = dynamic<{
-  open: boolean
-  onClose: () => void
-}>(
-  async () =>
-    await import(
-      /* webpackChunkName: "MenuLanguageDialog" */
-      './LanguageDialog'
-    ).then((mod) => mod.LanguageDialog)
-)
-
-export const GET_ROLE = gql`
-  query GetRole {
-    getUserRole {
-      id
-      userId
-      roles
-    }
-  }
-`
 
 export function Menu(): ReactElement {
   const { journey } = useJourney()
@@ -60,15 +28,8 @@ export function Menu(): ReactElement {
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
-    useState(false)
-  const [showTitleDialog, setShowTitleDialog] = useState(false)
-  const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
-  const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
-
-  const { enqueueSnackbar } = useSnackbar()
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   const openMenu = Boolean(anchorEl)
 
@@ -78,7 +39,6 @@ export function Menu(): ReactElement {
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
   }
-
   const handleTemplate = async (teamId: string | undefined): Promise<void> => {
     if (journey == null || teamId == null) return
 
@@ -91,36 +51,6 @@ export function Menu(): ReactElement {
         shallow: true
       })
     }
-  }
-  const handleUpdateTitleDescription = (): void => {
-    setShowTitleDescriptionDialog(true)
-    setAnchorEl(null)
-  }
-  const handleUpdateTitle = (): void => {
-    setShowTitleDialog(true)
-    setAnchorEl(null)
-  }
-  const handleUpdateDescription = (): void => {
-    setShowDescriptionDialog(true)
-    setAnchorEl(null)
-  }
-  const handleUpdateLanguage = (): void => {
-    setShowLanguageDialog(true)
-    setAnchorEl(null)
-  }
-  const handleCopyLink = async (): Promise<void> => {
-    if (journey == null) return
-
-    await navigator.clipboard.writeText(
-      `${process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'}/${
-        journey.slug
-      }`
-    )
-    setAnchorEl(null)
-    enqueueSnackbar('Link Copied', {
-      variant: 'success',
-      preventDuplicate: true
-    })
   }
 
   let editLink
@@ -139,7 +69,7 @@ export function Menu(): ReactElement {
           {journey.template !== true && (
             <>
               <Chip
-                icon={<VisibilityIcon />}
+                icon={<EyeOpenIcon />}
                 label="Preview"
                 component="a"
                 href={`/api/preview?slug=${journey.slug}`}
@@ -164,7 +94,7 @@ export function Menu(): ReactElement {
                   }
                 }}
               >
-                <VisibilityIcon />
+                <EyeOpenIcon />
               </IconButton>
             </>
           )}
@@ -176,7 +106,7 @@ export function Menu(): ReactElement {
             aria-expanded={openMenu ? 'true' : undefined}
             onClick={handleShowMenu}
           >
-            <MoreVert />
+            <MoreIcon />
           </IconButton>
           <MuiMenu
             id="single-journey-actions"
@@ -187,10 +117,14 @@ export function Menu(): ReactElement {
               'aria-labelledby': 'journey-actions'
             }}
           >
-            <NextLink href={`/api/preview?slug=${journey.slug}`} passHref>
+            <NextLink
+              href={`/api/preview?slug=${journey.slug}`}
+              passHref
+              legacyBehavior
+            >
               <MenuItem
                 label="Preview"
-                icon={<VisibilityIcon />}
+                icon={<EyeOpenIcon />}
                 openInNew
                 onClick={handleCloseMenu}
               />
@@ -198,83 +132,23 @@ export function Menu(): ReactElement {
             {journey.template === true && (
               <MenuItem
                 label="Use Template"
-                icon={<CheckRounded />}
+                icon={<CheckContainedIcon />}
                 onClick={() => setDuplicateTeamDialogOpen(true)}
               />
             )}
-            {journey.template === true && isPublisher && (
-              <MenuItem
-                label="Description"
-                icon={<EditIcon />}
-                onClick={handleUpdateTitleDescription}
-              />
-            )}
-            {journey.template !== true && (
-              <>
-                <MenuItem
-                  label="Title"
-                  icon={<EditIcon />}
-                  onClick={handleUpdateTitle}
-                />
-                <MenuItem
-                  label="Description"
-                  icon={<DescriptionIcon />}
-                  onClick={handleUpdateDescription}
-                />
-              </>
-            )}
-            {(journey.template !== true || isPublisher) && (
-              <MenuItem
-                label="Language"
-                icon={<TranslateIcon />}
-                onClick={handleUpdateLanguage}
-              />
-            )}
-            {journey.template !== true && (
-              <NextLink href={`/journeys/${journey.id}/reports`} passHref>
-                <MenuItem label="Report" icon={<AssessmentRoundedIcon />} />
-              </NextLink>
-            )}
-            {journey.template !== true && isPublisher === true && (
-              <CreateTemplateMenuItem />
-            )}
-            {(journey.template !== true || isPublisher) && (
+            {(journey.template !== true || isPublisher != null) && (
               <>
                 <Divider />
-                <NextLink href={editLink != null ? editLink : ''} passHref>
-                  <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
+                <NextLink
+                  href={editLink != null ? editLink : ''}
+                  passHref
+                  legacyBehavior
+                >
+                  <MenuItem label="Edit Cards" icon={<JourneysIcon />} />
                 </NextLink>
               </>
             )}
-            {journey.template !== true && (
-              <>
-                <Divider />
-                <MenuItem
-                  label="Copy Link"
-                  icon={<ContentCopyIcon />}
-                  onClick={handleCopyLink}
-                />
-              </>
-            )}
           </MuiMenu>
-          <TitleDescriptionDialog
-            open={showTitleDescriptionDialog}
-            onClose={() => setShowTitleDescriptionDialog(false)}
-          />
-          <TitleDialog
-            open={showTitleDialog}
-            onClose={() => setShowTitleDialog(false)}
-          />
-          <DescriptionDialog
-            open={showDescriptionDialog}
-            onClose={() => setShowDescriptionDialog(false)}
-          />
-          {showLanguageDialog && (
-            <DynamicLanguageDialog
-              open={showLanguageDialog}
-              onClose={() => setShowLanguageDialog(false)}
-            />
-          )}
           <CopyToTeamDialog
             submitLabel="Add"
             title="Add Journey to Team"
@@ -285,7 +159,7 @@ export function Menu(): ReactElement {
         </>
       ) : (
         <IconButton edge="end" disabled>
-          <MoreVert />
+          <MoreIcon />
         </IconButton>
       )}
     </>

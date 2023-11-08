@@ -1,0 +1,1 @@
+export { useUserInvitesLazyQuery } from './useUserInvitesLazyQuery'

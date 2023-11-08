@@ -11,11 +11,13 @@ import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDet
 import { useVideo } from '../../../libs/videoContext'
 import { HeroOverlay } from '../../HeroOverlay'
 
-interface Props {
+interface ContainerHeroProps {
   openDialog: () => void
 }
 
-export function ContainerHero({ openDialog }: Props): ReactElement {
+export function ContainerHero({
+  openDialog
+}: ContainerHeroProps): ReactElement {
   const { label: videoLabel, title, childrenCount, image } = useVideo()
   const { label, childCountLabel } = getLabelDetails(videoLabel, childrenCount)
 
@@ -28,9 +30,18 @@ export function ContainerHero({ openDialog }: Props): ReactElement {
         alignItems: 'flex-end',
         position: 'relative'
       }}
+      data-testid="ContainerHero"
     >
       {image != null && (
-        <Image src={image} alt="Home Hero" layout="fill" objectFit="cover" />
+        <Image
+          src={image}
+          alt="Home Hero"
+          fill
+          sizes="100vw"
+          style={{
+            objectFit: 'cover'
+          }}
+        />
       )}
       <HeroOverlay />
       <Container

@@ -12,6 +12,11 @@ import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
 
 import { NewVideoButton } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('NewVideoButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',

@@ -2,11 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  AccessDialog,
-  GET_JOURNEY_WITH_PERMISSIONS,
-  GET_USER_INVITES
-} from './AccessDialog'
+import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
+
+import { AccessDialog, GET_JOURNEY_WITH_PERMISSIONS } from './AccessDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -15,9 +13,9 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 const user1 = { id: 'userId1', email: 'admin@email.com' }
 
-jest.mock('../../libs/useCurrentUser', () => ({
+jest.mock('../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUser: jest.fn().mockReturnValue({
+  useCurrentUserLazyQuery: jest.fn().mockReturnValue({
     loadUser: jest.fn(),
     data: {
       __typename: 'User',

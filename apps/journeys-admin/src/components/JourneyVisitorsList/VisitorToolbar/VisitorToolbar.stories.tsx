@@ -1,12 +1,13 @@
-import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
-import { Meta, Story } from '@storybook/react'
-import { ComponentProps, useState } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ReactElement, useState } from 'react'
+
+import FilterIcon from '@core/shared/ui/icons/Filter'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { VisitorToolbar } from './VisitorToolbar'
 
-const VisitorToolbarStory = {
+const VisitorToolbarStory: Meta<typeof VisitorToolbar> = {
   ...journeysAdminConfig,
   component: VisitorToolbar,
   title: 'Journeys-Admin/JourneyVisitorsList/FilterDrawer/VisitorToolBar',
@@ -16,11 +17,15 @@ const VisitorToolbarStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof VisitorToolbar>> = (args) => {
+const VisitorToolBarComponent = (): ReactElement => {
   const [open, setOpen] = useState(false)
-  return <FilterListRoundedIcon onClick={() => setOpen(!open)} />
+  return <FilterIcon onClick={() => setOpen(!open)} />
 }
 
-export const MobileView = Template.bind({})
+const Template: StoryObj<typeof VisitorToolbar> = {
+  render: () => <VisitorToolBarComponent />
+}
 
-export default VisitorToolbarStory as Meta
+export const MobileView = { ...Template }
+
+export default VisitorToolbarStory

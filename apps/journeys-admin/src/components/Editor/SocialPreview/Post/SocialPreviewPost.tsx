@@ -1,7 +1,3 @@
-import ChatBubble from '@mui/icons-material/ChatBubble'
-import PersonIcon from '@mui/icons-material/Person'
-import Share from '@mui/icons-material/Share'
-import ThumbUp from '@mui/icons-material/ThumbUp'
 import Avatar from '@mui/material/Avatar'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -13,6 +9,11 @@ import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
+
+import MessageCircleIcon from '@core/shared/ui/icons/MessageCircle'
+import ShareIcon from '@core/shared/ui/icons/Share'
+import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
+import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 import { useSocialPreview } from '../../SocialProvider'
@@ -64,7 +65,7 @@ export function SocialPreviewPost({
                   color: (theme) => theme.palette.background.paper
                 }}
               >
-                <PersonIcon />
+                <UserProfile2Icon />
               </Avatar>
               <Box flexGrow={1}>
                 <Box
@@ -104,12 +105,14 @@ export function SocialPreviewPost({
               ) : (
                 <Image
                   src={primaryImageBlock.src}
-                  alt={primaryImageBlock.alt}
+                  alt={primaryImageBlock.alt ?? ''}
                   width={224}
                   height={120}
-                  objectFit="cover"
                   style={{
-                    borderRadius: '4px'
+                    borderRadius: '4px',
+                    maxWidth: '100%',
+                    height: 'auto',
+                    objectFit: 'cover'
                   }}
                 />
               )}
@@ -166,9 +169,9 @@ export function SocialPreviewPost({
                 color="#EFEFEF"
                 my={2}
               >
-                <ThumbUp sx={{ fontSize: 12 }} />
-                <ChatBubble sx={{ fontSize: 12 }} />
-                <Share sx={{ fontSize: 12 }} />
+                <ThumbsUpIcon sx={{ fontSize: 12 }} />
+                <MessageCircleIcon sx={{ fontSize: 12 }} />
+                <ShareIcon sx={{ fontSize: 12 }} />
               </Stack>
             </CardContent>
             <CardActionArea />

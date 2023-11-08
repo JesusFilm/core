@@ -59,7 +59,7 @@ export function DownloadDialog({
 
   useEffect(() => {
     if (percentage === 100) {
-      onClose()
+      onClose?.()
     }
   }, [percentage, onClose])
 
@@ -73,12 +73,13 @@ export function DownloadDialog({
       open={open}
       onClose={() => {
         cancel()
-        onClose()
+        onClose?.()
       }}
       dialogTitle={{
         title: 'Download Video',
         closeButton: true
       }}
+      testId="DownloadDialog"
     >
       <>
         <Stack
@@ -101,8 +102,12 @@ export function DownloadDialog({
                   alt={imageAlt[0].value}
                   width={240}
                   height={115}
-                  objectFit="cover"
-                  style={{ borderRadius: theme.spacing(2) }}
+                  style={{
+                    borderRadius: theme.spacing(2),
+                    maxWidth: '100%',
+                    height: 'auto',
+                    objectFit: 'cover'
+                  }}
                 />
                 <Stack
                   direction="row"
@@ -210,12 +215,12 @@ export function DownloadDialog({
               </Stack>
               <TermsOfUseDialog
                 open={openTerms}
-                onClose={() => {
-                  setFieldValue('terms', false)
+                onClose={async () => {
+                  await setFieldValue('terms', false)
                   setOpenTerms(false)
                 }}
-                onSubmit={() => {
-                  setFieldValue('terms', true)
+                onSubmit={async () => {
+                  await setFieldValue('terms', true)
                   setOpenTerms(false)
                 }}
               />

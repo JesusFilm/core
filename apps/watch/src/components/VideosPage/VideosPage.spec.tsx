@@ -25,7 +25,7 @@ describe('VideosPage', () => {
           <VideosPage videos={videos} />
         </MockedProvider>
       )
-      expect(getByTestId('videos-grid')).toBeInTheDocument()
+      expect(getByTestId('VideoGrid')).toBeInTheDocument()
     })
 
     it('should display videos', async () => {

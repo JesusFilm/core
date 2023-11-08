@@ -1,9 +1,11 @@
 {
+  "name": "api-videos",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-videos/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-videos",
@@ -22,7 +24,9 @@
             "output": "./assets"
           }
         ],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node"
       },
       "configurations": {
         "production": {
@@ -39,59 +43,59 @@
       }
     },
     "seed": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apps/api-videos/db/seed.ts"
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api-videos:build",
         "inspect": false
       }
     },
     "watcher": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node tools/scripts/generate-typings.ts api-videos"
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/api-videos/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/api-videos"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/api-videos"],
       "options": {
         "jestConfig": "apps/api-videos/jest.config.ts",
         "passWithNoTests": true
       }
     },
     "generate-graphql": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "rover subgraph introspect http://localhost:4004/graphql > apps/api-videos/schema.graphql"
       }
     },
     "subgraph-check": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-videos --schema apps/api-videos/schema.graphql"
       }
     },
     "fetch-secrets": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "DOPPLER_TOKEN=$DOPPLER_API_VIDEOS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-videos > apps/api-videos/.env"
       }
     },
     "prisma-generate": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "parallel": false,
         "commands": [
@@ -100,7 +104,7 @@
       }
     },
     "prisma-migrate": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "bash -c 'npx prisma migrate dev --schema apps/api-videos/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
@@ -115,7 +119,7 @@
       }
     },
     "prisma-reset": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "npx prisma migrate reset --schema apps/api-videos/db/schema.prisma --force"
@@ -123,13 +127,13 @@
       }
     },
     "prisma-seed": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": ["npm run ts-node apps/api-videos/db/seed.ts"]
       }
     },
     "prisma-studio": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "npx prisma studio --schema apps/api-videos/db/schema.prisma"
@@ -137,7 +141,7 @@
       }
     },
     "prisma-validate": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "npx prisma validate --schema apps/api-videos/db/schema.prisma"
@@ -145,13 +149,13 @@
       }
     },
     "type-check": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "npx tsc -b apps/api-videos/tsconfig.json"
       }
     },
     "codecov": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-videos/cobertura-coverage.xml -F apps.api-videos"
       }

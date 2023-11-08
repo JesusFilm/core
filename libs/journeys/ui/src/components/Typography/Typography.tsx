@@ -24,6 +24,7 @@ export function Typography({
       paragraph={variant === 'overline' || variant === 'caption'}
       gutterBottom
       whiteSpace="pre-line"
+      data-testid="JourneysTypography"
     >
       {editableContent ?? content}
     </MuiTypography>

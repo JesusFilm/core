@@ -5,8 +5,12 @@ import { ReactElement, ReactNode } from 'react'
 
 const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
   ({ theme, clicked }) => ({
-    minWidth: 56,
-    borderRadius: 20,
+    minWidth: 46,
+    minHeight: 30,
+    height: 30,
+    paddingLeft: 14,
+    paddingRight: 14,
+    borderRadius: 100,
     backgroundColor: theme.palette.grey[800],
     color: theme.palette.grey[100],
     [theme.breakpoints.down('lg')]: {
@@ -41,7 +45,7 @@ const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
   })
 )
 
-interface Props {
+interface StyledFooterButtonProps {
   onClick: () => void
   children: ReactNode
   clicked?: boolean
@@ -51,7 +55,7 @@ export function StyledFooterButton({
   onClick,
   children,
   clicked = false
-}: Props): ReactElement {
+}: StyledFooterButtonProps): ReactElement {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   return (

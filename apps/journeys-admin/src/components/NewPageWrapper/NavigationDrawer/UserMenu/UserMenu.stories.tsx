@@ -1,21 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { simpleComponentConfig } from '../../../../libs/storybook'
 
-import { UserMenuProps } from './UserMenu'
-
 import { UserMenu } from '.'
 
-const UserMenuStory = {
+const UserMenuStory: Meta<typeof UserMenu> = {
   ...simpleComponentConfig,
   component: UserMenu,
-  title: 'Journeys-Admin/PageWrapper/NavigationDrawer/UserMenu'
+  title: 'Journeys-Admin/NewPageWrapper/NavigationDrawer/UserMenu'
 }
 
-const Template: Story<UserMenuProps> = ({ ...args }) => {
+const UserMenuComponent = (args): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -30,22 +28,29 @@ const Template: Story<UserMenuProps> = ({ ...args }) => {
   )
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  user: {
-    __typename: 'User',
-    id: 'userId',
-    firstName: 'Amin',
-    lastName: 'One',
-    imageUrl: 'https://bit.ly/3Gth4Yf',
-    email: 'amin@email.com'
-  },
-  authUser: {
-    displayName: 'Amin One',
-    photoURL: 'https://bit.ly/3Gth4Yf',
-    email: 'amin@email.com',
-    signOut: noop
+const Template: StoryObj<typeof UserMenu> = {
+  render: ({ ...args }) => <UserMenuComponent {...args} />
+}
+
+export const Default = {
+  ...Template,
+  args: {
+    apiUser: {
+      __typename: 'User',
+      id: 'userId',
+      firstName: 'Amin',
+      lastName: 'One',
+      imageUrl: 'https://bit.ly/3Gth4Yf',
+      email: 'amin@email.com',
+      superAdmin: false
+    },
+    user: {
+      displayName: 'Amin One',
+      photoURL: 'https://bit.ly/3Gth4Yf',
+      email: 'amin@email.com',
+      signOut: noop
+    }
   }
 }
 
-export default UserMenuStory as Meta
+export default UserMenuStory

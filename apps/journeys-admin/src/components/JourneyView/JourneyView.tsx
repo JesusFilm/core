@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
@@ -10,8 +9,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { GetUserRole } from '../../../__generated__/GetUserRole'
 import { JourneysReportType, Role } from '../../../__generated__/globalTypes'
+import { useUserRoleQuery } from '../../libs/useUserRoleQuery/useUserRoleQuery'
 import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
 
 import { CardView } from './CardView'
@@ -22,16 +21,7 @@ import { SlugDialog } from './JourneyLink/SlugDialog'
 import { JourneyViewFab } from './JourneyViewFab'
 import { Properties } from './Properties'
 import { SocialImage } from './SocialImage'
-import { TitleDescription } from './TitleDescription'
-
-export const GET_USER_ROLE = gql`
-  query GetUserRole {
-    getUserRole {
-      id
-      roles
-    }
-  }
-`
+import { TemplateSettings } from './TemplateSettings'
 
 export type JourneyType = 'Journey' | 'Template'
 
@@ -46,7 +36,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
     journey?.blocks != null
       ? (transformer(journey.blocks) as Array<TreeBlock<StepBlock>>)
       : undefined
-  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const { data } = useUserRoleQuery()
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
   const [showSlugDialog, setShowSlugDialog] = useState(false)
@@ -83,7 +73,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
           }}
         >
           {journeyType === 'Template' && <DatePreview />}
-          <TitleDescription isPublisher={isPublisher} />
+          <TemplateSettings isPublisher={isPublisher} />
         </Stack>
       </Box>
       <Properties journeyType={journeyType} isPublisher={isPublisher} />

@@ -13,7 +13,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('PageWrapper', () => {
   describe('MainPanel', () => {
-    it('should show main panel title', () => {
+    it('should show main header title', () => {
       const { getByRole } = render(
         <MockedProvider>
           <FlagsProvider>
@@ -35,18 +35,32 @@ describe('PageWrapper', () => {
       expect(getByRole('link')).toHaveAttribute('href', '/')
     })
 
-    it('should show custom menu', () => {
+    it('should not show main panel header', () => {
+      const { queryByText } = render(
+        <MockedProvider>
+          <FlagsProvider>
+            <PageWrapper title="Page Title" hiddenPanelHeader />
+          </FlagsProvider>
+        </MockedProvider>
+      )
+      expect(queryByText('Page Title')).not.toBeInTheDocument()
+    })
+
+    it('should show main header children', () => {
       const { getByRole } = render(
         <MockedProvider>
           <FlagsProvider>
-            <PageWrapper title="Page title" menu={<>Custom Content</>} />
+            <PageWrapper
+              title="Page title"
+              mainHeaderChildren={<>Custom Content</>}
+            />
           </FlagsProvider>
         </MockedProvider>
       )
       expect(getByRole('main')).toHaveTextContent('Custom Content')
     })
 
-    it('should show children', () => {
+    it('should show main body children', () => {
       const { getByTestId } = render(
         <MockedProvider>
           <FlagsProvider>

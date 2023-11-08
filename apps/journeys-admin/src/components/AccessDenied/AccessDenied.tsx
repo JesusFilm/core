@@ -1,6 +1,3 @@
-import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
-import ContactSupportIcon from '@mui/icons-material/ContactSupport'
-import LockRoundedIcon from '@mui/icons-material/LockRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -10,6 +7,10 @@ import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import HelpCircleContainedIcon from '@core/shared/ui/icons/HelpCircleContained'
+import Lock1Icon from '@core/shared/ui/icons/Lock1'
 
 import { AccessDeniedListItem } from './AccessDeniedListItem'
 
@@ -38,7 +39,7 @@ export function AccessDenied({
             display={{ xs: 'none', sm: 'flex' }}
             sx={{ mb: 8 }}
           >
-            <LockRoundedIcon
+            <Lock1Icon
               sx={{ width: '40px', ml: 5, mr: 3, color: 'secondary.light' }}
             />
             <Typography variant="h3" color="text.primary">
@@ -50,7 +51,7 @@ export function AccessDenied({
             display={{ xs: 'flex', sm: 'none' }}
             sx={{ mb: 7 }}
           >
-            <LockRoundedIcon
+            <Lock1Icon
               sx={{
                 width: '40px',
                 ml: 5,
@@ -108,10 +109,10 @@ export function AccessDenied({
           </List>
           <Stack direction="row" justifyContent="space-between" sx={{ mt: 7 }}>
             <Box display={{ xs: 'none', sm: 'flex' }}>
-              <NextLink href="/" passHref>
+              <NextLink href="/" passHref legacyBehavior>
                 <Button
                   sx={{ color: 'primary.main' }}
-                  startIcon={<ChevronLeftRoundedIcon />}
+                  startIcon={<ChevronLeftIcon />}
                   size="small"
                 >
                   {t('Back to my journeys')}
@@ -119,10 +120,10 @@ export function AccessDenied({
               </NextLink>
             </Box>
             <Box display={{ xs: 'flex', sm: 'none' }}>
-              <NextLink href="/" passHref>
+              <NextLink href="/" passHref legacyBehavior>
                 <Button
                   sx={{ color: 'primary.main' }}
-                  startIcon={<ChevronLeftRoundedIcon />}
+                  startIcon={<ChevronLeftIcon />}
                   size="small"
                 >
                   {t('All journeys')}
@@ -132,6 +133,7 @@ export function AccessDenied({
             <NextLink
               href="mailto:support@nextstep.is?subject=Need%20help%20with%20requesting%20editing%20access%20to%20the%20journey"
               passHref
+              legacyBehavior
             >
               <Button
                 sx={{
@@ -142,7 +144,7 @@ export function AccessDenied({
                   }
                 }}
                 startIcon={
-                  <ContactSupportIcon sx={{ color: 'secondary.dark' }} />
+                  <HelpCircleContainedIcon sx={{ color: 'secondary.dark' }} />
                 }
                 size="small"
                 variant="outlined"

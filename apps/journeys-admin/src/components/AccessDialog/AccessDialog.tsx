@@ -12,10 +12,10 @@ import {
   GetJourneyWithPermissions,
   GetJourneyWithPermissions_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithPermissions'
-import { GetUserInvites } from '../../../__generated__/GetUserInvites'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import { useCurrentUser } from '../../libs/useCurrentUser'
+import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
+import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
 import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
@@ -54,18 +54,6 @@ export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   }
 `
 
-export const GET_USER_INVITES = gql`
-  query GetUserInvites($journeyId: ID!) {
-    userInvites(journeyId: $journeyId) {
-      id
-      journeyId
-      email
-      acceptedAt
-      removedAt
-    }
-  }
-`
-
 interface AccessDialogProps {
   journeyId: string
   open?: boolean
@@ -84,19 +72,17 @@ export function AccessDialog({
     })
 
   const [, { data: userInviteData, refetch: refetchInvites }] =
-    useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
-      variables: { journeyId }
-    })
+    useUserInvitesLazyQuery({ journeyId })
 
-  const { loadUser, data: authUser } = useCurrentUser()
+  const { loadUser, data: user } = useCurrentUserLazyQuery()
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const currentUser = useMemo(() => {
     return data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === authUser.email
+      (userJourney) => userJourney.user?.email === user.email
     )
-  }, [data?.journey?.userJourneys, authUser])
+  }, [data?.journey?.userJourneys, user])
 
   const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []

@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
-import { AuthUser } from 'next-firebase-auth'
+import { SxProps, useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
@@ -16,34 +16,38 @@ import { SidePanel } from './SidePanel'
 import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
 
 interface PageWrapperProps {
-  backHref?: string
-  title: string | ReactNode
-  menu?: ReactNode
-  children?: ReactNode
   showAppHeader?: boolean
+  title?: string
+  mainHeaderChildren?: ReactNode
+  hiddenPanelHeader?: boolean
+  backHref?: string
+  backHrefHistory?: boolean
+  children?: ReactNode
+  bottomPanelChildren?: ReactNode
   sidePanelTitle?: string | ReactNode
   /**
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */
   sidePanelChildren?: ReactNode
-  bottomPanelChildren?: ReactNode
-  authUser?: AuthUser
+  user?: User
   initialState?: Partial<PageState>
-  backHrefHistory?: boolean
+  mainPanelSx?: SxProps
 }
 
 export function PageWrapper({
-  backHref,
   showAppHeader = true,
   title,
-  menu: customMenu,
+  mainHeaderChildren,
+  hiddenPanelHeader,
+  backHref,
+  backHrefHistory,
+  children,
+  bottomPanelChildren,
   sidePanelTitle,
   sidePanelChildren,
-  bottomPanelChildren,
-  children,
-  authUser,
+  user,
   initialState,
-  backHrefHistory
+  mainPanelSx
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -56,15 +60,16 @@ export function PageWrapper({
       <Box
         sx={{
           height: viewportHeight ?? '100vh',
-          overflow: 'hidden',
-          [theme.breakpoints.down('md')]: { overflowY: 'auto' }
+          minHeight: '-webkit-fill-available',
+          [theme.breakpoints.down('md')]: { overflowY: 'auto' },
+          overflow: 'hidden'
         }}
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
           <NavigationDrawer
             open={open}
             onClose={setOpen}
-            authUser={authUser}
+            user={user}
             router={router}
           />
 
@@ -94,13 +99,19 @@ export function PageWrapper({
                 }
               }}
             >
-              <MainPanelHeader
-                title={title}
-                backHref={backHref}
-                menu={customMenu}
-                backHrefHistory={backHrefHistory}
-              />
-              <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
+              {hiddenPanelHeader !== true && (
+                <MainPanelHeader
+                  title={title}
+                  backHref={backHref}
+                  backHrefHistory={backHrefHistory}
+                >
+                  {mainHeaderChildren}
+                </MainPanelHeader>
+              )}
+              <MainPanelBody
+                bottomPanelChildren={bottomPanelChildren}
+                sx={mainPanelSx}
+              >
                 {children}
               </MainPanelBody>
             </Stack>
