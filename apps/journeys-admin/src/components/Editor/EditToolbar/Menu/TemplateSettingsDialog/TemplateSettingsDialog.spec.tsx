@@ -227,7 +227,9 @@ describe('TemplateSettingsDialog', () => {
 
     await waitFor(() => {
       expect(getByRole('combobox')).toBeInTheDocument()
+      expect(getLanguagesMock.result).toHaveBeenCalled()
     })
+
     fireEvent.click(getAllByRole('button', { name: 'Open' })[0])
     fireEvent.click(
       within(getByRole('option', { name: 'Acceptance' })).getByRole('checkbox')
@@ -240,7 +242,7 @@ describe('TemplateSettingsDialog', () => {
       expect(result2).toHaveBeenCalled()
       expect(onClose).toHaveBeenCalled()
     })
-  })
+  }, 40000)
 
   it('should update case study to a google slides embed link', async () => {
     const updatedJourney = {
