@@ -40,6 +40,8 @@ export const defaultJourney: Journey = {
   themeMode: ThemeMode.light,
   blocks: null,
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   template: null,
   seoTitle: null,
   seoDescription: null,
