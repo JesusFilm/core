@@ -223,39 +223,50 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   key={block.id}
                   onClick={() => setShowNavigation(true)}
                 >
-                  <ThemeProvider {...theme} locale={locale} rtl={rtl} nested>
-                    <Fade
-                      in={activeBlock?.id === block.id}
-                      mountOnEnter
-                      unmountOnExit
-                    >
-                      <Stack
-                        justifyContent="center"
-                        sx={{
-                          maxHeight: {
-                            xs: '100vh',
-                            lg: 'calc(100vh - 80px)'
-                          },
-                          height: {
-                            xs: 'inherit',
-                            lg: 'calc(54.25vw + 102px)'
-                          },
-                          px: { lg: 6 }
-                        }}
+                  {({ isActive }) =>
+                    isActive && (
+                      <ThemeProvider
+                        {...theme}
+                        locale={locale}
+                        rtl={rtl}
+                        nested
                       >
-                        {showHeaderFooter && (
-                          <StepHeader sx={{ ...mobileNotchStyling }} />
-                        )}
-                        <BlockRenderer block={block} />
-                        <StepFooter
-                          sx={{
-                            visibility: showHeaderFooter ? 'visible' : 'hidden',
-                            ...mobileNotchStyling
-                          }}
-                        />
-                      </Stack>
-                    </Fade>
-                  </ThemeProvider>
+                        <Fade
+                          in={activeBlock?.id === block.id}
+                          mountOnEnter
+                          unmountOnExit
+                        >
+                          <Stack
+                            justifyContent="center"
+                            sx={{
+                              maxHeight: {
+                                xs: '100vh',
+                                lg: 'calc(100vh - 80px)'
+                              },
+                              height: {
+                                xs: 'inherit',
+                                lg: 'calc(54.25vw + 102px)'
+                              },
+                              px: { lg: 6 }
+                            }}
+                          >
+                            {showHeaderFooter && (
+                              <StepHeader sx={{ ...mobileNotchStyling }} />
+                            )}
+                            <BlockRenderer block={block} />
+                            <StepFooter
+                              sx={{
+                                visibility: showHeaderFooter
+                                  ? 'visible'
+                                  : 'hidden',
+                                ...mobileNotchStyling
+                              }}
+                            />
+                          </Stack>
+                        </Fade>
+                      </ThemeProvider>
+                    )
+                  }
                 </SwiperSlide>
               )
             })}
