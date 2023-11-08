@@ -174,7 +174,11 @@ describe('NavigationButton', () => {
     expect(mockedDataLayer).toHaveBeenCalledWith({
       dataLayer: {
         event: 'step_next',
-        eventId: 'uuid'
+        eventId: 'uuid',
+        blockId: 'step1.id',
+        stepName: 'Step {{number}}',
+        targetStepId: 'step3.id',
+        targetStepName: 'Step {{number}}'
       }
     })
   })
@@ -195,7 +199,11 @@ describe('NavigationButton', () => {
     expect(mockedDataLayer).toHaveBeenCalledWith({
       dataLayer: {
         event: 'step_prev',
-        eventId: 'uuid'
+        eventId: 'uuid',
+        blockId: 'step2.id',
+        stepName: 'Step {{number}}',
+        targetStepId: 'step1.id',
+        targetStepName: 'Step {{number}}'
       }
     })
   })

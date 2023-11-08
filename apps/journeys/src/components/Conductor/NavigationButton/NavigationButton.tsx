@@ -130,7 +130,11 @@ export function NavigationButton({
     TagManager.dataLayer({
       dataLayer: {
         event: 'step_next',
-        eventId: id
+        eventId: id,
+        blockId: activeBlock.id,
+        stepName: currentStepHeading,
+        targetStepId: nextBlock?.id,
+        targetStepName: nextStepHeading
       }
     })
 
@@ -171,7 +175,11 @@ export function NavigationButton({
     TagManager.dataLayer({
       dataLayer: {
         event: 'step_prev',
-        eventId: id
+        eventId: id,
+        blockId: activeBlock.id,
+        stepName: currentStepHeading,
+        targetStepId: prevStepId,
+        targetStepName: prevStepHeading
       }
     })
 
