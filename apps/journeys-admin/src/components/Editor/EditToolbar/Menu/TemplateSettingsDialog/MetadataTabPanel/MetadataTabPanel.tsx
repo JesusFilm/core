@@ -19,6 +19,21 @@ export function MetadataTabPanel(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation()
 
+  const handleOnChange = async (value): Promise<void> => {
+    const { id } = value
+    await setFieldValue('languageId', id)
+  }
+
+  const languageValuesObject = {
+    id: values.languageId as string,
+    localName: data?.languages
+      .find(({ id }) => id === values.languageId)
+      ?.name.find(({ primary }) => !primary)?.value,
+    nativeName: data?.languages
+      .find(({ id }) => id === values.languageId)
+      ?.name.find(({ primary }) => primary)?.value
+  }
+
   return (
     <>
       <TextField
@@ -44,8 +59,8 @@ export function MetadataTabPanel(): ReactElement {
         helperText={t('Publicly visible on template details page')}
       />
       <LanguageAutocomplete
-        onChange={async (value) => await setFieldValue('language', value)}
-        value={values.language}
+        onChange={async (value) => await handleOnChange(value)}
+        value={languageValuesObject}
         languages={data?.languages}
         loading={loading}
         helperText={t('RTL languages will change the journey flow')}
@@ -74,7 +89,7 @@ export function MetadataTabPanel(): ReactElement {
             disabled
             aria-readonly
             variant="filled"
-            label={format(parseISO(journey?.publishedAt), 'MM/dd/yyyy')}
+            label={format(parseISO(journey?.publishedAt), 'P')}
             InputProps={{
               sx: {
                 '&.Mui-disabled': {

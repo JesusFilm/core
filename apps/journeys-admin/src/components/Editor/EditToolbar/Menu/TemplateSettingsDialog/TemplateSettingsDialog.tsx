@@ -75,13 +75,7 @@ export function TemplateSettingsDialog({
     strategySlug: journey?.strategySlug,
     tagIds: journey?.tags.map(({ id }) => id),
     creatorDescription: journey?.creatorDescription,
-    language: {
-      id: journey?.language?.id as string,
-      localName: journey?.language?.name.find(({ primary }) => !primary)
-        ?.value as string,
-      nativeName: journey?.language?.name.find(({ primary }) => primary)
-        ?.value as string
-    }
+    languageId: journey?.language?.id
   }
 
   function handleTabChange(_event, newValue): void {
@@ -105,8 +99,7 @@ export function TemplateSettingsDialog({
         variables: {
           id: journey.id,
           input: {
-            ...omit(values, 'featured', 'language'),
-            languageId: values?.language?.id
+            ...omit(values, 'featured')
           }
         }
       })
