@@ -79,7 +79,7 @@ describe('TemplateGalleryCarousel', () => {
   })
 
   it('should render TemplateGalleryCarousel with placeholder items', () => {
-    const { getAllByRole, queryByRole } = render(
+    const { getAllByRole, getByRole, queryByRole } = render(
       <TemplateGalleryCarousel
         items={[journey]}
         renderItem={(itemProps) => (
@@ -96,10 +96,10 @@ describe('TemplateGalleryCarousel', () => {
     expect(items).toHaveLength(8)
     expect(items[0]).toHaveTextContent('placeholder')
     expect(
-      queryByRole('button', { name: 'prev-button' })
-    ).not.toBeInTheDocument()
+      getByRole('button', { name: 'prev-button-disabled' })
+    ).toBeInTheDocument()
     expect(
-      queryByRole('button', { name: 'next-button' })
-    ).not.toBeInTheDocument()
+      getByRole('button', { name: 'next-button-disabled' })
+    ).toBeInTheDocument()
   })
 })
