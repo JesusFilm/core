@@ -8,7 +8,10 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+import {
+  LanguageAutocomplete,
+  LanguageOption
+} from '@core/shared/ui/LanguageAutocomplete'
 
 import { useLanguagesQuery } from '../../../../../../libs/useLanguagesQuery'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
@@ -57,7 +60,7 @@ export function MetadataTabPanel(): ReactElement {
       />
       <LanguageAutocomplete
         onChange={async (value) => await handleOnChange(value)}
-        value={languageValue}
+        value={languageValue as LanguageOption}
         languages={data?.languages}
         loading={loading}
         helperText={t('RTL languages will change the journey flow')}
