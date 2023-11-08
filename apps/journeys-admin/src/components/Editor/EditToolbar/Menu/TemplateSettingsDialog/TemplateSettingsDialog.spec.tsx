@@ -49,7 +49,7 @@ describe('TemplateSettingsDialog', () => {
           __typename: 'Journey',
           ...updatedJourney,
           tags: [{ __typeName: 'Tag', id: 'tagId' }],
-          language: { id: '496', __typename: 'Language' }
+          language: { id: '529', __typename: 'Language' }
         }
       }
     }))
@@ -95,6 +95,90 @@ describe('TemplateSettingsDialog', () => {
       }
     }))
 
+    const { getByRole, getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_TAGS
+            },
+            result: tagResult
+          },
+          {
+            request: {
+              query: JOURNEY_SETTINGS_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                input: {
+                  ...updatedJourney,
+                  tagIds: ['tagId'],
+                  creatorDescription: null,
+                  languageId: '529'
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: JOURNEY_FEATURE_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                feature: true
+              }
+            },
+            result: result2
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'New Title' }
+    })
+    fireEvent.change(getAllByRole('textbox')[1], {
+      target: { value: 'New Description' }
+    })
+    fireEvent.click(getByRole('checkbox'))
+
+    fireEvent.click(getByRole('tab', { name: 'About' }))
+
+    fireEvent.change(getAllByRole('textbox')[1], {
+      target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
+    })
+
+    fireEvent.click(getByRole('tab', { name: 'Categories' }))
+
+    await waitFor(() => {
+      expect(getByRole('combobox')).toBeInTheDocument()
+    })
+
+    fireEvent.click(getAllByRole('button', { name: 'Open' })[0])
+    fireEvent.click(
+      within(getByRole('option', { name: 'Acceptance' })).getByRole('checkbox')
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => {
+      expect(result).toHaveBeenCalled()
+      expect(result2).toHaveBeenCalled()
+      expect(onClose).toHaveBeenCalled()
+    })
+  })
+
+  it('should change and update template language', async () => {
     const getLanguagesMock = {
       request: {
         query: GET_LANGUAGES,
@@ -102,7 +186,7 @@ describe('TemplateSettingsDialog', () => {
           languageId: '529'
         }
       },
-      result: jest.fn(() => ({
+      result: {
         data: {
           languages: [
             {
@@ -150,26 +234,34 @@ describe('TemplateSettingsDialog', () => {
             }
           ]
         }
-      }))
+      }
     }
 
-    const { getByRole, getAllByRole } = render(
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          ...defaultJourney,
+          id: defaultJourney.id,
+          __typename: 'Journey',
+          tags: [{ __typeName: 'Tag', id: 'tagId' }],
+          language: { id: '496', __typename: 'Language' }
+        }
+      }
+    }))
+
+    const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: GET_TAGS
-            },
-            result: tagResult
-          },
-          {
-            request: {
               query: JOURNEY_SETTINGS_UPDATE,
               variables: {
-                id: defaultJourney.id,
+                id: 'journey-id',
                 input: {
-                  ...updatedJourney,
-                  tagIds: ['tagId'],
+                  title: 'Journey Heading',
+                  description: 'Description',
+                  strategySlug: null,
+                  tagIds: [],
                   creatorDescription: null,
                   languageId: '496'
                 }
@@ -177,16 +269,7 @@ describe('TemplateSettingsDialog', () => {
             },
             result
           },
-          {
-            request: {
-              query: JOURNEY_FEATURE_UPDATE,
-              variables: {
-                id: defaultJourney.id,
-                feature: true
-              }
-            },
-            result: result2
-          },
+
           getLanguagesMock
         ]}
       >
@@ -203,46 +286,15 @@ describe('TemplateSettingsDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getAllByRole('textbox')[0], {
-      target: { value: 'New Title' }
-    })
-    fireEvent.change(getAllByRole('textbox')[1], {
-      target: { value: 'New Description' }
-    })
-    fireEvent.click(getByRole('checkbox'))
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     await waitFor(() =>
       expect(getByRole('option', { name: 'English' })).toBeInTheDocument()
     )
     fireEvent.click(getByRole('option', { name: 'French Français' }))
-
-    fireEvent.click(getByRole('tab', { name: 'About' }))
-
-    fireEvent.change(getAllByRole('textbox')[1], {
-      target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
-    })
-
-    fireEvent.click(getByRole('tab', { name: 'Categories' }))
-
-    await waitFor(() => {
-      expect(getByRole('combobox')).toBeInTheDocument()
-      expect(getLanguagesMock.result).toHaveBeenCalled()
-    })
-
-    fireEvent.click(getAllByRole('button', { name: 'Open' })[0])
-    fireEvent.click(
-      within(getByRole('option', { name: 'Acceptance' })).getByRole('checkbox')
-    )
-
     fireEvent.click(getByRole('button', { name: 'Save' }))
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-      expect(result2).toHaveBeenCalled()
-      expect(onClose).toHaveBeenCalled()
-    })
-  }, 40000)
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
 
   it('should update case study to a google slides embed link', async () => {
     const updatedJourney = {
