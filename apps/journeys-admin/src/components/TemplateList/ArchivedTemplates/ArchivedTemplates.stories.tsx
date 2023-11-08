@@ -1,10 +1,13 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { Decorator, Meta, StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
+import { ComponentProps } from 'react'
 
+import { GetAdminJourneys } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
   defaultTemplate,
   descriptiveTemplate,
@@ -15,7 +18,7 @@ import { ThemeProvider } from '../../ThemeProvider'
 
 import { ArchivedTemplates } from '.'
 
-const ArchivedTemplatesStory = {
+const ArchivedTemplatesStory: Meta<typeof ArchivedTemplates> = {
   component: ArchivedTemplates,
   title: 'Journeys-Admin/TemplatesList/ArchivedTemplates',
   parameters: {
@@ -23,7 +26,7 @@ const ArchivedTemplatesStory = {
     layout: 'fullscreen'
   },
   decorators: [
-    (Story: Story) => (
+    (Story: Parameters<Decorator>[0]) => (
       <SnackbarProvider>
         <ThemeProvider>
           <div style={{ height: '900px' }}>
@@ -52,76 +55,93 @@ const archivedTemplate = {
   status: JourneyStatus.archived
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider mocks={args.mocks}>
-    <ArchivedTemplates {...args.props} />
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  mocks: [
-    {
-      request: {
-        query: GET_ADMIN_JOURNEYS,
-        variables: {
-          status: [JourneyStatus.archived],
-          template: true
-        }
-      },
-      result: {
-        data: {
-          journeys: [
-            defaultArchivedTemplate,
-            oldArchivedTemplate,
-            descriptiveArchivedTemplate,
-            archivedTemplate
-          ]
-        }
-      }
-    }
-  ]
+const Template: StoryObj<
+  ComponentProps<typeof ArchivedTemplates> & {
+    props: JourneyListProps
+    mocks: [MockedResponse<GetAdminJourneys>]
+  }
+> = {
+  render: ({ ...args }) => (
+    <MockedProvider mocks={args.mocks}>
+      <ArchivedTemplates {...args.props} />
+    </MockedProvider>
+  )
 }
 
-export const NoTemplates = Template.bind({})
-NoTemplates.args = {
-  mocks: [
-    {
-      request: {
-        query: GET_ADMIN_JOURNEYS,
-        variables: {
-          status: [JourneyStatus.archived],
-          template: true
-        }
-      },
-      result: {
-        data: {
-          journeys: []
+export const Default = {
+  ...Template,
+  args: {
+    mocks: [
+      {
+        request: {
+          query: GET_ADMIN_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.archived],
+            template: true
+          }
+        },
+        result: {
+          data: {
+            journeys: [
+              defaultArchivedTemplate,
+              oldArchivedTemplate,
+              descriptiveArchivedTemplate,
+              archivedTemplate
+            ]
+          }
         }
       }
-    }
-  ]
+    ]
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  mocks: []
+export const NoTemplates = {
+  ...Template,
+  args: {
+    mocks: [
+      {
+        request: {
+          query: GET_ADMIN_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.archived],
+            template: true
+          }
+        },
+        result: {
+          data: {
+            journeys: []
+          }
+        }
+      }
+    ]
+  }
 }
 
-export const UnarchiveDialog = Template.bind({})
-UnarchiveDialog.args = {
-  props: {
-    event: 'restoreAllArchived'
-  },
-  mocks: []
+export const Loading = {
+  ...Template,
+  args: {
+    mocks: []
+  }
 }
 
-export const TrashDialog = Template.bind({})
-TrashDialog.args = {
-  props: {
-    event: 'trashAllArchived'
-  },
-  mocks: []
+export const UnarchiveDialog = {
+  ...Template,
+  args: {
+    props: {
+      event: 'restoreAllArchived'
+    },
+    mocks: []
+  }
 }
 
-export default ArchivedTemplatesStory as Meta
+export const TrashDialog = {
+  ...Template,
+  args: {
+    props: {
+      event: 'trashAllArchived'
+    },
+    mocks: []
+  }
+}
+
+export default ArchivedTemplatesStory

@@ -1,14 +1,13 @@
-import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
-import ViewDayOutlinedIcon from '@mui/icons-material/ViewDayOutlined'
 import capitalize from 'lodash/capitalize'
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+import LinkIcon from '@core/shared/ui/icons/Link'
+import SpaceHorizontalIcon from '@core/shared/ui/icons/SpaceHorizontal'
+import TransformIcon from '@core/shared/ui/icons/Transform'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   ButtonColor,
@@ -18,6 +17,7 @@ import {
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Action, actions } from '../../Action/Action'
+import { Attribute } from '../../Attribute'
 import { Icon, icons } from '../../Icon'
 
 import { Color } from './Color'
@@ -62,7 +62,7 @@ export function Button({
     <>
       <Attribute
         id={`${id}-button-action`}
-        icon={<LinkRoundedIcon />}
+        icon={<LinkIcon />}
         name="Action"
         value={selectedAction?.label ?? 'None'}
         description="Action"
@@ -94,7 +94,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-size`}
-        icon={<ViewDayOutlinedIcon />}
+        icon={<SpaceHorizontalIcon />}
         name="Button Size"
         value={capitalize(size?.toString() ?? ButtonSize.medium)}
         description="Button Size"
@@ -110,7 +110,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-variant`}
-        icon={<FormatShapesRoundedIcon />}
+        icon={<TransformIcon />}
         name="Variant"
         value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
         description="Button Variant"
@@ -126,7 +126,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-leading-icon`}
-        icon={<InfoOutlinedIcon />}
+        icon={<AlertCircleIcon />}
         name="Leading Icon"
         value={
           icons.find(({ value }) => value === startIcon?.iconName)?.label ??
@@ -145,7 +145,7 @@ export function Button({
 
       <Attribute
         id={`${id}-button-trailing-icon`}
-        icon={<InfoOutlinedIcon />}
+        icon={<AlertCircleIcon />}
         name="Trailing Icon"
         value={
           icons.find(({ value }) => value === endIcon?.iconName)?.label ??

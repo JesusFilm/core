@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 import { ShareButton } from '../../ShareButton'
 
-export interface Props {
+export interface ContainerDescriptionProps {
   value: string
   openDialog: () => void
 }
@@ -13,13 +13,14 @@ export interface Props {
 export function ContainerDescription({
   value,
   openDialog
-}: Props): ReactElement {
+}: ContainerDescriptionProps): ReactElement {
   return (
     <Stack
       direction="row"
       justifyContent="space-between"
       alignItems="flex-start"
       spacing={4}
+      data-testid="ContainerDescription"
     >
       <Typography
         variant="subtitle1"

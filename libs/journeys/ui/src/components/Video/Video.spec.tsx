@@ -9,6 +9,11 @@ import { VideoFields } from './__generated__/VideoFields'
 
 import { Video } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const block: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
   id: 'video0.id',
@@ -69,8 +74,9 @@ describe('Video', () => {
         <Video {...block} />
       </MockedProvider>
     )
-    const sourceTag =
-      getByTestId('video-video0.id').querySelector('.vjs-tech source')
+    const sourceTag = getByTestId('JourneysVideo-video0.id').querySelector(
+      '.vjs-tech source'
+    )
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
@@ -89,8 +95,9 @@ describe('Video', () => {
         />
       </MockedProvider>
     )
-    const sourceTag =
-      getByTestId('video-video0.id').querySelector('.vjs-tech source')
+    const sourceTag = getByTestId('JourneysVideo-video0.id').querySelector(
+      '.vjs-tech source'
+    )
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8'
     )
@@ -133,10 +140,23 @@ describe.skip('Admin Video', () => {
     )
     const video = getByRole('region', { name: 'Video Player' })
 
-    fireEvent.click(getByTestId('video-video0.id'))
-    expect(getByTestId('video-video0.id')).toHaveStyle(
+    fireEvent.click(getByTestId('JourneysVideo-video0.id'))
+    expect(getByTestId('JourneysVideo-video0.id')).toHaveStyle(
       'outline: 2px solid #C52D3A'
     )
     expect(video).toHaveClass('vjs-paused')
+  })
+
+  it('should set container to 16:9', () => {
+    const { getByTestId } = render(<Video {...block} />)
+
+    // Expect container to have 16:9 aspect ratio
+    expect(getByTestId('video-container')).toHaveStyle('position: absolute')
+    expect(getByTestId('video-container')).toHaveStyle(
+      'margin-left: calc((100vh * 16 / 9) * -0.355)'
+    )
+    expect(getByTestId('video-container')).toHaveStyle('overflow: hidden')
+
+    // Jest height/width are not rendered by jest dom for testing
   })
 })

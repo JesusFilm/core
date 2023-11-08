@@ -32,10 +32,10 @@ describe('Edit Toolbar', () => {
     )
     expect(
       getAllByRole('button', { name: 'Delete Block Actions' })[0]
-    ).toContainElement(getByTestId('DeleteOutlineRoundedIcon'))
+    ).toContainElement(getByTestId('Trash2Icon'))
     expect(
       getAllByRole('button', { name: 'Edit Journey Actions' })[0]
-    ).toContainElement(getByTestId('MoreVertIcon'))
+    ).toContainElement(getByTestId('MoreIcon'))
   })
 
   it('should render Preview Button', () => {
@@ -44,7 +44,10 @@ describe('Edit Toolbar', () => {
         <MockedProvider>
           <JourneyProvider
             value={{
-              journey: { slug: 'untitled-journey' } as unknown as Journey,
+              journey: {
+                slug: 'untitled-journey',
+                tags: []
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -54,7 +57,7 @@ describe('Edit Toolbar', () => {
       </SnackbarProvider>
     )
     const button = getAllByRole('link', { name: 'Preview' })[0]
-    expect(button).toContainElement(getAllByTestId('VisibilityIcon')[0])
+    expect(button).toContainElement(getAllByTestId('EyeOpenIcon')[0])
     expect(button).toHaveAttribute('href', '/api/preview?slug=untitled-journey')
     expect(button).toHaveAttribute('target', '_blank')
     expect(button).not.toBeDisabled()
@@ -66,7 +69,10 @@ describe('Edit Toolbar', () => {
         <MockedProvider>
           <JourneyProvider
             value={{
-              journey: { slug: 'untitled-journey' } as unknown as Journey,
+              journey: {
+                slug: 'untitled-journey',
+                tags: []
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -92,7 +98,10 @@ describe('Edit Toolbar', () => {
         <MockedProvider>
           <JourneyProvider
             value={{
-              journey: { slug: 'untitled-journey' } as unknown as Journey,
+              journey: {
+                slug: 'untitled-journey',
+                tags: []
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >

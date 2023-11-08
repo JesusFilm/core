@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
@@ -17,11 +17,16 @@ import {
   TextResponse
 } from './TextResponse'
 
-const Demo = {
+const Demo: Meta<typeof TextResponse> = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: TextResponse,
-  title: 'Journeys-Ui/TextResponse'
+  title: 'Journeys-Ui/TextResponse',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
 const typographyProps: ComponentProps<typeof Typography> = {
@@ -74,92 +79,103 @@ const submitEventMock: MockedResponse = {
   }
 }
 
-const Template: Story<ComponentProps<typeof TextResponse>> = ({
-  ...args
-}): ReactElement => (
-  <MockedProvider mocks={[submitEventMock]}>
-    <JourneyProvider>
-      <SnackbarProvider>
-        <StoryCard>
-          <Typography {...typographyProps} />
-          <TextResponse {...args} uuid={() => 'uuid'} />
-          <Typography
-            {...typographyProps}
-            content="Some block below"
-            variant={TypographyVariant.body1}
-          />
-        </StoryCard>
-      </SnackbarProvider>
-    </JourneyProvider>
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = { ...textResponseProps }
-
-export const Complete = Template.bind({})
-Complete.args = {
-  ...Default.args,
-  hint: 'Optional Hint text',
-  minRows: 4,
-  label: 'Custom label',
-  submitIconId: 'icon',
-  submitLabel: 'Custom label',
-  children: [
-    {
-      id: 'icon',
-      __typename: 'IconBlock',
-      parentBlockId: 'parent',
-      parentOrder: 0,
-      iconName: IconName.SendRounded,
-      iconSize: null,
-      iconColor: null,
-      children: []
-    }
-  ]
+const Template: StoryObj<typeof TextResponse> = {
+  render: ({ ...args }): ReactElement => (
+    <MockedProvider mocks={[submitEventMock]}>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <StoryCard>
+            <Typography {...typographyProps} />
+            <TextResponse {...args} uuid={() => 'uuid'} />
+            <Typography
+              {...typographyProps}
+              content="Some block below"
+              variant={TypographyVariant.body1}
+            />
+          </StoryCard>
+        </SnackbarProvider>
+      </JourneyProvider>
+    </MockedProvider>
+  )
 }
 
-export const SubmitError = Template.bind({})
-SubmitError.args = {
-  ...Default.args,
-  minRows: 1
+export const Default = { ...Template, args: { ...textResponseProps } }
+
+export const Complete = {
+  ...Template,
+  args: {
+    ...Default.args,
+    hint: 'Optional Hint text',
+    minRows: 4,
+    label: 'Custom label',
+    submitIconId: 'icon',
+    submitLabel: 'Custom label',
+    children: [
+      {
+        id: 'icon',
+        __typename: 'IconBlock',
+        parentBlockId: 'parent',
+        parentOrder: 0,
+        iconName: IconName.SendRounded,
+        iconSize: null,
+        iconColor: null,
+        children: []
+      }
+    ]
+  }
 }
-SubmitError.play = () => {
-  const submit = screen.getAllByRole('button')[0]
-  userEvent.type(screen.getAllByRole('textbox')[0], 'Answer')
-  userEvent.click(submit)
+
+export const SubmitError = {
+  ...Template,
+  args: {
+    ...Default.args,
+    minRows: 1
+  },
+  play: async () => {
+    const submit = screen.getAllByRole('button')[0]
+    await userEvent.type(screen.getAllByRole('textbox')[0], 'Answer')
+    await userEvent.click(submit)
+  }
 }
 
-const LoadingTemplate: Story<ComponentProps<typeof TextResponse>> = ({
-  ...args
-}): ReactElement => (
-  <ApolloLoadingProvider>
-    <JourneyProvider>
-      <SnackbarProvider>
-        <StoryCard>
-          <TextResponse {...args} uuid={() => 'uuid'} />
-        </StoryCard>
-      </SnackbarProvider>
-    </JourneyProvider>
-  </ApolloLoadingProvider>
-)
-
-export const Loading = LoadingTemplate.bind({})
-Loading.args = { ...Default.args }
-Loading.play = () => {
-  const submitButtons = screen.getAllByRole('button')
-  const textFields = screen.getAllByRole('textbox')
-  textFields.forEach((field) => {
-    userEvent.type(field, 'Answer')
-  })
-  submitButtons.forEach((button) => {
-    userEvent.click(button)
-  })
+const LoadingTemplate: StoryObj<typeof TextResponse> = {
+  render: ({ ...args }): ReactElement => (
+    <ApolloLoadingProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <StoryCard>
+            <TextResponse {...args} uuid={() => 'uuid'} />
+          </StoryCard>
+        </SnackbarProvider>
+      </JourneyProvider>
+    </ApolloLoadingProvider>
+  )
 }
-Loading.parameters = { chromatic: { disableSnapshot: true } }
 
-export const RTL = Template.bind({})
-RTL.args = { ...Complete.args }
-RTL.parameters = { rtl: true }
+export const Loading = {
+  ...LoadingTemplate,
+  args: { ...Default.args },
+  parameters: { chromatic: { disableSnapshot: true } },
+  play: async () => {
+    const submitButtons = screen.getAllByRole('button')
+    const textFields = screen.getAllByRole('textbox')
+    await Promise.all(
+      textFields.map(async (field) => {
+        await userEvent.type(field, 'Answer')
+      })
+    )
+    await Promise.all(
+      submitButtons.map(async (button) => {
+        await userEvent.click(button)
+      })
+    )
+  }
+}
 
-export default Demo as Meta
+export const RTL = {
+  ...Template,
+  args: { ...Complete.args },
+  parameters: { rtl: true }
+}
+
+export default Demo

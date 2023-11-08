@@ -1,8 +1,8 @@
 import { formatISO, startOfYear } from 'date-fns'
 
 import {
-  GetAdminJourneys_journeys as Journey,
-  GetAdminJourneys_journeys_userJourneys as User
+  GetAdminJourneys_journeys_userJourneys as ApiUser,
+  GetAdminJourneys_journeys as Journey
 } from '../../../__generated__/GetAdminJourneys'
 import {
   JourneyStatus,
@@ -11,7 +11,7 @@ import {
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
-const userJourneys: User[] = [
+const userJourneys: ApiUser[] = [
   {
     __typename: 'UserJourney',
     id: 'user-journey-id',

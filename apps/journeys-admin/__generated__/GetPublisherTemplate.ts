@@ -589,6 +589,22 @@ export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
   blurhash: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_userJourneys_user {
   __typename: "User";
   id: string;
@@ -629,6 +645,26 @@ export interface GetPublisherTemplate_publisherTemplate_team {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: GetPublisherTemplate_publisherTemplate_tags_name_language;
+  primary: boolean;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_tags {
+  __typename: "Tag";
+  id: string;
+  parentId: string | null;
+  name: GetPublisherTemplate_publisherTemplate_tags_name[];
 }
 
 export interface GetPublisherTemplate_publisherTemplate {
@@ -640,18 +676,23 @@ export interface GetPublisherTemplate_publisherTemplate {
   status: JourneyStatus;
   language: GetPublisherTemplate_publisherTemplate_language;
   createdAt: any;
+  featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  strategySlug: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
   blocks: GetPublisherTemplate_publisherTemplate_blocks[] | null;
   primaryImageBlock: GetPublisherTemplate_publisherTemplate_primaryImageBlock | null;
+  creatorDescription: string | null;
+  creatorImageBlock: GetPublisherTemplate_publisherTemplate_creatorImageBlock | null;
   userJourneys: GetPublisherTemplate_publisherTemplate_userJourneys[] | null;
   chatButtons: GetPublisherTemplate_publisherTemplate_chatButtons[];
   host: GetPublisherTemplate_publisherTemplate_host | null;
   team: GetPublisherTemplate_publisherTemplate_team | null;
+  tags: GetPublisherTemplate_publisherTemplate_tags[];
 }
 
 export interface GetPublisherTemplate {

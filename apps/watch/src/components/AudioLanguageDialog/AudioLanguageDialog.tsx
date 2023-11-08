@@ -61,12 +61,13 @@ export function AudioLanguageDialog({
         }${selectedLanguageSlug}`
       )
     }
-    onClose()
+
+    onClose?.()
   }
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {
-      onClose()
+      onClose?.()
       // wait for dialog animation to complete
       setTimeout(
         () =>
@@ -121,11 +122,12 @@ export function AudioLanguageDialog({
                 closeButton: true
               }}
               divider
+              testId="AudioLanguageDialog"
             >
               <Form>
                 <LanguageAutocomplete
-                  onChange={(value) => {
-                    setFieldValue('language', value)
+                  onChange={async (value) => {
+                    await setFieldValue('language', value)
                     if (value != null) handleSubmit(value)
                   }}
                   value={values.language}

@@ -39,7 +39,7 @@ export function VideoContainerPage(): ReactElement {
 
   return (
     <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
-      <Container maxWidth="xxl">
+      <Container maxWidth="xxl" data-testid="VideoContainerPage">
         <Stack
           spacing={{ xs: 4, md: 11 }}
           py={{ xs: 7, md: 17 }}

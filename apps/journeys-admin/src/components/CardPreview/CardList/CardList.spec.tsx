@@ -13,8 +13,8 @@ import {
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 import { SocialProvider } from '../../Editor/SocialProvider'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 
 import { CardList } from '.'
 
@@ -246,7 +246,7 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    const dragHandle = getAllByTestId('DragHandleRoundedIcon')
+    const dragHandle = getAllByTestId('DragIcon')
     expect(dragHandle[0]).toHaveClass('MuiSvgIcon-root')
   })
 

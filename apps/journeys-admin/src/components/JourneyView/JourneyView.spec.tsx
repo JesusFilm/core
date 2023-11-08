@@ -33,9 +33,11 @@ describe('JourneyView', () => {
     __typename: 'Journey',
     id: 'journeyId',
     slug: 'my-journey',
+    strategySlug: null,
     title: 'title',
     description: 'description',
     createdAt: '2021-11-19T12:34:56.647Z',
+    featuredAt: null,
     blocks: [],
     language: {
       __typename: 'Language',
@@ -57,11 +59,14 @@ describe('JourneyView', () => {
     seoTitle: null,
     seoDescription: null,
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     template: null,
     userJourneys: [],
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it.skip('should have edit button', () => {

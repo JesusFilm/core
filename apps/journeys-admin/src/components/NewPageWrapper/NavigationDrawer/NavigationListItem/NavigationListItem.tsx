@@ -5,14 +5,14 @@ import ListItemText from '@mui/material/ListItemText'
 import Tooltip from '@mui/material/Tooltip'
 import flowRight from 'lodash/flowRight'
 import NextLink from 'next/link'
-import { ReactElement } from 'react'
+import { MouseEventHandler, ReactElement } from 'react'
 
 export interface NavigationListItemProps {
   icon: ReactElement
   label: string
   selected: boolean
   link?: string
-  handleClick?: (e?) => void
+  handleClick?: MouseEventHandler<HTMLDivElement> | undefined
   tooltipText?: string
 }
 
@@ -59,7 +59,7 @@ const withLink = (link: string | undefined) =>
   function component(baseComponent: ReactElement) {
     if (link != null) {
       return (
-        <NextLink href={link} passHref>
+        <NextLink href={link} passHref legacyBehavior>
           {baseComponent}
         </NextLink>
       )

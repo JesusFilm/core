@@ -1,6 +1,6 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { LDClient } from 'launchdarkly-node-server-sdk'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
@@ -32,12 +32,12 @@ const checkConditionalRedirectMock =
   >
 
 describe('initAndAuthApp', () => {
-  const mockAuthUser = {
+  const mockUser = {
     id: '1',
     displayName: 'test',
     email: 'test@test.com',
     getIdToken: jest.fn().mockResolvedValue('token')
-  } as unknown as AuthUser
+  } as unknown as User
 
   const mockSSRConfig: SSRConfig = {
     _nextI18Next: {
@@ -75,10 +75,11 @@ describe('initAndAuthApp', () => {
     })
   })
 
-  it('should return with apolloClient, flags, redirect, and translations', async () => {
+  it('should return with apolloClient, flags, redirect, and translations when auth user', async () => {
     const result = await initAndAuthApp({
-      AuthUser: mockAuthUser,
-      locale: 'en'
+      user: mockUser,
+      locale: 'en',
+      resolvedUrl: '/templates'
     })
 
     expect(result).toEqual({
@@ -88,6 +89,23 @@ describe('initAndAuthApp', () => {
         destination: '/users/terms-and-conditions',
         permanent: false
       },
+      translations: mockSSRConfig
+    })
+  })
+
+  it('should return with apolloClient, flags, redirect, and translations when anonymous user', async () => {
+    const result = await initAndAuthApp({
+      user: {
+        id: null
+      } as unknown as User,
+      locale: 'en',
+      resolvedUrl: '/templates'
+    })
+
+    expect(result).toEqual({
+      apolloClient: expect.any(ApolloClient),
+      flags: { termsAndConditions: true },
+      redirect: undefined,
       translations: mockSSRConfig
     })
   })

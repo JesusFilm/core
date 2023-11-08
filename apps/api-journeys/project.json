@@ -1,9 +1,11 @@
 {
+  "name": "api-journeys",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-journeys/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-journeys",
@@ -22,7 +24,9 @@
             "output": "./assets"
           }
         ],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node"
       },
       "configurations": {
         "production": {
@@ -39,28 +43,28 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api-journeys:build",
         "inspect": false
       }
     },
     "watcher": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node tools/scripts/generate-typings.ts api-journeys"
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/api-journeys"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/api-journeys"],
       "options": {
         "jestConfig": "apps/api-journeys/jest.config.ts",
         "passWithNoTests": true,
@@ -73,25 +77,25 @@
       }
     },
     "generate-graphql": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
       }
     },
     "subgraph-check": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-journeys --schema apps/api-journeys/schema.graphql"
       }
     },
     "fetch-secrets": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > apps/api-journeys/.env"
       }
     },
     "prisma-generate": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "parallel": false,
         "commands": [
@@ -101,7 +105,7 @@
       }
     },
     "prisma-migrate": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "bash -c 'npx prisma migrate dev --schema apps/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
@@ -116,7 +120,7 @@
       }
     },
     "prisma-reset": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "npx prisma migrate reset --schema apps/api-journeys/db/schema.prisma --force"
@@ -124,13 +128,13 @@
       }
     },
     "prisma-seed": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": ["npm run ts-node apps/api-journeys/db/seed.ts"]
       }
     },
     "prisma-studio": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "npx prisma studio --schema apps/api-journeys/db/schema.prisma"
@@ -138,7 +142,7 @@
       }
     },
     "prisma-validate": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "npx prisma validate --schema apps/api-journeys/db/schema.prisma"
@@ -146,7 +150,7 @@
       }
     },
     "prisma-resolve": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "npx prisma migrate resolve --schema apps/api-journeys/db/schema.prisma --applied 20230711193802_20230711193801"
@@ -154,13 +158,13 @@
       }
     },
     "type-check": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "npx tsc -b apps/api-journeys/tsconfig.json"
       }
     },
     "codecov": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
       }

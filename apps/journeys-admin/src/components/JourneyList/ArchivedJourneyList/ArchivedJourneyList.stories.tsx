@@ -1,9 +1,12 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
+import { GetAdminJourneys } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { JourneyListProps } from '../JourneyList'
 import {
   defaultJourney,
   descriptiveJourney,
@@ -13,7 +16,7 @@ import {
 
 import { ArchivedJourneyList } from '.'
 
-const ArchivedJourneyListStory = {
+const ArchivedJourneyListStory: Meta<typeof ArchivedJourneyList> = {
   ...journeysAdminConfig,
   component: ArchivedJourneyList,
   title: 'Journeys-Admin/JourneyList/StatusTabPanel/ArchivedJourneyList',
@@ -23,74 +26,90 @@ const ArchivedJourneyListStory = {
   }
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider mocks={args.mocks}>
-    <ArchivedJourneyList {...args.props} />
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  mocks: [
-    {
-      request: {
-        query: GET_ADMIN_JOURNEYS,
-        variables: {
-          status: [JourneyStatus.archived]
-        }
-      },
-      result: {
-        data: {
-          journeys: [
-            defaultJourney,
-            oldJourney,
-            descriptiveJourney,
-            publishedJourney
-          ]
-        }
-      }
-    }
-  ]
+const Template: StoryObj<
+  ComponentProps<typeof ArchivedJourneyList> & {
+    props: JourneyListProps
+    mocks: [MockedResponse<GetAdminJourneys>]
+  }
+> = {
+  render: ({ ...args }) => (
+    <MockedProvider mocks={args.mocks}>
+      <ArchivedJourneyList {...args.props} />
+    </MockedProvider>
+  )
 }
-
-export const NoJourneys = Template.bind({})
-NoJourneys.args = {
-  mocks: [
-    {
-      request: {
-        query: GET_ADMIN_JOURNEYS,
-        variables: {
-          status: [JourneyStatus.archived]
-        }
-      },
-      result: {
-        data: {
-          journeys: []
+export const Default = {
+  ...Template,
+  args: {
+    mocks: [
+      {
+        request: {
+          query: GET_ADMIN_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.archived]
+          }
+        },
+        result: {
+          data: {
+            journeys: [
+              defaultJourney,
+              oldJourney,
+              descriptiveJourney,
+              publishedJourney
+            ]
+          }
         }
       }
-    }
-  ]
+    ]
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  mocks: []
+export const NoJourneys = {
+  ...Template,
+  args: {
+    mocks: [
+      {
+        request: {
+          query: GET_ADMIN_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.archived]
+          }
+        },
+        result: {
+          data: {
+            journeys: []
+          }
+        }
+      }
+    ]
+  }
 }
 
-export const UnarchiveAll = Template.bind({})
-UnarchiveAll.args = {
-  props: {
-    event: 'restoreAllArchived'
-  },
-  mocks: []
+export const Loading = {
+  ...Template,
+  args: {
+    mocks: []
+  }
 }
 
-export const TrashAll = Template.bind({})
-TrashAll.args = {
-  props: {
-    event: 'trashAllArchived'
-  },
-  mocks: []
+export const UnarchiveAll = {
+  ...Template,
+  args: {
+    props: {
+      event: 'restoreAllArchived'
+    },
+    mocks: []
+  }
 }
 
-export default ArchivedJourneyListStory as Meta
+export const TrashAll = {
+  ...Template,
+  args: {
+    props: {
+      event: 'trashAllArchived'
+    },
+    mocks: []
+  }
+}
+
+export default ArchivedJourneyListStory

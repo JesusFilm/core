@@ -4,6 +4,8 @@ import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import videojs from 'video.js'
 
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
@@ -48,6 +50,7 @@ describe('VideoEvents', () => {
 
     props = {
       player: videojs(video, {
+        ...defaultVideoJsOptions,
         autoplay: false,
         muted: true,
         controls: true,

@@ -1,4 +1,3 @@
-import CreateRoundedIcon from '@mui/icons-material/CreateRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
@@ -8,6 +7,7 @@ import dynamic from 'next/dynamic'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 const DynamicLanguageDialog = dynamic<{
   open: boolean
@@ -16,7 +16,7 @@ const DynamicLanguageDialog = dynamic<{
   async () =>
     await import(
       /* webpackChunkName: "PropertiesLanguageDialog" */
-      '../../../Menu/LanguageDialog'
+      '../../../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
     ).then((mod) => mod.LanguageDialog)
 )
 
@@ -61,7 +61,9 @@ export function Language({ isPublisher }: LanguageProps): ReactElement {
               {localLanguage ?? nativeLanguage}
               {localLanguage != null &&
                 localLanguage !== nativeLanguage &&
-                nativeLanguage && <span>&nbsp;({nativeLanguage})</span>}
+                nativeLanguage !== null && (
+                  <span>&nbsp;({nativeLanguage})</span>
+                )}
             </span>
           </Typography>
         ) : (
@@ -69,7 +71,7 @@ export function Language({ isPublisher }: LanguageProps): ReactElement {
         )}
         {isPublisher === true && (
           <IconButton size="small" onClick={() => setShowLanguageDialog(true)}>
-            <CreateRoundedIcon sx={{ m: 1 }} />
+            <Edit2Icon sx={{ m: 1 }} />
           </IconButton>
         )}
       </Box>

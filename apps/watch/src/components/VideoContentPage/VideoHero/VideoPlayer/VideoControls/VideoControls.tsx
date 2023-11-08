@@ -25,13 +25,10 @@ import Player from 'video.js/dist/types/player'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useVideo } from '../../../../../libs/videoContext'
+import { SubtitleDialogProps } from '../../../../SubtitleDialog/SubtitleDialog'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
-const DynamicSubtitleDialog = dynamic<{
-  open: boolean
-  player: Player
-  onClose: () => void
-}>(
+const DynamicSubtitleDialog = dynamic<SubtitleDialogProps>(
   async () =>
     await import(
       /* webpackChunkName: "SubtitleDialog" */
@@ -306,6 +303,7 @@ export function VideoControls({
         void handleFullscreen()
       })}
       onMouseMove={() => player.userActive(true)}
+      data-testid="VideoControls"
     >
       <Fade
         in={visible}

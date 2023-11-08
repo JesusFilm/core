@@ -3,6 +3,11 @@ import { gql } from '@apollo/client'
 import { IMAGE_FIELDS } from '../../components/Image/imageFields'
 import { BLOCK_FIELDS } from '../block/blockFields'
 
+/**
+ * Return only common fields needed by journeys and journeys-admin.
+ * Project-specific fields should be added in a project-specific
+ * useJourneyQuery/useJourneysQuery hook.
+ */
 export const JOURNEY_FIELDS = gql`
   ${BLOCK_FIELDS}
   ${IMAGE_FIELDS}
@@ -22,9 +27,11 @@ export const JOURNEY_FIELDS = gql`
       }
     }
     createdAt
+    featuredAt
     publishedAt
     themeName
     themeMode
+    strategySlug
     seoTitle
     seoDescription
     template
@@ -32,6 +39,10 @@ export const JOURNEY_FIELDS = gql`
       ...BlockFields
     }
     primaryImageBlock {
+      ...ImageFields
+    }
+    creatorDescription
+    creatorImageBlock {
       ...ImageFields
     }
     userJourneys {
@@ -61,6 +72,18 @@ export const JOURNEY_FIELDS = gql`
     team {
       id
       title
+      publicTitle
+    }
+    tags {
+      id
+      parentId
+      name {
+        value
+        language {
+          id
+        }
+        primary
+      }
     }
   }
 `

@@ -1,13 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { AuthUser } from 'next-firebase-auth'
 import { NextRouter, useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { Role } from '../../../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 
 import { NavigationDrawer } from '.'
@@ -45,7 +45,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     expect(getAllByRole('button')[0]).toContainElement(
-      getByTestId('ChevronLeftRoundedIcon')
+      getByTestId('ChevronLeftIcon')
     )
     expect(getByText('Discover')).toBeInTheDocument()
   })
@@ -89,20 +89,20 @@ describe('NavigationDrawer', () => {
           <NavigationDrawer
             open
             onClose={onClose}
-            authUser={
+            user={
               {
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
                 signOut
-              } as unknown as AuthUser
+              } as unknown as User
             }
           />
         </FlagsProvider>
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
-    expect(getByText('Reports')).toBeInTheDocument()
+    expect(getByText('Analytics')).toBeInTheDocument()
     await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
   })
 
@@ -134,7 +134,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('Reports-list-item')).toHaveAttribute(
+    expect(getByTestId('Analytics-list-item')).toHaveAttribute(
       'aria-selected',
       'true'
     )
@@ -148,7 +148,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(queryByText('Reports')).not.toBeInTheDocument()
+    expect(queryByText('Analytics')).not.toBeInTheDocument()
   })
 
   it('should select publisher button', async () => {
@@ -193,13 +193,13 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer
           open
           onClose={onClose}
-          authUser={
+          user={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
               signOut
-            } as unknown as AuthUser
+            } as unknown as User
           }
         />
       </MockedProvider>
@@ -250,13 +250,13 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer
           open
           onClose={onClose}
-          authUser={
+          user={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
               signOut
-            } as unknown as AuthUser
+            } as unknown as User
           }
         />
       </MockedProvider>
@@ -281,7 +281,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     const button = getAllByRole('button')[0]
-    expect(button).toContainElement(getByTestId('ChevronLeftRoundedIcon'))
+    expect(button).toContainElement(getByTestId('ChevronLeftIcon'))
     fireEvent.click(button)
     expect(onClose).toHaveBeenCalled()
   })
@@ -296,7 +296,7 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
-    expect(getByTestId('ViewCarouselRoundedIcon').parentElement).toHaveStyle(
+    expect(getByTestId('JourneysIcon').parentElement).toHaveStyle(
       'color: #FFFFFF'
     )
   })

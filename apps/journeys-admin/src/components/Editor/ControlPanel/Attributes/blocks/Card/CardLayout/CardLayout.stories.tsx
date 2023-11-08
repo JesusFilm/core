@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -19,7 +19,7 @@ import { Drawer } from '../../../../../Drawer'
 
 import { CardLayout } from '.'
 
-const CardLayoutStory = {
+const CardLayoutStory: Meta<typeof CardLayout> = {
   ...journeysAdminConfig,
   component: CardLayout,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/CardLayout',
@@ -36,6 +36,8 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
+  featuredAt: null,
+  strategySlug: null,
   language: {
     __typename: 'Language',
     id: '529',
@@ -55,77 +57,84 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
-export const Default: Story = () => {
-  const block: TreeBlock<CardBlock> = {
-    id: 'card1.id',
-    __typename: 'CardBlock',
-    parentBlockId: 'step1.id',
-    parentOrder: 0,
-    coverBlockId: null,
-    backgroundColor: null,
-    themeMode: null,
-    themeName: null,
-    fullscreen: false,
-    children: []
+export const Default: StoryObj<typeof CardLayout> = {
+  render: () => {
+    const block: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
+
+    return (
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: block,
+              drawerChildren: <CardLayout />,
+              drawerTitle: 'Card Layout Property',
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
   }
-
-  return (
-    <MockedProvider>
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: block,
-            drawerChildren: <CardLayout />,
-            drawerTitle: 'Card Layout Property',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
 }
 
-export const FullScreen: Story = () => {
-  const block: TreeBlock<CardBlock> = {
-    id: 'card1.id',
-    __typename: 'CardBlock',
-    parentBlockId: 'step1.id',
-    parentOrder: 0,
-    coverBlockId: null,
-    backgroundColor: null,
-    themeMode: ThemeMode.light,
-    themeName: null,
-    fullscreen: true,
-    children: []
+export const FullScreen: StoryObj<typeof CardLayout> = {
+  render: () => {
+    const block: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: ThemeMode.light,
+      themeName: null,
+      fullscreen: true,
+      children: []
+    }
+
+    return (
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: block,
+              drawerChildren: <CardLayout />,
+              drawerTitle: 'Card Layout Property',
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
   }
-
-  return (
-    <MockedProvider>
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: block,
-            drawerChildren: <CardLayout />,
-            drawerTitle: 'Card Layout Property',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
 }
 
-export default CardLayoutStory as Meta
+export default CardLayoutStory

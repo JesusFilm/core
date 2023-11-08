@@ -1,10 +1,4 @@
 import { gql, useQuery } from '@apollo/client'
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
-import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
-import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
-import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
-import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
-import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import Avatar from '@mui/material/Avatar'
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
@@ -17,23 +11,30 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import compact from 'lodash/compact'
-import { AuthUser } from 'next-firebase-auth'
 import Image from 'next/image'
 import { NextRouter } from 'next/router'
-import { ReactElement, useState } from 'react'
+import { User } from 'next-firebase-auth'
+import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Bag5Icon from '@core/shared/ui/icons/Bag5'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
+import BoxIcon from '@core/shared/ui/icons/Box'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
+import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
 import { GetMe } from '../../../../__generated__/GetMe'
-import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 
+import { ImpersonateDialog } from './ImpersonateDialog'
 import { NavigationListItem } from './NavigationListItem'
 import { UserMenu } from './UserMenu'
 
@@ -42,7 +43,7 @@ const DRAWER_WIDTH = '237px'
 export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
-  authUser?: AuthUser
+  user?: User
   router?: NextRouter
 }
 
@@ -54,6 +55,7 @@ export const GET_ME = gql`
       lastName
       email
       imageUrl
+      superAdmin
     }
   }
 `
@@ -103,7 +105,7 @@ export const StyledList = styled(List)({
 export function NavigationDrawer({
   open,
   onClose,
-  authUser,
+  user,
   router
 }: NavigationDrawerProps): ReactElement {
   const { data: activeJourneys } = useAdminJourneysQuery({
@@ -112,28 +114,41 @@ export function NavigationDrawer({
   const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
-  const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+  const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLDivElement | null>(
+    null
+  )
+  const [impersonateOpen, setImpersonateOpen] = useState(false)
+
   const { globalReports } = useFlags()
 
   const selectedPage = router?.pathname?.split('/')[1]
 
   const profileOpen = Boolean(profileAnchorEl)
-  const handleProfileClick = (event): void => {
+
+  function handleImpersonateClick(): void {
+    setImpersonateOpen(true)
+  }
+
+  function handleImpersonateClose(): void {
+    setImpersonateOpen(false)
+  }
+
+  function handleProfileClick(event: MouseEvent<HTMLDivElement>): void {
     setProfileAnchorEl(event.currentTarget)
   }
 
-  const handleProfileClose = (): void => {
+  function handleProfileClose(): void {
     setProfileAnchorEl(null)
   }
 
-  const handleClose = (): void => {
+  function handleClose(): void {
     onClose(!open)
   }
 
   const { data } = useQuery<GetMe>(GET_ME)
-  const { data: userRoleData } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const { data: userRoleData } = useUserRoleQuery()
 
-  const journeyTooltip = getJourneyTooltip(t, journeys, authUser?.id)
+  const journeyTooltip = getJourneyTooltip(t, journeys, user?.id)
 
   return (
     <StyledNavigationDrawer
@@ -154,12 +169,12 @@ export function NavigationDrawer({
               }
             }}
           >
-            {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
+            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </ListItemIcon>
         </ListItemButton>
 
         <NavigationListItem
-          icon={<ViewCarouselRoundedIcon />}
+          icon={<JourneysIcon />}
           label="Discover"
           selected={selectedPage === 'journeys' || selectedPage === ''} // empty for when page is index. UPDATE when we add the actual index page
           link="/"
@@ -167,7 +182,7 @@ export function NavigationDrawer({
         />
 
         <NavigationListItem
-          icon={<ShopRoundedIcon />}
+          icon={<Bag5Icon />}
           label="Templates"
           selected={selectedPage === 'templates'}
           link="/templates"
@@ -175,27 +190,40 @@ export function NavigationDrawer({
 
         {globalReports && (
           <NavigationListItem
-            icon={<LeaderboardRoundedIcon />}
-            label="Reports"
+            icon={<BarGroup3Icon />}
+            label="Analytics"
             selected={selectedPage === 'reports'}
             link="/reports"
           />
         )}
 
-        {authUser != null && data?.me != null && (
+        {user?.id != null && data?.me != null && (
           <>
             <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
 
             {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
               true && (
               <NavigationListItem
-                icon={<ShopTwoRoundedIcon />}
+                icon={<BoxIcon />}
                 label="Publisher"
                 selected={selectedPage === 'publisher'}
                 link="/publisher"
               />
             )}
-
+            {data.me.superAdmin === true && (
+              <NavigationListItem
+                icon={<UserProfile3Icon />}
+                label="Impersonate"
+                selected={false}
+                handleClick={handleImpersonateClick}
+              />
+            )}
+            {data.me.superAdmin === true && (
+              <ImpersonateDialog
+                open={impersonateOpen}
+                onClose={handleImpersonateClose}
+              />
+            )}
             <NavigationListItem
               icon={
                 <Avatar
@@ -209,11 +237,11 @@ export function NavigationDrawer({
               handleClick={handleProfileClick}
             />
             <UserMenu
-              user={data.me}
+              apiUser={data.me}
               profileOpen={profileOpen}
               profileAnchorEl={profileAnchorEl}
               handleProfileClose={handleProfileClose}
-              authUser={authUser}
+              user={user}
             />
           </>
         )}
@@ -226,7 +254,6 @@ export function NavigationDrawer({
               src={taskbarIcon}
               width={32}
               height={32}
-              layout="fixed"
               alt="Next Steps Logo"
             />
           </ListItemIcon>
@@ -235,7 +262,6 @@ export function NavigationDrawer({
               src={nextstepsTitle}
               width={106}
               height={24}
-              layout="fixed"
               alt="Next Steps Title"
             />
           </Box>

@@ -1,12 +1,12 @@
 import { gql, useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -44,7 +44,7 @@ export const GET_PUBLISHER = gql`
 function TemplateDetailsAdmin(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const { data } = useQuery<GetPublisherTemplate>(GET_PUBLISHER_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
@@ -70,7 +70,7 @@ function TemplateDetailsAdmin(): ReactElement {
           >
             <PageWrapper
               title={t('Template Details')}
-              authUser={AuthUser}
+              user={user}
               showDrawer
               backHref="/publisher"
               menu={<Menu />}
@@ -90,12 +90,16 @@ function TemplateDetailsAdmin(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
+})(async ({ user, locale, resolvedUrl }) => {
+  if (user == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
   const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
+    user,
+    locale,
+    resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -108,6 +112,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(TemplateDetailsAdmin)

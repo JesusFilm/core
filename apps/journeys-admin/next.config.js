@@ -1,12 +1,16 @@
-const withNx = require('@nrwl/next/plugins/with-nx')
-const withPlugins = require('next-compose-plugins')
+const { composePlugins, withNx } = require('@nx/next')
 const withImages = require('next-images')
 
 const { i18n } = require('./next-i18next.config')
 /**
- * @type {import('@nrwl/next/plugins/with-nx').WithNxOptions}
+ * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  nx: {
+    // Set this to true if you would like to to use SVGR
+    // See: https://github.com/gregberge/svgr
+    svgr: false
+  },
   i18n,
   images: {
     domains: [
@@ -24,11 +28,6 @@ const nextConfig = {
       }.cloudflarestream.com`
     ]
   },
-  nx: {
-    // Set this to true if you would like to to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: false
-  },
   async redirects() {
     return [
       {
@@ -39,6 +38,11 @@ const nextConfig = {
       {
         source: '/reports',
         destination: '/reports/journeys',
+        permanent: true
+      },
+      {
+        source: '/journeys/:slug/edit',
+        destination: '/journeys/:slug',
         permanent: true
       }
     ]
@@ -51,6 +55,7 @@ const nextConfig = {
   eslint: {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
-  }
+  },
+  transpilePackages: ['shared-ui']
 }
-module.exports = withPlugins([[withImages], [withNx]], nextConfig)
+module.exports = composePlugins(withImages, withNx)(nextConfig)

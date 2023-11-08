@@ -1,11 +1,12 @@
-import ChatRoundedIcon from '@mui/icons-material/ChatRounded'
 import Button from '@mui/material/Button'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import MessageText1Icon from '@core/shared/ui/icons/MessageText1'
+
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 
-interface Props {
+interface ChatButtonProps {
   messagePlatform?: MessagePlatform | null
   messagePlatformId?: string | null
 }
@@ -13,7 +14,7 @@ interface Props {
 export function ChatButton({
   messagePlatform,
   messagePlatformId
-}: Props): ReactElement {
+}: ChatButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   function handleClick(): void {
@@ -65,7 +66,7 @@ export function ChatButton({
 
   return (
     <Button
-      startIcon={<ChatRoundedIcon />}
+      startIcon={<MessageText1Icon />}
       disabled={messagePlatform == null || messagePlatformId == null}
       onClick={handleClick}
     >

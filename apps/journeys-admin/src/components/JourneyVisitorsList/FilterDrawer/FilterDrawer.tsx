@@ -1,4 +1,3 @@
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
@@ -11,9 +10,11 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
+import X2Icon from '@core/shared/ui/icons/X2'
+
 import { ClearAllButton } from './ClearAllButton'
 
-interface Props {
+interface FilterDrawerProps {
   handleClose?: () => void
   handleChange?: (e) => void
   sortSetting?: 'date' | 'duration'
@@ -35,7 +36,7 @@ export function FilterDrawer({
   withIcon,
   hideInteractive,
   handleClearAll
-}: Props): ReactElement {
+}: FilterDrawerProps): ReactElement {
   return (
     <Box sx={{ height: '100vh' }}>
       <Box sx={{ display: { sm: 'block', md: 'none' } }}>
@@ -44,7 +45,7 @@ export function FilterDrawer({
             Filters <ClearAllButton handleClearAll={handleClearAll} />
           </Typography>
           <IconButton sx={{ ml: 'auto' }}>
-            <CloseRoundedIcon onClick={handleClose} />
+            <X2Icon onClick={handleClose} />
           </IconButton>
         </Stack>
         <Divider />

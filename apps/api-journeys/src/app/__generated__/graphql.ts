@@ -595,6 +595,10 @@ export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
     ids?: Nullable<string[]>;
+    tagIds?: Nullable<string[]>;
+    languageIds?: Nullable<string[]>;
+    limit?: Nullable<number>;
+    orderByRecent?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
@@ -613,11 +617,15 @@ export class JourneyUpdateInput {
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
+    creatorDescription?: Nullable<string>;
+    creatorImageBlockId?: Nullable<string>;
     primaryImageBlockId?: Nullable<string>;
     slug?: Nullable<string>;
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     hostId?: Nullable<string>;
+    strategySlug?: Nullable<string>;
+    tagIds?: Nullable<string[]>;
 }
 
 export class JourneyTemplateInput {
@@ -640,10 +648,12 @@ export class JourneyVisitorFilter {
 
 export class TeamCreateInput {
     title: string;
+    publicTitle?: Nullable<string>;
 }
 
 export class TeamUpdateInput {
     title: string;
+    publicTitle?: Nullable<string>;
 }
 
 export class UserInviteCreateInput {
@@ -733,6 +743,7 @@ export class Journey {
     __typename?: 'Journey';
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
+    creatorImageBlock?: Nullable<ImageBlock>;
     chatButtons: ChatButton[];
     id: string;
     title: string;
@@ -740,6 +751,7 @@ export class Journey {
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
+    creatorDescription?: Nullable<string>;
     slug: string;
     archivedAt?: Nullable<DateTime>;
     deletedAt?: Nullable<DateTime>;
@@ -753,6 +765,8 @@ export class Journey {
     template?: Nullable<boolean>;
     host?: Nullable<Host>;
     team?: Nullable<Team>;
+    strategySlug?: Nullable<string>;
+    tags: Tag[];
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1168,6 +1182,7 @@ export class JourneyProfile {
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
     lastActiveTeamId?: Nullable<string>;
+    onboardingFormCompletedAt?: Nullable<DateTime>;
 }
 
 export class JourneyVisitor {
@@ -1206,6 +1221,7 @@ export class Team {
     __typename?: 'Team';
     id: string;
     title: string;
+    publicTitle?: Nullable<string>;
     createdAt: DateTime;
     updatedAt: DateTime;
     userTeams: UserTeam[];
@@ -1433,6 +1449,8 @@ export abstract class IMutation {
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
+    abstract journeyFeature(id: string, feature: boolean): Nullable<Journey> | Promise<Nullable<Journey>>;
+
     abstract journeysArchive(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
 
     abstract journeysDelete(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
@@ -1446,6 +1464,8 @@ export abstract class IMutation {
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract journeyProfileOnboardingFormComplete(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 
@@ -1490,6 +1510,10 @@ export class Video {
 }
 
 export class Language {
+    id: string;
+}
+
+export class Tag {
     id: string;
 }
 

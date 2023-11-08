@@ -47,7 +47,7 @@ export function HeaderMenuPanel({
   )
 
   return (
-    <Paper elevation={0}>
+    <Paper elevation={0} data-testid="HeaderMenuPanel">
       <Container maxWidth="xxl" disableGutters>
         <Stack
           spacing={0.5}
@@ -55,16 +55,18 @@ export function HeaderMenuPanel({
           justifyContent="space-between"
           p={8}
         >
-          <NextLink href="/" passHref>
-            <a>
-              <Image
-                src={logo}
-                width="160"
-                height="40"
-                alt="Watch Logo"
-                style={{ cursor: 'pointer' }}
-              />
-            </a>
+          <NextLink href="/" passHref legacyBehavior>
+            <Image
+              src={logo}
+              width="160"
+              height="40"
+              alt="Watch Logo"
+              style={{
+                cursor: 'pointer',
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
           </NextLink>
           <IconButton
             color="inherit"
