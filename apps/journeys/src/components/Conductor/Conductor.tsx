@@ -205,79 +205,85 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         data-testid="Conductor"
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
-          <ThemeProvider
-            themeMode={currentTheme.themeMode}
-            themeName={currentTheme.themeName}
-            locale={locale}
-            rtl={rtl}
-            nested
+          <StyledSwiperContainer
+            dir={!rtl ? 'ltr' : 'rtl'}
+            pagination={{ dynamicBullets: true }}
+            slidesPerView="auto"
+            centeredSlides
+            centeredSlidesBounds
+            resizeObserver
+            onSwiper={(swiper) => setSwiper(swiper)}
+            allowTouchMove={false}
+            onSlideChange={() => setShowHeaderFooter(true)}
+            sx={{
+              '.swiper-pagination': {
+                display: showHeaderFooter ? 'block' : 'none'
+              }
+            }}
           >
-            <StyledSwiperContainer
-              dir={!rtl ? 'ltr' : 'rtl'}
-              pagination={{ dynamicBullets: true }}
-              slidesPerView="auto"
-              centeredSlides
-              centeredSlidesBounds
-              resizeObserver
-              onSwiper={(swiper) => setSwiper(swiper)}
-              allowTouchMove={false}
-              onSlideChange={() => setShowHeaderFooter(true)}
-              sx={{
-                '.swiper-pagination': {
-                  display: showHeaderFooter ? 'block' : 'none'
-                }
-              }}
-            >
-              {treeBlocks.map((block) => {
-                return (
-                  <SwiperSlide
-                    key={block.id}
-                    onClick={() => setShowNavigation(true)}
-                  >
-                    <Fade
-                      in={activeBlock?.id === block.id}
-                      mountOnEnter
-                      unmountOnExit
-                    >
-                      <Stack
-                        justifyContent="center"
-                        sx={{
-                          maxHeight: {
-                            xs: '100vh',
-                            lg: 'calc(100vh - 80px)'
-                          },
-                          height: {
-                            xs: 'inherit',
-                            lg: 'calc(54.25vw + 102px)'
-                          },
-                          px: { lg: 6 }
-                        }}
+            {treeBlocks.map((block) => {
+              return (
+                <SwiperSlide
+                  key={block.id}
+                  onClick={() => setShowNavigation(true)}
+                >
+                  {({ isActive }) =>
+                    isActive && (
+                      <ThemeProvider
+                        themeMode={currentTheme.themeMode}
+                        themeName={currentTheme.themeName}
+                        locale={locale}
+                        rtl={rtl}
+                        nested
                       >
-                        {showHeaderFooter && (
-                          <StepHeader sx={{ ...mobileNotchStyling }} />
-                        )}
-                        <BlockRenderer block={block} />
-                        <StepFooter
-                          sx={{
-                            visibility: showHeaderFooter ? 'visible' : 'hidden',
-                            ...mobileNotchStyling
-                          }}
-                        />
-                      </Stack>
-                    </Fade>
-                  </SwiperSlide>
-                )
-              })}
-              <NavigationButton
-                variant={rtl ? 'next' : 'prev'}
-                alignment="left"
-              />
-              <NavigationButton
-                variant={rtl ? 'prev' : 'next'}
-                alignment="right"
-              />
-            </StyledSwiperContainer>
-          </ThemeProvider>
+                        <Fade
+                          in={activeBlock?.id === block.id}
+                          mountOnEnter
+                          unmountOnExit
+                        >
+                          <Stack
+                            justifyContent="center"
+                            sx={{
+                              maxHeight: {
+                                xs: '100vh',
+                                lg: 'calc(100vh - 80px)'
+                              },
+                              height: {
+                                xs: 'inherit',
+                                lg: 'calc(54.25vw + 102px)'
+                              },
+                              px: { lg: 6 }
+                            }}
+                          >
+                            {showHeaderFooter && (
+                              <StepHeader sx={{ ...mobileNotchStyling }} />
+                            )}
+                            <BlockRenderer block={block} />
+                            <StepFooter
+                              sx={{
+                                visibility: showHeaderFooter
+                                  ? 'visible'
+                                  : 'hidden',
+                                ...mobileNotchStyling
+                              }}
+                            />
+                          </Stack>
+                        </Fade>
+                      </ThemeProvider>
+                    )
+                  }
+                </SwiperSlide>
+              )
+            })}
+            <NavigationButton
+              variant={rtl ? 'next' : 'prev'}
+              alignment="left"
+            />
+            <NavigationButton
+              variant={rtl ? 'prev' : 'next'}
+              alignment="right"
+            />
+          </StyledSwiperContainer>
         </Box>
       </Stack>
     </Box>

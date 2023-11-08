@@ -83,6 +83,7 @@ export function RadioQuestion({
           eventId: id,
           blockId,
           radioOptionSelectedId: radioOptionBlockId,
+          radioOptionSelectedLabel: radioOptionLabel,
           stepName: heading
         }
       })
