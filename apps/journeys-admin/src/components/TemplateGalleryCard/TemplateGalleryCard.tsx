@@ -4,6 +4,7 @@ import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -99,7 +100,9 @@ export function TemplateGalleryCard({
                 height: { xs: 130, md: 180 },
                 borderColor: 'divider',
                 borderRadius: 2,
-                backgroundColor: 'background.default'
+                backgroundColor: 'background.default',
+                width: '100%',
+                height: 'auto'
               }}
             />
           )}

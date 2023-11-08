@@ -62,32 +62,54 @@ export function TemplateGallery(): ReactElement {
         container
         spacing={2}
         sx={{
-          pb: { xs: 4, md: 7 }
+          mb: { xs: 6, md: 9 }
         }}
+        id="TemplateGalleryTagsFilter"
       >
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={7}>
           <TagsFilter
             label={t('Topics, holidays, felt needs, collections')}
             tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
             onChange={handleChange}
             selectedTagIds={selectedTagIds}
+            popperElementId="TemplateGalleryTagsFilter"
           />
         </Grid>
-        <Grid item xs={6} md={2}>
-          <TagsFilter
-            label={t('Audience')}
-            tagNames={['Audience']}
-            onChange={handleChange}
-            selectedTagIds={selectedTagIds}
-          />
-        </Grid>
-        <Grid item xs={6} md={2}>
-          <TagsFilter
-            label={t('Genre')}
-            tagNames={['Genre']}
-            onChange={handleChange}
-            selectedTagIds={selectedTagIds}
-          />
+        <Grid item xs={12} md={5}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TagsFilter
+                label={t('Audience')}
+                tagNames={['Audience']}
+                onChange={handleChange}
+                selectedTagIds={selectedTagIds}
+                popperElementId="TemplateGalleryAudienceTagsFilter"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TagsFilter
+                label={t('Genre')}
+                tagNames={['Genre']}
+                onChange={handleChange}
+                selectedTagIds={selectedTagIds}
+                popperElementId="TemplateGalleryGenreTagsFilter"
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              id="TemplateGalleryAudienceTagsFilter"
+              sx={{ p: '0 !important' }}
+            />
+            <Grid
+              item
+              xs={12}
+              md={6}
+              id="TemplateGalleryGenreTagsFilter"
+              sx={{ p: '0 !important' }}
+            />
+          </Grid>
         </Grid>
       </Grid>
       <TagCarousels selectedTagIds={selectedTagIds} onChange={handleChange} />

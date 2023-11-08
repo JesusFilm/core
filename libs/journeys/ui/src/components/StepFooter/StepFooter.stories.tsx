@@ -40,6 +40,7 @@ const journey: Journey = {
   title: 'my journey',
   featuredAt: null,
   strategySlug: null,
+
   slug: 'my-journey',
   language: {
     __typename: 'Language',
@@ -60,6 +61,8 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,

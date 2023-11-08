@@ -3,13 +3,13 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockUpdateInput } from "./globalTypes";
+import { ImageBlockCreateInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: PrimaryImageBlockUpdate
+// GraphQL mutation operation: JourneyImageBlockCreate
 // ====================================================
 
-export interface PrimaryImageBlockUpdate_imageBlockUpdate {
+export interface JourneyImageBlockCreate_imageBlockCreate {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -25,12 +25,10 @@ export interface PrimaryImageBlockUpdate_imageBlockUpdate {
   blurhash: string;
 }
 
-export interface PrimaryImageBlockUpdate {
-  imageBlockUpdate: PrimaryImageBlockUpdate_imageBlockUpdate;
+export interface JourneyImageBlockCreate {
+  imageBlockCreate: JourneyImageBlockCreate_imageBlockCreate;
 }
 
-export interface PrimaryImageBlockUpdateVariables {
-  id: string;
-  journeyId: string;
-  input: ImageBlockUpdateInput;
+export interface JourneyImageBlockCreateVariables {
+  input: ImageBlockCreateInput;
 }

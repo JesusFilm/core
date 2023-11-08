@@ -1,0 +1,1 @@
+export { MetadataTabPanel } from './MetadataTabPanel'
