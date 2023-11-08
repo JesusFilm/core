@@ -22,7 +22,7 @@ export function MetadataTabPanel(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation()
 
-  const handleOnChange = async (value): Promise<void> => {
+  async function handleOnChange(value: LanguageOption): Promise<void> {
     const { id } = value
     await setFieldValue('languageId', id)
   }
@@ -59,7 +59,7 @@ export function MetadataTabPanel(): ReactElement {
         helperText={t('Publicly visible on template details page')}
       />
       <LanguageAutocomplete
-        onChange={async (value) => await handleOnChange(value)}
+        onChange={handleOnChange}
         value={languageValue}
         languages={data?.languages}
         loading={loading}
