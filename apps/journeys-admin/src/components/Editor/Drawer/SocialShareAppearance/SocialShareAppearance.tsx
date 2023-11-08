@@ -3,9 +3,10 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DescriptionEdit } from './DescriptionEdit/DescriptionEdit'
-import { ImageEdit } from './ImageEdit/ImageEdit'
-import { TitleEdit } from './TitleEdit/TitleEdit'
+import { ImageEdit } from '../../ImageEdit'
+
+import { DescriptionEdit } from './DescriptionEdit'
+import { TitleEdit } from './TitleEdit'
 
 export function SocialShareAppearance(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

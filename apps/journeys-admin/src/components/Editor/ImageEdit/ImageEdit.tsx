@@ -4,25 +4,25 @@ import { ReactElement, useState } from 'react'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import {
   JourneyImageBlockAssociationUpdate,
   JourneyImageBlockAssociationUpdateVariables
-} from '../../../../../../__generated__/JourneyImageBlockAssociationUpdate'
+} from '../../../../__generated__/JourneyImageBlockAssociationUpdate'
 import {
   JourneyImageBlockCreate,
   JourneyImageBlockCreateVariables
-} from '../../../../../../__generated__/JourneyImageBlockCreate'
+} from '../../../../__generated__/JourneyImageBlockCreate'
 import {
   JourneyImageBlockDelete,
   JourneyImageBlockDeleteVariables
-} from '../../../../../../__generated__/JourneyImageBlockDelete'
+} from '../../../../__generated__/JourneyImageBlockDelete'
 import {
   JourneyImageBlockUpdate,
   JourneyImageBlockUpdateVariables
-} from '../../../../../../__generated__/JourneyImageBlockUpdate'
-import { blockDeleteUpdate } from '../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
-import { ImageLibrary } from '../../../ImageLibrary'
+} from '../../../../__generated__/JourneyImageBlockUpdate'
+import { blockDeleteUpdate } from '../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { ImageLibrary } from '../ImageLibrary'
 
 import { Large } from './Large'
 import { Small } from './Small'
