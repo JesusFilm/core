@@ -12,6 +12,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
+import { ThemeMode } from '../../../../__generated__/globalTypes'
 import { StepFields } from '../../../../__generated__/StepFields'
 
 const LeftNavigationContainer = styled(Box)`
@@ -26,11 +27,13 @@ const RightNavigationContainer = styled(Box)`
 interface NavigationButtonProps {
   variant: 'prev' | 'next'
   alignment: 'left' | 'right'
+  themeMode: ThemeMode
 }
 
 export function NavigationButton({
   variant,
-  alignment
+  alignment,
+  themeMode
 }: NavigationButtonProps): ReactElement {
   const { variant: journeyVariant } = useJourney()
   const {
@@ -125,22 +128,20 @@ export function NavigationButton({
         timeout={{ appear: 300, exit: 1000 }}
       >
         <IconButton
-          data-testid={`ConductorNavigationButton${capitalize(variant)}`}
-          size="small"
-          onClick={() => handleNav(variant)}
-          disableRipple
-          sx={{
-            pointerEvents: 'all',
-            mx: { xs: 2, lg: 8 },
-            p: 2,
-            color: (theme) => theme.palette.common.white,
-            backgroundColor: (theme) => `${theme.palette.grey[700]}33`,
-            '&:hover': {
-              color: (theme) => theme.palette.common.white,
-              backgroundColor: (theme) => `${theme.palette.grey[700]}4d`
-            }
-          }}
-        >
+        data-testid={`ConductorNavigationButton${capitalize(variant)}`}
+        size="small"
+        onClick={() => handleNav(variant)}
+        disableRipple
+        sx={{
+          pointerEvents: 'all',
+          mx: { xs: 2, lg: 8 },
+          p: 2,
+          color: (theme) =>
+            themeMode === ThemeMode.light
+              ? theme.palette.common.black
+              : theme.palette.common.white
+        }}
+      >
           {alignment === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </Fade>

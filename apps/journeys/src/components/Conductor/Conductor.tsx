@@ -277,10 +277,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               <NavigationButton
                 variant={rtl ? 'next' : 'prev'}
                 alignment="left"
+                themeMode={currentTheme.themeMode}
               />
               <NavigationButton
                 variant={rtl ? 'prev' : 'next'}
                 alignment="right"
+                themeMode={currentTheme.themeMode}
               />
             </StyledSwiperContainer>
           </ThemeProvider>
