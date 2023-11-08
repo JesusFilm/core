@@ -1,5 +1,6 @@
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
+import compact from 'lodash/compact'
 import difference from 'lodash/difference'
 import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper'
@@ -63,11 +64,16 @@ export function TagCarousels({
   )
 
   const handleChange = (selectedTagId: string): void => {
-    const existingTagIds = difference(selectedTagIds, [selectedTagId])
-    onChange(
-      [...existingTagIds, selectedTagId],
-      [...feltNeedsTagIds, ...collectionTagIds]
+    const carouselsTagIds = [...feltNeedsTagIds, ...collectionTagIds] ?? []
+
+    // Existing selected tag ids from these carousels only
+    const carouselSelectedTagIds = compact(
+      selectedTagIds.map((tagId) => carouselsTagIds.find((id) => id === tagId))
     )
+    // Remove newly selected tag id from existing tag ids
+    const existingTagIds = difference(carouselSelectedTagIds, [selectedTagId])
+
+    onChange([...existingTagIds, selectedTagId], carouselsTagIds)
   }
 
   return (

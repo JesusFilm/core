@@ -412,6 +412,32 @@ export const getTagsMock: MockedResponse<GetTags> = {
               primary: true
             }
           ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'parentId3',
+          service: null,
+          parentId: null,
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Topics',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'addictionTagId',
+          service: null,
+          parentId: 'parentId3',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Addiction',
+              primary: true
+            }
+          ]
         }
       ]
     }
