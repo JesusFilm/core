@@ -48,7 +48,8 @@ describe('TemplateSettingsDialog', () => {
           id: defaultJourney.id,
           __typename: 'Journey',
           ...updatedJourney,
-          tags: [{ __typeName: 'Tag', id: 'tagId' }]
+          tags: [{ __typeName: 'Tag', id: 'tagId' }],
+          language: { id: '496', __typename: 'Language' }
         }
       }
     }))
