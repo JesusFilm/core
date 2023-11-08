@@ -86,23 +86,11 @@ export function MetadataTabPanel(): ReactElement {
         </FormGroup>
         {journey?.publishedAt != null && (
           <TextField
-            disabled
-            aria-readonly
+            hiddenLabel
             variant="filled"
-            label={format(parseISO(journey?.publishedAt), 'P')}
+            value={format(parseISO(journey?.publishedAt), 'P')}
             InputProps={{
-              sx: {
-                '&.Mui-disabled': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.06)'
-                }
-              }
-            }}
-            InputLabelProps={{
-              sx: {
-                '&.Mui-disabled': {
-                  color: 'secondary.main'
-                }
-              }
+              readOnly: true
             }}
           />
         )}
