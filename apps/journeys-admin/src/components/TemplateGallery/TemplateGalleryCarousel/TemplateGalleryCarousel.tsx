@@ -34,10 +34,10 @@ export function TemplateGalleryCarousel<T>({
   renderItem,
   heading,
   breakpoints,
-  loading
+  loading = false
 }: TemplateGalleryCarouselProps<T>): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
-  const [showNav, setShowNav] = useState(false)
+  const [hovered, setHovered] = useState(false)
 
   const nextRef = useRef<HTMLButtonElement>(null)
   const prevRef = useRef<HTMLButtonElement>(null)
@@ -76,7 +76,7 @@ export function TemplateGalleryCarousel<T>({
         breakpoints={breakpoints}
         onSwiper={(swiper) => setSwiper(swiper)}
       >
-        {loading === true
+        {loading
           ? [0, 1, 2, 3, 4, 5, 6, 7].map((index) => {
               return (
                 <SwiperSlide key={`${heading ?? ''}-item-${index}`}>
@@ -89,8 +89,8 @@ export function TemplateGalleryCarousel<T>({
                 <SwiperSlide
                   key={item.id}
                   data-testid={`journey-${item.id}`}
-                  onMouseOver={() => setShowNav(true)}
-                  onMouseLeave={() => setShowNav(false)}
+                  onMouseOver={() => setHovered(true)}
+                  onMouseLeave={() => setHovered(false)}
                 >
                   {renderItem({ item })}
                 </SwiperSlide>
@@ -100,12 +100,14 @@ export function TemplateGalleryCarousel<T>({
       <NavButton
         variant="prev"
         ref={prevRef}
-        show={showNav && prevRef.current?.disabled === false}
+        hovered={hovered}
+        disabled={loading || prevRef.current?.disabled}
       />
       <NavButton
         variant="next"
         ref={nextRef}
-        show={showNav && nextRef.current?.disabled === false}
+        hovered={hovered}
+        disabled={loading || nextRef.current?.disabled}
       />
     </Box>
   )
