@@ -28,8 +28,8 @@ export function MetadataTabPanel(): ReactElement {
   }
 
   const language = data?.languages.find(({ id }) => id === values.languageId)
-  const languageValue = {
-    id: language?.id,
+  const languageValue: LanguageOption = {
+    id: language?.id ?? '',
     localName: language?.name?.find(({ primary }) => !primary)?.value,
     nativeName: language?.name?.find(({ primary }) => primary)?.value
   }
@@ -60,7 +60,7 @@ export function MetadataTabPanel(): ReactElement {
       />
       <LanguageAutocomplete
         onChange={async (value) => await handleOnChange(value)}
-        value={languageValue as LanguageOption}
+        value={languageValue}
         languages={data?.languages}
         loading={loading}
         helperText={t('RTL languages will change the journey flow')}
