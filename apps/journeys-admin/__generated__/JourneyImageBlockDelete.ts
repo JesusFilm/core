@@ -4,24 +4,23 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: BlockDeletePrimaryImage
+// GraphQL mutation operation: JourneyImageBlockDelete
 // ====================================================
 
-export interface BlockDeletePrimaryImage_blockDelete {
+export interface JourneyImageBlockDelete_blockDelete {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
-export interface BlockDeletePrimaryImage {
+export interface JourneyImageBlockDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  blockDelete: BlockDeletePrimaryImage_blockDelete[];
+  blockDelete: JourneyImageBlockDelete_blockDelete[];
 }
 
-export interface BlockDeletePrimaryImageVariables {
+export interface JourneyImageBlockDeleteVariables {
   id: string;
-  parentBlockId: string;
   journeyId: string;
 }

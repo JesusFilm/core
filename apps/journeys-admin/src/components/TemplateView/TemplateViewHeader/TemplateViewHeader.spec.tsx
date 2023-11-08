@@ -93,7 +93,7 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should render Template Edit button for publishers', () => {
-    const { getAllByTestId } = render(
+    const { getAllByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -110,7 +110,31 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(getAllByTestId('EditTemplateSettings')[0]).toBeInTheDocument()
+    expect(getAllByRole('link', { name: 'Edit' })).toHaveLength(2)
+  })
+
+  it('edit button should redirect to publisher journey edit', () => {
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey
+            }}
+          >
+            <TemplateViewHeader
+              isPublisher
+              authUser={{ id: '123' } as unknown as User}
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getAllByRole('link', { name: 'Edit' })[0]).toHaveAttribute(
+      'href',
+      '/publisher/journeyId/edit'
+    )
   })
 
   it('should not render Template Edit button for non-publishers', () => {

@@ -78,9 +78,9 @@ describe('Dialog', () => {
       expect(input.dialogAction?.onSubmit).toHaveBeenCalled()
     })
 
-    it('should show loading spinner if dialog is in submitting state', () => {
-      const { getByTestId } = render(<Dialog {...input} loading />)
-      expect(getByTestId('dialog-loading-icon')).toBeInTheDocument()
+    it('should show loading button if dialog is in submitting state', () => {
+      const { getByRole } = render(<Dialog {...input} loading />)
+      expect(getByRole('progressbar')).toBeInTheDocument()
     })
   })
 
