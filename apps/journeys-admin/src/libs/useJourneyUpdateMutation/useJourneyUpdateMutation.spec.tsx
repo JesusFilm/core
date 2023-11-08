@@ -32,7 +32,7 @@ describe('useJourneyUpdateMutation', () => {
           description: 'New Description',
           strategySlug: 'www.example.com/embed',
           tags: [{ __typename: 'Tag', id: 'tagId' }],
-          language: { id: '529' }
+          language: { id: '529', __typename: 'Language' }
         }
       }
     }))
