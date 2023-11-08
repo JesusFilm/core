@@ -57,6 +57,8 @@ const journey: Journey = {
     }
   ] as TreeBlock[],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
@@ -114,6 +116,8 @@ describe('JourneyContext', () => {
         }
       ] as TreeBlock[],
       primaryImageBlock: null,
+      creatorDescription: null,
+      creatorImageBlock: null,
       userJourneys: [],
       seoTitle: null,
       seoDescription: null,

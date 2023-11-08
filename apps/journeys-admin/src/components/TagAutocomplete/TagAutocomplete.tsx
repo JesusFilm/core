@@ -11,11 +11,11 @@ export interface AutocompleteOption {
 interface TagAutocompleteProps {
   parentId: string
   tags: AutocompleteOption[]
-  selectedTagIds?: string[]
+  selectedTagIds?: string[] | null
   label?: string
   placeholder?: string
   limit?: number
-  onChange: (parentId: string, tags: readonly AutocompleteOption[]) => void
+  onChange: (parentId: string, tagIds: readonly string[]) => void
 }
 
 export function TagAutocomplete({
@@ -38,7 +38,10 @@ export function TagAutocomplete({
       limitTags={limit}
       disableCloseOnSelect
       onChange={(e, value) => {
-        onChange(parentId, value)
+        onChange(
+          parentId,
+          value.map(({ value }) => value)
+        )
       }}
       fullWidth
       getOptionLabel={(option) => option.label}

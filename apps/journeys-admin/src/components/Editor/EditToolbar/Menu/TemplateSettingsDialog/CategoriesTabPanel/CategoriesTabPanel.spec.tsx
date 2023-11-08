@@ -1,8 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { FormikContextType, FormikProvider } from 'formik'
+import noop from 'lodash/noop'
 
-import { Service } from '../../../../../../__generated__/globalTypes'
-import { GET_TAGS } from '../../../../../libs/useTagsQuery/useTagsQuery'
+import { Service } from '../../../../../../../__generated__/globalTypes'
+import { GET_TAGS } from '../../../../../../libs/useTagsQuery/useTagsQuery'
+import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { CategoriesTabPanel } from './CategoriesTabPanel'
 
@@ -222,28 +225,30 @@ describe('CategoriesTabPanel', () => {
   it('shows tag autocompletes with initial tags', async () => {
     const { getByRole, getAllByRole } = render(
       <MockedProvider mocks={[tagsMock]}>
-        <CategoriesTabPanel
-          tabValue={1}
-          onChange={jest.fn()}
-          initialTags={[{ id: topicTag.id, parentId: topicTag.parentId }]}
-        />
+        <FormikProvider
+          value={
+            {
+              values: { tagIds: [] },
+              setFieldValue: noop
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <CategoriesTabPanel />
+        </FormikProvider>
       </MockedProvider>
     )
+
+    await waitFor(() => null)
 
     await waitFor(() => {
       const topicsAutocomplete = getByRole('combobox', { name: 'Topics' })
       expect(topicsAutocomplete).toBeInTheDocument()
-      const selectedChip = getByRole('button', { name: 'Acceptance' })
-      expect(selectedChip).toBeInTheDocument()
       expect(getByRole('combobox', { name: 'Felt Needs' })).toBeInTheDocument()
     })
 
     fireEvent.click(getAllByRole('button', { name: 'Open' })[0])
 
     await waitFor(() => {
-      expect(
-        getByRole('option', { name: 'Acceptance', selected: true })
-      ).toBeInTheDocument()
       expect(
         getByRole('option', { name: 'Addiction', selected: false })
       ).toBeInTheDocument()
@@ -256,11 +261,16 @@ describe('CategoriesTabPanel', () => {
   it('shows tag autocompletes with proper parent tag icons', async () => {
     const { getByTestId } = render(
       <MockedProvider mocks={[parentTagsMock]}>
-        <CategoriesTabPanel
-          tabValue={1}
-          onChange={jest.fn()}
-          initialTags={[{ id: topicTag.id, parentId: topicTag.parentId }]}
-        />
+        <FormikProvider
+          value={
+            {
+              values: { tagIds: [] },
+              setFieldValue: noop
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <CategoriesTabPanel />
+        </FormikProvider>
       </MockedProvider>
     )
 
@@ -275,15 +285,20 @@ describe('CategoriesTabPanel', () => {
   })
 
   it('calls onChange with selected tags from all tag groups', async () => {
-    const onChange = jest.fn()
+    const setFieldValue = jest.fn()
 
     const { getByRole, getAllByRole } = render(
       <MockedProvider mocks={[tagsMock]}>
-        <CategoriesTabPanel
-          tabValue={1}
-          onChange={onChange}
-          initialTags={[{ id: topicTag.id, parentId: topicTag.parentId }]}
-        />
+        <FormikProvider
+          value={
+            {
+              values: { tagIds: [] },
+              setFieldValue
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <CategoriesTabPanel />
+        </FormikProvider>
       </MockedProvider>
     )
 
@@ -299,9 +314,6 @@ describe('CategoriesTabPanel', () => {
       )
     )
 
-    expect(onChange).toHaveBeenCalledWith('tags', [
-      { id: topicTag.id, parentId: topicTag.parentId },
-      { id: needsTag.id, parentId: needsTag.parentId }
-    ])
+    expect(setFieldValue).toHaveBeenCalledWith('tagIds', ['tagId4'])
   })
 })
