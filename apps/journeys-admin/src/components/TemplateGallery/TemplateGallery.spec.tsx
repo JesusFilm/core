@@ -112,14 +112,15 @@ describe('TemplateGallery', () => {
     )
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    await waitFor(() =>
-      fireEvent.click(getByRole('option', { name: 'French' }))
-    )
-    expect(push).toHaveBeenCalledWith({
-      push,
-      query: {
-        languageIds: ['496']
-      }
+    fireEvent.click(getByRole('option', { name: 'French Français' }))
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        push,
+        query: {
+          languageIds: ['496']
+        }
+      })
     })
   })
 })
