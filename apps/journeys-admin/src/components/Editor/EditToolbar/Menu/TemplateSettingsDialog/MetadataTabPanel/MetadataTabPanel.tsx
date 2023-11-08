@@ -25,14 +25,11 @@ export function MetadataTabPanel(): ReactElement {
   }
 
   const language = data?.languages.find(({ id }) => id === values.languageId)
-  const languageValue =
-    language != null
-      ? {
-          id: language.id,
-          localName: language.name.find(({ primary }) => !primary)?.value,
-          nativeName: language.name.find(({ primary }) => primary)?.value
-        }
-      : undefined
+  const languageValue = {
+    id: language?.id,
+    localName: language?.name?.find(({ primary }) => !primary)?.value,
+    nativeName: language?.name?.find(({ primary }) => primary)?.value
+  }
 
   return (
     <>
