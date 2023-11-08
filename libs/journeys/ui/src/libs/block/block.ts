@@ -14,12 +14,19 @@ interface ActiveBlockArgs {
    *  activeBlock.nextBlockId */
   id?: string
 }
+
+interface GetNextBlockArgs {
+  id?: string
+  activeBlock?: TreeBlock<StepFields>
+}
+
 interface UseBlocksHook {
   prevActiveBlock: (args?: ActiveBlockArgs) => void
   nextActiveBlock: (args?: ActiveBlockArgs) => void
   setTreeBlocks: (blocks: TreeBlock[]) => void
   setShowHeaderFooter: (value: boolean) => void
   setShowNavigation: (value: boolean) => void
+  getNextBlock: (args: GetNextBlockArgs) => TreeBlock<StepFields> | undefined
   treeBlocks: TreeBlock[]
   blockHistory: TreeBlock[]
   showHeaderFooter: boolean
@@ -35,18 +42,16 @@ export function prevActiveBlock(): void {
   blockHistoryVar(updatedBlocks)
 }
 
-export function nextActiveBlock(args?: ActiveBlockArgs): void {
+export function getNextBlock({
+  id,
+  activeBlock
+}: GetNextBlockArgs): TreeBlock<StepFields> | undefined {
   const blocks = treeBlocksVar()
-  const blockHistory = blockHistoryVar()
-  const activeBlock = blockHistory[
-    blockHistory.length - 1
-  ] as TreeBlock<StepFields>
   let block: TreeBlock<StepFields> | undefined
 
-  // Set next block from id, nextBlockId or next block in treeBlocks
-  if (args?.id != null) {
+  if (id != null) {
     block = blocks.find(
-      (block) => block.__typename === 'StepBlock' && block.id === args.id
+      (block) => block.__typename === 'StepBlock' && block.id === id
     ) as TreeBlock<StepFields> | undefined
   } else if (activeBlock != null) {
     if (activeBlock.nextBlockId != null) {
@@ -64,6 +69,17 @@ export function nextActiveBlock(args?: ActiveBlockArgs): void {
         | undefined
     }
   }
+
+  return block
+}
+
+export function nextActiveBlock(args?: ActiveBlockArgs): void {
+  const blockHistory = blockHistoryVar()
+  const activeBlock = blockHistory[
+    blockHistory.length - 1
+  ] as TreeBlock<StepFields>
+
+  const block = getNextBlock({ id: args?.id, activeBlock })
 
   if (block != null && block !== activeBlock) {
     blockHistoryVar([...blockHistory, block])
@@ -114,6 +130,7 @@ export function useBlocks(): UseBlocksHook {
     setTreeBlocks,
     setShowHeaderFooter,
     setShowNavigation,
+    getNextBlock,
     treeBlocks,
     blockHistory,
     showHeaderFooter,

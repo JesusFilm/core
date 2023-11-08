@@ -1,3 +1,4 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
@@ -5,14 +6,36 @@ import { styled } from '@mui/material/styles'
 import capitalize from 'lodash/capitalize'
 import last from 'lodash/last'
 import { ReactElement, useEffect } from 'react'
+import TagManager from 'react-gtm-module'
+import { useTranslation } from 'react-i18next'
+import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 import { StepFields } from '../../../../__generated__/StepFields'
+import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
+import { StepPrevEventCreate } from '../../../../__generated__/StepPrevEventCreate'
+
+export const STEP_NEXT_EVENT_CREATE = gql`
+  mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
+    stepNextEventCreate(input: $input) {
+      id
+    }
+  }
+`
+
+export const STEP_PREV_EVENT_CREATE = gql`
+  mutation StepPrevEventCreate($input: StepPrevEventCreateInput!) {
+    stepPrevEventCreate(input: $input) {
+      id
+    }
+  }
+`
 
 const LeftNavigationContainer = styled(Box)`
   /* @noflip */
@@ -32,9 +55,17 @@ export function NavigationButton({
   variant,
   alignment
 }: NavigationButtonProps): ReactElement {
+  const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
+    STEP_NEXT_EVENT_CREATE
+  )
+  const [stepPrevEventCreate] = useMutation<StepPrevEventCreate>(
+    STEP_PREV_EVENT_CREATE
+  )
+  const { t } = useTranslation('journeys')
   const { variant: journeyVariant } = useJourney()
   const {
     setShowNavigation,
+    getNextBlock,
     treeBlocks,
     blockHistory,
     showNavigation,
@@ -70,11 +101,88 @@ export function NavigationButton({
     }
   }, [showNavigation, setShowNavigation, activeBlock])
 
+  function handleNext(): void {
+    const id = uuidv4()
+    const currentStepHeading = getStepHeading(
+      activeBlock.id,
+      activeBlock.children,
+      treeBlocks,
+      t
+    )
+    const nextBlock = getNextBlock({ id: undefined, activeBlock })
+    const nextStepHeading: string =
+      nextBlock != null
+        ? getStepHeading(nextBlock.id, nextBlock.children, treeBlocks, t)
+        : t('Unknown step')
+
+    void stepNextEventCreate({
+      variables: {
+        input: {
+          id,
+          blockId: activeBlock.id,
+          nextStepId: nextBlock?.id,
+          label: currentStepHeading,
+          value: nextStepHeading
+        }
+      }
+    })
+
+    TagManager.dataLayer({
+      dataLayer: {
+        event: 'step_next',
+        eventId: id
+      }
+    })
+
+    nextActiveBlock()
+  }
+
+  function handlePrev(): void {
+    const id = uuidv4()
+    const prevStep = blockHistory[
+      blockHistory.length - 2
+    ] as TreeBlock<StepFields>
+    const prevStepId = prevStep.id
+    const currentStepHeading = getStepHeading(
+      activeBlock.id,
+      activeBlock.children,
+      treeBlocks,
+      t
+    )
+    const prevStepHeading = getStepHeading(
+      prevStep.id,
+      prevStep.children,
+      treeBlocks,
+      t
+    )
+
+    void stepPrevEventCreate({
+      variables: {
+        input: {
+          id,
+          blockId: activeBlock.id,
+          prevStepId,
+          label: currentStepHeading,
+          value: prevStepHeading
+        }
+      }
+    })
+
+    TagManager.dataLayer({
+      dataLayer: {
+        event: 'step_prev',
+        eventId: id
+      }
+    })
+
+    prevActiveBlock()
+  }
+
   function handleNav(direction: 'next' | 'prev'): void {
     if (direction === 'next') {
-      nextActiveBlock()
+      handleNext()
     } else {
-      prevActiveBlock()
+      handlePrev()
     }
   }
 
