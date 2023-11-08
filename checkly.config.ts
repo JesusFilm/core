@@ -7,8 +7,8 @@ const config = defineConfig({
   /* A human friendly name for your project */
   projectName: 'core',
   /** A logical ID that needs to be unique across your Checkly account,
-  * See https://www.checklyhq.com/docs/cli/constructs/ to learn more about logical IDs.
-  */
+   * See https://www.checklyhq.com/docs/cli/constructs/ to learn more about logical IDs.
+   */
   logicalId: 'core',
   /* An optional URL to your Git repo */
   repoUrl: 'https://github.com/JesusFilm/core',
@@ -28,17 +28,17 @@ const config = defineConfig({
     // checkMatch: '**/__checks__/**/*.check.ts',
     browserChecks: {
       /* A glob pattern matches any Playwright .spec.ts files and automagically creates a Browser Check. This way, you
-      * can just write native Playwright code. See https://www.checklyhq.com/docs/cli/using-check-test-match/
-      * */
-      testMatch: '**/*.monitor.ts',
-    },
+       * can just write native Playwright code. See https://www.checklyhq.com/docs/cli/using-check-test-match/
+       * */
+      testMatch: '**/*.monitor.ts'
+    }
   },
   cli: {
     /* The default datacenter location to use when running npx checkly test */
     runLocation: 'eu-west-1',
     /* An array of default reporters to use when a reporter is not specified with the "--reporter" flag */
-    reporters: ['list'],
-  },
+    reporters: ['list']
+  }
 })
 
 export default config
