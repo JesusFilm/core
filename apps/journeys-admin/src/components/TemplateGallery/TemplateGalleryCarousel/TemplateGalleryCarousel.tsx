@@ -55,7 +55,12 @@ export function TemplateGalleryCarousel<T>({
   }, [swiper])
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box
+      sx={{ position: 'relative' }}
+      data-testid={`${
+        heading?.replace(' ', '') ?? ''
+      }-template-gallery-carousel`}
+    >
       {heading != null && <Typography variant="h5">{heading}</Typography>}
       <StyledSwiperContainer
         freeMode
@@ -92,8 +97,16 @@ export function TemplateGalleryCarousel<T>({
               )
             })}
       </StyledSwiperContainer>
-      <NavButton variant="prev" ref={prevRef} show={showNav} />
-      <NavButton variant="next" ref={nextRef} show={showNav} />
+      <NavButton
+        variant="prev"
+        ref={prevRef}
+        show={showNav && prevRef.current?.disabled === false}
+      />
+      <NavButton
+        variant="next"
+        ref={nextRef}
+        show={showNav && nextRef.current?.disabled === false}
+      />
     </Box>
   )
 }
