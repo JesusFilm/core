@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
 import { StrategySection } from '../../../../../StrategySection'
-import { ImageEdit } from '../../../../Drawer/SocialShareAppearance/ImageEdit/ImageEdit'
+import { ImageEdit } from '../../../../ImageEdit'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 export function AboutTabPanel(): ReactElement {

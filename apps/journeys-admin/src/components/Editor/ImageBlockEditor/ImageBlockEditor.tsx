@@ -59,10 +59,8 @@ export function ImageBlockEditor({
     width = 0,
     height = 0
   ): Promise<void> => {
-    if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src) {
-      console.log('here')
+    if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
       return
-    }
 
     const block = {
       ...selectedBlock,

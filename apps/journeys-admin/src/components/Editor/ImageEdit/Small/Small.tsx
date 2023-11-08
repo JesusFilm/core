@@ -4,8 +4,8 @@ import { ReactElement } from 'react'
 
 import Image3Icon from '@core/shared/ui/icons/Image3'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
-import { ImageBlockHeader } from '../../../../ImageBlockHeader'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../__generated__/GetJourney'
+import { ImageBlockHeader } from '../../ImageBlockHeader'
 
 interface SmallProps {
   loading?: boolean
@@ -28,7 +28,6 @@ export function Small({
       }}
     >
       <CardActionArea
-        data-testid="card click area"
         onClick={onClick}
         sx={{
           height: '100%',
@@ -41,6 +40,7 @@ export function Small({
           selectedBlock={imageBlock ?? null}
           showAdd
           showTitle={false}
+          loading={loading}
           Icon={Image3Icon}
         />
       </CardActionArea>
