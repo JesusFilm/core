@@ -163,7 +163,7 @@ export function NavigationDrawer({
         {globalReports && (
           <NavigationListItem
             icon={<BarGroup3Icon />}
-            label="Reports"
+            label="Analytics"
             selected={selectedPage === 'reports'}
             link="/reports"
           />
