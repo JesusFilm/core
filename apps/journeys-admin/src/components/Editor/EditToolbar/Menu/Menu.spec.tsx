@@ -95,7 +95,7 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -159,7 +159,7 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Create Template' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -223,7 +223,7 @@ describe('EditToolbar Menu', () => {
       expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
     })
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
