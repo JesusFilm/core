@@ -24,15 +24,15 @@ export function MetadataTabPanel(): ReactElement {
     await setFieldValue('languageId', id)
   }
 
-  const languageValuesObject = {
-    id: values.languageId as string,
-    localName: data?.languages
-      .find(({ id }) => id === values.languageId)
-      ?.name.find(({ primary }) => !primary)?.value,
-    nativeName: data?.languages
-      .find(({ id }) => id === values.languageId)
-      ?.name.find(({ primary }) => primary)?.value
-  }
+  const language = data?.languages.find(({ id }) => id === values.languageId)
+  const languageValue =
+    language != null
+      ? {
+          id: language.id,
+          localName: language.name.find(({ primary }) => !primary)?.value,
+          nativeName: language.name.find(({ primary }) => primary)?.value
+        }
+      : undefined
 
   return (
     <>
@@ -60,7 +60,7 @@ export function MetadataTabPanel(): ReactElement {
       />
       <LanguageAutocomplete
         onChange={async (value) => await handleOnChange(value)}
-        value={languageValuesObject}
+        value={languageValue}
         languages={data?.languages}
         loading={loading}
         helperText={t('RTL languages will change the journey flow')}
