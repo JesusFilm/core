@@ -3,6 +3,8 @@ import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
+import '../../../../test/i18n'
+
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
