@@ -25,7 +25,7 @@ describe('MetadataTabPanel', () => {
 
   it('shows published date', () => {
     const handleChange = jest.fn()
-    const { getByText } = render(
+    const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
           value={{ journey: publishedJourney as unknown as Journey }}
@@ -44,7 +44,7 @@ describe('MetadataTabPanel', () => {
       </MockedProvider>
     )
 
-    expect(getByText('01/01/2023')).toBeInTheDocument()
+    expect(getByRole('textbox', { name: '' })).toHaveValue('01/01/2023')
   })
 
   it('should handle form change', () => {
