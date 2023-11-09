@@ -1,4 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Language } from '.prisma/api-languages-client'
 
 import { LanguageIdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -6,11 +9,12 @@ import { PrismaService } from '../../lib/prisma.service'
 import { LanguageResolver } from './language.resolver'
 
 describe('LangaugeResolver', () => {
-  let resolver: LanguageResolver, prismaService: PrismaService
+  let resolver: LanguageResolver, prismaService: DeepMockProxy<PrismaService>
 
-  const language = {
+  const language: Language = {
     id: '20615',
     bcp47: 'zh',
+    iso3: 'zh',
     name: [
       {
         value: '普通話',
@@ -29,29 +33,51 @@ describe('LangaugeResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LanguageResolver, PrismaService]
+      providers: [
+        LanguageResolver,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
     }).compile()
     resolver = module.get<LanguageResolver>(LanguageResolver)
-    prismaService = module.get<PrismaService>(PrismaService)
-    prismaService.language.findUnique = jest.fn().mockResolvedValue(language)
-    prismaService.language.findMany = jest
-      .fn()
-      .mockResolvedValue([language, language])
-    prismaService.language.findFirst = jest.fn().mockResolvedValue(language)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
   describe('languages', () => {
     it('returns Languages', async () => {
+      prismaService.language.findMany.mockResolvedValue([language, language])
       expect(await resolver.languages(1, 2)).toEqual([language, language])
       expect(prismaService.language.findMany).toHaveBeenCalledWith({
         skip: 1,
-        take: 2
+        take: 2,
+        where: {}
+      })
+    })
+
+    it('filters by ids array', async () => {
+      prismaService.language.findMany.mockResolvedValue([language, language])
+      expect(
+        await resolver.languages(1, 2, { ids: ['languageId1', 'languageId2'] })
+      ).toEqual([language, language])
+      expect(prismaService.language.findMany).toHaveBeenCalledWith({
+        skip: 1,
+        take: 2,
+        where: {
+          id: {
+            in: ['languageId1', 'languageId2']
+          }
+        }
       })
     })
   })
 
   describe('language', () => {
     it('should return language', async () => {
+      prismaService.language.findUnique.mockResolvedValue(language)
       expect(await resolver.language(language.id)).toEqual(language)
       expect(prismaService.language.findUnique).toHaveBeenCalledWith({
         where: { id: language.id }
@@ -59,6 +85,7 @@ describe('LangaugeResolver', () => {
     })
 
     it('should return language by bcp47', async () => {
+      prismaService.language.findFirst.mockResolvedValue(language)
       expect(
         await resolver.language(language.id, LanguageIdType.bcp47)
       ).toEqual(language)
@@ -86,6 +113,7 @@ describe('LangaugeResolver', () => {
 
   describe('resolveReference', () => {
     it('should return language', async () => {
+      prismaService.language.findUnique.mockResolvedValue(language)
       expect(
         await resolver.resolveReference({
           __typename: 'Language',
