@@ -20,6 +20,7 @@ export function TemplateCreatorDetails({
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack
+      data-testid="TemplateCreatorDetails"
       sx={{
         borderWidth: { xs: 0, sm: 1 },
         borderStyle: 'solid',
@@ -40,7 +41,9 @@ export function TemplateCreatorDetails({
             mr: { xs: 3, sm: 0 },
             borderWidth: { xs: 0, sm: '2px' },
             borderStyle: 'solid',
-            borderColor: 'background.paper'
+            borderColor: 'background.paper',
+            width: { xs: 32, sm: 48 },
+            height: { xs: 32, sm: 48 }
           }}
         />
       )}
@@ -53,7 +56,7 @@ export function TemplateCreatorDetails({
           }}
         >
           <Typography
-            variant="subtitle3"
+            variant="body2"
             sx={{ color: { xs: 'text.primary', sm: 'secondary.light' } }}
           >
             {t('{{ creatorDetails }}', { creatorDetails })}

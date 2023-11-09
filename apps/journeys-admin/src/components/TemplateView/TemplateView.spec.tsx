@@ -113,6 +113,83 @@ describe('TemplateView', () => {
     expect(queryByText('Strategy')).not.toBeInTheDocument()
   })
 
+  it('should show creator details if provided', async () => {
+    const journeyWithCreatorDetails: Journey = {
+      ...defaultJourney,
+      strategySlug: null,
+      tags: [tag],
+      creatorDescription:
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries',
+      creatorImageBlock: {
+        id: 'creatorImageBlock.id',
+        parentBlockId: null,
+        parentOrder: 3,
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'photo-1552410260-0fd9b577afa6',
+        width: 6000,
+        height: 4000,
+        blurhash: 'LHFr#AxW9a%L0KM{IVRkoMD%D%R*',
+        __typename: 'ImageBlock'
+      }
+    }
+    const { getAllByText, getAllByRole } = render(
+      <MockedProvider mocks={[getJourneyMock]}>
+        <JourneyProvider
+          value={{
+            journey: journeyWithCreatorDetails,
+            variant: 'admin'
+          }}
+        >
+          <TemplateView authUser={{} as unknown as User} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getAllByText('{{ creatorDetails }}')).toHaveLength(2)
+    const creatorImages = getAllByRole('img')
+    expect(creatorImages).toHaveLength(2)
+    expect(creatorImages[0]).toHaveAttribute(
+      'src',
+      'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
+    )
+  })
+
+  it('should not show creator details if description is not provided', async () => {
+    const journeyWithoutCreatorDescription: Journey = {
+      ...defaultJourney,
+      strategySlug: null,
+      tags: [tag],
+      creatorDescription: null,
+      creatorImageBlock: {
+        id: 'creatorImageBlock.id',
+        parentBlockId: null,
+        parentOrder: 3,
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'photo-1552410260-0fd9b577afa6',
+        width: 6000,
+        height: 4000,
+        blurhash: 'LHFr#AxW9a%L0KM{IVRkoMD%D%R*',
+        __typename: 'ImageBlock'
+      }
+    }
+    const { queryAllByText, queryAllByRole } = render(
+      <MockedProvider mocks={[getJourneyMock]}>
+        <JourneyProvider
+          value={{
+            journey: journeyWithoutCreatorDescription,
+            variant: 'admin'
+          }}
+        >
+          <TemplateView authUser={{} as unknown as User} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(queryAllByText('{{ creatorDetails }}')).toHaveLength(0)
+    const creatorImages = queryAllByRole('img')
+    expect(creatorImages).toHaveLength(0)
+  })
+
   it('should get related templates', async () => {
     const journeyWithTags: Journey = {
       ...defaultJourney,
