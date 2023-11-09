@@ -74,7 +74,8 @@ export function TemplateSettingsDialog({
     featured: journey?.featuredAt != null,
     strategySlug: journey?.strategySlug,
     tagIds: journey?.tags.map(({ id }) => id),
-    creatorDescription: journey?.creatorDescription
+    creatorDescription: journey?.creatorDescription,
+    languageId: journey?.language?.id
   }
 
   function handleTabChange(_event, newValue): void {
@@ -93,12 +94,13 @@ export function TemplateSettingsDialog({
     values: TemplateSettingsFormValues
   ): Promise<void> {
     if (journey == null) return
-
     try {
       await journeySettingsUpdate({
         variables: {
           id: journey.id,
-          input: omit(values, 'featured')
+          input: {
+            ...omit(values, 'featured')
+          }
         }
       })
       if (Boolean(journey.featuredAt) !== values.featured)
