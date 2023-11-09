@@ -1,5 +1,4 @@
 const { composePlugins, withNx } = require('@nx/next')
-const withImages = require('next-images')
 
 const { i18n } = require('./next-i18next.config')
 
@@ -39,4 +38,4 @@ const nextConfig = {
   },
   transpilePackages: ['journeys-ui']
 }
-module.exports = composePlugins(withImages, withNx)(nextConfig)
+module.exports = composePlugins(withNx)(nextConfig)

@@ -70,6 +70,8 @@ describe('ChatButtons', () => {
     createdAt: '2021-11-19T12:34:56.647Z',
     publishedAt: null,
     blocks: [stepBlock],
+    creatorDescription: null,
+    creatorImageBlock: null,
     primaryImageBlock: null,
     userJourneys: [],
     template: null,
