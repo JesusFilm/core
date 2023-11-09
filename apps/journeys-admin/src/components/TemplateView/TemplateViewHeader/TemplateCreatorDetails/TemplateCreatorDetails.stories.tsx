@@ -1,8 +1,10 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { TemplateCreatorDetails } from './TemplateCreatorDetails'
 import Box from '@mui/material/Box'
+import { Meta, StoryObj } from '@storybook/react'
+
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import { SocialImage } from '../../../JourneyView/SocialImage'
+
+import { TemplateCreatorDetails } from './TemplateCreatorDetails'
 
 const TemplateCreatorStory: Meta<typeof TemplateCreatorDetails> = {
   ...journeysAdminConfig,
@@ -27,7 +29,7 @@ const Template: StoryObj<typeof TemplateCreatorDetails> = {
           }
         }}
       />
-      <TemplateCreatorDetails {...args}></TemplateCreatorDetails>
+      <TemplateCreatorDetails {...args} />
     </Box>
   )
 }
