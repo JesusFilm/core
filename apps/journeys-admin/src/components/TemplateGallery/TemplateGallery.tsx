@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { TemplateSections } from '../TemplateSections'
 
 import { LanguageFilter } from './LanguageFilter'
+import { TagCarousels } from './TagCarousels'
 import { TagsFilter } from './TagsFilter'
 
 export function TemplateGallery(): ReactElement {
@@ -24,10 +25,10 @@ export function TemplateGallery(): ReactElement {
 
   function handleChange(
     newSelectedTagIds: string[],
-    filteredTagIds: string[]
+    availableTagIds: string[]
   ): void {
     const tagIds = [
-      ...difference(selectedTagIds, filteredTagIds),
+      ...difference(selectedTagIds, availableTagIds),
       ...newSelectedTagIds
     ]
     setSelectedTagIds(tagIds)
@@ -111,6 +112,7 @@ export function TemplateGallery(): ReactElement {
           </Grid>
         </Grid>
       </Grid>
+      <TagCarousels selectedTagIds={selectedTagIds} onChange={handleChange} />
       <TemplateSections
         tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
         languageId={languageId}
