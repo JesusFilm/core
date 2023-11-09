@@ -275,12 +275,9 @@
   "Save": "Save",
   "Only a manager can invite new members to the team": "Only a manager can invite new members to the team",
   "No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.": "No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.",
-  "All Languages": "All Languages",
-  "One Language Selected": "{{first}}",
-  "Two Languages Selected": "{{first}}, {{second}}",
-  "Multiple Languages Selected_one": "{{list}}, +{{count}}",
-  "Multiple Languages Selected_other": "{{list}}, +{{count}}",
-  "Filter by language:": "Filter by language:",
+  "<0>Journey Templates</0><1>{{firstLanguage}} {{secondLanguage}}</1>": "<0>Journey Templates</0><1>{{firstLanguage}} {{secondLanguage}}</1>",
+  "<0>Journey Templates</0><1>{{firstLanguage}}</1>_one": "<0>Journey Templates</0><1>{{firstLanguage}}</1>",
+  "<0>Journey Templates</0><1>{{firstLanguage}}</1>_other": "<0>Journey Templates</0><1>{{count}} languages</1>",
   "Available Languages": "Available Languages",
   "Topics, holidays, felt needs, collections": "Topics, holidays, felt needs, collections",
   "Audience": "Audience",
@@ -337,5 +334,6 @@
   "Last Active": "Last Active",
   "Action": "Action",
   "User Data": "User Data",
-  "Polls": "Polls"
+  "Polls": "Polls",
+  "<0>Journey Templates</0><1>{{firstLanguage}}</1>_zero": "<0>Journey Templates</0><1>All Languages</1>"
 }

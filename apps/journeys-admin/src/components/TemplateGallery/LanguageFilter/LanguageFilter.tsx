@@ -2,8 +2,10 @@ import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { ReactElement, ReactNode, useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
+
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
@@ -19,68 +21,124 @@ export function LanguageFilter({
   languageIds,
   onChange
 }: LanguageFilterProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [open, setOpen] = useState(false)
+  const { t } = useTranslation('apps-journeys-admin')
 
   const { filteredLanguages, loading } = useLanguagesQuery({
     languageId: '529'
   })
 
-  const formatLanguages = (): string => {
-    const languageNames = getLanguages(languageIds, filteredLanguages)?.map(
-      (languageName) => languageName.localName ?? languageName.nativeName ?? ' '
-    )
-    const remaining = languageNames.length - 2
+  const languages = getLanguages(languageIds, filteredLanguages)?.map(
+    (languageName) => languageName.localName ?? languageName.nativeName ?? ' '
+  )
+  const [firstLanguage, secondLanguage] = languages
+  const count = languages.length
 
-    switch (languageNames.length) {
-      case 0:
-        return t('All Languages')
-      case 1:
-        return t('One Language Selected', { first: languageNames[0] })
-      case 2:
-        return t('Two Languages Selected', {
-          first: languageNames[0],
-          second: languageNames[1]
-        })
-      default:
-        return t('Multiple Languages Selected', {
-          list: languageNames.slice(0, 2).join(', '),
-          count: remaining
-        })
-    }
+  const LocalButton = ({ children }): ReactElement => (
+    <Button
+      variant="outlined"
+      size="small"
+      onClick={() => setOpen(true)}
+      sx={{
+        border: 'none',
+        '&:hover': {
+          border: 'none'
+        },
+        px: 1
+      }}
+    >
+      <Typography
+        variant="h1"
+        sx={{
+          display: { xs: 'none', lg: 'block' },
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden'
+        }}
+      >
+        {loading ? <Skeleton width={61} /> : children}
+      </Typography>
+      <Typography
+        variant="h6"
+        sx={{
+          display: { xs: 'block', lg: 'none' },
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden'
+        }}
+      >
+        {loading ? <Skeleton width={61} /> : children}
+      </Typography>
+      <ChevronDownIcon
+        fontSize="large"
+        sx={{ display: { xs: 'none', md: 'block' } }}
+      />
+      <ChevronDownIcon sx={{ display: { xs: 'block', md: 'none' } }} />
+    </Button>
+  )
+
+  const LocalTypography = ({
+    children,
+    color
+  }: {
+    children: ReactNode
+    color?: string
+  }): ReactElement => (
+    <>
+      <Typography
+        variant="h1"
+        color={color}
+        sx={{
+          display: { xs: 'none', lg: 'block' }
+        }}
+      >
+        {children}
+      </Typography>
+      <Typography
+        variant="h6"
+        color={color}
+        sx={{
+          display: { xs: 'block', lg: 'none' }
+        }}
+      >
+        {children}
+      </Typography>
+    </>
+  )
+
+  const LocalTypographyButton = ({ children }): ReactElement => {
+    return (
+      <Stack direction="row" alignItems="center">
+        <LocalTypography color="text.secondary">in</LocalTypography>
+        <LocalButton>{children}</LocalButton>
+      </Stack>
+    )
   }
-  const languageNames = formatLanguages()
 
   return (
     <>
-      <Stack direction="row" alignItems="center" justifyContent="center">
-        {!loading && (
-          <Typography variant="subtitle3" sx={{ flexShrink: 0 }}>
-            {t('Filter by language:')}
-          </Typography>
+      <Stack
+        gap={{ xs: 0, md: 1 }}
+        alignItems={{ xs: 'start', md: 'center' }}
+        sx={{
+          pb: { xs: 6, md: 9 },
+          flexDirection: { xs: 'column', md: 'row' }
+        }}
+      >
+        {count === 2 && (
+          <Trans t={t} values={{ firstLanguage, secondLanguage }}>
+            <LocalTypography>Journey Templates</LocalTypography>
+            <LocalTypographyButton>
+              {{ firstLanguage }} {{ secondLanguage }}
+            </LocalTypographyButton>
+          </Trans>
         )}
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={() => setOpen(true)}
-          sx={{
-            border: 'none',
-            '&:hover': {
-              border: 'none'
-            }
-          }}
-        >
-          <Typography
-            variant="subtitle3"
-            sx={{
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden'
-            }}
-          >
-            {loading ? <Skeleton width={61} /> : languageNames}
-          </Typography>
-        </Button>
+        {count !== 2 && (
+          <Trans t={t} values={{ firstLanguage }} count={count}>
+            <LocalTypography>Journey Templates</LocalTypography>
+            <LocalTypographyButton>{{ firstLanguage }}</LocalTypographyButton>
+          </Trans>
+        )}
       </Stack>
       <LanguageFilterDialog
         open={open}

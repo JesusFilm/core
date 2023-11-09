@@ -1,7 +1,5 @@
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
 import { useRouter } from 'next/router'
@@ -44,26 +42,10 @@ export function TemplateGallery(): ReactElement {
 
   return (
     <Container disableGutters>
-      <Stack
-        gap={1}
-        justifyContent="space-between"
-        sx={{
-          pb: { xs: 6, md: 9 },
-          flexDirection: { xs: 'column', md: 'row' },
-          alignItems: { xs: 'start', md: 'center' }
-        }}
-      >
-        <Typography variant="h2" sx={{ display: { xs: 'none', lg: 'block' } }}>
-          {t('Journey Templates')}
-        </Typography>
-        <Typography variant="h4" sx={{ display: { xs: 'block', lg: 'none' } }}>
-          {t('Journey Templates')}
-        </Typography>
-        <LanguageFilter
-          languageIds={languageIds}
-          onChange={handleLanguageChange}
-        />
-      </Stack>
+      <LanguageFilter
+        languageIds={languageIds}
+        onChange={handleLanguageChange}
+      />
       <Grid
         container
         spacing={2}
