@@ -96,7 +96,8 @@ export function HeaderAndLanguageFilter({
         variant="h1"
         color={color}
         sx={{
-          display: { xs: 'none', lg: 'block' }
+          display: { xs: 'none', lg: 'block' },
+          flexShrink: 0
         }}
       >
         {children}
@@ -126,7 +127,12 @@ export function HeaderAndLanguageFilter({
         {count === 2 && (
           <Trans t={t} values={{ firstLanguage, secondLanguage }}>
             <LocalTypography>Journey Templates</LocalTypography>
-            <Stack direction="row" gap={1} alignItems="center">
+            <Stack
+              direction="row"
+              gap={1}
+              alignItems="center"
+              sx={{ width: '100%', minWidth: 0 }}
+            >
               <LocalTypography color="text.secondary">in</LocalTypography>
               <LocalButton>
                 {{ firstLanguage }} {{ secondLanguage }}
@@ -137,7 +143,13 @@ export function HeaderAndLanguageFilter({
         {count !== 2 && (
           <Trans t={t} values={{ firstLanguage }} count={count}>
             <LocalTypography>Journey Templates</LocalTypography>
-            <Stack direction="row" gap={1} alignItems="center">
+            <Stack
+              direction="row"
+              gap={1}
+              alignItems="center"
+              minWidth={0}
+              sx={{ width: '100%', minWidth: 0 }}
+            >
               <LocalTypography color="text.secondary">in</LocalTypography>
               <LocalButton>{{ firstLanguage }}</LocalButton>
             </Stack>
