@@ -37,6 +37,11 @@ export function LanguageFilterDialog({
     onChange(ids)
     onClose()
   }
+  console.log('languages from parent', languages)
+  console.log(
+    'languages from iteslf',
+    convertLanguagesToOptions(languageIds, languages)
+  )
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {

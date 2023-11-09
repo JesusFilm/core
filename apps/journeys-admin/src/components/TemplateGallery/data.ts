@@ -203,7 +203,21 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
   request: {
     query: GET_LANGUAGES,
     variables: {
-      languageId: '529'
+      languageId: '529',
+      where: {
+        ids: [
+          '529',
+          '4415',
+          '1106',
+          '4451',
+          '496',
+          '20526',
+          '584',
+          '21028',
+          '20615',
+          '3934'
+        ]
+      }
     }
   },
   result: {
