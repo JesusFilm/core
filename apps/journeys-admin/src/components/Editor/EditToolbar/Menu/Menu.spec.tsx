@@ -217,7 +217,7 @@ describe('EditToolbar Menu', () => {
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
     expect(
-      getByRole('menuitem', { name: 'Publisher Settings' })
+      getByRole('menuitem', { name: 'Template Settings' })
     ).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
@@ -303,7 +303,7 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
   })
 
-  it('should link back to publisher page on click', () => {
+  it('should open templates dialog', () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'stepId',
@@ -314,7 +314,7 @@ describe('EditToolbar Menu', () => {
       children: []
     }
 
-    const { getByRole } = render(
+    const { getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -335,11 +335,14 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-
-    fireEvent.click(getByRole('button'))
     expect(
-      getByRole('menuitem', { name: 'Publisher Settings' })
-    ).toHaveAttribute('href', '/publisher/journeyId')
+      queryByRole('dialog', { name: 'Template Settings' })
+    ).not.toBeInTheDocument()
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Template Settings' }))
+    expect(
+      getByRole('dialog', { name: 'Template Settings' })
+    ).toBeInTheDocument()
   })
 
   it('should handle edit journey title', () => {

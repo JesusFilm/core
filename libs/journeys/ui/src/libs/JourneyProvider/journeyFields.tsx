@@ -41,6 +41,10 @@ export const JOURNEY_FIELDS = gql`
     primaryImageBlock {
       ...ImageFields
     }
+    creatorDescription
+    creatorImageBlock {
+      ...ImageFields
+    }
     userJourneys {
       id
       role

@@ -147,6 +147,8 @@ describe('Conductor', () => {
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: null,

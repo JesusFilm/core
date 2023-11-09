@@ -198,7 +198,6 @@ export function TagsFilter({
               pb: { md: hasMultipleColumns ? 6 : undefined },
               pr: { md: hasMultipleColumns ? 6 : undefined },
               maxHeight: {
-                xs: 'calc(100vh - 300px)',
                 md: 'calc(100vh - 175px)'
               },
               display: {

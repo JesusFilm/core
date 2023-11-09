@@ -59,7 +59,7 @@ export function DownloadDialog({
 
   useEffect(() => {
     if (percentage === 100) {
-      onClose()
+      onClose?.()
     }
   }, [percentage, onClose])
 
@@ -73,7 +73,7 @@ export function DownloadDialog({
       open={open}
       onClose={() => {
         cancel()
-        onClose()
+        onClose?.()
       }}
       dialogTitle={{
         title: 'Download Video',

@@ -14,11 +14,20 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('SocialShareAppearance', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   it('should render SocialShareAppearance', () => {
-    const { getByText, getByTestId, getByRole } = render(
+    const { getByText, getByRole } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -31,7 +40,7 @@ describe('SocialShareAppearance', () => {
       </MockedProvider>
     )
     expect(getByText('Social Image')).toBeInTheDocument()
-    expect(getByTestId('social-image-edit')).toBeInTheDocument()
+    expect(getByText('Change')).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Description' })).toBeInTheDocument()
   })
