@@ -109,16 +109,13 @@ export function NavigationButton({
       sx={{
         ...alignSx,
         position: 'absolute',
+        top: '50%',
+        transform: 'translate(0%, -50%)',
         // StepFooter heights
-        bottom: { xs: '170px', sm: '133px', lg: '60.5px' },
         zIndex: 2,
         display: 'flex',
         width: { xs: 82, lg: 114 },
-        height: {
-          xs: 'calc(100vh - 275px)',
-          sm: 'calc(100vh - 238px)',
-          lg: 'calc(100% - 105px)'
-        },
+        height: '100%',
         alignItems: 'center',
         pointerEvents: 'none'
       }}
@@ -128,20 +125,20 @@ export function NavigationButton({
         timeout={{ appear: 300, exit: 1000 }}
       >
         <IconButton
-        data-testid={`ConductorNavigationButton${capitalize(variant)}`}
-        size="small"
-        onClick={() => handleNav(variant)}
-        disableRipple
-        sx={{
-          pointerEvents: 'all',
-          mx: { xs: 2, lg: 8 },
-          p: 2,
-          color: (theme) =>
-            themeMode === ThemeMode.light
-              ? theme.palette.common.black
-              : theme.palette.common.white
-        }}
-      >
+          data-testid={`ConductorNavigationButton${capitalize(variant)}`}
+          size="small"
+          onClick={() => handleNav(variant)}
+          disableRipple
+          sx={{
+            pointerEvents: 'all',
+            mx: { xs: 0, lg: 8 },
+            p: { xs: 0, lg: 2 },
+            color: (theme) =>
+              themeMode === ThemeMode.light
+                ? theme.palette.common.black
+                : theme.palette.common.white
+          }}
+        >
           {alignment === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </Fade>
