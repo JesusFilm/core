@@ -40,28 +40,26 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
   }
 `
 
-const StyledSwiperContainer = styled(Swiper)(({ theme }) => {
-  const lgUp = useMediaQuery(theme.breakpoints.up('lg'))
-
-  return {
-    background: theme.palette.grey[900],
-    height: 'inherit',
-    '.swiper-pagination': {
-      height: 16,
-      top: 16,
-      width: '84px !important'
-    },
-    '.swiper-pagination-bullet': {
-      background: lgUp
-        ? theme.palette.common.white
-        : theme.palette.primary.main,
-      opacity: '60%'
-    },
-    '.swiper-pagination-bullet-active': {
-      opacity: '100%'
+const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
+  background: theme.palette.grey[900],
+  height: 'inherit',
+  '.swiper-pagination': {
+    height: 16,
+    top: 16,
+    width: '84px !important'
+  },
+  '.swiper-pagination-bullet': {
+    background: theme.palette.primary.main,
+    opacity: '60%',
+    [theme.breakpoints.up('lg')]: {
+      background: theme.palette.common.white
     }
+  },
+  '.swiper-pagination-bullet-active': {
+    opacity: '100%'
   }
-})
+}))
+
 export const JOURNEY_VISITOR_UPDATE = gql`
   mutation VisitorUpdateForCurrentUser($input: VisitorUpdateInput!) {
     visitorUpdateForCurrentUser(input: $input) {
