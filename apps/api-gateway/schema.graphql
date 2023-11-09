@@ -948,6 +948,12 @@ enum LanguageIdType
   bcp47 @join__enumValue(graph: LANGUAGES)
 }
 
+input LanguagesFilter
+  @join__type(graph: LANGUAGES)
+{
+  ids: [ID!]
+}
+
 type LanguageWithSlug
   @join__type(graph: VIDEOS)
 {
@@ -1380,7 +1386,7 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-  languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
+  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
   getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
