@@ -60,12 +60,10 @@ const Template: StoryObj<ComponentProps<typeof TemplateGalleryCard>> = {
       <Box
         sx={{
           backgroundColor: 'background.paper',
-          p: 5,
-          width: 250,
-          height: 320
+          p: 5
         }}
       >
-        <TemplateGalleryCard journey={args.journey} />
+        <TemplateGalleryCard item={args.item} />
       </Box>
     </MockedProvider>
   )
@@ -74,21 +72,21 @@ const Template: StoryObj<ComponentProps<typeof TemplateGalleryCard>> = {
 export const Default = {
   ...Template,
   args: {
-    journey
+    item: journey
   }
 }
 
 export const Loading = {
   ...Template,
   args: {
-    journey: undefined
+    item: undefined
   }
 }
 
 export const Complete = {
   ...Template,
   args: {
-    journey: {
+    item: {
       ...journey,
       title: 'Where did Jesus body go',
       primaryImageBlock: {

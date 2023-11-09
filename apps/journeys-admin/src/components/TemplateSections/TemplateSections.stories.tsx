@@ -186,9 +186,8 @@ const getJourneysMock: MockedResponse<GetJourneys> = {
 }
 
 const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
-  ...getJourneysMock,
   request: {
-    ...getJourneysMock.request,
+    query: GET_JOURNEYS,
     variables: {
       where: {
         template: true,
@@ -207,18 +206,30 @@ const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
   }
 }
 
-const getJourneysEmptyMock: MockedResponse<GetJourneys> = {
-  ...getJourneysMock,
+const getJourneysWithInvalidTagIdsMock: MockedResponse<GetJourneys> = {
+  request: {
+    query: GET_JOURNEYS,
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true,
+        tagIds: [addiction.id, 'invalidId'],
+        languageIds: ['529']
+      }
+    }
+  },
   result: {
     data: {
-      journeys: []
+      journeys: journeys.filter(({ tags }) =>
+        tags.some(({ id }) => id === addiction.id)
+      )
     }
   }
 }
 
 const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
   render: ({ ...args }) => (
-    <Box sx={{ backgroundColor: 'background.paper', p: 5 }}>
+    <Box sx={{ backgroundColor: 'background.paper', p: 5, overflow: 'hidden' }}>
       <TemplateSections {...args} />
     </Box>
   )
@@ -236,19 +247,7 @@ export const Default = {
   }
 }
 
-export const Loading = {
-  ...Template,
-  args: {
-    languageId: '529'
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [{ ...getJourneysMock, delay: 100000000000000 }]
-    }
-  }
-}
-
-export const TagIds = {
+export const Match = {
   ...Template,
   args: {
     tagIds: [addiction.id],
@@ -261,14 +260,15 @@ export const TagIds = {
   }
 }
 
-export const Empty = {
+export const NoMatch = {
   ...Template,
   args: {
+    tagIds: [addiction.id, 'invalidId'],
     languageId: '529'
   },
   parameters: {
     apolloClient: {
-      mocks: [getJourneysEmptyMock]
+      mocks: [getJourneysWithInvalidTagIdsMock]
     }
   }
 }
