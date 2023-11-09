@@ -9,7 +9,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
-import { getLanguages } from './getLanguages'
+import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 import { LanguageFilterDialog } from './LanguageFilterDialog'
 
 interface LanguageFilterProps {
@@ -17,18 +17,21 @@ interface LanguageFilterProps {
   onChange: (values: string[]) => void
 }
 
-export function LanguageFilter({
+export function HeaderAndLanguageFilter({
   languageIds,
   onChange
 }: LanguageFilterProps): ReactElement {
   const [open, setOpen] = useState(false)
   const { t } = useTranslation('apps-journeys-admin')
 
-  const { filteredLanguages, loading } = useLanguagesQuery({
+  const { data, loading } = useLanguagesQuery({
     languageId: '529'
   })
 
-  const languages = getLanguages(languageIds, filteredLanguages)?.map(
+  const languages = convertLanguagesToOptions(
+    languageIds,
+    data?.languages
+  )?.map(
     (languageName) => languageName.localName ?? languageName.nativeName ?? ' '
   )
   const [firstLanguage, secondLanguage] = languages
@@ -110,15 +113,6 @@ export function LanguageFilter({
     </>
   )
 
-  const LocalTypographyButton = ({ children }): ReactElement => {
-    return (
-      <Stack direction="row" gap={1} alignItems="center">
-        <LocalTypography color="text.secondary">in</LocalTypography>
-        <LocalButton>{children}</LocalButton>
-      </Stack>
-    )
-  }
-
   return (
     <>
       <Stack
@@ -132,15 +126,21 @@ export function LanguageFilter({
         {count === 2 && (
           <Trans t={t} values={{ firstLanguage, secondLanguage }}>
             <LocalTypography>Journey Templates</LocalTypography>
-            <LocalTypographyButton>
-              {{ firstLanguage }} {{ secondLanguage }}
-            </LocalTypographyButton>
+            <Stack direction="row" gap={1} alignItems="center">
+              <LocalTypography color="text.secondary">in</LocalTypography>
+              <LocalButton>
+                {{ firstLanguage }} {{ secondLanguage }}
+              </LocalButton>
+            </Stack>
           </Trans>
         )}
         {count !== 2 && (
           <Trans t={t} values={{ firstLanguage }} count={count}>
             <LocalTypography>Journey Templates</LocalTypography>
-            <LocalTypographyButton>{{ firstLanguage }}</LocalTypographyButton>
+            <Stack direction="row" gap={1} alignItems="center">
+              <LocalTypography color="text.secondary">in</LocalTypography>
+              <LocalButton>{{ firstLanguage }}</LocalButton>
+            </Stack>
           </Trans>
         )}
       </Stack>
@@ -148,7 +148,7 @@ export function LanguageFilter({
         open={open}
         onClose={() => setOpen(false)}
         onChange={onChange}
-        languages={filteredLanguages}
+        languages={data?.languages}
         languageIds={languageIds}
         loading={loading}
       />

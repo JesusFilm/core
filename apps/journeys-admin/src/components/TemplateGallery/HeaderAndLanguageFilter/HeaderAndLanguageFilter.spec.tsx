@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery/useLanguagesQuery'
 
-import { LanguageFilter } from '.'
+import { HeaderAndLanguageFilter } from '.'
 
 import '../../../../test/i18n'
 
@@ -12,7 +12,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-describe('LanguageFilter', () => {
+describe('HeaderAndLanguageFilter', () => {
   it('should open the language filter dialog on button click', async () => {
     const onChange = jest.fn()
     const { getByRole, getAllByRole, getAllByText } = render(
@@ -77,7 +77,7 @@ describe('LanguageFilter', () => {
           }
         ]}
       >
-        <LanguageFilter languageIds={[]} onChange={onChange} />
+        <HeaderAndLanguageFilter languageIds={[]} onChange={onChange} />
       </MockedProvider>
     )
     await waitFor(() => {

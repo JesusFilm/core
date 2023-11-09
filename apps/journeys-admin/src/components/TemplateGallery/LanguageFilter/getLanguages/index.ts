@@ -1,1 +1,0 @@
-export { getLanguages } from './getLanguages'

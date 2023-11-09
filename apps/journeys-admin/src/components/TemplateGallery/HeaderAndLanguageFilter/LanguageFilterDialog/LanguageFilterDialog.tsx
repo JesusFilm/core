@@ -10,7 +10,7 @@ import {
   MultipleLanguageAutocomplete
 } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
-import { getLanguages } from '../getLanguages'
+import { convertLanguagesToOptions } from '../convertLanguagesToOptions'
 
 interface LanguageFilterDialogProps {
   open: boolean
@@ -31,7 +31,6 @@ export function LanguageFilterDialog({
 }: LanguageFilterDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
-  const ENGLISH_LANGUAGE_ID = '529'
 
   const handleSubmit = (values: FormikValues): void => {
     const ids = values.languages.map((language) => language.id)
@@ -49,7 +48,7 @@ export function LanguageFilterDialog({
             values: {
               languages:
                 languages != null
-                  ? getLanguages([ENGLISH_LANGUAGE_ID], languages)
+                  ? convertLanguagesToOptions(languageIds, languages)
                   : undefined
             }
           }),
@@ -65,7 +64,7 @@ export function LanguageFilterDialog({
           initialValues={{
             languages:
               languages != null
-                ? getLanguages(languageIds, languages)
+                ? convertLanguagesToOptions(languageIds, languages)
                 : undefined
           }}
           onSubmit={handleSubmit}

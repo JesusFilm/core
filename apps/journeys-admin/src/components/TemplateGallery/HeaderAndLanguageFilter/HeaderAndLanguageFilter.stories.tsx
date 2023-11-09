@@ -9,12 +9,12 @@ import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
 
-import { LanguageFilter } from '.'
+import { HeaderAndLanguageFilter } from '.'
 
-const LanguageFilterStory: Meta<typeof LanguageFilter> = {
+const HeaderAndLanguageFilterStory: Meta<typeof HeaderAndLanguageFilter> = {
   ...journeysAdminConfig,
-  component: LanguageFilter,
-  title: 'Journeys-Admin/TemplateGallery/LanguageFilter'
+  component: HeaderAndLanguageFilter,
+  title: 'Journeys-Admin/TemplateGallery/HeaderAndLanguageFilter'
 }
 
 const getLanguagesMock: MockedResponse<GetLanguages> = {
@@ -75,8 +75,8 @@ const getLanguagesMock: MockedResponse<GetLanguages> = {
   }
 }
 
-const Template: StoryObj<ComponentProps<typeof LanguageFilter>> = {
-  render: ({ ...args }) => <LanguageFilter {...args} />
+const Template: StoryObj<ComponentProps<typeof HeaderAndLanguageFilter>> = {
+  render: ({ ...args }) => <HeaderAndLanguageFilter {...args} />
 }
 
 export const Default = {
@@ -118,4 +118,4 @@ export const Loading = {
   }
 }
 
-export default LanguageFilterStory
+export default HeaderAndLanguageFilterStory

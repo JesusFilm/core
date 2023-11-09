@@ -1,6 +1,6 @@
-import { getLanguages } from './getLanguages'
+import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 
-describe('getLanguages', () => {
+describe('convertLanguagesToOptions', () => {
   const languageIds = ['529', '496']
   const languages = [
     {
@@ -49,7 +49,7 @@ describe('getLanguages', () => {
   ]
 
   it('should return an array of formatted languages', () => {
-    expect(getLanguages(languageIds, languages)).toEqual([
+    expect(convertLanguagesToOptions(languageIds, languages)).toEqual([
       { id: '529', localName: undefined, nativeName: 'English' },
       { id: '496', localName: 'French', nativeName: 'Français' }
     ])

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 
 import { TemplateSections } from '../TemplateSections'
 
-import { LanguageFilter } from './LanguageFilter'
+import { HeaderAndLanguageFilter } from './HeaderAndLanguageFilter'
 import { TagsFilter } from './TagsFilter'
 
 export function TemplateGallery(): ReactElement {
@@ -42,7 +42,7 @@ export function TemplateGallery(): ReactElement {
 
   return (
     <Container disableGutters>
-      <LanguageFilter
+      <HeaderAndLanguageFilter
         languageIds={languageIds}
         onChange={handleLanguageChange}
       />
