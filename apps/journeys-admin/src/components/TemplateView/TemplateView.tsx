@@ -20,7 +20,7 @@ import { TemplateGalleryCard } from '../TemplateGalleryCard'
 import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import { TemplateTags } from './TemplateTags'
-import { TemplateViewHeader } from './TemplateViewHeader/TemplateViewHeader'
+import { TemplateViewHeader } from './TemplateViewHeader'
 import { TemplateCreatorDetails } from './TemplateViewHeader/TemplateCreatorDetails'
 
 interface TemplateViewProps {
