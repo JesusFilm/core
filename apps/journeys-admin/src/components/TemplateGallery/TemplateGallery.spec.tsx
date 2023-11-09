@@ -35,8 +35,10 @@ describe('TemplateGallery', () => {
     await waitFor(() =>
       expect(getByRole('button', { name: 'English' })).toBeInTheDocument()
     )
-    expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
-    expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
+    expect(
+      getByRole('heading', { level: 5, name: 'Acceptance' })
+    ).toBeInTheDocument()
+    expect(getByRole('heading', { level: 5, name: 'Hope' })).toBeInTheDocument()
   })
 
   it('should render templates filtered via tags', async () => {
@@ -62,9 +64,11 @@ describe('TemplateGallery', () => {
     await waitFor(() =>
       fireEvent.click(getByRole('option', { name: 'Acceptance' }))
     )
-    expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
     expect(
-      queryByRole('heading', { name: 'Addiction' })
+      getByRole('heading', { level: 5, name: 'Acceptance' })
+    ).toBeInTheDocument()
+    expect(
+      queryByRole('heading', { level: 5, name: 'Hope' })
     ).not.toBeInTheDocument()
     expect(push).toHaveBeenCalledWith({
       push,
