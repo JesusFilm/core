@@ -13,8 +13,9 @@ import {
 } from '../Team/TeamProvider'
 
 import { onboardingJourneys } from './data'
+import { GET_ONBOARDING_JOURNEYS } from './OnboardingPanelContent'
 
-import { OnboardingPanelContent } from '.'
+import OnboardingPanel from '.'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -118,6 +119,17 @@ const mocks = [
       variables
     },
     result: { data }
+  },
+  {
+    request: {
+      query: GET_ONBOARDING_JOURNEYS,
+      variables: {
+        where: {
+          ids: onboardingJourneys.map((journey) => journey.id)
+        }
+      }
+    },
+    result: { data: { onboardingJourneys } }
   }
 ]
 
@@ -148,6 +160,13 @@ describe('OnboardingPanelContent', () => {
       <MockedProvider
         mocks={[
           ...mocks,
+
+          {
+            request: {
+              query: GET_ONBOARDING_JOURNEYS
+            },
+            result: { data: { onboardingJourneys } }
+          },
           {
             ...getTeams,
             result: {
@@ -166,7 +185,7 @@ describe('OnboardingPanelContent', () => {
       >
         <FlagsProvider flags={{ teams: true }}>
           <TeamProvider>
-            <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+            <OnboardingPanel />
           </TeamProvider>
         </FlagsProvider>
       </MockedProvider>
@@ -207,7 +226,7 @@ describe('OnboardingPanelContent', () => {
       >
         <FlagsProvider flags={{ teams: true }}>
           <TeamProvider>
-            <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+            <OnboardingPanel />
           </TeamProvider>
         </FlagsProvider>
       </MockedProvider>
@@ -224,7 +243,7 @@ describe('OnboardingPanelContent', () => {
       <MockedProvider mocks={mocks}>
         <FlagsProvider flags={{ teams: false }}>
           <TeamProvider>
-            <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+            <OnboardingPanel />
           </TeamProvider>
         </FlagsProvider>
       </MockedProvider>
@@ -239,7 +258,7 @@ describe('OnboardingPanelContent', () => {
   it('should display onboarding templates', async () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+        <OnboardingPanel />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -257,7 +276,7 @@ describe('OnboardingPanelContent', () => {
 
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+        <OnboardingPanel />
       </MockedProvider>
     )
 
@@ -273,7 +292,7 @@ describe('OnboardingPanelContent', () => {
   it('should redirect on See all link', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+        <OnboardingPanel />
       </MockedProvider>
     )
 
@@ -286,7 +305,7 @@ describe('OnboardingPanelContent', () => {
   it('should redirect on See all templates button', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+        <OnboardingPanel />
       </MockedProvider>
     )
 

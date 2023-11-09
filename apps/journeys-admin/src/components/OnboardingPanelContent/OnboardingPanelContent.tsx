@@ -1,10 +1,11 @@
+import { gql, useSuspenseQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import { ReactElement, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -12,7 +13,10 @@ import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import FilePlus1Icon from '@core/shared/ui/icons/FilePlus1'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 
-import { GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys } from '../../../__generated__/GetOnboardingJourneys'
+import {
+  GetOnboardingJourneys,
+  GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
+} from '../../../__generated__/GetOnboardingJourneys'
 import { useJourneyCreateMutation } from '../../libs/useJourneyCreateMutation/useJourneyCreateMutation'
 import { ContainedIconButton } from '../ContainedIconButton'
 import { MediaListItem } from '../MediaListItem'
@@ -27,25 +31,69 @@ const onboardingIds = [
   '13317d05-a805-4b3c-b362-9018971d9b57'
 ]
 
-interface OnboardingPanelContentProps {
-  onboardingJourneys: OnboardingJourneys[]
+export const GET_ONBOARDING_JOURNEYS = gql`
+  query GetOnboardingJourneys($where: JourneysFilter) {
+    onboardingJourneys: journeys(where: $where) {
+      id
+      title
+      description
+      template
+      primaryImageBlock {
+        src
+      }
+    }
+  }
+`
+export function OnboardingPanelContent(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
+  const { data } = useSuspenseQuery<GetOnboardingJourneys>(
+    GET_ONBOARDING_JOURNEYS,
+    {
+      variables: {
+        where: {
+          ids: onboardingIds
+        }
+      }
+    }
+  )
+  const templates: OnboardingJourneys[] = []
+  data.onboardingJourneys.forEach((onboardingJourney) => {
+    templates[onboardingIds.indexOf(onboardingJourney.id)] = onboardingJourney
+  })
+
+  const handleTemplateClick = (journeyId?: string): void => {
+    if (journeyId != null) void router.push(`/templates/${journeyId}`)
+  }
+
+  return (
+    <>
+      {templates.map(
+        (template) =>
+          template != null && (
+            <MediaListItem
+              key={template.id}
+              loading={false}
+              title={template.title}
+              description={template.description ?? ''}
+              image={template.primaryImageBlock?.src ?? ''}
+              overline={t('Template')}
+              border
+              onClick={() => handleTemplateClick(template?.id)}
+            />
+          )
+      )}
+    </>
+  )
 }
 
-export function OnboardingPanelContent({
-  onboardingJourneys
-}: OnboardingPanelContentProps): ReactElement {
+export function OnboardingPanel(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const router = useRouter()
   const { teams } = useFlags()
 
   const { createJourney, loading } = useJourneyCreateMutation()
-
-  const templates: OnboardingJourneys[] = []
-  onboardingJourneys.forEach((onboardingJourney) => {
-    templates[onboardingIds.indexOf(onboardingJourney.id)] = onboardingJourney
-  })
-  const loadingTemplates = onboardingJourneys == null
 
   const handleCreateJourneyClick = async (): Promise<void> => {
     const journey = await createJourney()
@@ -54,10 +102,6 @@ export function OnboardingPanelContent({
         shallow: true
       })
     }
-  }
-
-  const handleTemplateClick = (journeyId?: string): void => {
-    if (journeyId != null) void router.push(`/templates/${journeyId}`)
   }
 
   return (
@@ -87,21 +131,28 @@ export function OnboardingPanelContent({
           </NextLink>
         </Stack>
       </SidePanelContainer>
-      {templates.map(
-        (template) =>
-          template != null && (
-            <MediaListItem
-              key={template.id}
-              loading={loadingTemplates}
-              title={template.title}
-              description={template.description ?? ''}
-              image={template.primaryImageBlock?.src ?? ''}
-              overline={t('Template')}
-              border
-              onClick={() => handleTemplateClick(template?.id)}
-            />
-          )
-      )}
+      <Suspense
+        fallback={
+          <>
+            {onboardingIds.map((id, i) => (
+              <MediaListItem
+                key={i}
+                loading
+                title=""
+                description=""
+                image=""
+                overline={t('Template')}
+                border
+                onClick={() => {
+                  return null
+                }}
+              />
+            ))}
+          </>
+        }
+      >
+        <OnboardingPanelContent />
+      </Suspense>
       <SidePanelContainer border={false}>
         <NextLink href="/templates" passHref legacyBehavior>
           <Button

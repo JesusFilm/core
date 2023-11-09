@@ -7,8 +7,9 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
-import { OnboardingPanelContent } from '../../OnboardingPanelContent'
+import OnboardingPanel from '../../OnboardingPanelContent'
 import { onboardingJourneys } from '../../OnboardingPanelContent/data'
+import { GET_ONBOARDING_JOURNEYS } from '../../OnboardingPanelContent/OnboardingPanelContent'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
@@ -124,11 +125,25 @@ describe('TeamSelect', () => {
 
   it('removes create journey buttons when on Shared With Me team', async () => {
     const { getByRole, queryByRole } = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ONBOARDING_JOURNEYS,
+              variables: {
+                where: {
+                  ids: onboardingJourneys.map((journey) => journey.id)
+                }
+              }
+            },
+            result: { data: { onboardingJourneys } }
+          }
+        ]}
+      >
         <FlagsProvider flags={{ teams: true }}>
           <TeamProvider>
             <TeamSelect />
-            <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+            <OnboardingPanel />
             <AddJourneyButton />
           </TeamProvider>
         </FlagsProvider>
