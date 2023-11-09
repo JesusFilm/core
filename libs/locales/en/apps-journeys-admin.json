@@ -275,7 +275,7 @@
   "Save": "Save",
   "Only a manager can invite new members to the team": "Only a manager can invite new members to the team",
   "No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.": "No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.",
-  "<0>Journey Templates</0><1>{{firstLanguage}} {{secondLanguage}}</1>": "<0>Journey Templates</0><1>{{firstLanguage}} {{secondLanguage}}</1>",
+  "<0>Journey Templates</0><1>{{firstLanguage}} {{secondLanguage}}</1>": "<0>Journey Templates</0><1>{{firstLanguage}}, {{secondLanguage}}</1>",
   "<0>Journey Templates</0><1>{{firstLanguage}}</1>_one": "<0>Journey Templates</0><1>{{firstLanguage}}</1>",
   "<0>Journey Templates</0><1>{{firstLanguage}}</1>_other": "<0>Journey Templates</0><1>{{count}} languages</1>",
   "Available Languages": "Available Languages",
