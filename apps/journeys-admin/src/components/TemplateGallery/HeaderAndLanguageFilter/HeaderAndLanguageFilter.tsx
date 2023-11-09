@@ -106,7 +106,8 @@ export function HeaderAndLanguageFilter({
         variant="h6"
         color={color}
         sx={{
-          display: { xs: 'block', lg: 'none' }
+          display: { xs: 'block', lg: 'none' },
+          flexShrink: 0
         }}
       >
         {children}
