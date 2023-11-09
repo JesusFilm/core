@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepPrevEventCreateInput } from "./globalTypes";
+import { StepPrevEventCreateInput } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepPrevEventCreate

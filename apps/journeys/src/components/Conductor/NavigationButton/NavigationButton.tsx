@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
@@ -12,30 +12,18 @@ import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
+import { StepNextEventCreate } from '@core/journeys/ui/Card/__generated__/StepNextEventCreate'
+import { StepPrevEventCreate } from '@core/journeys/ui/Card/__generated__/StepPrevEventCreate'
+import {
+  STEP_NEXT_EVENT_CREATE,
+  STEP_PREV_EVENT_CREATE
+} from '@core/journeys/ui/Card/Card'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 import { StepFields } from '../../../../__generated__/StepFields'
-import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
-import { StepPrevEventCreate } from '../../../../__generated__/StepPrevEventCreate'
-
-export const STEP_NEXT_EVENT_CREATE = gql`
-  mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
-    stepNextEventCreate(input: $input) {
-      id
-    }
-  }
-`
-
-export const STEP_PREV_EVENT_CREATE = gql`
-  mutation StepPrevEventCreate($input: StepPrevEventCreateInput!) {
-    stepPrevEventCreate(input: $input) {
-      id
-    }
-  }
-`
 
 const LeftNavigationContainer = styled(Box)`
   /* @noflip */
@@ -101,96 +89,70 @@ export function NavigationButton({
     }
   }, [showNavigation, setShowNavigation, activeBlock])
 
-  function handleNext(): void {
+  // should always be called with nextActiveBlock() and prevActiveBlock()
+  // should match with other handleNavigationEventCreate functions
+  function handleNavigationEventCreate(target: 'next' | 'prev'): void {
     const id = uuidv4()
-    const currentStepHeading = getStepHeading(
+    const stepName = getStepHeading(
       activeBlock.id,
       activeBlock.children,
       treeBlocks,
       t
     )
-    const nextBlock = getNextBlock({ id: undefined, activeBlock })
-    const nextStepHeading: string =
-      nextBlock != null
-        ? getStepHeading(nextBlock.id, nextBlock.children, treeBlocks, t)
-        : t('Unknown step')
+    const targetBlock =
+      target === 'next'
+        ? getNextBlock({ id: undefined, activeBlock })
+        : (blockHistory[blockHistory.length - 2] as TreeBlock<StepFields>)
+    const targetStepName =
+      targetBlock != null &&
+      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
 
-    void stepNextEventCreate({
-      variables: {
-        input: {
-          id,
-          blockId: activeBlock.id,
-          nextStepId: nextBlock?.id,
-          label: currentStepHeading,
-          value: nextStepHeading
+    const mutationInput = {
+      id,
+      blockId: activeBlock.id,
+      label: stepName,
+      value: targetStepName
+    }
+
+    if (target === 'next') {
+      void stepNextEventCreate({
+        variables: {
+          input: {
+            ...mutationInput,
+            nextStepId: targetBlock?.id
+          }
         }
-      }
-    })
+      })
+    } else {
+      void stepPrevEventCreate({
+        variables: {
+          input: {
+            ...mutationInput,
+            prevStepId: targetBlock?.id
+          }
+        }
+      })
+    }
 
     TagManager.dataLayer({
       dataLayer: {
-        event: 'step_next',
+        event: target === 'next' ? 'step_next' : 'step_prev',
         eventId: id,
         blockId: activeBlock.id,
-        stepName: currentStepHeading,
-        targetStepId: nextBlock?.id,
-        targetStepName: nextStepHeading
+        stepName,
+        targetStepId: targetBlock?.id,
+        targetStepName
       }
     })
-
-    nextActiveBlock()
-  }
-
-  function handlePrev(): void {
-    const id = uuidv4()
-    const prevStep = blockHistory[
-      blockHistory.length - 2
-    ] as TreeBlock<StepFields>
-    const prevStepId = prevStep.id
-    const currentStepHeading = getStepHeading(
-      activeBlock.id,
-      activeBlock.children,
-      treeBlocks,
-      t
-    )
-    const prevStepHeading = getStepHeading(
-      prevStep.id,
-      prevStep.children,
-      treeBlocks,
-      t
-    )
-
-    void stepPrevEventCreate({
-      variables: {
-        input: {
-          id,
-          blockId: activeBlock.id,
-          prevStepId,
-          label: currentStepHeading,
-          value: prevStepHeading
-        }
-      }
-    })
-
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'step_prev',
-        eventId: id,
-        blockId: activeBlock.id,
-        stepName: currentStepHeading,
-        targetStepId: prevStepId,
-        targetStepName: prevStepHeading
-      }
-    })
-
-    prevActiveBlock()
   }
 
   function handleNav(direction: 'next' | 'prev'): void {
     if (direction === 'next') {
-      handleNext()
+      handleNavigationEventCreate('next')
+      nextActiveBlock()
     } else {
-      handlePrev()
+      handleNavigationEventCreate('prev')
+      prevActiveBlock()
     }
   }
 

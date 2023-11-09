@@ -197,6 +197,22 @@ export interface SignUpSubmissionEventCreateInput {
   email: string;
 }
 
+export interface StepNextEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  nextStepId: string;
+  label?: string | null;
+  value?: string | null;
+}
+
+export interface StepPrevEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  prevStepId: string;
+  label?: string | null;
+  value?: string | null;
+}
+
 export interface StepViewEventCreateInput {
   id?: string | null;
   blockId: string;

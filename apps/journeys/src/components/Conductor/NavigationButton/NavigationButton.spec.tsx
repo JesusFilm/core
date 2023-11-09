@@ -5,12 +5,12 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
 import { showNavigationVar } from '@core/journeys/ui/block/block'
-
 import {
-  NavigationButton,
   STEP_NEXT_EVENT_CREATE,
   STEP_PREV_EVENT_CREATE
-} from './NavigationButton'
+} from '@core/journeys/ui/Card/Card'
+
+import { NavigationButton } from './NavigationButton'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
