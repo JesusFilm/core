@@ -2,6 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
+import '../../../test/i18n'
+
 import {
   getJourneysMock,
   getJourneysWithoutLanguageIdsMock,
@@ -14,15 +16,6 @@ import { TemplateGallery } from '.'
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
-}))
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
 }))
 
 jest.mock('next/router', () => ({
@@ -49,7 +42,9 @@ describe('TemplateGallery', () => {
       getAllByRole('heading', { name: 'Journey Templates' })[0]
     ).toBeInTheDocument()
     await waitFor(() =>
-      expect(getByRole('button', { name: 'All Languages' })).toBeInTheDocument()
+      expect(
+        getAllByRole('heading', { name: 'All Languages' })[0]
+      ).toBeInTheDocument()
     )
     expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
     expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
@@ -96,7 +91,7 @@ describe('TemplateGallery', () => {
       query: { languageIds: [] }
     } as unknown as NextRouter)
 
-    const { getByRole } = render(
+    const { getByRole, getAllByRole } = render(
       <MockedProvider
         mocks={[
           getJourneysWithoutLanguageIdsMock,
@@ -108,7 +103,7 @@ describe('TemplateGallery', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      fireEvent.click(getByRole('button', { name: 'All Languages' }))
+      fireEvent.click(getAllByRole('heading', { name: 'All Languages' })[0])
     )
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
