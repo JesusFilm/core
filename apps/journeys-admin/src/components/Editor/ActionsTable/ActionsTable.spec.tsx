@@ -22,6 +22,15 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 const blocks: Blocks[] = [
   {
     __typename: 'IconBlock',
@@ -48,6 +57,42 @@ const blocks: Blocks[] = [
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
       url: 'https://www.google.com/'
+    }
+  },
+  {
+    __typename: 'ButtonBlock',
+    id: 'button2.id',
+    parentBlockId: '777f29f2-274f-4f14-ba21-2208ea06e7f5',
+    parentOrder: 1,
+    label: 'Chat link',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: ButtonColor.primary,
+    size: ButtonSize.medium,
+    startIconId: null,
+    endIconId: null,
+    action: {
+      __typename: 'LinkAction',
+      parentBlockId: 'button2.id',
+      gtmEventName: null,
+      url: 'https://m.me/some_user'
+    }
+  },
+  {
+    __typename: 'ButtonBlock',
+    id: 'button3.id',
+    parentBlockId: '777f29f2-274f-4f14-ba21-2208ea06e7f5',
+    parentOrder: 2,
+    label: 'Bible link',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: ButtonColor.primary,
+    size: ButtonSize.medium,
+    startIconId: null,
+    endIconId: null,
+    action: {
+      __typename: 'LinkAction',
+      parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
+      gtmEventName: null,
+      url: 'https://www.bible.com/'
     }
   },
   {
@@ -100,6 +145,8 @@ describe('ActionsTable', () => {
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: null,
@@ -120,7 +167,7 @@ describe('ActionsTable', () => {
   })
 
   it('should render a list of actions', () => {
-    const { getByText, getAllByText, getByTestId } = render(
+    const { getByText, getAllByText, getAllByTestId } = render(
       <JourneyProvider
         value={{
           journey: {
@@ -134,7 +181,16 @@ describe('ActionsTable', () => {
       </JourneyProvider>
     )
     expect(getByText('The Journey Goals')).toBeInTheDocument()
+
+    expect(getAllByText('https://m.me/some_user')[0]).toBeInTheDocument()
+    expect(getAllByText('Start a Conversation')).toHaveLength(2)
+
+    expect(getAllByText('https://www.bible.com/')[0]).toBeInTheDocument()
+    expect(getAllByText('Link to Bible')).toHaveLength(2)
+
     expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
-    expect(getByTestId('Edit2Icon')).toBeInTheDocument()
+    expect(getAllByText('Visit a Website')).toHaveLength(2)
+
+    expect(getAllByTestId('Edit2Icon')).toHaveLength(3)
   })
 })
