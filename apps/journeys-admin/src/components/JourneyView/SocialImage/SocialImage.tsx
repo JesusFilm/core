@@ -1,15 +1,15 @@
-import Stack from '@mui/material/Stack'
 import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/material/styles'
-import { ReactElement } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 interface SocialImageProps {
-  height?: number
-  width?: number
+  height?: ComponentProps<typeof Stack>['height']
+  width?: ComponentProps<typeof Stack>['width']
   sx?: SxProps
 }
 
@@ -22,12 +22,12 @@ export function SocialImage({
 
   return (
     <Stack
+      width={width}
+      height={height}
       sx={{
         position: 'relative',
         justifyContent: 'center',
         alignItems: 'center',
-        width,
-        height,
         backgroundColor: 'background.default',
         overflow: 'hidden',
         ...sx

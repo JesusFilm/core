@@ -58,6 +58,8 @@ export function TemplateViewHeader({
           }}
         >
           <SocialImage
+            height={{ xs: 107, sm: 244 }}
+            width={{ xs: 107, sm: 244 }}
             sx={{
               borderRadius: 3,
               borderBottomRightRadius: {
@@ -67,9 +69,7 @@ export function TemplateViewHeader({
               borderBottomLeftRadius: {
                 xs: 12,
                 sm: hasCreatorDescription ? 0 : 12
-              },
-              height: { xs: 107, sm: 244 },
-              width: { xs: 107, sm: 244 }
+              }
             }}
           />
           {hasCreatorDescription && (

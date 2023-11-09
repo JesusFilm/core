@@ -1,7 +1,7 @@
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { SxProps, useTheme } from '@mui/material/styles'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -18,7 +18,6 @@ export function TemplateCreatorDetails({
   creatorDetails
 }: TemplateCreatorDetailsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const theme = useTheme()
   return (
     <Stack
       sx={{
