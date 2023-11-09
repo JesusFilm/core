@@ -148,7 +148,6 @@ export function HeaderAndLanguageFilter({
               direction="row"
               gap={1}
               alignItems="center"
-              minWidth={0}
               sx={{ width: '100%', minWidth: 0 }}
             >
               <LocalTypography color="text.secondary">in</LocalTypography>
