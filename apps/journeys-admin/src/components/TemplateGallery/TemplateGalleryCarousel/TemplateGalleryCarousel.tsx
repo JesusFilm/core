@@ -2,13 +2,15 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
-import SwiperCore, { A11y, Mousewheel, Navigation, SwiperOptions } from 'swiper'
+import SwiperCore from 'swiper'
+import { A11y, Mousewheel, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { NavigationOptions } from 'swiper/types/components/navigation'
+import { SwiperOptions } from 'swiper/types'
+import { NavigationOptions } from 'swiper/types/modules/navigation'
 
 import { NavButton } from './NavButton'
 
-import 'swiper/swiper.min.css'
+import 'swiper/css'
 
 SwiperCore.use([Navigation, Mousewheel, A11y])
 

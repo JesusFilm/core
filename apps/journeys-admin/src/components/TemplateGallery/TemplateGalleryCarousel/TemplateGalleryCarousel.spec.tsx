@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography'
 import { render } from '@testing-library/react'
-import { SwiperOptions } from 'swiper'
+import { SwiperOptions } from 'swiper/types'
 
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import {

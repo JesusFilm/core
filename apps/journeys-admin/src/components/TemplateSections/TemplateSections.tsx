@@ -6,7 +6,7 @@ import map from 'lodash/map'
 import take from 'lodash/take'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SwiperOptions } from 'swiper'
+import { SwiperOptions } from 'swiper/types'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
