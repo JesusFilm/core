@@ -27,7 +27,7 @@ const RightNavigationContainer = styled(Box)`
 interface NavigationButtonProps {
   variant: 'prev' | 'next'
   alignment: 'left' | 'right'
-  themeMode: ThemeMode
+  themeMode?: ThemeMode
 }
 
 export function NavigationButton({
