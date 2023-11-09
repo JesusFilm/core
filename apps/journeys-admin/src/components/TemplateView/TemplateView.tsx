@@ -21,6 +21,7 @@ import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import { TemplateTags } from './TemplateTags'
 import { TemplateViewHeader } from './TemplateViewHeader/TemplateViewHeader'
+import { TemplateCreatorDetails } from './TemplateViewHeader/TemplateCreatorDetails'
 
 interface TemplateViewProps {
   authUser: User
@@ -29,7 +30,7 @@ interface TemplateViewProps {
 export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   const { journey } = useJourney()
   const { breakpoints } = useTheme()
-
+  const hasCreatorDescription = journey?.creatorDescription != null
   const { t } = useTranslation('apps-journeys-admin')
 
   const tagIds = journey?.tags.map((tag) => tag.id)
@@ -105,6 +106,13 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
             </>
           )}
         </Typography>
+        {hasCreatorDescription && (
+          <TemplateCreatorDetails
+            creatorDetails={journey?.creatorDescription}
+            creatorImage={journey?.creatorImageBlock?.src}
+            sx={{ display: { xs: 'flex', sm: 'none' } }}
+          />
+        )}
         {journey?.strategySlug != null && (
           <StrategySection
             strategySlug={journey?.strategySlug}
