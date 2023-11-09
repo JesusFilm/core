@@ -12,12 +12,14 @@ declare module '@mui/material/styles' {
   interface TypographyVariants {
     subtitle3: React.CSSProperties
     overline2: React.CSSProperties
+    label: React.CSSProperties
   }
 
   // allow configuration using `createTheme`
   interface TypographyVariantsOptions {
     subtitle3?: React.CSSProperties
     overline2?: React.CSSProperties
+    label?: React.CSSProperties
   }
 }
 
@@ -26,6 +28,7 @@ declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
     subtitle3: true
     overline2: true
+    label: true
   }
 }
 
@@ -92,6 +95,12 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       fontWeight: 400,
       fontSize: 14,
       lineHeight: '22px'
+    },
+    label: {
+      fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
+      fontWeight: 600,
+      fontSize: 14,
+      lineHeight: '20px'
     },
     overline: {
       fontWeight: 600,

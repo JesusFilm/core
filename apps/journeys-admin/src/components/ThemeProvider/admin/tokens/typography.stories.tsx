@@ -42,6 +42,7 @@ export const Typography = {
       'subtitle3',
       'body1',
       'body2',
+      'label',
       'overline',
       'overline2',
       'caption'

@@ -74,6 +74,7 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
           subtitle3: 'h6',
           body1: 'p',
           body2: 'p',
+          label: 'p',
           overline: 'span',
           overline2: 'span',
           caption: 'span'
