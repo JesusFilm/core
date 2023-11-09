@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { TemplateSections } from '../TemplateSections'
 
 import { HeaderAndLanguageFilter } from './HeaderAndLanguageFilter'
+import { TagCarousels } from './TagCarousels'
 import { TagsFilter } from './TagsFilter'
 
 export function TemplateGallery(): ReactElement {
@@ -23,10 +24,10 @@ export function TemplateGallery(): ReactElement {
 
   function handleChange(
     newSelectedTagIds: string[],
-    filteredTagIds: string[]
+    availableTagIds: string[]
   ): void {
     const tagIds = [
-      ...difference(selectedTagIds, filteredTagIds),
+      ...difference(selectedTagIds, availableTagIds),
       ...newSelectedTagIds
     ]
     setSelectedTagIds(tagIds)
@@ -50,34 +51,57 @@ export function TemplateGallery(): ReactElement {
         container
         spacing={2}
         sx={{
-          pb: { xs: 6, md: 9 }
+          mb: { xs: 6, md: 9 }
         }}
+        id="TemplateGalleryTagsFilter"
       >
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={7}>
           <TagsFilter
             label={t('Topics, holidays, felt needs, collections')}
             tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
             onChange={handleChange}
             selectedTagIds={selectedTagIds}
+            popperElementId="TemplateGalleryTagsFilter"
           />
         </Grid>
-        <Grid item xs={6} md={2}>
-          <TagsFilter
-            label={t('Audience')}
-            tagNames={['Audience']}
-            onChange={handleChange}
-            selectedTagIds={selectedTagIds}
-          />
-        </Grid>
-        <Grid item xs={6} md={2}>
-          <TagsFilter
-            label={t('Genre')}
-            tagNames={['Genre']}
-            onChange={handleChange}
-            selectedTagIds={selectedTagIds}
-          />
+        <Grid item xs={12} md={5}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TagsFilter
+                label={t('Audience')}
+                tagNames={['Audience']}
+                onChange={handleChange}
+                selectedTagIds={selectedTagIds}
+                popperElementId="TemplateGalleryAudienceTagsFilter"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TagsFilter
+                label={t('Genre')}
+                tagNames={['Genre']}
+                onChange={handleChange}
+                selectedTagIds={selectedTagIds}
+                popperElementId="TemplateGalleryGenreTagsFilter"
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              id="TemplateGalleryAudienceTagsFilter"
+              sx={{ p: '0 !important' }}
+            />
+            <Grid
+              item
+              xs={12}
+              md={6}
+              id="TemplateGalleryGenreTagsFilter"
+              sx={{ p: '0 !important' }}
+            />
+          </Grid>
         </Grid>
       </Grid>
+      <TagCarousels selectedTagIds={selectedTagIds} onChange={handleChange} />
       <TemplateSections
         tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
         languageIds={languageIds}

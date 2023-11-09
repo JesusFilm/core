@@ -102,7 +102,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
-    expect(getByText('Reports')).toBeInTheDocument()
+    expect(getByText('Analytics')).toBeInTheDocument()
     await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
   })
 
@@ -134,7 +134,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('Reports-list-item')).toHaveAttribute(
+    expect(getByTestId('Analytics-list-item')).toHaveAttribute(
       'aria-selected',
       'true'
     )
@@ -148,7 +148,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(queryByText('Reports')).not.toBeInTheDocument()
+    expect(queryByText('Analytics')).not.toBeInTheDocument()
   })
 
   it('should select publisher button', async () => {

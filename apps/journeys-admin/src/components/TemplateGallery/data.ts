@@ -77,12 +77,12 @@ const acceptance: Tag = {
   parentId: 'parentId'
 }
 
-const addiction: Tag = {
+const hope: Tag = {
   __typename: 'Tag',
-  id: 'addictionTagId',
+  id: 'hopeTagId',
   name: [
     {
-      value: 'Addiction',
+      value: 'Hope',
       primary: true,
       __typename: 'Translation',
       language: {
@@ -100,14 +100,14 @@ const journeys: Journey[] = [
     id: 'featuredId1',
     title: 'Featured Template 1',
     createdAt: '2023-09-05T23:27:45.596Z',
-    tags: [addiction]
+    tags: [hope]
   },
   {
     ...defaultTemplate,
     id: 'featuredId2',
     title: 'Featured Template 2',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [addiction]
+    tags: [hope]
   },
   {
     ...defaultTemplate,
@@ -121,7 +121,7 @@ const journeys: Journey[] = [
     id: 'newId1',
     title: 'New Template 1',
     createdAt: '2023-09-05T23:27:45.596Z',
-    tags: [acceptance, addiction],
+    tags: [acceptance, hope],
     featuredAt: null
   },
   {
@@ -129,7 +129,7 @@ const journeys: Journey[] = [
     id: 'newId2',
     title: 'New Template 2',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [acceptance, addiction],
+    tags: [acceptance, hope],
     featuredAt: null
   },
   {
@@ -137,7 +137,7 @@ const journeys: Journey[] = [
     id: 'newId3',
     title: 'New Template 3',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [acceptance, addiction],
+    tags: [acceptance, hope],
     featuredAt: null
   },
   {
@@ -145,7 +145,7 @@ const journeys: Journey[] = [
     id: 'newId4',
     title: 'New Template 4',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [acceptance, addiction],
+    tags: [acceptance, hope],
     featuredAt: null
   },
   {
@@ -153,7 +153,7 @@ const journeys: Journey[] = [
     id: 'newId5',
     title: 'New Template 5',
     createdAt: '2023-08-05T23:27:45.596Z',
-    tags: [acceptance, addiction],
+    tags: [acceptance, hope],
     featuredAt: null
   }
 ]
@@ -267,7 +267,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
         {
           __typename: 'Tag',
           id: 'parentId1',
-          service: Service.apiJourneys,
+          service: null,
           parentId: null,
           name: [
             {
@@ -280,7 +280,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
         {
           __typename: 'Tag',
           id: 'acceptanceTagId',
-          service: Service.apiJourneys,
+          service: null,
           parentId: 'parentId1',
           name: [
             {
@@ -292,9 +292,165 @@ export const getTagsMock: MockedResponse<GetTags> = {
         },
         {
           __typename: 'Tag',
-          id: 'addictionTagId',
-          service: Service.apiJourneys,
+          id: 'depressionTagId',
+          service: null,
           parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Depression',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'fearTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Fear/Anxiety',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'forgivenessTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Forgiveness',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'hopeTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Hope',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'lonelinessTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Loneliness',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'loveTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Love',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'securityTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Security',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'significanceTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Significance',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'parentId2',
+          service: null,
+          parentId: null,
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Collections',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'jesusFilmTagId',
+          service: Service.apiJourneys,
+          parentId: 'parentId2',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Jesus Film',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'nuaTagId',
+          service: Service.apiJourneys,
+          parentId: 'parentId2',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'NUA',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'parentId3',
+          service: null,
+          parentId: null,
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Topics',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'addictionTagId',
+          service: null,
+          parentId: 'parentId3',
           name: [
             {
               __typename: 'Translation',

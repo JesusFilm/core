@@ -7,10 +7,10 @@ import {
   Resolver
 } from '@nestjs/graphql'
 
-import { Language } from '.prisma/api-languages-client'
+import { Language, Prisma } from '.prisma/api-languages-client'
 import { TranslationField } from '@core/nest/decorators/TranslationField'
 
-import { LanguageIdType } from '../../__generated__/graphql'
+import { LanguageIdType, LanguagesFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Language')
@@ -20,9 +20,13 @@ export class LanguageResolver {
   @Query()
   async languages(
     @Args('offset') offset: number,
-    @Args('limit') limit: number
+    @Args('limit') limit: number,
+    @Args('where') where?: LanguagesFilter
   ): Promise<Language[]> {
+    const filter: Prisma.LanguageWhereInput = {}
+    if (where?.ids != null) filter.id = { in: where?.ids }
     return await this.prismaService.language.findMany({
+      where: filter,
       skip: offset,
       take: limit
     })

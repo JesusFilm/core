@@ -46,8 +46,10 @@ describe('TemplateGallery', () => {
         getAllByRole('heading', { name: 'All Languages' })[0]
       ).toBeInTheDocument()
     )
-    expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
-    expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
+    expect(
+      getByRole('heading', { level: 5, name: 'Acceptance' })
+    ).toBeInTheDocument()
+    expect(getByRole('heading', { level: 5, name: 'Hope' })).toBeInTheDocument()
   })
 
   it('should render templates filtered via tags', async () => {
@@ -74,7 +76,10 @@ describe('TemplateGallery', () => {
       fireEvent.click(getByRole('option', { name: 'Acceptance' }))
     )
     expect(
-      queryByRole('heading', { name: 'Addiction' })
+      getByRole('heading', { level: 5, name: 'Acceptance' })
+    ).toBeInTheDocument()
+    expect(
+      queryByRole('heading', { level: 5, name: 'Hope' })
     ).not.toBeInTheDocument()
     expect(push).toHaveBeenCalledWith({
       push,

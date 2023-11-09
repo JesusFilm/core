@@ -589,6 +589,22 @@ export interface JourneyFields_primaryImageBlock {
   blurhash: string;
 }
 
+export interface JourneyFields_creatorImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
 export interface JourneyFields_userJourneys_user {
   __typename: "User";
   id: string;
@@ -670,6 +686,8 @@ export interface JourneyFields {
   template: boolean | null;
   blocks: JourneyFields_blocks[] | null;
   primaryImageBlock: JourneyFields_primaryImageBlock | null;
+  creatorDescription: string | null;
+  creatorImageBlock: JourneyFields_creatorImageBlock | null;
   userJourneys: JourneyFields_userJourneys[] | null;
   chatButtons: JourneyFields_chatButtons[];
   host: JourneyFields_host | null;

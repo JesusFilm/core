@@ -54,6 +54,8 @@ describe('NavigateToJourneyAction', () => {
     publishedAt: null,
     blocks: [] as TreeBlock[],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: null,

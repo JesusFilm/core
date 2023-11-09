@@ -54,7 +54,7 @@ describe('TemplateGalleryCard', () => {
 
   it('should render Template Gallery Card', () => {
     const { getByRole, getByText } = render(
-      <TemplateGalleryCard journey={journey} />
+      <TemplateGalleryCard item={journey} />
     )
     expect(getByRole('img').attributes.getNamedItem('src')?.value).toBe(
       'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
@@ -68,7 +68,7 @@ describe('TemplateGalleryCard', () => {
   it('should return an abbreviated version of the language', () => {
     const { getByText } = render(
       <TemplateGalleryCard
-        journey={{
+        item={{
           ...journey,
           language: {
             __typename: 'Language',
@@ -93,7 +93,7 @@ describe('TemplateGalleryCard', () => {
   })
 
   it('should link to template details', () => {
-    const { getByTestId } = render(<TemplateGalleryCard journey={journey} />)
+    const { getByTestId } = render(<TemplateGalleryCard item={journey} />)
     expect(getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
       '/templates/template-id'

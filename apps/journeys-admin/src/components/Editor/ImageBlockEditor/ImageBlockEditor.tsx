@@ -139,10 +139,20 @@ export function ImageBlockEditor({
           )}
         </Tabs>
       </Box>
-      <TabPanel name="gallery" value={tabValue} index={0}>
+      <TabPanel
+        name="gallery"
+        value={tabValue}
+        index={0}
+        sx={{ flexGrow: 1, overflow: 'scroll' }}
+      >
         <UnsplashGallery onChange={handleUnsplashChange} />
       </TabPanel>
-      <TabPanel name="custom" value={tabValue} index={1}>
+      <TabPanel
+        name="custom"
+        value={tabValue}
+        index={1}
+        sx={{ flexGrow: 1, overflow: 'scroll' }}
+      >
         <CustomImage
           onChange={handleSrcChange}
           setUploading={(upload) => setUploading(upload)}
@@ -153,7 +163,12 @@ export function ImageBlockEditor({
       </TabPanel>
       {/*  // TODO: remove segmind ai flags when ready */}
       {segmind && (
-        <TabPanel name="generative" value={tabValue} index={2}>
+        <TabPanel
+          name="generative"
+          value={tabValue}
+          index={2}
+          sx={{ flexGrow: 1, overflow: 'scroll' }}
+        >
           <AIGallery
             onChange={handleSrcChange}
             setUploading={setUploading}
