@@ -86,7 +86,6 @@ export function MultipleLanguageAutocomplete({
       multiple
       disableCloseOnSelect
       value={values}
-      limitTags={2}
       onChange={(_event, option) => handleChange(option)}
       open={openPopper}
       onOpen={() => setOpenPopper(true)}
