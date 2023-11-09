@@ -69,11 +69,15 @@ export function LanguageFilter({
       >
         {loading ? <Skeleton width={61} /> : children}
       </Typography>
-      <ChevronDownIcon
-        fontSize="large"
-        sx={{ display: { xs: 'none', md: 'block' } }}
-      />
-      <ChevronDownIcon sx={{ display: { xs: 'block', md: 'none' } }} />
+      {!loading && (
+        <>
+          <ChevronDownIcon
+            fontSize="large"
+            sx={{ display: { xs: 'none', md: 'block' } }}
+          />
+          <ChevronDownIcon sx={{ display: { xs: 'block', md: 'none' } }} />
+        </>
+      )}
     </Button>
   )
 
@@ -108,7 +112,7 @@ export function LanguageFilter({
 
   const LocalTypographyButton = ({ children }): ReactElement => {
     return (
-      <Stack direction="row" alignItems="center">
+      <Stack direction="row" gap={1} alignItems="center">
         <LocalTypography color="text.secondary">in</LocalTypography>
         <LocalButton>{children}</LocalButton>
       </Stack>
@@ -118,7 +122,7 @@ export function LanguageFilter({
   return (
     <>
       <Stack
-        gap={{ xs: 0, md: 1 }}
+        gap={{ xs: 0, md: 2 }}
         alignItems={{ xs: 'start', md: 'center' }}
         sx={{
           pb: { xs: 6, md: 9 },
