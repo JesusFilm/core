@@ -1,7 +1,6 @@
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 
 describe('convertLanguagesToOptions', () => {
-  const languageIds = ['529', '496']
   const languages = [
     {
       __typename: 'Language',
@@ -49,9 +48,10 @@ describe('convertLanguagesToOptions', () => {
   ]
 
   it('should return an array of formatted languages', () => {
-    expect(convertLanguagesToOptions(languageIds, languages)).toEqual([
+    expect(convertLanguagesToOptions(languages)).toEqual([
       { id: '529', localName: undefined, nativeName: 'English' },
-      { id: '496', localName: 'French', nativeName: 'Français' }
+      { id: '496', localName: 'French', nativeName: 'Français' },
+      { id: '1106', localName: 'German, Standard', nativeName: 'Deutsch' }
     ])
   })
 })

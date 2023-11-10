@@ -56,7 +56,7 @@ describe('TemplateGallery', () => {
     const push = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
-      query: { tagIds: [] }
+      query: { tagIds: [], languageIds: ['529'] }
     } as unknown as NextRouter)
 
     const { getByRole, queryByRole } = render(
@@ -84,7 +84,8 @@ describe('TemplateGallery', () => {
     expect(push).toHaveBeenCalledWith({
       push,
       query: {
-        tagIds: ['acceptanceTagId']
+        tagIds: ['acceptanceTagId'],
+        languageIds: ['529']
       }
     })
   })
