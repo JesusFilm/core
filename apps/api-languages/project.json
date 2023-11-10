@@ -61,8 +61,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-languages"],
       "options": {
-        "jestConfig": "apps/api-languages/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/api-languages/jest.config.ts"
       }
     },
     "generate-graphql": {

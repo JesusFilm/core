@@ -112,8 +112,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/watch"],
       "options": {
-        "jestConfig": "apps/watch/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/watch/jest.config.ts"
       }
     },
     "lint": {

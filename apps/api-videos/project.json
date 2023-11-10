@@ -72,8 +72,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-videos"],
       "options": {
-        "jestConfig": "apps/api-videos/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/api-videos/jest.config.ts"
       }
     },
     "generate-graphql": {

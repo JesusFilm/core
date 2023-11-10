@@ -15,8 +15,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/nest/gqlAuthGuard"],
       "options": {
-        "jestConfig": "libs/nest/gqlAuthGuard/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/nest/gqlAuthGuard/jest.config.ts"
       }
     },
     "codecov": {

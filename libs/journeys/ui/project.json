@@ -23,8 +23,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/journeys/ui"],
       "options": {
-        "jestConfig": "libs/journeys/ui/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/journeys/ui/jest.config.ts"
       }
     },
     "demo": {

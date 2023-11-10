@@ -67,7 +67,6 @@
       "outputs": ["{workspaceRoot}/coverage/apps/api-journeys"],
       "options": {
         "jestConfig": "apps/api-journeys/jest.config.ts",
-        "passWithNoTests": true,
         "fileReplacements": [
           {
             "replace": "apps/api-journeys/src/environments/environment.ts",

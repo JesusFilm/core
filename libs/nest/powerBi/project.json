@@ -15,8 +15,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/nest/powerBi"],
       "options": {
-        "jestConfig": "libs/nest/powerBi/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/nest/powerBi/jest.config.ts"
       }
     },
     "codecov": {

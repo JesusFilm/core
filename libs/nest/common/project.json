@@ -15,8 +15,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/nest/common"],
       "options": {
-        "jestConfig": "libs/nest/common/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/nest/common/jest.config.ts"
       }
     },
     "codecov": {

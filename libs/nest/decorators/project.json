@@ -15,8 +15,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/nest/decorators"],
       "options": {
-        "jestConfig": "libs/nest/decorators/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/nest/decorators/jest.config.ts"
       }
     },
     "codecov": {
