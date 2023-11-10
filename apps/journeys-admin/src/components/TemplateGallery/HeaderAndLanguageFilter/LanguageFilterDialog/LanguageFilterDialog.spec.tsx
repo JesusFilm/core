@@ -63,8 +63,8 @@ describe('LanguageFilterDialog', () => {
           open
           onClose={jest.fn()}
           onChange={onChange}
-          languageIds={['529']}
           languages={languages}
+          value={[]}
           loading={false}
         />
       </MockedProvider>
@@ -87,7 +87,7 @@ describe('LanguageFilterDialog', () => {
           onClose={onClose}
           onChange={jest.fn()}
           languages={languages}
-          languageIds={['529']}
+          value={[]}
           loading={false}
         />
       </MockedProvider>
