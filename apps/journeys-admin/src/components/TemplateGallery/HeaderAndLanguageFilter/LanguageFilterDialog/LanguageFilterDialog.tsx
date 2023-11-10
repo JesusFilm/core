@@ -7,17 +7,16 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@core/shared/ui/Dialog'
 import {
   Language,
+  LanguageOption,
   MultipleLanguageAutocomplete
 } from '@core/shared/ui/MultipleLanguageAutocomplete'
-
-import { convertLanguagesToOptions } from '../convertLanguagesToOptions'
 
 interface LanguageFilterDialogProps {
   open: boolean
   onClose: () => void
   onChange: (values: string[]) => void
   languages?: Language[]
-  languageIds: string[]
+  value: LanguageOption[]
   loading: boolean
 }
 
@@ -26,7 +25,7 @@ export function LanguageFilterDialog({
   onClose,
   onChange,
   languages,
-  languageIds,
+  value,
   loading
 }: LanguageFilterDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -42,18 +41,7 @@ export function LanguageFilterDialog({
     return () => {
       onClose()
       // wait for dialog animation to complete
-      setTimeout(
-        () =>
-          resetForm({
-            values: {
-              languages:
-                languages != null
-                  ? convertLanguagesToOptions(languageIds, languages)
-                  : undefined
-            }
-          }),
-        500
-      )
+      setTimeout(() => resetForm({ values: { languages: value } }), 500)
     }
   }
 
@@ -62,10 +50,7 @@ export function LanguageFilterDialog({
       {languages != null && (
         <Formik
           initialValues={{
-            languages:
-              languages != null
-                ? convertLanguagesToOptions(languageIds, languages)
-                : undefined
+            languages: value
           }}
           onSubmit={handleSubmit}
           enableReinitialize

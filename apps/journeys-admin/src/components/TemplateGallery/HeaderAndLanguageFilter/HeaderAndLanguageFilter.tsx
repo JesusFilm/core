@@ -127,7 +127,7 @@ export function HeaderAndLanguageFilter({
     languageId: '529',
     where: {
       ids: [
-        '529',
+        '529', // English
         '4415',
         '1106',
         '4451',
@@ -141,14 +141,15 @@ export function HeaderAndLanguageFilter({
     }
   })
 
-  const languages = convertLanguagesToOptions(
-    languageIds,
-    data?.languages
-  )?.map(
+  const languageOptions = convertLanguagesToOptions(
+    data?.languages.filter(({ id }) => languageIds.includes(id))
+  )
+
+  const languageNames = languageOptions.map(
     (languageName) => languageName.localName ?? languageName.nativeName ?? ' '
   )
-  const [firstLanguage, secondLanguage] = languages
-  const count = languages.length
+  const [firstLanguage, secondLanguage] = languageNames
+  const count = languageNames.length
 
   const journeyTemplatesTypographyProps: LocalTypographyProps = {
     sx: { flexBasis: { xs: '100%', md: 'initial' } }
@@ -197,7 +198,7 @@ export function HeaderAndLanguageFilter({
         onClose={() => setOpen(false)}
         onChange={onChange}
         languages={data?.languages}
-        languageIds={languageIds}
+        value={languageOptions}
         loading={loading}
       />
     </>
