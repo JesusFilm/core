@@ -8,11 +8,14 @@ import { ReactElement } from 'react'
 import { simpleComponentConfig } from '../../libs/storybook'
 
 import { onboardingJourneys } from './data'
-import { OnboardingPanelContent } from './OnboardingPanelContent'
+import {
+  GET_ONBOARDING_JOURNEYS,
+  OnboardingPanel
+} from './OnboardingPanelContent'
 
-const OnboardingPanelContentStory: Meta<typeof OnboardingPanelContent> = {
+const OnboardingPanelContentStory: Meta<typeof OnboardingPanel> = {
   ...simpleComponentConfig,
-  component: OnboardingPanelContent,
+  component: OnboardingPanel,
   title: 'Journeys-Admin/OnboardingPanelContent'
 }
 
@@ -20,15 +23,29 @@ const OnboardingPanelContentComponent = (): ReactElement => {
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
   return (
-    <MockedProvider>
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_ONBOARDING_JOURNEYS,
+            variables: {
+              where: {
+                ids: onboardingJourneys.map((journey) => journey.id)
+              }
+            }
+          },
+          result: { data: { onboardingJourneys } }
+        }
+      ]}
+    >
       <Drawer anchor={isMobile ? 'bottom' : 'left'} open>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+        <OnboardingPanel />
       </Drawer>
     </MockedProvider>
   )
 }
 
-const Template: StoryObj<typeof OnboardingPanelContent> = {
+const Template: StoryObj<typeof OnboardingPanel> = {
   render: () => <OnboardingPanelContentComponent />
 }
 
