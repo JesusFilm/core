@@ -25,7 +25,7 @@ const config: Config = {
   coverageReporters: ['cobertura'],
   preset: '../../jest.preset.js',
   transformIgnorePatterns: [
-    `<rootDir>/node_modules/(?!(${esmModules.join('|')}))`
+    `<rootDir>/../../node_modules/(?!(${esmModules.join('|')}))`
   ]
 }
 
