@@ -76,7 +76,7 @@ describe('TemplateGallery', () => {
       fireEvent.click(getByRole('option', { name: 'Acceptance' }))
     )
     expect(
-      getByRole('heading', { level: 5, name: 'Acceptance' })
+      getByRole('heading', { level: 6, name: 'Acceptance' })
     ).toBeInTheDocument()
     expect(
       queryByRole('heading', { level: 5, name: 'Hope' })
