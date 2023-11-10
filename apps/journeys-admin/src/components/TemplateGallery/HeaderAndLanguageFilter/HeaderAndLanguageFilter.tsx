@@ -188,7 +188,7 @@ export function HeaderAndLanguageFilter({
               Journey Templates
             </LocalTypography>
             <LocalTypography {...inTypographyProps}>in</LocalTypography>
-            <LocalButton>{{ firstLanguage }}</LocalButton>
+            <LocalButton {...localButtonProps}>{{ firstLanguage }}</LocalButton>
           </Trans>
         )}
       </Stack>
