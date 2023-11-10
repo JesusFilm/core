@@ -1,28 +1,36 @@
-import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
-import { ReactElement } from 'react'
+import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
+import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 interface SocialImageProps {
-  height?: number
-  width?: number
+  height?: ComponentProps<typeof Stack>['height']
+  width?: ComponentProps<typeof Stack>['width']
+  sx?: SxProps
 }
 
 export function SocialImage({
   height = 167,
-  width = 213
+  width = 213,
+  sx
 }: SocialImageProps): ReactElement {
   const { journey } = useJourney()
 
   return (
-    <Box
+    <Stack
+      width={width}
+      height={height}
       sx={{
-        display: 'flex',
+        position: 'relative',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: 'background.default',
+        overflow: 'hidden',
+        ...sx
       }}
     >
       {journey?.primaryImageBlock?.src != null ? (
@@ -31,36 +39,18 @@ export function SocialImage({
           alt={journey?.primaryImageBlock.alt}
           placeholder="blur"
           blurDataURL={journey?.primaryImageBlock.blurhash}
-          width={width}
-          height={height}
+          layout="fill"
           objectFit="cover"
-          style={{
-            borderRadius: 12
-          }}
         />
+      ) : journey != null ? (
+        <GridEmptyIcon fontSize="large" />
       ) : (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 3,
-            width,
-            height,
-            backgroundColor: 'background.default'
-          }}
-        >
-          {journey != null ? (
-            <GridEmptyIcon fontSize="large" />
-          ) : (
-            <Skeleton
-              data-testid="SocialImageSkeleton"
-              variant="rounded"
-              sx={{ borderRadius: 4, width, height }}
-            />
-          )}
-        </Box>
+        <Skeleton
+          data-testid="SocialImageSkeleton"
+          variant="rectangular"
+          sx={{ width: '100%', height: '100%' }}
+        />
       )}
-    </Box>
+    </Stack>
   )
 }
