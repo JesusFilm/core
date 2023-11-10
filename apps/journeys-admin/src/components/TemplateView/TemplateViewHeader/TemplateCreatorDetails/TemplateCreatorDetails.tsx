@@ -4,7 +4,6 @@ import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 interface TemplateCreatorDetailsProps {
   sx?: SxProps
@@ -17,7 +16,6 @@ export function TemplateCreatorDetails({
   creatorImage,
   creatorDetails
 }: TemplateCreatorDetailsProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack
       data-testid="TemplateCreatorDetails"
@@ -59,7 +57,7 @@ export function TemplateCreatorDetails({
             variant="body2"
             sx={{ color: { xs: 'text.primary', sm: 'secondary.light' } }}
           >
-            {t('{{ creatorDetails }}', { creatorDetails })}
+            {creatorDetails}
           </Typography>
         </Box>
       )}

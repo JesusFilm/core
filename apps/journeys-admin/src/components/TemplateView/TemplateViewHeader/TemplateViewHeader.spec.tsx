@@ -85,7 +85,11 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(getByText('{{ creatorDetails }}')).toBeInTheDocument()
+    expect(
+      getByText(
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries'
+      )
+    ).toBeInTheDocument()
     const creatorImage = getByRole('img')
     expect(creatorImage).toBeInTheDocument()
     expect(creatorImage).toHaveAttribute(
@@ -125,7 +129,11 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(queryByText('{{ creatorDetails }}')).not.toBeInTheDocument()
+    expect(
+      queryByText(
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries'
+      )
+    ).not.toBeInTheDocument()
     const creatorImage = queryByRole('img')
     expect(creatorImage).not.toBeInTheDocument()
   })

@@ -11,7 +11,11 @@ describe('TemplateCreatorDetails', () => {
       />
     )
 
-    expect(getByText('{{ creatorDetails }}')).toBeInTheDocument()
+    expect(
+      getByText(
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries'
+      )
+    ).toBeInTheDocument()
     expect(getByRole('img')).toBeInTheDocument()
   })
 

@@ -145,7 +145,11 @@ describe('TemplateView', () => {
       </MockedProvider>
     )
 
-    expect(getAllByText('{{ creatorDetails }}')).toHaveLength(2)
+    expect(
+      getAllByText(
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries'
+      )
+    ).toHaveLength(2)
     const creatorImages = getAllByRole('img')
     expect(creatorImages).toHaveLength(2)
     expect(creatorImages[0]).toHaveAttribute(
@@ -185,7 +189,11 @@ describe('TemplateView', () => {
       </MockedProvider>
     )
 
-    expect(queryAllByText('{{ creatorDetails }}')).toHaveLength(0)
+    expect(
+      queryAllByText(
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries'
+      )
+    ).toHaveLength(0)
     const creatorImages = queryAllByRole('img')
     expect(creatorImages).toHaveLength(0)
   })
