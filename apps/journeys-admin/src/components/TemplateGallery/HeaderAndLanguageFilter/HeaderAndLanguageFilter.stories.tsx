@@ -82,7 +82,7 @@ const Template: StoryObj<ComponentProps<typeof HeaderAndLanguageFilter>> = {
 export const Default = {
   ...Template,
   args: {
-    languageIds: [],
+    selectedLanguageIds: [],
     onChange: noop
   },
   parameters: {
@@ -95,7 +95,7 @@ export const Default = {
 export const Selected = {
   ...Template,
   args: {
-    languageIds: ['529'],
+    selectedLanguageIds: ['529'],
     onChange: noop
   },
   parameters: {
@@ -108,7 +108,7 @@ export const Selected = {
 export const Loading = {
   ...Template,
   args: {
-    languageIds: ['529'],
+    selectedLanguageIds: ['529'],
     onChange: noop
   },
   parameters: {

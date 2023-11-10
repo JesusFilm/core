@@ -91,7 +91,7 @@ describe('HeaderAndLanguageFilter', () => {
           }
         ]}
       >
-        <HeaderAndLanguageFilter languageIds={[]} onChange={onChange} />
+        <HeaderAndLanguageFilter selectedLanguageIds={[]} onChange={onChange} />
       </MockedProvider>
     )
     await waitFor(() => {

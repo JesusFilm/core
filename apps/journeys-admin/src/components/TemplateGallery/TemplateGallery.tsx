@@ -15,14 +15,14 @@ import { TagsFilter } from './TagsFilter'
 export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const [languageIds, setLanguageIds] = useState<string[]>(
+  const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
     router.query.languageIds != null ? castArray(router.query.languageIds) : []
   )
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     router.query.tagIds != null ? castArray(router.query.tagIds) : []
   )
 
-  function handleChange(
+  function handleTagIdsChange(
     newSelectedTagIds: string[],
     availableTagIds: string[]
   ): void {
@@ -35,8 +35,8 @@ export function TemplateGallery(): ReactElement {
     void router.push(router)
   }
 
-  function handleLanguageChange(values: string[]): void {
-    setLanguageIds(values)
+  function handleLanguageIdsChange(values: string[]): void {
+    setSelectedLanguageIds(values)
     router.query.languageIds = values
     void router.push(router)
   }
@@ -44,8 +44,8 @@ export function TemplateGallery(): ReactElement {
   return (
     <Container disableGutters>
       <HeaderAndLanguageFilter
-        languageIds={languageIds}
-        onChange={handleLanguageChange}
+        selectedLanguageIds={selectedLanguageIds}
+        onChange={handleLanguageIdsChange}
       />
       <Grid
         container
@@ -59,7 +59,7 @@ export function TemplateGallery(): ReactElement {
           <TagsFilter
             label={t('Topics, holidays, felt needs, collections')}
             tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
-            onChange={handleChange}
+            onChange={handleTagIdsChange}
             selectedTagIds={selectedTagIds}
             popperElementId="TemplateGalleryTagsFilter"
           />
@@ -70,7 +70,7 @@ export function TemplateGallery(): ReactElement {
               <TagsFilter
                 label={t('Audience')}
                 tagNames={['Audience']}
-                onChange={handleChange}
+                onChange={handleTagIdsChange}
                 selectedTagIds={selectedTagIds}
                 popperElementId="TemplateGalleryAudienceTagsFilter"
               />
@@ -79,7 +79,7 @@ export function TemplateGallery(): ReactElement {
               <TagsFilter
                 label={t('Genre')}
                 tagNames={['Genre']}
-                onChange={handleChange}
+                onChange={handleTagIdsChange}
                 selectedTagIds={selectedTagIds}
                 popperElementId="TemplateGalleryGenreTagsFilter"
               />
@@ -101,10 +101,15 @@ export function TemplateGallery(): ReactElement {
           </Grid>
         </Grid>
       </Grid>
-      <TagCarousels selectedTagIds={selectedTagIds} onChange={handleChange} />
+      <TagCarousels
+        selectedTagIds={selectedTagIds}
+        onChange={handleTagIdsChange}
+      />
       <TemplateSections
         tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
-        languageIds={languageIds}
+        languageIds={
+          selectedLanguageIds.length > 0 ? selectedLanguageIds : undefined
+        }
       />
     </Container>
   )

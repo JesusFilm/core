@@ -19,7 +19,7 @@ interface Contents {
 
 interface TemplateSectionsProps {
   tagIds?: string[]
-  languageIds: string[]
+  languageIds?: string[]
 }
 
 export function TemplateSections({
@@ -37,7 +37,10 @@ export function TemplateSections({
         template: true,
         orderByRecent: true,
         tagIds,
-        languageIds: languageIds.length > 0 ? languageIds : undefined
+        languageIds:
+          languageIds != null && languageIds?.length > 0
+            ? languageIds
+            : undefined
       }
     },
     onCompleted(data) {

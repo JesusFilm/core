@@ -112,12 +112,12 @@ function LocalButton({
 }
 
 interface LanguageFilterProps {
-  languageIds: string[]
+  selectedLanguageIds: string[]
   onChange: (values: string[]) => void
 }
 
 export function HeaderAndLanguageFilter({
-  languageIds,
+  selectedLanguageIds,
   onChange
 }: LanguageFilterProps): ReactElement {
   const [open, setOpen] = useState(false)
@@ -128,21 +128,21 @@ export function HeaderAndLanguageFilter({
     where: {
       ids: [
         '529', // English
-        '4415',
-        '1106',
-        '4451',
-        '496',
-        '20526',
-        '584',
-        '21028',
-        '20615',
-        '3934'
+        '4415', // Italiano, Italian
+        '1106', // Deutsch, German, Standard
+        '4451', // polski, Polish
+        '496', // Français, French
+        '20526', // Shqip, Albanian
+        '584', // Português, Portuguese, Brazil
+        '21028', // Español, Spanish, Latin American
+        '20615', // 普通話, Chinese, Mandarin
+        '3934' // Русский, Russian
       ]
     }
   })
 
   const languageOptions = convertLanguagesToOptions(
-    data?.languages.filter(({ id }) => languageIds.includes(id))
+    data?.languages.filter(({ id }) => selectedLanguageIds.includes(id))
   )
 
   const languageNames = languageOptions.map(
