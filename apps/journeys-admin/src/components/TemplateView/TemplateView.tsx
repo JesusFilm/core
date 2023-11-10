@@ -30,7 +30,6 @@ interface TemplateViewProps {
 export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   const { journey } = useJourney()
   const { breakpoints } = useTheme()
-  const hasCreatorDescription = journey?.creatorDescription != null
   const { t } = useTranslation('apps-journeys-admin')
 
   const tagIds = journey?.tags.map((tag) => tag.id)
@@ -106,7 +105,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
             </>
           )}
         </Typography>
-        {hasCreatorDescription && (
+        {journey?.creatorDescription != null && (
           <TemplateCreatorDetails
             creatorDetails={journey?.creatorDescription}
             creatorImage={journey?.creatorImageBlock?.src}
