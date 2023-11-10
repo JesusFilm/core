@@ -1,9 +1,9 @@
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ComponentProps, ReactElement, useState } from 'react'
+import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -40,7 +40,9 @@ function LocalTypography(props: LocalTypographyProps): ReactElement {
   )
 }
 
-interface LocalButtonProps extends ComponentProps<typeof Button> {
+interface LocalButtonProps
+  extends Omit<ComponentProps<typeof Button>, 'children'> {
+  children?: ComponentProps<typeof Trans>['children']
   loading?: boolean
 }
 
@@ -74,7 +76,11 @@ function LocalButton({
             overflow: 'hidden'
           }}
         >
-          {loading === true ? <Skeleton width={61} /> : children}
+          {loading === true ? (
+            <Skeleton width={61} />
+          ) : (
+            (children as unknown as ReactNode)
+          )}
         </Typography>
         <Typography
           variant="h6"
@@ -85,7 +91,11 @@ function LocalButton({
             overflow: 'hidden'
           }}
         >
-          {loading === true ? <Skeleton width={61} /> : children}
+          {loading === true ? (
+            <Skeleton width={61} />
+          ) : (
+            (children as unknown as ReactNode)
+          )}
         </Typography>
         {loading !== true && (
           <>
