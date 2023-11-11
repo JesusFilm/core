@@ -196,3 +196,24 @@ module "datadog_aurora" {
       db_instance_name = module.api-languages.database.aws_rds_cluster.id
   }]
 }
+
+module "journeys" {
+  source        = "../../../apps/journeys/infrastructure"
+  ecs_config    = local.public_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_journeys_stage_token.value
+}
+
+module "journeys-admin" {
+  source        = "../../../apps/journeys-admin/infrastructure"
+  ecs_config    = local.public_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
+}
+
+module "watch" {
+  source        = "../../../apps/watch/infrastructure"
+  ecs_config    = local.public_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_watch_stage_token.value
+}
