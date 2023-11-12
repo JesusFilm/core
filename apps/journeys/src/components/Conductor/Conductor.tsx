@@ -72,6 +72,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     setTreeBlocks,
     setShowNavigation,
     setShowHeaderFooter,
+    prevActiveBlock,
+    nextActiveBlock,
     treeBlocks,
     blockHistory,
     showHeaderFooter
@@ -206,6 +208,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             resizeObserver
             onSwiper={(swiper) => setSwiper(swiper)}
             allowTouchMove
+            onSlideNextTransitionStart={() => {
+              nextActiveBlock()
+            }}
+            onSlidePrevTransitionStart={() => {
+              prevActiveBlock()
+            }}
             onSlideChange={() => setShowHeaderFooter(true)}
             sx={{
               '.swiper-pagination': {
