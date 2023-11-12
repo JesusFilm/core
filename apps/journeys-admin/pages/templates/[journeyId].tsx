@@ -45,6 +45,7 @@ function TemplateDetails(): ReactElement {
             backgroundColor: 'background.paper',
             overflowX: 'hidden'
           }}
+          backHrefHistory={router.pathname === '/templates/[journeyId]'}
         >
           {templates ? (
             <TemplateView authUser={user} />
