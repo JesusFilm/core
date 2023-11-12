@@ -181,9 +181,9 @@ const getUserRoleMock: MockedResponse<GetUserRole> = {
 
 const Template: StoryObj<
   ComponentProps<typeof TemplateView> & {
-    journey: Journey
     getJourneysMock: MockedResponse<GetJourneys>
     getUserRoleMock: MockedResponse<GetUserRole>
+    journey: Journey
     getTagsMock: MockedResponse<GetTags>
   }
 > = {
@@ -220,12 +220,33 @@ export const Complete = {
   args: {
     journey: {
       ...journey,
-      tags
+      tags,
+      creatorDescription:
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries',
+      creatorImageBlock: {
+        id: 'creatorImageBlock.id',
+        parentBlockId: null,
+        parentOrder: 3,
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'photo-1552410260-0fd9b577afa6',
+        width: 6000,
+        height: 4000,
+        blurhash: 'LHFr#AxW9a%L0KM{IVRkoMD%D%R*',
+        __typename: 'ImageBlock'
+      }
     },
     authUser: 'user.id',
     getJourneysMock,
     getUserRoleMock,
     getTagsMock
+  }
+}
+
+export const Loading = {
+  ...Template,
+  args: {
+    ...Default.args,
+    journey: undefined
   }
 }
 

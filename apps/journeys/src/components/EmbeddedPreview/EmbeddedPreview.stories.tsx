@@ -62,6 +62,8 @@ const journey: Journey = {
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   featuredAt: null,
   strategySlug: null,
@@ -121,9 +123,11 @@ export const Opened = {
   play: async () => {
     await waitFor(
       async () =>
-        await expect(screen.getAllByTestId('card0.id')[0]).toBeInTheDocument()
+        await expect(
+          screen.getAllByTestId('JourneysCard-card0.id')[0]
+        ).toBeInTheDocument()
     )
-    const card = screen.getAllByTestId('card0.id')[0]
+    const card = screen.getAllByTestId('JourneysCard-card0.id')[0]
     await userEvent.click(card)
   }
 }

@@ -55,6 +55,8 @@ describe('StepFooter', () => {
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: 'My awesome journey',
@@ -84,8 +86,8 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('host-avatars')).toBeInTheDocument()
-    expect(getByTestId('host-name-location')).toBeInTheDocument()
+    expect(getByTestId('StepFooterHostAvatars')).toBeInTheDocument()
+    expect(getByTestId('StepFooterHostTitleLocation')).toBeInTheDocument()
   })
 
   it('should show footer buttons', () => {
@@ -99,7 +101,7 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getAllByTestId('footer-buttons')).toHaveLength(2)
+    expect(getAllByTestId('StepFooterButtonList')).toHaveLength(2)
   })
 
   it('should display social media journey title by default', () => {
@@ -146,7 +148,9 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('stepFooter')).toHaveStyle('outline: 1px solid red')
+    expect(getByTestId('JourneysStepFooter')).toHaveStyle(
+      'outline: 1px solid red'
+    )
   })
 
   it('should call onFooterClick on click', () => {
@@ -166,7 +170,7 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('stepFooter'))
+    fireEvent.click(getByTestId('JourneysStepFooter'))
 
     expect(onFooterClick).toHaveBeenCalledTimes(1)
     expect(getByTestId('Plus2Icon')).toBeInTheDocument()

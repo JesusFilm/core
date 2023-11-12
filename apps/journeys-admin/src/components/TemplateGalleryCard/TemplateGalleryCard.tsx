@@ -1,10 +1,9 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
-import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -15,11 +14,11 @@ import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourn
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 
 export interface TemplateGalleryCardProps {
-  journey?: Journey
+  item?: Journey
 }
 
 export function TemplateGalleryCard({
-  journey
+  item: journey
 }: TemplateGalleryCardProps): ReactElement {
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
@@ -41,12 +40,13 @@ export function TemplateGalleryCard({
 
   return (
     <Card
-      aria-label="template-gallery-card"
+      aria-label="templateGalleryCard"
       variant="outlined"
       sx={{
         border: 'none',
         backgroundColor: 'transparent',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        width: { xs: 130, md: 180 }
       }}
     >
       <NextLink
@@ -54,7 +54,12 @@ export function TemplateGalleryCard({
         passHref
         legacyBehavior
       >
-        <CardActionArea sx={{ height: 'inherit' }}>
+        <Box
+          data-testid="templateGalleryCard"
+          sx={{
+            height: 'inherit'
+          }}
+        >
           {journey != null ? (
             journey?.primaryImageBlock?.src != null ? (
               <Box
@@ -90,15 +95,19 @@ export function TemplateGalleryCard({
             <Skeleton
               variant="rectangular"
               sx={{
-                height: { xs: 130, lg: 180 },
+                width: { xs: 130, md: 180 },
+                height: { xs: 130, md: 180 },
                 borderColor: 'divider',
                 borderRadius: 2,
                 backgroundColor: 'background.default'
               }}
             />
           )}
-          <CardContent
-            sx={{ display: 'flex', flexDirection: 'column', px: 0, py: 3 }}
+          <Stack
+            sx={{
+              px: 0,
+              py: 3
+            }}
           >
             {journey != null ? (
               <>
@@ -113,27 +122,44 @@ export function TemplateGalleryCard({
                 >
                   {date} ● {displayLanguage}
                 </Typography>
-                <Typography
-                  variant="subtitle2"
+                <Box
                   sx={{
-                    my: 1,
-                    display: { xs: 'none', lg: 'block' }
-                  }}
-                >
-                  {journey.title}
-                </Typography>
-                <Typography
-                  variant="subtitle3"
-                  sx={{
-                    whiteSpace: 'noWrap',
+                    display: { xs: 'none', md: '-webkit-box' },
+                    maxHeight: '66px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    my: 1,
-                    display: { xs: 'block', lg: 'none' }
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 3
                   }}
                 >
-                  {journey.title}
-                </Typography>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      my: 1
+                    }}
+                  >
+                    {journey.title}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: { xs: '-webkit-box', md: 'none' },
+                    maxHeight: '63px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 3
+                  }}
+                >
+                  <Typography
+                    variant="subtitle3"
+                    sx={{
+                      my: 1
+                    }}
+                  >
+                    {journey.title}
+                  </Typography>
+                </Box>
               </>
             ) : (
               <Box>
@@ -142,8 +168,8 @@ export function TemplateGalleryCard({
                 <Skeleton variant="text" sx={{ width: '60%' }} />
               </Box>
             )}
-          </CardContent>
-        </CardActionArea>
+          </Stack>
+        </Box>
       </NextLink>
     </Card>
   )

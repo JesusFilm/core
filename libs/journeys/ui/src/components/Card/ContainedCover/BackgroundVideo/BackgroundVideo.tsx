@@ -99,6 +99,10 @@ export function BackgroundVideo({
     }
   }, [playerRef, startAt, endAt, source, video, videoId, setLoading])
 
+  useEffect(() => {
+    if (videoRef.current != null) videoRef.current.pause()
+  }, [])
+
   let videoFit: CSSProperties['objectFit']
   if (source === VideoBlockSource.youTube) {
     videoFit = 'contain'
@@ -124,10 +128,11 @@ export function BackgroundVideo({
         xs: isFillAndNotYoutube() ? '300%' : '100%',
         sm: '100%'
       }}
+      minHeight="-webkit-fill-available"
       overflow="hidden"
       marginX={{ xs: isFillAndNotYoutube() ? '-100%' : 0, sm: 0 }}
       position="absolute"
-      data-testid="background-video-container"
+      data-testid="CardContainedBackgroundVideo"
     >
       <StyledVideo
         ref={videoRef}

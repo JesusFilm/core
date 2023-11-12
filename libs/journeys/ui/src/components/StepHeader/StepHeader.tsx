@@ -14,11 +14,11 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '../../libs/JourneyProvider'
 
-interface Props {
+interface StepHeaderProps {
   sx?: SxProps
 }
 
-export function StepHeader({ sx }: Props): ReactElement {
+export function StepHeader({ sx }: StepHeaderProps): ReactElement {
   const { journey, variant } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -34,7 +34,7 @@ export function StepHeader({ sx }: Props): ReactElement {
 
   return (
     <Stack
-      data-testid="stepHeader"
+      data-testid="JourneysStepHeader"
       sx={{
         position: { xs: 'absolute', lg: 'relative' },
         mt: { xs: 1, lg: 0 },

@@ -362,6 +362,8 @@ export interface JourneyUpdateInput {
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
   description?: string | null;
+  creatorDescription?: string | null;
+  creatorImageBlockId?: string | null;
   primaryImageBlockId?: string | null;
   slug?: string | null;
   seoTitle?: string | null;
@@ -389,6 +391,10 @@ export interface JourneysFilter {
   languageIds?: string[] | null;
   limit?: number | null;
   orderByRecent?: boolean | null;
+}
+
+export interface LanguagesFilter {
+  ids?: string[] | null;
 }
 
 export interface LinkActionInput {

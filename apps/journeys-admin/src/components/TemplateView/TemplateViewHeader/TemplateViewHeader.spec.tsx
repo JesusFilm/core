@@ -5,7 +5,10 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields_primaryImageBlock as PrimaryImageBlock } from '../../../../__generated__/JourneyFields'
+import {
+  JourneyFields as Journey,
+  JourneyFields_primaryImageBlock as PrimaryImageBlock
+} from '../../../../__generated__/JourneyFields'
 import { journey } from '../../Editor/ActionDetails/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
@@ -48,6 +51,91 @@ describe('TemplateViewHeader', () => {
 
     expect(queryByTestId('GridEmptyIcon')).not.toBeInTheDocument()
     expect(getByRole('img', { name: 'image.jpg' })).toBeInTheDocument()
+  })
+
+  it('should show creator details if provided', async () => {
+    const journeyWithCreatorDetails = {
+      ...journey,
+      strategySlug: null,
+      tags: [],
+      creatorDescription:
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries',
+      creatorImageBlock: {
+        id: 'creatorImageBlock.id',
+        parentBlockId: null,
+        parentOrder: 3,
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'photo-1552410260-0fd9b577afa6',
+        width: 6000,
+        height: 4000,
+        blurhash: 'LHFr#AxW9a%L0KM{IVRkoMD%D%R*',
+        __typename: 'ImageBlock'
+      }
+    }
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: journeyWithCreatorDetails as Journey,
+            variant: 'admin'
+          }}
+        >
+          <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      getByText(
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries'
+      )
+    ).toBeInTheDocument()
+    const creatorImage = getByRole('img')
+    expect(creatorImage).toBeInTheDocument()
+    expect(creatorImage).toHaveAttribute(
+      'src',
+      'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
+    )
+  })
+
+  it('should not show creator details if description is not provided', async () => {
+    const journeyWithCreatorDetails = {
+      ...journey,
+      strategySlug: null,
+      tags: [],
+      creatorDescription: null,
+      creatorImageBlock: {
+        id: 'creatorImageBlock.id',
+        parentBlockId: null,
+        parentOrder: 3,
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'photo-1552410260-0fd9b577afa6',
+        width: 6000,
+        height: 4000,
+        blurhash: 'LHFr#AxW9a%L0KM{IVRkoMD%D%R*',
+        __typename: 'ImageBlock'
+      }
+    }
+    const { queryByText, queryByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: journeyWithCreatorDetails as Journey,
+            variant: 'admin'
+          }}
+        >
+          <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      queryByText(
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries'
+      )
+    ).not.toBeInTheDocument()
+    const creatorImage = queryByRole('img')
+    expect(creatorImage).not.toBeInTheDocument()
   })
 
   it('should display the title and description', () => {
@@ -93,7 +181,7 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should render Template Edit button for publishers', () => {
-    const { getAllByTestId } = render(
+    const { getAllByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -110,7 +198,31 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(getAllByTestId('EditTemplateSettings')[0]).toBeInTheDocument()
+    expect(getAllByRole('link', { name: 'Edit' })).toHaveLength(2)
+  })
+
+  it('edit button should redirect to publisher journey edit', () => {
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey
+            }}
+          >
+            <TemplateViewHeader
+              isPublisher
+              authUser={{ id: '123' } as unknown as User}
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getAllByRole('link', { name: 'Edit' })[0]).toHaveAttribute(
+      'href',
+      '/publisher/journeyId/edit'
+    )
   })
 
   it('should not render Template Edit button for non-publishers', () => {
@@ -155,8 +267,8 @@ describe('TemplateViewHeader', () => {
     expect(getAllByRole('link', { name: 'Preview' })[0]).toBeInTheDocument()
   })
 
-  it('should show featured date if journey is featured', () => {
-    const { getAllByTestId } = render(
+  it('should show created at date', () => {
+    const { getAllByText } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -172,8 +284,23 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(
-      getAllByTestId('featuredAtTemplatePreviewPage')[0]
-    ).toBeInTheDocument()
+    expect(getAllByText('November 2021')).toHaveLength(2)
+  })
+
+  it('should show skeletons while loading', async () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider value={{}}>
+          <TemplateViewHeader
+            isPublisher={false}
+            authUser={{} as unknown as User}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByTestId('TemplateViewTitleSkeleton')).toBeInTheDocument()
+    )
   })
 })

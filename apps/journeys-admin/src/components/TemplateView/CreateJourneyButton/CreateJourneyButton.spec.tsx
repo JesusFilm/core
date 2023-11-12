@@ -81,6 +81,8 @@ describe('CreateJourneyButton', () => {
     team: null,
     blocks: [],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     tags: []
   }
@@ -136,7 +138,9 @@ describe('CreateJourneyButton', () => {
           }
         ]}
       >
-        <CreateJourneyButton signedIn />
+        <JourneyProvider value={{ journey }}>
+          <CreateJourneyButton signedIn />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -174,7 +178,9 @@ describe('CreateJourneyButton', () => {
           }
         ]}
       >
-        <CreateJourneyButton />
+        <JourneyProvider value={{ journey }}>
+          <CreateJourneyButton />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -274,5 +280,24 @@ describe('CreateJourneyButton', () => {
         { shallow: true }
       )
     })
+  })
+
+  it('should disbable button while loading', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { createNew: false }
+    } as unknown as NextRouter)
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <TeamProvider>
+          <JourneyProvider value={{}}>
+            <CreateJourneyButton signedIn />
+          </JourneyProvider>
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Use Template' })).toBeDisabled()
+    )
   })
 })

@@ -181,7 +181,7 @@ describe('TemplateSections', () => {
         where: {
           template: true,
           orderByRecent: true,
-          tagIds: [addiction.id],
+          tagIds: [addiction.id, acceptance.id],
           languageIds: ['529']
         }
       }
@@ -189,8 +189,48 @@ describe('TemplateSections', () => {
     result: {
       data: {
         journeys: journeys.filter(({ tags }) =>
-          tags.some(({ id }) => id === addiction.id)
+          tags.some(({ id }) => id === addiction.id || id === acceptance.id)
         )
+      }
+    }
+  }
+
+  const getJourneysWithLanguageIdsMock: MockedResponse<GetJourneys> = {
+    request: {
+      query: GET_JOURNEYS,
+      variables: {
+        where: {
+          template: true,
+          orderByRecent: true,
+          languageIds: ['529', '5441']
+        }
+      }
+    },
+    result: {
+      data: {
+        journeys: [
+          ...journeys,
+          {
+            ...defaultTemplate,
+            title: 'Template in different language',
+            language: {
+              __typename: 'Language',
+              id: '5441',
+              name: [
+                {
+                  __typename: 'Translation',
+                  value: 'Achi, Rabinal',
+                  primary: true
+                },
+                {
+                  __typename: 'Translation',
+                  value: 'Achi, Rabinal',
+                  primary: false
+                }
+              ]
+            }
+          }
+        ]
       }
     }
   }
@@ -208,7 +248,7 @@ describe('TemplateSections', () => {
     it('should render Featured & New templates if tagIds are not present', async () => {
       const { getByRole, getAllByRole } = render(
         <MockedProvider mocks={[getJourneysMock]}>
-          <TemplateSections languageId="529" />
+          <TemplateSections languageIds={['529']} />
         </MockedProvider>
       )
       await waitFor(() =>
@@ -227,7 +267,10 @@ describe('TemplateSections', () => {
     it('should render relevant templates if tagIds are present', async () => {
       const { getByRole, getAllByRole } = render(
         <MockedProvider mocks={[getJourneysWithTagIdsMock]}>
-          <TemplateSections tagIds={[addiction.id]} languageId="529" />
+          <TemplateSections
+            tagIds={[addiction.id, acceptance.id]}
+            languageIds={['529']}
+          />
         </MockedProvider>
       )
       await waitFor(() =>
@@ -238,23 +281,45 @@ describe('TemplateSections', () => {
       expect(
         getByRole('heading', { name: 'Most Relevant' })
       ).toBeInTheDocument()
-      expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
     })
   })
 
   describe('Tag Templates', () => {
     it('should render tag templates', async () => {
-      const { getByRole, queryByRole } = render(
+      const { getByRole } = render(
         <MockedProvider mocks={[getJourneysWithTagIdsMock]}>
-          <TemplateSections tagIds={[addiction.id]} languageId="529" />
+          <TemplateSections
+            tagIds={[addiction.id, acceptance.id]}
+            languageIds={['529']}
+          />
         </MockedProvider>
       )
       await waitFor(async () => {
         expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
+        expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('Multiple Languages', () => {
+    it('should render templates if languageIds are present', async () => {
+      const { getByRole, getAllByRole } = render(
+        <MockedProvider mocks={[getJourneysWithLanguageIdsMock]}>
+          <TemplateSections languageIds={['529', '5441']} />
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(
+          getAllByRole('heading', { name: 'Featured Template 2' })[0]
+        ).toBeInTheDocument()
+      )
       expect(
-        queryByRole('heading', { name: 'Acceptance' })
-      ).not.toBeInTheDocument()
+        getByRole('heading', { name: 'Featured & New' })
+      ).toBeInTheDocument()
+      expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
+      expect(
+        getByRole('heading', { name: 'Template in different language' })
+      ).toBeInTheDocument()
     })
   })
 
@@ -262,7 +327,7 @@ describe('TemplateSections', () => {
     it('should render empty state', async () => {
       const { getByRole, getByText, queryByRole } = render(
         <MockedProvider mocks={[getJourneysEmptyMock]}>
-          <TemplateSections languageId="529" />
+          <TemplateSections languageIds={['529']} />
         </MockedProvider>
       )
       await waitFor(async () => {
