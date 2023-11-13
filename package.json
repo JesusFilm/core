@@ -249,7 +249,7 @@
     "webpack-merge": "^5.9.0",
     "webpack-node-externals": "^3.0.0",
     "webpack-sources": "^3.0.2",
-    "checkly": "latest"
+    "checkly": "4.4.0"
   },
   "msw": {
     "workerDirectory": "./.storybook/static"
