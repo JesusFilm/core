@@ -57,7 +57,15 @@ export function TemplateGalleryCard({
         <Box
           data-testid="templateGalleryCard"
           sx={{
-            height: 'inherit'
+            height: 'inherit',
+            '&:hover': {
+              '& .MuiImageBackground-root': {
+                transform: 'scale(1.02)'
+              }
+            },
+            '& .MuiImageBackground-root': {
+              transition: (theme) => theme.transitions.create('transform')
+            }
           }}
         >
           {journey != null ? (
@@ -65,14 +73,19 @@ export function TemplateGalleryCard({
               <Box
                 sx={{
                   position: 'relative',
-                  aspectRatio: 1
+                  aspectRatio: 1,
+                  overflow: 'hidden',
+                  borderRadius: 2
                 }}
               >
                 <Image
+                  className="MuiImageBackground-root"
                   src={journey?.primaryImageBlock?.src}
                   alt={journey?.primaryImageBlock.alt}
                   fill
-                  style={{ borderRadius: 8, objectFit: 'cover' }}
+                  style={{
+                    objectFit: 'cover'
+                  }}
                 />
               </Box>
             ) : (
@@ -88,7 +101,7 @@ export function TemplateGalleryCard({
                   backgroundColor: 'background.default'
                 }}
               >
-                <InsertPhotoRoundedIcon />
+                <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
               </CardMedia>
             )
           ) : (
