@@ -4,32 +4,41 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
-interface MediaListItemProps {
+interface MediaListItemLoadingProps {
+  image?: string
+  title?: string
+  description?: string
+  loading: true
+  overline?: string
+  duration?: string
+  href?: string
+}
+
+interface MediaListItemLoadedProps {
   image: string
   title: string
   description: string
-  loading?: boolean
+  loading?: false
   overline?: string
-  imagePosition?: 'start' | 'end'
   duration?: string
-  border?: boolean
-  onClick: () => void
+  href: string
 }
+
+type MediaListItemProps = MediaListItemLoadingProps | MediaListItemLoadedProps
 
 export function MediaListItem({
   image,
   title,
   description,
-  loading = false,
+  loading,
   overline,
-  imagePosition = 'start',
   duration,
-  border = false,
-  onClick
+  href
 }: MediaListItemProps): ReactElement {
   const theme = useTheme()
   // TODO: Replace fade with `line-clamp` with ellipsis when line-clamp supported
@@ -63,135 +72,138 @@ export function MediaListItem({
       }
     }
   }
-  const bottomBorder = border
-    ? { borderBottom: '1px solid', borderColor: 'divider' }
-    : {}
 
   return (
-    <ListItemButton
-      onClick={onClick}
-      disabled={loading}
-      sx={{ ...faceOnButtonHoverFix, ...bottomBorder, px: 6 }}
-    >
-      <Stack
-        direction={imagePosition === 'start' ? 'row' : 'row-reverse'}
-        spacing={4}
-        alignItems="center"
-        sx={{ width: '100%' }}
+    <NextLink href={href ?? ''} passHref legacyBehavior>
+      <ListItemButton
+        disabled={loading}
+        sx={{
+          ...faceOnButtonHoverFix,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          px: 6
+        }}
       >
-        {loading ? (
-          <Skeleton
-            data-testid="image-placeholder"
-            variant="rectangular"
-            height={79}
-            width={79}
-            sx={{ borderRadius: 2 }}
-          />
-        ) : (
-          <Stack>
-            <NextImage
-              src={image}
-              alt={title}
+        <Stack
+          direction="row"
+          spacing={4}
+          alignItems="center"
+          sx={{ width: '100%' }}
+        >
+          {loading === true ? (
+            <Skeleton
+              data-testid="image-placeholder"
+              variant="rectangular"
               height={79}
               width={79}
-              layout="fixed"
-              objectFit="cover"
-              style={{
-                borderRadius: 8
-              }}
+              sx={{ borderRadius: 2 }}
             />
-            {duration != null && (
-              <Stack
-                sx={{
-                  position: 'absolute',
-                  alignItems: 'flex-end',
-                  justifyContent: 'flex-end',
-                  height: 79,
-                  width: 79,
-                  borderRadius: 2,
-                  mr: 2
+          ) : (
+            <Stack>
+              <NextImage
+                src={image}
+                alt={title}
+                height={79}
+                width={79}
+                layout="fixed"
+                objectFit="cover"
+                style={{
+                  borderRadius: 8
                 }}
-              >
-                <Typography
-                  component="div"
-                  variant="caption"
-                  sx={{
-                    color: 'background.paper',
-                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                    px: 1,
-                    m: 1,
-                    borderRadius: 2
-                  }}
-                >
-                  {duration}
-                </Typography>
-              </Stack>
-            )}
-          </Stack>
-        )}
-        <Stack flexGrow={1} sx={{ overflow: 'hidden' }}>
-          {overline != null &&
-            (loading ? (
-              <Skeleton
-                variant="text"
-                width={10.5 * overline.length}
-                sx={{ mb: 1, height: theme.typography.overline.lineHeight }}
               />
-            ) : (
-              <Typography
-                variant="overline"
-                color="secondary.light"
-                className="overflow-text"
-                sx={{ ...fadeOverflowText('overline'), mt: 2 }}
-              >
-                {overline}
-              </Typography>
-            ))}
-
-          <ListItemText
-            primary={
-              loading ? (
-                <Skeleton
-                  variant="rectangular"
-                  width={9.5 * title.length}
+              {duration != null && (
+                <Stack
                   sx={{
-                    mt: 0.5,
-                    borderRadius: 1,
-                    fontSize: theme.typography.subtitle1.fontSize
+                    position: 'absolute',
+                    alignItems: 'flex-end',
+                    justifyContent: 'flex-end',
+                    height: 79,
+                    width: 79,
+                    borderRadius: 2,
+                    mr: 2
                   }}
-                />
-              ) : (
-                <Typography
-                  variant="subtitle1"
-                  className="overflow-text"
-                  sx={{ ...fadeOverflowText('subtitle1') }}
                 >
-                  {title}
-                </Typography>
-              )
-            }
-            secondary={
-              loading ? (
+                  <Typography
+                    component="div"
+                    variant="caption"
+                    sx={{
+                      color: 'background.paper',
+                      backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                      px: 1,
+                      m: 1,
+                      borderRadius: 2
+                    }}
+                  >
+                    {duration}
+                  </Typography>
+                </Stack>
+              )}
+            </Stack>
+          )}
+          <Stack flexGrow={1} sx={{ overflow: 'hidden' }}>
+            {overline != null &&
+              (loading === true ? (
                 <Skeleton
                   variant="text"
-                  width={6 * description.length}
-                  sx={{ mt: 1, fontSize: theme.typography.body2.lineHeight }}
+                  width={100}
+                  sx={{ mb: 1, height: theme.typography.overline.lineHeight }}
                 />
               ) : (
                 <Typography
-                  variant="body2"
+                  variant="overline"
                   color="secondary.light"
                   className="overflow-text"
-                  sx={{ ...fadeOverflowText('body2') }}
+                  sx={{ ...fadeOverflowText('overline'), mt: 2 }}
                 >
-                  {description}
+                  {overline}
                 </Typography>
-              )
-            }
-            sx={{ mt: 0 }}
-          />
+              ))}
+
+            <ListItemText
+              primary={
+                loading === true ? (
+                  <Skeleton
+                    variant="rectangular"
+                    width={150}
+                    sx={{
+                      mt: 0.5,
+                      borderRadius: 1,
+                      fontSize: theme.typography.subtitle1.fontSize
+                    }}
+                  />
+                ) : (
+                  <Typography
+                    variant="subtitle1"
+                    className="overflow-text"
+                    sx={{ ...fadeOverflowText('subtitle1') }}
+                  >
+                    {title}
+                  </Typography>
+                )
+              }
+              secondary={
+                loading === true ? (
+                  <Skeleton
+                    variant="text"
+                    width={125}
+                    sx={{ mt: 1, fontSize: theme.typography.body2.lineHeight }}
+                  />
+                ) : (
+                  <Typography
+                    variant="body2"
+                    color="secondary.light"
+                    className="overflow-text"
+                    sx={{ ...fadeOverflowText('body2') }}
+                  >
+                    {description}
+                  </Typography>
+                )
+              }
+              sx={{ mt: 0 }}
+            />
+          </Stack>
         </Stack>
-      </Stack>
-    </ListItemButton>
+      </ListItemButton>
+    </NextLink>
   )
 }

@@ -1,10 +1,8 @@
-import { fireEvent, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import { MediaListItem } from './MediaListItem'
 
 describe('MediaListItem', () => {
-  const onClick = jest.fn()
-
   it('should render content', async () => {
     const { getByRole } = render(
       <MediaListItem
@@ -12,12 +10,12 @@ describe('MediaListItem', () => {
         title="Heading"
         description="Description"
         overline="Overline"
-        onClick={onClick}
+        href="/href"
         duration="2:34"
       />
     )
 
-    expect(getByRole('button')).toHaveTextContent(
+    expect(getByRole('link')).toHaveTextContent(
       '2:34OverlineHeadingDescription'
     )
   })
@@ -28,12 +26,10 @@ describe('MediaListItem', () => {
         image="https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg"
         title="Heading"
         description="Description"
-        onClick={onClick}
+        href="/href"
       />
     )
-    fireEvent.click(getByRole('button'))
-
-    expect(onClick).toHaveBeenCalled()
+    expect(getByRole('link')).toHaveAttribute('href', '/href')
   })
 
   it('should hide image and text if loading', () => {
@@ -44,7 +40,6 @@ describe('MediaListItem', () => {
         description="Description"
         loading
         overline="Overline"
-        onClick={onClick}
         duration="2:34"
       />
     )

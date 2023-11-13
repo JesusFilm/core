@@ -5,9 +5,10 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 
+import { cache } from '../../libs/apolloClient/cache'
 import { simpleComponentConfig } from '../../libs/storybook'
 
-import { onboardingJourneys } from './data'
+import { getOnboardingJourneysMock } from './data'
 import { OnboardingPanelContent } from './OnboardingPanelContent'
 
 const OnboardingPanelContentStory: Meta<typeof OnboardingPanelContent> = {
@@ -22,7 +23,7 @@ const OnboardingPanelContentComponent = (): ReactElement => {
   return (
     <MockedProvider>
       <Drawer anchor={isMobile ? 'bottom' : 'left'} open>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+        <OnboardingPanelContent />
       </Drawer>
     </MockedProvider>
   )
@@ -32,6 +33,15 @@ const Template: StoryObj<typeof OnboardingPanelContent> = {
   render: () => <OnboardingPanelContentComponent />
 }
 
-export const Default = { ...Template }
+export const Default = {
+  ...Template,
+
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [getOnboardingJourneysMock]
+    }
+  }
+}
 
 export default OnboardingPanelContentStory
