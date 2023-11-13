@@ -72,24 +72,24 @@ export function FeltNeedsButton({
           height: { xs: '56px', md: '110px' },
           overflow: 'hidden',
           '&:hover': {
-            '& .HoverEffect': {
+            '& .hoverStyles': {
               transform: 'scale(1.02)'
             }
           },
-          '& .HoverEffect': {
+          '& .hoverStyles': {
             transition: (theme) => theme.transitions.create('transform')
           }
         }}
         onClick={() => onClick(tag.id)}
       >
         <NextImage
-          className="HoverEffect"
+          className="hoverStyles"
           src={image.src}
           layout="fill"
           sx={{ borderRadius: 2 }}
         />
         <Typography
-          className="HoverEffect"
+          className="hoverStyles"
           variant="h3"
           sx={{
             zIndex: 1,
@@ -103,7 +103,7 @@ export function FeltNeedsButton({
           {tagLabel}
         </Typography>
         <Typography
-          className="HoverEffect"
+          className="hoverStyles"
           variant="subtitle2"
           sx={{
             zIndex: 1,
