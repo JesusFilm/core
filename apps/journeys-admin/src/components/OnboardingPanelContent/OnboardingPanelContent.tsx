@@ -114,8 +114,6 @@ export function OnboardingPanelContent(): ReactElement {
           <MediaListItem loading />
           <MediaListItem loading />
           <MediaListItem loading />
-          <MediaListItem loading />
-          <MediaListItem loading />
         </>
       ) : (
         templates.map(
@@ -123,8 +121,8 @@ export function OnboardingPanelContent(): ReactElement {
             template != null && (
               <MediaListItem
                 title={template.title}
-                description={template.description ?? ''}
-                image={template.primaryImageBlock?.src ?? ''}
+                description={template.description ?? undefined}
+                image={template.primaryImageBlock?.src ?? undefined}
                 overline={t('Template')}
                 key={template.id}
                 href={`/templates/${template.id}`}

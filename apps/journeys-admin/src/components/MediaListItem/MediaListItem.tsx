@@ -1,3 +1,5 @@
+import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
+import Box from '@mui/material/Box'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Skeleton from '@mui/material/Skeleton'
@@ -15,17 +17,15 @@ interface MediaListItemLoadingProps {
   description?: string
   loading: true
   overline?: string
-  duration?: string
   href?: string
 }
 
 interface MediaListItemLoadedProps {
-  image: string
+  image?: string
   title: string
-  description: string
+  description?: string
   loading?: false
   overline?: string
-  duration?: string
   href: string
 }
 
@@ -37,7 +37,6 @@ export function MediaListItem({
   description,
   loading,
   overline,
-  duration,
   href
 }: MediaListItemProps): ReactElement {
   const theme = useTheme()
@@ -84,71 +83,49 @@ export function MediaListItem({
           px: 6
         }}
       >
-        <Stack
-          direction="row"
-          spacing={4}
-          alignItems="center"
-          sx={{ width: '100%' }}
-        >
-          {loading === true ? (
-            <Skeleton
-              data-testid="image-placeholder"
-              variant="rectangular"
-              height={79}
-              width={79}
-              sx={{ borderRadius: 2 }}
-            />
-          ) : (
-            <Stack>
+        <Stack direction="row" spacing={4} alignItems="center">
+          <Box
+            sx={{
+              width: 79,
+              height: 79,
+              position: 'relative',
+              flexShrink: 0,
+              overflow: 'hidden',
+              borderRadius: 2
+            }}
+          >
+            {loading === true ? (
+              <Skeleton variant="rectangular" height="100%" />
+            ) : image != null ? (
               <NextImage
                 src={image}
                 alt={title}
-                height={79}
-                width={79}
-                layout="fixed"
+                layout="fill"
                 objectFit="cover"
-                style={{
-                  borderRadius: 8
-                }}
               />
-              {duration != null && (
-                <Stack
-                  sx={{
-                    position: 'absolute',
-                    alignItems: 'flex-end',
-                    justifyContent: 'flex-end',
-                    height: 79,
-                    width: 79,
-                    borderRadius: 2,
-                    mr: 2
-                  }}
-                >
-                  <Typography
-                    component="div"
-                    variant="caption"
-                    sx={{
-                      color: 'background.paper',
-                      backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                      px: 1,
-                      m: 1,
-                      borderRadius: 2
-                    }}
-                  >
-                    {duration}
-                  </Typography>
-                </Stack>
-              )}
-            </Stack>
-          )}
+            ) : (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'background.default',
+                  height: '100%'
+                }}
+              >
+                <InsertPhotoRoundedIcon />
+              </Box>
+            )}
+          </Box>
           <Stack flexGrow={1} sx={{ overflow: 'hidden' }}>
-            {overline != null &&
-              (loading === true ? (
-                <Skeleton
-                  variant="text"
-                  width={100}
-                  sx={{ mb: 1, height: theme.typography.overline.lineHeight }}
-                />
-              ) : (
+            {loading === true ? (
+              <Skeleton
+                variant="text"
+                width={100}
+                sx={{ mb: 1, height: theme.typography.overline.lineHeight }}
+              />
+            ) : (
+              overline != null && (
                 <Typography
                   variant="overline"
                   color="secondary.light"
@@ -157,7 +134,8 @@ export function MediaListItem({
                 >
                   {overline}
                 </Typography>
-              ))}
+              )
+            )}
 
             <ListItemText
               primary={
@@ -189,14 +167,16 @@ export function MediaListItem({
                     sx={{ mt: 1, fontSize: theme.typography.body2.lineHeight }}
                   />
                 ) : (
-                  <Typography
-                    variant="body2"
-                    color="secondary.light"
-                    className="overflow-text"
-                    sx={{ ...fadeOverflowText('body2') }}
-                  >
-                    {description}
-                  </Typography>
+                  description != null && (
+                    <Typography
+                      variant="body2"
+                      color="secondary.light"
+                      className="overflow-text"
+                      sx={{ ...fadeOverflowText('body2') }}
+                    >
+                      {description}
+                    </Typography>
+                  )
                 )
               }
               sx={{ mt: 0 }}

@@ -56,11 +56,11 @@ export const LongContent: Story = {
   }
 }
 
-export const Duration: Story = {
+export const NoImage: Story = {
   ...Template,
   args: {
     ...Default.args,
-    duration: '2:34'
+    image: undefined
   }
 }
 
