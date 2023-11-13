@@ -14,6 +14,7 @@ import { SocialImage } from '../../JourneyView/SocialImage'
 import { CreateJourneyButton } from '../CreateJourneyButton'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
+import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreatorDetails'
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
 interface TemplateViewHeaderProps {
@@ -26,6 +27,7 @@ export function TemplateViewHeader({
   authUser
 }: TemplateViewHeaderProps): ReactElement {
   const { journey } = useJourney()
+  const hasCreatorDescription = journey?.creatorDescription != null
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
@@ -51,10 +53,32 @@ export function TemplateViewHeader({
       <Stack direction="row" sx={{ gap: { xs: 4, sm: 6 } }}>
         <Box
           sx={{
-            flexShrink: 0
+            flexShrink: 0,
+            width: { xs: '107px', sm: '244px' }
           }}
         >
-          <SocialImage height={smUp ? 244 : 107} width={smUp ? 244 : 107} />
+          <SocialImage
+            height={{ xs: 107, sm: 244 }}
+            width={{ xs: 107, sm: 244 }}
+            sx={{
+              borderRadius: 3,
+              borderBottomRightRadius: {
+                xs: 12,
+                sm: hasCreatorDescription ? 0 : 12
+              },
+              borderBottomLeftRadius: {
+                xs: 12,
+                sm: hasCreatorDescription ? 0 : 12
+              }
+            }}
+          />
+          {hasCreatorDescription && (
+            <TemplateCreatorDetails
+              creatorDetails={journey?.creatorDescription}
+              creatorImage={journey?.creatorImageBlock?.src}
+              sx={{ display: { xs: 'none', sm: 'flex' } }}
+            />
+          )}
         </Box>
         <Stack
           direction="column"
