@@ -54,51 +54,26 @@ test('User creation and logout', async ({ page }) => {
   await page.click('input[type="text"][id="publicTitle"]')
   await page.fill('input[type="text"][id="publicTitle"]', legalName)
 
-  // const [apiLoginResponse] = await Promise.all([
-  //     page.waitForResponse(response => response.url().endsWith('api/login') && response.status() === 200),
-  //   ]);
-  await page.getByRole('button', { name: 'Create' }).click({ force: true })
-
-  //   expect(apiLoginResponse.status()).toBe(200);
+  await page.getByRole('button', { name: 'Create' }).click()
 
   // await page.waitForLoadState('domcontentloaded')
-  await page.getByRole('button', { name: 'Skip' }).click({ force: true })
+  await page.getByRole('button', { name: 'Skip' }).click()
 
-  // Click on team name dropdown and test that team name is correct
-  // await page.waitForSelector('svg[data-testid="ChevronDownIcon"]')
-  // await page.getByTestId('ChevronDownIcon').click({ force: true })
+  // Test that Team details are recorded correctly
+  await page.getByRole('button', { name: teamName }).click()
+  const teamNameLocatoreInDropdown =
+    'ul[role="listbox"] li[aria-selected="true"]'
+  expect(await page.textContent(teamNameLocatoreInDropdown)).toContain(teamName)
+  // Close team name drop down
+  await page.click(teamNameLocatoreInDropdown)
 
-  // Retry if team name is not found
-  // const teamNameText = await page.textContent('div.MuiMenu-paper ul li.Mui-selected')
-  // expect(teamNameText).toContain(teamName)
-  // async function waitForTeamNameToAppear(page, teamName) {
-  //   const teamNameText = await page.textContent('div.MuiMenu-paper ul li.Mui-selected')
-  //   console.log('teamNameText', teamNameText)
-  //   if (teamNameText === teamName) {
-  //     return
-  //   } else {
-  //     await page.waitForTimeout(2000)
-  //     await page.refresh()
-  //     await page.getByTestId('ChevronDownIcon').click({ force: true })
-  //     await page.waitForTimeout(2000)
-  //     return await waitForTeamNameToAppear(page, teamName)
-  //   }
-  // }
-
-  // console.log('teamNameText', teamNameText)
-  // await waitForTeamNameToAppear(page, teamName)
-
-  // close the team name dropdown
-  // await page.locator('svg[data-testid="ChevronDownIcon"]').click({ force: true })
-
-  // Click on Profile and test that name & emai are correct
+  // Click on Profile
   await page.getByTestId('Profile-list-item').click()
-
+  // Test name is correct
   expect(
     await page.textContent('div.MuiMenu-paper div p.MuiTypography-body1')
   ).toContain(firstAndLastName)
-
-  // test email is correct
+  // Test email is correct
   expect(
     await page.textContent('div.MuiMenu-paper div p.MuiTypography-body2')
   ).toContain(email)
@@ -106,7 +81,7 @@ test('User creation and logout', async ({ page }) => {
   // Click on Log out
   await page.click('div ul li[role="menuitem"]')
 
-  // test that logged out successfully
+  // Test that log out was successfully
   expect(
     await page.textContent('button[data-provider-id="password"]')
   ).toContain('Sign in with email')
