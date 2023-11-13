@@ -7,18 +7,35 @@ export class OnboardingPages {
     this.page = page
   }
 
+  async fillEmail(email: string): Promise<void> {
+    await this.page.locator('input[type="email"]').click()
+    await this.page.locator('input[type="email"]').fill(email)
+  }
+
+  async clickNextButton(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Next' }).click()
+  }
+
+  async fillPassword(password: string): Promise<void> {
+    await this.page.locator('input[type="password"]').click()
+    await this.page.locator('input[type="password"]').fill(password)
+  }
+
+  async clickSubmitButton(): Promise<void> {
+    await this.page.locator('button[type="submit"]').click()
+  }
+
   async createUser(
     email: string,
     firstAndLastName: string,
     password: string
   ): Promise<void> {
-    await this.page.getByLabel('Email').click()
-    await this.page.getByLabel('Email').fill(email)
-    await this.page.getByRole('button', { name: 'Next' }).click()
+
+    await this.fillEmail(email)
+    await this.clickNextButton()
     await this.page.getByLabel('First & last name').click()
     await this.page.getByLabel('First & last name').fill(firstAndLastName)
-    await this.page.getByLabel('Choose password').click()
-    await this.page.getByLabel('Choose password').fill(password)
+    await this.fillPassword(password)
     await this.page.getByRole('button', { name: 'Save' }).click()
 
     await this.page
@@ -29,6 +46,7 @@ export class OnboardingPages {
     // Save Email and Password as environment variables for later use
     process.env.EMAIL = email
     process.env.PASSWORD = password
+    process.env.FIRST_AND_LAST_NAME = firstAndLastName
   }
 
   async fillOnboardingForm(teamName: string, legalName: string): Promise<void> {
@@ -59,5 +77,8 @@ export class OnboardingPages {
     await this.page.getByRole('button', { name: 'Create' }).click()
 
     await this.page.getByRole('button', { name: 'Skip' }).click()
+
+    process.env.TEAM_NAME = teamName
+    process.env.LEGAL_NAME = legalName
   }
 }

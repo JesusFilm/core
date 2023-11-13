@@ -9,14 +9,14 @@ export class LandingPage {
   }
 
   async open(): Promise<void> {
-    await this.page.goto('https://journeys-admin-2024-jesusfilm.vercel.app/')
+    await this.page.goto('https://journeys-admin-2024-jesusfilm.vercel.app/');
+  }
+
+  async isSignInWithEmailVisible(): Promise<boolean> {
+    return await this.page.isVisible('button[data-provider-id="password"]')
   }
 
   async clickSignInWithEmail(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Sign in with email' }).click()
-  }
-
-  async hasUserLoggedOutSuccessfully(): Promise<boolean> {
-    return await this.page.isVisible('button[data-provider-id="password"]')
+    await this.page.locator('button[data-provider-id="password"]').click();
   }
 }

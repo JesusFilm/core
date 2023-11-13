@@ -5,8 +5,9 @@ import { LeftNav } from '../pages/left-nav'
 import { TopNav } from '../pages/top-nav'
 import { OnboardingPages } from '../pages/onboarding-pages'
 
-/* 
-Test that a user can create an account and logout
+test.describe('User creation', () => {
+  /* 
+Test that new user can be created successfully
 */
 test('User creation and logout', async ({ page }) => {
   const landingPage = new LandingPage(page)
@@ -35,4 +36,25 @@ test('User creation and logout', async ({ page }) => {
   await leftNav.testUserDetails(firstAndLastName, email)
 
   await leftNav.logout()
+  await landingPage.isSignInWithEmailVisible()
+})
+
+test('Existing user can login and logout successfully', async ({ page }) => { 
+  const landingPage = new LandingPage(page)
+  const leftNav = new LeftNav(page)
+  const onboardingPages = new OnboardingPages(page)
+
+  await landingPage.open()
+  await landingPage.clickSignInWithEmail()
+
+  await onboardingPages.fillEmail(process.env.EMAIL)
+  await onboardingPages.clickNextButton()
+  await onboardingPages.fillPassword(process.env.PASSWORD)
+  await onboardingPages.clickSubmitButton()
+  await leftNav.clickProfile()
+  await leftNav.testUserDetails(process.env.FIRST_AND_LAST_NAME, process.env.EMAIL)
+
+  await leftNav.logout()
+  await landingPage.isSignInWithEmailVisible()
+ })
 })
