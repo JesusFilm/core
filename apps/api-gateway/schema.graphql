@@ -642,6 +642,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  creatorImageBlock: ImageBlock
   chatButtons: [ChatButton!]!
   id: ID!
   title: String!
@@ -649,6 +650,7 @@ type Journey
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
+  creatorDescription: String
   slug: String!
   archivedAt: DateTime
   deletedAt: DateTime
@@ -752,6 +754,8 @@ input JourneyUpdateInput
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
+  creatorDescription: String
+  creatorImageBlockId: ID
   primaryImageBlockId: ID
   slug: String
   seoTitle: String
@@ -942,6 +946,12 @@ enum LanguageIdType
 {
   databaseId @join__enumValue(graph: LANGUAGES)
   bcp47 @join__enumValue(graph: LANGUAGES)
+}
+
+input LanguagesFilter
+  @join__type(graph: LANGUAGES)
+{
+  ids: [ID!]
 }
 
 type LanguageWithSlug
@@ -1375,7 +1385,7 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-  languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
+  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
   getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)

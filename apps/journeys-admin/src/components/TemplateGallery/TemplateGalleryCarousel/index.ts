@@ -1,0 +1,1 @@
+export { TemplateGalleryCarousel } from './TemplateGalleryCarousel'

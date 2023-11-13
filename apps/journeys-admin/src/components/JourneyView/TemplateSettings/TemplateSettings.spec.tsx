@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -40,8 +40,8 @@ describe('TemplateSettings', () => {
     expect(getByTestId('Edit2Icon')).toBeInTheDocument()
   })
 
-  it('should open and close TemplateSettingsDialog', async () => {
-    const { getByRole, getByText, queryByText } = render(
+  it('should redirect user to publisher edit', async () => {
+    const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -55,13 +55,10 @@ describe('TemplateSettings', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
-    expect(getByText('Template Settings')).toBeInTheDocument()
-    await waitFor(() => {
-      fireEvent.click(getByRole('button', { name: 'Cancel' }))
-    })
-    await waitFor(() => {
-      expect(queryByText('Template Settings')).not.toBeInTheDocument()
-    })
+    fireEvent.click(getByRole('link'))
+    expect(getByRole('link')).toHaveAttribute(
+      'href',
+      '/publisher/journey-id/edit'
+    )
   })
 })

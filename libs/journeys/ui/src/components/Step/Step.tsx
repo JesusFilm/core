@@ -63,9 +63,12 @@ export function Step({
 
   return (
     <>
-      {(variant === 'default' || variant === 'embed') && (
-        <NextSeo title={`${journey?.title ?? ''} (${heading})`} />
-      )}
+      {(variant === 'default' || variant === 'embed') &&
+        (treeBlocks[0]?.id !== blockId ? (
+          <NextSeo title={`${heading} (${journey?.title ?? ''})`} />
+        ) : (
+          <NextSeo title={`${journey?.title ?? ''} (${heading})`} />
+        ))}
       {children.map((block) => (
         <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
       ))}

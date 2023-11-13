@@ -21,8 +21,8 @@ function ReportsJourneysPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Journeys Report')} />
-      <PageWrapper title={t('Journeys Report')} user={user}>
+      <NextSeo title={t('Journeys Analytics')} />
+      <PageWrapper title={t('Journeys Analytics')} user={user}>
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <ReportsNavigation
             reportType={JourneysReportType.multipleFull}

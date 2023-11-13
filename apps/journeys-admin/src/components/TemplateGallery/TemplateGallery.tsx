@@ -1,8 +1,5 @@
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
 import { useRouter } from 'next/router'
@@ -11,24 +8,26 @@ import { useTranslation } from 'react-i18next'
 
 import { TemplateSections } from '../TemplateSections'
 
-import { LanguageFilter } from './LanguageFilter'
+import { HeaderAndLanguageFilter } from './HeaderAndLanguageFilter'
+import { TagCarousels } from './TagCarousels'
 import { TagsFilter } from './TagsFilter'
 
 export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const ENGLISH_LANGUAGE_ID = '529'
-  const [languageId, setLanguageId] = useState(ENGLISH_LANGUAGE_ID)
+  const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
+    router.query.languageIds != null ? castArray(router.query.languageIds) : []
+  )
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     router.query.tagIds != null ? castArray(router.query.tagIds) : []
   )
 
-  function handleChange(
+  function handleTagIdsChange(
     newSelectedTagIds: string[],
-    filteredTagIds: string[]
+    availableTagIds: string[]
   ): void {
     const tagIds = [
-      ...difference(selectedTagIds, filteredTagIds),
+      ...difference(selectedTagIds, availableTagIds),
       ...newSelectedTagIds
     ]
     setSelectedTagIds(tagIds)
@@ -36,76 +35,82 @@ export function TemplateGallery(): ReactElement {
     void router.push(router)
   }
 
+  function handleLanguageIdsChange(values: string[]): void {
+    setSelectedLanguageIds(values)
+    router.query.languageIds = values
+    void router.push(router)
+  }
+
   return (
-    <Paper elevation={0} square sx={{ height: '100%' }}>
-      <Container
+    <Container disableGutters>
+      <HeaderAndLanguageFilter
+        selectedLanguageIds={selectedLanguageIds}
+        onChange={handleLanguageIdsChange}
+      />
+      <Grid
+        container
+        spacing={2}
         sx={{
-          px: { xs: 6, sm: 8 },
-          py: { xs: 6, sm: 9 }
+          mb: { xs: 6, md: 9 }
         }}
+        id="TemplateGalleryTagsFilter"
       >
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{
-            pb: { xs: 6, md: 9 }
-          }}
-        >
-          <Typography
-            variant="h2"
-            sx={{ display: { xs: 'none', lg: 'block' } }}
-          >
-            {t('Journey Templates')}
-          </Typography>
-          <Typography
-            variant="h2"
-            sx={{ display: { xs: 'block', lg: 'none' } }}
-          >
-            {t('Templates')}
-          </Typography>
-          <LanguageFilter
-            languageId={languageId}
-            onChange={(value) => setLanguageId(value)}
+        <Grid item xs={12} md={7}>
+          <TagsFilter
+            label={t('Topics, holidays, felt needs, collections')}
+            tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
+            onChange={handleTagIdsChange}
+            selectedTagIds={selectedTagIds}
+            popperElementId="TemplateGalleryTagsFilter"
           />
-        </Stack>
-        <Grid
-          container
-          spacing={2}
-          sx={{
-            pb: { xs: 6, md: 9 }
-          }}
-        >
-          <Grid item xs={12} md={8}>
-            <TagsFilter
-              label={t('Topics, holidays, felt needs, collections')}
-              tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
-              onChange={handleChange}
-              selectedTagIds={selectedTagIds}
+        </Grid>
+        <Grid item xs={12} md={5}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TagsFilter
+                label={t('Audience')}
+                tagNames={['Audience']}
+                onChange={handleTagIdsChange}
+                selectedTagIds={selectedTagIds}
+                popperElementId="TemplateGalleryAudienceTagsFilter"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TagsFilter
+                label={t('Genre')}
+                tagNames={['Genre']}
+                onChange={handleTagIdsChange}
+                selectedTagIds={selectedTagIds}
+                popperElementId="TemplateGalleryGenreTagsFilter"
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              id="TemplateGalleryAudienceTagsFilter"
+              sx={{ p: '0 !important' }}
             />
-          </Grid>
-          <Grid item xs={6} md={2}>
-            <TagsFilter
-              label={t('Audience')}
-              tagNames={['Audience']}
-              onChange={handleChange}
-              selectedTagIds={selectedTagIds}
-            />
-          </Grid>
-          <Grid item xs={6} md={2}>
-            <TagsFilter
-              label={t('Genre')}
-              tagNames={['Genre']}
-              onChange={handleChange}
-              selectedTagIds={selectedTagIds}
+            <Grid
+              item
+              xs={12}
+              md={6}
+              id="TemplateGalleryGenreTagsFilter"
+              sx={{ p: '0 !important' }}
             />
           </Grid>
         </Grid>
-        <TemplateSections
-          tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
-          languageId={languageId}
-        />
-      </Container>
-    </Paper>
+      </Grid>
+      <TagCarousels
+        selectedTagIds={selectedTagIds}
+        onChange={handleTagIdsChange}
+      />
+      <TemplateSections
+        tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
+        languageIds={
+          selectedLanguageIds.length > 0 ? selectedLanguageIds : undefined
+        }
+      />
+    </Container>
   )
 }
