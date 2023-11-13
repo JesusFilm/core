@@ -142,7 +142,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('NavigationListItemReports')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemAnalytics')).toHaveAttribute(
       'aria-selected',
       'true'
     )
