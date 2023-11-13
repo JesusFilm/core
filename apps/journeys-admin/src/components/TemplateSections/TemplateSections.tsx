@@ -1,15 +1,17 @@
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import map from 'lodash/map'
 import take from 'lodash/take'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SwiperOptions } from 'swiper'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
-
-import { TemplateSection } from './TemplateSection'
+import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
+import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 interface Contents {
   [key: string]: { category: string; journeys: Journey[] }
@@ -17,14 +19,15 @@ interface Contents {
 
 interface TemplateSectionsProps {
   tagIds?: string[]
-  languageId: string
+  languageIds?: string[]
 }
 
 export function TemplateSections({
   tagIds,
-  languageId
+  languageIds
 }: TemplateSectionsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { breakpoints } = useTheme()
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
 
@@ -34,7 +37,10 @@ export function TemplateSections({
         template: true,
         orderByRecent: true,
         tagIds,
-        languageIds: [languageId]
+        languageIds:
+          languageIds != null && languageIds?.length > 0
+            ? languageIds
+            : undefined
       }
     },
     onCompleted(data) {
@@ -64,12 +70,41 @@ export function TemplateSections({
     }
   })
 
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      slidesPerGroup: 2,
+      spaceBetween: 20
+    },
+    [breakpoints.values.sm]: {
+      slidesPerGroup: 3,
+      spaceBetween: 20
+    },
+    [breakpoints.values.md]: {
+      slidesPerGroup: 4,
+      spaceBetween: 48
+    },
+    [breakpoints.values.lg]: {
+      slidesPerGroup: 5,
+      spaceBetween: 48
+    },
+    [breakpoints.values.xl]: {
+      slidesPerGroup: 6,
+      spaceBetween: 48
+    },
+    [breakpoints.values.xxl]: {
+      slidesPerGroup: 7,
+      spaceBetween: 48
+    }
+  }
+
   return (
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {(loading || (collection != null && collection.length > 0)) && (
-        <TemplateSection
-          category={tagIds == null ? t('Featured & New') : t('Most Relevant')}
-          journeys={collection}
+        <TemplateGalleryCarousel
+          heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
+          items={collection}
+          renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+          breakpoints={swiperBreakpoints}
           loading={loading}
         />
       )}
@@ -98,7 +133,12 @@ export function TemplateSections({
         ({ category, journeys }, key) =>
           ((tagIds == null && journeys.length >= 5) ||
             tagIds?.includes(key) === true) && (
-            <TemplateSection category={category} journeys={journeys} />
+            <TemplateGalleryCarousel
+              heading={category}
+              items={journeys}
+              renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+              breakpoints={swiperBreakpoints}
+            />
           )
       )}
     </Stack>

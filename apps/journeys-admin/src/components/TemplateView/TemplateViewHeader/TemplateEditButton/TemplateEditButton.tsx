@@ -1,37 +1,24 @@
 import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import { ReactElement, useState } from 'react'
+import NextLink from 'next/link'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { TemplateSettingsDialog } from '../../../JourneyView/TemplateSettings/TemplateSettingsDialog'
+interface TemplateEditButtonProps {
+  journeyId: string
+}
 
-export function TemplateEditButton(): ReactElement {
+export function TemplateEditButton({
+  journeyId
+}: TemplateEditButtonProps): ReactElement {
   const { t } = useTranslation()
-  const [showTemplateSettingsDialog, setTemplateSettingsDialog] =
-    useState(false)
-
-  const handleTemplateSettingsOpen = (): void => {
-    setTemplateSettingsDialog(true)
-  }
 
   return (
-    <>
-      <Button
-        data-testid="TemplateEditButton"
-        size="small"
-        onClick={handleTemplateSettingsOpen}
-      >
-        <Edit2Icon />
-        <Typography sx={{ display: { xs: 'none', sm: 'block' }, pl: '6px' }}>
-          {t('Edit')}
-        </Typography>
+    <NextLink href={`/publisher/${journeyId}/edit`} passHref legacyBehavior>
+      <Button startIcon={<Edit2Icon />} data-testid="TemplateEditButton">
+        {t('Edit')}
       </Button>
-      <TemplateSettingsDialog
-        open={showTemplateSettingsDialog}
-        onClose={() => setTemplateSettingsDialog(false)}
-      />
-    </>
+    </NextLink>
   )
 }

@@ -61,7 +61,7 @@ export function Footer(): ReactElement {
         id="hosted-by"
         icon={<UserProfileCircleIcon />}
         name={t('Hosted By')}
-        value={hostName as string}
+        value={hostName}
         description={t("Host's name")}
         onClick={() => {
           dispatch({

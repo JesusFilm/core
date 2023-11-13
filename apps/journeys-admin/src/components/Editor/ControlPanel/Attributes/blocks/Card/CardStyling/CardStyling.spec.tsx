@@ -65,6 +65,8 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   template: null,
   userJourneys: [],
   seoTitle: null,

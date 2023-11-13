@@ -2,17 +2,20 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import { getJourneysMock, getLanguagesMock, getTagsMock } from './data'
+import '../../../test/i18n'
+
+import {
+  getJourneysMock,
+  getJourneysWithoutLanguageIdsMock,
+  getLanguagesMock,
+  getTagsMock
+} from './data'
 
 import { TemplateGallery } from '.'
 
-jest.mock('react-i18next', () => ({
+jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
+  default: () => true
 }))
 
 jest.mock('next/router', () => ({
@@ -25,7 +28,13 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 describe('TemplateGallery', () => {
   it('should render TemplateGallery', async () => {
     const { getByRole, getAllByRole } = render(
-      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
+      <MockedProvider
+        mocks={[
+          getJourneysWithoutLanguageIdsMock,
+          getLanguagesMock,
+          getTagsMock
+        ]}
+      >
         <TemplateGallery />
       </MockedProvider>
     )
@@ -33,17 +42,21 @@ describe('TemplateGallery', () => {
       getAllByRole('heading', { name: 'Journey Templates' })[0]
     ).toBeInTheDocument()
     await waitFor(() =>
-      expect(getByRole('button', { name: 'English' })).toBeInTheDocument()
+      expect(
+        getAllByRole('heading', { name: 'All Languages' })[0]
+      ).toBeInTheDocument()
     )
-    expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
-    expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
+    expect(
+      getByRole('heading', { level: 5, name: 'Acceptance' })
+    ).toBeInTheDocument()
+    expect(getByRole('heading', { level: 5, name: 'Hope' })).toBeInTheDocument()
   })
 
   it('should render templates filtered via tags', async () => {
     const push = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
-      query: { tagIds: [] }
+      query: { tagIds: [], languageIds: ['529'] }
     } as unknown as NextRouter)
 
     const { getByRole, queryByRole } = render(
@@ -62,15 +75,53 @@ describe('TemplateGallery', () => {
     await waitFor(() =>
       fireEvent.click(getByRole('option', { name: 'Acceptance' }))
     )
-    expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
     expect(
-      queryByRole('heading', { name: 'Addiction' })
+      getByRole('heading', { level: 6, name: 'Acceptance' })
+    ).toBeInTheDocument()
+    expect(
+      queryByRole('heading', { level: 5, name: 'Hope' })
     ).not.toBeInTheDocument()
     expect(push).toHaveBeenCalledWith({
       push,
       query: {
-        tagIds: ['acceptanceTagId']
+        tagIds: ['acceptanceTagId'],
+        languageIds: ['529']
       }
+    })
+  })
+
+  it('should render templates filtered via language ids', async () => {
+    const push = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      push,
+      query: { languageIds: [] }
+    } as unknown as NextRouter)
+
+    const { getByRole, getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          getJourneysWithoutLanguageIdsMock,
+          getLanguagesMock,
+          getTagsMock
+        ]}
+      >
+        <TemplateGallery />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      fireEvent.click(getAllByRole('heading', { name: 'All Languages' })[0])
+    )
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'French Français' }))
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        push,
+        query: {
+          languageIds: ['496']
+        }
+      })
     })
   })
 })

@@ -110,7 +110,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
-    expect(getByText('Reports')).toBeInTheDocument()
+    expect(getByText('Analytics')).toBeInTheDocument()
     await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
   })
 

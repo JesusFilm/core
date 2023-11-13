@@ -40,10 +40,13 @@ function JourneysAdminApp({
   emotionCache = clientSideEmotionCache
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const token =
-    (pageProps.userSerialized != null
-      ? (JSON.parse(pageProps.userSerialized)._token as string | null)
-      : '') ?? ''
+
+  const user =
+    pageProps.userSerialized != null
+      ? JSON.parse(pageProps.userSerialized)
+      : null
+
+  const token = user?._token ?? ''
   const apolloClient = useApollo(token)
 
   useEffect(() => {
@@ -72,7 +75,9 @@ function JourneysAdminApp({
     if (jssStyles != null) {
       jssStyles.parentElement?.removeChild(jssStyles)
     }
-  }, [])
+
+    TagManager.dataLayer({ dataLayer: { userId: user?.id } })
+  }, [user])
 
   return (
     <FlagsProvider flags={pageProps.flags}>

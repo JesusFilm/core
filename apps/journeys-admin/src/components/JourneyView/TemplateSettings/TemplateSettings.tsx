@@ -2,12 +2,11 @@ import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useState } from 'react'
+import NextLink from 'next/link'
+import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-
-import { TemplateSettingsDialog } from './TemplateSettingsDialog'
 
 interface TemplateSettingsProps {
   isPublisher?: boolean
@@ -17,13 +16,6 @@ export function TemplateSettings({
   isPublisher = false
 }: TemplateSettingsProps): ReactElement {
   const { journey } = useJourney()
-
-  const [showTemplateSettingsDialog, setTemplateSettingsDialog] =
-    useState(false)
-
-  const handleTemplateSettingsOpen = (): void => {
-    setTemplateSettingsDialog(true)
-  }
 
   return (
     <>
@@ -42,14 +34,16 @@ export function TemplateSettings({
               <Skeleton variant="text" width="60%" />
             )}
           </Typography>
-          {isPublisher && (
-            <IconButton
-              data-testid="EditTemplateSettings"
-              size="small"
-              onClick={handleTemplateSettingsOpen}
+          {journey != null && isPublisher && (
+            <NextLink
+              href={`/publisher/${journey.id}/edit`}
+              passHref
+              legacyBehavior
             >
-              <Edit2Icon />
-            </IconButton>
+              <IconButton size="small" aria-label="Edit">
+                <Edit2Icon />
+              </IconButton>
+            </NextLink>
           )}
         </Stack>
         <Typography variant="body1">
@@ -60,10 +54,6 @@ export function TemplateSettings({
           )}
         </Typography>
       </Stack>
-      <TemplateSettingsDialog
-        open={showTemplateSettingsDialog}
-        onClose={() => setTemplateSettingsDialog(false)}
-      />
     </>
   )
 }

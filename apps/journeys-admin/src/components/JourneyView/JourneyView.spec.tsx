@@ -59,6 +59,8 @@ describe('JourneyView', () => {
     seoTitle: null,
     seoDescription: null,
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     template: null,
     userJourneys: [],
     chatButtons: [],
