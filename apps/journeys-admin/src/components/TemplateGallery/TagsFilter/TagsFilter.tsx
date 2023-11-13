@@ -10,7 +10,7 @@ import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
-import { ReactElement, useCallback } from 'react'
+import { ReactElement, useCallback, useState } from 'react'
 
 import { GetTags_tags as Tag } from '../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
@@ -31,6 +31,7 @@ export function TagsFilter({
   onChange,
   popperElementId
 }: TagsFilterProps): ReactElement {
+  const [openPopper, setOpenPopper] = useState(false)
   const { parentTags, childTags, loading } = useTagsQuery()
   const theme = useTheme()
   const filteredParentTagIds = compact(
@@ -88,6 +89,8 @@ export function TagsFilter({
   return (
     <Autocomplete
       PopperComponent={popperElementId != null ? Popper : undefined}
+      open={openPopper}
+      onOpen={() => setOpenPopper(true)}
       loading={loading}
       limitTags={hasMultipleColumns ? 4 : 1}
       disableCloseOnSelect
@@ -119,7 +122,13 @@ export function TagsFilter({
                 ) : null}
                 {params.InputProps.endAdornment}
               </>
-            )
+            ),
+            onKeyDown: (e) => {
+              if (e.key === 'Enter') {
+                e.stopPropagation()
+                setOpenPopper(false)
+              }
+            }
           }}
         />
       )}
