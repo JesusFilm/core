@@ -85,6 +85,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   return (
     <Paper elevation={0} square sx={{ height: '100%' }}>
       <Container
+        maxWidth="xl"
         sx={{
           px: { xs: 6, sm: 8 },
           py: { xs: 6, sm: 9 }
@@ -118,30 +119,30 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
               variant="full"
             />
           )}
-        </Typography>
-        {journey?.creatorDescription != null && (
-          <TemplateCreatorDetails
-            creatorDetails={journey?.creatorDescription}
-            creatorImage={journey?.creatorImageBlock?.src}
-            sx={{ display: { xs: 'flex', sm: 'none' } }}
-          />
-        )}
-        {journey?.strategySlug != null && (
-          <StrategySection
-            strategySlug={journey?.strategySlug}
-            variant="full"
-          />
-        )}
-        {relatedJourneys != null && relatedJourneys.length >= 1 && (
-          <TemplateGalleryCarousel
-            heading={t('Related Templates')}
-            items={relatedJourneys}
-            renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-            breakpoints={swiperBreakpoints}
-          />
-        )}
-        <TemplateFooter signedIn={authUser?.id != null} />
-      </Stack>
-    </Container>
+          {journey?.creatorDescription != null && (
+            <TemplateCreatorDetails
+              creatorDetails={journey?.creatorDescription}
+              creatorImage={journey?.creatorImageBlock?.src}
+              sx={{ display: { xs: 'flex', sm: 'none' } }}
+            />
+          )}
+          {journey?.strategySlug != null && (
+            <StrategySection
+              strategySlug={journey?.strategySlug}
+              variant="full"
+            />
+          )}
+          {relatedJourneys != null && relatedJourneys.length >= 1 && (
+            <TemplateGalleryCarousel
+              heading={t('Related Templates')}
+              items={relatedJourneys}
+              renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+              breakpoints={swiperBreakpoints}
+            />
+          )}
+          <TemplateFooter signedIn={authUser?.id != null} />
+        </Stack>
+      </Container>
+    </Paper>
   )
 }
