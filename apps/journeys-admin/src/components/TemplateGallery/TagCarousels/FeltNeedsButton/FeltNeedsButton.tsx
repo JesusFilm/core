@@ -71,9 +71,32 @@ export function FeltNeedsButton({
           width: { xs: '150px', md: '222px' },
           height: { xs: '56px', md: '110px' },
           overflow: 'hidden',
+          '&:before': {
+            transition: (theme) => theme.transitions.create('opacity'),
+            content: '""',
+            opacity: 0,
+            backgroundColor: 'secondary.dark',
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 1
+          },
           '&:hover': {
             '& .hoverStyles': {
-              transform: 'scale(1.02)'
+              transform: 'scale(1.05)'
+            },
+            '&:before': {
+              content: '""',
+              opacity: 0.3,
+              backgroundColor: 'secondary.dark',
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              zIndex: 1
             }
           },
           '& .hoverStyles': {

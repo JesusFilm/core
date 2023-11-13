@@ -60,7 +60,7 @@ export function TemplateGalleryCard({
             height: 'inherit',
             '&:hover': {
               '& .MuiImageBackground-root': {
-                transform: 'scale(1.02)'
+                transform: 'scale(1.05)'
               }
             },
             '& .MuiImageBackground-root': {
@@ -75,7 +75,32 @@ export function TemplateGalleryCard({
                   position: 'relative',
                   aspectRatio: 1,
                   overflow: 'hidden',
-                  borderRadius: 2
+                  borderRadius: 2,
+                  '&:before': {
+                    transition: (theme) => theme.transitions.create('opacity'),
+                    content: '""',
+                    opacity: 0,
+                    backgroundColor: 'secondary.dark',
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    zIndex: 1
+                  },
+                  '&:hover': {
+                    '&:before': {
+                      content: '""',
+                      opacity: 0.3,
+                      backgroundColor: 'secondary.dark',
+                      position: 'absolute',
+                      top: 0,
+                      right: 0,
+                      bottom: 0,
+                      left: 0,
+                      zIndex: 1
+                    }
+                  }
                 }}
               >
                 <Image
