@@ -207,7 +207,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             centeredSlidesBounds
             resizeObserver
             onSwiper={(swiper) => setSwiper(swiper)}
-            allowTouchMove
+            // FIX: swipe backwards when locked
+            allowTouchMove={activeBlock?.locked ?? false}
             onSlideNextTransitionStart={() => {
               nextActiveBlock()
             }}
