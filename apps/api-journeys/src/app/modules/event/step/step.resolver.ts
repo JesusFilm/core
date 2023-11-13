@@ -9,8 +9,8 @@ import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import {
   StepNextEvent,
   StepNextEventCreateInput,
-  StepPrevEvent,
-  StepPrevEventCreateInput,
+  StepPreviousEvent,
+  StepPreviousEventCreateInput,
   StepViewEvent,
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
@@ -115,31 +115,31 @@ export class StepNextEventResolver {
   }
 }
 
-@Resolver('StepPrevEvent')
-export class StepPrevEventResolver {
+@Resolver('StepPreviousEvent')
+export class StepPreviousEventResolver {
   constructor(private readonly eventService: EventService) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async stepPrevEventCreate(
+  async stepPreviousEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: StepPrevEventCreateInput
-  ): Promise<StepPrevEvent> {
+    @Args('input') input: StepPreviousEventCreateInput
+  ): Promise<StepPreviousEvent> {
     const { visitor, journeyId } = await this.eventService.validateBlockEvent(
       userId,
       input.blockId,
       input.blockId
     )
 
-    const stepPrevEvent = await this.eventService.save({
+    const stepPreviousEvent = await this.eventService.save({
       ...input,
       id: input.id ?? undefined,
-      typename: 'StepPrevEvent',
+      typename: 'StepPreviousEvent',
       visitor: { connect: { id: visitor.id } },
       createdAt: new Date().toISOString(),
       journeyId
     })
 
-    return stepPrevEvent as StepPrevEvent
+    return stepPreviousEvent as StepPreviousEvent
   }
 }

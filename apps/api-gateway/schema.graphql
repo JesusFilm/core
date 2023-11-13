@@ -1151,7 +1151,7 @@ type Mutation
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @join__field(graph: JOURNEYS)
-  stepPrevEventCreate(input: StepPrevEventCreateInput!): StepPrevEvent! @join__field(graph: JOURNEYS)
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent! @join__field(graph: JOURNEYS)
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent! @join__field(graph: JOURNEYS)
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @join__field(graph: JOURNEYS)
@@ -1652,20 +1652,20 @@ input StepNextEventCreateInput
   """
   id: ID
 
-  """Id of the StepBlock"""
+  """Id of the current StepBlock"""
   blockId: ID!
 
   """id of the next stepBlock"""
   nextStepId: ID!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   label: String
 
   """stepName of the next stepBlock"""
   value: String
 }
 
-type StepPrevEvent implements Event
+type StepPreviousEvent implements Event
   @join__implements(graph: JOURNEYS, interface: "Event")
   @join__type(graph: JOURNEYS)
 {
@@ -1677,14 +1677,14 @@ type StepPrevEvent implements Event
   """time event was created"""
   createdAt: DateTime!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   label: String
 
-  """stepName of the next stepBlock"""
+  """stepName of the previous stepBlock"""
   value: String
 }
 
-input StepPrevEventCreateInput
+input StepPreviousEventCreateInput
   @join__type(graph: JOURNEYS)
 {
   """
@@ -1692,13 +1692,13 @@ input StepPrevEventCreateInput
   """
   id: ID
 
-  """Id of the StepBlock"""
+  """Id of the current StepBlock"""
   blockId: ID!
 
   """id of the previous stepBlock"""
-  prevStepId: ID!
+  previousStepId: ID!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   label: String
 
   """stepName of the previous stepBlock"""

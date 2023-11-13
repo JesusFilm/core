@@ -100,7 +100,7 @@ model Event {
   radioOptionBlockId      String?
   email                   String?
   nextStepId              String?
-  prevStepId              String?
+  previousStepId          String?
   position                Float?
   source                  VideoBlockSource?
   progress                Int?

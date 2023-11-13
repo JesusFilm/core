@@ -505,10 +505,10 @@ export class StepNextEventCreateInput {
     value?: Nullable<string>;
 }
 
-export class StepPrevEventCreateInput {
+export class StepPreviousEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
-    prevStepId: string;
+    previousStepId: string;
     label?: Nullable<string>;
     value?: Nullable<string>;
 }
@@ -1027,8 +1027,8 @@ export class StepNextEvent implements Event {
     value?: Nullable<string>;
 }
 
-export class StepPrevEvent implements Event {
-    __typename?: 'StepPrevEvent';
+export class StepPreviousEvent implements Event {
+    __typename?: 'StepPreviousEvent';
     id: string;
     journeyId: string;
     createdAt: DateTime;
@@ -1436,7 +1436,7 @@ export abstract class IMutation {
 
     abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
-    abstract stepPrevEventCreate(input: StepPrevEventCreateInput): StepPrevEvent | Promise<StepPrevEvent>;
+    abstract stepPreviousEventCreate(input: StepPreviousEventCreateInput): StepPreviousEvent | Promise<StepPreviousEvent>;
 
     abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 

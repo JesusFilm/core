@@ -224,7 +224,7 @@ extend type Mutation {
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
-  stepPrevEventCreate(input: StepPrevEventCreateInput!): StepPrevEvent!
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent!
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
@@ -1311,13 +1311,13 @@ input StepNextEventCreateInput {
   """
   id: ID
 
-  """Id of the StepBlock"""
+  """Id of the current StepBlock"""
   blockId: ID!
 
   """id of the next stepBlock"""
   nextStepId: ID!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   label: String
 
   """stepName of the next stepBlock"""
@@ -1340,26 +1340,26 @@ type StepNextEvent implements Event {
   value: String
 }
 
-input StepPrevEventCreateInput {
+input StepPreviousEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
 
-  """Id of the StepBlock"""
+  """Id of the current StepBlock"""
   blockId: ID!
 
   """id of the previous stepBlock"""
-  prevStepId: ID!
+  previousStepId: ID!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   label: String
 
   """stepName of the previous stepBlock"""
   value: String
 }
 
-type StepPrevEvent implements Event {
+type StepPreviousEvent implements Event {
   id: ID!
 
   """ID of the journey that the stepBlock belongs to"""
@@ -1368,10 +1368,10 @@ type StepPrevEvent implements Event {
   """time event was created"""
   createdAt: DateTime!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   label: String
 
-  """stepName of the next stepBlock"""
+  """stepName of the previous stepBlock"""
   value: String
 }
 
