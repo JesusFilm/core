@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 
 import { cache } from '../../libs/apolloClient/cache'
 import { simpleComponentConfig } from '../../libs/storybook'
+import { TeamProvider } from '../Team/TeamProvider'
 
 import { getOnboardingJourneysMock } from './data'
 import { OnboardingPanelContent } from './OnboardingPanelContent'
@@ -22,9 +23,11 @@ const OnboardingPanelContentComponent = (): ReactElement => {
 
   return (
     <MockedProvider>
-      <Drawer anchor={isMobile ? 'bottom' : 'left'} open>
-        <OnboardingPanelContent />
-      </Drawer>
+      <TeamProvider>
+        <Drawer anchor={isMobile ? 'bottom' : 'left'} open>
+          <OnboardingPanelContent />
+        </Drawer>
+      </TeamProvider>
     </MockedProvider>
   )
 }
