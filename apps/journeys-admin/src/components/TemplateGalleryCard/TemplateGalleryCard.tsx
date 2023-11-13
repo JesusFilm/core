@@ -4,7 +4,6 @@ import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -17,15 +16,6 @@ import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 export interface TemplateGalleryCardProps {
   item?: Journey
 }
-
-const StyledImage = styled(Image)({
-  borderRadius: 8,
-  objectFit: 'cover',
-  transition: 'transform .35s ease',
-  '&:hover': {
-    transform: 'scale(1.05)'
-  }
-})
 
 export function TemplateGalleryCard({
   item: journey
@@ -67,7 +57,15 @@ export function TemplateGalleryCard({
         <Box
           data-testid="templateGalleryCard"
           sx={{
-            height: 'inherit'
+            height: 'inherit',
+            '&:hover': {
+              '& .MuiImageBackground-root': {
+                transform: 'scale(1.02)'
+              }
+            },
+            '& .MuiImageBackground-root': {
+              transition: (theme) => theme.transitions.create('transform')
+            }
           }}
         >
           {journey != null ? (
@@ -80,10 +78,14 @@ export function TemplateGalleryCard({
                   borderRadius: 2
                 }}
               >
-                <StyledImage
+                <Image
+                  className="MuiImageBackground-root"
                   src={journey?.primaryImageBlock?.src}
                   alt={journey?.primaryImageBlock.alt}
                   fill
+                  style={{
+                    objectFit: 'cover'
+                  }}
                 />
               </Box>
             ) : (
@@ -99,7 +101,7 @@ export function TemplateGalleryCard({
                   backgroundColor: 'background.default'
                 }}
               >
-                <InsertPhotoRoundedIcon />
+                <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
               </CardMedia>
             )
           ) : (
