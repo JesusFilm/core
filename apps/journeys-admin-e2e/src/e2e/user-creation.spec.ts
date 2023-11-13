@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { UserCreation } from '../pages/user-creation'
+import { UserCreation } from '../pages/home-page'
 
 /* 
 Test that a user can create an account and logout

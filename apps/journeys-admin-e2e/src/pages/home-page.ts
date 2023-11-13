@@ -8,7 +8,7 @@ export class LandingPage {
   }
 
   async open(): Promise<void> {
-    await this.page.goto('https://admin.nextstep.is')
+    await this.page.goto('/')
   }
 
   async goToLoginPage(): Promise<void> {
