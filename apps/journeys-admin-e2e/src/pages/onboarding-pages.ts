@@ -1,5 +1,5 @@
 import { Page } from 'playwright-core'
-
+import { expect } from '@playwright/test'
 export class OnboardingPages {
   readonly page: Page
 
@@ -8,17 +8,31 @@ export class OnboardingPages {
   }
 
   async fillEmail(email: string): Promise<void> {
-    await this.page.locator('input[type="email"]').click()
-    await this.page.locator('input[type="email"]').fill(email)
+    const emailInputLocator = '#ui-sign-in-email-input'
+    await this.page.locator(emailInputLocator).click()
+    await this.page.locator(emailInputLocator).fill(email)
+
+    const inputLocator = this.page.locator(emailInputLocator)
+    const emailValue = await inputLocator.inputValue()
+
+    await expect(emailValue).toContain(email)
+  }
+
+  async fillPassword(password: string): Promise<void> {
+    await this.page.getByLabel('Choose password').fill(password)
+  }
+
+  async fillExistingEmail(email: string): Promise<void> {
+    await this.page.getByLabel('Email').fill(email)
+    expect(await this.page.locator('input[name="email"]').inputValue()).toBe(email)
   }
 
   async clickNextButton(): Promise<void> {
     await this.page.getByRole('button', { name: 'Next' }).click()
   }
 
-  async fillPassword(password: string): Promise<void> {
-    await this.page.locator('input[type="password"]').click()
-    await this.page.locator('input[type="password"]').fill(password)
+  async fillExistingPassword(password: string): Promise<void> {
+    await this.page.getByLabel('Password').fill(password)
   }
 
   async clickSubmitButton(): Promise<void> {
