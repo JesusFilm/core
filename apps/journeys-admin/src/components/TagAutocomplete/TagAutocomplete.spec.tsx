@@ -87,12 +87,7 @@ describe('TagAutocomplete', () => {
       within(getByRole('button', { name: 'Easter' })).getByTestId('CancelIcon')
     )
     await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith('parentId', [
-        {
-          value: 'tag2',
-          label: 'Christmas'
-        }
-      ])
+      expect(onChange).toHaveBeenCalledWith('parentId', ['tag2'])
     })
   })
 
@@ -116,16 +111,7 @@ describe('TagAutocomplete', () => {
       within(getByRole('option', { name: 'Ramadan' })).getByRole('checkbox')
     )
     await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith('parentId', [
-        {
-          value: 'tag2',
-          label: 'Christmas'
-        },
-        {
-          value: 'tag1',
-          label: 'Ramadan'
-        }
-      ])
+      expect(onChange).toHaveBeenCalledWith('parentId', ['tag2', 'tag1'])
     })
   })
 })

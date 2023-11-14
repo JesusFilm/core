@@ -1,4 +1,4 @@
-import { TFunction } from 'react-i18next'
+import { TFunction } from 'i18next'
 
 import { GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonEvent } from '../../../../../../__generated__/GetVisitorEvents'
 import { ButtonAction } from '../../../../../../__generated__/globalTypes'

@@ -25,8 +25,8 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
       clicked={clicked}
       data-testid="ReactionButton"
     >
-      {variant === 'thumbsup' && <ThumbsUp />}
-      {variant === 'thumbsdown' && <ThumbsDown />}
+      {variant === 'thumbsup' && <ThumbsUp sx={{ fontSize: 18 }} />}
+      {variant === 'thumbsdown' && <ThumbsDown sx={{ fontSize: 18 }} />}
     </StyledFooterButton>
   )
 }

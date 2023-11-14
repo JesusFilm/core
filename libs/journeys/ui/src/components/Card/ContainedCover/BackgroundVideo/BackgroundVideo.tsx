@@ -99,6 +99,10 @@ export function BackgroundVideo({
     }
   }, [playerRef, startAt, endAt, source, video, videoId, setLoading])
 
+  useEffect(() => {
+    if (videoRef.current != null) videoRef.current.pause()
+  }, [])
+
   let videoFit: CSSProperties['objectFit']
   if (source === VideoBlockSource.youTube) {
     videoFit = 'contain'

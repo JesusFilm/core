@@ -81,6 +81,8 @@ describe('CreateJourneyButton', () => {
     team: null,
     blocks: [],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     tags: []
   }

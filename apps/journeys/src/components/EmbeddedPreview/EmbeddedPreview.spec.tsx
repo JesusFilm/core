@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
+import { treeBlocksVar } from '@core/journeys/ui/block'
 import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../__generated__/GetJourney'
@@ -20,11 +21,21 @@ jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('EmbeddedPreview', () => {
   it('renders first block', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+    treeBlocksVar(basic)
     const { getByText } = render(
       <MockedProvider
         mocks={[

@@ -67,6 +67,8 @@ describe('JourneyResolver', () => {
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
+    creatorDescription: null,
+    creatorImageBlockId: null,
     primaryImageBlockId: null,
     teamId: 'teamId',
     publishedAt: new Date('2021-11-19T12:34:56.647Z'),
@@ -941,6 +943,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'hostId',
             'primaryImageBlockId',
+            'creatorImageBlockId',
+            'creatorDescription',
             'publishedAt',
             'teamId',
             'createdAt',
@@ -1003,6 +1007,8 @@ describe('JourneyResolver', () => {
           'nextBlockId',
           'hostId',
           'primaryImageBlockId',
+          'creatorImageBlockId',
+          'creatorDescription',
           'publishedAt',
           'teamId',
           'createdAt',
@@ -1023,15 +1029,6 @@ describe('JourneyResolver', () => {
             userId: 'userId',
             role: UserJourneyRole.owner
           }
-        },
-        journeyTags: {
-          create: [
-            {
-              journey: { connect: { id: 'duplicateJourneyId' } },
-              journeyId: 'duplicateJourneyId',
-              tagId: 'tagId'
-            }
-          ]
         }
       }
 
@@ -1113,6 +1110,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'hostId',
             'primaryImageBlockId',
+            'creatorImageBlockId',
+            'creatorDescription',
             'publishedAt',
             'teamId',
             'createdAt',
@@ -1635,7 +1634,54 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { not: 'primaryImageBlockId' }
+          id: { notIn: ['primaryImageBlockId'] }
+        }
+      })
+    })
+
+    it('returns blocks without creatorImageBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        creatorImageBlockId: 'creatorImageBlockId'
+      }
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
+        { ...block, __typename: 'ImageBlock', typename: undefined }
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        include: {
+          action: true
+        },
+        orderBy: {
+          parentOrder: 'asc'
+        },
+        where: {
+          journeyId: 'journeyId',
+          id: { notIn: ['creatorImageBlockId'] }
+        }
+      })
+    })
+
+    it('returns blocks without primaryImageBlock or creatorImageBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        primaryImageBlockId: 'primaryImageBlockId',
+        creatorImageBlockId: 'creatorImageBlockId'
+      }
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
+        { ...block, __typename: 'ImageBlock', typename: undefined }
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        include: {
+          action: true
+        },
+        orderBy: {
+          parentOrder: 'asc'
+        },
+        where: {
+          journeyId: 'journeyId',
+          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] }
         }
       })
     })
@@ -1732,6 +1778,44 @@ describe('JourneyResolver', () => {
       expect(
         await resolver.primaryImageBlock(
           journeyWithPrimaryImageBlockFromDifferentJourney
+        )
+      ).toBeNull()
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+  })
+
+  describe('creatorImageBlock', () => {
+    it('returns creatorImageBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        creatorImageBlockId: 'blockId'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      expect(
+        await resolver.creatorImageBlock(journeyWithPrimaryImageBlock)
+      ).toEqual(block)
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+
+    it('returns null if no creatorImageBlockId', async () => {
+      expect(await resolver.creatorImageBlock(journey)).toBeNull()
+    })
+
+    it('returns null if creatorImageBlock journey is not current journey', async () => {
+      const journeyWithCreatorImageBlockFromDifferentJourney = {
+        ...journey,
+        id: 'differentJourneyId',
+        creatorImageBlockId: 'blockId'
+      }
+      expect(
+        await resolver.creatorImageBlock(
+          journeyWithCreatorImageBlockFromDifferentJourney
         )
       ).toBeNull()
       expect(prismaService.block.findUnique).toHaveBeenCalledWith({

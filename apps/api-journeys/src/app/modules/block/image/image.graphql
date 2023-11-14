@@ -62,4 +62,5 @@ extend type Mutation {
 
 extend type Journey {
   primaryImageBlock: ImageBlock
+  creatorImageBlock: ImageBlock
 }

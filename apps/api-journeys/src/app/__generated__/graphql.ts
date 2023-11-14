@@ -617,6 +617,8 @@ export class JourneyUpdateInput {
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
+    creatorDescription?: Nullable<string>;
+    creatorImageBlockId?: Nullable<string>;
     primaryImageBlockId?: Nullable<string>;
     slug?: Nullable<string>;
     seoTitle?: Nullable<string>;
@@ -741,6 +743,7 @@ export class Journey {
     __typename?: 'Journey';
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
+    creatorImageBlock?: Nullable<ImageBlock>;
     chatButtons: ChatButton[];
     id: string;
     title: string;
@@ -748,6 +751,7 @@ export class Journey {
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
+    creatorDescription?: Nullable<string>;
     slug: string;
     archivedAt?: Nullable<DateTime>;
     deletedAt?: Nullable<DateTime>;

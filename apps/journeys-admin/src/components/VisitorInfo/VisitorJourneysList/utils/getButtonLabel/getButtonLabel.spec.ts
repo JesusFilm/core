@@ -1,10 +1,16 @@
+import { TFunction } from 'i18next'
+
 import { GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonEvent } from '../../../../../../__generated__/GetVisitorEvents'
 import { ButtonAction } from '../../../../../../__generated__/globalTypes'
 
 import { getButtonLabel } from '.'
 
 describe('getButtonLabel', () => {
-  const t = (string): string => string
+  const t = ((string): string => string) as unknown as TFunction<
+    'apps-journeys-admin',
+    undefined
+  >
+
   const buttonEvent: ButtonEvent = {
     __typename: 'ButtonClickEvent',
     id: 'buttonClick.id',

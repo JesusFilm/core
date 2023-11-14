@@ -79,7 +79,7 @@ export function EmbedJourney({
             }}
           />
           <FramePortal height="100%" width="100%">
-            <JourneyProvider value={{ variant: 'embed' }}>
+            <JourneyProvider value={{ variant: 'admin' }}>
               <ThemeProvider
                 themeName={ThemeName.base}
                 themeMode={ThemeMode.light}

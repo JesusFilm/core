@@ -4,9 +4,16 @@ import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '../../libs/storybook'
 
-import { getJourneysMock, getLanguagesMock, getTagsMock } from './data'
+import {
+  getJourneysMock,
+  getJourneysWithoutLanguageIdsMock,
+  getLanguagesMock,
+  getTagsMock
+} from './data'
 
 import { TemplateGallery } from '.'
+
+import '../../../test/i18n'
 
 const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
   ...journeysAdminConfig,
@@ -23,7 +30,8 @@ const Template: StoryObj<ComponentProps<typeof TemplateGallery>> = {
       sx={{
         backgroundColor: 'background.paper',
         p: 5,
-        height: '100%'
+        height: '100%',
+        overflow: 'hidden'
       }}
     >
       <TemplateGallery />
@@ -35,7 +43,7 @@ export const Default = {
   ...Template,
   parameters: {
     apolloClient: {
-      mocks: [getJourneysMock, getLanguagesMock, getTagsMock]
+      mocks: [getJourneysWithoutLanguageIdsMock, getLanguagesMock, getTagsMock]
     }
   }
 }
