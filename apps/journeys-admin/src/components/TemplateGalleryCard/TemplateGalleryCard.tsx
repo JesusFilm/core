@@ -12,10 +12,35 @@ import { ReactElement } from 'react'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
-import { HoverLayer } from '../TemplateGallery/HoverLayer'
+// import { HoverLayer } from '../TemplateGallery/HoverLayer'
 
 export interface TemplateGalleryCardProps {
   item?: Journey
+}
+
+interface HoverLayerProps {
+  className?: string
+}
+
+export function HoverLayer({ className }: HoverLayerProps): ReactElement {
+  return (
+    <Box
+      data-testid="hoverLayer"
+      className={className}
+      sx={{
+        transition: (theme) => theme.transitions.create('opacity'),
+        content: '""',
+        opacity: 0,
+        backgroundColor: 'secondary.dark',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        zIndex: 2
+      }}
+    />
+  )
 }
 
 export function TemplateGalleryCard({
@@ -47,7 +72,8 @@ export function TemplateGalleryCard({
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer',
-        width: { xs: 130, md: 180 }
+        width: { xs: 130, md: 180 },
+        borderRadius: 2
       }}
     >
       <NextLink
@@ -59,10 +85,12 @@ export function TemplateGalleryCard({
           data-testid="templateGalleryCard"
           sx={{
             height: 'inherit',
+            transition: (theme) => theme.transitions.create('all'),
             '& .MuiImageBackground-root': {
               transition: (theme) => theme.transitions.create('transform')
             },
             '&:hover': {
+              backgroundColor: (theme) => theme.palette.grey[200],
               '& .MuiImageBackground-root': {
                 transform: 'scale(1.05)'
               },
@@ -146,7 +174,7 @@ export function TemplateGalleryCard({
                 <Box
                   sx={{
                     display: { xs: 'none', md: '-webkit-box' },
-                    maxHeight: '66px',
+                    height: '66px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     WebkitBoxOrient: 'vertical',
@@ -165,7 +193,7 @@ export function TemplateGalleryCard({
                 <Box
                   sx={{
                     display: { xs: '-webkit-box', md: 'none' },
-                    maxHeight: '63px',
+                    height: '63px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     WebkitBoxOrient: 'vertical',

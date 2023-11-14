@@ -19,8 +19,18 @@ interface CollectionButtonProps {
   onClick: (value: string) => void
 }
 
-const StyledCollectionButton = styled(ButtonBase)(() => ({
-  borderRadius: '8px'
+const StyledCollectionButton = styled(ButtonBase)(({ theme }) => ({
+  borderRadius: '8px',
+  transition: theme.transitions.create('all'),
+  '& .backgroundImageHover': {
+    transition: theme.transitions.create('transform')
+  },
+  '&:hover': {
+    backgroundColor: theme.palette.grey[200],
+    '& .backgroundImageHover': {
+      transform: 'scale(1.05)'
+    }
+  }
 }))
 
 export function CollectionButton({
@@ -54,7 +64,9 @@ export function CollectionButton({
       <Stack
         gap={3}
         alignItems="center"
-        sx={{ [theme.breakpoints.up('md')]: { flexDirection: 'row' } }}
+        sx={{
+          [theme.breakpoints.up('md')]: { flexDirection: 'row' }
+        }}
       >
         {tag != null ? (
           <Stack
@@ -66,11 +78,13 @@ export function CollectionButton({
               height: '64px',
               width: '64px',
               color: 'white',
-              borderRadius: 8
+              borderRadius: 8,
+              overflow: 'hidden'
             }}
           >
             {image != null ? (
               <NextImage
+                className="backgroundImageHover"
                 src={image.src}
                 layout="fill"
                 sx={{ borderRadius: 8 }}

@@ -7,7 +7,6 @@ import { ReactElement, useCallback } from 'react'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
-import { HoverLayer } from '../../HoverLayer'
 import acceptanceImage from '../assets/acceptance.png'
 import depressionImage from '../assets/depression.png'
 import fearAnxietyImage from '../assets/fearAnxiety.png'
@@ -75,9 +74,6 @@ export function FeltNeedsButton({
           '&:hover': {
             '& .hoverStyles': {
               transform: 'scale(1.05)'
-            },
-            '& .hoverEffectsLayer': {
-              opacity: 0.3
             }
           },
           '& .hoverStyles': {
@@ -86,7 +82,6 @@ export function FeltNeedsButton({
         }}
         onClick={() => onClick(tag.id)}
       >
-        <HoverLayer className="hoverEffectsLayer" />
         <NextImage
           className="hoverStyles"
           src={image.src}
