@@ -46,9 +46,7 @@ function TemplateCardPreviewItem({
       sx={{
         position: 'relative',
         width: { xs: 217, sm: 280 },
-        // width: { xs: 177, sm: 240 },
-        height: { xs: 320, sm: 420 }
-        // height: { xs: 280, sm: 380 }
+        height: { xs: 300, sm: 420 }
       }}
     >
       <Box
@@ -62,9 +60,7 @@ function TemplateCardPreviewItem({
             position: 'absolute',
             display: 'block',
             width: { xs: 485, sm: 445 },
-            // width: { xs: 445, sm: 405 },
             height: { xs: 738, sm: 673 },
-            // height: { xs: 698, sm: 633 },
             zIndex: 2,
             cursor: 'grab'
           }}
@@ -72,9 +68,7 @@ function TemplateCardPreviewItem({
         <FramePortal
           sx={{
             width: { xs: 485, sm: 445 },
-            // width: { xs: 445, sm: 405 },
             height: { xs: 738, sm: 673 }
-            // height: { xs: 698, sm: 633 }
           }}
           dir={rtl ? 'rtl' : 'ltr'}
         >
@@ -160,9 +154,7 @@ export function TemplateCardPreview({
                   data-testid="TemplateCardSkeleton"
                   sx={{
                     width: { xs: 217, sm: 280 },
-                    // width: { xs: 177, sm: 240 },
-                    height: { xs: 320, sm: 420 },
-                    // height: { xs: 280, sm: 380 },
+                    height: { xs: 300, sm: 420 },
                     transform: 'scale(1)',
                     borderRadius: 2
                   }}

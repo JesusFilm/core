@@ -37,7 +37,7 @@ export function TemplateViewHeader({
         sx={{
           color: 'secondary.light',
           display: { xs: 'block', sm: 'none' },
-          pb: 6
+          pb: 4
         }}
         noWrap
       >

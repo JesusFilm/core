@@ -37,7 +37,7 @@ export function TemplatePreviewTabs(): ReactElement {
   }
 
   return (
-    <Box sx={{ pb: { xs: 3, sm: 7 } }}>
+    <Box sx={{ pb: { sm: 5 } }}>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
