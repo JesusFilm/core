@@ -1,1 +1,0 @@
-export { HoverLayer } from './HoverLayer'
