@@ -37,6 +37,6 @@ jobs:
       - name: NPM Install
         run: npm install --silent
       - name: Danger JS
-        run: npx danger ci
+        run: npx danger ci --failOnErrors
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

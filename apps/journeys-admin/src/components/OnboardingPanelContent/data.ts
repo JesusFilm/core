@@ -1,4 +1,15 @@
-import { GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys } from '../../../__generated__/GetOnboardingJourneys'
+import { MockedResponse } from '@apollo/client/testing'
+
+import {
+  GetOnboardingJourneys,
+  GetOnboardingJourneysVariables,
+  GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
+} from '../../../__generated__/GetOnboardingJourneys'
+
+import {
+  GET_ONBOARDING_JOURNEYS,
+  ONBOARDING_IDS
+} from './OnboardingPanelContent'
 
 export const onboardingJourneys: OnboardingJourneys[] = [
   {
@@ -57,3 +68,20 @@ export const onboardingJourneys: OnboardingJourneys[] = [
     }
   }
 ]
+
+export const getOnboardingJourneysMock: MockedResponse<
+  GetOnboardingJourneys,
+  GetOnboardingJourneysVariables
+> = {
+  request: {
+    query: GET_ONBOARDING_JOURNEYS,
+    variables: {
+      where: {
+        ids: ONBOARDING_IDS
+      }
+    }
+  },
+  result: {
+    data: { onboardingJourneys }
+  }
+}

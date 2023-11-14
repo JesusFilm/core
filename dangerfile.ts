@@ -10,6 +10,9 @@ import {
 import config from './commitlint.config'
 
 export default async () => {
+  // merge queues not supported by danger-js
+  if (danger.github.pr == null) return
+
   const isDependabot = danger.github.pr.user.login === 'dependabot[bot]'
   // check lockfile updated when package changes
   const packageChanged = danger.git.modified_files.includes('package.json')
