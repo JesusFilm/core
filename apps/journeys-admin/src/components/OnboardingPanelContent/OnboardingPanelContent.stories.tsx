@@ -1,12 +1,9 @@
-import { MockedProvider } from '@apollo/client/testing'
-import Drawer from '@mui/material/Drawer'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 
 import { cache } from '../../libs/apolloClient/cache'
 import { simpleComponentConfig } from '../../libs/storybook'
+import { SidePanel } from '../NewPageWrapper/SidePanel'
 import { TeamProvider } from '../Team/TeamProvider'
 
 import { getOnboardingJourneysMock } from './data'
@@ -18,31 +15,33 @@ const OnboardingPanelContentStory: Meta<typeof OnboardingPanelContent> = {
   title: 'Journeys-Admin/OnboardingPanelContent'
 }
 
-const OnboardingPanelContentComponent = (): ReactElement => {
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
-
-  return (
-    <MockedProvider>
-      <TeamProvider>
-        <Drawer anchor={isMobile ? 'bottom' : 'left'} open>
-          <OnboardingPanelContent />
-        </Drawer>
-      </TeamProvider>
-    </MockedProvider>
-  )
-}
-
 const Template: StoryObj<typeof OnboardingPanelContent> = {
-  render: () => <OnboardingPanelContentComponent />
+  render: (): ReactElement => {
+    return (
+      <TeamProvider>
+        <SidePanel title="Create A New Journey">
+          <OnboardingPanelContent />
+        </SidePanel>
+      </TeamProvider>
+    )
+  }
 }
 
 export const Default = {
   ...Template,
-
   parameters: {
     apolloClient: {
       cache: cache(),
       mocks: [getOnboardingJourneysMock]
+    }
+  }
+}
+
+export const Loading = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [{ ...getOnboardingJourneysMock, delay: 100000000000000 }]
     }
   }
 }
