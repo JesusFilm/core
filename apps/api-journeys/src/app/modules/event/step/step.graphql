@@ -4,11 +4,11 @@ input StepViewEventCreateInput {
   """
   id: ID
   """
-  Id of the StepBlock
+  Id of the current StepBlock
   """
   blockId: ID!
   """
-  stepName of the stepBlock
+  stepName of the current stepBlock
   """
   value: String
 }
