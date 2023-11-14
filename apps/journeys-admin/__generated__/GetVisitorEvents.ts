@@ -10,7 +10,7 @@ import { ButtonAction, VideoBlockSource, MessagePlatform } from "./globalTypes";
 // ====================================================
 
 export interface GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent {
-  __typename: "RadioQuestionSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPrevEvent" | "TextResponseSubmissionEvent";
+  __typename: "RadioQuestionSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "TextResponseSubmissionEvent";
   id: string;
   journeyId: string;
   label: string | null;
