@@ -107,6 +107,7 @@ export function VisitorsList(): ReactElement {
         height: { xs: '600px', sm: '600px', md: '100%' },
         alignItems: 'center'
       }}
+      data-testid="JourneysAdminVisitorsList"
     >
       <Box sx={{ height: '95%', width: '100%' }}>
         <StyledDataGrid

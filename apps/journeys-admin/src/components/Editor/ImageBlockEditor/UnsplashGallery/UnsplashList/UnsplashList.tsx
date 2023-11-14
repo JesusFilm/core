@@ -45,7 +45,12 @@ export function UnsplashList({
   }
 
   return (
-    <ImageList variant="masonry" gap={10} sx={{ overflowY: 'visible' }}>
+    <ImageList
+      variant="masonry"
+      gap={10}
+      sx={{ overflowY: 'visible' }}
+      data-testid="UnsplashList"
+    >
       {gallery?.map((item) => (
         <ImageListItem
           data-testid={`image-${item.id}`}

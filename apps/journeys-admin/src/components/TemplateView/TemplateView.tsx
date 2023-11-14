@@ -20,7 +20,8 @@ import { TemplateGalleryCard } from '../TemplateGalleryCard'
 import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import { TemplateTags } from './TemplateTags'
-import { TemplateViewHeader } from './TemplateViewHeader/TemplateViewHeader'
+import { TemplateViewHeader } from './TemplateViewHeader'
+import { TemplateCreatorDetails } from './TemplateViewHeader/TemplateCreatorDetails'
 
 interface TemplateViewProps {
   authUser: User
@@ -29,7 +30,6 @@ interface TemplateViewProps {
 export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   const { journey } = useJourney()
   const { breakpoints } = useTheme()
-
   const { t } = useTranslation('apps-journeys-admin')
 
   const tagIds = journey?.tags.map((tag) => tag.id)
@@ -82,7 +82,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   }
 
   return (
-    <Container disableGutters>
+    <Container disableGutters data-testid="JourneysAdminTemplateView">
       <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
         <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
         <TemplateTags tags={journey?.tags} />
@@ -105,6 +105,13 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
             </>
           )}
         </Typography>
+        {journey?.creatorDescription != null && (
+          <TemplateCreatorDetails
+            creatorDetails={journey?.creatorDescription}
+            creatorImage={journey?.creatorImageBlock?.src}
+            sx={{ display: { xs: 'flex', sm: 'none' } }}
+          />
+        )}
         {journey?.strategySlug != null && (
           <StrategySection
             strategySlug={journey?.strategySlug}

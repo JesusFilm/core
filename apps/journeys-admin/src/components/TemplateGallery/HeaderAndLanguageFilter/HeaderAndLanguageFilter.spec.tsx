@@ -3,28 +3,40 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery/useLanguagesQuery'
 
-import { LanguageFilter } from '.'
+import { HeaderAndLanguageFilter } from '.'
 
-jest.mock('react-i18next', () => ({
+import '../../../../test/i18n'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
+  default: () => true
 }))
 
-describe('LanguageFilter', () => {
+describe('HeaderAndLanguageFilter', () => {
   it('should open the language filter dialog on button click', async () => {
     const onChange = jest.fn()
-    const { getByRole, getByText } = render(
+    const { getByRole, getAllByRole, getAllByText } = render(
       <MockedProvider
         mocks={[
           {
             request: {
               query: GET_LANGUAGES,
               variables: {
-                languageId: '529'
+                languageId: '529',
+                where: {
+                  ids: [
+                    '529',
+                    '4415',
+                    '1106',
+                    '4451',
+                    '496',
+                    '20526',
+                    '584',
+                    '21028',
+                    '20615',
+                    '3934'
+                  ]
+                }
               }
             },
             result: {
@@ -79,16 +91,17 @@ describe('LanguageFilter', () => {
           }
         ]}
       >
-        <LanguageFilter languageId="529" onChange={onChange} />
+        <HeaderAndLanguageFilter selectedLanguageIds={[]} onChange={onChange} />
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(getByText('Filter by language:')).toBeInTheDocument()
-      fireEvent.click(getByRole('button', { name: 'English' }))
+      expect(getAllByText('Journey Templates')[0]).toBeInTheDocument()
+      fireEvent.click(getAllByRole('heading', { name: 'All Languages' })[0])
     })
     expect(getByRole('dialog')).toBeInTheDocument()
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'German, Standard Deutsch' }))
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(onChange).toHaveBeenCalled())

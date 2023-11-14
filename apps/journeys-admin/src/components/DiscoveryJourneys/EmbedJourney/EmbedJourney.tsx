@@ -47,6 +47,7 @@ export function EmbedJourney({
         height: dimensions,
         width: dimensions
       }}
+      data-testid={`EmbedJourney-${slug}`}
     >
       {block != null && (
         <>
