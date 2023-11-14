@@ -75,6 +75,7 @@ export function TrashJourneyDialog({
         submitLabel: 'Delete',
         closeLabel: 'Cancel'
       }}
+      testId="TrashJourneyDialog"
     >
       <Typography>
         By selecting “delete”, this journey will be moved to the trash. It will

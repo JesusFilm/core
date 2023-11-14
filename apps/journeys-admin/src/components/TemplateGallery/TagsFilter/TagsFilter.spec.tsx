@@ -109,6 +109,129 @@ describe('TagsFilter', () => {
     }
   ]
 
+  const parentTags = [
+    {
+      __typename: 'Tag',
+      id: 'parentId1',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Topics',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'parentId2',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Felt Needs',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'parentId3',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Holidays',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'parentId4',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Audience',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'parentId5',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Genre',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'parentId6',
+      service: Service.apiJourneys,
+      parentId: null,
+      name: [
+        {
+          value: 'Collections',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'tagId1',
+      service: Service.apiJourneys,
+      parentId: 'parentId1',
+      name: [
+        {
+          value: 'Acceptance',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'tagId4',
+      service: Service.apiJourneys,
+      parentId: 'parentId2',
+      name: [
+        {
+          value: 'Loneliness',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'tagId5',
+      service: Service.apiJourneys,
+      parentId: 'parentId3',
+      name: [
+        {
+          value: 'New Year',
+          primary: true
+        }
+      ]
+    },
+    {
+      __typename: 'Tag',
+      id: 'tagId6',
+      service: Service.apiJourneys,
+      parentId: 'parentId6',
+      name: [
+        {
+          value: 'NUA',
+          primary: true
+        }
+      ]
+    }
+  ]
+
   const getTagsMock = {
     request: {
       query: GET_TAGS
@@ -127,6 +250,17 @@ describe('TagsFilter', () => {
     result: {
       data: {
         tags: [...topics, ...feltNeeds]
+      }
+    }
+  }
+
+  const allParentTagsMock = {
+    request: {
+      query: GET_TAGS
+    },
+    result: {
+      data: {
+        tags: [...parentTags]
       }
     }
   }
@@ -250,5 +384,30 @@ describe('TagsFilter', () => {
       ['tagId4'],
       ['tagId1', 'tagId2', 'tagId3', 'tagId4', 'tagId5', 'tagId6']
     )
+  })
+
+  it('renders parent tag icons', async () => {
+    const handleChange = jest.fn()
+    const { getByTestId, getByRole } = render(
+      <MockedProvider mocks={[allParentTagsMock]}>
+        <TagsFilter
+          label="Topics, felt needs, holidays, collections"
+          tagNames={['Topics', 'Felt Needs', 'Holidays', 'Collections']}
+          onChange={handleChange}
+          selectedTagIds={[]}
+        />
+      </MockedProvider>
+    )
+    expect(
+      getByRole('combobox', {
+        name: 'Topics, felt needs, holidays, collections'
+      })
+    ).toBeInTheDocument()
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+
+    await waitFor(() => expect(getByTestId('Hash2Icon')).toBeInTheDocument())
+    expect(getByTestId('SmileyNeutralIcon')).toBeInTheDocument()
+    expect(getByTestId('Calendar4Icon')).toBeInTheDocument()
+    expect(getByTestId('Grid1Icon')).toBeInTheDocument()
   })
 })

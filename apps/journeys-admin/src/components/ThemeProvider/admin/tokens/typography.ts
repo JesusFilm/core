@@ -78,7 +78,8 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
     subtitle3: {
       fontSize: 14,
       fontWeight: 600,
-      lineHeight: '19px'
+      lineHeight: '19px',
+      fontFamily: '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
     },
     body1: {
       fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
@@ -104,7 +105,8 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       fontSize: 10,
       lineHeight: '16px',
       letterSpacing: 1,
-      textTransform: 'uppercase'
+      textTransform: 'uppercase',
+      fontFamily: '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
     },
     caption: {
       fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',

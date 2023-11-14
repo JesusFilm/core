@@ -1,10 +1,8 @@
-import { fireEvent, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import { MediaListItem } from './MediaListItem'
 
 describe('MediaListItem', () => {
-  const onClick = jest.fn()
-
   it('should render content', async () => {
     const { getByRole } = render(
       <MediaListItem
@@ -12,45 +10,29 @@ describe('MediaListItem', () => {
         title="Heading"
         description="Description"
         overline="Overline"
-        onClick={onClick}
-        duration="2:34"
+        href="/href"
       />
     )
 
-    expect(getByRole('button')).toHaveTextContent(
-      '2:34OverlineHeadingDescription'
-    )
+    expect(getByRole('link')).toHaveTextContent('OverlineHeadingDescription')
   })
 
-  it('should call onClick on button click', () => {
+  it('should have link', () => {
     const { getByRole } = render(
       <MediaListItem
         image="https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg"
         title="Heading"
         description="Description"
-        onClick={onClick}
+        href="/href"
       />
     )
-    fireEvent.click(getByRole('button'))
-
-    expect(onClick).toHaveBeenCalled()
+    expect(getByRole('link')).toHaveAttribute('href', '/href')
   })
 
-  it('should hide image and text if loading', () => {
-    const { getByRole, getByTestId } = render(
-      <MediaListItem
-        image="https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg"
-        title="Heading"
-        description="Description"
-        loading
-        overline="Overline"
-        onClick={onClick}
-        duration="2:34"
-      />
+  it('should show placeholder when no image', () => {
+    const { getByTestId } = render(
+      <MediaListItem title="Heading" description="Description" href="/href" />
     )
-
-    expect(getByRole('button')).toHaveAttribute('aria-disabled', 'true')
-    expect(getByRole('button')).toHaveTextContent('')
-    expect(getByTestId('image-placeholder')).toBeInTheDocument()
+    expect(getByTestId('InsertPhotoRoundedIcon')).toBeInTheDocument()
   })
 })

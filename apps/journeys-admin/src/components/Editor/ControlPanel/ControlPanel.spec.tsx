@@ -205,7 +205,7 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('tab', { name: 'Properties' }))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
-    fireEvent.click(getByTestId('preview-step2.id'))
+    fireEvent.click(getByTestId('CardItem-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
@@ -374,7 +374,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Text' }))
@@ -472,7 +472,7 @@ describe('ControlPanel', () => {
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Subscribe' }))
@@ -631,7 +631,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Poll' }))
@@ -700,7 +700,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Image' }))
@@ -722,7 +722,7 @@ describe('ControlPanel', () => {
               variables: {
                 input: {
                   journeyId: 'journeyId',
-                  parentBlockId: 'card2.id',
+                  parentBlockId: 'card3.id',
                   autoplay: true,
                   muted: false,
                   fullsize: true
@@ -772,7 +772,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step2.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Video' }))
@@ -886,17 +886,17 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Button' }))
     await waitFor(() => {
       expect(getByRole('button', { name: 'Done' })).toBeInTheDocument()
-      expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
-        'aria-selected',
-        'true'
-      )
     })
+    expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 
   it('should keep Journey tab open when selecting a card', async () => {
@@ -928,7 +928,7 @@ describe('ControlPanel', () => {
       'aria-selected',
       'true'
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     expect(getByRole('tab', { name: 'Journey' })).toHaveAttribute(
       'aria-selected',
       'true'
@@ -1056,7 +1056,7 @@ describe('ControlPanel', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByTestId('preview-step3.id'))
+    fireEvent.click(getByTestId('CardItem-step3.id'))
     expect(getByText('selectedBlock: step3.id')).toBeInTheDocument()
     expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
     expect(getByText('drawerTitle: Properties')).toBeInTheDocument()
@@ -1098,7 +1098,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step2.id'))
+    fireEvent.click(getByTestId('CardItem-step2.id'))
     expect(getByText('selectedBlock: step2.id')).toBeInTheDocument()
     expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
     expect(getByText('drawerTitle: Card Templates')).toBeInTheDocument()
@@ -1210,7 +1210,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardSocial'))
     expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute('disabled')
     expect(getByRole('tab', { name: 'Blocks' })).toHaveAttribute('disabled')
     fireEvent.click(getByTestId('social-edit-fab'))
@@ -1256,7 +1256,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardSocial'))
     expect(getByText('selectedBlock: step1.id')).toBeInTheDocument()
     expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
     expect(getByText('drawerTitle: Social Share Preview')).toBeInTheDocument()
@@ -1299,7 +1299,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('goals-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardGoals'))
     expect(getByText('journeyEditContentComponent: action')).toBeInTheDocument()
   })
 

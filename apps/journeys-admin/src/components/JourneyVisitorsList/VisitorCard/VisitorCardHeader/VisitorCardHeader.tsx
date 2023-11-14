@@ -36,7 +36,11 @@ export function VisitorCardHeader({
   return (
     <>
       {/* Desktop */}
-      <Stack direction="row" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+      <Stack
+        direction="row"
+        sx={{ display: { xs: 'none', sm: 'flex' } }}
+        data-testid="VisitorCardHeader"
+      >
         {loading ? (
           <Skeleton
             variant="circular"
@@ -119,7 +123,11 @@ export function VisitorCardHeader({
       </Stack>
 
       {/* Mobile */}
-      <Stack direction="row" sx={{ display: { xs: 'flex', sm: 'none' } }}>
+      <Stack
+        direction="row"
+        sx={{ display: { xs: 'flex', sm: 'none' } }}
+        data-testid="VisitorCardHeader"
+      >
         {loading ? (
           <Skeleton
             variant="circular"

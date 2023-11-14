@@ -64,6 +64,8 @@ describe('Editor', () => {
       }
     ] as TreeBlock[],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: null,
@@ -127,7 +129,7 @@ describe('Editor', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByTestId('social-preview-panel')).toBeInTheDocument()
+    expect(getByTestId('SocialPreview')).toBeInTheDocument()
     expect(getByTestId('journey-edit-content')).toHaveStyle({
       backgroundColor: 'none'
     })

@@ -1,5 +1,6 @@
 import { Form, FormElementAction, FormElementType } from '@formium/types'
 import Typography from '@mui/material/Typography'
+import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import { useFormium } from '../../FormiumProvider'
@@ -42,10 +43,13 @@ export function Header({ page: { title } }: HeaderProps): ReactElement {
   const { hiddenPageTitle } = useFormium()
 
   return hiddenPageTitle === true ? (
-    <></>
+    <NextSeo title={title} />
   ) : (
-    <Typography variant="h4" sx={{ pb: '30px' }}>
-      {title}
-    </Typography>
+    <>
+      <NextSeo title={title} />
+      <Typography variant="h4" sx={{ pb: '30px' }}>
+        {title}
+      </Typography>
+    </>
   )
 }
