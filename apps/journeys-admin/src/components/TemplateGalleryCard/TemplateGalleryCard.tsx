@@ -1,7 +1,6 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -59,11 +58,6 @@ export function TemplateGalleryCard({
           data-testid="templateGalleryCard"
           sx={{
             height: 'inherit',
-            '&:hover': {
-              '& .MuiImageBackground-root': {
-                transform: 'scale(1.05)'
-              }
-            },
             '& .MuiImageBackground-root': {
               transition: (theme) => theme.transitions.create('transform')
             }
@@ -76,7 +70,12 @@ export function TemplateGalleryCard({
                   position: 'relative',
                   aspectRatio: 1,
                   overflow: 'hidden',
-                  borderRadius: 2
+                  borderRadius: 2,
+                  '&:hover': {
+                    '& .MuiImageBackground-root': {
+                      transform: 'scale(1.05)'
+                    }
+                  }
                 }}
               >
                 <HoverLayer />
@@ -91,7 +90,7 @@ export function TemplateGalleryCard({
                 />
               </Box>
             ) : (
-              <CardMedia
+              <Stack
                 component="div"
                 sx={{
                   position: 'relative',
@@ -102,12 +101,22 @@ export function TemplateGalleryCard({
                   aspectRatio: 1,
                   borderRadius: 2,
                   backgroundColor: 'background.default',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  '&:hover': {
+                    '& .MuiImageBackground-root': {
+                      transform: 'scale(1.05)'
+                    }
+                  }
                 }}
               >
                 <HoverLayer />
-                <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
-              </CardMedia>
+                <InsertPhotoRoundedIcon
+                  className="MuiImageBackground-root"
+                  style={{
+                    objectFit: 'cover'
+                  }}
+                />
+              </Stack>
             )
           ) : (
             <Skeleton
