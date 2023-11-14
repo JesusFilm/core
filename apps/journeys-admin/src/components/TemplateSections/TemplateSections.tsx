@@ -19,12 +19,12 @@ interface Contents {
 
 interface TemplateSectionsProps {
   tagIds?: string[]
-  languageId: string
+  languageIds?: string[]
 }
 
 export function TemplateSections({
   tagIds,
-  languageId
+  languageIds
 }: TemplateSectionsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { breakpoints } = useTheme()
@@ -37,7 +37,10 @@ export function TemplateSections({
         template: true,
         orderByRecent: true,
         tagIds,
-        languageIds: [languageId]
+        languageIds:
+          languageIds != null && languageIds?.length > 0
+            ? languageIds
+            : undefined
       }
     },
     onCompleted(data) {
@@ -95,7 +98,7 @@ export function TemplateSections({
   }
 
   return (
-    <Stack spacing={8}>
+    <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {(loading || (collection != null && collection.length > 0)) && (
         <TemplateGalleryCarousel
           heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}

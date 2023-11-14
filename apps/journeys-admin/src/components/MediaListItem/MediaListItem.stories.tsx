@@ -12,8 +12,10 @@ const MediaListItemDemo: Meta<typeof MediaListItem> = {
   title: 'Journeys-Admin/MediaListItem'
 }
 
-const Template: StoryObj<typeof MediaListItem> = {
-  render: ({ ...args }) => (
+type Story = StoryObj<typeof MediaListItem>
+
+const Template: Story = {
+  render: (args) => (
     <Paper elevation={0} sx={{ p: 2 }}>
       <Stack direction="row">
         <MediaListItem {...args} />
@@ -22,10 +24,9 @@ const Template: StoryObj<typeof MediaListItem> = {
   )
 }
 
-export const Default = {
+export const Default: Story = {
   ...Template,
   args: {
-    id: 'id',
     title: 'This is a Heading',
     description: 'This is a description',
     image:
@@ -33,7 +34,7 @@ export const Default = {
   }
 }
 
-export const Overline = {
+export const Overline: Story = {
   ...Template,
   args: {
     ...Default.args,
@@ -41,10 +42,9 @@ export const Overline = {
   }
 }
 
-export const LongContent = {
+export const LongContent: Story = {
   ...Template,
   args: {
-    id: 'id',
     overline:
       'This is overline is really really really really really really really really really really really really really really long',
     title:
@@ -56,29 +56,17 @@ export const LongContent = {
   }
 }
 
-export const EndImage = {
-  ...Template,
-  args: {
-    ...LongContent.args,
-    overline: '',
-    description: 'This is a description',
-    imagePosition: 'end'
-  }
-}
-
-export const Duration = {
+export const NoImage: Story = {
   ...Template,
   args: {
     ...Default.args,
-    duration: '2:34'
+    image: undefined
   }
 }
 
-export const Loading = {
+export const Loading: Story = {
   ...Template,
   args: {
-    ...Overline.args,
-    ...Duration.args,
     loading: true
   }
 }
