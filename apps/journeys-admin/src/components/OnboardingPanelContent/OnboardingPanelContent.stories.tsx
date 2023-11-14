@@ -2,6 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 
 import { cache } from '../../libs/apolloClient/cache'
+import { PageProvider } from '../../libs/PageWrapperProvider'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { SidePanel } from '../NewPageWrapper/SidePanel'
 import { TeamProvider } from '../Team/TeamProvider'
@@ -19,9 +20,11 @@ const Template: StoryObj<typeof OnboardingPanelContent> = {
   render: (): ReactElement => {
     return (
       <TeamProvider>
-        <SidePanel title="Create A New Journey">
-          <OnboardingPanelContent />
-        </SidePanel>
+        <PageProvider initialState={{ mobileDrawerOpen: true }}>
+          <SidePanel title="Create A New Journey">
+            <OnboardingPanelContent />
+          </SidePanel>
+        </PageProvider>
       </TeamProvider>
     )
   }
