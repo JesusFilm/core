@@ -54,7 +54,7 @@ export function Card({
   const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
     STEP_NEXT_EVENT_CREATE
   )
-  const [stepPrevEventCreate] = useMutation<StepPreviousEventCreate>(
+  const [stepPreviousEventCreate] = useMutation<StepPreviousEventCreate>(
     STEP_PREVIOUS_EVENT_CREATE
   )
 
@@ -151,7 +151,7 @@ export function Card({
         }
       })
     } else {
-      void stepPrevEventCreate({
+      void stepPreviousEventCreate({
         variables: {
           input: {
             ...mutationInput,

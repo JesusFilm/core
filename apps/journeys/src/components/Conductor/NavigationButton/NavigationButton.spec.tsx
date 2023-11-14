@@ -80,9 +80,9 @@ describe('NavigationButton', () => {
   }))
   const stepPreviousResult = jest.fn(() => ({
     data: {
-      stepPrevEventCreate: {
+      stepPreviousEventCreate: {
         id: 'uuid',
-        __typename: 'StepPrevEvent'
+        __typename: 'StepPreviousEvent'
       }
     }
   }))
