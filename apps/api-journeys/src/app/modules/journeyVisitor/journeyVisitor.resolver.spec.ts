@@ -149,6 +149,7 @@ describe('JourneyVisitorResolver', () => {
       radioOptionBlockId: null,
       email: null,
       nextStepId: null,
+      previousStepId: null,
       position: null,
       source: null,
       progress: null,
