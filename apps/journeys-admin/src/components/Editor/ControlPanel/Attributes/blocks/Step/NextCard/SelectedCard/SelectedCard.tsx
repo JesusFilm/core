@@ -93,6 +93,7 @@ export function SelectedCard(): ReactElement {
       justifyContent="space-between"
       alignItems="center"
       sx={{ p: 4, pl: 6 }}
+      data-testid={`SelectedCard-${id}`}
     >
       <Stack direction="row" spacing={4}>
         <Box

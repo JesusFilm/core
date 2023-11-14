@@ -82,7 +82,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   }
 
   return (
-    <Container disableGutters>
+    <Container disableGutters data-testid="JourneysAdminTemplateView">
       <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
         <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
         <TemplateTags tags={journey?.tags} />

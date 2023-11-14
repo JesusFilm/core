@@ -124,7 +124,7 @@ describe('NavigationDrawer', () => {
         />
       </MockedProvider>
     )
-    expect(getByTestId('Templates-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemTemplates')).toHaveAttribute(
       'aria-selected',
       'true'
     )
@@ -142,7 +142,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('Analytics-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemAnalytics')).toHaveAttribute(
       'aria-selected',
       'true'
     )
@@ -213,7 +213,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByTestId('Publisher-list-item')).toHaveAttribute(
+      expect(getByTestId('NavigationListItemPublisher')).toHaveAttribute(
         'aria-selected',
         'true'
       )
@@ -275,7 +275,7 @@ describe('NavigationDrawer', () => {
     await waitFor(() =>
       expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     )
-    expect(getByTestId('Profile-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemDiscover')).toHaveAttribute(
       'aria-selected',
       'false'
     )
