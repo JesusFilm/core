@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import {
   StepNextEventCreateInput,
-  StepPrevEventCreateInput,
+  StepPreviousEventCreateInput,
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -10,7 +10,7 @@ import { EventService } from '../event.service'
 
 import {
   StepNextEventResolver,
-  StepPrevEventResolver,
+  StepPreviousEventResolver,
   StepViewEventResolver
 } from './step.resolver'
 
@@ -162,34 +162,38 @@ describe('Step', () => {
   })
 
   describe('StepPrevEventResolver', () => {
-    let resolver: StepPrevEventResolver
+    let resolver: StepPreviousEventResolver
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [StepPrevEventResolver, eventService]
+        providers: [StepPreviousEventResolver, eventService]
       }).compile()
-      resolver = module.get<StepPrevEventResolver>(StepPrevEventResolver)
+      resolver = module.get<StepPreviousEventResolver>(
+        StepPreviousEventResolver
+      )
     })
 
     describe('stepPrevEventCreate', () => {
-      const input: StepPrevEventCreateInput = {
+      const input: StepPreviousEventCreateInput = {
         id: '1',
         blockId: 'block.id',
-        prevStepId: 'step.id',
+        previousStepId: 'step.id',
         label: 'step name',
         value: 'Prev step name'
       }
 
       it('should return step Prev event', async () => {
-        expect(await resolver.stepPrevEventCreate('userId', input)).toEqual({
-          ...input,
-          typename: 'StepPrevEvent',
-          visitor: {
-            connect: { id: 'visitor.id' }
-          },
-          createdAt: new Date().toISOString(),
-          journeyId: 'journey.id'
-        })
+        expect(await resolver.stepPreviousEventCreate('userId', input)).toEqual(
+          {
+            ...input,
+            typename: 'StepPreviousEvent',
+            visitor: {
+              connect: { id: 'visitor.id' }
+            },
+            createdAt: new Date().toISOString(),
+            journeyId: 'journey.id'
+          }
+        )
       })
     })
   })

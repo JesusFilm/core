@@ -32,8 +32,12 @@ enum LanguageIdType {
   bcp47
 }
 
+input LanguagesFilter {
+  ids: [ID!]
+}
+
 type Query {
-  languages(offset: Int, limit: Int): [Language!]! @cacheControl(maxAge: 86400)
+  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @cacheControl(maxAge: 86400)
   language(id: ID!, idType: LanguageIdType): Language @cacheControl(maxAge: 86400)
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!

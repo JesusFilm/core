@@ -240,7 +240,7 @@ describe('VisitorResolver', () => {
       radioOptionBlockId: null,
       email: null,
       nextStepId: null,
-      prevStepId: null,
+      previousStepId: null,
       position: null,
       source: null,
       progress: null,

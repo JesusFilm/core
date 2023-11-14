@@ -238,7 +238,7 @@ const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
 export const Default = {
   ...Template,
   args: {
-    languageId: '529'
+    languageIds: ['529']
   },
   parameters: {
     apolloClient: {
@@ -251,7 +251,7 @@ export const Match = {
   ...Template,
   args: {
     tagIds: [addiction.id],
-    languageId: '529'
+    languageIds: ['529']
   },
   parameters: {
     apolloClient: {
@@ -264,7 +264,7 @@ export const NoMatch = {
   ...Template,
   args: {
     tagIds: [addiction.id, 'invalidId'],
-    languageId: '529'
+    languageIds: ['529']
   },
   parameters: {
     apolloClient: {

@@ -120,7 +120,7 @@ describe('TeamCreateDialog', () => {
       { __ref: 'Team:teamId1' },
       { __ref: 'Team:teamId' }
     ])
-    expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
+    expect(getByText('Team Title created.')).toBeInTheDocument()
     await waitFor(() => expect(handleCreate).toHaveBeenCalled())
   })
 
