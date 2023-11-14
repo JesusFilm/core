@@ -1,6 +1,7 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -93,7 +94,7 @@ export function TemplateGalleryCard({
                 />
               </Box>
             ) : (
-              <Stack
+              <CardMedia
                 component="div"
                 sx={{
                   position: 'relative',
@@ -108,13 +109,8 @@ export function TemplateGalleryCard({
                 }}
               >
                 <HoverLayer className="hoverImageEffects" />
-                <InsertPhotoRoundedIcon
-                  className="MuiImageBackground-root"
-                  style={{
-                    objectFit: 'cover'
-                  }}
-                />
-              </Stack>
+                <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
+              </CardMedia>
             )
           ) : (
             <Skeleton
