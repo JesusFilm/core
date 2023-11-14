@@ -8,21 +8,21 @@ import { SidePanel } from '../NewPageWrapper/SidePanel'
 import { TeamProvider } from '../Team/TeamProvider'
 
 import { getOnboardingJourneysMock } from './data'
-import { OnboardingPanelContent } from './OnboardingPanelContent'
+import { OnboardingPanel } from './OnboardingPanelContent'
 
-const OnboardingPanelContentStory: Meta<typeof OnboardingPanelContent> = {
+const OnboardingPanelContentStory: Meta<typeof OnboardingPanel> = {
   ...simpleComponentConfig,
-  component: OnboardingPanelContent,
+  component: OnboardingPanel,
   title: 'Journeys-Admin/OnboardingPanelContent'
 }
 
-const Template: StoryObj<typeof OnboardingPanelContent> = {
+const Template: StoryObj<typeof OnboardingPanel> = {
   render: (): ReactElement => {
     return (
       <TeamProvider>
         <PageProvider initialState={{ mobileDrawerOpen: true }}>
           <SidePanel title="Create A New Journey">
-            <OnboardingPanelContent />
+            <OnboardingPanel />
           </SidePanel>
         </PageProvider>
       </TeamProvider>

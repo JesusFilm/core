@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useSuspenseQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { ReactElement, useState } from 'react'
+import { ReactElement, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -44,8 +44,43 @@ export const GET_ONBOARDING_JOURNEYS = gql`
     }
   }
 `
-
 export function OnboardingPanelContent(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const { data } = useSuspenseQuery<GetOnboardingJourneys>(
+    GET_ONBOARDING_JOURNEYS,
+    {
+      variables: {
+        where: {
+          ids: ONBOARDING_IDS
+        }
+      }
+    }
+  )
+  const templates: OnboardingJourneys[] = compact(
+    ONBOARDING_IDS.map((onboardingId) =>
+      data.onboardingJourneys.find(({ id }) => onboardingId === id)
+    )
+  )
+
+  return (
+    <>
+      {templates.map(
+        (template) =>
+          template != null && (
+            <MediaListItem
+              title={template.title}
+              description={template.description ?? undefined}
+              image={template.primaryImageBlock?.src ?? undefined}
+              overline={t('Template')}
+              key={template.id}
+              href={`/templates/${template.id}`}
+            />
+          )
+      )}
+    </>
+  )
+}
+export function OnboardingPanel(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     query: { loading: loadingTeams },
@@ -54,24 +89,6 @@ export function OnboardingPanelContent(): ReactElement {
   const router = useRouter()
   const { createJourney, loading: loadingJourneyCreateMutation } =
     useJourneyCreateMutation()
-  const [templates, setTemplates] = useState<OnboardingJourneys[]>([])
-  const { loading: loadingOnboardingJourneys } =
-    useQuery<GetOnboardingJourneys>(GET_ONBOARDING_JOURNEYS, {
-      variables: {
-        where: {
-          ids: ONBOARDING_IDS
-        }
-      },
-      onCompleted(data) {
-        setTemplates(
-          compact(
-            ONBOARDING_IDS.map((onboardingId) =>
-              data.onboardingJourneys.find(({ id }) => onboardingId === id)
-            )
-          )
-        )
-      }
-    })
 
   async function handleCreateJourneyClick(): Promise<void> {
     const journey = await createJourney()
@@ -109,27 +126,17 @@ export function OnboardingPanelContent(): ReactElement {
           </NextLink>
         </Stack>
       </SidePanelContainer>
-      {loadingOnboardingJourneys ? (
-        <>
-          <MediaListItem loading />
-          <MediaListItem loading />
-          <MediaListItem loading />
-        </>
-      ) : (
-        templates.map(
-          (template) =>
-            template != null && (
-              <MediaListItem
-                title={template.title}
-                description={template.description ?? undefined}
-                image={template.primaryImageBlock?.src ?? undefined}
-                overline={t('Template')}
-                key={template.id}
-                href={`/templates/${template.id}`}
-              />
-            )
-        )
-      )}
+      <Suspense
+        fallback={
+          <>
+            <MediaListItem loading />
+            <MediaListItem loading />
+            <MediaListItem loading />
+          </>
+        }
+      >
+        <OnboardingPanelContent />
+      </Suspense>
       <SidePanelContainer border={false}>
         <NextLink href="/templates" passHref legacyBehavior>
           <Button

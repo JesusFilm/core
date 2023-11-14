@@ -21,7 +21,7 @@ import {
 
 import { getOnboardingJourneysMock } from './data'
 
-import { OnboardingPanelContent } from '.'
+import OnboardingPanel from '.'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -159,7 +159,7 @@ describe('OnboardingPanelContent', () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
@@ -199,7 +199,7 @@ describe('OnboardingPanelContent', () => {
         ]}
       >
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
@@ -214,7 +214,7 @@ describe('OnboardingPanelContent', () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
@@ -234,7 +234,7 @@ describe('OnboardingPanelContent', () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
@@ -253,7 +253,7 @@ describe('OnboardingPanelContent', () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
@@ -268,7 +268,7 @@ describe('OnboardingPanelContent', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )

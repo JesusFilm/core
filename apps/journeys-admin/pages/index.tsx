@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -16,7 +17,6 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/NewPageWrapper'
-import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
@@ -31,6 +31,15 @@ export const ACCEPT_ALL_INVITES = gql`
     }
   }
 `
+
+const DynamicOnboardingPanel = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "DynamicOnboardingPanel" */
+      '../src/components/OnboardingPanelContent'
+    ),
+  { ssr: false }
+)
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -57,7 +66,7 @@ function IndexPage(): ReactElement {
             </Stack>
           )
         }
-        sidePanelChildren={<OnboardingPanelContent />}
+        sidePanelChildren={<DynamicOnboardingPanel />}
         sidePanelTitle={t('Create a New Journey')}
       >
         <JourneyList user={user} />

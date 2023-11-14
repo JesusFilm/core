@@ -1,1 +1,3 @@
-export { OnboardingPanelContent } from './OnboardingPanelContent'
+import { OnboardingPanel } from './OnboardingPanelContent'
+
+export default OnboardingPanel
