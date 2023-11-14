@@ -91,6 +91,7 @@ export function TagsFilter({
       PopperComponent={popperElementId != null ? Popper : undefined}
       open={openPopper}
       onOpen={() => setOpenPopper(true)}
+      onClose={() => setOpenPopper(false)}
       loading={loading}
       limitTags={hasMultipleColumns ? 4 : 1}
       disableCloseOnSelect
