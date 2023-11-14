@@ -90,7 +90,7 @@ export function CollectionButton({
                 sx={{ borderRadius: 8 }}
               />
             ) : (
-              <InsertPhotoRoundedIcon />
+              <InsertPhotoRoundedIcon className="backgroundImageHover" />
             )}
           </Stack>
         ) : (
