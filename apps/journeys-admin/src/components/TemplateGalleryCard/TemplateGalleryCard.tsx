@@ -74,7 +74,6 @@ export function TemplateGalleryCard({
         width: { xs: 130, md: 180 },
         borderRadius: 2,
         p: 2,
-
         '& .MuiImageBackground-root': {
           transition: (theme) => theme.transitions.create('transform')
         },
