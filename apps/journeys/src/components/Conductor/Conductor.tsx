@@ -208,6 +208,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             resizeObserver
             onSwiper={(swiper) => setSwiper(swiper)}
             // FIX: swipe backwards when locked
+            // className={activeBlock?.locked && 'swiper-no-swiping'}
             allowTouchMove
             onSlideNextTransitionStart={() => {
               nextActiveBlock()
@@ -279,6 +280,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 </SwiperSlide>
               )
             })}
+
             <NavigationButton
               variant={rtl ? 'next' : 'prev'}
               alignment="left"
