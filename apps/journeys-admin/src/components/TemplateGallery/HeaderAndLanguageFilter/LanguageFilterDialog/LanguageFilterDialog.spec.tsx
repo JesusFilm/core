@@ -3,6 +3,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { LanguageFilterDialog } from './LanguageFilterDialog'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('LanguageFilterDialog', () => {
   const languages = [
     {
@@ -59,7 +64,7 @@ describe('LanguageFilterDialog', () => {
           onClose={jest.fn()}
           onChange={onChange}
           languages={languages}
-          languageId="529"
+          value={[]}
           loading={false}
         />
       </MockedProvider>
@@ -67,6 +72,7 @@ describe('LanguageFilterDialog', () => {
 
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'German, Standard Deutsch' }))
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(onChange).toHaveBeenCalled())
@@ -81,7 +87,7 @@ describe('LanguageFilterDialog', () => {
           onClose={onClose}
           onChange={jest.fn()}
           languages={languages}
-          languageId="529"
+          value={[]}
           loading={false}
         />
       </MockedProvider>
