@@ -18,6 +18,7 @@ export function MultipleSummaryReport(): ReactElement {
         width: '100%',
         backgroundColor: 'background.paper'
       }}
+      data-testid="JourneysAdminMultipleSummaryReport"
     >
       <Container maxWidth="lg" sx={{ px: { xs: 6, sm: 8 } }}>
         <Stack direction="row" spacing={4} sx={{ py: 2 }}>

@@ -83,6 +83,7 @@ export function TeamMenu(): ReactElement {
           vertical: 'top',
           horizontal: 'right'
         }}
+        data-testid="TeamMenu"
       >
         <MenuItem
           disabled={activeTeam == null}

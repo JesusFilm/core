@@ -62,6 +62,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         alignItems="center"
         sx={{ overflow: 'hidden', flexGrow: 1 }}
         ref={anchorRef}
+        data-testid="TeamSelect"
       >
         <UsersProfiles2Icon sx={{ mr: 1, ml: '3px' }} />
         <FormControl variant="standard" sx={{ minWidth: 100 }}>

@@ -128,6 +128,7 @@ export function NavigationDrawer({
       onClose={handleClose}
       variant={smUp ? 'permanent' : 'temporary'}
       anchor="left"
+      data-testid="NavigationDrawer"
     >
       {open && smUp && <Backdrop open={open} onClick={handleClose} />}
       <StyledList>

@@ -88,6 +88,7 @@ export function SocialPreviewMessage({
       width={256}
       mx="auto"
       sx={{ transform: { md: 'scale(1)', lg: 'scale(1.33)' } }}
+      data-testid="SocialPreviewMessage"
     >
       <Stack direction="column" justifyContent="start">
         <Typography variant="caption" pb={4} textAlign="center">

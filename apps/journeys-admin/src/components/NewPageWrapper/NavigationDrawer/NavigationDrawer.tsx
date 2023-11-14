@@ -156,6 +156,7 @@ export function NavigationDrawer({
       onClose={handleClose}
       variant={mdUp ? 'permanent' : 'temporary'}
       anchor="left"
+      data-testid="NavigationDrawer"
     >
       {open && mdUp && <Backdrop open={open} onClick={handleClose} />}
       <StyledList>

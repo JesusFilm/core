@@ -46,6 +46,7 @@ export function UnsplashSearch({
                 </InputAdornment>
               )
             }}
+            data-testid="UnsplashSearch"
           />
         </Form>
       )}

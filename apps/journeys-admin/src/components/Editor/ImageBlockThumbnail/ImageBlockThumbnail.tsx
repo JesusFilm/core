@@ -32,6 +32,7 @@ export function ImageBlockThumbnail({
         alignItems: 'center',
         overflow: 'hidden'
       }}
+      data-testid="ImageBlockThumbnail"
     >
       {loading === true ? (
         <CircularProgress size={20} />

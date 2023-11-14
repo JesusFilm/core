@@ -110,12 +110,14 @@ export function ArchiveJourney({
           label="Archive"
           icon={<FolderUp1Icon color="secondary" />}
           onClick={handleClick}
+          testId="Archive"
         />
       ) : (
         <MenuItem
           label="Unarchive"
           icon={<FolderDown1Icon color="secondary" />}
           onClick={handleClick}
+          testId="Unarchive"
         />
       )}
     </>
