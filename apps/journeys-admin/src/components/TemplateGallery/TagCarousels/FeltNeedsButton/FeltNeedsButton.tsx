@@ -7,6 +7,7 @@ import { ReactElement, useCallback } from 'react'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
+import { HoverLayer } from '../../HoverLayer'
 import acceptanceImage from '../assets/acceptance.png'
 import depressionImage from '../assets/depression.png'
 import fearAnxietyImage from '../assets/fearAnxiety.png'
@@ -71,32 +72,12 @@ export function FeltNeedsButton({
           width: { xs: '150px', md: '222px' },
           height: { xs: '56px', md: '110px' },
           overflow: 'hidden',
-          '&:before': {
-            transition: (theme) => theme.transitions.create('opacity'),
-            content: '""',
-            opacity: 0,
-            backgroundColor: 'secondary.dark',
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            zIndex: 1
-          },
           '&:hover': {
             '& .hoverStyles': {
               transform: 'scale(1.05)'
             },
-            '&:before': {
-              content: '""',
-              opacity: 0.3,
-              backgroundColor: 'secondary.dark',
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-              zIndex: 1
+            '& .hoverEffectsLayer': {
+              opacity: 0.3
             }
           },
           '& .hoverStyles': {
@@ -105,6 +86,7 @@ export function FeltNeedsButton({
         }}
         onClick={() => onClick(tag.id)}
       >
+        <HoverLayer className="hoverEffectsLayer" />
         <NextImage
           className="hoverStyles"
           src={image.src}

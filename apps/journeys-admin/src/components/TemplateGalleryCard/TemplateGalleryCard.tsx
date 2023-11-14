@@ -12,6 +12,7 @@ import { ReactElement } from 'react'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
+import { HoverLayer } from '../TemplateGallery/HoverLayer'
 
 export interface TemplateGalleryCardProps {
   item?: Journey
@@ -61,6 +62,9 @@ export function TemplateGalleryCard({
             '&:hover': {
               '& .MuiImageBackground-root': {
                 transform: 'scale(1.05)'
+              },
+              '& .hoverEffectsLayer': {
+                opacity: 0.3
               }
             },
             '& .MuiImageBackground-root': {
@@ -75,34 +79,10 @@ export function TemplateGalleryCard({
                   position: 'relative',
                   aspectRatio: 1,
                   overflow: 'hidden',
-                  borderRadius: 2,
-                  '&:before': {
-                    transition: (theme) => theme.transitions.create('opacity'),
-                    content: '""',
-                    opacity: 0,
-                    backgroundColor: 'secondary.dark',
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                    zIndex: 1
-                  },
-                  '&:hover': {
-                    '&:before': {
-                      content: '""',
-                      opacity: 0.3,
-                      backgroundColor: 'secondary.dark',
-                      position: 'absolute',
-                      top: 0,
-                      right: 0,
-                      bottom: 0,
-                      left: 0,
-                      zIndex: 1
-                    }
-                  }
+                  borderRadius: 2
                 }}
               >
+                <HoverLayer className="hoverEffectsLayer" />
                 <Image
                   className="MuiImageBackground-root"
                   src={journey?.primaryImageBlock?.src}
@@ -117,15 +97,18 @@ export function TemplateGalleryCard({
               <CardMedia
                 component="div"
                 sx={{
+                  position: 'relative',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderColor: 'divider',
                   aspectRatio: 1,
                   borderRadius: 2,
-                  backgroundColor: 'background.default'
+                  backgroundColor: 'background.default',
+                  overflow: 'hidden'
                 }}
               >
+                <HoverLayer className="hoverEffectsLayer" />
                 <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
               </CardMedia>
             )
