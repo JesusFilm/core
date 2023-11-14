@@ -160,9 +160,7 @@ describe('Action', () => {
     fireEvent.mouseDown(getByRole('button', { name: 'None' }))
     await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
     fireEvent.click(getByRole('option', { name: 'Selected Card' }))
-    await waitFor(() =>
-      expect(getByTestId('horizontal-select')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(getByTestId('CardList')).toBeInTheDocument())
   })
 
   it('shows url input text box when URL/Website is selected', async () => {

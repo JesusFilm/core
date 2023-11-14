@@ -103,7 +103,7 @@ export function SelectableWrapper({
 
   return isSelectable ? (
     <Box
-      data-testid={`selected-${block.id}`}
+      data-testid={`SelectableWrapper-${block.id}`}
       className={
         block.__typename === 'RadioOptionBlock'
           ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'

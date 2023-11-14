@@ -129,6 +129,16 @@
         "jest/no-disabled-tests": "off",
         "jest/require-top-level-describe": "error"
       }
+    },
+    {
+      "files": [
+        "*.stories.ts",
+        "*.stories.tsx",
+        "*.stories.js",
+        "*.stories.jsx"
+      ],
+      "plugins": ["storybook"],
+      "extends": ["plugin:storybook/recommended"]
     }
   ]
 }

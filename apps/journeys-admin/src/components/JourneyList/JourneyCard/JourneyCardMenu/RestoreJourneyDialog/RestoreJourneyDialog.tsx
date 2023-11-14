@@ -81,6 +81,7 @@ export function RestoreJourneyDialog({
         submitLabel: 'Restore',
         closeLabel: 'Cancel'
       }}
+      testId="RestoreJourneyDialog"
     >
       <Typography>
         Are you sure you would like to restore this journey?
