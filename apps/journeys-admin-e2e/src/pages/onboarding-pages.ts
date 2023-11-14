@@ -22,23 +22,6 @@ export class OnboardingPages {
     await this.page.getByLabel('Choose password').fill(password)
   }
 
-  async fillExistingEmail(email: string): Promise<void> {
-    await this.page.getByLabel('Email').fill(email)
-    expect(await this.page.locator('input[name="email"]').inputValue()).toBe(email)
-  }
-
-  async clickNextButton(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Next' }).click()
-  }
-
-  async fillExistingPassword(password: string): Promise<void> {
-    await this.page.getByLabel('Password').fill(password)
-  }
-
-  async clickSubmitButton(): Promise<void> {
-    await this.page.locator('button[type="submit"]').click()
-  }
-
   async createUser(
     email: string,
     firstAndLastName: string,
@@ -46,7 +29,7 @@ export class OnboardingPages {
   ): Promise<void> {
 
     await this.fillEmail(email)
-    await this.clickNextButton()
+    await this.page.getByRole('button', { name: 'Next' }).click()
     await this.page.getByLabel('First & last name').click()
     await this.page.getByLabel('First & last name').fill(firstAndLastName)
     await this.fillPassword(password)
@@ -58,9 +41,9 @@ export class OnboardingPages {
     await this.page.getByRole('button', { name: 'Next' }).click()
 
     // Save Email and Password as environment variables for later use
-    process.env.EMAIL = email
-    process.env.PASSWORD = password
-    process.env.FIRST_AND_LAST_NAME = firstAndLastName
+    process.env.EMAIL = process.env.EMAIL || email
+    process.env.PASSWORD = process.env.PASSWORD || password
+    process.env.FIRST_AND_LAST_NAME = process.env.FIRST_AND_LAST_NAME || firstAndLastName
   }
 
   async fillOnboardingForm(teamName: string, legalName: string): Promise<void> {
