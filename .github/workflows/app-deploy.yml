@@ -132,8 +132,12 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      - name: Install Playwright Browsers then create test user if admin 
+        run: |
+          npx playwright install --with-deps
+          if [[ ${{ steps.deployment-url.outputs.deployment-url }} == *"admin"* ]]; then
+          npx playwright test apps/journeys-admin-e2e/src/test-data/user-creation.spec.ts
+          fi
       - name: Run Playwright tests
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
