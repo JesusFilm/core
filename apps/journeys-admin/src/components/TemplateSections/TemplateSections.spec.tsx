@@ -195,6 +195,46 @@ describe('TemplateSections', () => {
     }
   }
 
+  const getJourneysWithLanguageIdsMock: MockedResponse<GetJourneys> = {
+    request: {
+      query: GET_JOURNEYS,
+      variables: {
+        where: {
+          template: true,
+          orderByRecent: true,
+          languageIds: ['529', '5441']
+        }
+      }
+    },
+    result: {
+      data: {
+        journeys: [
+          ...journeys,
+          {
+            ...defaultTemplate,
+            title: 'Template in different language',
+            language: {
+              __typename: 'Language',
+              id: '5441',
+              name: [
+                {
+                  __typename: 'Translation',
+                  value: 'Achi, Rabinal',
+                  primary: true
+                },
+                {
+                  __typename: 'Translation',
+                  value: 'Achi, Rabinal',
+                  primary: false
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+
   const getJourneysEmptyMock: MockedResponse<GetJourneys> = {
     ...getJourneysMock,
     result: {
@@ -208,7 +248,7 @@ describe('TemplateSections', () => {
     it('should render Featured & New templates if tagIds are not present', async () => {
       const { getByRole, getAllByRole } = render(
         <MockedProvider mocks={[getJourneysMock]}>
-          <TemplateSections languageId="529" />
+          <TemplateSections languageIds={['529']} />
         </MockedProvider>
       )
       await waitFor(() =>
@@ -229,7 +269,7 @@ describe('TemplateSections', () => {
         <MockedProvider mocks={[getJourneysWithTagIdsMock]}>
           <TemplateSections
             tagIds={[addiction.id, acceptance.id]}
-            languageId="529"
+            languageIds={['529']}
           />
         </MockedProvider>
       )
@@ -250,7 +290,7 @@ describe('TemplateSections', () => {
         <MockedProvider mocks={[getJourneysWithTagIdsMock]}>
           <TemplateSections
             tagIds={[addiction.id, acceptance.id]}
-            languageId="529"
+            languageIds={['529']}
           />
         </MockedProvider>
       )
@@ -261,11 +301,33 @@ describe('TemplateSections', () => {
     })
   })
 
+  describe('Multiple Languages', () => {
+    it('should render templates if languageIds are present', async () => {
+      const { getByRole, getAllByRole } = render(
+        <MockedProvider mocks={[getJourneysWithLanguageIdsMock]}>
+          <TemplateSections languageIds={['529', '5441']} />
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(
+          getAllByRole('heading', { name: 'Featured Template 2' })[0]
+        ).toBeInTheDocument()
+      )
+      expect(
+        getByRole('heading', { name: 'Featured & New' })
+      ).toBeInTheDocument()
+      expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
+      expect(
+        getByRole('heading', { name: 'Template in different language' })
+      ).toBeInTheDocument()
+    })
+  })
+
   describe('Empty', () => {
     it('should render empty state', async () => {
       const { getByRole, getByText, queryByRole } = render(
         <MockedProvider mocks={[getJourneysEmptyMock]}>
-          <TemplateSections languageId="529" />
+          <TemplateSections languageIds={['529']} />
         </MockedProvider>
       )
       await waitFor(async () => {

@@ -39,7 +39,8 @@ export function LanguageAutocomplete({
   languages,
   loading,
   renderInput,
-  renderOption
+  renderOption,
+  helperText
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
@@ -75,6 +76,7 @@ export function LanguageAutocomplete({
       hiddenLabel
       placeholder="Search Language"
       variant="filled"
+      helperText={helperText}
       InputProps={{
         ...params.InputProps,
         sx: { paddingBottom: 2 },
