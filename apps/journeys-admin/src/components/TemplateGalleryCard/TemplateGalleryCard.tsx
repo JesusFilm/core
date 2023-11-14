@@ -60,6 +60,14 @@ export function TemplateGalleryCard({
             height: 'inherit',
             '& .MuiImageBackground-root': {
               transition: (theme) => theme.transitions.create('transform')
+            },
+            '&:hover': {
+              '& .MuiImageBackground-root': {
+                transform: 'scale(1.05)'
+              },
+              '& .hoverImageEffects': {
+                opacity: 0.3
+              }
             }
           }}
         >
@@ -70,15 +78,10 @@ export function TemplateGalleryCard({
                   position: 'relative',
                   aspectRatio: 1,
                   overflow: 'hidden',
-                  borderRadius: 2,
-                  '&:hover': {
-                    '& .MuiImageBackground-root': {
-                      transform: 'scale(1.05)'
-                    }
-                  }
+                  borderRadius: 2
                 }}
               >
-                <HoverLayer />
+                <HoverLayer className="hoverImageEffects" />
                 <Image
                   className="MuiImageBackground-root"
                   src={journey?.primaryImageBlock?.src}
@@ -101,15 +104,10 @@ export function TemplateGalleryCard({
                   aspectRatio: 1,
                   borderRadius: 2,
                   backgroundColor: 'background.default',
-                  overflow: 'hidden',
-                  '&:hover': {
-                    '& .MuiImageBackground-root': {
-                      transform: 'scale(1.05)'
-                    }
-                  }
+                  overflow: 'hidden'
                 }}
               >
-                <HoverLayer />
+                <HoverLayer className="hoverImageEffects" />
                 <InsertPhotoRoundedIcon
                   className="MuiImageBackground-root"
                   style={{

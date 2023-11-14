@@ -86,7 +86,7 @@ export function FeltNeedsButton({
         }}
         onClick={() => onClick(tag.id)}
       >
-        <HoverLayer />
+        <HoverLayer className="hoverEffectsLayer" />
         <NextImage
           className="hoverStyles"
           src={image.src}
