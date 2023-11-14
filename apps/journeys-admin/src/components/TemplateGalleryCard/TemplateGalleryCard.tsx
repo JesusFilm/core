@@ -12,7 +12,6 @@ import { ReactElement } from 'react'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
-// import { HoverLayer } from '../TemplateGallery/HoverLayer'
 
 export interface TemplateGalleryCardProps {
   item?: Journey
@@ -73,7 +72,21 @@ export function TemplateGalleryCard({
         backgroundColor: 'transparent',
         cursor: 'pointer',
         width: { xs: 130, md: 180 },
-        borderRadius: 2
+        borderRadius: 2,
+        p: 2,
+
+        '& .MuiImageBackground-root': {
+          transition: (theme) => theme.transitions.create('transform')
+        },
+        '&:hover': {
+          backgroundColor: (theme) => theme.palette.grey[200],
+          '& .MuiImageBackground-root': {
+            transform: 'scale(1.05)'
+          },
+          '& .hoverImageEffects': {
+            opacity: 0.3
+          }
+        }
       }}
     >
       <NextLink
@@ -84,20 +97,7 @@ export function TemplateGalleryCard({
         <Box
           data-testid="templateGalleryCard"
           sx={{
-            height: 'inherit',
-            transition: (theme) => theme.transitions.create('all'),
-            '& .MuiImageBackground-root': {
-              transition: (theme) => theme.transitions.create('transform')
-            },
-            '&:hover': {
-              backgroundColor: (theme) => theme.palette.grey[200],
-              '& .MuiImageBackground-root': {
-                transform: 'scale(1.05)'
-              },
-              '& .hoverImageEffects': {
-                opacity: 0.3
-              }
-            }
+            height: 'inherit'
           }}
         >
           {journey != null ? (

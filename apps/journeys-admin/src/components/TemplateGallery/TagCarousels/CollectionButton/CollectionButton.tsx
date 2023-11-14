@@ -65,7 +65,8 @@ export function CollectionButton({
         gap={3}
         alignItems="center"
         sx={{
-          [theme.breakpoints.up('md')]: { flexDirection: 'row' }
+          [theme.breakpoints.up('md')]: { flexDirection: 'row' },
+          p: 2
         }}
       >
         {tag != null ? (
