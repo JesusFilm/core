@@ -24,7 +24,7 @@ export function SocialImage({
         backgroundColor: 'background.default',
         overflow: 'hidden',
         width: { xs: 107, sm: 244 },
-        heigth: { xs: 107, sm: 244 },
+        height: { xs: 107, sm: 244 },
         borderRadius: 3,
         borderBottomRightRadius: {
           xs: 12,
