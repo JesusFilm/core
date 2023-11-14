@@ -12,6 +12,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
+import { ThemeMode } from '../../../../__generated__/globalTypes'
 import { StepFields } from '../../../../__generated__/StepFields'
 
 const LeftNavigationContainer = styled(Box)`
@@ -26,11 +27,13 @@ const RightNavigationContainer = styled(Box)`
 interface NavigationButtonProps {
   variant: 'prev' | 'next'
   alignment: 'left' | 'right'
+  themeMode?: ThemeMode
 }
 
 export function NavigationButton({
   variant,
-  alignment
+  alignment,
+  themeMode
 }: NavigationButtonProps): ReactElement {
   const { variant: journeyVariant } = useJourney()
   const {
@@ -106,16 +109,13 @@ export function NavigationButton({
       sx={{
         ...alignSx,
         position: 'absolute',
+        top: '50%',
+        transform: 'translate(0%, -50%)',
         // StepFooter heights
-        bottom: { xs: '170px', sm: '133px', lg: '60.5px' },
         zIndex: 2,
         display: 'flex',
         width: { xs: 82, lg: 114 },
-        height: {
-          xs: 'calc(100vh - 275px)',
-          sm: 'calc(100vh - 238px)',
-          lg: 'calc(100% - 105px)'
-        },
+        height: '100%',
         alignItems: 'center',
         pointerEvents: 'none'
       }}
@@ -131,14 +131,12 @@ export function NavigationButton({
           disableRipple
           sx={{
             pointerEvents: 'all',
-            mx: { xs: 2, lg: 8 },
-            p: 2,
-            color: (theme) => theme.palette.common.white,
-            backgroundColor: (theme) => `${theme.palette.grey[700]}33`,
-            '&:hover': {
-              color: (theme) => theme.palette.common.white,
-              backgroundColor: (theme) => `${theme.palette.grey[700]}4d`
-            }
+            mx: { xs: 0, lg: 8 },
+            p: { xs: 0, lg: 2 },
+            color: (theme) =>
+              themeMode === ThemeMode.light
+                ? theme.palette.common.black
+                : theme.palette.common.white
           }}
         >
           {alignment === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}

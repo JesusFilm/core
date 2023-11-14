@@ -6,8 +6,9 @@ import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import NextLink from 'next/link'
 import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -23,6 +24,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+  const theme = useTheme()
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
     if (variant === 'default' || variant === 'embed')
@@ -32,6 +34,8 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
     setAnchorEl(null)
   }
 
+  const lgUp = useMediaQuery(theme.breakpoints.up('lg'))
+
   return (
     <Stack
       data-testid="JourneysStepHeader"
@@ -40,7 +44,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
         mt: { xs: 1, lg: 0 },
         zIndex: 1,
         top: 0,
-        alignItems: 'flex-end',
+        alignItems: 'flex-start',
         width: { xs: '100%', lg: 'auto' },
         ...sx
       }}
@@ -50,10 +54,19 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
         aria-controls="more-info"
         aria-haspopup="true"
         aria-expanded={open ? 'true' : 'false'}
-        sx={{ mx: 2, mt: 1 }}
+        sx={{
+          px: { xs: 6, lg: 0 }
+        }}
         onClick={handleClick}
       >
-        <InfoOutlinedIcon sx={{ color: 'white' }} />
+        <InfoOutlinedIcon
+          sx={{
+            color:
+              lgUp && variant !== 'admin'
+                ? theme.palette.common.white
+                : theme.palette.primary.main
+          }}
+        />
       </IconButton>
       <Menu
         id="basic-menu"

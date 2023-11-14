@@ -341,26 +341,27 @@ export function VideoControls({
           </Stack>
           {/* Play/Pause */}
           <Stack flexGrow={1} alignItems="center" justifyContent="center">
-            {!loading ? (
-              <IconButton
-                aria-label={
-                  playing ? 'center-pause-button' : 'center-play-button'
-                }
-                sx={{
-                  fontSize: 50,
-                  display: { xs: 'flex', lg: 'none' },
-                  p: { xs: 2, sm: 0, md: 2 }
-                }}
-              >
-                {playing ? (
-                  <PauseRounded fontSize="inherit" />
-                ) : (
-                  <PlayArrowRounded fontSize="inherit" />
-                )}
-              </IconButton>
-            ) : (
-              <CircularProgress size={65} />
-            )}
+            <IconButton
+              aria-label={
+                playing ? 'center-pause-button' : 'center-play-button'
+              }
+              sx={{
+                fontSize: playing ? 52 : 56,
+                display: { xs: 'flex', lg: 'none' },
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)'
+              }}
+            >
+              {playing ? (
+                <PauseRounded fontSize="inherit" />
+              ) : !loading ? (
+                <PlayArrowRounded fontSize="inherit" />
+              ) : (
+                <CircularProgress size={65} />
+              )}
+            </IconButton>
           </Stack>
           {/* Progress Bar */}
           <Container
@@ -424,7 +425,7 @@ export function VideoControls({
                   color="secondary.main"
                   noWrap
                   overflow="unset"
-                  sx={{ p: 2 }}
+                  sx={{ px: { xs: 4, lg: 2 }, py: 2 }}
                 >
                   {displayTime} / {duration}
                 </Typography>
@@ -513,7 +514,7 @@ export function VideoControls({
               sx={{
                 width: 'initial',
                 height: 5,
-                mx: 2.5,
+                mx: 4,
                 py: 2,
                 display: { xs: 'flex', lg: 'none' },
                 '& .MuiSlider-thumb': {

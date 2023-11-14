@@ -21,7 +21,6 @@ import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 // Used to resolve dynamic viewport height on Safari
-
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
@@ -49,13 +48,17 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
     width: '84px !important'
   },
   '.swiper-pagination-bullet': {
-    background: theme.palette.common.white,
-    opacity: '60%'
+    background: theme.palette.primary.main,
+    opacity: '60%',
+    [theme.breakpoints.up('lg')]: {
+      background: theme.palette.common.white
+    }
   },
   '.swiper-pagination-bullet-active': {
     opacity: '100%'
   }
 }))
+
 export const JOURNEY_VISITOR_UPDATE = gql`
   mutation VisitorUpdateForCurrentUser($input: VisitorUpdateInput!) {
     visitorUpdateForCurrentUser(input: $input) {
@@ -179,6 +182,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
 
+  const currentTheme = getStepTheme(activeBlock, journey)
+
   return (
     <Box
       sx={{
@@ -197,40 +202,37 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         data-testid="Conductor"
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
-          <StyledSwiperContainer
-            dir={!rtl ? 'ltr' : 'rtl'}
-            pagination={{ dynamicBullets: true }}
-            slidesPerView="auto"
-            centeredSlides
-            centeredSlidesBounds
-            resizeObserver
-            onSwiper={(swiper) => setSwiper(swiper)}
-            allowTouchMove={false}
-            onSlideChange={() => setShowHeaderFooter(true)}
-            sx={{
-              '.swiper-pagination': {
-                display: showHeaderFooter ? 'block' : 'none'
-              }
-            }}
+          <ThemeProvider
+            themeMode={currentTheme.themeMode}
+            themeName={currentTheme.themeName}
+            locale={locale}
+            rtl={rtl}
+            nested
           >
-            {treeBlocks.map((block) => {
-              const theme = getStepTheme(
-                block as TreeBlock<StepFields>,
-                journey
-              )
-              return (
-                <SwiperSlide
-                  key={block.id}
-                  onClick={() => setShowNavigation(true)}
-                >
-                  {({ isActive }) =>
-                    isActive && (
-                      <ThemeProvider
-                        {...theme}
-                        locale={locale}
-                        rtl={rtl}
-                        nested
-                      >
+            <StyledSwiperContainer
+              dir={!rtl ? 'ltr' : 'rtl'}
+              pagination={{ dynamicBullets: true }}
+              slidesPerView="auto"
+              centeredSlides
+              centeredSlidesBounds
+              resizeObserver
+              onSwiper={(swiper) => setSwiper(swiper)}
+              allowTouchMove={false}
+              onSlideChange={() => setShowHeaderFooter(true)}
+              sx={{
+                '.swiper-pagination': {
+                  display: showHeaderFooter ? 'block' : 'none'
+                }
+              }}
+            >
+              {treeBlocks.map((block) => {
+                return (
+                  <SwiperSlide
+                    key={block.id}
+                    onClick={() => setShowNavigation(true)}
+                  >
+                    {({ isActive }) =>
+                      isActive && (
                         <Fade
                           in={activeBlock?.id === block.id}
                           mountOnEnter
@@ -264,21 +266,23 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                             />
                           </Stack>
                         </Fade>
-                      </ThemeProvider>
-                    )
-                  }
-                </SwiperSlide>
-              )
-            })}
-            <NavigationButton
-              variant={rtl ? 'next' : 'prev'}
-              alignment="left"
-            />
-            <NavigationButton
-              variant={rtl ? 'prev' : 'next'}
-              alignment="right"
-            />
-          </StyledSwiperContainer>
+                      )
+                    }
+                  </SwiperSlide>
+                )
+              })}
+              <NavigationButton
+                variant={rtl ? 'next' : 'prev'}
+                alignment="left"
+                themeMode={currentTheme.themeMode}
+              />
+              <NavigationButton
+                variant={rtl ? 'prev' : 'next'}
+                alignment="right"
+                themeMode={currentTheme.themeMode}
+              />
+            </StyledSwiperContainer>
+          </ThemeProvider>
         </Box>
       </Stack>
     </Box>
