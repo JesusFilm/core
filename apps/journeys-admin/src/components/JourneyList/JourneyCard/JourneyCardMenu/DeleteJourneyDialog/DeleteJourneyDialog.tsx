@@ -75,6 +75,7 @@ export function DeleteJourneyDialog({
         submitLabel: 'Delete',
         closeLabel: 'Cancel'
       }}
+      testId="DeleteJourneyDialog"
     >
       <Typography>
         Are you sure you would like to delete the journey immediately? You will

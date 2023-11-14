@@ -79,6 +79,7 @@ export function Cards(): ReactElement {
         selected={nextStep}
         steps={steps}
         onSelect={handleSelectStep}
+        testId="Cards"
       />
     </>
   )

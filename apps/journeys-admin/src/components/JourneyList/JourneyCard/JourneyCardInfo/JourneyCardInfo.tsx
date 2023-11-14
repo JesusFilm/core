@@ -48,6 +48,7 @@ export function JourneyCardInfo({
       spacing={4}
       flexGrow={1}
       sx={{ width: '95%' }}
+      data-testid="JourneyCardInfo"
     >
       <AccessAvatars
         journeyId={journey?.id}

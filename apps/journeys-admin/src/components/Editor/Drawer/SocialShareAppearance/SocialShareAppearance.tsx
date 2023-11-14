@@ -11,7 +11,7 @@ import { TitleEdit } from './TitleEdit'
 export function SocialShareAppearance(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Box sx={{ px: 6, py: 4 }}>
+    <Box sx={{ px: 6, py: 4 }} data-testid="SocialShareAppearance">
       <Typography variant="subtitle2" sx={{ pb: 4 }}>
         {t('Social Image')}
       </Typography>
