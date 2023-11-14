@@ -58,7 +58,7 @@ export function NavigationButton({
     blockHistory,
     showNavigation,
     nextActiveBlock,
-    prevActiveBlock
+    previousActiveBlock
   } = useBlocks()
   const activeBlock = blockHistory[
     blockHistory.length - 1
@@ -89,7 +89,7 @@ export function NavigationButton({
     }
   }, [showNavigation, setShowNavigation, activeBlock])
 
-  // should always be called with nextActiveBlock() and prevActiveBlock()
+  // should always be called with nextActiveBlock() and previousActiveBlock()
   // should match with other handleNavigationEventCreate functions
   function handleNavigationEventCreate(target: 'next' | 'prev'): void {
     const id = uuidv4()
@@ -152,7 +152,7 @@ export function NavigationButton({
       nextActiveBlock()
     } else {
       handleNavigationEventCreate('prev')
-      prevActiveBlock()
+      previousActiveBlock()
     }
   }
 

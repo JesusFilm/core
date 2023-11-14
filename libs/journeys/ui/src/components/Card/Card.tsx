@@ -62,7 +62,7 @@ export function Card({
   const theme = useTheme()
   const {
     nextActiveBlock,
-    prevActiveBlock,
+    previousActiveBlock,
     blockHistory,
     treeBlocks,
     getNextBlock
@@ -116,7 +116,7 @@ export function Card({
       (child) => child.__typename === 'VideoBlock' && child.id !== coverBlockId
     ) != null
 
-  // should always be called with nextActiveBlock() and prevActiveBlock()
+  // should always be called with nextActiveBlock() and previousActiveBlock()
   // should match with other handleNavigationEventCreate functions
   function handleNavigationEventCreate(target: 'next' | 'prev'): void {
     const id = uuidv4()
@@ -184,7 +184,7 @@ export function Card({
         }
       } else {
         handleNavigationEventCreate('prev')
-        prevActiveBlock()
+        previousActiveBlock()
       }
     } else {
       const divide = view.innerWidth * 0.33
@@ -195,7 +195,7 @@ export function Card({
         }
       } else {
         handleNavigationEventCreate('prev')
-        prevActiveBlock()
+        previousActiveBlock()
       }
     }
   }

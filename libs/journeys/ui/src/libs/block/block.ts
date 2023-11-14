@@ -21,7 +21,7 @@ interface GetNextBlockArgs {
 }
 
 interface UseBlocksHook {
-  prevActiveBlock: (args?: ActiveBlockArgs) => void
+  previousActiveBlock: (args?: ActiveBlockArgs) => void
   nextActiveBlock: (args?: ActiveBlockArgs) => void
   setTreeBlocks: (blocks: TreeBlock[]) => void
   setShowHeaderFooter: (value: boolean) => void
@@ -33,7 +33,7 @@ interface UseBlocksHook {
   showNavigation: boolean
 }
 
-export function prevActiveBlock(): void {
+export function previousActiveBlock(): void {
   const blockHistory = blockHistoryVar()
 
   const updatedBlocks =
@@ -125,7 +125,7 @@ export function useBlocks(): UseBlocksHook {
   }, [])
 
   return {
-    prevActiveBlock,
+    previousActiveBlock,
     nextActiveBlock,
     setTreeBlocks,
     setShowHeaderFooter,

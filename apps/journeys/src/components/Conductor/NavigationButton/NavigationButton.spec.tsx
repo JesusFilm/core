@@ -223,7 +223,7 @@ describe('NavigationButton', () => {
       expect(blockHistoryVar()[1].id).toBe('step3.id')
     })
 
-    it('should call prevActiveBlock on prev button click', () => {
+    it('should call previousActiveBlock on prev button click', () => {
       treeBlocksVar([step1, step2, step3])
       blockHistoryVar([step1, step2])
       const { getByTestId } = render(
@@ -307,7 +307,7 @@ describe('NavigationButton', () => {
       expect(blockHistoryVar()[1].id).toBe('step3.id')
     })
 
-    it('should call prevActiveBlock on prev button click', () => {
+    it('should call previousActiveBlock on prev button click', () => {
       treeBlocksVar([step1, step2, step3])
       blockHistoryVar([step1, step2])
       const { getByTestId } = render(
