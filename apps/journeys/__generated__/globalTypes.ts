@@ -230,10 +230,10 @@ export interface StepNextEventCreateInput {
   value?: string | null;
 }
 
-export interface StepPrevEventCreateInput {
+export interface StepPreviousEventCreateInput {
   id?: string | null;
   blockId: string;
-  prevStepId: string;
+  previousStepId: string;
   label?: string | null;
   value?: string | null;
 }

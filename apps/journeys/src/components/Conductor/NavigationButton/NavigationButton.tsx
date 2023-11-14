@@ -13,10 +13,10 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
 import { StepNextEventCreate } from '@core/journeys/ui/Card/__generated__/StepNextEventCreate'
-import { StepPrevEventCreate } from '@core/journeys/ui/Card/__generated__/StepPrevEventCreate'
+import { StepPreviousEventCreate } from '@core/journeys/ui/Card/__generated__/StepPreviousEventCreate'
 import {
   STEP_NEXT_EVENT_CREATE,
-  STEP_PREV_EVENT_CREATE
+  STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -46,8 +46,8 @@ export function NavigationButton({
   const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
     STEP_NEXT_EVENT_CREATE
   )
-  const [stepPrevEventCreate] = useMutation<StepPrevEventCreate>(
-    STEP_PREV_EVENT_CREATE
+  const [stepPreviousEventCreate] = useMutation<StepPreviousEventCreate>(
+    STEP_PREVIOUS_EVENT_CREATE
   )
   const { t } = useTranslation('journeys')
   const { variant: journeyVariant } = useJourney()
@@ -124,11 +124,11 @@ export function NavigationButton({
         }
       })
     } else {
-      void stepPrevEventCreate({
+      void stepPreviousEventCreate({
         variables: {
           input: {
             ...mutationInput,
-            prevStepId: targetBlock?.id
+            previousStepId: targetBlock?.id
           }
         }
       })

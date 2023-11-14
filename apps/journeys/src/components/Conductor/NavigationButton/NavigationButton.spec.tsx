@@ -7,7 +7,7 @@ import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
 import { showNavigationVar } from '@core/journeys/ui/block/block'
 import {
   STEP_NEXT_EVENT_CREATE,
-  STEP_PREV_EVENT_CREATE
+  STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 
 import { NavigationButton } from './NavigationButton'
@@ -78,7 +78,7 @@ describe('NavigationButton', () => {
       }
     }
   }))
-  const stepPrevResult = jest.fn(() => ({
+  const stepPreviousResult = jest.fn(() => ({
     data: {
       stepPrevEventCreate: {
         id: 'uuid',
@@ -103,20 +103,20 @@ describe('NavigationButton', () => {
     result: stepNextResult
   }
 
-  const stepPrevEventCreateMock = {
+  const stepPreviousEventCreateMock = {
     request: {
-      query: STEP_PREV_EVENT_CREATE,
+      query: STEP_PREVIOUS_EVENT_CREATE,
       variables: {
         input: {
           id: 'uuid',
           blockId: 'step2.id',
-          prevStepId: 'step1.id',
+          previousStepId: 'step1.id',
           label: 'Step {{number}}',
           value: 'Step {{number}}'
         }
       }
     },
-    result: stepPrevResult
+    result: stepPreviousResult
   }
 
   it('should show navigation arrows on mouse over', async () => {
@@ -183,18 +183,18 @@ describe('NavigationButton', () => {
     })
   })
 
-  it('should create stepPrevEvent', async () => {
+  it('should create stepPreviousEvent', async () => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1, step2])
 
     const { getByTestId } = render(
-      <MockedProvider mocks={[stepPrevEventCreateMock]}>
+      <MockedProvider mocks={[stepPreviousEventCreateMock]}>
         <NavigationButton variant="prev" alignment="left" />
       </MockedProvider>
     )
     fireEvent.click(getByTestId('ConductorNavigationButtonPrev'))
 
-    await waitFor(() => expect(stepPrevResult).toHaveBeenCalled())
+    await waitFor(() => expect(stepPreviousResult).toHaveBeenCalled())
 
     expect(mockedDataLayer).toHaveBeenCalledWith({
       dataLayer: {
@@ -227,7 +227,7 @@ describe('NavigationButton', () => {
       treeBlocksVar([step1, step2, step3])
       blockHistoryVar([step1, step2])
       const { getByTestId } = render(
-        <MockedProvider mocks={[stepPrevEventCreateMock]}>
+        <MockedProvider mocks={[stepPreviousEventCreateMock]}>
           <NavigationButton variant="prev" alignment="left" />
         </MockedProvider>
       )
@@ -278,7 +278,7 @@ describe('NavigationButton', () => {
       blockHistoryVar([step1, step2, { ...step3, nextBlockId: step1.id }])
       const { getByTestId } = render(
         <MockedProvider
-          mocks={[stepNextEventCreateMock, stepPrevEventCreateMock]}
+          mocks={[stepNextEventCreateMock, stepPreviousEventCreateMock]}
         >
           <NavigationButton variant="next" alignment="right" />
         </MockedProvider>
@@ -311,7 +311,7 @@ describe('NavigationButton', () => {
       treeBlocksVar([step1, step2, step3])
       blockHistoryVar([step1, step2])
       const { getByTestId } = render(
-        <MockedProvider mocks={[stepPrevEventCreateMock]}>
+        <MockedProvider mocks={[stepPreviousEventCreateMock]}>
           <NavigationButton variant="prev" alignment="right" />
         </MockedProvider>
       )

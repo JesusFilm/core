@@ -19,7 +19,7 @@ import { VideoFields } from '../Video/__generated__/VideoFields'
 
 import { CardFields } from './__generated__/CardFields'
 import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
-import { StepPrevEventCreate } from './__generated__/StepPrevEventCreate'
+import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 
@@ -31,9 +31,9 @@ export const STEP_NEXT_EVENT_CREATE = gql`
   }
 `
 
-export const STEP_PREV_EVENT_CREATE = gql`
-  mutation StepPrevEventCreate($input: StepPrevEventCreateInput!) {
-    stepPrevEventCreate(input: $input) {
+export const STEP_PREVIOUS_EVENT_CREATE = gql`
+  mutation StepPreviousEventCreate($input: StepPreviousEventCreateInput!) {
+    stepPreviousEventCreate(input: $input) {
       id
     }
   }
@@ -54,8 +54,8 @@ export function Card({
   const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
     STEP_NEXT_EVENT_CREATE
   )
-  const [stepPrevEventCreate] = useMutation<StepPrevEventCreate>(
-    STEP_PREV_EVENT_CREATE
+  const [stepPrevEventCreate] = useMutation<StepPreviousEventCreate>(
+    STEP_PREVIOUS_EVENT_CREATE
   )
 
   const { t } = useTranslation('journeys-ui')
@@ -155,7 +155,7 @@ export function Card({
         variables: {
           input: {
             ...mutationInput,
-            prevStepId: targetBlock?.id
+            previousStepId: targetBlock?.id
           }
         }
       })
