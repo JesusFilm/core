@@ -7,14 +7,14 @@ const config: Config = {
   transform: {
     // '(?!.*\\.mjs$|swiper|ssr-window|dom7)': 'babel-jest',
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
-    '^.+\\.[tj]sx?$': [
+    '^.+\\.[t]sx?$': [
       'babel-jest',
       {
         presets: [
           // ['@babel/preset-env', { targets: { node: 'current' } }],
           '@nx/next/babel'
-        ],
-        plugins: ['@babel/plugin-proposal-private-methods']
+        ]
+        // plugins: ['@babel/plugin-proposal-private-methods']
       }
     ]
   },
@@ -24,9 +24,7 @@ const config: Config = {
   collectCoverage: true,
   coverageReporters: ['cobertura'],
   preset: '../../jest.preset.js',
-  transformIgnorePatterns: [
-    `<rootDir>/../../node_modules/(?!(${esmModules.join('|')}))`
-  ]
+  transformIgnorePatterns: [`../../node_modules/(?!swiper)`]
 }
 
 export default config

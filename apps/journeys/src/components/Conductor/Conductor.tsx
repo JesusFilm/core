@@ -6,9 +6,8 @@ import { SxProps, styled, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
-import SwiperCore from 'swiper'
 import { Pagination } from 'swiper/modules'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -30,8 +29,6 @@ import { StepFields } from '../../../__generated__/StepFields'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { NavigationButton } from './NavigationButton'
-
-SwiperCore.use([Pagination])
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -77,7 +74,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     blockHistory,
     showHeaderFooter
   } = useBlocks()
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const [swiper, setSwiper] = useState<SwiperClass>()
   const theme = useTheme()
   const viewportHeight = use100vh()
   const { journey, variant } = useJourney()
@@ -199,6 +196,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
           <StyledSwiperContainer
+            modules={[Pagination]}
             dir={!rtl ? 'ltr' : 'rtl'}
             pagination={{ dynamicBullets: true }}
             slidesPerView="auto"
