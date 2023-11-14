@@ -8,19 +8,19 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { defaultJourney } from '../../../data'
 
-import { JOURNEY_TITLE_UPDATE, TitleDialog } from './TitleDialog'
+import { JOURNEY_SLUG_UPDATE, SlugDialog } from './SlugDialog'
 
-const TitleDialogStory: Meta<typeof TitleDialog> = {
+const SlugDialogStory: Meta<typeof SlugDialog> = {
   ...journeysAdminConfig,
-  component: TitleDialog,
-  title: 'Journeys-Admin/JourneyView/Menu/TitleDialog',
+  component: SlugDialog,
+  title: 'Journeys-Admin/JourneyView/JourneyLink/SlugDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const TitleDialogComponent = (args): ReactElement => {
+const SlugDialogComponent = (args): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -31,14 +31,14 @@ const TitleDialogComponent = (args): ReactElement => {
           variant: 'admin'
         }}
       >
-        <TitleDialog open={open} onClose={() => setOpen(false)} />
+        <SlugDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
     </MockedProvider>
   )
 }
 
-const Template: StoryObj<typeof TitleDialog> = {
-  render: (args) => <TitleDialogComponent args={args} />
+const Template: StoryObj<typeof SlugDialog> = {
+  render: (args) => <SlugDialogComponent args={args} />
 }
 
 export const Default = {
@@ -47,11 +47,11 @@ export const Default = {
     mocks: [
       {
         request: {
-          query: JOURNEY_TITLE_UPDATE,
+          query: JOURNEY_SLUG_UPDATE,
           variables: {
             id: defaultJourney.id,
             input: {
-              title: 'Journey Heading'
+              slug: 'default'
             }
           }
         },
@@ -60,7 +60,7 @@ export const Default = {
             journeyUpdate: {
               id: defaultJourney.id,
               __typename: 'Journey',
-              title: 'Journey Heading'
+              slug: 'default'
             }
           }
         }
@@ -75,11 +75,11 @@ export const Error = {
     mocks: [
       {
         request: {
-          query: JOURNEY_TITLE_UPDATE,
+          query: JOURNEY_SLUG_UPDATE,
           variables: {
             id: defaultJourney.id,
             input: {
-              title: 'Journey Heading error'
+              slug: 'default error'
             }
           }
         },
@@ -97,4 +97,4 @@ export const Error = {
   }
 }
 
-export default TitleDialogStory
+export default SlugDialogStory

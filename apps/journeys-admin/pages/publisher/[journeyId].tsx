@@ -16,10 +16,9 @@ import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { GetPublisher } from '../../__generated__/GetPublisher'
 import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { Role } from '../../__generated__/globalTypes'
-import { JourneyView } from '../../src/components/JourneyView'
-import { Menu } from '../../src/components/JourneyView/Menu'
-import { PageWrapper } from '../../src/components/PageWrapper'
+import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
+import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
@@ -71,11 +70,13 @@ function TemplateDetailsAdmin(): ReactElement {
             <PageWrapper
               title={t('Template Details')}
               user={user}
-              showDrawer
               backHref="/publisher"
-              menu={<Menu />}
+              mainPanelSx={{
+                backgroundColor: 'background.paper',
+                overflowX: 'hidden'
+              }}
             >
-              <JourneyView journeyType="Template" />
+              <TemplateView authUser={user} />
             </PageWrapper>
           </JourneyProvider>
         </>
