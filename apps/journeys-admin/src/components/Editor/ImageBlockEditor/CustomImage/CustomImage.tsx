@@ -23,7 +23,7 @@ export function CustomImage({
   error
 }: CustomImageProps): ReactElement {
   return (
-    <Stack sx={{ bgcolor: 'background.paper' }}>
+    <Stack sx={{ bgcolor: 'background.paper' }} data-testid="CustomImage">
       <ImageUpload
         onChange={onChange}
         setUploading={setUploading}

@@ -4,7 +4,6 @@ import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -15,13 +14,11 @@ import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourn
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 
 export interface TemplateGalleryCardProps {
-  journey?: Journey
-  sx?: SxProps
+  item?: Journey
 }
 
 export function TemplateGalleryCard({
-  journey,
-  sx
+  item: journey
 }: TemplateGalleryCardProps): ReactElement {
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
@@ -49,7 +46,7 @@ export function TemplateGalleryCard({
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer',
-        ...sx
+        width: { xs: 130, md: 180 }
       }}
     >
       <NextLink
@@ -60,7 +57,15 @@ export function TemplateGalleryCard({
         <Box
           data-testid="templateGalleryCard"
           sx={{
-            height: 'inherit'
+            height: 'inherit',
+            '&:hover': {
+              '& .MuiImageBackground-root': {
+                transform: 'scale(1.02)'
+              }
+            },
+            '& .MuiImageBackground-root': {
+              transition: (theme) => theme.transitions.create('transform')
+            }
           }}
         >
           {journey != null ? (
@@ -68,14 +73,19 @@ export function TemplateGalleryCard({
               <Box
                 sx={{
                   position: 'relative',
-                  aspectRatio: 1
+                  aspectRatio: 1,
+                  overflow: 'hidden',
+                  borderRadius: 2
                 }}
               >
                 <Image
+                  className="MuiImageBackground-root"
                   src={journey?.primaryImageBlock?.src}
                   alt={journey?.primaryImageBlock.alt}
                   fill
-                  style={{ borderRadius: 8, objectFit: 'cover' }}
+                  style={{
+                    objectFit: 'cover'
+                  }}
                 />
               </Box>
             ) : (
@@ -91,19 +101,18 @@ export function TemplateGalleryCard({
                   backgroundColor: 'background.default'
                 }}
               >
-                <InsertPhotoRoundedIcon />
+                <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
               </CardMedia>
             )
           ) : (
             <Skeleton
               variant="rectangular"
               sx={{
-                aspectRatio: 1,
+                width: { xs: 130, md: 180 },
+                height: { xs: 130, md: 180 },
                 borderColor: 'divider',
                 borderRadius: 2,
-                backgroundColor: 'background.default',
-                width: '100%',
-                height: 'auto'
+                backgroundColor: 'background.default'
               }}
             />
           )}
@@ -128,7 +137,7 @@ export function TemplateGalleryCard({
                 </Typography>
                 <Box
                   sx={{
-                    display: { xs: 'none', lg: '-webkit-box' },
+                    display: { xs: 'none', md: '-webkit-box' },
                     maxHeight: '66px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -147,7 +156,7 @@ export function TemplateGalleryCard({
                 </Box>
                 <Box
                   sx={{
-                    display: { xs: '-webkit-box', lg: 'none' },
+                    display: { xs: '-webkit-box', md: 'none' },
                     maxHeight: '63px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',

@@ -161,7 +161,7 @@ export function Details({
   }
 
   return (
-    <AccordionDetails sx={{ px: 6 }}>
+    <AccordionDetails sx={{ px: 6 }} data-testid="ChatOptionDetails">
       <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
         {enableIconSelect && (
           <FormControl variant="filled" fullWidth hiddenLabel>

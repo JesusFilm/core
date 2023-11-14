@@ -42,6 +42,7 @@ export function VideoSearch({
         px: 6,
         py: 8
       }}
+      data-testid="VideoSearch"
     >
       <TextField
         label={label ?? 'Search by title in JF Library'}

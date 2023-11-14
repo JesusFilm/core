@@ -24,6 +24,7 @@ export function TagItem({
       direction="row"
       alignItems="center"
       sx={{ width: 'max-content', height: '93px' }}
+      data-testid={`TagItem${name ?? ''}`}
     >
       <Stack
         gap={2}

@@ -97,6 +97,7 @@ export function DescriptionDialog({
                 onSubmit: handleSubmit,
                 closeLabel: 'Cancel'
               }}
+              testId="DescriptionDialog"
             >
               <Form>
                 <TextField
