@@ -62,9 +62,6 @@ export function TemplateGalleryCard({
             '&:hover': {
               '& .MuiImageBackground-root': {
                 transform: 'scale(1.05)'
-              },
-              '& .hoverEffectsLayer': {
-                opacity: 0.3
               }
             },
             '& .MuiImageBackground-root': {
@@ -82,7 +79,7 @@ export function TemplateGalleryCard({
                   borderRadius: 2
                 }}
               >
-                <HoverLayer className="hoverEffectsLayer" />
+                <HoverLayer />
                 <Image
                   className="MuiImageBackground-root"
                   src={journey?.primaryImageBlock?.src}
@@ -108,7 +105,7 @@ export function TemplateGalleryCard({
                   overflow: 'hidden'
                 }}
               >
-                <HoverLayer className="hoverEffectsLayer" />
+                <HoverLayer />
                 <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
               </CardMedia>
             )

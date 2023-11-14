@@ -1,16 +1,14 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
-interface HoverLayerProps {
-  className: string
-}
-
-export function HoverLayer({ className }: HoverLayerProps): ReactElement {
+export function HoverLayer(): ReactElement {
   return (
     <Box
       data-testid="hoverLayer"
-      className={className}
       sx={{
+        '&:hover': {
+          opacity: 0.3
+        },
         transition: (theme) => theme.transitions.create('opacity'),
         content: '""',
         opacity: 0,
