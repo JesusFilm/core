@@ -78,6 +78,7 @@ export function TemplateCard({
               }
             : undefined
       }}
+      data-testid="JourneysAdminTemplateCard"
     >
       {journey?.primaryImageBlock?.src != null ? (
         <CardMedia

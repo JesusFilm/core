@@ -98,7 +98,7 @@ export function TemplateSections({
   }
 
   return (
-    <Stack spacing={8}>
+    <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {(loading || (collection != null && collection.length > 0)) && (
         <TemplateGalleryCarousel
           heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}

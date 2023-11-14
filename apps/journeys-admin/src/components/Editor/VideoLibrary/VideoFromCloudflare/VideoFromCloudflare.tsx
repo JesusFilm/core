@@ -25,7 +25,10 @@ export function VideoFromCloudflare({
   }
 
   return (
-    <Stack sx={{ bgcolor: 'background.paper' }}>
+    <Stack
+      sx={{ bgcolor: 'background.paper' }}
+      data-testid="VideoFromCloudflare"
+    >
       <AddByFile onChange={handleChange} />
     </Stack>
   )

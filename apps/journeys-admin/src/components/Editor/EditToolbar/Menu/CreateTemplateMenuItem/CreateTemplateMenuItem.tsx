@@ -95,6 +95,7 @@ export function CreateTemplateMenuItem(): ReactElement {
       label="Create Template"
       icon={<Bag5Icon />}
       onClick={handleCreateTemplate}
+      testId="CreateTemplate"
     />
   )
 }

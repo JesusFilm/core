@@ -50,7 +50,10 @@ export const DiscoveryJourneys = memo(
     })
 
     return (
-      <Container sx={{ px: { xs: 6, sm: 0 } }}>
+      <Container
+        sx={{ px: { xs: 6, sm: 0 } }}
+        data-testid="JourneysAdminDiscoveryJourneys"
+      >
         <Stack
           direction="row"
           spacing={{ xs: 2, sm: 8 }}
