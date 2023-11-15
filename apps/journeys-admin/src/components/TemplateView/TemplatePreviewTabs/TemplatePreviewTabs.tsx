@@ -1,6 +1,7 @@
 import 'swiper/swiper.min.css'
 import 'swiper/components/scrollbar/scrollbar.min.css'
 
+import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -58,11 +59,11 @@ export function TemplatePreviewTabs(): ReactElement {
   }
 
   return (
-    <>
+    <Box sx={{ pb: { sm: 5 } }}>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
-        sx={{ borderBottom: 1, borderColor: 'divider' }}
+        sx={{ borderBottom: 1, borderColor: 'divider', mb: { xs: 3, sm: 7 } }}
       >
         <Tab
           label={t('{{cardBlockCount}} Cards', {
@@ -88,6 +89,6 @@ export function TemplatePreviewTabs(): ReactElement {
           <TemplateVideoPreview videoBlocks={videos} />
         )}
       </TabPanel>
-    </>
+    </Box>
   )
 }

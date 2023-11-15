@@ -34,6 +34,7 @@ export function AddJourneyButton(): ReactElement {
           size="medium"
           onClick={handleClick}
           sx={{ mt: 3, alignSelf: 'center' }}
+          data-testid="AddJourneyButton"
         >
           {t('Create a Journey')}
         </Button>

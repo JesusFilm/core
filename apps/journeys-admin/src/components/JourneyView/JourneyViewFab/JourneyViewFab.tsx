@@ -71,6 +71,7 @@ export function JourneyViewFab({
           color="primary"
           disabled={journey == null}
           onClick={() => setDuplicateTeamDialogOpen(true)}
+          data-testid="JourneyViewFab"
         >
           <CheckIcon sx={{ mr: 3 }} />
           <Typography
@@ -102,6 +103,7 @@ export function JourneyViewFab({
             }}
             color="primary"
             disabled={journey == null}
+            data-testid="JourneyViewFab"
           >
             <Edit2Icon sx={{ mr: 3 }} />
             Edit

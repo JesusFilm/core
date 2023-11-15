@@ -43,7 +43,7 @@ export const Empty = {
   }
 }
 
-export const withLocation = {
+export const WithLocation = {
   ...Template,
   args: {
     ...Default.args,
@@ -54,7 +54,7 @@ export const withLocation = {
 export const TwoAvatars = {
   ...Template,
   args: {
-    ...withLocation.args,
+    ...WithLocation.args,
     title: 'John G  & Siyang C',
     src2: 'https://tinyurl.com/3bxusmyb'
   }

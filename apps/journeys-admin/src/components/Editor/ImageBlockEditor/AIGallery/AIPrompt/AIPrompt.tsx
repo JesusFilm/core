@@ -28,7 +28,7 @@ export function AIPrompt({
   const initialValues: AIPromptInput = { prompt: '' }
 
   return (
-    <Stack sx={{ p: 6 }}>
+    <Stack sx={{ p: 6 }} data-testid="AIPrompt">
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}

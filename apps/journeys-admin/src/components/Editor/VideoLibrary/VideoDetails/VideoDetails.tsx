@@ -130,6 +130,7 @@ export function VideoDetails({
             height: '100%'
           }
         }}
+        data-testid="VideoDetails"
       >
         <AppBar position="sticky" color="default">
           <Toolbar variant="dense">
