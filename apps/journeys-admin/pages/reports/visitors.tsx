@@ -19,8 +19,8 @@ function ReportsVisitorsPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Visitors Report')} />
-      <PageWrapper title={t('Visitors Report')} user={user}>
+      <NextSeo title={t('Visitors Analytics')} />
+      <PageWrapper title={t('Visitors Analytics')} user={user}>
         <ReportsNavigation selected="visitors" />
         <VisitorsList />
       </PageWrapper>

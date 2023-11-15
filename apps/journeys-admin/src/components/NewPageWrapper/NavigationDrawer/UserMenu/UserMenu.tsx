@@ -45,6 +45,7 @@ export function UserMenu({
         vertical: 'top',
         horizontal: 'left'
       }}
+      data-testid="UserMenu"
     >
       <Stack
         direction="row"

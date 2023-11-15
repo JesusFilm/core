@@ -18,6 +18,10 @@ export enum LanguageIdType {
     bcp47 = "bcp47"
 }
 
+export class LanguagesFilter {
+    ids?: Nullable<string[]>;
+}
+
 export class Language {
     __typename?: 'Language';
     id: string;
@@ -29,7 +33,7 @@ export class Language {
 export abstract class IQuery {
     __typename?: 'IQuery';
 
-    abstract languages(offset?: Nullable<number>, limit?: Nullable<number>): Language[] | Promise<Language[]>;
+    abstract languages(offset?: Nullable<number>, limit?: Nullable<number>, where?: Nullable<LanguagesFilter>): Language[] | Promise<Language[]>;
 
     abstract language(id: string, idType?: Nullable<LanguageIdType>): Nullable<Language> | Promise<Nullable<Language>>;
 }

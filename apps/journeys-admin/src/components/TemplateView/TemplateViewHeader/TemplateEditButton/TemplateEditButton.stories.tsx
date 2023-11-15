@@ -11,7 +11,7 @@ const TemplateEditButtonStory: Meta<typeof TemplateEditButton> = {
 }
 
 const Tempalte: StoryObj<typeof TemplateEditButton> = {
-  render: () => <TemplateEditButton />
+  render: () => <TemplateEditButton journeyId="journeyId" />
 }
 
 export const Default = {

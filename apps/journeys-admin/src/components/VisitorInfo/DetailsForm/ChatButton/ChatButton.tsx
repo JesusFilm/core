@@ -69,6 +69,7 @@ export function ChatButton({
       startIcon={<MessageText1Icon />}
       disabled={messagePlatform == null || messagePlatformId == null}
       onClick={handleClick}
+      data-testid="ChatButton"
     >
       {t('Open conversation')}
     </Button>

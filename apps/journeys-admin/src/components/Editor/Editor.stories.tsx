@@ -631,6 +631,8 @@ const journey: Journey = {
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   blocks,
   featuredAt: null,
@@ -677,7 +679,7 @@ export const SocialPreview = {
   ...Template,
   args: { journey },
   play: async () => {
-    const button = screen.getByTestId('social-preview-navigation-card')
+    const button = screen.getByTestId('NavigationCardSocial')
     await userEvent.click(button)
     await waitFor(async () => {
       await screen.getByText('Social App View')
@@ -689,7 +691,7 @@ export const Goals = {
   ...Template,
   args: { journey },
   play: async () => {
-    const button = screen.getByTestId('goals-navigation-card')
+    const button = screen.getByTestId('NavigationCardGoals')
     await userEvent.click(button)
     await waitFor(async () => {
       await screen.getByText('Every Journey has a goal')

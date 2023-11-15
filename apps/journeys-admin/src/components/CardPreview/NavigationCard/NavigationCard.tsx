@@ -3,6 +3,7 @@ import Card from '@mui/material/Card'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import capitalize from 'lodash/capitalize'
 import { ReactElement } from 'react'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
@@ -13,20 +14,18 @@ interface NavigationCardProps {
   destination: ActiveJourneyEditContent
   header?: ReactElement
   loading?: boolean
-  testId?: string
 }
 
 export function NavigationCard({
   id,
   title,
   header,
-  loading = false,
-  testId
+  loading = false
 }: NavigationCardProps): ReactElement {
   return (
     <Box
       id={id}
-      data-testid={testId}
+      data-testid={`NavigationCard${capitalize(id)}`}
       height={164}
       width={95}
       borderRadius={2}

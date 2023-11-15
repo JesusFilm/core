@@ -45,6 +45,7 @@ export function TeamManageDialog({
             </Stack>
           }
           fullscreen={!smUp}
+          testId="TeamManageDialog"
         >
           <Stack spacing={4}>
             {userTeamList}

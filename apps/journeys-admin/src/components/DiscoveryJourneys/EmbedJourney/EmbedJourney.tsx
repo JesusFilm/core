@@ -47,6 +47,7 @@ export function EmbedJourney({
         height: dimensions,
         width: dimensions
       }}
+      data-testid={`EmbedJourney-${slug}`}
     >
       {block != null && (
         <>
@@ -79,7 +80,7 @@ export function EmbedJourney({
             }}
           />
           <FramePortal height="100%" width="100%">
-            <JourneyProvider value={{ variant: 'embed' }}>
+            <JourneyProvider value={{ variant: 'admin' }}>
               <ThemeProvider
                 themeName={ThemeName.base}
                 themeMode={ThemeMode.light}

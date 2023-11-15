@@ -24,7 +24,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
-import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate'
 import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`

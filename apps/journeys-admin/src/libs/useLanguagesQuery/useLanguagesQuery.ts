@@ -6,8 +6,8 @@ import {
 } from '../../../__generated__/GetLanguages'
 
 export const GET_LANGUAGES = gql`
-  query GetLanguages($languageId: ID) {
-    languages(limit: 5000) {
+  query GetLanguages($languageId: ID, $where: LanguagesFilter) {
+    languages(limit: 5000, where: $where) {
       id
       name(languageId: $languageId, primary: true) {
         value

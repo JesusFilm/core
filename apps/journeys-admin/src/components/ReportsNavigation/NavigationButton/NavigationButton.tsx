@@ -25,6 +25,7 @@ export function NavigationButton({
           borderRadius: 1,
           backgroundColor: selected ? undefined : 'background.paper'
         }}
+        data-testid="NavigationButton"
       >
         <Typography variant="subtitle1">{value}</Typography>
       </Button>
