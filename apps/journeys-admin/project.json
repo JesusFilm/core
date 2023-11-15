@@ -183,7 +183,8 @@
     "bundle-analyzer": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ANALYZE=true nx build journeys-admin --configuration=production"
+        "commands": ["ANALYZE=true nx build journeys-admin --configuration=production", "http-server -p 8888 dist/apps/journeys-admin/.next/analyze"],
+        "parallel": false
       }
     }
   },

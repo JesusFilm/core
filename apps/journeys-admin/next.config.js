@@ -71,6 +71,6 @@ const nextConfig = {
 }
 const plugins = [withNx]
 if (process.env.ANALYZE === 'true') {
-  plugins.push(withBundleAnalyzer({ enabled: true }))
+  plugins.push(withBundleAnalyzer({ enabled: true, openAnalyzer: true }))
 }
 module.exports = composePlugins(...plugins)(nextConfig)
