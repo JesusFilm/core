@@ -28,13 +28,7 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 describe('TemplateGallery', () => {
   it('should render TemplateGallery', async () => {
     const { getByRole, getAllByRole } = render(
-      <MockedProvider
-        mocks={[
-          getJourneysWithoutLanguageIdsMock,
-          getLanguagesMock,
-          getTagsMock
-        ]}
-      >
+      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
         <TemplateGallery />
       </MockedProvider>
     )
