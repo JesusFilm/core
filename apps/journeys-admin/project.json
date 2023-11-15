@@ -179,6 +179,12 @@
       "options": {
         "command": "codecov -f coverage/apps/journeys-admin/cobertura-coverage.xml -F apps.journeys-admin"
       }
+    },
+    "bundle-analyzer": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ANALYZE=true nx build journeys-admin --configuration=production"
+      }
     }
   },
   "tags": []
