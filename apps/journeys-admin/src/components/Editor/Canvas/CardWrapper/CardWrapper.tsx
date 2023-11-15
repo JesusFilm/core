@@ -60,6 +60,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
             position: 'relative',
             borderRadius: 5
           }}
+          data-testid="CardWrapper"
         >
           <Card
             {...{ ...block, children: blocks }}

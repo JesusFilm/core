@@ -91,7 +91,7 @@ export function MoveBlockButtons({
     parentBlock != null ? parentBlock.children.length - 1 : 0
 
   return (
-    <Box>
+    <Box data-testid="MoveBlockButtons">
       <ButtonGroup
         data-testid="move-block-buttons"
         disableElevation

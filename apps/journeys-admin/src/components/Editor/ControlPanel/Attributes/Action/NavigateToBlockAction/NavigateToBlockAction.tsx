@@ -80,6 +80,7 @@ export function NavigateToBlockAction(): ReactElement {
       selected={currentActionStep}
       steps={steps}
       onSelect={handleSelectStep}
+      testId="NavigationToBlockAction"
     />
   )
 }

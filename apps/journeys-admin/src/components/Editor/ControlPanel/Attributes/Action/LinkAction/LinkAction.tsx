@@ -92,7 +92,7 @@ export function LinkAction(): ReactElement {
   }
 
   return (
-    <Box sx={{ pt: 8 }}>
+    <Box sx={{ pt: 8 }} data-testid="LinkAction">
       <TextFieldForm
         id="link"
         label="Paste URL here..."

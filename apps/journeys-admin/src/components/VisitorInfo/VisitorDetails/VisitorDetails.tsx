@@ -41,6 +41,7 @@ export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
       alignItems={{ xs: 'flex-start', sm: 'center' }}
       spacing={8}
       sx={{ pb: 5, px: 6, mx: { xs: -6, sm: '-30px', md: 0 } }}
+      data-testid="VisitorDetails"
     >
       {data?.visitor.lastChatStartedAt != null && (
         <Stack

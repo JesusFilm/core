@@ -26,9 +26,13 @@ export function NavigateAction(): ReactElement {
           backgroundColor: 'white',
           opacity: '40%'
         }}
-        data-testid="cards-disabled-view"
+        data-testid="NavigateAction"
       >
-        <CardPreview selected={nextStep} steps={steps} />
+        <CardPreview
+          selected={nextStep}
+          steps={steps}
+          testId="NavigateAction"
+        />
       </Box>
       <Stack
         direction="row"

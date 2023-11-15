@@ -43,6 +43,7 @@ export function JourneyEdit(): ReactElement {
           flexDirection: 'column',
           marginRight: { sm: `${DRAWER_WIDTH}px` }
         }}
+        data-testid="JourneyEdit"
       >
         <Box
           data-testid="journey-edit-content"

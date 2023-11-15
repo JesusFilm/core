@@ -16,7 +16,11 @@ export function PublisherInvite(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Container maxWidth="xs" sx={{ py: 10 }}>
+    <Container
+      maxWidth="xs"
+      sx={{ py: 10 }}
+      data-testid="JourneysAdminPublisherInvite"
+    >
       <Box
         sx={{
           display: 'flex',

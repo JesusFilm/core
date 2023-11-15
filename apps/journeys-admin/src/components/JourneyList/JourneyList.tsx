@@ -57,7 +57,10 @@ export function JourneyList({
   return (
     <>
       {journeysSummaryReport && <MultipleSummaryReport />}
-      <Box sx={{ mx: { xs: -6, sm: 0 } }}>
+      <Box
+        sx={{ mx: { xs: -6, sm: 0 } }}
+        data-testid="JourneysAdminJourneyList"
+      >
         <Container disableGutters>
           <StatusTabPanel
             activeList={<ActiveJourneyList {...journeyListProps} />}

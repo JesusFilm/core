@@ -28,7 +28,10 @@ export function AccessDeniedCard({
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Card sx={{ display: 'flex', flexDirection: 'row' }}>
+    <Card
+      sx={{ display: 'flex', flexDirection: 'row' }}
+      data-testid="AccessDeniedCard"
+    >
       <CardContent
         sx={{
           display: 'flex',

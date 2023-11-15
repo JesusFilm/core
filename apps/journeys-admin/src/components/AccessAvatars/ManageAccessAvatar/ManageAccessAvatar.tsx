@@ -29,6 +29,7 @@ export function ManageAccessAvatar({
             backgroundColor: 'divider'
           }
         }}
+        data-testid="ManageAccessAvatar"
       >
         <UsersProfiles2Icon
           sx={{ color: 'secondary.light' }}
