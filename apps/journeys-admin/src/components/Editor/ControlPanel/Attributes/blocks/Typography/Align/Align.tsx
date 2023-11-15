@@ -78,6 +78,7 @@ export function Align(): ReactElement {
       value={selectedBlock?.align ?? TypographyAlign.left}
       onChange={handleChange}
       options={options}
+      testId="Align"
     />
   )
 }

@@ -68,6 +68,7 @@ export function PageWrapper({
           [theme.breakpoints.down('md')]: { overflowY: 'auto' },
           overflow: 'hidden'
         }}
+        data-testid="JourneysAdminNewPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
           <NavigationDrawer

@@ -43,7 +43,12 @@ export function TemplateGallery(): ReactElement {
   }
 
   return (
-    <Paper elevation={0} square sx={{ height: '100%' }}>
+    <Paper
+      elevation={0}
+      square
+      sx={{ height: '100%' }}
+      data-testid="TemplateGallery"
+    >
       <Container
         maxWidth="xl"
         sx={{

@@ -41,6 +41,7 @@ function TemplateDetails(): ReactElement {
           title={t('Journey Template')}
           user={user}
           backHref="/templates"
+          backHrefHistory
           mainBodyPadding={false}
         >
           {templates ? (

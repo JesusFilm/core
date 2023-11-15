@@ -174,7 +174,7 @@ export function Canvas(): ReactElement {
   }
 
   return (
-    <Box onClick={handleSelectCard}>
+    <Box onClick={handleSelectCard} data-testid="EditorCanvas">
       <StyledSwiperContainer
         data-testid="step-container"
         slidesPerView="auto"

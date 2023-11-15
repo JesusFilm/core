@@ -49,6 +49,7 @@ function Drawer({
           display: 'flex'
         }
       }}
+      data-testid="ImageLibrary"
     >
       <AppBar position="static" color="default">
         <Toolbar>

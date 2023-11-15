@@ -60,6 +60,7 @@ export function UserTeamInviteListItem({
             Invited
           </Button>
         }
+        data-testid={`UserTeamInviteListItem-${user.id}`}
       >
         <ListItemAvatar>
           <Avatar src={undefined} alt={email}>

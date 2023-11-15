@@ -38,7 +38,6 @@
     "@apollo/subgraph": "^2.5.4",
     "@casl/ability": "^6.5.0",
     "@casl/prisma": "^1.4.1",
-    "@datadog/browser-rum": "^4.48.1",
     "@docusaurus/core": "^3.0.0-alpha.0",
     "@docusaurus/preset-classic": "^3.0.0-alpha.0",
     "@emotion/cache": "11.11.0",
@@ -248,7 +247,8 @@
     "webpack-dev-server": "^4.15.1",
     "webpack-merge": "^5.9.0",
     "webpack-node-externals": "^3.0.0",
-    "webpack-sources": "^3.0.2"
+    "webpack-sources": "^3.0.2",
+    "checkly": "4.4.0"
   },
   "msw": {
     "workerDirectory": "./.storybook/static"

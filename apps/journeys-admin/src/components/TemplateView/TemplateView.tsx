@@ -83,7 +83,12 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   }
 
   return (
-    <Paper elevation={0} square sx={{ height: '100%' }}>
+    <Paper
+      elevation={0}
+      square
+      sx={{ height: '100%' }}
+      data-testid="JourneysAdminTemplateView"
+    >
       <Container
         maxWidth="xl"
         sx={{

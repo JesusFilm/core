@@ -162,7 +162,7 @@ export function UnsplashGallery({
   }
 
   return (
-    <Stack sx={{ p: 6 }}>
+    <Stack sx={{ p: 6 }} data-testid="UnsplashGallery">
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
       <UnsplashCollections onClick={handleCollectionChange} />
       <Stack sx={{ pt: 4, pb: 1 }}>

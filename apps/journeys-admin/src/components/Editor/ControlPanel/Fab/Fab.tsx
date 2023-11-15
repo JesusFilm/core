@@ -28,7 +28,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
   }
 
   return (
-    <Zoom in={visible} unmountOnExit>
+    <Zoom in={visible} unmountOnExit data-testid="Fab">
       {activeFab === ActiveFab.Add ? (
         <MuiFab
           variant="extended"

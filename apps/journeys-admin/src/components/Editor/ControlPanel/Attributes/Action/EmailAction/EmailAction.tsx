@@ -74,7 +74,7 @@ export function EmailAction(): ReactElement {
   }
 
   return (
-    <Box sx={{ pt: 8 }}>
+    <Box sx={{ pt: 8 }} data-testid="EmailAction">
       <TextFieldForm
         id="email"
         label="Paste Email here..."

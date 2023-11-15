@@ -26,6 +26,7 @@ export function TeamAvatars({
       sx={{
         cursor: onClick != null ? 'pointer' : 'default'
       }}
+      data-testid="TeamAvatars"
     >
       <AvatarGroup
         sx={{

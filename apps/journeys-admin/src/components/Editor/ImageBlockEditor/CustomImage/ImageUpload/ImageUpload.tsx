@@ -97,6 +97,7 @@ export function ImageUpload({
       alignItems="center"
       gap={1}
       sx={{ px: 6, py: 3 }}
+      data-testid="ImageUpload"
     >
       <input {...getInputProps()} />
       <Box

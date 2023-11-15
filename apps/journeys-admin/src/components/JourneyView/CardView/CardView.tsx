@@ -68,6 +68,7 @@ export function CardView({
         showAddButton={journey?.template !== true || isPublisher}
         showNavigationCards
         isDraggable={false}
+        testId="CardView"
       />
       <Box sx={{ pt: 2, display: 'flex', justifyContent: 'center' }}>
         <Typography variant="body1">

@@ -36,6 +36,7 @@ export function MainPanelHeader({
           top: { xs: toolbar.height, md: 0 },
           width: 'inherit'
         }}
+        data-testid="MainPanelHeader"
       >
         <Toolbar variant={toolbar.variant}>
           {backHrefHistory ? (

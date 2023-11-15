@@ -55,6 +55,16 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['shared-ui']
+  transpilePackages: ['shared-ui'],
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+        'node_modules/esbuild-linux-64/bin'
+      ]
+    },
+    fallbackNodePolyfills: false
+  }
 }
 module.exports = composePlugins(withNx)(nextConfig)
