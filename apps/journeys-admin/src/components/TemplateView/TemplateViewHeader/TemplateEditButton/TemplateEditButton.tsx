@@ -16,7 +16,9 @@ export function TemplateEditButton({
 
   return (
     <NextLink href={`/publisher/${journeyId}/edit`} passHref legacyBehavior>
-      <Button startIcon={<Edit2Icon />}>{t('Edit')}</Button>
+      <Button startIcon={<Edit2Icon />} data-testid="TemplateEditButton">
+        {t('Edit')}
+      </Button>
     </NextLink>
   )
 }

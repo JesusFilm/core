@@ -161,7 +161,12 @@ export function BackgroundColor(): ReactElement {
 
   return (
     <>
-      <Stack sx={{ p: 6, py: 4 }} spacing={3} direction="row">
+      <Stack
+        sx={{ p: 6, py: 4 }}
+        spacing={3}
+        direction="row"
+        data-testid="BackgroundColor"
+      >
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
         <TextField
           data-testid="bgColorTextField"

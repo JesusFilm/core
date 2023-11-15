@@ -21,6 +21,7 @@ export function TermsListItem({
       sx={{ pt: 3, pb: 3 }}
       target="_blank"
       rel="noopener"
+      data-testid="TermsListItem"
     >
       <ListItemIcon sx={{ minWidth: 44 }}>{icon}</ListItemIcon>
       <ListItemText

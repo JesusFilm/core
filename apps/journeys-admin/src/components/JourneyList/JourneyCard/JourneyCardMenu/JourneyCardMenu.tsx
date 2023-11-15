@@ -66,6 +66,7 @@ export function JourneyCardMenu({
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
+        data-testid="JourneyCardMenu"
       >
         {status === JourneyStatus.trashed ? (
           <TrashMenu

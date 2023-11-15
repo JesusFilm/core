@@ -29,7 +29,7 @@ export function NavigationListItem({
     <ListItemButton
       onClick={handleClick}
       aria-selected={selected}
-      data-testid={`${label}-list-item`}
+      data-testid={`NavigationListItem${label}`}
     >
       <Badge
         variant="dot"

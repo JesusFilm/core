@@ -80,7 +80,7 @@ export function DetailsForm({ id }: DetailsFormProps): ReactElement {
   }
 
   return (
-    <Paper elevation={0} sx={{ borderRadius: 0 }}>
+    <Paper elevation={0} sx={{ borderRadius: 0 }} data-testid="DetailsForm">
       {data?.visitor != null && (
         <Formik
           initialValues={pick(data.visitor, [
