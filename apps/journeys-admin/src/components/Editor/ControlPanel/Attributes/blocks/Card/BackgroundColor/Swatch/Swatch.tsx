@@ -9,7 +9,7 @@ interface SwatchProps {
 export function Swatch({ id, color }: SwatchProps): ReactElement {
   return (
     <Box
-      data-testid={id}
+      data-testid={`Swatch-${id}`}
       id={id}
       sx={{
         backgroundColor: color,

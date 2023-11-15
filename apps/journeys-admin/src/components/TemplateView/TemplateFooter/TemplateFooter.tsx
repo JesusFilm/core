@@ -18,7 +18,12 @@ export function TemplateFooter({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
-    <Stack alignItems="center" gap={6} sx={{ py: 9 }}>
+    <Stack
+      alignItems="center"
+      gap={6}
+      sx={{ py: 9 }}
+      data-testid="TemplateFooter"
+    >
       <Typography variant={smUp ? 'subtitle1' : 'subtitle2'} align="center">
         {t('Use this template to make it your journey')}
       </Typography>

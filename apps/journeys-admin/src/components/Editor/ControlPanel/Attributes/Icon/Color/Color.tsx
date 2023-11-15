@@ -80,6 +80,7 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
       value={iconColor ?? IconColor.inherit}
       onChange={handleChange}
       options={options}
+      testId="Color"
     />
   )
 }

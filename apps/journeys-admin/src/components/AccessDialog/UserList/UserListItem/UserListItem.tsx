@@ -126,6 +126,7 @@ export function UserListItem({
             {isInvite ? 'Pending' : menuLabel}
           </Button>
         }
+        data-testid="UserListItem"
       >
         <ListItemAvatar>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>

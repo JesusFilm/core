@@ -45,7 +45,7 @@ export function TemplateGallery(): ReactElement {
   }
 
   return (
-    <Container disableGutters>
+    <Container disableGutters data-testid="TemplateGallery">
       <HeaderAndLanguageFilter
         selectedLanguageIds={selectedLanguageIds}
         onChange={handleLanguageIdsChange}

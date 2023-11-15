@@ -132,6 +132,7 @@ export function UnsplashCollections({
         pb: 2,
         position: 'relative'
       }}
+      data-testid="UnsplashCollections"
     >
       <Box
         data-testid="collections"

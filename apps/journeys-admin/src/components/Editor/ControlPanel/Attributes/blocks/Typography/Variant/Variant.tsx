@@ -169,6 +169,7 @@ export function Variant(): ReactElement {
       value={selectedBlock?.variant ?? TypographyVariant.body2}
       onChange={handleChange}
       options={options}
+      testId="Variant"
     />
   )
 }

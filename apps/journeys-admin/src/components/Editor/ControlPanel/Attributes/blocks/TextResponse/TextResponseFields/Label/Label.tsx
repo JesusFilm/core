@@ -63,7 +63,7 @@ export function Label(): ReactElement {
     selectedBlock != null ? { textResponseLabel: selectedBlock.label } : null
 
   return (
-    <Box sx={{ px: 6, py: 4 }}>
+    <Box sx={{ px: 6, py: 4 }} data-testid="Label">
       {selectedBlock != null ? (
         <Formik initialValues={initialValues} onSubmit={noop}>
           {({ values, errors, handleChange, handleBlur, setValues }) => (

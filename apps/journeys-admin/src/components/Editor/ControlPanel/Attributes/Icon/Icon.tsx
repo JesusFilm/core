@@ -185,7 +185,12 @@ export function Icon({ id }: IconProps): ReactElement {
 
   return (
     <>
-      <FormControl fullWidth hiddenLabel sx={{ pt: 4, pb: 6, px: 6 }}>
+      <FormControl
+        fullWidth
+        hiddenLabel
+        sx={{ pt: 4, pb: 6, px: 6 }}
+        data-testid="IconSelect"
+      >
         <Select
           labelId="icon-name-select"
           id="icon-name-select"

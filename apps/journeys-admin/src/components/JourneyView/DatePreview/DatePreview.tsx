@@ -17,6 +17,7 @@ export function DatePreview(): ReactElement {
       direction="row"
       justifyContent="space-between"
       sx={{ alignItems: 'center' }}
+      data-testid="DatePreview"
     >
       <Typography variant="overline" sx={{ color: 'secondary.light' }}>
         {journey != null ? (
