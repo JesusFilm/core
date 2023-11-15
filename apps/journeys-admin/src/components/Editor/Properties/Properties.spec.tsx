@@ -16,7 +16,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('Properties', () => {
   it('should render journey properties', async () => {
-    const { getByText } = render(
+    const { getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <FlagsProvider>
@@ -32,7 +32,7 @@ describe('Properties', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByText('Access Control')).toBeInTheDocument()
-    expect(getByText('Journey URL')).toBeInTheDocument()
+    expect(getAllByText('Access Control')[0]).toBeInTheDocument()
+    expect(getAllByText('Journey URL')[0]).toBeInTheDocument()
   })
 })
