@@ -182,17 +182,18 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
 
-  const isTouchScreenDevice = (): string => {
+  const isTouchScreenDevice = (): boolean => {
     try {
       document.createEvent('TouchEvent')
-      return 'TRUE'
+      return true
     } catch (e) {
-      return 'FALSE'
+      return false
     }
   }
 
-  const disableTouchMove =
-    isTouchScreenDevice() === 'FALSE' ? true : activeBlock?.locked
+  const disableTouchMove = !isTouchScreenDevice()
+    ? true
+    : activeBlock?.locked ?? false
 
   return (
     <Box
@@ -235,8 +236,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               }
             }}
           >
-            {/* For testing if device has touch screen */}
-            <Typography>{isTouchScreenDevice()}</Typography>
             {treeBlocks.map((block) => {
               const theme = getStepTheme(
                 block as TreeBlock<StepFields>,
@@ -294,6 +293,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 </SwiperSlide>
               )
             })}
+
+            {/* For testing if device has touch screen */}
+            <Typography color="background.paper">{`IS TOUCH: ${
+              isTouchScreenDevice() as string
+            }`}</Typography>
 
             <NavigationButton
               variant={rtl ? 'next' : 'prev'}
