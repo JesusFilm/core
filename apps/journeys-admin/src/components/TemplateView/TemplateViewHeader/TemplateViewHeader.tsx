@@ -37,7 +37,7 @@ export function TemplateViewHeader({
         sx={{
           color: 'secondary.light',
           display: { xs: 'block', sm: 'none' },
-          pb: 6
+          pb: 4
         }}
         noWrap
       >
@@ -50,7 +50,7 @@ export function TemplateViewHeader({
           <Skeleton sx={{ width: '50%', maxWidth: 150 }} />
         )}
       </Typography>
-      <Stack direction="row" sx={{ gap: { xs: 4, sm: 6 } }}>
+      <Stack direction="row" sx={{ gap: { xs: 4, sm: 7 } }}>
         <Box
           sx={{
             flexShrink: 0,
