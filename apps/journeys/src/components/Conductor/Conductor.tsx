@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { SxProps, styled, useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
@@ -181,6 +182,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
 
+  const isTouchScreenDevice = (): string => {
+    try {
+      document.createEvent('TouchEvent')
+      return 'TRUE'
+    } catch (e) {
+      return 'FALSE'
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -223,6 +233,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               }
             }}
           >
+            <Typography>{isTouchScreenDevice()}</Typography>
             {treeBlocks.map((block) => {
               const theme = getStepTheme(
                 block as TreeBlock<StepFields>,
