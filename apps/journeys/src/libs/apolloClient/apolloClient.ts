@@ -39,9 +39,7 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
     cache: cache(),
     name: 'journeys',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-    connectToDevTools:
-      process.env.NEXT_PUBLIC_VERCEL_ENV !== 'production' &&
-      process.env.NEXT_PUBLIC_VERCEL_ENV !== 'preview'
+    connectToDevTools: true
   })
 }
 
