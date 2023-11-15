@@ -85,7 +85,7 @@ export function VideoControls({
   useEffect(() => {
     const handleVideoPlay = (): void => {
       // Always mute first video
-      if (player.muted()) {
+      if (player.muted() ?? false) {
         setMuted(true)
       }
       setPlaying(true)
