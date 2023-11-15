@@ -21,7 +21,7 @@ test('Create a new user', async ({ page }) => {
     const teamName = `Team Name-${epochTime}`
     const legalName = `Legal Name-${epochTime}`
   
-    await landingPage.open()
+    await landingPage.goToAdminUrl()
     await landingPage.clickSignInWithEmail()
   
     await onboardingPages.createUser(email, firstAndLastName, password)

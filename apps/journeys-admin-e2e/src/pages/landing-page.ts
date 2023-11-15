@@ -8,7 +8,7 @@ export class LandingPage {
     this.page = page
   }
 
-  async open(): Promise<void> {
+  async goToAdminUrl(): Promise<void> {
     await this.page.goto('/');
   }
 
