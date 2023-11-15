@@ -15,10 +15,11 @@ import { TagsFilter } from './TagsFilter'
 export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+  const ENGLISH_LANGUAGE_ID = '529'
   const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
     router.query.languageIds != null
       ? castArray(router.query.languageIds)
-      : ['529']
+      : [ENGLISH_LANGUAGE_ID]
   )
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     router.query.tagIds != null ? castArray(router.query.tagIds) : []
