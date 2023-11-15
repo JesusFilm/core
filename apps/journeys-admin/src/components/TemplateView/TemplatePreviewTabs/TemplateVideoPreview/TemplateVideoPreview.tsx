@@ -1,6 +1,5 @@
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import { useTheme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -51,10 +50,11 @@ export function TemplateVideoPreviewItem({
         />
       ) : (
         <Box
+          onClick={() => setHasPlayed(true)}
           sx={{
-            width: '430px',
-            height: '239px',
-            cursor: 'grab',
+            width: { xs: 280, sm: 430 },
+            height: { xs: 157, sm: 239 },
+            cursor: 'pointer',
             borderRadius: 4
           }}
         >
@@ -68,9 +68,7 @@ export function TemplateVideoPreviewItem({
               borderRadius: '16px'
             }}
           />
-          <Button
-            variant="contained"
-            onClick={() => setHasPlayed(true)}
+          <Box
             sx={{
               position: 'absolute',
               top: '50%',
@@ -88,7 +86,7 @@ export function TemplateVideoPreviewItem({
                 color: 'background.default'
               }}
             />
-          </Button>
+          </Box>
         </Box>
       )}
     </>
@@ -107,10 +105,14 @@ export function TemplateVideoPreview({
 
   return (
     <Swiper
+      mousewheel={{
+        forceToAxis: true
+      }}
       freeMode
       watchOverflow
       spaceBetween={12}
       slidesPerView="auto"
+      autoHeight
       breakpoints={swiperBreakpoints}
       style={{
         overflow: 'visible',

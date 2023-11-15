@@ -53,6 +53,16 @@ export function TemplateVideoPlayer({
 
     player
       ?.getChild('ControlBar')
+      ?.getChild('ProgressControl')
+      ?.setAttribute('style', 'display: flex')
+
+    player
+      ?.getChild('ControlBar')
+      ?.getChild('RemainingTimeDisplay')
+      ?.setAttribute('style', 'display: flex')
+
+    player
+      ?.getChild('ControlBar')
       ?.getChild('VolumePanel')
       ?.addClass('swiper-no-swiping')
 
@@ -72,8 +82,8 @@ export function TemplateVideoPlayer({
   return (
     <Box
       sx={{
-        width: '430px',
-        height: '239px',
+        width: { xs: 280, sm: 430 },
+        height: { xs: 157, sm: 239 },
         overflow: 'hidden',
         borderRadius: 4,
         position: 'relative'

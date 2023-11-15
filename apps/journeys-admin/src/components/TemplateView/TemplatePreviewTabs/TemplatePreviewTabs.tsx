@@ -65,7 +65,6 @@ export function TemplatePreviewTabs(): ReactElement {
         sx={{ borderBottom: 1, borderColor: 'divider' }}
       >
         <Tab
-          disableRipple
           label={t('{{cardBlockCount}} Cards', {
             cardBlockCount: steps?.length ?? 0
           })}
