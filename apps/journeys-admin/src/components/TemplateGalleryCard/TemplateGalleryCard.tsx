@@ -77,6 +77,7 @@ export function TemplateGalleryCard({
           transition: (theme) => theme.transitions.create('transform')
         },
         '&:hover': {
+          transition: (theme) => theme.transitions.create('background-color'),
           backgroundColor: (theme) => theme.palette.grey[200],
           '& .MuiImageBackground-root': {
             transform: 'scale(1.05)'
