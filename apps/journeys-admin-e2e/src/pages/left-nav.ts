@@ -10,7 +10,7 @@ export class LeftNav {
 
   async clickProfile(): Promise<void> {
     // Click on Profile
-    await this.page.getByTestId('Profile-list-item').click()
+    await this.page.getByTestId('NavigationListItemProfile').click()
   }
 
   async testUserDetails(

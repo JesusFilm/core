@@ -19,7 +19,9 @@ export class TopNav {
     expect(await this.page.textContent(teamNameLocatoreInDropdown)).toContain(
       teamName
     )
-    // Close team name drop down
-    await this.page.click(teamNameLocatoreInDropdown)
+  }
+
+  async clickSharedWithMe(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Shared with me' }).click()
   }
 }

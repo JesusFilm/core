@@ -9,7 +9,7 @@ export class LandingPage {
   }
 
   async goToAdminUrl(): Promise<void> {
-    await this.page.goto('/');
+    await this.page.goto('https://journeys-admin-2014-jesusfilm.vercel.app/');
   }
 
   async clickSignInWithEmail(): Promise<void> {

@@ -7,7 +7,7 @@ export class HomePage {
     this.page = page
   }
 
-  async open(): Promise<void> {
-    await this.page.goto('/')
+  async seeAllTemplates(): Promise<void> {
+    await this.page.getByRole('link', { name: 'See all', exact: true }).click();
   }
 }
