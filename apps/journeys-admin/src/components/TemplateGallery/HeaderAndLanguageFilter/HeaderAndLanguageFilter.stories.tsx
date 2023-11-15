@@ -1,13 +1,11 @@
-import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
 import '../../../../test/i18n'
 
-import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
+import { getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
 
@@ -17,64 +15,6 @@ const HeaderAndLanguageFilterStory: Meta<typeof HeaderAndLanguageFilter> = {
   title: 'Journeys-Admin/TemplateGallery/HeaderAndLanguageFilter'
 }
 
-const getLanguagesMock: MockedResponse<GetLanguages> = {
-  request: {
-    query: GET_LANGUAGES,
-    variables: {
-      languageId: '529'
-    }
-  },
-  result: {
-    data: {
-      languages: [
-        {
-          __typename: 'Language',
-          id: '529',
-          name: [
-            {
-              value: 'English',
-              primary: true,
-              __typename: 'Translation'
-            }
-          ]
-        },
-        {
-          id: '496',
-          __typename: 'Language',
-          name: [
-            {
-              value: 'Français',
-              primary: true,
-              __typename: 'Translation'
-            },
-            {
-              value: 'French',
-              primary: false,
-              __typename: 'Translation'
-            }
-          ]
-        },
-        {
-          id: '1106',
-          __typename: 'Language',
-          name: [
-            {
-              value: 'Deutsch',
-              primary: true,
-              __typename: 'Translation'
-            },
-            {
-              value: 'German, Standard',
-              primary: false,
-              __typename: 'Translation'
-            }
-          ]
-        }
-      ]
-    }
-  }
-}
-
 const Template: StoryObj<ComponentProps<typeof HeaderAndLanguageFilter>> = {
   render: ({ ...args }) => <HeaderAndLanguageFilter {...args} />
 }
@@ -82,7 +22,7 @@ const Template: StoryObj<ComponentProps<typeof HeaderAndLanguageFilter>> = {
 export const Default = {
   ...Template,
   args: {
-    selectedLanguageIds: [],
+    selectedLanguageIds: ['529'],
     onChange: noop
   },
   parameters: {
