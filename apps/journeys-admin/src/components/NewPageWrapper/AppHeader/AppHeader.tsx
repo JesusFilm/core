@@ -19,7 +19,11 @@ export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
 
   return (
-    <Box id="app-header" sx={{ display: { md: 'none' } }}>
+    <Box
+      id="app-header"
+      sx={{ display: { md: 'none' } }}
+      data-testid="AppHeader"
+    >
       <AppBar
         role="banner"
         position="fixed"

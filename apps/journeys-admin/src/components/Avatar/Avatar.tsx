@@ -21,7 +21,7 @@ export function Avatar({
   const displayName = compact([apiUser.firstName, apiUser.lastName]).join(' ')
 
   return (
-    <Tooltip title={displayName}>
+    <Tooltip title={displayName} data-testid="JourneysAdminAvatar">
       <Badge
         invisible={!notification}
         color="warning"

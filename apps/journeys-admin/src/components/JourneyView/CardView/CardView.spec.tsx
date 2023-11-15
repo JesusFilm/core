@@ -80,7 +80,7 @@ describe('JourneyView/CardView', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step0.id'))
+    fireEvent.click(getByTestId('CardItem-step0.id'))
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
         '/journeys/journeyId/edit?stepId=step0.id',
@@ -105,7 +105,7 @@ describe('JourneyView/CardView', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step0.id'))
+    fireEvent.click(getByTestId('CardItem-step0.id'))
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
         '/publisher/journeyId/edit?stepId=step0.id',
@@ -125,7 +125,7 @@ describe('JourneyView/CardView', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardSocial'))
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
         '/journeys/journeyId/edit?view=social',

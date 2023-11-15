@@ -34,6 +34,7 @@ export function ImageThumbnail({
         alignItems: 'center',
         overflow: 'hidden'
       }}
+      data-testid="JourneysAdminImageThumbnail"
     >
       {loading === true ? (
         <CircularProgress size={20} />

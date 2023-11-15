@@ -32,6 +32,7 @@ export function AccessDeniedListItem({
         bgcolor: stepActive ? 'background.paper' : '#F5F5F5',
         padding: 5
       }}
+      data-testid="AccessDeniedListItem"
     >
       <Typography
         sx={{

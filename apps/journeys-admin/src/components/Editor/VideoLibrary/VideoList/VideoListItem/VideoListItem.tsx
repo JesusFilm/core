@@ -49,6 +49,7 @@ export function VideoListItem({
       <ListItemButton
         onClick={handleOpen}
         sx={{ alignItems: 'flex-start', py: 4, px: 6 }}
+        data-testid={`VideoListItem-${id}`}
       >
         <ListItemText
           primary={title}

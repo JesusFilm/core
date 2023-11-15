@@ -54,6 +54,7 @@ export function Language({ isPublisher }: LanguageProps): ReactElement {
             justifyContent: 'center'
           }
         }}
+        data-testid="Language"
       >
         {journey != null ? (
           <Typography variant="body2" sx={{ ml: 2 }}>

@@ -102,8 +102,9 @@ export function CreateJourneyButton({
         variant="contained"
         sx={{ flex: 'none' }}
         disabled={journey == null}
+        data-testid="CreateJourneyButton"
       >
-        {t('Use Template')}
+        {t('Use This Template')}
       </Button>
       <CopyToTeamDialog
         submitLabel="Add"

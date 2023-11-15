@@ -38,7 +38,10 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
           backgroundColor: theme.palette.background.paper,
           '&:hover': {
             backgroundColor: theme.palette.background.paper,
-            opacity: { xs: 0, md: disabled ? 0 : 1 }
+            opacity: { xs: 0, md: 1 }
+          },
+          '&.swiper-button-disabled': {
+            display: 'none'
           }
         }}
       >
