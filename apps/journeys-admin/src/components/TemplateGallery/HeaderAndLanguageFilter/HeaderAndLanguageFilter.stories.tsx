@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/react'
-import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
 import '../../../../test/i18n'
@@ -22,8 +21,7 @@ const Template: StoryObj<ComponentProps<typeof HeaderAndLanguageFilter>> = {
 export const Default = {
   ...Template,
   args: {
-    selectedLanguageIds: ['529'],
-    onChange: noop
+    selectedLanguageIds: ['529']
   },
   parameters: {
     apolloClient: {
@@ -35,8 +33,7 @@ export const Default = {
 export const Loading = {
   ...Template,
   args: {
-    selectedLanguageIds: ['529'],
-    onChange: noop
+    selectedLanguageIds: ['529']
   },
   parameters: {
     apolloClient: {
