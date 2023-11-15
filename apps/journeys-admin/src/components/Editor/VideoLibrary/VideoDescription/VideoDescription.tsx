@@ -56,6 +56,7 @@ export const VideoDescription = ({
         overflow: 'hidden',
         position: 'relative'
       }}
+      data-testid="VideoDescription"
     >
       <Typography
         variant="caption"

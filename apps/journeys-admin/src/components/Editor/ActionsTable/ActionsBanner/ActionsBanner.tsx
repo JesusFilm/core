@@ -64,6 +64,7 @@ export function ActionsBanner(): ReactElement {
           flexDirection: 'column-reverse'
         }
       }}
+      data-testid="ActionsBanner"
     >
       <Image
         src={goal}

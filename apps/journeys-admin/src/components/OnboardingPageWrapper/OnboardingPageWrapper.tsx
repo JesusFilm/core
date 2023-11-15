@@ -23,6 +23,7 @@ export function OnboardingPageWrapper({
       justifyContent="space-evenly"
       alignItems="center"
       sx={{ height: '100vh', minHeight: '600px' }}
+      data-testid="JourneysAdminOnboardingPageWrapper"
     >
       <Stack alignItems="center" sx={{ maxWidth: { xs: 311, md: 397 } }}>
         <Box sx={{ mb: 10, flexShrink: 0 }}>

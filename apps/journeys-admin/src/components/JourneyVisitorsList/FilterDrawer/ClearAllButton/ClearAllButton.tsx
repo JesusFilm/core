@@ -18,6 +18,7 @@ export const ClearAllButton = ({
         ml: 5,
         mb: 1
       }}
+      data-testid="ClearAllButton"
     >
       Clear all
     </Button>

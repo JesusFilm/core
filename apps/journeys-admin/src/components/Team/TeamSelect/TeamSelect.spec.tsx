@@ -8,7 +8,6 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
 import { OnboardingPanelContent } from '../../OnboardingPanelContent'
-import { onboardingJourneys } from '../../OnboardingPanelContent/data'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
@@ -128,7 +127,7 @@ describe('TeamSelect', () => {
         <FlagsProvider flags={{ teams: true }}>
           <TeamProvider>
             <TeamSelect />
-            <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+            <OnboardingPanelContent />
             <AddJourneyButton />
           </TeamProvider>
         </FlagsProvider>

@@ -62,6 +62,7 @@ export function TeamCreateDialog({
             closeLabel: t('Cancel'),
             submitLabel: t('Create')
           }}
+          data-testid="TeamCreateDialog"
         >
           <Form>
             <Stack spacing={4}>
