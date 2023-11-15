@@ -35,6 +35,7 @@ export function SocialImage({
           sm: hasCreatorDescription ? 0 : 12
         }
       }}
+      data-testid="SocialImage"
     >
       {journey?.primaryImageBlock?.src != null ? (
         <NextImage

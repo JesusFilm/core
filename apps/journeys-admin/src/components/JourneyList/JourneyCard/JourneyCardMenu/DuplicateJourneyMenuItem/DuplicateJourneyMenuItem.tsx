@@ -52,6 +52,7 @@ export function DuplicateJourneyMenuItem({
         )
       }
       onClick={handleDuplicateJourney}
+      testId="Duplicate"
     />
   )
 }

@@ -61,7 +61,7 @@ export function AIGallery({
   }
 
   return (
-    <Box>
+    <Box data-testid="AIGallery">
       <AIPrompt handleSubmit={handleSubmit} loading={loading} />
     </Box>
   )

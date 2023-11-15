@@ -91,6 +91,7 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
                 onSubmit: handleSubmit,
                 closeLabel: t('Cancel')
               }}
+              testId="SlugDialog"
             >
               <Form>
                 <TextField

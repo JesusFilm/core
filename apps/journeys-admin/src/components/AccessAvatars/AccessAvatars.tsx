@@ -153,6 +153,7 @@ const withRenderLogic = ({
           height: diameter
         }}
         role="button"
+        data-testid="JourneysAdminAccessAvatars"
       >
         <StyledBadge
           color="warning"

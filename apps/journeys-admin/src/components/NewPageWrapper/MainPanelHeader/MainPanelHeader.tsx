@@ -35,6 +35,7 @@ export function MainPanelHeader({
           position: { xs: 'fixed', md: 'sticky' },
           top: { xs: toolbar.height, md: 0 }
         }}
+        data-testid="MainPanelHeader"
       >
         <Toolbar variant={toolbar.variant}>
           {backHrefHistory === true ? (

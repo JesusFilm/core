@@ -92,6 +92,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
                 onSubmit: handleSubmit,
                 closeLabel: 'Cancel'
               }}
+              testId="TitleDialog"
             >
               <Form>
                 <TextField

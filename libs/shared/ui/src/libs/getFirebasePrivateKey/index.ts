@@ -1,1 +1,0 @@
-export { getFirebasePrivateKey } from './getFirebasePrivateKey'

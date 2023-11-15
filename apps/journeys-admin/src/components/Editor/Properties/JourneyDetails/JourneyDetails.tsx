@@ -21,7 +21,10 @@ export function JourneyDetails({
 
   return (
     <>
-      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+      <Box
+        sx={{ display: 'flex', flexDirection: 'row' }}
+        data-testid="JourneyDetails"
+      >
         <Calendar1Icon fontSize="small" />
         <Typography
           variant="body2"

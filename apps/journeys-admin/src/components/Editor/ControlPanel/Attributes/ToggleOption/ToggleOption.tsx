@@ -20,7 +20,7 @@ export function ToggleOption({
   children
 }: ToggleOptionProps): ReactElement {
   return (
-    <Stack>
+    <Stack data-testid="ToggleOption">
       <Box
         sx={{
           display: 'flex',
