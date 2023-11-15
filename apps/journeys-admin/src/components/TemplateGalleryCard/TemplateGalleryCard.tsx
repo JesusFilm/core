@@ -1,7 +1,6 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -100,45 +99,38 @@ export function TemplateGalleryCard({
           }}
         >
           {journey != null ? (
-            journey?.primaryImageBlock?.src != null ? (
-              <Box
-                sx={{
-                  position: 'relative',
-                  aspectRatio: 1,
-                  overflow: 'hidden',
-                  borderRadius: 2
-                }}
-              >
-                <HoverLayer className="hoverImageEffects" />
-                <Image
-                  className="MuiImageBackground-root"
-                  src={journey?.primaryImageBlock?.src}
-                  alt={journey?.primaryImageBlock.alt}
-                  fill
-                  style={{
-                    objectFit: 'cover'
-                  }}
-                />
-              </Box>
-            ) : (
-              <CardMedia
-                component="div"
-                sx={{
-                  position: 'relative',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderColor: 'divider',
-                  aspectRatio: 1,
-                  borderRadius: 2,
-                  backgroundColor: 'background.default',
-                  overflow: 'hidden'
-                }}
-              >
-                <HoverLayer className="hoverImageEffects" />
-                <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
-              </CardMedia>
-            )
+            <Stack
+              justifyContent="center"
+              alignItems="center"
+              sx={{
+                position: 'relative',
+                aspectRatio: 1,
+                overflow: 'hidden',
+                borderRadius: 2,
+                alignItems: 'center',
+                backgroundColor: 'background.default'
+              }}
+            >
+              {journey?.primaryImageBlock?.src != null ? (
+                <>
+                  <HoverLayer className="hoverImageEffects" />
+                  <Image
+                    className="MuiImageBackground-root"
+                    src={journey?.primaryImageBlock?.src}
+                    alt={journey?.primaryImageBlock.alt}
+                    fill
+                    style={{
+                      objectFit: 'cover'
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  <HoverLayer className="hoverImageEffects" />
+                  <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
+                </>
+              )}
+            </Stack>
           ) : (
             <Skeleton
               variant="rectangular"
