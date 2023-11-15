@@ -65,7 +65,8 @@ const nextConfig = {
         'node_modules/@swc/core-linux-x64-musl',
         'node_modules/esbuild-linux-64/bin'
       ]
-    }
+    },
+    fallbackNodePolyfills: false
   }
 }
 const plugins = [withNx]
