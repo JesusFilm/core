@@ -45,6 +45,7 @@ function TemplateDetails(): ReactElement {
             backgroundColor: 'background.paper',
             overflowX: 'hidden'
           }}
+          backHrefHistory
         >
           {templates ? (
             <TemplateView authUser={user} />
