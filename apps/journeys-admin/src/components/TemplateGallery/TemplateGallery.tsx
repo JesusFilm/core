@@ -16,7 +16,9 @@ export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
-    router.query.languageIds != null ? castArray(router.query.languageIds) : []
+    router.query.languageIds != null
+      ? castArray(router.query.languageIds)
+      : ['529']
   )
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     router.query.tagIds != null ? castArray(router.query.tagIds) : []
@@ -51,7 +53,7 @@ export function TemplateGallery(): ReactElement {
         container
         spacing={2}
         sx={{
-          mb: { xs: 6, md: 9 }
+          mb: { xs: 5, md: 7 }
         }}
         id="TemplateGalleryTagsFilter"
       >
