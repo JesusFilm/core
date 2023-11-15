@@ -51,7 +51,7 @@ export function TemplateGallery(): ReactElement {
         container
         spacing={2}
         sx={{
-          mb: { xs: 6, md: 9 }
+          mb: { xs: 5, md: 7 }
         }}
         id="TemplateGalleryTagsFilter"
       >

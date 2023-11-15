@@ -14,7 +14,6 @@ SwiperCore.use([Navigation, Mousewheel, A11y])
 
 const StyledSwiperContainer = styled(Swiper)(() => ({
   overflow: 'visible !important',
-  marginTop: '16px',
   '.swiper-slide': {
     // Use important otherwise swiper overrides width on resize
     width: 'unset !important'
