@@ -38,7 +38,8 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
     link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
     cache: cache(),
     name: 'journeys',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
+    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
+    connectToDevTools: true
   })
 }
 
