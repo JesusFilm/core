@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
+// import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { SxProps, styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -246,50 +246,43 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   key={block.id}
                   onClick={() => setShowNavigation(true)}
                 >
-                  {({ isActive }) =>
-                    isActive && (
-                      <ThemeProvider
-                        {...theme}
-                        locale={locale}
-                        rtl={rtl}
-                        nested
-                      >
-                        <Fade
-                          in={activeBlock?.id === block.id}
-                          mountOnEnter
-                          unmountOnExit
-                        >
-                          <Stack
-                            justifyContent="center"
-                            sx={{
-                              maxHeight: {
-                                xs: '100vh',
-                                lg: 'calc(100vh - 80px)'
-                              },
-                              height: {
-                                xs: 'inherit',
-                                lg: 'calc(54.25vw + 102px)'
-                              },
-                              px: { lg: 6 }
-                            }}
-                          >
-                            {showHeaderFooter && (
-                              <StepHeader sx={{ ...mobileNotchStyling }} />
-                            )}
-                            <BlockRenderer block={block} />
-                            <StepFooter
-                              sx={{
-                                visibility: showHeaderFooter
-                                  ? 'visible'
-                                  : 'hidden',
-                                ...mobileNotchStyling
-                              }}
-                            />
-                          </Stack>
-                        </Fade>
-                      </ThemeProvider>
-                    )
-                  }
+                  {/* {({ isActive }) =>
+                    isActive && ( */}
+                  <ThemeProvider {...theme} locale={locale} rtl={rtl} nested>
+                    {/* <Fade
+                      in={activeBlock?.id === block.id}
+                      mountOnEnter
+                      unmountOnExit
+                    > */}
+                    <Stack
+                      justifyContent="center"
+                      sx={{
+                        maxHeight: {
+                          xs: '100vh',
+                          lg: 'calc(100vh - 80px)'
+                        },
+                        height: {
+                          xs: 'inherit',
+                          lg: 'calc(54.25vw + 102px)'
+                        },
+                        px: { lg: 6 }
+                      }}
+                    >
+                      {showHeaderFooter && (
+                        <StepHeader sx={{ ...mobileNotchStyling }} />
+                      )}
+                      <BlockRenderer block={block} />
+                      <StepFooter
+                        sx={{
+                          visibility: showHeaderFooter ? 'visible' : 'hidden',
+                          ...mobileNotchStyling
+                        }}
+                      />
+                    </Stack>
+                    {/* </Fade> */}
+                  </ThemeProvider>
+                  {/* )
+                  } */}
                 </SwiperSlide>
               )
             })}
