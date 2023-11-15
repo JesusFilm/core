@@ -43,7 +43,7 @@ describe('TemplateGallery', () => {
     ).toBeInTheDocument()
     await waitFor(() =>
       expect(
-        getAllByRole('heading', { name: 'All Languages' })[0]
+        getAllByRole('heading', { name: 'English' })[0]
       ).toBeInTheDocument()
     )
     expect(
