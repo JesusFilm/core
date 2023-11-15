@@ -191,6 +191,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }
 
+  const disableTouchMove =
+    isTouchScreenDevice() === 'FALSE' ? true : activeBlock?.locked
+
   return (
     <Box
       sx={{
@@ -217,8 +220,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             centeredSlidesBounds
             resizeObserver
             onSwiper={(swiper) => setSwiper(swiper)}
-            // FIX: swipe backwards when locked
-            // className={activeBlock?.locked && 'swiper-no-swiping'}
+            className={disableTouchMove && 'swiper-no-swiping'}
             allowTouchMove
             onSlideNextTransitionStart={() => {
               nextActiveBlock()
@@ -233,6 +235,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               }
             }}
           >
+            {/* For testing if device has touch screen */}
             <Typography>{isTouchScreenDevice()}</Typography>
             {treeBlocks.map((block) => {
               const theme = getStepTheme(
