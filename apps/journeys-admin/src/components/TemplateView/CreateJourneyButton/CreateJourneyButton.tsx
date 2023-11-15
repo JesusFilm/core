@@ -104,7 +104,7 @@ export function CreateJourneyButton({
         disabled={journey == null}
         data-testid="CreateJourneyButton"
       >
-        {t('Use Template')}
+        {t('Use This Template')}
       </Button>
       <CopyToTeamDialog
         submitLabel="Add"
