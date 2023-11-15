@@ -4,8 +4,6 @@ on:
     branches: [main, stage, feature/*]
   pull_request:
     branches: [main, feature/*]
-  merge_group:
-    branches: [main]
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -131,14 +129,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
-          deployment-id: ${{ steps.deployment.outputs.deployment_id }}         
-      - name: Install Playwright Browsers then create test user if admin 
-        run: |
-          echo "DEPLOYMENT_URL=${{ steps.deployment-url.outputs.deployment-url }}"
-          npx playwright install --with-deps
-          if [[ ${{ steps.deployment-url.outputs.deployment-url }} == *"admin"* ]]; then
-          npx playwright test apps/journeys-admin-e2e/src/test-data/user-creation.spec.ts
-          fi
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
