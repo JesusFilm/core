@@ -166,17 +166,6 @@ export function VideoControls({
     }
   }, [player, setShowNavigation])
 
-  // Handle volume change event
-  useEffect(() => {
-    const initialVolume = player.volume() ?? 0
-    const handleVideoVolumeChange = (): void => setVolume(initialVolume * 100)
-
-    player.on('volumechange', handleVideoVolumeChange)
-    return () => {
-      player.off('volumechange', handleVideoVolumeChange)
-    }
-  }, [player])
-
   // Handle fullscreen change event
   useEffect(() => {
     const handleFullscreenChange = (): void => {
