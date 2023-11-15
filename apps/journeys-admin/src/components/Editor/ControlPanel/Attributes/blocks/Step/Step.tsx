@@ -38,7 +38,7 @@ export function Step({
 
   return (
     <Attribute
-      id={`${id}-next-block`}
+      id={`next-step-${id}`}
       icon={locked ? <Lock1Icon /> : <LockOpen1Icon />}
       name="Next Card"
       value={heading}
@@ -51,6 +51,7 @@ export function Step({
           children: <NextCard />
         })
       }}
+      testId={`Step-${id}`}
     />
   )
 }

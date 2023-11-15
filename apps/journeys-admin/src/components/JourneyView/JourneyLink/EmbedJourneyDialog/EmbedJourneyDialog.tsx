@@ -68,6 +68,7 @@ iframe.style.zIndex="auto"
         closeLabel: 'Cancel'
       }}
       divider={!smUp}
+      testId="EmbedJourneyDialog"
     >
       <Stack
         direction={smUp ? 'row' : 'column'}

@@ -43,6 +43,7 @@ export function Properties({
           borderColor: 'divider',
           borderRadius: 0
         }}
+        data-testid="Properties"
       >
         <Toolbar>
           <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>

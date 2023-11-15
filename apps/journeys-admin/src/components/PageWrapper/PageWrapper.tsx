@@ -62,6 +62,7 @@ export function PageWrapper({
                 : 'calc(100% - 72px)'
           }
         }}
+        data-testid="JourneysAdminPageWrapper"
       >
         {showAppBarMobile ? (
           <Toolbar

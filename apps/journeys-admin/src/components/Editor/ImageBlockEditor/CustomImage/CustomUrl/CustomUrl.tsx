@@ -67,6 +67,7 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
             backgroundColor: 'transparent'
           }
         }}
+        data-testid="CustomURL"
       >
         <LinkIcon />
         <Typography variant="subtitle2" sx={{ pl: 2, pr: 1 }}>

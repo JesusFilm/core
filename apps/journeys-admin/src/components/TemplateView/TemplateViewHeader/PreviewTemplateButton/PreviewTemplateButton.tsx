@@ -27,6 +27,7 @@ export function PreviewTemplateButton({
       disabled={slug == null}
       href={link}
       target="_blank"
+      data-testid="PreviewTemplateButton"
     >
       {t('Preview')}
     </Button>

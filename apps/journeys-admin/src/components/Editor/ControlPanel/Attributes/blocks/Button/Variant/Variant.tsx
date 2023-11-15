@@ -68,6 +68,7 @@ export function Variant(): ReactElement {
       value={selectedBlock?.buttonVariant ?? ButtonVariant.contained}
       onChange={handleChange}
       options={options}
+      testId="Variant"
     />
   )
 }
