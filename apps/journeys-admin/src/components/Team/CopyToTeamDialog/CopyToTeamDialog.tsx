@@ -73,6 +73,7 @@ export function CopyToTeamDialog({
             closeLabel: t('Cancel'),
             submitLabel: submitLabel === 'Add' ? t('Add') : t('Copy')
           }}
+          testId="CopyToTeamDialog"
         >
           <FormControl variant="filled" hiddenLabel fullWidth>
             <TextField

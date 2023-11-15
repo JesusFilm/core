@@ -116,6 +116,7 @@ export function LanguageDialog({
                 onSubmit: handleSubmit,
                 closeLabel: 'Cancel'
               }}
+              testId="LanguageDialog"
             >
               <Form>
                 <LanguageAutocomplete

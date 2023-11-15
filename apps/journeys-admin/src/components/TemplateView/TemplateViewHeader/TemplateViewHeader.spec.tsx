@@ -252,7 +252,7 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(queryByTestId('EditTemplateSettings')).not.toBeInTheDocument()
+    expect(queryByTestId('TemplateEditButton')).not.toBeInTheDocument()
   })
 
   it('should render preview button', () => {

@@ -29,6 +29,7 @@ export function AddJourneyFab(): ReactElement {
         zIndex: 1,
         display: { xs: 'flex', md: 'none' }
       }}
+      data-testid="AddJourneyFab"
     >
       <Plus2Icon sx={{ mr: 3 }} />
       Add

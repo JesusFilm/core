@@ -189,7 +189,12 @@ export function AddByFile({
   const noBorder = error != null || uploading || fileRejected
 
   return (
-    <Stack alignItems="center" gap={1} sx={{ px: 6, py: 3 }}>
+    <Stack
+      alignItems="center"
+      gap={1}
+      sx={{ px: 6, py: 3 }}
+      data-testid="AddByFile"
+    >
       <Box
         data-testid="drop zone"
         sx={{

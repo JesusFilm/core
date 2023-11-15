@@ -48,6 +48,7 @@ function TemplateCardPreviewItem({
         width: { xs: 217, sm: 280 },
         height: { xs: 300, sm: 420 }
       }}
+      data-testid="TemplateCardPreviewItem"
     >
       <Box
         sx={{

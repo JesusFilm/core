@@ -32,6 +32,7 @@ export function SocialImage({
         overflow: 'hidden',
         ...sx
       }}
+      data-testid="SocialImage"
     >
       {journey?.primaryImageBlock?.src != null ? (
         <NextImage

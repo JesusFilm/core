@@ -31,7 +31,7 @@ export function HostList({ hosts, onItemClick }: HostListProps): ReactElement {
   }
 
   return (
-    <List disablePadding>
+    <List disablePadding data-testid="HostList">
       {hosts.map((host) => (
         <HostListItem key={host.id} {...host} onClick={handleClick} />
       ))}

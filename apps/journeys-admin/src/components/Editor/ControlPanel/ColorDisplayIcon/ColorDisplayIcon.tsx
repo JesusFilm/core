@@ -44,6 +44,7 @@ export function ColorDisplayIcon({
       sx={{
         borderRadius: 1000
       }}
+      data-testid="ColorDisplayIcon"
     >
       <ThemeProvider
         themeName={card?.themeName ?? journey?.themeName ?? ThemeName.base}
