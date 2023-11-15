@@ -30,8 +30,12 @@ describe('TemplateFooter', () => {
     expect(
       getByText('Use this template to make it your journey')
     ).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Use Template' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Use Template' })).not.toBeDisabled()
+    expect(
+      getByRole('button', { name: 'Use This Template' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Use This Template' })
+    ).not.toBeDisabled()
   })
 
   it('should disable when loading', () => {
@@ -43,6 +47,6 @@ describe('TemplateFooter', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('button', { name: 'Use Template' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
   })
 })
