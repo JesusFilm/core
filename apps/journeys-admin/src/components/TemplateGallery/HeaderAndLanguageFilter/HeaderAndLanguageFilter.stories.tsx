@@ -92,19 +92,6 @@ export const Default = {
   }
 }
 
-export const Selected = {
-  ...Template,
-  args: {
-    selectedLanguageIds: ['529'],
-    onChange: noop
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [getLanguagesMock]
-    }
-  }
-}
-
 export const Loading = {
   ...Template,
   args: {
