@@ -49,7 +49,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "options": {
         "lintFilePatterns": ["apps/docs/**/*.{ts,tsx,js,jsx}"]
       },

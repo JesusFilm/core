@@ -84,6 +84,10 @@ export function VideoControls({
   // Handle play event
   useEffect(() => {
     const handleVideoPlay = (): void => {
+      // Always mute first video
+      if (player.muted()) {
+        setMuted(true)
+      }
       setPlaying(true)
       const currentTime = player.currentTime() ?? 0
       if (startAt > 0 && currentTime < startAt) {
@@ -251,6 +255,7 @@ export function VideoControls({
   function handleVolume(e: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       player.muted(false)
+      setMuted(false)
       setVolume(value)
       player.volume(value / 100)
     }
@@ -312,6 +317,7 @@ export function VideoControls({
         }
         player.userActive(true)
       }}
+      data-testid="JourneysVideoControls"
     >
       <Fade
         in={visible}

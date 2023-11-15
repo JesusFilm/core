@@ -18,6 +18,7 @@ export interface HorizontalSelectProps {
   sx?: SxProps<Theme>
   footer?: ReactNode
   isDragging?: boolean
+  testId?: string
 }
 
 export function HorizontalSelect({
@@ -26,7 +27,8 @@ export function HorizontalSelect({
   onChange,
   sx,
   footer,
-  isDragging
+  isDragging,
+  testId
 }: HorizontalSelectProps): ReactElement {
   const selectedRef = useRef<HTMLElement>(null)
 
@@ -42,7 +44,7 @@ export function HorizontalSelect({
   return (
     <Stack
       direction="row"
-      data-testid="horizontal-select"
+      data-testid={testId}
       spacing={1}
       sx={{
         overflowX: 'auto',

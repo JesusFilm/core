@@ -1,9 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
-import MenuRounded from '@mui/icons-material/MenuRounded'
 import IconButton from '@mui/material/IconButton'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
+
+import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import { Role } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
@@ -80,7 +81,7 @@ export const Complete = {
       backHref: '/',
       showDrawer: true,
       title: 'Journey Details',
-      authUser: {
+      user: {
         displayName: 'Amin One',
         photoURL: 'https://bit.ly/3Gth4Yf',
         email: 'amin@email.com',
@@ -88,7 +89,7 @@ export const Complete = {
       },
       menu: (
         <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
-          <MenuRounded />
+          <Menu1Icon />
         </IconButton>
       )
     }

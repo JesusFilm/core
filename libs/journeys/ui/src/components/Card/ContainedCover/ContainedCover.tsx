@@ -74,7 +74,8 @@ export function ContainedCover({
   const contentRef = useRef() as RefObject<HTMLDivElement>
 
   const posterImage =
-    videoBlock?.source !== VideoBlockSource.youTube
+    videoBlock?.source !== VideoBlockSource.youTube &&
+    videoBlock?.source !== VideoBlockSource.cloudflare
       ? // Use posterBlockId image or default poster image on video
         videoBlock?.posterBlockId != null
         ? (
@@ -85,7 +86,7 @@ export function ContainedCover({
             ) as TreeBlock<ImageFields>
           ).src
         : videoBlock?.video?.image
-      : // Use Youtube set poster image
+      : // Use Youtube or Cloudflare set poster image
         videoBlock?.image
 
   useEffect(() => {
@@ -104,7 +105,7 @@ export function ContainedCover({
   return (
     <>
       <Box
-        data-testid="ContainedCover"
+        data-testid="CardContainedCover"
         sx={{
           width: '100%',
           height: '100%',
@@ -166,7 +167,7 @@ export function ContainedCover({
       </Box>
       {/* Background image, after overlay-content-container temp fix embed render bug */}
       <Box
-        data-testid="overlay-image-container"
+        data-testid="CardOverlayImageContainer"
         sx={{
           width: '100%',
           height: hasFullscreenVideo ? undefined : '100%',
@@ -191,7 +192,7 @@ export function ContainedCover({
         )}
       </Box>
       <Stack
-        data-testid="overlay-content-container"
+        data-testid="CardOverlayContentContainer"
         sx={{
           position: 'relative',
           zIndex: 1,

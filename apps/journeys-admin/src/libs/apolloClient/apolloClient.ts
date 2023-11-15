@@ -4,6 +4,7 @@ import {
   createHttpLink
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
+import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { useMemo } from 'react'
 
@@ -20,7 +21,7 @@ export function createApolloClient(
   const authLink = setContext(async (_, { headers }) => {
     const firebaseToken = isSsrMode
       ? token
-      : (await getAuth().currentUser?.getIdToken()) ?? token
+      : (await getAuth(getApp()).currentUser?.getIdToken()) ?? token
 
     return {
       headers: {
@@ -35,7 +36,8 @@ export function createApolloClient(
     link: authLink.concat(httpLink),
     cache: cache(),
     name: 'journeys-admin',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
+    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
+    connectToDevTools: true
   })
 }
 

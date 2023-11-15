@@ -1,4 +1,3 @@
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import AppBar from '@mui/material/AppBar'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
@@ -7,6 +6,8 @@ import Box from '@mui/system/Box'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
+
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
@@ -34,6 +35,7 @@ export function MainPanelHeader({
           position: { xs: 'fixed', md: 'sticky' },
           top: { xs: toolbar.height, md: 0 }
         }}
+        data-testid="MainPanelHeader"
       >
         <Toolbar variant={toolbar.variant}>
           {backHrefHistory === true ? (
@@ -45,7 +47,7 @@ export function MainPanelHeader({
                 color="inherit"
                 sx={{ mr: 2 }}
               >
-                <ChevronLeftRounded />
+                <ChevronLeftIcon />
               </IconButton>
             </Box>
           ) : (
@@ -57,7 +59,7 @@ export function MainPanelHeader({
                   color="inherit"
                   sx={{ mr: 2 }}
                 >
-                  <ChevronLeftRounded />
+                  <ChevronLeftIcon />
                 </IconButton>
               </NextLink>
             )

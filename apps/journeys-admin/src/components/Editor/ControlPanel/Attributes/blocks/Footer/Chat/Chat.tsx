@@ -1,10 +1,10 @@
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
 
@@ -75,7 +75,7 @@ export function Chat(): ReactElement {
           mt: 5
         }}
       >
-        <InfoOutlinedIcon sx={{ mr: 3 }} />
+        <InformationCircleContainedIcon sx={{ mr: 3 }} />
         <Typography variant="caption">
           {t('You can add no more than two chat platforms')}
         </Typography>

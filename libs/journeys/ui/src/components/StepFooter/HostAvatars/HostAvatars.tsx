@@ -3,7 +3,7 @@ import AvatarGroup from '@mui/material/AvatarGroup'
 import { ReactElement } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import UserProfile3 from '@core/shared/ui/icons/UserProfile3'
+import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
@@ -30,7 +30,7 @@ export function HostAvatars({
   return (
     <AvatarGroup
       spacing={size === 'small' ? (rtl ? 0 : 12) : 24}
-      data-testid="host-avatars"
+      data-testid="StepFooterHostAvatars"
       sx={{
         '.MuiAvatar-root': {
           borderWidth: '1px',
@@ -75,14 +75,9 @@ export function HostAvatars({
               }
             }}
           >
-            <UserProfile3
+            <UserProfile3Icon
               data-testid="host-avatar-placeholder"
-              sx={{
-                pr: rtl ? '4px' : '0px',
-                pl: rtl ? '0px' : '4px',
-                pt: '4px',
-                color: (theme) => theme.palette.grey[700]
-              }}
+              sx={{ color: (theme) => theme.palette.grey[700] }}
             />
           </Avatar>
         )}
@@ -102,14 +97,9 @@ export function HostAvatars({
               }
             }}
           >
-            <UserProfile3
+            <UserProfile3Icon
               data-testid="host-avatar-placeholder-solid"
-              sx={{
-                pr: rtl ? '4px' : '0px',
-                pl: rtl ? '0px' : '4px',
-                pt: '4px',
-                color: (theme) => theme.palette.grey[700]
-              }}
+              sx={{ color: (theme) => theme.palette.grey[700] }}
             />
           </Avatar>
         )}

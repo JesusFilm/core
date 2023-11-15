@@ -1,11 +1,12 @@
 import { gql, useMutation } from '@apollo/client'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Checkbox from '@mui/material/Checkbox'
 import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
 import { ChangeEvent, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonCreate } from '../../../../../../../../../../__generated__/JourneyChatButtonCreate'
@@ -32,7 +33,7 @@ export const JOURNEY_CHAT_BUTTON_REMOVE = gql`
   }
 `
 
-interface Props {
+interface SummaryProps {
   title: string
   active: boolean
   disableSelection: boolean
@@ -52,7 +53,7 @@ export function Summary({
   currentPlatform,
   chatButtonId,
   openAccordion
-}: Props): ReactElement {
+}: SummaryProps): ReactElement {
   const [journeyChatButtonCreate, { loading: createLoading }] =
     useMutation<JourneyChatButtonCreate>(JOURNEY_CHAT_BUTTON_CREATE)
   const [journeyChatButtonRemove, { loading: removeLoading }] =
@@ -141,7 +142,11 @@ export function Summary({
   }
 
   return (
-    <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 6, py: 2 }}>
+    <AccordionSummary
+      expandIcon={<ChevronDownIcon />}
+      sx={{ px: 6, py: 2 }}
+      data-testid="ChatOptionSummary"
+    >
       <Checkbox
         data-testid={`checkbox-${currentPlatform as string}`}
         checked={active}

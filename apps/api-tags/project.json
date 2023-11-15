@@ -56,7 +56,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/api-tags/**/*.ts"]
@@ -117,7 +117,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma reset --schema apps/api-tags/db/schema.prisma --force"
+          "npx prisma migrate reset --schema apps/api-tags/db/schema.prisma --force"
         ]
       }
     },

@@ -1,5 +1,3 @@
-import AddIcon from '@mui/icons-material/Add'
-import DragHandleRounded from '@mui/icons-material/DragHandleRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -21,23 +19,27 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import Target from '@core/shared/ui/icons/Target'
-import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+import DragIcon from '@core/shared/ui/icons/Drag'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
+import TargetIcon from '@core/shared/ui/icons/Target'
+import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import {
   Role,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { useSocialPreview } from '../../Editor/SocialProvider'
 import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
+
+import { CardWrapper } from './CardWrapper'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -94,7 +96,7 @@ export function CardList({
           }}
           onClick={handleClick}
         >
-          <AddIcon color="primary" />
+          <Plus2Icon color="primary" />
         </CardActionArea>
       </Card>
     )
@@ -113,12 +115,12 @@ export function CardList({
       id={selectedId}
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
+      testId="CardList"
     >
       {showNavigation === true && (
         <NavigationCard
           key="goals"
           id="goals"
-          testId="goals-navigation-card"
           title="Goals"
           destination={ActiveJourneyEditContent.Action}
           header={
@@ -131,7 +133,7 @@ export function CardList({
               justifyContent="center"
               alignItems="center"
             >
-              <Target color="error" />
+              <TargetIcon color="error" />
             </Box>
           }
           loading={journey == null}
@@ -151,7 +153,6 @@ export function CardList({
         <NavigationCard
           key="social"
           id="social"
-          testId="social-preview-navigation-card"
           title="Social Media"
           destination={ActiveJourneyEditContent.SocialPreview}
           header={
@@ -165,7 +166,7 @@ export function CardList({
                 justifyContent="center"
                 alignItems="center"
               >
-                <ThumbsUp color="error" />
+                <ThumbsUpIcon color="error" />
               </Box>
             ) : (
               <Image
@@ -231,13 +232,16 @@ const CardItem = ({
 }: CardItemProps): ReactElement => {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
+  const cardBlock = step.children.find(
+    (child) => child.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
 
   return (
     <Box
       ref={provided != null ? provided.innerRef : null}
       id={id}
       key={id}
-      data-testid={`preview-${id}`}
+      data-testid={`CardItem-${id}`}
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -258,7 +262,7 @@ const CardItem = ({
             justifyContent: 'center'
           }}
         >
-          <DragHandleRounded
+          <DragIcon
             sx={{
               opacity: snapshot.isDragging === true ? 1 : 0.5
             }}
@@ -283,8 +287,8 @@ const CardItem = ({
         />
         <FramePortal width={380} height={560} dir={rtl ? 'rtl' : 'ltr'}>
           <ThemeProvider
-            themeName={journey?.themeName ?? ThemeName.base}
-            themeMode={journey?.themeMode ?? ThemeMode.light}
+            themeName={cardBlock?.themeName ?? ThemeName.base}
+            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
             rtl={rtl}
             locale={locale}
           >

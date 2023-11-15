@@ -21,7 +21,7 @@ import { SlugDialog } from './JourneyLink/SlugDialog'
 import { JourneyViewFab } from './JourneyViewFab'
 import { Properties } from './Properties'
 import { SocialImage } from './SocialImage'
-import { TitleDescription } from './TitleDescription'
+import { TemplateSettings } from './TemplateSettings'
 
 export type JourneyType = 'Journey' | 'Template'
 
@@ -43,7 +43,10 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
 
   return (
-    <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
+    <Box
+      sx={{ mr: { sm: '328px' }, mb: '80px' }}
+      data-testid="JourneysAdminJourneyView"
+    >
       <Box
         sx={{
           p: { xs: 6, sm: 8 },
@@ -73,7 +76,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
           }}
         >
           {journeyType === 'Template' && <DatePreview />}
-          <TitleDescription isPublisher={isPublisher} />
+          <TemplateSettings isPublisher={isPublisher} />
         </Stack>
       </Box>
       <Properties journeyType={journeyType} isPublisher={isPublisher} />

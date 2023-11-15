@@ -56,12 +56,32 @@ export interface GetJourneys_journeys_primaryImageBlock {
   blurhash: string;
 }
 
+export interface GetJourneys_journeys_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetJourneys_journeys_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: GetJourneys_journeys_tags_name_language;
+  primary: boolean;
+}
+
+export interface GetJourneys_journeys_tags {
+  __typename: "Tag";
+  id: string;
+  parentId: string | null;
+  name: GetJourneys_journeys_tags_name[];
+}
+
 export interface GetJourneys_journeys {
   __typename: "Journey";
   id: string;
   title: string;
   createdAt: any;
   publishedAt: any | null;
+  featuredAt: any | null;
   trashedAt: any | null;
   description: string | null;
   slug: string;
@@ -74,6 +94,7 @@ export interface GetJourneys_journeys {
   template: boolean | null;
   userJourneys: GetJourneys_journeys_userJourneys[] | null;
   primaryImageBlock: GetJourneys_journeys_primaryImageBlock | null;
+  tags: GetJourneys_journeys_tags[];
 }
 
 export interface GetJourneys {

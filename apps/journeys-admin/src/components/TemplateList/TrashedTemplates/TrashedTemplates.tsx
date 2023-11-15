@@ -22,7 +22,7 @@ import { TemplateCard } from '../../TemplateCard'
 export function TrashedTemplates({
   sortOrder,
   event
-}: Omit<JourneyListProps, 'authUser'>): ReactElement {
+}: Omit<JourneyListProps, 'user'>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({

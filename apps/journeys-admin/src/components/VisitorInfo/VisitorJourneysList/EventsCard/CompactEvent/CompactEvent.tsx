@@ -6,12 +6,15 @@ import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import { ReactElement } from 'react'
 
-interface Props {
+interface CompactEventProps {
   value: string
   handleClick: () => void
 }
 
-export function CompactEvent({ value, handleClick }: Props): ReactElement {
+export function CompactEvent({
+  value,
+  handleClick
+}: CompactEventProps): ReactElement {
   return (
     <TimelineItem
       sx={{
@@ -21,6 +24,7 @@ export function CompactEvent({ value, handleClick }: Props): ReactElement {
           flex: 0
         }
       }}
+      data-testid="CompactEvent"
     >
       <TimelineSeparator sx={{ ml: '41px', mr: '26px' }}>
         <TimelineConnector sx={{ flexGrow: '2' }} />

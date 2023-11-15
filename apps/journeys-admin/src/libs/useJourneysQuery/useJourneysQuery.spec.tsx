@@ -31,6 +31,11 @@ describe('useJourneysQuery', () => {
                   __typename: 'Translation',
                   value: 'English',
                   primary: true
+                },
+                {
+                  __typename: 'Translation',
+                  value: 'English',
+                  primary: false
                 }
               ]
             },
@@ -39,6 +44,7 @@ describe('useJourneysQuery', () => {
             status: JourneyStatus.draft,
             seoTitle: null,
             seoDescription: null,
+            tags: [],
             userJourneys: [
               {
                 __typename: 'UserJourney',
@@ -62,8 +68,10 @@ describe('useJourneysQuery', () => {
     renderHook(
       () =>
         useJourneysQuery({
-          where: {
-            template: true
+          variables: {
+            where: {
+              template: true
+            }
           }
         }),
       {

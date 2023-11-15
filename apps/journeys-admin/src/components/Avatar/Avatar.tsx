@@ -5,23 +5,23 @@ import Tooltip from '@mui/material/Tooltip'
 import compact from 'lodash/compact'
 import { ReactElement } from 'react'
 
-import { GetAdminJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetAdminJourneys'
+import { GetAdminJourneys_journeys_userJourneys_user as ApiUser } from '../../../__generated__/GetAdminJourneys'
 
 export interface AvatarProps {
-  user: User
+  apiUser: ApiUser
   notification?: boolean
   sx?: SxProps
 }
 
 export function Avatar({
-  user,
+  apiUser,
   notification = false,
   sx
 }: AvatarProps): ReactElement {
-  const displayName = compact([user.firstName, user.lastName]).join(' ')
+  const displayName = compact([apiUser.firstName, apiUser.lastName]).join(' ')
 
   return (
-    <Tooltip title={displayName}>
+    <Tooltip title={displayName} data-testid="JourneysAdminAvatar">
       <Badge
         invisible={!notification}
         color="warning"
@@ -36,7 +36,7 @@ export function Avatar({
       >
         <MuiAvatar
           alt={displayName}
-          src={user.imageUrl ?? undefined}
+          src={apiUser.imageUrl ?? undefined}
           data-testid="avatar"
           sx={{
             ...sx,

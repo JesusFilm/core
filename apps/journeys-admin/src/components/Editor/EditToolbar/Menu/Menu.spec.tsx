@@ -18,6 +18,11 @@ import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('EditToolbar Menu', () => {
   it('should disable duplicate button when video block is selected', async () => {
     const { getByRole } = render(
@@ -26,7 +31,8 @@ describe('EditToolbar Menu', () => {
           <JourneyProvider
             value={{
               journey: {
-                status: JourneyStatus.draft
+                status: JourneyStatus.draft,
+                tags: []
               } as unknown as Journey,
               variant: 'admin'
             }}
@@ -68,7 +74,8 @@ describe('EditToolbar Menu', () => {
             value={{
               journey: {
                 id: 'journeyId',
-                slug: 'my-journey'
+                slug: 'my-journey',
+                tags: []
               } as unknown as Journey
             }}
           >
@@ -85,13 +92,10 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Duplicate Card' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Journey Settings' })
-    ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -129,7 +133,8 @@ describe('EditToolbar Menu', () => {
             value={{
               journey: {
                 id: 'journeyId',
-                slug: 'my-journey'
+                slug: 'my-journey',
+                tags: []
               } as unknown as Journey
             }}
           >
@@ -146,9 +151,6 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Duplicate Card' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Journey Settings' })
-    ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
@@ -157,7 +159,7 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Create Template' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -196,7 +198,8 @@ describe('EditToolbar Menu', () => {
               journey: {
                 id: 'journeyId',
                 slug: 'my-journey',
-                template: true
+                template: true,
+                tags: []
               } as unknown as Journey
             }}
           >
@@ -214,13 +217,13 @@ describe('EditToolbar Menu', () => {
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
     expect(
-      getByRole('menuitem', { name: 'Publisher Settings' })
+      getByRole('menuitem', { name: 'Template Settings' })
     ).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
     })
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -243,7 +246,8 @@ describe('EditToolbar Menu', () => {
           <JourneyProvider
             value={{
               journey: {
-                status: JourneyStatus.draft
+                status: JourneyStatus.draft,
+                tags: []
               } as unknown as Journey,
               variant: 'admin'
             }}
@@ -255,7 +259,7 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(getByTestId('MoreVertIcon'))
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
     fireEvent.click(getByRole('button'))
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
@@ -279,7 +283,8 @@ describe('EditToolbar Menu', () => {
           <JourneyProvider
             value={{
               journey: {
-                status: JourneyStatus.draft
+                status: JourneyStatus.draft,
+                tags: []
               } as unknown as Journey,
               variant: 'admin'
             }}
@@ -291,14 +296,14 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(getByTestId('MoreVertIcon'))
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
     fireEvent.click(getByRole('button'))
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
   })
 
-  it('should link back to journey on click', () => {
+  it('should open templates dialog', () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'stepId',
@@ -309,45 +314,7 @@ describe('EditToolbar Menu', () => {
       children: []
     }
 
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journeyId',
-                slug: 'my-journey'
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock }}>
-              <Menu />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Journey Settings' })).toHaveAttribute(
-      'href',
-      '/journeys/journeyId'
-    )
-  })
-
-  it('should link back to publisher page on click', () => {
-    const selectedBlock: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'stepId',
-      parentBlockId: 'journeyId',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
-
-    const { getByRole } = render(
+    const { getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -355,7 +322,8 @@ describe('EditToolbar Menu', () => {
               journey: {
                 id: 'journeyId',
                 slug: 'my-journey',
-                template: true
+                template: true,
+                tags: []
               } as unknown as Journey,
               variant: 'admin'
             }}
@@ -367,11 +335,14 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-
-    fireEvent.click(getByRole('button'))
     expect(
-      getByRole('menuitem', { name: 'Publisher Settings' })
-    ).toHaveAttribute('href', '/publisher/journeyId')
+      queryByRole('dialog', { name: 'Template Settings' })
+    ).not.toBeInTheDocument()
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Template Settings' }))
+    expect(
+      getByRole('dialog', { name: 'Template Settings' })
+    ).toBeInTheDocument()
   })
 
   it('should handle edit journey title', () => {
@@ -382,7 +353,8 @@ describe('EditToolbar Menu', () => {
             value={{
               journey: {
                 id: 'journeyId',
-                slug: 'my-journey'
+                slug: 'my-journey',
+                tags: []
               } as unknown as Journey
             }}
           >
@@ -409,7 +381,8 @@ describe('EditToolbar Menu', () => {
             value={{
               journey: {
                 id: 'journeyId',
-                slug: 'my-journey'
+                slug: 'my-journey',
+                tags: []
               } as unknown as Journey
             }}
           >
@@ -454,7 +427,8 @@ describe('EditToolbar Menu', () => {
               journey: {
                 id: 'journeyId',
                 slug: 'my-journey',
-                template: true
+                template: true,
+                tags: []
               } as unknown as Journey
             }}
           >

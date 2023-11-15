@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
 interface HostLocationFieldFormProps {
@@ -14,7 +14,7 @@ export function HostLocationFieldForm({
   empty = false,
   disabled
 }: HostLocationFieldFormProps): ReactElement {
-  const { updateHost } = useHostUpdate()
+  const { updateHost } = useHostUpdateMutation()
   const { journey } = useJourney()
   const host = journey?.host
 
@@ -32,6 +32,7 @@ export function HostLocationFieldForm({
       disabled={disabled}
       initialValue={empty ? undefined : host?.location ?? ''}
       onSubmit={handleSubmit}
+      data-testid="HostLocationFieldForm"
     />
   )
 }

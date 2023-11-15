@@ -1,10 +1,10 @@
-import EditRoundedIcon from '@mui/icons-material/EditRounded'
-import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
@@ -28,7 +28,7 @@ export function SourceFromCloudflare({
             }/thumbnails/thumbnail.jpg?time=2s&height=55&width=55`,
             alt: selectedBlock.title ?? ''
           }}
-          Icon={VideocamRoundedIcon}
+          Icon={VideoOnIcon}
         />
       </Box>
       <Box flexGrow={1} minWidth={0}>
@@ -54,7 +54,7 @@ export function SourceFromCloudflare({
           Custom Video &nbsp;
         </Typography>
       </Box>
-      <EditRoundedIcon color="primary" />
+      <Edit2Icon color="primary" />
     </>
   )
 }

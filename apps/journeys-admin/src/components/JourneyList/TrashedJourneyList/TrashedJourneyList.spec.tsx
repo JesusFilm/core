@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
@@ -293,7 +293,7 @@ describe('TrashedJourneyList', () => {
             <SnackbarProvider>
               <TrashedJourneyList
                 event="restoreAllTrashed"
-                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
             {/* </TeamProvider> */}
@@ -332,7 +332,7 @@ describe('TrashedJourneyList', () => {
               <SnackbarProvider>
                 <TrashedJourneyList
                   event="restoreAllTrashed"
-                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                  user={{ id: 'user-id1' } as unknown as User}
                 />
               </SnackbarProvider>
             </ThemeProvider>
@@ -399,7 +399,7 @@ describe('TrashedJourneyList', () => {
             <SnackbarProvider>
               <TrashedJourneyList
                 event="deleteAllTrashed"
-                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
             {/* </TeamProvider> */}
@@ -438,7 +438,7 @@ describe('TrashedJourneyList', () => {
                 <SnackbarProvider>
                   <TrashedJourneyList
                     event="deleteAllTrashed"
-                    authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                    user={{ id: 'user-id1' } as unknown as User}
                   />
                 </SnackbarProvider>
               </TeamProvider>

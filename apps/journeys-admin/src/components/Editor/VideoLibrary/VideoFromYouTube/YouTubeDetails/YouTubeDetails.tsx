@@ -1,4 +1,3 @@
-import Check from '@mui/icons-material/Check'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -9,6 +8,9 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
+
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { parseISO8601Duration } from '../../../../../libs/parseISO8601Duration'
@@ -64,6 +66,7 @@ export function YouTubeDetails({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
         fluid: true,
         controls: true,
         poster: data?.snippet?.thumbnails?.default?.url ?? undefined
@@ -77,7 +80,7 @@ export function YouTubeDetails({
   const loading = data == null && error == null
 
   return (
-    <Stack spacing={4} sx={{ p: 6 }}>
+    <Stack spacing={4} sx={{ p: 6 }} data-testid="YoutubeDetails">
       {loading ? (
         <>
           <Skeleton variant="rectangular" width="100%" sx={{ borderRadius: 2 }}>
@@ -147,7 +150,7 @@ export function YouTubeDetails({
       >
         <Button
           variant="contained"
-          startIcon={<Check />}
+          startIcon={<CheckIcon />}
           onClick={handleSelect}
           size="small"
           disabled={loading}

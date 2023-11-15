@@ -23,13 +23,17 @@ const StyledIconButton = styled(IconButton)<
   m: 2
 }))
 
-interface Props {
+interface ShareDialogProps {
   url?: string
   open: boolean
   closeDialog: () => void
 }
 
-export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
+export function ShareDialog({
+  url,
+  open,
+  closeDialog
+}: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -58,6 +62,7 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
         closeButton: true
       }}
       container={element}
+      testId="ShareDialog"
     >
       <Stack direction="row" justifyContent="space-around">
         <Stack

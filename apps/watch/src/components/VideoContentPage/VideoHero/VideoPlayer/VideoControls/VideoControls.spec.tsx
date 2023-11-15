@@ -9,6 +9,8 @@ import {
 import fscreen from 'fscreen'
 import videojs from 'video.js'
 
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+
 import { VideoProvider } from '../../../../../libs/videoContext'
 import { videos } from '../../../../Videos/__generated__/testData'
 
@@ -30,6 +32,7 @@ describe('VideoControls', () => {
     const video = document.createElement('video')
     document.body.appendChild(video)
     player = videojs(video, {
+      ...defaultVideoJsOptions,
       autoplay: false,
       controls: true,
       userActions: {

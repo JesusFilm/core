@@ -1,20 +1,38 @@
-import ImageIcon from '@mui/icons-material/Image'
-import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
+import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
-export function SocialImage(): ReactElement {
+interface SocialImageProps {
+  height?: ComponentProps<typeof Stack>['height']
+  width?: ComponentProps<typeof Stack>['width']
+  sx?: SxProps
+}
+
+export function SocialImage({
+  height = 167,
+  width = 213,
+  sx
+}: SocialImageProps): ReactElement {
   const { journey } = useJourney()
 
   return (
-    <Box
+    <Stack
+      width={width}
+      height={height}
       sx={{
-        display: 'flex',
+        position: 'relative',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: 'background.default',
+        overflow: 'hidden',
+        ...sx
       }}
+      data-testid="SocialImage"
     >
       {journey?.primaryImageBlock?.src != null ? (
         <NextImage
@@ -22,28 +40,18 @@ export function SocialImage(): ReactElement {
           alt={journey?.primaryImageBlock.alt}
           placeholder="blur"
           blurDataURL={journey?.primaryImageBlock.blurhash}
-          width={213}
-          height={167}
+          layout="fill"
           objectFit="cover"
-          style={{
-            borderRadius: 12
-          }}
         />
+      ) : journey != null ? (
+        <GridEmptyIcon fontSize="large" />
       ) : (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 3,
-            width: 213,
-            height: 167,
-            backgroundColor: 'background.default'
-          }}
-        >
-          {journey != null ? <ImageIcon fontSize="large" /> : <></>}
-        </Box>
+        <Skeleton
+          data-testid="SocialImageSkeleton"
+          variant="rectangular"
+          sx={{ width: '100%', height: '100%' }}
+        />
       )}
-    </Box>
+    </Stack>
   )
 }

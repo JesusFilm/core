@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import take from 'lodash/take'
 import { ReactElement } from 'react'
 
-import UserProfileAdd from '@core/shared/ui/icons/UserProfileAdd'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeam } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { Avatar } from '../../Avatar'
@@ -26,6 +26,7 @@ export function TeamAvatars({
       sx={{
         cursor: onClick != null ? 'pointer' : 'default'
       }}
+      data-testid="TeamAvatars"
     >
       <AvatarGroup
         sx={{
@@ -49,7 +50,7 @@ export function TeamAvatars({
           }}
         >
           {take(userTeams, 5).map(({ user }) => (
-            <Avatar key={user.id} user={user} />
+            <Avatar key={user.id} apiUser={user} />
           ))}
         </AvatarGroup>
         {onClick != null && (
@@ -59,7 +60,7 @@ export function TeamAvatars({
               backgroundColor: 'secondary.contrastText'
             }}
           >
-            <UserProfileAdd sx={{ color: 'secondary.light', width: '18px' }} />
+            <Plus2Icon sx={{ color: 'secondary.light', width: '18px' }} />
           </MuiAvatar>
         )}
       </AvatarGroup>

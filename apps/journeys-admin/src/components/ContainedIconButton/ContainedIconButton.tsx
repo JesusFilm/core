@@ -1,4 +1,3 @@
-import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -6,6 +5,8 @@ import Icon from '@mui/material/Icon'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
+
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { ImageThumbnail } from '../ImageThumbnail'
 
@@ -23,7 +24,7 @@ interface ContainedIconProps {
 
 export function ContainedIconButton({
   thumbnailIcon,
-  actionIcon = <AddIcon />,
+  actionIcon = <Plus2Icon />,
   label,
   description,
   imageSrc,
@@ -33,7 +34,11 @@ export function ContainedIconButton({
   onClick
 }: ContainedIconProps): ReactElement {
   return (
-    <Card variant="outlined" sx={{ borderRadius: 2 }}>
+    <Card
+      variant="outlined"
+      sx={{ borderRadius: 2 }}
+      data-testid="JourneysAdminContainedIconButton"
+    >
       <CardActionArea onClick={onClick} disabled={disabled || loading}>
         <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
           <Box>

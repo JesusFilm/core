@@ -32,6 +32,8 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
+  strategySlug: null,
+  featuredAt: null,
   language: {
     __typename: 'Language',
     id: '529',
@@ -51,13 +53,16 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 const Template: StoryObj<typeof Action> = {
@@ -163,14 +168,6 @@ export const NavigateToBlockAction = {
   args: {
     steps,
     selectedBlock: steps[4].children[0].children[4]
-  }
-}
-
-export const NavigateToJourneyAction = {
-  ...Template,
-  args: {
-    steps,
-    selectedBlock: steps[0].children[0].children[3]
   }
 }
 

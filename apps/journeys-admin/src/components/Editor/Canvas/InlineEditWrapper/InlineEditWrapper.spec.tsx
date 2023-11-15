@@ -22,6 +22,11 @@ import { SelectableWrapper } from '../SelectableWrapper'
 
 import { InlineEditWrapper } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
@@ -89,7 +94,7 @@ describe('InlineEditWrapper', () => {
 
     fireEvent.click(getByText('test content'))
     fireEvent.click(getByText('test content'))
-    expect(getByTestId(`selected-${typographyBlock.id}`)).toHaveStyle({
+    expect(getByTestId(`SelectableWrapper-${typographyBlock.id}`)).toHaveStyle({
       outline: '2px solid #C52D3A',
       zIndex: '1'
     })
@@ -135,7 +140,7 @@ describe('InlineEditWrapper', () => {
 
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
-    expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
+    expect(getByTestId(`SelectableWrapper-${block.id}`)).toHaveStyle({
       outline: '2px solid #C52D3A',
       zIndex: '1'
     })
@@ -177,7 +182,7 @@ describe('InlineEditWrapper', () => {
 
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
-    expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
+    expect(getByTestId(`SelectableWrapper-${block.id}`)).toHaveStyle({
       outline: '2px solid #C52D3A',
       zIndex: '1'
     })
@@ -221,7 +226,7 @@ describe('InlineEditWrapper', () => {
 
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
-    expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
+    expect(getByTestId(`SelectableWrapper-${block.id}`)).toHaveStyle({
       outline: '2px solid #C52D3A',
       zIndex: '1'
     })
@@ -283,7 +288,7 @@ describe('InlineEditWrapper', () => {
 
       // Select RadioQuestion
       await waitFor(() => fireEvent.click(getByText('option')))
-      expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
+      expect(getByTestId(`SelectableWrapper-${block.id}`)).toHaveStyle({
         outline: '2px solid #C52D3A',
         zIndex: '1'
       })
@@ -305,7 +310,7 @@ describe('InlineEditWrapper', () => {
         </MockedProvider>
       )
       fireEvent.click(getByText('option'))
-      expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
+      expect(getByTestId(`SelectableWrapper-${option.id}`)).toHaveStyle({
         outline: '2px solid #C52D3A',
         zIndex: '1'
       })
@@ -331,7 +336,7 @@ describe('InlineEditWrapper', () => {
       )
       fireEvent.click(getByText('option'))
       fireEvent.click(getByText('option'))
-      expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
+      expect(getByTestId(`SelectableWrapper-${option.id}`)).toHaveStyle({
         outline: '2px solid #C52D3A',
         zIndex: '1'
       })

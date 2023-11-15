@@ -1,6 +1,7 @@
-import AddRounded from '@mui/icons-material/AddRounded'
 import Fab from '@mui/material/Fab'
 import { ReactElement } from 'react'
+
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { usePage } from '../../../libs/PageWrapperProvider'
 
@@ -28,8 +29,9 @@ export function AddJourneyFab(): ReactElement {
         zIndex: 1,
         display: { xs: 'flex', md: 'none' }
       }}
+      data-testid="AddJourneyFab"
     >
-      <AddRounded sx={{ mr: 3 }} />
+      <Plus2Icon sx={{ mr: 3 }} />
       Add
     </Fab>
   )

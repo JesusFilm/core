@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
@@ -45,7 +45,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     expect(getAllByRole('button')[0]).toContainElement(
-      getByTestId('ChevronLeftRoundedIcon')
+      getByTestId('ChevronLeftIcon')
     )
     expect(getByText('Discover')).toBeInTheDocument()
   })
@@ -89,20 +89,20 @@ describe('NavigationDrawer', () => {
           <NavigationDrawer
             open
             onClose={onClose}
-            authUser={
+            user={
               {
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
                 signOut
-              } as unknown as AuthUser
+              } as unknown as User
             }
           />
         </FlagsProvider>
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
-    expect(getByText('Reports')).toBeInTheDocument()
+    expect(getByText('Analytics')).toBeInTheDocument()
     await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
   })
 
@@ -116,7 +116,7 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
-    expect(getByTestId('Templates-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemTemplates')).toHaveAttribute(
       'aria-selected',
       'true'
     )
@@ -134,7 +134,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('Reports-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemAnalytics')).toHaveAttribute(
       'aria-selected',
       'true'
     )
@@ -148,7 +148,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(queryByText('Reports')).not.toBeInTheDocument()
+    expect(queryByText('Analytics')).not.toBeInTheDocument()
   })
 
   it('should select publisher button', async () => {
@@ -193,19 +193,19 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer
           open
           onClose={onClose}
-          authUser={
+          user={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
               signOut
-            } as unknown as AuthUser
+            } as unknown as User
           }
         />
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByTestId('Publisher-list-item')).toHaveAttribute(
+      expect(getByTestId('NavigationListItemPublisher')).toHaveAttribute(
         'aria-selected',
         'true'
       )
@@ -250,13 +250,13 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer
           open
           onClose={onClose}
-          authUser={
+          user={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
               signOut
-            } as unknown as AuthUser
+            } as unknown as User
           }
         />
       </MockedProvider>
@@ -264,7 +264,7 @@ describe('NavigationDrawer', () => {
     await waitFor(() =>
       expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     )
-    expect(getByTestId('Profile-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemProfile')).toHaveAttribute(
       'aria-selected',
       'false'
     )
@@ -281,7 +281,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     const button = getAllByRole('button')[0]
-    expect(button).toContainElement(getByTestId('ChevronLeftRoundedIcon'))
+    expect(button).toContainElement(getByTestId('ChevronLeftIcon'))
     fireEvent.click(button)
     expect(onClose).toHaveBeenCalled()
   })
@@ -296,7 +296,7 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
-    expect(getByTestId('ViewCarouselRoundedIcon').parentElement).toHaveStyle(
+    expect(getByTestId('JourneysIcon').parentElement).toHaveStyle(
       'color: #FFFFFF'
     )
   })

@@ -1,6 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import LockRoundedIcon from '@mui/icons-material/LockRounded'
-import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -13,6 +11,8 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import Lock1Icon from '@core/shared/ui/icons/Lock1'
+import MinusCircleContained from '@core/shared/ui/icons/MinusCircleContained'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
@@ -93,6 +93,7 @@ export function SelectedCard(): ReactElement {
       justifyContent="space-between"
       alignItems="center"
       sx={{ p: 4, pl: 6 }}
+      data-testid={`SelectedCard-${id}`}
     >
       <Stack direction="row" spacing={4}>
         <Box
@@ -136,9 +137,7 @@ export function SelectedCard(): ReactElement {
           <Typography variant="subtitle2">Selected Step</Typography>
           {locked && (
             <Stack direction="row" spacing={1}>
-              <LockRoundedIcon
-                sx={{ fontSize: '18px', color: 'secondary.light' }}
-              />
+              <Lock1Icon sx={{ fontSize: '18px', color: 'secondary.light' }} />
               <Typography variant="caption" sx={{ color: 'secondary.light' }}>
                 Locked With Interaction
               </Typography>
@@ -161,7 +160,7 @@ export function SelectedCard(): ReactElement {
           onClick={handleRemoveCustomNextStep}
           data-testid="removeCustomNextStep"
         >
-          <RemoveCircleOutlineRoundedIcon color="primary" />
+          <MinusCircleContained color="primary" />
         </IconButton>
       )}
     </Stack>

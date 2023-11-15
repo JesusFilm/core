@@ -1,6 +1,7 @@
-import TranslateIcon from '@mui/icons-material/Translate'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
+
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import { MenuItem } from '../../../../MenuItem'
 
@@ -15,11 +16,13 @@ const DynamicLanguageDialog = dynamic<{
     ).then((mod) => mod.LanguageDialog)
 )
 
-interface Props {
+interface LanguageMenuItemProps {
   onClose?: () => void
 }
 
-export function LanguageMenuItem({ onClose }: Props): ReactElement {
+export function LanguageMenuItem({
+  onClose
+}: LanguageMenuItemProps): ReactElement {
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
 
   const handleUpdateLanguage = (): void => {
@@ -35,8 +38,9 @@ export function LanguageMenuItem({ onClose }: Props): ReactElement {
     <>
       <MenuItem
         label="Language"
-        icon={<TranslateIcon />}
+        icon={<Globe1Icon />}
         onClick={handleUpdateLanguage}
+        testId="Language"
       />
       {showLanguageDialog && (
         <DynamicLanguageDialog

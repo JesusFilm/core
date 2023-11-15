@@ -1,5 +1,4 @@
 const { composePlugins, withNx } = require('@nx/next')
-const withImages = require('next-images')
 
 const { i18n } = require('./next-i18next.config')
 /**
@@ -39,6 +38,11 @@ const nextConfig = {
         source: '/reports',
         destination: '/reports/journeys',
         permanent: true
+      },
+      {
+        source: '/journeys/:slug/edit',
+        destination: '/journeys/:slug',
+        permanent: true
       }
     ]
   },
@@ -51,6 +55,16 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['shared-ui']
+  transpilePackages: ['shared-ui'],
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+        'node_modules/esbuild-linux-64/bin'
+      ]
+    },
+    fallbackNodePolyfills: false
+  }
 }
-module.exports = composePlugins(withImages, withNx)(nextConfig)
+module.exports = composePlugins(withNx)(nextConfig)

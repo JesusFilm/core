@@ -1,5 +1,3 @@
-import EventRounded from '@mui/icons-material/EventRounded'
-import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
@@ -7,6 +5,8 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Calendar1Icon from '@core/shared/ui/icons/Calendar1'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import type { JourneyType } from '../../JourneyView'
 
@@ -29,8 +29,11 @@ export function JourneyDetails({
         <Language isPublisher={isPublisher} />
       ) : (
         <>
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <EventRounded fontSize="small" />
+          <Box
+            sx={{ display: 'flex', flexDirection: 'row' }}
+            data-testid="JourneyDetails"
+          >
+            <Calendar1Icon fontSize="small" />
             <Typography
               variant="body2"
               data-testid="created-at-date"
@@ -56,7 +59,7 @@ export function JourneyDetails({
               mt: 2
             }}
           >
-            <TranslateRounded fontSize="small" />
+            <Globe1Icon fontSize="small" />
             <Language />
           </Box>
         </>

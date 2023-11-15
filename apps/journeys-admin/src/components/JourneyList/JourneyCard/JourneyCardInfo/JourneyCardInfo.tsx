@@ -1,9 +1,10 @@
-import TranslateIcon from '@mui/icons-material/Translate'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import {
   GetAdminJourneys_journeys as Journey,
@@ -13,12 +14,15 @@ import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { AccessAvatars } from '../../../AccessAvatars'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
-interface Props {
+interface JourneyCardInfoProps {
   journey?: Journey
   variant: JourneyCardVariant
 }
 
-export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
+export function JourneyCardInfo({
+  journey,
+  variant
+}: JourneyCardInfoProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   let inviteRequested: UserJourney[] | undefined
@@ -44,6 +48,7 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
       spacing={4}
       flexGrow={1}
       sx={{ width: '95%' }}
+      data-testid="JourneyCardInfo"
     >
       <AccessAvatars
         journeyId={journey?.id}
@@ -75,7 +80,7 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
         <>
           {journey != null ? (
             <Stack direction="row" alignItems="center" spacing={1.5}>
-              <TranslateIcon sx={{ fontSize: 13 }} />
+              <Globe1Icon sx={{ fontSize: 13 }} />
               <Typography variant="caption">
                 {journey.language.name.find(({ primary }) => primary)?.value}
               </Typography>

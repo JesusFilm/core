@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import TouchAppRounded from '@mui/icons-material/TouchAppRounded'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -12,6 +11,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
 import { ButtonBlockCreate } from '../../../../../../__generated__/ButtonBlockCreate'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
@@ -155,6 +155,11 @@ export function NewButtonButton(): ReactElement {
   }
 
   return (
-    <Button icon={<TouchAppRounded />} value="Button" onClick={handleClick} />
+    <Button
+      icon={<Cursor6Icon />}
+      value="Button"
+      onClick={handleClick}
+      testId="NewButton"
+    />
   )
 }

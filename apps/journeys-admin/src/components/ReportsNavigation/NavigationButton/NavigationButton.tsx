@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-interface Props {
+interface NavigationButtonProps {
   selected: boolean
   value: string
   link: string
@@ -13,7 +13,7 @@ export function NavigationButton({
   selected,
   value,
   link
-}: Props): ReactElement {
+}: NavigationButtonProps): ReactElement {
   return (
     <NextLink href={link} passHref legacyBehavior>
       <Button
@@ -25,6 +25,7 @@ export function NavigationButton({
           borderRadius: 1,
           backgroundColor: selected ? undefined : 'background.paper'
         }}
+        data-testid="NavigationButton"
       >
         <Typography variant="subtitle1">{value}</Typography>
       </Button>

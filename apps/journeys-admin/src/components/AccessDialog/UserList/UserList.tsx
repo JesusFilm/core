@@ -47,7 +47,7 @@ export function UserList({
   return (
     <>
       {loading === true ? (
-        <Box>
+        <Box data-testid="JourneysAdminUserList">
           <Typography variant="subtitle1">{title}</Typography>
           <List>
             {[0, 1, 2].map((i) => (

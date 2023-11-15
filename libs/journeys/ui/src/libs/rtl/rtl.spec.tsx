@@ -30,6 +30,8 @@ const journey: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   title: 'my journey',
+  strategySlug: null,
+  featuredAt: null,
   slug: 'my-journey',
   language,
   description: 'my cool journey',
@@ -38,13 +40,16 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 describe('getJourneyRTL', () => {

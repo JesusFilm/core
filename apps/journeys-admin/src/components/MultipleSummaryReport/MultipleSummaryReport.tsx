@@ -1,4 +1,3 @@
-import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -6,6 +5,8 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
@@ -17,6 +18,7 @@ export function MultipleSummaryReport(): ReactElement {
         width: '100%',
         backgroundColor: 'background.paper'
       }}
+      data-testid="JourneysAdminMultipleSummaryReport"
     >
       <Container maxWidth="lg" sx={{ px: { xs: 6, sm: 8 } }}>
         <Stack direction="row" spacing={4} sx={{ py: 2 }}>
@@ -27,7 +29,7 @@ export function MultipleSummaryReport(): ReactElement {
             <Button
               size="small"
               variant="text"
-              endIcon={<ArrowForwardIosRoundedIcon sx={{ fontSize: 1 }} />}
+              endIcon={<ChevronRightIcon sx={{ fontSize: 1 }} />}
             >
               See all
             </Button>

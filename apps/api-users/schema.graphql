@@ -18,6 +18,7 @@ type User
   lastName: String
   email: String!
   imageUrl: String
+  superAdmin: Boolean
 }
 
 type Query {
@@ -27,6 +28,10 @@ type Query {
 
 extend type Query {
   me: User
+}
+
+extend type Mutation {
+  userImpersonate(email: String!): String
 }
 
 extend type Language

@@ -1,4 +1,3 @@
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -6,26 +5,28 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
-import { GetMe_me as User } from '../../../../../__generated__/GetMe'
+import Logout2Icon from '@core/shared/ui/icons/Logout2'
+
+import { GetMe_me as ApiUser } from '../../../../../__generated__/GetMe'
 import { MenuItem } from '../../../MenuItem'
 
 export interface UserMenuProps {
-  user: User
+  apiUser: ApiUser
   profileOpen: boolean
   profileAnchorEl: HTMLElement | null
   handleProfileClose: () => void
-  authUser: AuthUser
+  user: User
 }
 
 export function UserMenu({
-  user,
+  apiUser,
   profileOpen,
   profileAnchorEl,
   handleProfileClose,
-  authUser
+  user
 }: UserMenuProps): ReactElement {
   return (
     <Menu
@@ -40,6 +41,7 @@ export function UserMenu({
         vertical: 'top',
         horizontal: 'left'
       }}
+      data-testid="UserMenu"
     >
       <Stack
         direction="row"
@@ -49,17 +51,17 @@ export function UserMenu({
       >
         <Box>
           <Avatar
-            alt={compact([user.firstName, user.lastName]).join(' ')}
-            src={user.imageUrl ?? undefined}
+            alt={compact([apiUser.firstName, apiUser.lastName]).join(' ')}
+            src={apiUser.imageUrl ?? undefined}
           />
         </Box>
         <Box>
           <Typography>
-            {compact([user.firstName, user.lastName]).join(' ')}
+            {compact([apiUser.firstName, apiUser.lastName]).join(' ')}
           </Typography>
-          {user.email != null && (
+          {apiUser.email != null && (
             <Typography variant="body2" color="textSecondary">
-              {user.email}
+              {apiUser.email}
             </Typography>
           )}
         </Box>
@@ -67,10 +69,10 @@ export function UserMenu({
       <Divider />
       <MenuItem
         label="Logout"
-        icon={<LogoutRoundedIcon fontSize="small" />}
+        icon={<Logout2Icon fontSize="small" />}
         onClick={async () => {
           handleProfileClose()
-          await authUser.signOut()
+          await user.signOut()
         }}
       />
     </Menu>

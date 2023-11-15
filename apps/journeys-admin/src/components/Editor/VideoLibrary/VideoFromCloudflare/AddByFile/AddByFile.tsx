@@ -1,9 +1,6 @@
 import type { ReadStream } from 'fs'
 
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
-import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded'
-import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
@@ -18,6 +15,9 @@ import {
   HttpStack,
   Upload
 } from 'tus-js-client'
+
+import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
+import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
 import { GetMyCloudflareVideoQuery } from '../../../../../../__generated__/GetMyCloudflareVideoQuery'
@@ -189,7 +189,12 @@ export function AddByFile({
   const noBorder = error != null || uploading || fileRejected
 
   return (
-    <Stack alignItems="center" gap={1} sx={{ px: 6, py: 3 }}>
+    <Stack
+      alignItems="center"
+      gap={1}
+      sx={{ px: 6, py: 3 }}
+      data-testid="AddByFile"
+    >
       <Box
         data-testid="drop zone"
         sx={{
@@ -215,13 +220,11 @@ export function AddByFile({
       >
         <input {...getInputProps()} />
         {error != null || fileRejected ? (
-          <CloudOffRoundedIcon
+          <AlertTriangleIcon
             sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
           />
         ) : (
-          <BackupOutlinedIcon
-            sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }}
-          />
+          <Upload1Icon sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
         )}
         <Typography
           variant="body1"
@@ -246,7 +249,7 @@ export function AddByFile({
         color={error != null || fileRejected ? 'error.main' : 'secondary.light'}
         sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
-        <WarningAmberRounded
+        <AlertTriangleIcon
           fontSize="small"
           sx={{
             display: error != null || fileRejected ? 'flex' : 'none'

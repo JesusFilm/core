@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
+import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
@@ -61,7 +61,7 @@ export function Footer(): ReactElement {
         id="hosted-by"
         icon={<UserProfileCircleIcon />}
         name={t('Hosted By')}
-        value={hostName as string}
+        value={hostName}
         description={t("Host's name")}
         onClick={() => {
           dispatch({
@@ -74,7 +74,7 @@ export function Footer(): ReactElement {
       />
       <Attribute
         id="chat-widget"
-        icon={<MessageChat1 />}
+        icon={<MessageChat1Icon />}
         name={t('Chat Widget')}
         value={platforms ?? t('None')}
         description={t('Chat Platform')}

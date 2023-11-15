@@ -1,8 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
-import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined'
-import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded'
-import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -11,6 +7,10 @@ import type FormDataType from 'form-data'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+
+import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
+import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
+import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 
 import { CreateCloudflareUploadByFile } from '../../../../../../__generated__/CreateCloudflareUploadByFile'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
@@ -97,6 +97,7 @@ export function ImageUpload({
       alignItems="center"
       gap={1}
       sx={{ px: 6, py: 3 }}
+      data-testid="ImageUpload"
     >
       <input {...getInputProps()} />
       <Box
@@ -122,15 +123,15 @@ export function ImageUpload({
         }}
       >
         {uploadSuccess ? (
-          <CloudDoneOutlinedIcon
+          <CheckBrokenIcon
             sx={{ fontSize: 48, color: 'success.main', mb: 1 }}
           />
         ) : uploadError ? (
-          <CloudOffRoundedIcon
+          <AlertTriangleIcon
             sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
           />
         ) : (
-          <BackupOutlinedIcon
+          <Upload1IconIcon
             sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }}
           />
         )}
@@ -159,7 +160,7 @@ export function ImageUpload({
         spacing={1}
         color={uploadError ? 'error.main' : 'secondary.light'}
       >
-        <WarningAmberRounded
+        <AlertTriangleIcon
           fontSize="small"
           sx={{
             display: uploadError ? 'flex' : 'none'

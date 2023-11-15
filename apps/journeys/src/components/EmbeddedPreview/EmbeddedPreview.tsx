@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
-import Div100vh from 'react-div-100vh'
+import { use100vh } from 'react-div-100vh'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -23,8 +23,9 @@ interface EmbeddedPreviewProps {
 export function EmbeddedPreview({
   blocks
 }: EmbeddedPreviewProps): ReactElement {
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const maximizableElement = useRef(null)
+  const viewportHeight = use100vh()
   const [allowFullWindow, setAllowFullWindow] = useState(true)
   // Use full container / fullWindow mode over fullScreen to avoid video playback issues
   const [isFullWindow, setIsFullWindow] = useState(false)
@@ -128,7 +129,13 @@ export function EmbeddedPreview({
           box-shadow: none !important;
         }
       `}</style>
-      <Div100vh data-testid="embedded-preview">
+      <Box
+        data-testid="EmbeddedPreview"
+        sx={{
+          height: viewportHeight ?? '100vh',
+          minHeight: '-webkit-fill-available'
+        }}
+      >
         {!isFullWindow && <ClickableCard />}
         <Box
           id="embed-fullscreen-container"
@@ -154,13 +161,13 @@ export function EmbeddedPreview({
               >
                 <Close />
               </IconButton>
-              <JourneyProvider value={{ variant: 'default' }}>
+              <JourneyProvider value={{ journey, variant: 'default' }}>
                 <Conductor blocks={blocks} />
               </JourneyProvider>
             </>
           )}
         </Box>
-      </Div100vh>
+      </Box>
     </>
   )
 }

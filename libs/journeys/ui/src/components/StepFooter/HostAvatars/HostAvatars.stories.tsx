@@ -39,7 +39,9 @@ const journey: Journey = {
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  featuredAt: null,
   title: 'my journey',
+  strategySlug: null,
   slug: 'my-journey',
   language: {
     __typename: 'Language',
@@ -60,13 +62,16 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: 'My awesome journey',
   seoDescription: null,
   chatButtons: [],
   host: hostData,
-  team: null
+  team: null,
+  tags: []
 }
 
 type Story = StoryObj<

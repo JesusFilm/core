@@ -31,7 +31,10 @@ const BackgroundMediaStory: Meta<typeof BackgroundMedia> = {
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundMedia',
   parameters: {
     ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    docs: {
+      source: { type: 'code' }
+    }
   }
 }
 
@@ -42,6 +45,8 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
+  strategySlug: null,
+  featuredAt: null,
   language: {
     __typename: 'Language',
     id: '529',
@@ -61,13 +66,16 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 const card: TreeBlock<CardBlock> = {

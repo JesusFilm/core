@@ -1,5 +1,3 @@
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
-import MenuIcon from '@mui/icons-material/Menu'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
@@ -9,8 +7,11 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
+
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 
@@ -22,7 +23,7 @@ export interface PageWrapperProps {
   title: string
   menu?: ReactNode
   children?: ReactNode
-  authUser?: AuthUser
+  user?: User
 }
 
 export function PageWrapper({
@@ -31,7 +32,7 @@ export function PageWrapper({
   title,
   menu: customMenu,
   children,
-  authUser
+  user
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -41,7 +42,7 @@ export function PageWrapper({
     title === 'Trashed Journeys' ||
     title === 'Journey Details' ||
     title === 'Journey Report' ||
-    title === 'Reports' ||
+    title === 'Analytics' ||
     title === 'Journey Templates' ||
     title === 'Journey Template' ||
     title === 'Template Details'
@@ -61,6 +62,7 @@ export function PageWrapper({
                 : 'calc(100% - 72px)'
           }
         }}
+        data-testid="JourneysAdminPageWrapper"
       >
         {showAppBarMobile ? (
           <Toolbar
@@ -81,7 +83,7 @@ export function PageWrapper({
                 left: '25px'
               }}
             >
-              <MenuIcon sx={{ color: 'background.paper' }} />
+              <Menu1Icon sx={{ color: 'background.paper' }} />
             </IconButton>
             <Image src={taskbarIcon} width={32} height={32} alt="Next Steps" />
           </Toolbar>
@@ -97,7 +99,7 @@ export function PageWrapper({
                 color="inherit"
                 sx={{ mr: 2 }}
               >
-                <ChevronLeftRounded />
+                <ChevronLeftIcon />
               </IconButton>
             </NextLink>
           )}
@@ -112,7 +114,7 @@ export function PageWrapper({
           {customMenu != null && customMenu}
         </Toolbar>
       </AppBar>
-      <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} />
+      <NavigationDrawer open={open} onClose={setOpen} user={user} />
       <Box
         sx={{
           ml: { sm: '72px' }
