@@ -9,8 +9,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 
-import { NestHealthModule } from '@core/nest/health'
-
+import { NestHealthModule } from './modules/health/health.module'
 import { UserModule } from './modules/user/user.module'
 
 @Module({
