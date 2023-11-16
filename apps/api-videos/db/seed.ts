@@ -180,6 +180,9 @@ export async function handleArclightMediaComponent(
         )
 
         if (replace) {
+          await prisma.video.deleteMany({
+            where: { parent: { some: { id: video.id } } }
+          })
           await prisma.video.delete({
             where: { id: video.id }
           })
