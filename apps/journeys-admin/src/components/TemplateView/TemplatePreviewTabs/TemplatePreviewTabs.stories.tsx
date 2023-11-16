@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { ComponentProps } from 'react'
 import { fireEvent, within } from '@storybook/testing-library'
+import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 

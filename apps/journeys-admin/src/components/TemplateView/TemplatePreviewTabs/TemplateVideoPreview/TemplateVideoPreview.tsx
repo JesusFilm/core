@@ -1,6 +1,5 @@
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import Box from '@mui/material/Box'
-import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -74,7 +73,7 @@ function TemplateVideoPreviewItem({
               zIndex: 2,
               backgroundColor: 'divider',
               transition: (theme) => theme.transitions.create('opacity'),
-              opacity: opacity
+              opacity
             }}
           />
           <Image
