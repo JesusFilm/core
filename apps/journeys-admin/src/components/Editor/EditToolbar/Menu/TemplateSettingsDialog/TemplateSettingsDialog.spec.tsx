@@ -7,7 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 import { GET_LANGUAGES } from '../../../../../libs/useLanguagesQuery'
 import { GET_TAGS } from '../../../../../libs/useTagsQuery/useTagsQuery'
-import { defaultJourney } from '../../../../JourneyView/data'
+import { defaultJourney } from '../../../data'
 
 import {
   JOURNEY_FEATURE_UPDATE,
