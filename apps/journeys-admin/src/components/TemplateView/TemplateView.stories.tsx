@@ -202,13 +202,7 @@ const Template: StoryObj<
         ]}
       >
         <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-          <Box
-            sx={{
-              backgroundColor: 'background.paper',
-              height: '100%',
-              overflow: 'hidden'
-            }}
-          >
+          <Box sx={{ height: '100%', overflow: 'hidden' }}>
             <TemplateView authUser={args.authUser as unknown as User} />
           </Box>
         </JourneyProvider>
@@ -259,7 +253,7 @@ export const Complete = {
 export const Loading = {
   ...Template,
   args: {
-    ...Complete.args,
+    ...Default.args,
     journey: undefined
   }
 }
