@@ -1,4 +1,5 @@
 import { Page } from 'playwright-core'
+import { expect } from '@playwright/test'
 
 export class TemplatePage {
   readonly page: Page
@@ -24,12 +25,37 @@ export class TemplatePage {
     await this.page.getByRole('button', { name: templateCategory }).click()
   }
 
+  // Test correct template category is selected
+  async correctTemplateCategoryFiltered(
+    chosenTemplaeCategory: string
+  ): Promise<void> {
+    // Test chosen category is selected
+    expect(
+      await this.page.textContent(
+        'div.MuiAutocomplete-tagSizeMedium span.MuiChip-label'
+      )
+    ).toContain(chosenTemplaeCategory)
+
+    // Test chosen category came up in filtered results
+    expect(await this.page.getByTestId(`${chosenTemplaeCategory}-template-gallery-carousel`).textContent()).toContain(chosenTemplaeCategory)
+  }
+
+
   // Template details page
-  async clickTemplate(): Promise<void> {
+  async clickTemplate(templateCategory: string): Promise<void> {
     await this.page
-      .getByTestId('Featured& New-template-gallery-carousel')
-      .getByRole('img', { name: 'photo-1544164559-90f4302d5142' })
+      .getByTestId(`${templateCategory}-template-gallery-carousel`)
+      .getByTestId('journey-1c5bce8b-df6a-4dcc-a623-0ab683a9dddf')
       .click()
+  }
+
+  // Test correct template is displayed
+  async correctTemplateDisplayed(templateName: string): Promise<void> {
+    expect(
+      await this.page
+      .getByTestId('JourneysAdminTemplateViewHeader')
+      .locator('div.MuiTypography-h1').textContent()
+    ).toContain(templateName)
   }
 
   // Journey list page

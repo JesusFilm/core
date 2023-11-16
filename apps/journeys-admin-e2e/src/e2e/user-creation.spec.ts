@@ -157,13 +157,11 @@ test.describe.serial('Running test sequentially', () => {
     test.setTimeout(2 * 60 * 1000)
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
-    const topNav = new TopNav(page)
     const templatePage = new TemplatePage(page)
     
 
     const email = process.env.EMAIL?.toString() || users.email
     const password = process.env.PASSWORD?.toString() || users.pass
-    const teamName = process.env.TEAM_NAME?.toString() || users.team_name
   
     await landingPage.goToAdminUrl()
     await landingPage.clickSignInWithEmail()
@@ -186,5 +184,120 @@ test.describe.serial('Running test sequentially', () => {
       port: 9222
     })
     await browser.close()
-  })  
+  })
+
+  test('Template library with filter - lighthouse test', async ( { }) => {
+    const browser = await chromium.launch({
+      args: ['--remote-debugging-port=9222', '--start-maximized']
+    })
+    const page = await browser.newPage()
+    const config = {
+      extends: 'lighthouse:default',
+      settings: {
+        formFactor: 'desktop',
+        screenEmulation: {
+          mobile: false,
+          width: 1350,
+          height: 940,
+          deviceScaleFactor: 1,
+          disabled: false
+        }
+      }
+    }
+    
+    // Set test time out to 2 minutes as it has to run lighthouse audit
+    test.setTimeout(2 * 60 * 1000)
+    const landingPage = new LandingPage(page)
+    const loginPage = new LoginPage(page)
+    const templatePage = new TemplatePage(page)
+    
+
+    const email = process.env.EMAIL?.toString() || users.email
+    const password = process.env.PASSWORD?.toString() || users.pass
+    const teamName = process.env.TEAM_NAME?.toString() || users.team_name
+  
+    await landingPage.goToAdminUrl()
+    await landingPage.clickSignInWithEmail()
+  
+    await loginPage.login(email, password)
+
+    await templatePage.seeAllTemplates()
+    await templatePage.templateGalleryCarouselVisible()
+
+    await templatePage.clickTemplateCategory('Acceptance')
+    await templatePage.correctTemplateCategoryFiltered('Acceptance')
+
+    await playAudit({
+      page,
+      config,
+      thresholds: {
+        performance: 17,
+        accessibility: 81,
+        'best-practices': 83,
+        seo: 73,
+        pwa: 67
+      },
+      port: 9222
+    })
+    await browser.close()
+  })
+  
+  test('Template landing page - lighthouse test', async ( { }) => {
+    const browser = await chromium.launch({
+      args: ['--remote-debugging-port=9222', '--start-maximized']
+    })
+    const page = await browser.newPage()
+    const config = {
+      extends: 'lighthouse:default',
+      settings: {
+        formFactor: 'desktop',
+        screenEmulation: {
+          mobile: false,
+          width: 1350,
+          height: 940,
+          deviceScaleFactor: 1,
+          disabled: false
+        }
+      }
+    }
+    
+    // Set test time out to 2 minutes as it has to run lighthouse audit
+    test.setTimeout(2 * 60 * 1000)
+    const landingPage = new LandingPage(page)
+    const loginPage = new LoginPage(page)
+    const templatePage = new TemplatePage(page)
+    
+
+    const email = process.env.EMAIL?.toString() || users.email
+    const password = process.env.PASSWORD?.toString() || users.pass
+    const teamName = process.env.TEAM_NAME?.toString() || users.team_name
+  
+    await landingPage.goToAdminUrl()
+    await landingPage.clickSignInWithEmail()
+  
+    await loginPage.login(email, password)
+
+    await templatePage.seeAllTemplates()
+    await templatePage.templateGalleryCarouselVisible()
+
+    await templatePage.clickTemplateCategory('Acceptance')
+    await templatePage.correctTemplateCategoryFiltered('Acceptance')
+
+    await templatePage.clickTemplate('Acceptance')
+    await templatePage.correctTemplateDisplayed("Lyuba's Template")
+
+    await playAudit({
+      page,
+      config,
+      thresholds: {
+        performance: 18,
+        accessibility: 81,
+        'best-practices': 83,
+        seo: 73,
+        pwa: 67
+      },
+      port: 9222
+    })
+    await browser.close()
+  })   
 })
