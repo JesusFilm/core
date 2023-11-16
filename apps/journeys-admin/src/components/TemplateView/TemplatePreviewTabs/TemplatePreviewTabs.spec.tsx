@@ -4,7 +4,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
-import { publishedJourney } from '../../JourneyView/data'
+import { publishedJourney } from '../../Editor/data'
 
 import { journeyVideoBlocks } from './data'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'

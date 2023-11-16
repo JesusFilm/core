@@ -123,7 +123,7 @@ export const getServerSideProps = withUserTokenSSR({
     return {
       redirect: {
         permanent: false,
-        destination: `/publisher/${journey?.id}/edit`
+        destination: `/publisher/${journey?.id}`
       }
     }
   }

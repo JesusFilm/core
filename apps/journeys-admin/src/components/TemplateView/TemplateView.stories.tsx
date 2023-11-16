@@ -18,7 +18,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
-import { defaultJourney, publishedJourney } from '../JourneyView/data'
+import { defaultJourney, publishedJourney } from '../Editor/data'
 
 import { journeyVideoBlocks } from './TemplatePreviewTabs/data'
 import { parentTags, tags } from './TemplateTags/data'

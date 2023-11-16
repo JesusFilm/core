@@ -6,12 +6,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { defaultJourney } from '../../../data'
 
-import { JOURNEY_TITLE_UPDATE, TitleDialog } from '.'
+import { JOURNEY_SLUG_UPDATE, SlugDialog } from '.'
 
 const onClose = jest.fn()
 
-describe('JourneyView/Menu/TitleDialog', () => {
-  it('should not set journey title on close', async () => {
+describe('JourneyView/Properties/SlugDialog', () => {
+  it('should not set journey slug on close', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
@@ -21,31 +21,27 @@ describe('JourneyView/Menu/TitleDialog', () => {
               variant: 'admin'
             }}
           >
-            <TitleDialog open onClose={onClose} />
+            <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
     fireEvent.change(getByRole('textbox'), {
-      target: { value: 'New Journey' }
+      target: { value: 'new-journey' }
     })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
     await waitFor(() => expect(onClose).toHaveBeenCalled())
   })
 
-  it('should update journey title on submit', async () => {
-    const updatedJourney = {
-      title: 'New Journey'
-    }
-
+  it('should update journey slug on submit', async () => {
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
           id: defaultJourney.id,
           __typename: 'Journey',
-          ...updatedJourney
+          slug: 'new-journey'
         }
       }
     }))
@@ -55,10 +51,12 @@ describe('JourneyView/Menu/TitleDialog', () => {
         mocks={[
           {
             request: {
-              query: JOURNEY_TITLE_UPDATE,
+              query: JOURNEY_SLUG_UPDATE,
               variables: {
                 id: defaultJourney.id,
-                input: updatedJourney
+                input: {
+                  slug: 'New Journey'
+                }
               }
             },
             result
@@ -72,7 +70,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
               variant: 'admin'
             }}
           >
-            <TitleDialog open onClose={onClose} />
+            <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -80,23 +78,21 @@ describe('JourneyView/Menu/TitleDialog', () => {
 
     fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
     fireEvent.click(getByRole('button', { name: 'Save' }))
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('textbox')).toHaveValue('new-journey')
   })
 
-  it('shows notistack error alert when title fails to update', async () => {
+  it('shows notistack error alert when slug fails to update', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: JOURNEY_TITLE_UPDATE,
+              query: JOURNEY_SLUG_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: {
-                  title: 'New Journey'
+                  slug: 'new-journey'
                 }
               }
             }
@@ -110,13 +106,13 @@ describe('JourneyView/Menu/TitleDialog', () => {
               variant: 'admin'
             }}
           >
-            <TitleDialog open onClose={onClose} />
+            <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
+    fireEvent.change(getByRole('textbox'), { target: { value: 'new-journey' } })
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(
@@ -130,7 +126,8 @@ describe('JourneyView/Menu/TitleDialog', () => {
       data: {
         journeyUpdate: {
           id: defaultJourney.id,
-          __typename: 'Journey'
+          __typename: 'Journey',
+          slug: 'new-journey'
         }
       }
     }))
@@ -140,11 +137,11 @@ describe('JourneyView/Menu/TitleDialog', () => {
         mocks={[
           {
             request: {
-              query: JOURNEY_TITLE_UPDATE,
+              query: JOURNEY_SLUG_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: {
-                  title: 'New Journey'
+                  slug: 'New Journey'
                 }
               }
             },
@@ -159,7 +156,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
               variant: 'admin'
             }}
           >
-            <TitleDialog open onClose={onClose} />
+            <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>

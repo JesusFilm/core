@@ -6,7 +6,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { publishedJourney } from '../../JourneyView/data'
+import { publishedJourney } from '../../Editor/data'
 
 import { journeyVideoBlocks } from './data'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
