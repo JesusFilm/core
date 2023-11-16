@@ -3,10 +3,12 @@ import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { Form } from 'formik'
 import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import { MultipleLanguageAutocomplete } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
@@ -178,9 +180,15 @@ export function HeaderAndLanguageFilter({
               Journey Templates
             </LocalTypography>
             <LocalTypography {...inTypographyProps}>in</LocalTypography>
-            <LocalButton {...localButtonProps}>
-              {{ firstLanguage }} {{ secondLanguage }}
-            </LocalButton>
+            <MultipleLanguageAutocomplete
+              onChange={
+                async (values) => console.log(values)
+                // await setFieldValue('languages', values)
+              }
+              // values={values.languages}
+              languages={data?.languages}
+              loading={loading}
+            />
           </Trans>
         )}
         {count !== 2 && (
@@ -189,18 +197,36 @@ export function HeaderAndLanguageFilter({
               Journey Templates
             </LocalTypography>
             <LocalTypography {...inTypographyProps}>in</LocalTypography>
-            <LocalButton {...localButtonProps}>{{ firstLanguage }}</LocalButton>
+            <MultipleLanguageAutocomplete
+              onChange={
+                async (values) => console.log(values)
+                // await setFieldValue('languages', values)
+              }
+              // values={values.languages}
+              languages={data?.languages}
+              loading={loading}
+            />
           </Trans>
         )}
+
+        {/* <MultipleLanguageAutocomplete
+          onChange={
+            async (values) => console.log(values)
+            // await setFieldValue('languages', values)
+          }
+          // values={values.languages}
+          languages={data?.languages}
+          loading={loading}
+        /> */}
       </Stack>
-      <LanguageFilterDialog
+      {/* <LanguageFilterDialog
         open={open}
         onClose={() => setOpen(false)}
         onChange={onChange}
         languages={data?.languages}
         value={languageOptions}
         loading={loading}
-      />
+      /> */}
     </>
   )
 }

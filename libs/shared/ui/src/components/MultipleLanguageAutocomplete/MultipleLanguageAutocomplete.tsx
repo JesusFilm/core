@@ -97,6 +97,10 @@ export function MultipleLanguageAutocomplete({
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
       }
+      sx={{
+        width: '100%',
+        maxWidth: 'calc(100% - 20px)'
+      }}
       renderInput={(params) => (
         <TextField
           {...params}
