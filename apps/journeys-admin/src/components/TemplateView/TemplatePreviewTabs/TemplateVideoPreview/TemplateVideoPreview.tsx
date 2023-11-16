@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
-import { SwiperOptions } from 'swiper'
+import SwiperCore, { Mousewheel, SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -15,6 +15,8 @@ import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 interface TemplateVideoPreviewProps {
   videoBlocks: Array<TreeBlock<VideoBlock>>
 }
+
+SwiperCore.use([Mousewheel])
 
 const DynamicTemplateVideoPlayer = dynamic<{
   id?: string | null
@@ -33,7 +35,7 @@ interface TemplateVideoPreviewItemProps {
   block?: TreeBlock<VideoBlock>
 }
 
-export function TemplateVideoPreviewItem({
+function TemplateVideoPreviewItem({
   block
 }: TemplateVideoPreviewItemProps): ReactElement {
   const [hasPlayed, setHasPlayed] = useState(false)
@@ -52,6 +54,7 @@ export function TemplateVideoPreviewItem({
         <Box
           onClick={() => setHasPlayed(true)}
           sx={{
+            position: 'relative',
             width: { xs: 280, sm: 430 },
             height: { xs: 157, sm: 239 },
             cursor: 'pointer',
@@ -98,6 +101,9 @@ export function TemplateVideoPreview({
 }: TemplateVideoPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      spaceBetween: 12
+    },
     [breakpoints.values.sm]: {
       spaceBetween: 28
     }
@@ -113,6 +119,8 @@ export function TemplateVideoPreview({
       spaceBetween={12}
       slidesPerView="auto"
       autoHeight
+      observer
+      observeParents
       breakpoints={swiperBreakpoints}
       style={{
         overflow: 'visible',
@@ -120,7 +128,11 @@ export function TemplateVideoPreview({
       }}
     >
       {videoBlocks?.map((block) => (
-        <SwiperSlide key={block.id} style={{ width: 'fit-content', zIndex: 2 }}>
+        <SwiperSlide
+          data-testid="TemplateVideosSwiperSlide"
+          key={block.id}
+          style={{ width: 'fit-content', zIndex: 2 }}
+        >
           <TemplateVideoPreviewItem block={block} />
         </SwiperSlide>
       ))}

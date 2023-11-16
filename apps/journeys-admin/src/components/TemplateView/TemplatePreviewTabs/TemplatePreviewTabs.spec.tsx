@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -31,7 +31,7 @@ describe('TemplatePreviewTabs', () => {
 
   beforeEach(() => jest.clearAllMocks())
 
-  it('should render card tab component', async () => {
+  it('should render tabs component', async () => {
     const { getByText, getAllByTestId } = render(
       <MockedProvider>
         <JourneyProvider
@@ -49,5 +49,27 @@ describe('TemplatePreviewTabs', () => {
     await waitFor(() =>
       expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(5)
     )
+    expect(getByText('{{videoBlockCount}} Videos')).toBeInTheDocument()
+  })
+
+  it('should render videos tabs content', async () => {
+    const { getByText, getAllByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: journeyWithVideos as JourneyFields,
+            variant: 'admin'
+          }}
+        >
+          <TemplatePreviewTabs />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByText('{{cardBlockCount}} Cards')).toBeInTheDocument()
+    await waitFor(() =>
+      fireEvent.click(getByText('{{videoBlockCount}} Videos'))
+    )
+    expect(getAllByTestId('TemplateVideosSwiperSlide')).toHaveLength(5)
   })
 })

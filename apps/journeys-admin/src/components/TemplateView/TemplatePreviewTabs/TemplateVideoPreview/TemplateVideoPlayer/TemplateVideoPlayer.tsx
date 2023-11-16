@@ -90,6 +90,7 @@ export function TemplateVideoPlayer({
       }}
     >
       <video
+        data-testid="TemplateVideoPlayer"
         ref={videoRef}
         className="video-js vjs-tech"
         playsInline

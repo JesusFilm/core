@@ -85,9 +85,7 @@ export function TemplatePreviewTabs(): ReactElement {
         <TemplateCardPreview steps={steps} />
       </TabPanel>
       <TabPanel name="videos-preview-tab" value={tabValue} index={1}>
-        {tabValue === 1 && videos?.length > 0 && (
-          <TemplateVideoPreview videoBlocks={videos} />
-        )}
+        <TemplateVideoPreview videoBlocks={videos} />
       </TabPanel>
     </Box>
   )
