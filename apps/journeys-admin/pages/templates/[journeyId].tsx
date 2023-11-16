@@ -38,11 +38,8 @@ function TemplateDetails(): ReactElement {
           title={t('Journey Template')}
           user={user}
           backHref="/templates"
-          mainPanelSx={{
-            backgroundColor: 'background.paper',
-            overflowX: 'hidden'
-          }}
           backHrefHistory
+          mainBodyPadding={false}
         >
           <TemplateView authUser={user} />
         </PageWrapper>
