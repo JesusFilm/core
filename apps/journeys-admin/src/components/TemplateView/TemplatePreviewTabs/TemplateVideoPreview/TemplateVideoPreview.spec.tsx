@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -20,13 +20,15 @@ describe('TemplateVideoPreview', () => {
     expect(queryByTestId('TemplateVideoPlayer')).not.toBeInTheDocument()
   })
 
-  // it('should only render the video and player when clicked on', () => {
-  //   const { getAllByRole, getAllByTestId, queryByTestId } = render(
-  //     <TemplateVideoPreview
-  //       videoBlocks={journeyVideoBlocks as Array<TreeBlock<VideoBlock>>}
-  //     />
-  //   )
+  it('should only render the video and player when clicked on', async () => {
+    const { getAllByRole, queryByTestId, getByRole } = render(
+      <TemplateVideoPreview
+        videoBlocks={journeyVideoBlocks as Array<TreeBlock<VideoBlock>>}
+      />
+    )
 
-  //   expect(queryByTestId('TemplateVideoPlayer')).not.toBeInTheDocument()
-  // })
+    expect(queryByTestId('TemplateVideoPlayer')).not.toBeInTheDocument()
+    await waitFor(() => fireEvent.click(getAllByRole('img')[0]))
+    expect(getByRole('region', { name: 'Video Player' })).toBeInTheDocument()
+  })
 })

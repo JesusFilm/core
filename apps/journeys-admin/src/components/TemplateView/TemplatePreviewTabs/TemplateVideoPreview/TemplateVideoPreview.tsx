@@ -1,5 +1,6 @@
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -39,6 +40,7 @@ function TemplateVideoPreviewItem({
   block
 }: TemplateVideoPreviewItemProps): ReactElement {
   const [hasPlayed, setHasPlayed] = useState(false)
+  const [opacity, setOpacity] = useState(1)
 
   return (
     <>
@@ -58,17 +60,33 @@ function TemplateVideoPreviewItem({
             width: { xs: 280, sm: 430 },
             height: { xs: 157, sm: 239 },
             cursor: 'pointer',
-            borderRadius: 4
+            borderRadius: 4,
+            overflow: 'hidden'
           }}
         >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 2,
+              backgroundColor: 'divider',
+              transition: (theme) => theme.transitions.create('opacity'),
+              opacity: opacity
+            }}
+          />
           <Image
             src={(block?.image as string) ?? block?.video?.image}
             alt={block?.video?.title[0]?.value ?? 'video' + ' image'}
             fill
             sizes="100vw"
+            onLoad={() => setOpacity(0)}
             style={{
               objectFit: 'cover',
-              borderRadius: '16px'
+              borderRadius: '16px',
+              color: 'red'
             }}
           />
           <Box
@@ -127,15 +145,17 @@ export function TemplateVideoPreview({
         zIndex: 2
       }}
     >
-      {videoBlocks?.map((block) => (
-        <SwiperSlide
-          data-testid="TemplateVideosSwiperSlide"
-          key={block.id}
-          style={{ width: 'fit-content', zIndex: 2 }}
-        >
-          <TemplateVideoPreviewItem block={block} />
-        </SwiperSlide>
-      ))}
+      {videoBlocks?.map((block) => {
+        return (
+          <SwiperSlide
+            data-testid="TemplateVideosSwiperSlide"
+            key={block.id}
+            style={{ width: 'fit-content', zIndex: 2 }}
+          >
+            <TemplateVideoPreviewItem block={block} />
+          </SwiperSlide>
+        )
+      })}
     </Swiper>
   )
 }

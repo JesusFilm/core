@@ -6,7 +6,7 @@ import Player from 'video.js/dist/types/player'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 
 interface TemplateVideoPreviewItemProps {
-  id?: string | null
+  id: string
   source?: VideoBlockSource
   poster?: string
   startAt: number
@@ -81,6 +81,7 @@ export function TemplateVideoPlayer({
 
   return (
     <Box
+      data-testid={`TemplateVideoPlayer-${id ?? 'emptyVideo'}`}
       sx={{
         width: { xs: 280, sm: 430 },
         height: { xs: 157, sm: 239 },
@@ -109,9 +110,7 @@ export function TemplateVideoPlayer({
         )}
         {source === VideoBlockSource.youTube && id != null && (
           <source
-            src={`https://www.youtube.com/embed/${id}?start=${
-              startAt ?? 0
-            }&end=${endAt ?? 0}`}
+            src={`https://www.youtube.com/embed/${id}?start=${startAt}&end=${endAt}`}
             type="video/youtube"
           />
         )}
