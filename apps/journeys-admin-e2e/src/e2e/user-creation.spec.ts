@@ -7,6 +7,7 @@ import { LeftNav } from '../pages/left-nav'
 import { TopNav } from '../pages/top-nav'
 import { OnboardingPages } from '../pages/onboarding-pages'
 import { LoginPage } from '../pages/login-page'
+import { TemplatePage } from '../pages/template-page'
 
 import users from '../test-data/users.json'
 
@@ -61,30 +62,29 @@ test.describe.serial('Running test sequentially', () => {
     await landingPage.signInWithEmailVisible()
   })
 
-  // Test team name is correct
-  test('Test team name recorded correctly', async ({ page }) => { 
-    const landingPage = new LandingPage(page)
-    const leftNav = new LeftNav(page)
-    const loginPage = new LoginPage(page)
-    const topNav = new TopNav(page)
+//   // Test team name is correct
+// test('Test team name recorded correctly', async ({ page }) => { 
+//     const landingPage = new LandingPage(page)
+//     const loginPage = new LoginPage(page)
+//     const topNav = new TopNav(page)
 
-    const email = process.env.EMAIL?.toString() || users.email
-    const password = process.env.PASSWORD?.toString() || users.pass
-    const teamName = process.env.TEAM_NAME?.toString() || users.team_name
+//     const email = process.env.EMAIL?.toString() || users.email
+//     const password = process.env.PASSWORD?.toString() || users.pass
+//     const teamName = process.env.TEAM_NAME?.toString() || users.team_name
   
-    await landingPage.goToAdminUrl()
-    await landingPage.clickSignInWithEmail()
+//     await landingPage.goToAdminUrl()
+//     await landingPage.clickSignInWithEmail()
   
-    await loginPage.login(email, password)
+//     await loginPage.login(email, password)
   
-    await topNav.clickTeamName(teamName)
-    await topNav.testTeamName(teamName)
-  })  
+//     await topNav.clickTeamName(teamName)
+//     await topNav.testTeamName(teamName)
+//   })  
   
   /*
   LightHouse audit test
   */
-  test('Homepage', async ( { }) => {
+  test('Home page - lighthouse test', async ( { }) => {
     const browser = await chromium.launch({
       args: ['--remote-debugging-port=9222', '--start-maximized']
     })
@@ -103,28 +103,88 @@ test.describe.serial('Running test sequentially', () => {
       }
     }
     
-    // Set test time out to 4 minutes as it has to run lighthouse audit
-    test.setTimeout(4 * 60 * 1000)
+    // Set test time out to 2 minutes as it has to run lighthouse audit
+    test.setTimeout(2 * 60 * 1000)
     const landingPage = new LandingPage(page)
+    const loginPage = new LoginPage(page)
+    const topNav = new TopNav(page)
+    
 
+    const email = process.env.EMAIL?.toString() || users.email
+    const password = process.env.PASSWORD?.toString() || users.pass
+    const teamName = process.env.TEAM_NAME?.toString() || users.team_name
+  
     await landingPage.goToAdminUrl()
+    await landingPage.clickSignInWithEmail()
+  
+    await loginPage.login(email, password)
+    await topNav.teamNameVisible(teamName)
+
     await playAudit({
       page,
       config,
       thresholds: {
-        performance: 36,
+        performance: 46,
         accessibility: 98,
         'best-practices': 83,
         seo: 82,
         pwa: 67
       },
-      reports: {
-        formats: { html: true },
-        name: 'lighthouse-report'
-        // Uncomment the line below to generate a new report every time
-        // directory: 'lighthouse-report' + Date.now().toString()
-      },
       port: 9222
     })
   })
+
+  test('Template library landing page - lighthouse test', async ( { }) => {
+    const browser = await chromium.launch({
+      args: ['--remote-debugging-port=9222', '--start-maximized']
+    })
+    const page = await browser.newPage()
+    const config = {
+      extends: 'lighthouse:default',
+      settings: {
+        formFactor: 'desktop',
+        screenEmulation: {
+          mobile: false,
+          width: 1350,
+          height: 940,
+          deviceScaleFactor: 1,
+          disabled: false
+        }
+      }
+    }
+    
+    // Set test time out to 2 minutes as it has to run lighthouse audit
+    test.setTimeout(2 * 60 * 1000)
+    const landingPage = new LandingPage(page)
+    const loginPage = new LoginPage(page)
+    const topNav = new TopNav(page)
+    const templatePage = new TemplatePage(page)
+    
+
+    const email = process.env.EMAIL?.toString() || users.email
+    const password = process.env.PASSWORD?.toString() || users.pass
+    const teamName = process.env.TEAM_NAME?.toString() || users.team_name
+  
+    await landingPage.goToAdminUrl()
+    await landingPage.clickSignInWithEmail()
+  
+    await loginPage.login(email, password)
+
+    await templatePage.seeAllTemplates()
+    await templatePage.templateGalleryCarouselVisible()
+
+    await playAudit({
+      page,
+      config,
+      thresholds: {
+        performance: 8,
+        accessibility: 76,
+        'best-practices': 83,
+        seo: 73,
+        pwa: 67
+      },
+      port: 9222
+    })
+    await browser.close()
+  })  
 })

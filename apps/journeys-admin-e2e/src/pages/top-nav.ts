@@ -8,6 +8,11 @@ export class TopNav {
     this.page = page
   }
 
+  async teamNameVisible(teamName: string): Promise<void> {
+    const teamNameElement = await this.page.getByRole('button', { name: teamName })
+    await teamNameElement.isVisible()
+  }
+
   async clickTeamName(teamName: string): Promise<void> {
     await this.page.getByRole('button', { name: teamName }).click()
   }

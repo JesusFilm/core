@@ -12,12 +12,19 @@ export class TemplatePage {
     await this.page.getByRole('link', { name: 'See all', exact: true }).click()
   }
 
+  async templateGalleryCarouselVisible(): Promise<void> {
+    const templateGalleryCarouseElement = await this.page.getByTestId(
+      '-template-gallery-carousel'
+    )
+    await templateGalleryCarouseElement.isVisible()
+  }
+
   // Shows all templates in a category
   async clickTemplateCategory(templateCategory: string): Promise<void> {
     await this.page.getByRole('button', { name: templateCategory }).click()
   }
 
-  // Template details page  
+  // Template details page
   async clickTemplate(): Promise<void> {
     await this.page
       .getByTestId('Featured& New-template-gallery-carousel')
@@ -27,10 +34,14 @@ export class TemplatePage {
 
   // Journey list page
   async addTemplateJourneyToTeam(): Promise<void> {
-    await this.page.getByTestId('JourneysAdminTemplateViewHeader').getByRole('button', { name: 'Use This Template' }).click();
-    await this.page.getByLabel('Select Team').click();
-    await this.page.getByRole('option', { name: 'Team Name-1699922098237' }).click();
-    await this.page.getByRole('button', { name: 'Add' }).click();
+    await this.page
+      .getByTestId('JourneysAdminTemplateViewHeader')
+      .getByRole('button', { name: 'Use This Template' })
+      .click()
+    await this.page.getByLabel('Select Team').click()
+    await this.page
+      .getByRole('option', { name: 'Team Name-1699922098237' })
+      .click()
+    await this.page.getByRole('button', { name: 'Add' }).click()
   }
-
 }
