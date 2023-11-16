@@ -3,17 +3,13 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
-import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
-  const { templates } = useFlags()
 
   return (
     <>
@@ -22,9 +18,9 @@ function LibraryIndex(): ReactElement {
         title={t('Journey Templates')}
         user={user}
         mainBodyPadding={false}
-        hiddenPanelHeader={templates}
+        showMainHeader={false}
       >
-        {templates ? <TemplateGallery /> : <TemplateLibrary />}
+        <TemplateGallery />
       </PageWrapper>
     </>
   )

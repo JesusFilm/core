@@ -19,10 +19,10 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
-import { Properties } from '../../JourneyView/Properties'
 import { ActionDetails } from '../ActionDetails'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
+import { Properties } from '../Properties'
 
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
@@ -84,7 +84,7 @@ export function ControlPanel(): ReactElement {
               type: 'SetDrawerPropsAction',
               mobileOpen: false,
               title: t('Properties'),
-              children: <Properties journeyType="Journey" isPublisher={false} />
+              children: <Properties isPublisher={false} />
             })
           }
           break
@@ -113,7 +113,7 @@ export function ControlPanel(): ReactElement {
           type: 'SetDrawerPropsAction',
           mobileOpen: false,
           title: t('Properties'),
-          children: <Properties journeyType="Journey" isPublisher={false} />
+          children: <Properties isPublisher={false} />
         })
       }
     } else if (view === ActiveJourneyEditContent.Action) {

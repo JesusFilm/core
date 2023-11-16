@@ -20,9 +20,9 @@ interface PageWrapperProps {
   backHrefHistory?: boolean
   backHref?: string
   title?: string
+  showMainHeader?: boolean
   mainHeaderChildren?: ReactNode
   mainBodyPadding?: boolean
-  hiddenPanelHeader?: boolean
   children?: ReactNode
   bottomPanelChildren?: ReactNode
   sidePanelTitle?: ReactNode
@@ -42,9 +42,9 @@ export function PageWrapper({
   backHrefHistory,
   backHref,
   title,
+  showMainHeader = true,
   mainHeaderChildren,
   mainBodyPadding = true,
-  hiddenPanelHeader,
   children,
   bottomPanelChildren,
   sidePanelTitle = '',
@@ -106,7 +106,7 @@ export function PageWrapper({
                 }
               }}
             >
-              {hiddenPanelHeader !== true && (
+              {showMainHeader && (
                 <MainPanelHeader
                   title={title}
                   backHref={backHref}

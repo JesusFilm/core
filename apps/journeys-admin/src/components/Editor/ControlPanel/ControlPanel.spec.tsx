@@ -1060,7 +1060,6 @@ describe('ControlPanel', () => {
     expect(getByText('selectedBlock: step3.id')).toBeInTheDocument()
     expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
     expect(getByText('drawerTitle: Properties')).toBeInTheDocument()
-    expect(getByText('Access Control')).toBeInTheDocument()
   })
 
   it('should open card template drawer when selecting a card without children', async () => {

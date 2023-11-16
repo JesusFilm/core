@@ -89,7 +89,7 @@ describe('Editor', () => {
   }
 
   it('should render the element', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <FlagsProvider>
@@ -108,7 +108,7 @@ describe('Editor', () => {
       </MockedProvider>
     )
     expect(getByText('Journey')).toBeInTheDocument()
-    expect(getByText('Access Control')).toBeInTheDocument()
+    expect(getByTestId('side-header')).toHaveTextContent('Properties')
   })
 
   it('should display Next Card property', () => {
