@@ -4,7 +4,6 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-
 import { defaultJourney } from '../data'
 
 import { Properties } from '.'
@@ -19,16 +18,14 @@ describe('Properties', () => {
     const { getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <Properties />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
+            <Properties />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )

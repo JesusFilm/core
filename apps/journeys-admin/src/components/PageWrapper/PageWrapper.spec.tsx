@@ -2,8 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 
-
-
 import { PageWrapper } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -20,9 +18,7 @@ describe('PageWrapper', () => {
     it('should show title', () => {
       const { getByText } = render(
         <MockedProvider>
-          
-            <PageWrapper title="Page title" />
-          </FlagsProvider>
+          <PageWrapper title="Page title" />
         </MockedProvider>
       )
       expect(getByText('Page title')).toBeInTheDocument()
@@ -31,9 +27,7 @@ describe('PageWrapper', () => {
     it('should show back button', () => {
       const { getAllByRole } = render(
         <MockedProvider>
-          
-            <PageWrapper title="Page title" backHref="/" />
-          </FlagsProvider>
+          <PageWrapper title="Page title" backHref="/" />
         </MockedProvider>
       )
       expect(getAllByRole('link')[0]).toHaveAttribute('href', '/')
@@ -42,9 +36,7 @@ describe('PageWrapper', () => {
     it('should show custom menu', () => {
       const { getByText } = render(
         <MockedProvider>
-          
-            <PageWrapper title="Page title" menu={<>Custom Content</>} />
-          </FlagsProvider>
+          <PageWrapper title="Page title" menu={<>Custom Content</>} />
         </MockedProvider>
       )
       expect(getByText('Custom Content')).toBeInTheDocument()
@@ -53,11 +45,9 @@ describe('PageWrapper', () => {
     it('should show children', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          
-            <PageWrapper title="Page title">
-              <div data-testid="test">Hello</div>
-            </PageWrapper>
-          </FlagsProvider>
+          <PageWrapper title="Page title">
+            <div data-testid="test">Hello</div>
+          </PageWrapper>
         </MockedProvider>
       )
       expect(getByTestId('test')).toHaveTextContent('Hello')
@@ -66,9 +56,7 @@ describe('PageWrapper', () => {
     it('should show the drawer on the left', () => {
       const { getAllByRole, getByTestId, getByText } = render(
         <MockedProvider>
-          
-            <PageWrapper title="Page title" />
-          </FlagsProvider>
+          <PageWrapper title="Page title" />
         </MockedProvider>
       )
       expect(getAllByRole('button')[0]).toContainElement(
@@ -87,9 +75,7 @@ describe('PageWrapper', () => {
     it('should show the drawer on mobile view', () => {
       const { getAllByRole, getByTestId, getByText } = render(
         <MockedProvider>
-          
-            <PageWrapper title="Active Journeys" />
-          </FlagsProvider>
+          <PageWrapper title="Active Journeys" />
         </MockedProvider>
       )
       expect(getByText('Active Journeys')).toBeInTheDocument()
@@ -102,9 +88,7 @@ describe('PageWrapper', () => {
     it('should not show the drawer on mobile view', () => {
       const { queryByTestId, getByText } = render(
         <MockedProvider>
-          
-            <PageWrapper title="Journey Edit" />
-          </FlagsProvider>
+          <PageWrapper title="Journey Edit" />
         </MockedProvider>
       )
       expect(getByText('Journey Edit')).toBeInTheDocument()

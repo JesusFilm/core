@@ -4,8 +4,6 @@ import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 

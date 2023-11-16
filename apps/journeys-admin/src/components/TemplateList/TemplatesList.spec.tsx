@@ -2,8 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-
-
 import { ThemeProvider } from '../ThemeProvider'
 
 import { TemplateList } from '.'
@@ -25,11 +23,9 @@ describe('TemplatesList', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          
-            <ThemeProvider>
-              <TemplateList />
-            </ThemeProvider>
-          </FlagsProvider>
+          <ThemeProvider>
+            <TemplateList />
+          </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
     )

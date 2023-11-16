@@ -27,7 +27,6 @@ const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
-  flags?: { [key: string]: boolean }
 }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache

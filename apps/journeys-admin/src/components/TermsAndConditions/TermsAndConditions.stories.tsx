@@ -1,8 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-
-
 import { journeysAdminConfig } from '../../libs/storybook'
 
 import { TermsAndConditions } from './TermsAndConditions'
@@ -16,11 +14,9 @@ const TermsAndConditionsStory: Meta<typeof TermsAndConditions> = {
 export const Default: StoryObj<typeof TermsAndConditions> = {
   render: () => {
     return (
-      
-        <MockedProvider>
-          <TermsAndConditions />
-        </MockedProvider>
-      </FlagsProvider>
+      <MockedProvider>
+        <TermsAndConditions />
+      </MockedProvider>
     )
   }
 }

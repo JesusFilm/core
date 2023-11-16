@@ -4,7 +4,6 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { publishedJourney } from '../data'
@@ -26,11 +25,9 @@ const Template: StoryObj<
 > = {
   render: ({ ...args }) => (
     <MockedProvider mocks={[]}>
-      
-        <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-          <Properties {...args} />
-        </JourneyProvider>
-      </FlagsProvider>
+      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+        <Properties {...args} />
+      </JourneyProvider>
     </MockedProvider>
   )
 }

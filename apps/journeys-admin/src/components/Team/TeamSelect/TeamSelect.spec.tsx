@@ -122,13 +122,11 @@ describe('TeamSelect', () => {
   it('removes create journey buttons when on Shared With Me team', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider mocks={[]}>
-        <FlagsProvider flags={{ teams: true }}>
-          <TeamProvider>
-            <TeamSelect />
-            <OnboardingPanelContent />
-            <AddJourneyButton />
-          </TeamProvider>
-        </FlagsProvider>
+        <TeamProvider>
+          <TeamSelect />
+          <OnboardingPanelContent />
+          <AddJourneyButton />
+        </TeamProvider>
       </MockedProvider>
     )
     await waitFor(() =>

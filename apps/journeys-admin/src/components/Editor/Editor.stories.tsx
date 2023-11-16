@@ -649,21 +649,19 @@ const Template: StoryObj<typeof Editor> = {
   render: (args) => {
     return (
       <MockedProvider>
-        
-          <Editor
-            journey={args.journey}
-            view={args.view ?? ActiveJourneyEditContent.Canvas}
+        <Editor
+          journey={args.journey}
+          view={args.view ?? ActiveJourneyEditContent.Canvas}
+        >
+          <PageWrapper
+            title={args.journey?.title ?? 'Edit Journey'}
+            showDrawer
+            menu={<EditToolbar />}
+            backHref="/journeys/nua-journey-ep-3-decision"
           >
-            <PageWrapper
-              title={args.journey?.title ?? 'Edit Journey'}
-              showDrawer
-              menu={<EditToolbar />}
-              backHref="/journeys/nua-journey-ep-3-decision"
-            >
-              <JourneyEdit />
-            </PageWrapper>
-          </Editor>
-        </FlagsProvider>
+            <JourneyEdit />
+          </PageWrapper>
+        </Editor>
       </MockedProvider>
     )
   }

@@ -19,11 +19,9 @@ const ImageLibraryComponent = (args): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
-    <FlagsProvider flags={{ segmind: args.segmind }}>
-      <MockedProvider mocks={[listUnsplashCollectionMock]}>
-        <ImageLibrary open={open} onClose={() => setOpen(false)} {...args} />
-      </MockedProvider>
-    </FlagsProvider>
+    <MockedProvider mocks={[listUnsplashCollectionMock]}>
+      <ImageLibrary open={open} onClose={() => setOpen(false)} {...args} />
+    </MockedProvider>
   )
 }
 

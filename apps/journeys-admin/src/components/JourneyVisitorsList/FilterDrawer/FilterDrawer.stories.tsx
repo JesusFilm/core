@@ -1,8 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-
-
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { PageWrapper } from '../../NewPageWrapper'
 
@@ -23,14 +21,12 @@ const Template: StoryObj<typeof FilterDrawer> = {
   render: ({ ...args }) => {
     return (
       <MockedProvider>
-        
-          <PageWrapper
-            {...args}
-            title="Visitors"
-            backHref="/"
-            sidePanelTitle="Filters"
-          />
-        </FlagsProvider>
+        <PageWrapper
+          {...args}
+          title="Visitors"
+          backHref="/"
+          sidePanelTitle="Filters"
+        />
       </MockedProvider>
     )
   }

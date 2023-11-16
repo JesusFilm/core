@@ -3,8 +3,6 @@ import { render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
-
-
 import { ThemeProvider } from '../ThemeProvider'
 
 import { JourneyList } from '.'
@@ -36,13 +34,11 @@ describe('JourneyList', () => {
   it('should render tab panel', () => {
     const { getByRole } = render(
       <SnackbarProvider>
-        
-          <MockedProvider>
-            <ThemeProvider>
-              <JourneyList />
-            </ThemeProvider>
-          </MockedProvider>
-        </FlagsProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList />
+          </ThemeProvider>
+        </MockedProvider>
       </SnackbarProvider>
     )
     expect(getByRole('tablist')).toBeInTheDocument()
@@ -51,13 +47,11 @@ describe('JourneyList', () => {
   it('should render report', async () => {
     const { getByTestId } = render(
       <SnackbarProvider>
-        <FlagsProvider flags={{ journeysSummaryReport: true }}>
-          <MockedProvider>
-            <ThemeProvider>
-              <JourneyList />
-            </ThemeProvider>
-          </MockedProvider>
-        </FlagsProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList />
+          </ThemeProvider>
+        </MockedProvider>
       </SnackbarProvider>
     )
     await waitFor(() => {
@@ -68,13 +62,11 @@ describe('JourneyList', () => {
   it('should show add journey button', () => {
     const { getByRole } = render(
       <SnackbarProvider>
-        
-          <MockedProvider>
-            <ThemeProvider>
-              <JourneyList />
-            </ThemeProvider>
-          </MockedProvider>
-        </FlagsProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList />
+          </ThemeProvider>
+        </MockedProvider>
       </SnackbarProvider>
     )
     expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
@@ -86,13 +78,11 @@ describe('JourneyList', () => {
     } as unknown as NextRouter)
     const { getByRole } = render(
       <SnackbarProvider>
-        
-          <MockedProvider>
-            <ThemeProvider>
-              <JourneyList />
-            </ThemeProvider>
-          </MockedProvider>
-        </FlagsProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList />
+          </ThemeProvider>
+        </MockedProvider>
       </SnackbarProvider>
     )
     expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
@@ -104,13 +94,11 @@ describe('JourneyList', () => {
     } as unknown as NextRouter)
     const { queryByRole } = render(
       <SnackbarProvider>
-        
-          <MockedProvider>
-            <ThemeProvider>
-              <JourneyList />
-            </ThemeProvider>
-          </MockedProvider>
-        </FlagsProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList />
+          </ThemeProvider>
+        </MockedProvider>
       </SnackbarProvider>
     )
     expect(queryByRole('button', { name: 'Add' })).toBeNull()
@@ -122,13 +110,11 @@ describe('JourneyList', () => {
     } as unknown as NextRouter)
     const { queryByRole } = render(
       <SnackbarProvider>
-        
-          <MockedProvider>
-            <ThemeProvider>
-              <JourneyList />
-            </ThemeProvider>
-          </MockedProvider>
-        </FlagsProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList />
+          </ThemeProvider>
+        </MockedProvider>
       </SnackbarProvider>
     )
     expect(queryByRole('button', { name: 'Add' })).toBeNull()

@@ -83,24 +83,21 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ globalReports: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            user={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as User
-            }
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          user={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as User
+          }
+        />
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
-    expect(getByText('Analytics')).toBeInTheDocument()
     await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
   })
 
@@ -120,30 +117,10 @@ describe('NavigationDrawer', () => {
     )
   })
 
-  it('should select the reports button', () => {
-    mockUseRouter.mockReturnValue({
-      pathname: '/reports'
-    } as unknown as NextRouter)
-
-    const { getByTestId } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ globalReports: true }}>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByTestId('NavigationListItemAnalytics')).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
-  })
-
   it('should hide the reports button', () => {
     const { queryByText } = render(
       <MockedProvider mocks={[]}>
-        <FlagsProvider flags={{ globalReports: false }}>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     expect(queryByText('Analytics')).not.toBeInTheDocument()

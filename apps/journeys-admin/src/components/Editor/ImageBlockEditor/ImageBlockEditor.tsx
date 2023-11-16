@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
-// TODO: remove segmind ai flags when ready
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import StarsIcon from '@core/shared/ui/icons/Stars'

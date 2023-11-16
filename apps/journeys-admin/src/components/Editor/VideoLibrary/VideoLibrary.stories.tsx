@@ -121,13 +121,11 @@ const VideoLibraryDefault = ({ onSelect }): ReactElement => {
         }
       ]}
     >
-      <FlagsProvider flags={{ videoFromCloudflare: true }}>
-        <VideoLibrary
-          open={open}
-          onClose={() => setOpen(false)}
-          onSelect={onSelect}
-        />
-      </FlagsProvider>
+      <VideoLibrary
+        open={open}
+        onClose={() => setOpen(false)}
+        onSelect={onSelect}
+      />
     </MockedProvider>
   )
 }
