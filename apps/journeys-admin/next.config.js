@@ -1,6 +1,8 @@
+const withBundleAnalyzer = require('@next/bundle-analyzer')
 const { composePlugins, withNx } = require('@nx/next')
 
 const { i18n } = require('./next-i18next.config')
+
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
@@ -72,4 +74,8 @@ const nextConfig = {
     fallbackNodePolyfills: false
   }
 }
-module.exports = composePlugins(withNx)(nextConfig)
+const plugins = [withNx]
+if (process.env.ANALYZE === 'true') {
+  plugins.push(withBundleAnalyzer({ enabled: true, openAnalyzer: true }))
+}
+module.exports = composePlugins(...plugins)(nextConfig)
