@@ -62,25 +62,6 @@ test.describe.serial('Running test sequentially', () => {
     
     await landingPage.signInWithEmailVisible()
   })
-
-//   // Test team name is correct
-// test('Test team name recorded correctly', async ({ page }) => { 
-//     const landingPage = new LandingPage(page)
-//     const loginPage = new LoginPage(page)
-//     const topNav = new TopNav(page)
-
-//     const email = process.env.EMAIL?.toString() || users.email
-//     const password = process.env.PASSWORD?.toString() || users.pass
-//     const teamName = process.env.TEAM_NAME?.toString() || users.team_name
-  
-//     await landingPage.goToAdminUrl()
-//     await landingPage.clickSignInWithEmail()
-  
-//     await loginPage.login(email, password)
-  
-//     await topNav.clickTeamName(teamName)
-//     await topNav.testTeamName(teamName)
-//   })  
   
   /*
   LightHouse audit test
