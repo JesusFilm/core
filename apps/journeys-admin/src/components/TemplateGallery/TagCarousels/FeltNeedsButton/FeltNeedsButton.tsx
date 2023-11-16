@@ -73,7 +73,7 @@ export function FeltNeedsButton({
           overflow: 'hidden',
           '&:hover': {
             '& .hoverStyles': {
-              transform: 'scale(1.02)'
+              transform: 'scale(1.05)'
             }
           },
           '& .hoverStyles': {
