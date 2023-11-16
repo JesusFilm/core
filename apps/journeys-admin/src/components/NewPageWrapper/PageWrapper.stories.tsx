@@ -156,12 +156,7 @@ export const SidePanel = {
         </Paper>
       </>
     ),
-    sidePanelTitle: (
-      <>
-        Side Panel Content
-        <Button size="small">Custom Content</Button>
-      </>
-    ),
+    sidePanelTitle: 'Side Panel Content',
     sidePanelChildren: <SidePanelContainers />
   },
   menu: (
@@ -213,6 +208,12 @@ export const Complete = {
   ...Template,
   args: {
     ...SidePanel.args,
+    sidePanelTitle: (
+      <>
+        Side Panel Content
+        <Button size="small">Custom Content</Button>
+      </>
+    ),
     backHref: '/',
     bottomPanelChildren: (
       <Typography sx={{ backgroundColor: 'background.default' }}>

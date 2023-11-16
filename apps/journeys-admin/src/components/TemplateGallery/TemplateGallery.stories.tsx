@@ -29,7 +29,6 @@ const Template: StoryObj<ComponentProps<typeof TemplateGallery>> = {
     <Box
       sx={{
         backgroundColor: 'background.paper',
-        p: 5,
         height: '100%',
         overflow: 'hidden'
       }}
