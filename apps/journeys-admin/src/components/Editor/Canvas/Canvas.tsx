@@ -24,11 +24,11 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { FramePortal } from '../../FramePortal'
-import { Properties } from '../../JourneyView/Properties'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 import { DRAWER_WIDTH } from '../Drawer'
+import { Properties } from '../Properties'
 
 import { CardWrapper } from './CardWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -131,7 +131,7 @@ export function Canvas(): ReactElement {
         type: 'SetDrawerPropsAction',
         mobileOpen: false,
         title: t('Properties'),
-        children: <Properties journeyType="Journey" isPublisher={false} />
+        children: <Properties isPublisher={false} />
       })
     }
   }

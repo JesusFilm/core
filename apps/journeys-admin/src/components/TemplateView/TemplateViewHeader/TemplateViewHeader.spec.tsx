@@ -230,7 +230,7 @@ describe('TemplateViewHeader', () => {
 
     expect(getAllByRole('link', { name: 'Edit' })[0]).toHaveAttribute(
       'href',
-      '/publisher/journeyId/edit'
+      '/publisher/journeyId'
     )
   })
 

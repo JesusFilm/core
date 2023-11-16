@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { defaultJourney } from '../../../../JourneyView/data'
+import { defaultJourney } from '../../../data'
 
 import { JOURNEY_TITLE_UPDATE, TitleDialog } from '.'
 
