@@ -90,7 +90,6 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
       data-testid="JourneysAdminTemplateView"
     >
       <Container
-        maxWidth="xl"
         sx={{
           px: { xs: 6, sm: 8 },
           py: { xs: 6, sm: 9 }

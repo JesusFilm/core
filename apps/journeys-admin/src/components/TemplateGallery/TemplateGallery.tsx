@@ -50,8 +50,9 @@ export function TemplateGallery(): ReactElement {
       data-testid="TemplateGallery"
     >
       <Container
-        maxWidth="xl"
+        maxWidth={false}
         sx={{
+          maxWidth: { md: '90vw' },
           px: { xs: 6, sm: 8 },
           py: { xs: 6, sm: 9 }
         }}

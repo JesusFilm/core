@@ -29,7 +29,7 @@ export function MainPanelBody({
       border="hidden"
       sx={{
         overflow: 'hidden',
-        overflowY: { xs: 'scroll', md: 'auto' },
+        overflowY: 'auto',
         width: 'inherit'
       }}
       data-testid="MainPanelBody"
