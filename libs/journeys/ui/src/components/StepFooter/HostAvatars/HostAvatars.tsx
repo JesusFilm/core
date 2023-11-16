@@ -23,7 +23,6 @@ export function HostAvatars({
 }: HostAvatarsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const { editableStepFooter } = useFlags()
   const src1 = avatarSrc1 ?? journey?.host?.src1
   const src2 = avatarSrc2 ?? journey?.host?.src2
 
@@ -61,7 +60,6 @@ export function HostAvatars({
       )}
       {(src1 == null || src2 == null) &&
         hasPlaceholder === true &&
-        editableStepFooter &&
         size === 'small' && (
           <Avatar
             sx={{

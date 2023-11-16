@@ -2,8 +2,6 @@ import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import {
   JourneyStatus,
   ThemeMode,

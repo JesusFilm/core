@@ -3,8 +3,6 @@ import { fireEvent, render } from '@testing-library/react'
 // TODO: remove segmind ai flags when ready
 import { SnackbarProvider } from 'notistack'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
 import { ImageBlockEditor } from '.'

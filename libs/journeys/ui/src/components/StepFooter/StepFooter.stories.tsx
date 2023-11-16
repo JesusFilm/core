@@ -4,8 +4,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import {
   ChatPlatform,
   JourneyStatus,

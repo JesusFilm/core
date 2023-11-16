@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 
 import { PageWrapper } from '.'
 
@@ -20,7 +20,7 @@ describe('PageWrapper', () => {
     it('should show title', () => {
       const { getByText } = render(
         <MockedProvider>
-          <FlagsProvider>
+          
             <PageWrapper title="Page title" />
           </FlagsProvider>
         </MockedProvider>
@@ -31,7 +31,7 @@ describe('PageWrapper', () => {
     it('should show back button', () => {
       const { getAllByRole } = render(
         <MockedProvider>
-          <FlagsProvider>
+          
             <PageWrapper title="Page title" backHref="/" />
           </FlagsProvider>
         </MockedProvider>
@@ -42,7 +42,7 @@ describe('PageWrapper', () => {
     it('should show custom menu', () => {
       const { getByText } = render(
         <MockedProvider>
-          <FlagsProvider>
+          
             <PageWrapper title="Page title" menu={<>Custom Content</>} />
           </FlagsProvider>
         </MockedProvider>
@@ -53,7 +53,7 @@ describe('PageWrapper', () => {
     it('should show children', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
+          
             <PageWrapper title="Page title">
               <div data-testid="test">Hello</div>
             </PageWrapper>
@@ -66,7 +66,7 @@ describe('PageWrapper', () => {
     it('should show the drawer on the left', () => {
       const { getAllByRole, getByTestId, getByText } = render(
         <MockedProvider>
-          <FlagsProvider>
+          
             <PageWrapper title="Page title" />
           </FlagsProvider>
         </MockedProvider>
@@ -87,7 +87,7 @@ describe('PageWrapper', () => {
     it('should show the drawer on mobile view', () => {
       const { getAllByRole, getByTestId, getByText } = render(
         <MockedProvider>
-          <FlagsProvider>
+          
             <PageWrapper title="Active Journeys" />
           </FlagsProvider>
         </MockedProvider>
@@ -102,7 +102,7 @@ describe('PageWrapper', () => {
     it('should not show the drawer on mobile view', () => {
       const { queryByTestId, getByText } = render(
         <MockedProvider>
-          <FlagsProvider>
+          
             <PageWrapper title="Journey Edit" />
           </FlagsProvider>
         </MockedProvider>

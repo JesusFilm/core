@@ -27,9 +27,8 @@ export function StepFooter({
 }: StepFooterProps): ReactElement {
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const { editableStepFooter } = useFlags()
   const hasAvatar =
-    (variant === 'admin' && editableStepFooter) ||
+    variant === 'admin' ||
     journey?.host?.src1 != null ||
     journey?.host?.src2 != null
 

@@ -4,8 +4,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { Role } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'

@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 
 import { ThemeProvider } from '../ThemeProvider'
 
@@ -36,7 +36,7 @@ describe('JourneyList', () => {
   it('should render tab panel', () => {
     const { getByRole } = render(
       <SnackbarProvider>
-        <FlagsProvider>
+        
           <MockedProvider>
             <ThemeProvider>
               <JourneyList />
@@ -68,7 +68,7 @@ describe('JourneyList', () => {
   it('should show add journey button', () => {
     const { getByRole } = render(
       <SnackbarProvider>
-        <FlagsProvider>
+        
           <MockedProvider>
             <ThemeProvider>
               <JourneyList />
@@ -86,7 +86,7 @@ describe('JourneyList', () => {
     } as unknown as NextRouter)
     const { getByRole } = render(
       <SnackbarProvider>
-        <FlagsProvider>
+        
           <MockedProvider>
             <ThemeProvider>
               <JourneyList />
@@ -104,7 +104,7 @@ describe('JourneyList', () => {
     } as unknown as NextRouter)
     const { queryByRole } = render(
       <SnackbarProvider>
-        <FlagsProvider>
+        
           <MockedProvider>
             <ThemeProvider>
               <JourneyList />
@@ -122,7 +122,7 @@ describe('JourneyList', () => {
     } as unknown as NextRouter)
     const { queryByRole } = render(
       <SnackbarProvider>
-        <FlagsProvider>
+        
           <MockedProvider>
             <ThemeProvider>
               <JourneyList />

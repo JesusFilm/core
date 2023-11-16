@@ -11,7 +11,6 @@ import {
   EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetJourney_journey as Journey,

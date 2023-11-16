@@ -3,8 +3,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
 import { OnboardingPanelContent } from '../../OnboardingPanelContent'

@@ -4,8 +4,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps, ReactElement, useState } from 'react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { listUnsplashCollectionMock } from '../ImageBlockEditor/UnsplashGallery/data'
 

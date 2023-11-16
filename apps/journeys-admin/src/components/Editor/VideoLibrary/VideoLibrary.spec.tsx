@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 
 import {
   VideoBlockSource,
@@ -27,7 +27,7 @@ describe('VideoLibrary', () => {
     it('should render the Video Library on the right', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
+          
             <VideoLibrary open />
           </FlagsProvider>
         </MockedProvider>
@@ -42,7 +42,7 @@ describe('VideoLibrary', () => {
       const onClose = jest.fn()
       const { getAllByRole, getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
+          
             <VideoLibrary open onClose={onClose} />
           </FlagsProvider>
         </MockedProvider>
@@ -61,7 +61,7 @@ describe('VideoLibrary', () => {
     it('should render the VideoLibrary from the bottom', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
+          
             <VideoLibrary open />
           </FlagsProvider>
         </MockedProvider>
@@ -131,7 +131,7 @@ describe('VideoLibrary', () => {
             }
           ]}
         >
-          <FlagsProvider>
+          
             <VideoLibrary open />
           </FlagsProvider>
         </MockedProvider>
@@ -149,7 +149,7 @@ describe('VideoLibrary', () => {
   it('should render the Video Library on the right', () => {
     const { getByText, getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
+        
           <VideoLibrary open />
         </FlagsProvider>
       </MockedProvider>
@@ -215,7 +215,7 @@ describe('VideoLibrary', () => {
           }
         ]}
       >
-        <FlagsProvider>
+        
           <VideoLibrary open onSelect={onSelect} onClose={onClose} />
         </FlagsProvider>
       </MockedProvider>
@@ -244,7 +244,7 @@ describe('VideoLibrary', () => {
 
     const { getByText } = render(
       <MockedProvider>
-        <FlagsProvider>
+        
           <VideoLibrary
             open
             selectedBlock={{
@@ -283,7 +283,7 @@ describe('VideoLibrary', () => {
   it('should render YouTube', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
-        <FlagsProvider>
+        
           <VideoLibrary open />
         </FlagsProvider>
       </MockedProvider>

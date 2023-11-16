@@ -5,7 +5,7 @@ import { NextRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 
 import { Role } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
@@ -44,7 +44,7 @@ describe('NavigationDrawer', () => {
   it('should render the default menu items', () => {
     const { getByText, getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
+        
           <NavigationDrawer open onClose={onClose} />
         </FlagsProvider>
       </MockedProvider>

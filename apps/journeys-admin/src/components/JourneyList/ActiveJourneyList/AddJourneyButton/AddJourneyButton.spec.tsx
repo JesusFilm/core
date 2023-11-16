@@ -3,8 +3,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { CREATE_JOURNEY } from '../../../../libs/useJourneyCreateMutation'
 import {

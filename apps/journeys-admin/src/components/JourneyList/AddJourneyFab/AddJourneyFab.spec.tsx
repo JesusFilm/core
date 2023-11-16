@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 
 import { PageWrapper } from '../../NewPageWrapper'
 
@@ -19,7 +19,7 @@ describe('AddJourneyFab', () => {
   // Cannot test mobile in unit test until we can useMediaQuery
   it.skip('should open side panel drawer on fab click', async () => {
     const { getByRole, getByTestId } = render(
-      <FlagsProvider>
+      
         <MockedProvider>
           <PageWrapper title="test open side drawer">
             <AddJourneyFab />

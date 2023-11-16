@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { PageWrapper } from '../../NewPageWrapper'
@@ -23,7 +23,7 @@ const Template: StoryObj<typeof FilterDrawer> = {
   render: ({ ...args }) => {
     return (
       <MockedProvider>
-        <FlagsProvider>
+        
           <PageWrapper
             {...args}
             title="Visitors"
