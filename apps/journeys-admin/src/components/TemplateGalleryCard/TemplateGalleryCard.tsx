@@ -70,7 +70,7 @@ export function TemplateGalleryCard({
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer',
-        width: { xs: 130, md: 180 },
+        width: { xs: 130, md: 180, xl: 280 },
         borderRadius: 2,
         p: 2,
         '& .MuiImageBackground-root': {
@@ -136,8 +136,8 @@ export function TemplateGalleryCard({
             <Skeleton
               variant="rectangular"
               sx={{
-                width: { xs: 130, md: 180 },
-                height: { xs: 130, md: 180 },
+                width: { xs: 130, md: 180, xl: 280 },
+                height: { xs: 130, md: 180, xl: 280 },
                 borderColor: 'divider',
                 borderRadius: 2,
                 backgroundColor: 'background.default'

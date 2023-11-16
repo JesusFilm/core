@@ -89,11 +89,11 @@ export function TemplateSections({
     },
     [breakpoints.values.xl]: {
       slidesPerGroup: 6,
-      spaceBetween: 32
+      spaceBetween: 44
     },
     [breakpoints.values.xxl]: {
       slidesPerGroup: 7,
-      spaceBetween: 32
+      spaceBetween: 44
     }
   }
 
