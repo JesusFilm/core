@@ -6,12 +6,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { simpleComponentConfig } from '../../../../libs/storybook'
-import {
-  archivedJourney,
-  defaultJourney,
-  publishedJourney,
-  trashedJourney
-} from '../../data'
+import { defaultJourney } from '../../data'
 
 import { JourneyDetails } from './JourneyDetails'
 
