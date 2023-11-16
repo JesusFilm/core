@@ -43,6 +43,11 @@ const nextConfig = {
         source: '/journeys/:slug/edit',
         destination: '/journeys/:slug',
         permanent: true
+      },
+      {
+        source: '/publisher/:slug/edit',
+        destination: '/publisher/:slug',
+        permanent: true
       }
     ]
   },
