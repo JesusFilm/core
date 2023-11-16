@@ -117,12 +117,6 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
               </>
             )}
           </Typography>
-          {journey?.strategySlug != null && (
-            <StrategySection
-              strategySlug={journey?.strategySlug}
-              variant="full"
-            />
-          )}
           {journey?.creatorDescription != null && (
             <TemplateCreatorDetails
               creatorDetails={journey?.creatorDescription}

@@ -220,6 +220,7 @@ export const Complete = {
   args: {
     journey: {
       ...journey,
+      strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
       tags,
       creatorDescription:
         'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries',
