@@ -166,6 +166,13 @@ export function VideoControls({
     }
   }, [player, setShowNavigation])
 
+  // Handle volume change event
+  useEffect(() => {
+    return () => {
+      player.off('volumechange', () => 0)
+    }
+  }, [player])
+
   // Handle fullscreen change event
   useEffect(() => {
     const handleFullscreenChange = (): void => {
