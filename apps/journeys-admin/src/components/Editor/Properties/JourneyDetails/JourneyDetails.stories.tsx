@@ -40,37 +40,6 @@ export const Default = {
   }
 }
 
-export const Publish = {
-  ...Template,
-  args: {
-    journey: publishedJourney
-  }
-}
-
-export const Archived = {
-  ...Template,
-  args: {
-    journey: archivedJourney
-  }
-}
-
-export const Trashed = {
-  ...Template,
-  args: {
-    journey: trashedJourney
-  }
-}
-
-export const PreviousYear = {
-  ...Template,
-  args: {
-    journey: {
-      ...publishedJourney,
-      createdAt: '2020-11-19T12:34:56.647Z'
-    }
-  }
-}
-
 export const Loading = {
   ...Template,
   args: {
