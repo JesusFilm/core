@@ -104,7 +104,6 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
-    expect(getByText('Analytics')).toBeInTheDocument()
     await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
   })
 
@@ -119,22 +118,6 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     expect(getByTestId('NavigationListItemTemplates')).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
-  })
-
-  it('should select the reports button', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          router={getRouter('/reports')}
-        />
-      </MockedProvider>
-    )
-    expect(getByTestId('NavigationListItemAnalytics')).toHaveAttribute(
       'aria-selected',
       'true'
     )

@@ -274,15 +274,6 @@ describe('VideoLibrary', () => {
     expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
   })
 
-  it('should hide Cloudflare', () => {
-    const { queryByRole } = render(
-      <MockedProvider>
-        <VideoLibrary open />
-      </MockedProvider>
-    )
-    expect(queryByRole('tab', { name: 'Upload' })).not.toBeInTheDocument()
-  })
-
   it('should render Cloudflare', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>

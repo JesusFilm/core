@@ -44,21 +44,6 @@ describe('JourneyList', () => {
     expect(getByRole('tablist')).toBeInTheDocument()
   })
 
-  it('should render report', async () => {
-    const { getByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <ThemeProvider>
-            <JourneyList />
-          </ThemeProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    await waitFor(() => {
-      expect(getByTestId('powerBi-multipleSummary-report')).toBeInTheDocument()
-    })
-  })
-
   it('should show add journey button', () => {
     const { getByRole } = render(
       <SnackbarProvider>
