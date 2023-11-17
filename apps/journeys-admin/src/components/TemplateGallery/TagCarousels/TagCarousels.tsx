@@ -1,5 +1,6 @@
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
+import { CSSSelectorObjectOrCssVariables } from '@mui/system/styleFunctionSx'
 import compact from 'lodash/compact'
 import difference from 'lodash/difference'
 import { ReactElement, useMemo } from 'react'
@@ -33,6 +34,11 @@ export function TagCarousels({
     [breakpoints.values.lg]: {
       slidesPerGroup: 5
     }
+  }
+
+  const loadingBreakpoints: CSSSelectorObjectOrCssVariables = {
+    xs: 5,
+    md: 5
   }
 
   const feltNeedsTagId = useMemo(() => {
@@ -85,6 +91,7 @@ export function TagCarousels({
         )}
         breakpoints={swiperBreakpoints}
         loading={loading}
+        loadingBreakpoints={loadingBreakpoints}
       />
       <Stack direction="row" gap={10}>
         {loading
