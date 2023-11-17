@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import { ComponentProps, ReactElement, useRef } from 'react'
-import { A11y, Navigation, Virtual } from 'swiper/modules'
+import { A11y, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
@@ -59,7 +59,7 @@ export function VideoCarousel({
     <Box sx={{ position: 'relative' }} data-testid="VideoCarousel">
       {loading === true && (
         <Swiper
-          modules={[Navigation, A11y, Virtual]}
+          modules={[Navigation, A11y]}
           spaceBetween={12}
           slidesOffsetBefore={24}
           slidesOffsetAfter={24}
@@ -105,7 +105,7 @@ export function VideoCarousel({
             nextEl: nextRef.current,
             prevEl: prevRef.current
           }}
-          virtual
+          rewind={false}
         >
           {videos?.map((video) => (
             <SwiperSlide key={video.id}>
