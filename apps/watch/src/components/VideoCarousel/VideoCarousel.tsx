@@ -107,6 +107,7 @@ export function VideoCarousel({
             nextEl: nextRef.current,
             prevEl: prevRef.current
           }}
+          virtual
         >
           {videos?.map((video) => (
             <SwiperSlide key={video.id}>
