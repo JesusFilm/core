@@ -87,8 +87,10 @@ export function VideoControls({
   const [loadSubtitleDialog, setLoadSubtitleDialog] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
-  const durationSeconds = Math.round(player.duration())
+  const duration = secondsToTimeFormat(player.duration() ?? 1, {
+    trimZeroes: true
+  })
+  const durationSeconds = Math.round(player.duration() ?? 1)
   const { id, title, variant } = useVideo()
   const visible = !play || active || loading
 
@@ -105,7 +107,7 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player.currentTime()),
+        Math.round(player.currentTime() ?? 0),
         Math.round((progress / durationSeconds) * 100)
       )
       const [, ...rest] = progressPercentNotYetEmitted
@@ -122,9 +124,9 @@ export function VideoControls({
   ])
 
   useEffect(() => {
-    setVolume(player.volume() * 100)
+    setVolume((player.volume() ?? 1) * 100)
     player.on('play', () => {
-      if (player.currentTime() < 0.02) {
+      if ((player.currentTime() ?? 0) < 0.02) {
         eventToDataLayer(
           'video_start',
           id,
@@ -132,8 +134,10 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player.currentTime()),
-          Math.round((player.currentTime() / player.duration()) * 100)
+          Math.round(player.currentTime() ?? 0),
+          Math.round(
+            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          )
         )
       } else {
         eventToDataLayer(
@@ -143,14 +147,16 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player.currentTime()),
-          Math.round((player.currentTime() / player.duration()) * 100)
+          Math.round(player.currentTime() ?? 0),
+          Math.round(
+            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          )
         )
       }
       setPlay(true)
     })
     player.on('pause', () => {
-      if (player.currentTime() > 0.02) {
+      if ((player.currentTime() ?? 0) > 0.02) {
         eventToDataLayer(
           'video_pause',
           id,
@@ -158,24 +164,26 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player.currentTime()),
-          Math.round((player.currentTime() / player.duration()) * 100)
+          Math.round(player.currentTime() ?? 0),
+          Math.round(
+            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          )
         )
       }
       setPlay(false)
     })
     player.on('timeupdate', () => {
       setCurrentTime(
-        secondsToTimeFormat(player.currentTime(), { trimZeroes: true })
+        secondsToTimeFormat(player.currentTime() ?? 0, { trimZeroes: true })
       )
-      setProgress(Math.round(player.currentTime()))
+      setProgress(Math.round(player.currentTime() ?? 0))
     })
     player.on('volumechange', () => {
-      setMute(player.muted())
-      setVolume(player.volume() * 100)
+      setMute(player.muted() ?? false)
+      setVolume((player.volume() ?? 1) * 100)
     })
     player.on('fullscreenchange', () => {
-      setFullscreen(player.isFullscreen())
+      setFullscreen(player.isFullscreen() ?? false)
     })
     player.on('useractive', () => setActive(true))
     player.on('userinactive', () => setActive(false))
@@ -190,8 +198,10 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player.currentTime()),
-        Math.round((player.currentTime() / player.duration()) * 100)
+        Math.round(player.currentTime() ?? 0),
+        Math.round(
+          ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+        )
       )
     })
     player.on('canplay', () => setLoading(false))
@@ -205,8 +215,10 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player.currentTime()),
-          Math.round((player.currentTime() / player.duration()) * 100)
+          Math.round(player.currentTime() ?? 0),
+          Math.round(
+            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          )
         )
       } else {
         eventToDataLayer(
@@ -216,8 +228,10 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player.currentTime()),
-          Math.round((player.currentTime() / player.duration()) * 100)
+          Math.round(player.currentTime() ?? 0),
+          Math.round(
+            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          )
         )
       }
       setFullscreen(fscreen.fullscreenElement != null)
