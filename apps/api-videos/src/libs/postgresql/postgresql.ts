@@ -14,7 +14,7 @@ import {
   VideoVariantSubtitle
 } from '.prisma/api-videos-client'
 
-type PrismaVideo = Omit<Video, 'childIds'> & {
+export type PrismaVideo = Omit<Video, 'childIds'> & {
   title: VideoTitle[]
   variants: Array<
     VideoVariant & {

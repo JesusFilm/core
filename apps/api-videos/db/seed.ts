@@ -19,7 +19,7 @@ import {
   handleVideo,
   updateChildIds,
   updateParentChild
-} from '../src/libs/postgresql'
+} from '../src/libs/postgresql/postgresql'
 
 const prisma = new PrismaClient()
 
