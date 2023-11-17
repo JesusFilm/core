@@ -39,7 +39,7 @@ if (target === 'undefined' || target === '') {
   target = undefined
 }
 
-async function main(): Promise<void> {
+export async function main(mode: string, target?: string): Promise<void> {
   console.log('import mode:', mode)
 
   const { slugs: usedVideoSlugs, ids: existingVideoIds } =
@@ -149,7 +149,7 @@ async function main(): Promise<void> {
     console.log('error:', key, value)
   }
 }
-main().catch((e) => {
+main(mode, target).catch((e) => {
   console.error(e)
   process.exit(1)
 })
