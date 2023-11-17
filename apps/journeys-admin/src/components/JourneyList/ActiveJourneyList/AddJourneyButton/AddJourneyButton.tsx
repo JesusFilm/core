@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { useJourneyCreateMutation } from '../../../../libs/useJourneyCreateMutation'
@@ -14,7 +13,6 @@ export function AddJourneyButton(): ReactElement {
   const router = useRouter()
   const { activeTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
-  const { teams } = useFlags()
 
   const handleClick = async (): Promise<void> => {
     const journey = await createJourney()
@@ -27,7 +25,7 @@ export function AddJourneyButton(): ReactElement {
 
   return (
     <>
-      {(!teams || activeTeam != null) && (
+      {activeTeam != null && (
         <Button
           variant="contained"
           startIcon={<Plus2Icon />}

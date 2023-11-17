@@ -4,7 +4,6 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
@@ -80,13 +79,11 @@ describe('Editor', () => {
     const { getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider>
-            <ThemeProvider>
-              <Editor journey={journey}>
-                <JourneyEdit />
-              </Editor>
-            </ThemeProvider>
-          </FlagsProvider>
+          <ThemeProvider>
+            <Editor journey={journey}>
+              <JourneyEdit />
+            </Editor>
+          </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -98,13 +95,11 @@ describe('Editor', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider>
-            <ThemeProvider>
-              <Editor journey={journey} selectedStepId="step0.id">
-                <JourneyEdit />
-              </Editor>
-            </ThemeProvider>
-          </FlagsProvider>
+          <ThemeProvider>
+            <Editor journey={journey} selectedStepId="step0.id">
+              <JourneyEdit />
+            </Editor>
+          </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -116,16 +111,14 @@ describe('Editor', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider>
-            <ThemeProvider>
-              <Editor
-                journey={journey}
-                view={ActiveJourneyEditContent.SocialPreview}
-              >
-                <JourneyEdit />
-              </Editor>
-            </ThemeProvider>
-          </FlagsProvider>
+          <ThemeProvider>
+            <Editor
+              journey={journey}
+              view={ActiveJourneyEditContent.SocialPreview}
+            >
+              <JourneyEdit />
+            </Editor>
+          </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
