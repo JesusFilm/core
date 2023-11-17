@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -74,10 +75,12 @@ describe('VideoBlockEditorSettingsPoster', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <VideoBlockEditorSettingsPoster
-            selectedBlock={image}
-            parentBlockId={video.id}
-          />
+          <SnackbarProvider>
+            <VideoBlockEditorSettingsPoster
+              selectedBlock={image}
+              parentBlockId={video.id}
+            />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )

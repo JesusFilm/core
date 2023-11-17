@@ -139,7 +139,7 @@ describe('VideoControls', () => {
   it('mutes and unmutes the video on mute icon click', () => {
     const muteStub = jest
       .spyOn(player, 'muted')
-      .mockImplementationOnce(() => !player.muted())
+      .mockImplementationOnce(() => !(player.muted() ?? false))
 
     const { getByRole } = render(
       <MockedProvider>

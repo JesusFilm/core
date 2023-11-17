@@ -45,6 +45,7 @@ export function PromoteUser({ id, onClick }: PromoteUserProps): ReactElement {
       label={t('Promote')}
       icon={<AlertCircleIcon sx={{ color: 'secondary.light' }} />}
       onClick={handleClick}
+      testId="Promote"
     />
   )
 }

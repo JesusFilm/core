@@ -11,6 +11,7 @@ import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
+// eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
 

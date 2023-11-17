@@ -64,6 +64,7 @@ export function JourneyListMenu({
               vertical: 'top',
               horizontal: 'right'
             }}
+            data-testid="JourneyListMenu"
           >
             {activeTab === 'active' && [
               <MenuItem

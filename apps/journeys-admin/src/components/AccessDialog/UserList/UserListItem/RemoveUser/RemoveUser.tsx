@@ -110,6 +110,7 @@ export function RemoveUser({
       label={t('Remove')}
       icon={<MinusCircleContainedIcon sx={{ color: 'secondary.light' }} />}
       onClick={handleClick}
+      testId="Remove"
     />
   )
 }

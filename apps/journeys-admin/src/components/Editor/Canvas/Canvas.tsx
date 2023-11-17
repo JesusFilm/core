@@ -6,8 +6,7 @@ import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import SwiperCore from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
@@ -20,15 +19,14 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { FramePortal } from '../../FramePortal'
-import { Properties } from '../../JourneyView/Properties'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 import { DRAWER_WIDTH } from '../Drawer'
+import { Properties } from '../Properties'
 
 import { CardWrapper } from './CardWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -42,7 +40,7 @@ const MIN_SPACE_BETWEEN = 16
 const TASKBAR_WIDTH = 72
 
 export function Canvas(): ReactElement {
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const [swiper, setSwiper] = useState<SwiperClass>()
   const [spaceBetween, setSpaceBetween] = useState(16)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
@@ -51,7 +49,6 @@ export function Canvas(): ReactElement {
   } = useEditor()
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
-  const { editableStepFooter } = useFlags()
   const { t } = useTranslation('apps-journeys-admin')
 
   useEffect(() => {
@@ -108,7 +105,7 @@ export function Canvas(): ReactElement {
     })
   }
 
-  function handleSlideChange(swiper: SwiperCore): void {
+  function handleSlideChange(swiper: SwiperClass): void {
     const step = steps?.[swiper.activeIndex]
     if (step == null || step.id === selectedStep?.id) return
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Journey })
@@ -131,40 +128,39 @@ export function Canvas(): ReactElement {
         type: 'SetDrawerPropsAction',
         mobileOpen: false,
         title: t('Properties'),
-        children: <Properties journeyType="Journey" isPublisher={false} />
+        children: <Properties isPublisher={false} />
       })
     }
   }
 
   function handleFooterClick(): void {
-    if (editableStepFooter) {
-      dispatch({
-        type: 'SetSelectedComponentAction',
-        component: 'Footer'
-      })
-      dispatch({
-        type: 'SetActiveFabAction',
-        activeFab: ActiveFab.Add
-      })
-      dispatch({
-        type: 'SetActiveTabAction',
-        activeTab: ActiveTab.Properties
-      })
-      dispatch({
-        type: 'SetDrawerPropsAction',
-        title: t('Hosted By'),
-        mobileOpen: true,
-        children: <HostSidePanel />
-      })
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        id: 'hosted-by'
-      })
-    }
+    dispatch({
+      type: 'SetSelectedComponentAction',
+      component: 'Footer'
+    })
+    dispatch({
+      type: 'SetActiveFabAction',
+      activeFab: ActiveFab.Add
+    })
+    dispatch({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: t('Hosted By'),
+      mobileOpen: true,
+      children: <HostSidePanel />
+    })
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: 'hosted-by'
+    })
   }
 
   return (
     <Box
+      data-testid="EditorCanvas"
       sx={{
         backgroundColor: (theme) => theme.palette.background.paper,
         '& .swiper': {

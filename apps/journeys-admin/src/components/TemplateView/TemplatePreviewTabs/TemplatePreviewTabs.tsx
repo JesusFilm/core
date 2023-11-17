@@ -1,14 +1,13 @@
 import 'swiper/css'
 import 'swiper/css/scrollbar'
 
+import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import SwiperCore from 'swiper'
-import { A11y, Mousewheel, Scrollbar } from 'swiper/modules'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -18,8 +17,6 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 
 import { TemplateCardPreview } from './TemplateCardPreview/TemplateCardPreview'
-
-SwiperCore.use([Mousewheel, Scrollbar, A11y])
 
 export function TemplatePreviewTabs(): ReactElement {
   const [tabValue, setTabValue] = useState(0)
@@ -37,11 +34,11 @@ export function TemplatePreviewTabs(): ReactElement {
   }
 
   return (
-    <>
+    <Box sx={{ pb: { sm: 5 } }}>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
-        sx={{ borderBottom: 1, borderColor: 'divider' }}
+        sx={{ borderBottom: 1, borderColor: 'divider', mb: { xs: 3, sm: 7 } }}
       >
         <Tab
           disableRipple
@@ -55,6 +52,6 @@ export function TemplatePreviewTabs(): ReactElement {
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
         <TemplateCardPreview steps={steps} />
       </TabPanel>
-    </>
+    </Box>
   )
 }

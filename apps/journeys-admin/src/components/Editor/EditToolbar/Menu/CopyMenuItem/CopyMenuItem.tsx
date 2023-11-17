@@ -37,6 +37,7 @@ export function CopyMenuItem({
       label="Copy Link"
       icon={<LingAngledIcon />}
       onClick={handleCopyLink}
+      testId="Copy"
     />
   )
 }

@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
 
@@ -35,11 +36,13 @@ describe('ImageSource', () => {
     it('shows placeholders on null', async () => {
       const { getByRole } = render(
         <MockedProvider>
-          <ImageSource
-            selectedBlock={null}
-            onChange={onChange}
-            onDelete={onDelete}
-          />
+          <SnackbarProvider>
+            <ImageSource
+              selectedBlock={null}
+              onChange={onChange}
+              onDelete={onDelete}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Select Image' }))
@@ -54,11 +57,13 @@ describe('ImageSource', () => {
     it('shows placeholders', async () => {
       const { getByRole } = render(
         <MockedProvider>
-          <ImageSource
-            selectedBlock={null}
-            onChange={onChange}
-            onDelete={onDelete}
-          />
+          <SnackbarProvider>
+            <ImageSource
+              selectedBlock={null}
+              onChange={onChange}
+              onDelete={onDelete}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Select Image' }))
@@ -72,11 +77,13 @@ describe('ImageSource', () => {
   it('triggers onChange', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-        <ImageSource
-          selectedBlock={null}
-          onChange={onChange}
-          onDelete={onDelete}
-        />
+        <SnackbarProvider>
+          <ImageSource
+            selectedBlock={null}
+            onChange={onChange}
+            onDelete={onDelete}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
@@ -93,11 +100,13 @@ describe('ImageSource', () => {
   it('triggers onChange onPaste', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-        <ImageSource
-          selectedBlock={null}
-          onChange={onChange}
-          onDelete={onDelete}
-        />
+        <SnackbarProvider>
+          <ImageSource
+            selectedBlock={null}
+            onChange={onChange}
+            onDelete={onDelete}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))

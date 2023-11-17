@@ -80,6 +80,7 @@ export function ActionsList({
           gap: mdUp ? 12 : 4,
           mx: mdUp ? 8 : 0
         }}
+        data-testid="ActionsList"
       >
         <Stack
           sx={{

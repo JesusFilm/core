@@ -121,7 +121,7 @@ describe('HostAvatarsButton', () => {
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(queryByTestId('imageSrcStack')).not.toBeInTheDocument()
+    expect(queryByTestId('ImageBlockHeader')).not.toBeInTheDocument()
   })
 
   it('should open image edit library on avatar click', () => {
@@ -146,7 +146,7 @@ describe('HostAvatarsButton', () => {
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('imageSrcStack')).toBeInTheDocument()
+    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
     expect(getByRole('img')).toHaveAttribute('src', 'avatar1Src')
     fireEvent.click(getByRole('button', { name: 'close-image-library' }))
 
@@ -211,7 +211,7 @@ describe('HostAvatarsButton', () => {
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('imageSrcStack')).toBeInTheDocument()
+    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
     fireEvent.click(getByTestId('imageBlockHeaderDelete'))
 
     void waitFor(() => {
@@ -307,7 +307,7 @@ describe('HostAvatarsButton', () => {
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('imageSrcStack')).toBeInTheDocument()
+    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
     fireEvent.click(getByTestId('imageBlockHeaderDelete'))
     void waitFor(() => {
       expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()

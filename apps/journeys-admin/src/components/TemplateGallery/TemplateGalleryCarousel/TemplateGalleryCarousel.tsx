@@ -2,17 +2,14 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
-import SwiperCore from 'swiper'
 import { A11y, Mousewheel, Navigation } from 'swiper/modules'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 import { NavigationOptions } from 'swiper/types/modules/navigation'
 
 import { NavButton } from './NavButton'
 
 import 'swiper/css'
-
-SwiperCore.use([Navigation, Mousewheel, A11y])
 
 const StyledSwiperContainer = styled(Swiper)(() => ({
   overflow: 'visible !important',
@@ -38,7 +35,7 @@ export function TemplateGalleryCarousel<T>({
   breakpoints,
   loading = false
 }: TemplateGalleryCarouselProps<T>): ReactElement {
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const [swiper, setSwiper] = useState<SwiperClass>()
   const [hovered, setHovered] = useState(false)
 
   const nextRef = useRef<HTMLButtonElement>(null)
@@ -65,6 +62,7 @@ export function TemplateGalleryCarousel<T>({
     >
       {heading != null && <Typography variant="h5">{heading}</Typography>}
       <StyledSwiperContainer
+        modules={[Navigation, Mousewheel, A11y]}
         freeMode
         speed={850}
         slidesPerView="auto"

@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import React from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -35,9 +34,6 @@ describe('TemplateEditButton', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('link')).toHaveAttribute(
-      'href',
-      '/publisher/journeyId/edit'
-    )
+    expect(getByRole('link')).toHaveAttribute('href', '/publisher/journeyId')
   })
 })

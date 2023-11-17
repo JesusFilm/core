@@ -3,17 +3,13 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
-import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
-  const { templates } = useFlags()
 
   return (
     <>
@@ -25,9 +21,9 @@ function LibraryIndex(): ReactElement {
           backgroundColor: 'background.paper',
           overflowX: 'hidden'
         }}
-        hiddenPanelHeader={templates}
+        showMainHeader={false}
       >
-        {templates ? <TemplateGallery /> : <TemplateLibrary />}
+        <TemplateGallery />
       </PageWrapper>
     </>
   )
@@ -35,7 +31,7 @@ function LibraryIndex(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR()(
   async ({ user, locale, resolvedUrl }) => {
-    const { flags, redirect, translations } = await initAndAuthApp({
+    const { redirect, translations } = await initAndAuthApp({
       user,
       locale,
       resolvedUrl
@@ -45,7 +41,6 @@ export const getServerSideProps = withUserTokenSSR()(
 
     return {
       props: {
-        flags,
         ...translations
       }
     }
