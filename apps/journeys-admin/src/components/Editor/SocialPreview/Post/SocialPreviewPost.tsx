@@ -31,6 +31,7 @@ export function SocialPreviewPost({
       width={256}
       mx="auto"
       sx={{ transform: { xs: 'scale(1)', lg: 'scale(1.33)' } }}
+      data-testid="SocialPreviewPost"
     >
       <Stack direction="column" justifyContent="start" alignContent="center">
         <Typography variant="caption" pb={4} textAlign="center">

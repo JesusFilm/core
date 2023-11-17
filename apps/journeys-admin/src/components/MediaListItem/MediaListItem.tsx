@@ -82,6 +82,7 @@ export function MediaListItem({
           borderColor: 'divider',
           px: 6
         }}
+        data-testid="JourneysAdminMediaListItem"
       >
         <Stack direction="row" spacing={4} alignItems="center">
           <Box

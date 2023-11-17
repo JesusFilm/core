@@ -18,7 +18,10 @@ export function ActionDetails({
   setSelectedAction
 }: ActionDetailsProps): ReactElement {
   return (
-    <Box sx={{ overflow: 'auto', height: '100%' }}>
+    <Box
+      sx={{ overflow: 'auto', height: '100%' }}
+      data-testid="EditorActionDetails"
+    >
       {url != null ? (
         <Stack gap={7} sx={{ px: 6, pb: 6 }}>
           <ActionEditor

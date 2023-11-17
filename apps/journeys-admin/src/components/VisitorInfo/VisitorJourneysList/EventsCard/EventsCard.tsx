@@ -35,6 +35,7 @@ export function EventsCard({ journey }: EventsCardProps): ReactElement {
         borderRadius: { sm: 0, md: 4 },
         mx: { xs: -6, sm: '-32px', md: 0 }
       }}
+      data-testid={`EventsCard-${journey.id}`}
     >
       <Box sx={{ px: { xs: 4, sm: 6 } }}>
         <GenericEvent

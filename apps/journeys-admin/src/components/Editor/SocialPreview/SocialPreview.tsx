@@ -29,7 +29,7 @@ export function SocialPreview(): ReactElement {
   return (
     <>
       {mdUp ? (
-        <Box data-testid="social-preview-panel">
+        <Box data-testid="SocialPreview">
           <Stack
             direction="row"
             justifyContent="space-evenly"
@@ -51,7 +51,7 @@ export function SocialPreview(): ReactElement {
           </Stack>
         </Box>
       ) : (
-        <Box>
+        <Box data-testid="SocialPreview">
           <Swiper
             id="social-swiper"
             slidesPerView={1}

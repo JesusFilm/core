@@ -42,7 +42,7 @@ export function TemplateGallery(): ReactElement {
   }
 
   return (
-    <Container disableGutters>
+    <Container disableGutters data-testid="TemplateGallery">
       <HeaderAndLanguageFilter
         selectedLanguageIds={selectedLanguageIds}
         onChange={handleLanguageIdsChange}
@@ -51,7 +51,7 @@ export function TemplateGallery(): ReactElement {
         container
         spacing={2}
         sx={{
-          mb: { xs: 6, md: 9 }
+          mb: { xs: 1, md: 3 }
         }}
         id="TemplateGalleryTagsFilter"
       >

@@ -53,6 +53,7 @@ export function UserTeamDeleteMenuItem({
       icon={<MinusCircleContainedIcon />}
       onClick={handleClick}
       disabled={disabled === true || loading}
+      testId="Remove"
     />
   )
 }

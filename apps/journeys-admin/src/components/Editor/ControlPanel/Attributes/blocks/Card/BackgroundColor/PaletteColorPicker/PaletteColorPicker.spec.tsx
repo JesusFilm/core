@@ -20,8 +20,8 @@ describe('PaletteColorPicker', () => {
       />
     )
 
-    expect(getByTestId('#C62828')).toBeInTheDocument()
-    expect(getByTestId('#30313D')).toBeInTheDocument()
+    expect(getByTestId('Swatch-#C62828')).toBeInTheDocument()
+    expect(getByTestId('Swatch-#30313D')).toBeInTheDocument()
   })
 
   it('displays the palette for light mode', () => {
@@ -34,8 +34,8 @@ describe('PaletteColorPicker', () => {
       />
     )
 
-    expect(getByTestId('#FFCDD2')).toBeInTheDocument()
-    expect(getByTestId('#FEFEFE')).toBeInTheDocument()
+    expect(getByTestId('Swatch-#FFCDD2')).toBeInTheDocument()
+    expect(getByTestId('Swatch-#FEFEFE')).toBeInTheDocument()
   })
 
   it('calls onChange on swatch click', () => {
@@ -48,7 +48,7 @@ describe('PaletteColorPicker', () => {
       />
     )
 
-    fireEvent.click(getByTestId('#30313D'))
+    fireEvent.click(getByTestId('Swatch-#30313D'))
 
     expect(onChange).toHaveBeenCalledWith('#30313D')
   })

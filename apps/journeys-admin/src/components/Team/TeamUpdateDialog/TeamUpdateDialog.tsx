@@ -113,6 +113,7 @@ export function TeamUpdateDialog({
             closeLabel: t('Cancel'),
             submitLabel: t('Save')
           }}
+          testId="TeamUpdateDialog"
         >
           <Form>
             <Stack spacing={4}>

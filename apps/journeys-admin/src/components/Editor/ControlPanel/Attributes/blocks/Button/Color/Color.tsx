@@ -76,6 +76,7 @@ export function Color(): ReactElement {
       value={selectedBlock?.buttonColor ?? ButtonColor.primary}
       onChange={handleChange}
       options={options}
+      testId="Color"
     />
   )
 }

@@ -42,7 +42,7 @@ export function GenericEvent({
   } = getEventVariant(variant)
 
   return (
-    <TimelineItem>
+    <TimelineItem data-testid="GenericEvent">
       {/* Time */}
       <TimelineOppositeContent
         sx={{

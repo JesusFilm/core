@@ -41,7 +41,7 @@ export function AddUserSection({
   }
 
   return (
-    <Stack flexGrow={1} sx={{ m: 4, mt: 2 }}>
+    <Stack flexGrow={1} sx={{ m: 4, mt: 2 }} data-testid="AddUserSection">
       <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
         <UsersProfiles2Icon />
         <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>

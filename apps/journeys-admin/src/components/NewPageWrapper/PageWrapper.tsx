@@ -19,7 +19,7 @@ interface PageWrapperProps {
   showAppHeader?: boolean
   title?: string
   mainHeaderChildren?: ReactNode
-  hiddenPanelHeader?: boolean
+  showMainHeader?: boolean
   backHref?: string
   backHrefHistory?: boolean
   children?: ReactNode
@@ -38,7 +38,7 @@ export function PageWrapper({
   showAppHeader = true,
   title,
   mainHeaderChildren,
-  hiddenPanelHeader,
+  showMainHeader = true,
   backHref,
   backHrefHistory,
   children,
@@ -64,6 +64,7 @@ export function PageWrapper({
           [theme.breakpoints.down('md')]: { overflowY: 'auto' },
           overflow: 'hidden'
         }}
+        data-testid="JourneysAdminNewPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
           <NavigationDrawer
@@ -99,7 +100,7 @@ export function PageWrapper({
                 }
               }}
             >
-              {hiddenPanelHeader !== true && (
+              {showMainHeader && (
                 <MainPanelHeader
                   title={title}
                   backHref={backHref}
