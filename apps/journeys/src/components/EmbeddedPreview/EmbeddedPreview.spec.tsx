@@ -11,6 +11,24 @@ import { basic } from '../../libs/testData/storyData'
 
 import { EmbeddedPreview } from './EmbeddedPreview'
 
+// jest.mock('swiper/modules', () => ({
+//   Navigation: (props) => null,
+//   Pagination: (props) => null,
+//   Scrollbar: (props) => null,
+//   A11y: (props) => null
+// }))
+
+// jest.mock('swiper/react', () => ({
+//   Swiper: ({ children }) => <div data-testid="swiper-testid">{children}</div>,
+//   SwiperSlide: ({ children }) => (
+//     <div data-testid="swiper-slide-testid">{children}</div>
+//   ),
+//   SwiperClass: {}
+// }))
+
+// jest.mock('swiper/css', () => jest.fn())
+// jest.mock('swiper/css/pagination', () => jest.fn())
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true

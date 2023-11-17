@@ -6,8 +6,7 @@ import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import SwiperCore from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
@@ -41,7 +40,7 @@ const MIN_SPACE_BETWEEN = 16
 const TASKBAR_WIDTH = 72
 
 export function Canvas(): ReactElement {
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const [swiper, setSwiper] = useState<SwiperClass>()
   const [spaceBetween, setSpaceBetween] = useState(16)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
@@ -106,7 +105,7 @@ export function Canvas(): ReactElement {
     })
   }
 
-  function handleSlideChange(swiper: SwiperCore): void {
+  function handleSlideChange(swiper: SwiperClass): void {
     const step = steps?.[swiper.activeIndex]
     if (step == null || step.id === selectedStep?.id) return
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Journey })

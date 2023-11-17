@@ -1,20 +1,20 @@
 import type { Config } from 'jest'
-
-const esmModules = ['swiper', 'ssr-window', 'dom7']
+import path from 'path'
 
 const config: Config = {
   displayName: 'journeys',
+  moduleNameMapper: {
+    'swiper/react': '<rootDir>/../__mocks__/swiper/react',
+    'swiper/modules': '<rootDir>/../__mocks__/swiper/modules',
+    'swiper/css': '<rootDir>/../__mocks__/swiper/css',
+    'swiper/css/*': '<rootDir>/../__mocks__/swiper/css'
+  },
   transform: {
-    // '(?!.*\\.mjs$|swiper|ssr-window|dom7)': 'babel-jest',
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
     '^.+\\.[t]sx?$': [
       'babel-jest',
       {
-        presets: [
-          // ['@babel/preset-env', { targets: { node: 'current' } }],
-          '@nx/next/babel'
-        ]
-        // plugins: ['@babel/plugin-proposal-private-methods']
+        presets: ['@nx/next/babel']
       }
     ]
   },
@@ -23,8 +23,7 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>setupTests.ts'],
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../jest.preset.js',
-  transformIgnorePatterns: [`../../node_modules/(?!swiper)`]
+  preset: '../../jest.preset.js'
 }
 
 export default config
