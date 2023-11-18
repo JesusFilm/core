@@ -42,7 +42,30 @@ function TemplateVideoPreviewItem({
   const [opacity, setOpacity] = useState(1)
 
   return (
-    <>
+    <Box
+      onClick={() => setHasPlayed(true)}
+      sx={{
+        position: 'relative',
+        width: { xs: 280, sm: 430 },
+        height: { xs: 157, sm: 239 },
+        cursor: 'pointer',
+        borderRadius: 4,
+        overflow: 'hidden'
+      }}
+    >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 2,
+          backgroundColor: 'divider',
+          transition: (theme) => theme.transitions.create('opacity'),
+          opacity
+        }}
+      />
       {hasPlayed ? (
         <DynamicTemplateVideoPlayer
           id={block?.video?.variant?.hls ?? block?.videoId}
@@ -52,64 +75,39 @@ function TemplateVideoPreviewItem({
           endAt={block?.endAt ?? 10000}
         />
       ) : (
-        <Box
-          onClick={() => setHasPlayed(true)}
-          sx={{
-            position: 'relative',
-            width: { xs: 280, sm: 430 },
-            height: { xs: 157, sm: 239 },
-            cursor: 'pointer',
-            borderRadius: 4,
-            overflow: 'hidden'
+        <Image
+          src={(block?.image as string) ?? block?.video?.image}
+          alt={block?.video?.title[0]?.value ?? 'video' + ' image'}
+          fill
+          sizes="100vw"
+          onLoad={() => setOpacity(0)}
+          style={{
+            objectFit: 'cover',
+            borderRadius: '16px',
+            color: 'red'
           }}
-        >
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              zIndex: 2,
-              backgroundColor: 'divider',
-              transition: (theme) => theme.transitions.create('opacity'),
-              opacity
-            }}
-          />
-          <Image
-            src={(block?.image as string) ?? block?.video?.image}
-            alt={block?.video?.title[0]?.value ?? 'video' + ' image'}
-            fill
-            sizes="100vw"
-            onLoad={() => setOpacity(0)}
-            style={{
-              objectFit: 'cover',
-              borderRadius: '16px',
-              color: 'red'
-            }}
-          />
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              width: '68px',
-              height: '48px',
-              marginLeft: '-34px',
-              marginTop: '-24px'
-            }}
-          >
-            <PlayArrowRounded
-              sx={{
-                width: '100%',
-                height: '100%',
-                color: 'background.default'
-              }}
-            />
-          </Box>
-        </Box>
+        />
       )}
-    </>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: '68px',
+          height: '48px',
+          marginLeft: '-34px',
+          marginTop: '-24px'
+        }}
+      >
+        <PlayArrowRounded
+          sx={{
+            width: '100%',
+            height: '100%',
+            color: 'background.default'
+          }}
+        />
+      </Box>
+    </Box>
   )
 }
 
@@ -135,7 +133,6 @@ export function TemplateVideoPreview({
       watchOverflow
       spaceBetween={12}
       slidesPerView="auto"
-      autoHeight
       observer
       observeParents
       breakpoints={swiperBreakpoints}

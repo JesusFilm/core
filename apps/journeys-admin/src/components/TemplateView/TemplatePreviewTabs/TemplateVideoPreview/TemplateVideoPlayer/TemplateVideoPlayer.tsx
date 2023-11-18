@@ -83,11 +83,10 @@ export function TemplateVideoPlayer({
     <Box
       data-testid={`TemplateVideoPlayer-${id ?? 'emptyVideo'}`}
       sx={{
-        width: { xs: 280, sm: 430 },
-        height: { xs: 157, sm: 239 },
         overflow: 'hidden',
         borderRadius: 4,
-        position: 'relative'
+        position: 'relative',
+        zIndex: 2
       }}
     >
       <video
