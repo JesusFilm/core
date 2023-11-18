@@ -57,6 +57,7 @@ export function SocialPreview(): ReactElement {
             slideToClickedSlide
             pagination={{ clickable: true }}
             style={{ height: '330px' }}
+            onClick={() => false}
           >
             <SwiperSlide
               key={0}

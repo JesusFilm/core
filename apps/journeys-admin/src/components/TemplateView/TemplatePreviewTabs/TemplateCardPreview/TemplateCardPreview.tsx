@@ -125,6 +125,7 @@ export function TemplateCardPreview({
         overflow: 'visible',
         zIndex: 2
       }}
+      onClick={() => false}
     >
       {steps != null
         ? steps.map((step) => {

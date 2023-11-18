@@ -75,6 +75,7 @@ export function TemplateGalleryCarousel<T>({
         mousewheel={{ forceToAxis: true }}
         breakpoints={breakpoints}
         onSwiper={(swiper) => setSwiper(swiper)}
+        onClick={() => false}
       >
         {loading
           ? [0, 1, 2, 3, 4, 5, 6, 7].map((index) => {

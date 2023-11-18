@@ -64,6 +64,7 @@ export function VideoCarousel({
           slidesOffsetBefore={24}
           slidesOffsetAfter={24}
           breakpoints={swiperBreakpoints}
+          onClick={() => false}
         >
           <SwiperSlide>
             <VideoCard variant={variant} />
@@ -93,6 +94,7 @@ export function VideoCarousel({
       )}
       {loading !== true && (
         <Swiper
+          modules={[Navigation, A11y]}
           autoHeight
           speed={850}
           watchOverflow
@@ -105,7 +107,7 @@ export function VideoCarousel({
             nextEl: nextRef.current,
             prevEl: prevRef.current
           }}
-          rewind={false}
+          onClick={() => false}
         >
           {videos?.map((video) => (
             <SwiperSlide key={video.id}>

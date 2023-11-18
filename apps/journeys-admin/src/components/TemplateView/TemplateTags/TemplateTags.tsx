@@ -89,6 +89,7 @@ function SwiperWrapper({ children }: SwiperWrapperProps): ReactElement {
           overflow: 'visible',
           zIndex: 2
         }}
+        onClick={() => false}
       >
         {children}
       </Swiper>
