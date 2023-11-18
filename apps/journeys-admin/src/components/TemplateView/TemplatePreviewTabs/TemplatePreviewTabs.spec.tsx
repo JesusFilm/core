@@ -45,11 +45,11 @@ describe('TemplatePreviewTabs', () => {
       </MockedProvider>
     )
 
-    expect(getByText('{{cardBlockCount}} Cards')).toBeInTheDocument()
+    expect(getByText('{{count}} Cards')).toBeInTheDocument()
     await waitFor(() =>
       expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(5)
     )
-    expect(getByText('{{videoBlockCount}} Videos')).toBeInTheDocument()
+    expect(getByText('{{count}} Videos')).toBeInTheDocument()
   })
 
   it('should render videos tabs content', async () => {
@@ -66,10 +66,8 @@ describe('TemplatePreviewTabs', () => {
       </MockedProvider>
     )
 
-    expect(getByText('{{cardBlockCount}} Cards')).toBeInTheDocument()
-    await waitFor(() =>
-      fireEvent.click(getByText('{{videoBlockCount}} Videos'))
-    )
+    expect(getByText('{{count}} Cards')).toBeInTheDocument()
+    await waitFor(() => fireEvent.click(getByText('{{count}} Videos')))
     expect(getAllByTestId('TemplateVideosSwiperSlide')).toHaveLength(5)
   })
 })

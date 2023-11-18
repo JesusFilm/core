@@ -48,7 +48,7 @@ export const Videos = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    fireEvent.click(canvas.getByText('{{videoBlockCount}} Videos'))
+    fireEvent.click(canvas.getByText('{{count}} Videos'))
   }
 }
 

@@ -69,9 +69,9 @@ export function TemplateVideoPlayer({
     const startTime = startAt ?? 0
     if (player != null) {
       const handleVideoTimeChange = (): void => {
-        if (endAt > 0 && player.currentTime() > endAt) {
+        if (endAt > 0 && (player.currentTime() ?? 0) > endAt) {
           player.pause()
-          if (player.isFullscreen()) void player.exitFullscreen()
+          if (player.isFullscreen() ?? false) void player.exitFullscreen()
         }
       }
       player.currentTime(startTime)
