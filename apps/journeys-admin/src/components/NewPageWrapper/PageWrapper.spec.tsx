@@ -2,8 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { PageWrapper } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -16,9 +14,7 @@ describe('PageWrapper', () => {
     it('should show main header title', () => {
       const { getByRole } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Page title" />
-          </FlagsProvider>
+          <PageWrapper title="Page title" />
         </MockedProvider>
       )
       expect(getByRole('main')).toHaveTextContent('Page title')
@@ -27,9 +23,7 @@ describe('PageWrapper', () => {
     it('should show back button', () => {
       const { getByRole } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Page title" backHref="/" />
-          </FlagsProvider>
+          <PageWrapper title="Page title" backHref="/" />
         </MockedProvider>
       )
       expect(getByRole('link')).toHaveAttribute('href', '/')
@@ -38,9 +32,7 @@ describe('PageWrapper', () => {
     it('should not show main panel header', () => {
       const { queryByText } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Page Title" showMainHeader={false} />
-          </FlagsProvider>
+          <PageWrapper title="Page Title" showMainHeader={false} />
         </MockedProvider>
       )
       expect(queryByText('Page Title')).not.toBeInTheDocument()
@@ -49,12 +41,10 @@ describe('PageWrapper', () => {
     it('should show main header children', () => {
       const { getByRole } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper
-              title="Page title"
-              mainHeaderChildren={<>Custom Content</>}
-            />
-          </FlagsProvider>
+          <PageWrapper
+            title="Page title"
+            mainHeaderChildren={<>Custom Content</>}
+          />
         </MockedProvider>
       )
       expect(getByRole('main')).toHaveTextContent('Custom Content')
@@ -63,11 +53,9 @@ describe('PageWrapper', () => {
     it('should show main body children', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Page title">
-              <div>Child</div>
-            </PageWrapper>
-          </FlagsProvider>
+          <PageWrapper title="Page title">
+            <div>Child</div>
+          </PageWrapper>
         </MockedProvider>
       )
       expect(getByTestId('main-body')).toHaveTextContent('Child')
@@ -76,14 +64,12 @@ describe('PageWrapper', () => {
     it('should show bottom panel children', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper
-              title="Page title"
-              bottomPanelChildren={<div>Bottom Panel</div>}
-            >
-              <div>Child</div>
-            </PageWrapper>
-          </FlagsProvider>
+          <PageWrapper
+            title="Page title"
+            bottomPanelChildren={<div>Bottom Panel</div>}
+          >
+            <div>Child</div>
+          </PageWrapper>
         </MockedProvider>
       )
       expect(getByTestId('bottom-panel')).toHaveTextContent('Bottom Panel')
@@ -94,13 +80,11 @@ describe('PageWrapper', () => {
     it('should show the side panel', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper
-              title="Page title"
-              sidePanelTitle="Side Panel"
-              sidePanelChildren={<div>Drawer</div>}
-            />
-          </FlagsProvider>
+          <PageWrapper
+            title="Page title"
+            sidePanelTitle="Side Panel"
+            sidePanelChildren={<div>Drawer</div>}
+          />
         </MockedProvider>
       )
       expect(getByTestId('side-header')).toHaveTextContent('Side Panel')
@@ -118,9 +102,7 @@ describe('PageWrapper', () => {
 
       const { getByTestId, getByText, queryByRole } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Active Journeys" />
-          </FlagsProvider>
+          <PageWrapper title="Active Journeys" />
         </MockedProvider>
       )
       expect(
@@ -136,9 +118,7 @@ describe('PageWrapper', () => {
       ;(useMediaQuery as jest.Mock).mockImplementation(() => false)
       const { getByRole, getByText, queryByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Journey Edit" showAppHeader />
-          </FlagsProvider>
+          <PageWrapper title="Journey Edit" showAppHeader />
         </MockedProvider>
       )
       expect(queryByTestId('toggle-nav-drawer')).not.toBeInTheDocument()

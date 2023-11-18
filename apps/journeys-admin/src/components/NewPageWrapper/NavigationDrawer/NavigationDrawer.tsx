@@ -17,9 +17,7 @@ import { User } from 'next-firebase-auth'
 import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
-import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import BoxIcon from '@core/shared/ui/icons/Box'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -119,8 +117,6 @@ export function NavigationDrawer({
   )
   const [impersonateOpen, setImpersonateOpen] = useState(false)
 
-  const { globalReports } = useFlags()
-
   const selectedPage = router?.pathname?.split('/')[1]
 
   const profileOpen = Boolean(profileAnchorEl)
@@ -188,15 +184,6 @@ export function NavigationDrawer({
           selected={selectedPage === 'templates'}
           link="/templates"
         />
-
-        {globalReports && (
-          <NavigationListItem
-            icon={<BarGroup3Icon />}
-            label="Analytics"
-            selected={selectedPage === 'reports'}
-            link="/reports"
-          />
-        )}
 
         {user?.id != null && data?.me != null && (
           <>

@@ -12,8 +12,8 @@ import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 
 import TranslationModule from '@core/nest/common/TranslationModule'
-import { NestHealthModule } from '@core/nest/health'
 
+import { NestHealthModule } from './modules/health/health.module'
 import { VideoModule } from './modules/video/video.module'
 import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
 
