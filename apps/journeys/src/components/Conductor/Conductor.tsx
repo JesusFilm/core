@@ -206,7 +206,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onSwiper={(swiper) => setSwiper(swiper)}
             allowTouchMove={false}
             onSlideChange={() => setShowHeaderFooter(true)}
-            onClick={() => false}
             sx={{
               '.swiper-pagination': {
                 display: showHeaderFooter ? 'block' : 'none'

@@ -182,7 +182,6 @@ export function Canvas(): ReactElement {
         slideToClickedSlide={steps != null}
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={handleSlideChange}
-        onClick={() => false}
       >
         {steps != null ? (
           steps.map((step) => {

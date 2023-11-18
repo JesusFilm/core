@@ -107,7 +107,6 @@ export function VideoCarousel({
             nextEl: nextRef.current,
             prevEl: prevRef.current
           }}
-          onClick={() => false}
         >
           {videos?.map((video) => (
             <SwiperSlide key={video.id}>
