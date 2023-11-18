@@ -66,16 +66,16 @@ export function TemplatePreviewTabs(): ReactElement {
         sx={{ borderBottom: 1, borderColor: 'divider', mb: { xs: 3, sm: 7 } }}
       >
         <Tab
-          label={t('{{cardBlockCount}} Cards', {
-            cardBlockCount: steps?.length ?? 0
+          label={t('{{count}} Cards', {
+            count: steps?.length ?? 0
           })}
           {...tabA11yProps('cards-preview-tab', 0)}
           sx={{ width: smUp ? 200 : undefined }}
         />
         <Tab
           disabled={videos?.length === 0 || videos == null}
-          label={t('{{videoBlockCount}} Videos', {
-            videoBlockCount: videos?.length ?? 0
+          label={t('{{count}} Videos', {
+            count: videos?.length ?? 0
           })}
           {...tabA11yProps('videos-preview-tab', 1)}
           sx={{ width: smUp ? 200 : undefined }}
