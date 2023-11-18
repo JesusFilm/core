@@ -75,7 +75,7 @@ export function TemplateGalleryCarousel<T>({
             boxSizing: 'unset'
           }}
         >
-          {[0, 1, 2, 3, 4, 5].map((i) => {
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
             return (
               <Box
                 key={`${heading ?? ''}-item-${i}`}
