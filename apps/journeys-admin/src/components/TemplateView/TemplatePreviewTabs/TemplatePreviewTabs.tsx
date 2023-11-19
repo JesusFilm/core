@@ -61,6 +61,7 @@ export function TemplatePreviewTabs(): ReactElement {
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
+        variant="fullWidth"
         sx={{ borderBottom: 1, borderColor: 'divider', mb: { xs: 3, sm: 7 } }}
       >
         <Tab
@@ -68,7 +69,7 @@ export function TemplatePreviewTabs(): ReactElement {
             count: steps?.length ?? 0
           })}
           {...tabA11yProps('cards-preview-tab', 0)}
-          sx={{ width: { xs: '50%', md: 200 }, maxWidth: 'none' }}
+          sx={{ flexGrow: { xs: 1, sm: 0 }, minWidth: { sm: 200 } }}
         />
         <Tab
           disabled={videos?.length === 0 || videos == null}
@@ -76,7 +77,7 @@ export function TemplatePreviewTabs(): ReactElement {
             count: videos?.length ?? 0
           })}
           {...tabA11yProps('videos-preview-tab', 1)}
-          sx={{ width: { xs: '50%', md: 200 }, maxWidth: 'none' }}
+          sx={{ flexGrow: { xs: 1, sm: 0 }, minWidth: { sm: 200 } }}
         />
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
