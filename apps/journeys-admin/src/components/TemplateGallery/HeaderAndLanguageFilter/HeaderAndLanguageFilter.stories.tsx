@@ -107,7 +107,7 @@ export const Default = {
   }
 }
 
-export const WithAutocomplete = {
+export const Clicked = {
   ...Template,
   args: {
     selectedLanguageIds: [],
