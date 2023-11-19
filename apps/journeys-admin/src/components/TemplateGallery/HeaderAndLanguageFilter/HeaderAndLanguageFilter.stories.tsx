@@ -1,5 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
@@ -21,7 +22,21 @@ const getLanguagesMock: MockedResponse<GetLanguages> = {
   request: {
     query: GET_LANGUAGES,
     variables: {
-      languageId: '529'
+      languageId: '529',
+      where: {
+        ids: [
+          '529',
+          '4415',
+          '1106',
+          '4451',
+          '496',
+          '20526',
+          '584',
+          '21028',
+          '20615',
+          '3934'
+        ]
+      }
     }
   },
   result: {
@@ -89,6 +104,22 @@ export const Default = {
     apolloClient: {
       mocks: [getLanguagesMock]
     }
+  }
+}
+
+export const WithAutocomplete = {
+  ...Template,
+  args: {
+    selectedLanguageIds: [],
+    onChange: noop
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [getLanguagesMock]
+    }
+  },
+  play: async () => {
+    await userEvent.click(screen.getByRole('button'))
   }
 }
 
