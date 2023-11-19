@@ -3,7 +3,7 @@ import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Form } from 'formik'
+import { Form, Formik, FormikValues } from 'formik'
 import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
@@ -13,7 +13,7 @@ import { MultipleLanguageAutocomplete } from '@core/shared/ui/MultipleLanguageAu
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
-import { LanguageFilterDialog } from './LanguageFilterDialog'
+// import { LanguageFilterDialog } from './LanguageFilterDialog'
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 
@@ -165,11 +165,18 @@ export function HeaderAndLanguageFilter({
     onClick: () => setOpen(true)
   }
 
+  const handleSubmit = (values: FormikValues): void => {
+    const ids = values.languages.map((language) => language.id)
+    onChange(ids)
+    setOpen(false)
+  }
+
   return (
     <>
       <Stack
         gap={{ xs: 0, md: 2 }}
         alignItems="center"
+        justifyContent="flex-start"
         direction="row"
         flexWrap={{ xs: 'wrap', md: 'initial' }}
         sx={{ pb: { xs: 6, md: 9 } }}
@@ -180,15 +187,12 @@ export function HeaderAndLanguageFilter({
               Journey Templates
             </LocalTypography>
             <LocalTypography {...inTypographyProps}>in</LocalTypography>
-            <MultipleLanguageAutocomplete
-              onChange={
-                async (values) => console.log(values)
-                // await setFieldValue('languages', values)
-              }
-              // values={values.languages}
-              languages={data?.languages}
-              loading={loading}
-            />
+            <LocalButton
+              {...localButtonProps}
+              sx={{ display: open ? 'none' : 'flex' }}
+            >
+              {{ firstLanguage }} {{ secondLanguage }}
+            </LocalButton>
           </Trans>
         )}
         {count !== 2 && (
@@ -197,17 +201,41 @@ export function HeaderAndLanguageFilter({
               Journey Templates
             </LocalTypography>
             <LocalTypography {...inTypographyProps}>in</LocalTypography>
-            <MultipleLanguageAutocomplete
-              onChange={
-                async (values) => console.log(values)
-                // await setFieldValue('languages', values)
-              }
-              // values={values.languages}
-              languages={data?.languages}
-              loading={loading}
-            />
+            <LocalButton
+              {...localButtonProps}
+              sx={{ display: open ? 'none' : 'flex' }}
+            >
+              {{ firstLanguage }}
+            </LocalButton>
           </Trans>
         )}
+        <Formik
+          initialValues={{
+            languages: languageOptions
+          }}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          {({ values, handleSubmit, setFieldValue }) => (
+            <Form
+              style={{
+                display: open ? 'block' : 'none',
+                width: '100%',
+                maxWidth: 'calc(100% - 25px)'
+              }}
+            >
+              <MultipleLanguageAutocomplete
+                onChange={async (values) =>
+                  await setFieldValue('languages', values)
+                }
+                onBlur={handleSubmit}
+                values={values.languages}
+                languages={data?.languages}
+                loading={loading}
+              />
+            </Form>
+          )}
+        </Formik>
 
         {/* <MultipleLanguageAutocomplete
           onChange={
