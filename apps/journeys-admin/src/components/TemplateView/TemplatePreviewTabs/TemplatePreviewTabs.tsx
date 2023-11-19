@@ -2,10 +2,8 @@ import 'swiper/swiper.min.css'
 import 'swiper/components/scrollbar/scrollbar.min.css'
 
 import Box from '@mui/material/Box'
-import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import SwiperCore, { A11y, Mousewheel, Scrollbar } from 'swiper'
@@ -29,7 +27,7 @@ SwiperCore.use([Mousewheel, Scrollbar, A11y])
 export function TemplatePreviewTabs(): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const { t } = useTranslation('apps-journeys-admin')
-  const smUp = useMediaQuery((theme: Theme) => theme?.breakpoints?.up('sm'))
+
   const { journey } = useJourney()
 
   const steps =
@@ -70,7 +68,7 @@ export function TemplatePreviewTabs(): ReactElement {
             count: steps?.length ?? 0
           })}
           {...tabA11yProps('cards-preview-tab', 0)}
-          sx={{ width: smUp ? 200 : undefined }}
+          sx={{ width: { xs: undefined, sm: 200 } }}
         />
         <Tab
           disabled={videos?.length === 0 || videos == null}
@@ -78,7 +76,7 @@ export function TemplatePreviewTabs(): ReactElement {
             count: videos?.length ?? 0
           })}
           {...tabA11yProps('videos-preview-tab', 1)}
-          sx={{ width: smUp ? 200 : undefined }}
+          sx={{ width: { xs: undefined, sm: 200 } }}
         />
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>

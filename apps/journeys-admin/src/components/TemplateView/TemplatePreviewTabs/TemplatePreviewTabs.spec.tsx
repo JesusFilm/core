@@ -9,15 +9,6 @@ import { publishedJourney } from '../../Editor/data'
 import { journeyVideoBlocks } from './data'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -45,11 +36,11 @@ describe('TemplatePreviewTabs', () => {
       </MockedProvider>
     )
 
-    expect(getByText('{{count}} Cards')).toBeInTheDocument()
+    expect(getByText('5 Cards')).toBeInTheDocument()
     await waitFor(() =>
       expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(5)
     )
-    expect(getByText('{{count}} Videos')).toBeInTheDocument()
+    expect(getByText('5 Videos')).toBeInTheDocument()
   })
 
   it('should render videos tabs content', async () => {
@@ -66,8 +57,8 @@ describe('TemplatePreviewTabs', () => {
       </MockedProvider>
     )
 
-    expect(getByText('{{count}} Cards')).toBeInTheDocument()
-    await waitFor(() => fireEvent.click(getByText('{{count}} Videos')))
+    expect(getByText('5 Cards')).toBeInTheDocument()
+    await waitFor(() => fireEvent.click(getByText('5 Videos')))
     expect(getAllByTestId('TemplateVideosSwiperSlide')).toHaveLength(5)
   })
 })
