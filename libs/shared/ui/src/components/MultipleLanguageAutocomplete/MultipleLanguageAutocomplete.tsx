@@ -6,7 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { FormEvent, ReactElement, useEffect, useMemo, useState } from 'react'
+import { FormEvent, ReactElement, useMemo, useState } from 'react'
 
 export interface Language {
   id: string
@@ -41,10 +41,6 @@ export function MultipleLanguageAutocomplete({
   onBlur
 }: MultipleLanguageAutocompleteProps): ReactElement {
   const [openPopper, setOpenPopper] = useState(true)
-
-  useEffect(() => {
-    setOpenPopper(true)
-  }, [openPopper])
 
   const options = useMemo(() => {
     return (
