@@ -13,5 +13,5 @@ module.exports = {
    */
   snapshotFormat: { escapeString: true, printBasicPrototype: true },
   // https://jestjs.io/blog/2022/04/25/jest-28#github-actions-reporter
-  reporters: ['github-actions']
+  reporters: process.env.CI === 'true' ? ['github-actions'] : undefined
 }
