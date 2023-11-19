@@ -68,7 +68,7 @@ export function TemplatePreviewTabs(): ReactElement {
             count: steps?.length ?? 0
           })}
           {...tabA11yProps('cards-preview-tab', 0)}
-          sx={{ width: { xs: undefined, sm: 200 } }}
+          sx={{ width: { xs: '50%', md: 200 }, maxWidth: 'none' }}
         />
         <Tab
           disabled={videos?.length === 0 || videos == null}
@@ -76,7 +76,7 @@ export function TemplatePreviewTabs(): ReactElement {
             count: videos?.length ?? 0
           })}
           {...tabA11yProps('videos-preview-tab', 1)}
-          sx={{ width: { xs: undefined, sm: 200 } }}
+          sx={{ width: { xs: '50%', md: 200 }, maxWidth: 'none' }}
         />
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
