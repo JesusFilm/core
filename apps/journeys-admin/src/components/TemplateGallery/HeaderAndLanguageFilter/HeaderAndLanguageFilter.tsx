@@ -179,7 +179,7 @@ export function HeaderAndLanguageFilter({
         justifyContent="flex-start"
         direction="row"
         flexWrap={{ xs: 'wrap', md: 'initial' }}
-        sx={{ pb: { xs: 6, md: 9 } }}
+        sx={{ pb: { xs: 6, md: 9 }, height: { xs: 'auto', md: 90 } }}
       >
         {count === 2 && (
           <Trans t={t} values={{ firstLanguage, secondLanguage }}>
