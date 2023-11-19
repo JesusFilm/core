@@ -6,7 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { FormEvent, ReactElement, useMemo, useState } from 'react'
+import { FormEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 
 export interface Language {
   id: string
@@ -40,7 +40,11 @@ export function MultipleLanguageAutocomplete({
   loading,
   onBlur
 }: MultipleLanguageAutocompleteProps): ReactElement {
-  const [openPopper, setOpenPopper] = useState(false)
+  const [openPopper, setOpenPopper] = useState(true)
+
+  useEffect(() => {
+    setOpenPopper(true)
+  }, [openPopper])
 
   const options = useMemo(() => {
     return (
@@ -101,10 +105,10 @@ export function MultipleLanguageAutocomplete({
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
       }
-      sx={{}}
       renderInput={(params) => (
         <TextField
           {...params}
+          inputRef={(input) => input?.focus()}
           hiddenLabel
           placeholder="Search Language"
           variant="filled"
