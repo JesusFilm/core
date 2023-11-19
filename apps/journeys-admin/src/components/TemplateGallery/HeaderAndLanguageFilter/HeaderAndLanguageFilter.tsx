@@ -13,7 +13,6 @@ import { MultipleLanguageAutocomplete } from '@core/shared/ui/MultipleLanguageAu
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
-// import { LanguageFilterDialog } from './LanguageFilterDialog'
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 
@@ -236,25 +235,7 @@ export function HeaderAndLanguageFilter({
             </Form>
           )}
         </Formik>
-
-        {/* <MultipleLanguageAutocomplete
-          onChange={
-            async (values) => console.log(values)
-            // await setFieldValue('languages', values)
-          }
-          // values={values.languages}
-          languages={data?.languages}
-          loading={loading}
-        /> */}
       </Stack>
-      {/* <LanguageFilterDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        onChange={onChange}
-        languages={data?.languages}
-        value={languageOptions}
-        loading={loading}
-      /> */}
     </>
   )
 }
