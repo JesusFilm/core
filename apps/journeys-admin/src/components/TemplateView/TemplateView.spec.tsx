@@ -11,7 +11,7 @@ import {
 } from '../../../__generated__/JourneyFields'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
-import { defaultJourney } from '../JourneyView/data'
+import { defaultJourney } from '../Editor/data'
 
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'

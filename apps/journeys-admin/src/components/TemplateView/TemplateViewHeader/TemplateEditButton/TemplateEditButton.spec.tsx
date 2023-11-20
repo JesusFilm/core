@@ -34,9 +34,6 @@ describe('TemplateEditButton', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('link')).toHaveAttribute(
-      'href',
-      '/publisher/journeyId/edit'
-    )
+    expect(getByRole('link')).toHaveAttribute('href', '/publisher/journeyId')
   })
 })

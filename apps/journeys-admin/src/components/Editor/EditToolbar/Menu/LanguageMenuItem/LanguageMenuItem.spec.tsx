@@ -4,8 +4,8 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { defaultJourney } from '../../../../JourneyView/data'
 import { TeamProvider } from '../../../../Team/TeamProvider'
+import { defaultJourney } from '../../../data'
 
 import { LanguageMenuItem } from './LanguageMenuItem'
 

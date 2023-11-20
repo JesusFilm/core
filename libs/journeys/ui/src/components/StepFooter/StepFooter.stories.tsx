@@ -4,8 +4,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import {
   ChatPlatform,
   JourneyStatus,
@@ -99,19 +97,17 @@ const Template: Story = {
     return (
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider flags={{ editableStepFooter: true }}>
-            <JourneyProvider value={{ journey, variant }}>
-              <Stack
-                sx={{
-                  position: 'relative',
-                  height: { xs: 119, sm: 70, lg: 78 },
-                  justifyContent: 'center'
-                }}
-              >
-                <StepFooter sx={{ border: '1px solid black' }} />
-              </Stack>
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey, variant }}>
+            <Stack
+              sx={{
+                position: 'relative',
+                height: { xs: 119, sm: 70, lg: 78 },
+                justifyContent: 'center'
+              }}
+            >
+              <StepFooter sx={{ border: '1px solid black' }} />
+            </Stack>
+          </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -243,24 +239,19 @@ const TemplateRTL: StoryRTL = {
     return (
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider flags={{ editableStepFooter: true }}>
-            {journeys.map((journey, i) => (
-              <JourneyProvider
-                key={i}
-                value={{ journey, variant: variants[i] }}
+          {journeys.map((journey, i) => (
+            <JourneyProvider key={i} value={{ journey, variant: variants[i] }}>
+              <Stack
+                sx={{
+                  position: 'relative',
+                  height: { xs: 118, sm: 69, lg: 77 },
+                  justifyContent: 'center'
+                }}
               >
-                <Stack
-                  sx={{
-                    position: 'relative',
-                    height: { xs: 118, sm: 69, lg: 77 },
-                    justifyContent: 'center'
-                  }}
-                >
-                  <StepFooter sx={{ border: '1px solid black' }} />
-                </Stack>
-              </JourneyProvider>
-            ))}
-          </FlagsProvider>
+                <StepFooter sx={{ border: '1px solid black' }} />
+              </Stack>
+            </JourneyProvider>
+          ))}
         </SnackbarProvider>
       </MockedProvider>
     )
