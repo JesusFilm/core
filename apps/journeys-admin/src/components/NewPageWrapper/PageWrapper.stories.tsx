@@ -132,10 +132,30 @@ export const Default = {
         </Typography>
 
         <Typography sx={{ backgroundColor: 'background.default' }}>
-          The main body content background sometimes is grey, other times is
-          white.
+          The main body content background is grey by default.
         </Typography>
       </>
+    )
+  }
+}
+
+export const CustomMainBody = {
+  ...Template,
+  args: {
+    ...Default.args,
+    mainBodyPadding: false,
+    showMainHeader: false,
+    children: (
+      <Paper
+        sx={{ height: '100%', px: { xs: 1, md: 16 }, py: 4 }}
+        elevation={0}
+        square
+      >
+        <Typography gutterBottom>
+          Use mainBodyPadding: false and showMainHeader: false to completely
+          customise the layout & background of the main body area.
+        </Typography>
+      </Paper>
     )
   }
 }
