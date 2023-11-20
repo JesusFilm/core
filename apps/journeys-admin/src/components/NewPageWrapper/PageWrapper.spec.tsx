@@ -94,12 +94,10 @@ describe('PageWrapper', () => {
     it('should show the custom side panel', () => {
       const { getByText } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper
-              title="Page title"
-              customSidePanel={<div>Custom Drawer</div>}
-            />
-          </FlagsProvider>
+          <PageWrapper
+            title="Page title"
+            customSidePanel={<div>Custom Drawer</div>}
+          />
         </MockedProvider>
       )
       expect(getByText('Custom Drawer')).toBeInTheDocument()
