@@ -1,18 +1,38 @@
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import ButtonBase from '@mui/material/ButtonBase'
+import Checkbox from '@mui/material/Checkbox'
+import MuiPopper from '@mui/material/Popper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { Form, Formik, FormikValues } from 'formik'
-import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
+import { FieldArray, Form, Formik, FormikValues } from 'formik'
+import {
+  ComponentProps,
+  ReactElement,
+  ReactNode,
+  useMemo,
+  useState
+} from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
-import { MultipleLanguageAutocomplete } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
+
+const StyledPopperOption = styled(ButtonBase)(() => ({
+  backgroundColor: 'transparent',
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  flexGrow: 1
+}))
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 
@@ -123,6 +143,7 @@ export function HeaderAndLanguageFilter({
 }: LanguageFilterProps): ReactElement {
   const [open, setOpen] = useState(false)
   const { t } = useTranslation('apps-journeys-admin')
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const { data, loading } = useLanguagesQuery({
     languageId: '529',
@@ -161,24 +182,52 @@ export function HeaderAndLanguageFilter({
   }
   const localButtonProps: LocalButtonProps = {
     loading,
-    onClick: () => setOpen(true)
+    onClick: (e) => {
+      setAnchorEl(e.currentTarget)
+      setOpen(!open)
+    }
   }
 
-  const handleSubmit = (values: FormikValues): void => {
+  function handleSubmit(values: FormikValues): void {
     const ids = values.languages.map((language) => language.id)
     onChange(ids)
-    setOpen(false)
+    setOpen((prev) => !prev)
   }
+
+  const options = useMemo(() => {
+    return (
+      data?.languages?.map(({ id, name }) => {
+        const localLanguageName = name.find(({ primary }) => !primary)?.value
+        const nativeLanguageName = name.find(({ primary }) => primary)?.value
+
+        return {
+          id,
+          localName: localLanguageName,
+          nativeName: nativeLanguageName
+        }
+      }) ?? []
+    )
+  }, [data?.languages])
+
+  const sortedOptions = useMemo(() => {
+    if (options.length > 0) {
+      return options.sort((a, b) => {
+        return (a.localName ?? a.nativeName ?? '').localeCompare(
+          b.localName ?? b.nativeName ?? ''
+        )
+      })
+    }
+    return []
+  }, [options])
 
   return (
     <>
       <Stack
         gap={{ xs: 0, md: 2 }}
         alignItems="center"
-        justifyContent="flex-start"
         direction="row"
         flexWrap={{ xs: 'wrap', md: 'initial' }}
-        sx={{ pb: { xs: 6, md: 9 }, height: { xs: 'auto', md: 90 } }}
+        sx={{ pb: { xs: 6, md: 9 } }}
       >
         {count === 2 && (
           <Trans t={t} values={{ firstLanguage, secondLanguage }}>
@@ -186,10 +235,7 @@ export function HeaderAndLanguageFilter({
               Journey Templates
             </LocalTypography>
             <LocalTypography {...inTypographyProps}>in</LocalTypography>
-            <LocalButton
-              {...localButtonProps}
-              sx={{ display: open ? 'none' : 'flex' }}
-            >
+            <LocalButton {...localButtonProps}>
               {{ firstLanguage }} {{ secondLanguage }}
             </LocalButton>
           </Trans>
@@ -200,22 +246,36 @@ export function HeaderAndLanguageFilter({
               Journey Templates
             </LocalTypography>
             <LocalTypography {...inTypographyProps}>in</LocalTypography>
-            <LocalButton
-              {...localButtonProps}
-              sx={{ display: open ? 'none' : 'flex' }}
-            >
-              {{ firstLanguage }}
-            </LocalButton>
+            <LocalButton {...localButtonProps}>{{ firstLanguage }}</LocalButton>
           </Trans>
         )}
-        <Formik
-          initialValues={{
-            languages: languageOptions
-          }}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          {({ values, handleSubmit, setFieldValue }) => (
+      </Stack>
+
+      <Formik
+        initialValues={{
+          languages: languageOptions
+        }}
+        onSubmit={(values) => handleSubmit(values)}
+        enableReinitialize
+      >
+        {({ values, handleSubmit }) => (
+          <>
+            <Box
+              data-testid="PresentationLayer"
+              onClick={async () => {
+                await handleSubmit()
+              }}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: 'transparent',
+                zIndex: 9999,
+                display: open ? 'block' : 'none'
+              }}
+            />
             <Form
               style={{
                 display: open ? 'block' : 'none',
@@ -223,19 +283,76 @@ export function HeaderAndLanguageFilter({
                 maxWidth: 'calc(100% - 25px)'
               }}
             >
-              <MultipleLanguageAutocomplete
-                onChange={async (values) =>
-                  await setFieldValue('languages', values)
-                }
-                onBlur={handleSubmit}
-                values={values.languages}
-                languages={data?.languages}
-                loading={loading}
-              />
+              <FieldArray name="languages">
+                {({ push, remove }) => (
+                  <MuiPopper
+                    open={open}
+                    anchorEl={anchorEl}
+                    sx={{
+                      zIndex: 9999,
+                      py: 2,
+                      backgroundColor: 'background.paper',
+                      borderRadius: 1,
+                      boxShadow: 2,
+                      minWidth: 250,
+                      width: { xs: '100%', md: anchorEl?.clientWidth }
+                    }}
+                    placement="bottom"
+                  >
+                    <Stack>
+                      {sortedOptions.map(({ localName, nativeName, id }, i) => {
+                        function handleChange(): void {
+                          values.languages.some(
+                            (language) => language.id === id
+                          )
+                            ? remove(
+                                values.languages.findIndex(
+                                  (lang) => lang.id === id
+                                )
+                              )
+                            : push({ id, localName, nativeName })
+                        }
+                        return (
+                          <StyledPopperOption
+                            value={id}
+                            key={id}
+                            onClick={handleChange}
+                          >
+                            <Checkbox
+                              name="languages"
+                              value={id}
+                              icon={
+                                <CheckBoxOutlineBlankIcon fontSize="small" />
+                              }
+                              checkedIcon={<CheckBoxIcon fontSize="small" />}
+                              sx={{ mr: 2 }}
+                              onChange={handleChange}
+                              checked={values?.languages?.some(
+                                (language) => language.id === id
+                              )}
+                            />
+                            <Stack alignItems="flex-start" sx={{ pr: 2 }}>
+                              <Typography>{localName ?? nativeName}</Typography>
+                              {localName != null && nativeName != null && (
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  {nativeName}
+                                </Typography>
+                              )}
+                            </Stack>
+                          </StyledPopperOption>
+                        )
+                      })}
+                    </Stack>
+                  </MuiPopper>
+                )}
+              </FieldArray>
             </Form>
-          )}
-        </Formik>
-      </Stack>
+          </>
+        )}
+      </Formik>
     </>
   )
 }
