@@ -17,10 +17,10 @@ import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
 
 interface PageWrapperProps {
   showAppHeader?: boolean
-  backHrefHistory?: boolean
-  backHref?: string
   title?: string
   showMainHeader?: boolean
+  backHref?: string
+  backHrefHistory?: boolean
   mainHeaderChildren?: ReactNode
   mainBodyPadding?: boolean
   children?: ReactNode
@@ -39,10 +39,10 @@ interface PageWrapperProps {
 
 export function PageWrapper({
   showAppHeader = true,
-  backHrefHistory,
-  backHref,
   title,
   showMainHeader = true,
+  backHref,
+  backHrefHistory,
   mainHeaderChildren,
   mainBodyPadding = true,
   children,
