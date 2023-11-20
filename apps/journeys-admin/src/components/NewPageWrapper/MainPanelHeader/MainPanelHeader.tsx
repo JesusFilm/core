@@ -22,7 +22,7 @@ export function MainPanelHeader({
   title,
   backHref,
   children,
-  backHrefHistory
+  backHrefHistory = false
 }: MainPanelHeaderProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   const router = useRouter()
@@ -33,12 +33,13 @@ export function MainPanelHeader({
         color="default"
         sx={{
           position: { xs: 'fixed', md: 'sticky' },
-          top: { xs: toolbar.height, md: 0 }
+          top: { xs: toolbar.height, md: 0 },
+          width: 'inherit'
         }}
         data-testid="MainPanelHeader"
       >
         <Toolbar variant={toolbar.variant}>
-          {backHrefHistory === true ? (
+          {backHrefHistory ? (
             <Box onClick={() => router.back()}>
               <IconButton
                 data-testid="backHref-history-button"
