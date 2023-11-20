@@ -7,15 +7,14 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { User } from 'next-firebase-auth'
+import type { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../public/taskbar-icon.svg'
-
-import { NavigationDrawer } from './NavigationDrawer'
+import { NavigationDrawer } from '../NewPageWrapper/NavigationDrawer'
 
 export interface PageWrapperProps {
   backHref?: string

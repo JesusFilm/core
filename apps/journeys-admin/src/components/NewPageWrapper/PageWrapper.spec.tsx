@@ -21,12 +21,15 @@ describe('PageWrapper', () => {
     })
 
     it('should show back button', () => {
-      const { getByRole } = render(
+      const { getByTestId } = render(
         <MockedProvider>
           <PageWrapper title="Page title" backHref="/" />
         </MockedProvider>
       )
-      expect(getByRole('link')).toHaveAttribute('href', '/')
+      expect(getByTestId('ChevronLeftIcon').parentElement).toHaveAttribute(
+        'href',
+        '/'
+      )
     })
 
     it('should not show main panel header', () => {
@@ -110,20 +113,6 @@ describe('PageWrapper', () => {
       ).not.toBeInTheDocument()
 
       const button = getByTestId('toggle-nav-drawer')
-      fireEvent.click(button)
-      expect(getByText('Discover')).toBeInTheDocument()
-    })
-
-    it('should show the app header', () => {
-      ;(useMediaQuery as jest.Mock).mockImplementation(() => false)
-      const { getByRole, getByText, queryByTestId } = render(
-        <MockedProvider>
-          <PageWrapper title="Journey Edit" showAppHeader />
-        </MockedProvider>
-      )
-      expect(queryByTestId('toggle-nav-drawer')).not.toBeInTheDocument()
-
-      const button = getByRole('button', { name: 'open drawer' })
       fireEvent.click(button)
       expect(getByText('Discover')).toBeInTheDocument()
     })
