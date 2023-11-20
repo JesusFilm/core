@@ -26,7 +26,7 @@ export function EmbedJourney({
       aria-label={`${slug}-embedded`}
       onClick={handleClick}
       data-testid={`EmbedJourney-${slug}`}
-      sx={{ cursor: 'pointer' }}
+      sx={{ cursor: 'pointer', flexGrow: 1 }}
     >
       <Box
         sx={{
