@@ -149,6 +149,7 @@ export function UserTeamInviteForm({
                   </InputAdornment>
                 )
               }}
+              data-testid="UserTeamInviteForm"
             />
           </Form>
           <Stack

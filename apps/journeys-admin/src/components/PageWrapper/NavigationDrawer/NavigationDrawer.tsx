@@ -13,13 +13,11 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import compact from 'lodash/compact'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
-import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import BoxIcon from '@core/shared/ui/icons/Box'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -42,7 +40,7 @@ const DRAWER_WIDTH = '237px'
 export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
-  authUser?: AuthUser
+  user?: User
 }
 
 const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
@@ -90,7 +88,7 @@ export const StyledList = styled(List)({
 export function NavigationDrawer({
   open,
   onClose,
-  authUser
+  user
 }: NavigationDrawerProps): ReactElement {
   const { data: activeJourneys } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published]
@@ -98,7 +96,6 @@ export function NavigationDrawer({
   const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const { globalReports } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
@@ -120,7 +117,7 @@ export function NavigationDrawer({
   const { data } = useQuery<GetMe>(GET_ME)
   const { data: userRoleData } = useUserRoleQuery()
 
-  const journeyTooltip = getJourneyTooltip(t, journeys, authUser?.id)
+  const journeyTooltip = getJourneyTooltip(t, journeys, user?.id)
 
   return (
     <StyledNavigationDrawer
@@ -128,6 +125,7 @@ export function NavigationDrawer({
       onClose={handleClose}
       variant={smUp ? 'permanent' : 'temporary'}
       anchor="left"
+      data-testid="NavigationDrawer"
     >
       {open && smUp && <Backdrop open={open} onClick={handleClose} />}
       <StyledList>
@@ -160,16 +158,7 @@ export function NavigationDrawer({
           link="/templates"
         />
 
-        {globalReports && (
-          <NavigationListItem
-            icon={<BarGroup3Icon />}
-            label="Reports"
-            selected={selectedPage === 'reports'}
-            link="/reports"
-          />
-        )}
-
-        {authUser != null && data?.me != null && (
+        {user != null && data?.me != null && (
           <>
             <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
 
@@ -196,11 +185,11 @@ export function NavigationDrawer({
               handleClick={handleProfileClick}
             />
             <UserMenu
-              user={data.me}
+              apiUser={data.me}
               profileOpen={profileOpen}
               profileAnchorEl={profileAnchorEl}
               handleProfileClose={handleProfileClose}
-              authUser={authUser}
+              user={user}
             />
           </>
         )}

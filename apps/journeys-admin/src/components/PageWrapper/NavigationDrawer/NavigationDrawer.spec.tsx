@@ -2,9 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
-
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { User } from 'next-firebase-auth'
 
 import { Role } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
@@ -85,24 +83,21 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ globalReports: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            authUser={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as AuthUser
-            }
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          user={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as User
+          }
+        />
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
-    expect(getByText('Reports')).toBeInTheDocument()
     await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
   })
 
@@ -116,25 +111,7 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
-    expect(getByTestId('Templates-list-item')).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
-  })
-
-  it('should select the reports button', () => {
-    mockUseRouter.mockReturnValue({
-      pathname: '/reports'
-    } as unknown as NextRouter)
-
-    const { getByTestId } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ globalReports: true }}>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByTestId('Reports-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemTemplates')).toHaveAttribute(
       'aria-selected',
       'true'
     )
@@ -143,12 +120,10 @@ describe('NavigationDrawer', () => {
   it('should hide the reports button', () => {
     const { queryByText } = render(
       <MockedProvider mocks={[]}>
-        <FlagsProvider flags={{ globalReports: false }}>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
-    expect(queryByText('Reports')).not.toBeInTheDocument()
+    expect(queryByText('Analytics')).not.toBeInTheDocument()
   })
 
   it('should select publisher button', async () => {
@@ -193,19 +168,19 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer
           open
           onClose={onClose}
-          authUser={
+          user={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
               signOut
-            } as unknown as AuthUser
+            } as unknown as User
           }
         />
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByTestId('Publisher-list-item')).toHaveAttribute(
+      expect(getByTestId('NavigationListItemPublisher')).toHaveAttribute(
         'aria-selected',
         'true'
       )
@@ -250,13 +225,13 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer
           open
           onClose={onClose}
-          authUser={
+          user={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
               signOut
-            } as unknown as AuthUser
+            } as unknown as User
           }
         />
       </MockedProvider>
@@ -264,7 +239,7 @@ describe('NavigationDrawer', () => {
     await waitFor(() =>
       expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     )
-    expect(getByTestId('Profile-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemProfile')).toHaveAttribute(
       'aria-selected',
       'false'
     )

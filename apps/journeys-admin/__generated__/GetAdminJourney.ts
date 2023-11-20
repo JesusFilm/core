@@ -589,6 +589,22 @@ export interface GetAdminJourney_journey_primaryImageBlock {
   blurhash: string;
 }
 
+export interface GetAdminJourney_journey_creatorImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
 export interface GetAdminJourney_journey_userJourneys_user {
   __typename: "User";
   id: string;
@@ -629,6 +645,26 @@ export interface GetAdminJourney_journey_team {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
+}
+
+export interface GetAdminJourney_journey_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetAdminJourney_journey_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: GetAdminJourney_journey_tags_name_language;
+  primary: boolean;
+}
+
+export interface GetAdminJourney_journey_tags {
+  __typename: "Tag";
+  id: string;
+  parentId: string | null;
+  name: GetAdminJourney_journey_tags_name[];
 }
 
 export interface GetAdminJourney_journey {
@@ -650,10 +686,13 @@ export interface GetAdminJourney_journey {
   template: boolean | null;
   blocks: GetAdminJourney_journey_blocks[] | null;
   primaryImageBlock: GetAdminJourney_journey_primaryImageBlock | null;
+  creatorDescription: string | null;
+  creatorImageBlock: GetAdminJourney_journey_creatorImageBlock | null;
   userJourneys: GetAdminJourney_journey_userJourneys[] | null;
   chatButtons: GetAdminJourney_journey_chatButtons[];
   host: GetAdminJourney_journey_host | null;
   team: GetAdminJourney_journey_team | null;
+  tags: GetAdminJourney_journey_tags[];
 }
 
 export interface GetAdminJourney {

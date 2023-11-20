@@ -63,11 +63,14 @@ const journey: Journey = {
   primaryImageBlock: null,
   template: null,
   userJourneys: [],
+  creatorDescription: null,
+  creatorImageBlock: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 const video: TreeBlock<VideoBlock> = {

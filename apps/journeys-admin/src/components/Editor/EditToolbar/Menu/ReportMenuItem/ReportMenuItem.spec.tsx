@@ -4,8 +4,8 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { defaultJourney } from '../../../../JourneyView/data'
 import { TeamProvider } from '../../../../Team/TeamProvider'
+import { defaultJourney } from '../../../data'
 
 import { ReportMenuItem } from './ReportMenuItem'
 
@@ -27,8 +27,8 @@ describe('ReportMenuItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toHaveAttribute(
       'href',
       '/journeys/journey-id/reports'
     )

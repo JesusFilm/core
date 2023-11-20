@@ -642,6 +642,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  creatorImageBlock: ImageBlock
   chatButtons: [ChatButton!]!
   id: ID!
   title: String!
@@ -649,6 +650,7 @@ type Journey
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
+  creatorDescription: String
   slug: String!
   archivedAt: DateTime
   deletedAt: DateTime
@@ -698,6 +700,7 @@ type JourneyProfile
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
+  onboardingFormCompletedAt: DateTime
 }
 
 input JourneyProfileUpdateInput
@@ -713,6 +716,7 @@ input JourneysFilter
   template: Boolean
   ids: [ID!]
   tagIds: [ID!]
+  languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
 }
@@ -750,6 +754,8 @@ input JourneyUpdateInput
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
+  creatorDescription: String
+  creatorImageBlockId: ID
   primaryImageBlockId: ID
   slug: String
   seoTitle: String
@@ -942,6 +948,12 @@ enum LanguageIdType
   bcp47 @join__enumValue(graph: LANGUAGES)
 }
 
+input LanguagesFilter
+  @join__type(graph: LANGUAGES)
+{
+  ids: [ID!]
+}
+
 type LanguageWithSlug
   @join__type(graph: VIDEOS)
 {
@@ -1000,6 +1012,7 @@ enum MessagePlatform
 type Mutation
   @join__type(graph: JOURNEYS)
   @join__type(graph: MEDIA)
+  @join__type(graph: USERS)
 {
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @join__field(graph: JOURNEYS)
@@ -1138,6 +1151,7 @@ type Mutation
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @join__field(graph: JOURNEYS)
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent! @join__field(graph: JOURNEYS)
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent! @join__field(graph: JOURNEYS)
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @join__field(graph: JOURNEYS)
@@ -1175,6 +1189,7 @@ type Mutation
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
+  journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
@@ -1215,6 +1230,7 @@ type Mutation
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
+  userImpersonate(email: String!): String @join__field(graph: USERS)
 }
 
 """
@@ -1370,7 +1386,7 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-  languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
+  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
   getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
@@ -1635,15 +1651,57 @@ input StepNextEventCreateInput
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Id of the current StepBlock"""
   blockId: ID!
 
-  """id of the mext stepBlock"""
+  """id of the next stepBlock"""
   nextStepId: ID!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   label: String
 
   """stepName of the next stepBlock"""
+  value: String
+}
+
+type StepPreviousEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+
+  """ID of the journey that the stepBlock belongs to"""
+  journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
+
+  """stepName of the current stepBlock"""
+  label: String
+
+  """stepName of the previous stepBlock"""
+  value: String
+}
+
+input StepPreviousEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+
+  """Id of the current StepBlock"""
+  blockId: ID!
+
+  """id of the previous stepBlock"""
+  previousStepId: ID!
+
+  """stepName of the current stepBlock"""
+  label: String
+
+  """stepName of the previous stepBlock"""
   value: String
 }
 
@@ -1673,6 +1731,8 @@ input StepViewEventCreateInput
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Id of the StepBlock"""
   blockId: ID!
 
   """stepName of the stepBlock"""
@@ -2021,6 +2081,7 @@ type User
   lastName: String @join__field(graph: USERS)
   email: String! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
+  superAdmin: Boolean @join__field(graph: USERS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""

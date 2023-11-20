@@ -15,11 +15,11 @@ import { CompactEvent } from './CompactEvent'
 import { GenericEvent } from './GenericEvent'
 import { TimelineEvent } from './TimelineEvent'
 
-interface Props {
+interface EventsCardProps {
   journey: JourneyWithEvents
 }
 
-export function EventsCard({ journey }: Props): ReactElement {
+export function EventsCard({ journey }: EventsCardProps): ReactElement {
   const [open, setOpen] = useState(false)
 
   function handleOpen(): void {
@@ -35,6 +35,7 @@ export function EventsCard({ journey }: Props): ReactElement {
         borderRadius: { sm: 0, md: 4 },
         mx: { xs: -6, sm: '-32px', md: 0 }
       }}
+      data-testid={`EventsCard-${journey.id}`}
     >
       <Box sx={{ px: { xs: 4, sm: 6 } }}>
         <GenericEvent

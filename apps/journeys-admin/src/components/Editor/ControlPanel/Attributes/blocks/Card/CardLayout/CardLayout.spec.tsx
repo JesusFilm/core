@@ -19,6 +19,11 @@ import {
 
 import { CARD_BLOCK_LAYOUT_UPDATE, CardLayout } from './CardLayout'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const journey: Journey = {
   __typename: 'Journey',
   id: 'journeyId',
@@ -47,13 +52,16 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 describe('CardLayout', () => {

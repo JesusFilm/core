@@ -22,6 +22,11 @@ import {
   CARD_BLOCK_BACKGROUND_COLOR_UPDATE
 } from './BackgroundColor'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const journey: Journey = {
   __typename: 'Journey',
   id: 'journeyId',
@@ -50,13 +55,16 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 describe('BackgroundColor', () => {
@@ -86,16 +94,16 @@ describe('BackgroundColor', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('bg-color-#FEFEFE')).toHaveStyle({
+    expect(getByTestId('Swatch-bg-color-#FEFEFE')).toHaveStyle({
       backgroundColor: '#FEFEFE'
     })
     expect(getByRole('textbox')).toHaveValue('#FEFEFE')
 
     // Palette picker
-    expect(getAllByTestId('#FEFEFE')[0].parentElement).toHaveStyle({
+    expect(getAllByTestId('Swatch-#FEFEFE')[0].parentElement).toHaveStyle({
       outline: '2px solid #C52D3A'
     })
-    expect(getAllByTestId('#FEFEFE')[0]).toHaveStyle({
+    expect(getAllByTestId('Swatch-#FEFEFE')[0]).toHaveStyle({
       backgroundColor: '#FEFEFE'
     })
 
@@ -146,7 +154,7 @@ describe('BackgroundColor', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByTestId('#B0BEC5')[0])
+    fireEvent.click(getAllByTestId('Swatch-#B0BEC5')[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

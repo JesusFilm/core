@@ -12,17 +12,13 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import X2Icon from '@core/shared/ui/icons/X2'
 
 import { BlockDeleteForCoverImage } from '../../../../../__generated__/BlockDeleteForCoverImage'
-import {
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
-} from '../../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
@@ -39,7 +35,7 @@ export interface VideoDetailsProps {
   onClose: (closeParent?: boolean) => void
   onSelect: (block: VideoBlockUpdateInput) => void
   source: VideoBlockSource
-  activeVideo?: boolean
+  activeVideoBlock?: TreeBlock<VideoBlock>
 }
 
 export const BLOCK_DELETE_FOR_COVER_IMAGE = gql`
@@ -64,17 +60,12 @@ export function VideoDetails({
   onClose,
   onSelect,
   source,
-  activeVideo
+  activeVideoBlock
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [blockDeleteForCoverImage] = useMutation<BlockDeleteForCoverImage>(
     BLOCK_DELETE_FOR_COVER_IMAGE
   )
-
-  const {
-    state: { selectedStep }
-  } = useEditor()
-
   const { journey } = useJourney()
 
   let Details: (
@@ -101,20 +92,15 @@ export function VideoDetails({
   }
 
   const handleClearVideo = async (): Promise<void> => {
-    const videoBlock = selectedStep?.children
-      .find((child) => child.__typename === 'CardBlock')
-      ?.children.find(
-        (child) => child.__typename === 'VideoBlock'
-      ) as TreeBlock<VideoBlock>
-    const imageBlock = videoBlock?.children.find(
-      (child) => child.__typename === 'ImageBlock'
-    ) as TreeBlock<ImageBlock>
-    if (videoBlock.posterBlockId === imageBlock?.id) {
+    if (
+      activeVideoBlock?.id != null &&
+      activeVideoBlock?.posterBlockId != null
+    ) {
       await blockDeleteForCoverImage({
         variables: {
-          blockDeleteId: imageBlock?.id,
+          blockDeleteId: activeVideoBlock.posterBlockId,
           journeyId: journey?.id,
-          parentBlockId: imageBlock?.parentBlockId
+          parentBlockId: activeVideoBlock.id
         }
       })
     }
@@ -144,6 +130,7 @@ export function VideoDetails({
             height: '100%'
           }
         }}
+        data-testid="VideoDetails"
       >
         <AppBar position="sticky" color="default">
           <Toolbar variant="dense">
@@ -166,7 +153,7 @@ export function VideoDetails({
           </Toolbar>
         </AppBar>
         <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
-          {activeVideo === true && (
+          {activeVideoBlock != null && (
             <Stack
               direction="row"
               sx={{
@@ -196,7 +183,7 @@ export function VideoDetails({
             sx={{
               flexGrow: 1,
               overflow: 'auto',
-              mt: activeVideo === true ? -6 : 0
+              mt: activeVideoBlock != null ? -6 : 0
             }}
           >
             <Details id={id} open={open} onSelect={handleSelect} />

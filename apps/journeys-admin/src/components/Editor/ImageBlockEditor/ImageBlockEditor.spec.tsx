@@ -1,9 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
-// TODO: remove segmind ai flags when ready
 import { SnackbarProvider } from 'notistack'
-
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
@@ -24,13 +21,11 @@ describe('ImageBlockEditor', () => {
 
   it('should render the ImageBlockEditor', () => {
     const { getByText, getByRole } = render(
-      <FlagsProvider flags={{ segmind: true }}>
-        <SnackbarProvider>
-          <MockedProvider>
-            <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
-          </MockedProvider>
-        </SnackbarProvider>
-      </FlagsProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     expect(getByText('Selected Image')).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
@@ -40,13 +35,11 @@ describe('ImageBlockEditor', () => {
 
   it('should switch tabs', async () => {
     const { getByText, getByRole } = render(
-      <FlagsProvider flags={{ segmind: true }}>
-        <SnackbarProvider>
-          <MockedProvider>
-            <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
-          </MockedProvider>
-        </SnackbarProvider>
-      </FlagsProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
     expect(getByText('Unsplash')).toBeInTheDocument()

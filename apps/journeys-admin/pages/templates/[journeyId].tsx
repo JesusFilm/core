@@ -1,20 +1,13 @@
 import { useRouter } from 'next/router'
-import {
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
-} from 'next-firebase-auth'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { JourneyView } from '../../src/components/JourneyView'
-import { Menu } from '../../src/components/JourneyView/Menu'
-import { PageWrapper } from '../../src/components/PageWrapper'
-import { TemplateView } from '../../src/components/TemplateView/TemplateView'
+import { PageWrapper } from '../../src/components/NewPageWrapper'
+import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 import { useJourneyQuery } from '../../src/libs/useJourneyQuery/useJourneyQuery'
@@ -22,8 +15,7 @@ import { useJourneyQuery } from '../../src/libs/useJourneyQuery/useJourneyQuery'
 function TemplateDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const { templates } = useFlags()
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string
   })
@@ -44,36 +36,34 @@ function TemplateDetails(): ReactElement {
       >
         <PageWrapper
           title={t('Journey Template')}
-          authUser={AuthUser}
-          showDrawer
+          user={user}
           backHref="/templates"
-          menu={<Menu />}
+          backHrefHistory
+          mainBodyPadding={false}
         >
-          {templates ? (
-            <TemplateView />
-          ) : (
-            <JourneyView journeyType="Template" />
-          )}
+          <TemplateView authUser={user} />
         </PageWrapper>
       </JourneyProvider>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR()(
-  async ({ AuthUser, locale }) => {
-    const { flags, translations } = await initAndAuthApp({
-      AuthUser,
-      locale
+export const getServerSideProps = withUserTokenSSR()(
+  async ({ user, locale, resolvedUrl }) => {
+    const { redirect, translations } = await initAndAuthApp({
+      user,
+      locale,
+      resolvedUrl
     })
+
+    if (redirect != null) return { redirect }
 
     return {
       props: {
-        flags,
         ...translations
       }
     }
   }
 )
 
-export default withAuthUser()(TemplateDetails)
+export default withUser()(TemplateDetails)

@@ -49,6 +49,8 @@ describe('useJourneyQuery', () => {
       strategySlug: null,
       blocks: [],
       primaryImageBlock: null,
+      creatorDescription: null,
+      creatorImageBlock: null,
       chatButtons: [],
       host: null,
       team: null,
@@ -66,7 +68,8 @@ describe('useJourneyQuery', () => {
             imageUrl: 'https://bit.ly/3Gth4Yf'
           }
         }
-      ]
+      ],
+      tags: []
     }
 
     const result = jest.fn(() => ({ data: { journey } }))

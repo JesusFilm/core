@@ -33,7 +33,7 @@ export const JOURNEY_CHAT_BUTTON_REMOVE = gql`
   }
 `
 
-interface Props {
+interface SummaryProps {
   title: string
   active: boolean
   disableSelection: boolean
@@ -53,7 +53,7 @@ export function Summary({
   currentPlatform,
   chatButtonId,
   openAccordion
-}: Props): ReactElement {
+}: SummaryProps): ReactElement {
   const [journeyChatButtonCreate, { loading: createLoading }] =
     useMutation<JourneyChatButtonCreate>(JOURNEY_CHAT_BUTTON_CREATE)
   const [journeyChatButtonRemove, { loading: removeLoading }] =
@@ -142,7 +142,11 @@ export function Summary({
   }
 
   return (
-    <AccordionSummary expandIcon={<ChevronDownIcon />} sx={{ px: 6, py: 2 }}>
+    <AccordionSummary
+      expandIcon={<ChevronDownIcon />}
+      sx={{ px: 6, py: 2 }}
+      data-testid="ChatOptionSummary"
+    >
       <Checkbox
         data-testid={`checkbox-${currentPlatform as string}`}
         checked={active}

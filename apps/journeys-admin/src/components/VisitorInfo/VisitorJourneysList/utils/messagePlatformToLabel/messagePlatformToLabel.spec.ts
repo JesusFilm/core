@@ -1,11 +1,14 @@
+import { TFunction } from 'i18next'
+
 import { MessagePlatform } from '../../../../../../__generated__/globalTypes'
 
 import { messagePlatformToLabel } from './messagePlatformToLabel'
 
 describe('messagePlatformToLabel', () => {
-  function t(string: string): string {
-    return string
-  }
+  const t = ((string): string => string) as unknown as TFunction<
+    'apps-journeys-admin',
+    undefined
+  >
 
   it('returns Facebook', () => {
     expect(messagePlatformToLabel(MessagePlatform.facebook, t)).toBe('Facebook')

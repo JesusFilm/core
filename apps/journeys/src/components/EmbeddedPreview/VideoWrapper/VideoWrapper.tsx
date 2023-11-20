@@ -8,6 +8,7 @@ import Player from 'video.js/dist/types/player'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { blurImage } from '@core/journeys/ui/blurImage'
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import {
@@ -42,6 +43,7 @@ export function VideoWrapper({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
         autoplay: false,
         controls: false,
         responsive: true,

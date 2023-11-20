@@ -61,10 +61,6 @@ export const actions = [
     label: 'Selected Card'
   },
   {
-    value: 'NavigateToJourneyAction',
-    label: 'Another Journey'
-  },
-  {
     value: 'LinkAction',
     label: 'URL/Website'
   },
@@ -172,7 +168,7 @@ export function Action(): ReactElement {
 
   return (
     <>
-      <Stack sx={{ pt: 4, px: 6 }}>
+      <Stack sx={{ pt: 4, px: 6 }} data-testid="Action">
         <FormControl variant="filled">
           <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
             Navigate to:

@@ -5,26 +5,26 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
-import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation'
+import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
 
-jest.mock('../../../../../../../../../libs/useHostUpdate', () => ({
+jest.mock('../../../../../../../../../libs/useHostUpdateMutation', () => ({
   __esModule: true,
-  useHostUpdate: jest.fn()
+  useHostUpdateMutation: jest.fn()
 }))
 
-const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
-  typeof useHostUpdate
+const mockUseHostUpdateMutation = useHostUpdateMutation as jest.MockedFunction<
+  typeof useHostUpdateMutation
 >
 
 describe('HostAvatarsButton', () => {
   const updateHost = jest.fn()
 
   beforeEach(() => {
-    mockUseHostUpdate.mockReturnValue({
+    mockUseHostUpdateMutation.mockReturnValue({
       updateHost
     })
   })
@@ -121,7 +121,7 @@ describe('HostAvatarsButton', () => {
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(queryByTestId('imageSrcStack')).not.toBeInTheDocument()
+    expect(queryByTestId('ImageBlockHeader')).not.toBeInTheDocument()
   })
 
   it('should open image edit library on avatar click', () => {
@@ -146,7 +146,7 @@ describe('HostAvatarsButton', () => {
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('imageSrcStack')).toBeInTheDocument()
+    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
     expect(getByRole('img')).toHaveAttribute('src', 'avatar1Src')
     fireEvent.click(getByRole('button', { name: 'close-image-library' }))
 
@@ -211,7 +211,7 @@ describe('HostAvatarsButton', () => {
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('imageSrcStack')).toBeInTheDocument()
+    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
     fireEvent.click(getByTestId('imageBlockHeaderDelete'))
 
     void waitFor(() => {
@@ -307,7 +307,7 @@ describe('HostAvatarsButton', () => {
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('imageSrcStack')).toBeInTheDocument()
+    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
     fireEvent.click(getByTestId('imageBlockHeaderDelete'))
     void waitFor(() => {
       expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()

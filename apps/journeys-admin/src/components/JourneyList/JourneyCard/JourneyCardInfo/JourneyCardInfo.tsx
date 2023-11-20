@@ -14,12 +14,15 @@ import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { AccessAvatars } from '../../../AccessAvatars'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
-interface Props {
+interface JourneyCardInfoProps {
   journey?: Journey
   variant: JourneyCardVariant
 }
 
-export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
+export function JourneyCardInfo({
+  journey,
+  variant
+}: JourneyCardInfoProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   let inviteRequested: UserJourney[] | undefined
@@ -45,6 +48,7 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
       spacing={4}
       flexGrow={1}
       sx={{ width: '95%' }}
+      data-testid="JourneyCardInfo"
     >
       <AccessAvatars
         journeyId={journey?.id}

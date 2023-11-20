@@ -29,12 +29,14 @@ describe('TeamMenu', () => {
           {
             id: 'teamId1',
             title: 'Team Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           },
           {
             id: 'teamId2',
             title: 'Team Title2',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }
@@ -56,12 +58,14 @@ describe('TeamMenu', () => {
           {
             id: 'teamId1',
             title: 'Team Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           },
           {
             id: 'teamId2',
             title: 'Team Title2',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }

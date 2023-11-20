@@ -2,7 +2,6 @@ import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import { ReactElement } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
 import { useJourney } from '../../../libs/JourneyProvider'
@@ -23,14 +22,13 @@ export function HostAvatars({
 }: HostAvatarsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const { editableStepFooter } = useFlags()
   const src1 = avatarSrc1 ?? journey?.host?.src1
   const src2 = avatarSrc2 ?? journey?.host?.src2
 
   return (
     <AvatarGroup
       spacing={size === 'small' ? (rtl ? 0 : 12) : 24}
-      data-testid="host-avatars"
+      data-testid="StepFooterHostAvatars"
       sx={{
         '.MuiAvatar-root': {
           borderWidth: '1px',
@@ -61,7 +59,6 @@ export function HostAvatars({
       )}
       {(src1 == null || src2 == null) &&
         hasPlaceholder === true &&
-        editableStepFooter &&
         size === 'small' && (
           <Avatar
             sx={{

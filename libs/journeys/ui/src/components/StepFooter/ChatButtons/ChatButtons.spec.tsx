@@ -70,6 +70,8 @@ describe('ChatButtons', () => {
     createdAt: '2021-11-19T12:34:56.647Z',
     publishedAt: null,
     blocks: [stepBlock],
+    creatorDescription: null,
+    creatorImageBlock: null,
     primaryImageBlock: null,
     userJourneys: [],
     template: null,
@@ -77,7 +79,8 @@ describe('ChatButtons', () => {
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   const result = jest.fn(() => ({

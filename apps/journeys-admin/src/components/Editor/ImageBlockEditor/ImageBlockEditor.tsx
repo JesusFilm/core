@@ -5,8 +5,6 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
-// TODO: remove segmind ai flags when ready
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import StarsIcon from '@core/shared/ui/icons/Stars'
@@ -39,8 +37,6 @@ export function ImageBlockEditor({
   const [tabValue, setTabValue] = useState(0)
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
   const [uploading, setUploading] = useState<boolean>()
-  // TODO: remove segmind ai flags when ready
-  const { segmind } = useFlags()
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -129,20 +125,27 @@ export function ImageBlockEditor({
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />
-          {/*  // TODO: remove segmind ai flags when ready */}
-          {segmind && (
-            <Tab
-              icon={<StarsIcon />}
-              label={<Typography variant="subtitle2">AI</Typography>}
-              {...tabA11yProps('custom', 3)}
-            />
-          )}
+          <Tab
+            icon={<StarsIcon />}
+            label={<Typography variant="subtitle2">AI</Typography>}
+            {...tabA11yProps('custom', 3)}
+          />
         </Tabs>
       </Box>
-      <TabPanel name="gallery" value={tabValue} index={0}>
+      <TabPanel
+        name="gallery"
+        value={tabValue}
+        index={0}
+        sx={{ flexGrow: 1, overflow: 'scroll' }}
+      >
         <UnsplashGallery onChange={handleUnsplashChange} />
       </TabPanel>
-      <TabPanel name="custom" value={tabValue} index={1}>
+      <TabPanel
+        name="custom"
+        value={tabValue}
+        index={1}
+        sx={{ flexGrow: 1, overflow: 'scroll' }}
+      >
         <CustomImage
           onChange={handleSrcChange}
           setUploading={(upload) => setUploading(upload)}
@@ -151,16 +154,18 @@ export function ImageBlockEditor({
           error={error}
         />
       </TabPanel>
-      {/*  // TODO: remove segmind ai flags when ready */}
-      {segmind && (
-        <TabPanel name="generative" value={tabValue} index={2}>
-          <AIGallery
-            onChange={handleSrcChange}
-            setUploading={setUploading}
-            loading={uploading != null ? uploading : loading}
-          />
-        </TabPanel>
-      )}
+      <TabPanel
+        name="generative"
+        value={tabValue}
+        index={2}
+        sx={{ flexGrow: 1, overflow: 'scroll' }}
+      >
+        <AIGallery
+          onChange={handleSrcChange}
+          setUploading={setUploading}
+          loading={uploading != null ? uploading : loading}
+        />
+      </TabPanel>
     </>
   )
 }

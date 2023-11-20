@@ -1,10 +1,7 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
-import { LDClient } from 'launchdarkly-node-server-sdk'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
@@ -14,15 +11,12 @@ import { checkConditionalRedirect } from '../checkConditionalRedirect'
 import { initAndAuthApp } from './initAndAuthApp'
 
 jest.mock('next-i18next/serverSideTranslations')
-jest.mock('@core/shared/ui/getLaunchDarklyClient')
 jest.mock('../apolloClient')
 jest.mock('../checkConditionalRedirect')
 
 const serverSideTranslationsMock =
   serverSideTranslations as jest.MockedFunction<typeof serverSideTranslations>
-const getLaunchDarklyClientMock = getLaunchDarklyClient as jest.MockedFunction<
-  typeof getLaunchDarklyClient
->
+
 const createApolloClientMock = createApolloClient as jest.MockedFunction<
   typeof createApolloClient
 >
@@ -32,12 +26,12 @@ const checkConditionalRedirectMock =
   >
 
 describe('initAndAuthApp', () => {
-  const mockAuthUser = {
+  const mockUser = {
     id: '1',
     displayName: 'test',
     email: 'test@test.com',
     getIdToken: jest.fn().mockResolvedValue('token')
-  } as unknown as AuthUser
+  } as unknown as User
 
   const mockSSRConfig: SSRConfig = {
     _nextI18Next: {
@@ -51,13 +45,6 @@ describe('initAndAuthApp', () => {
   beforeEach(() => {
     // mock serverSideTranslation
     serverSideTranslationsMock.mockResolvedValueOnce(mockSSRConfig)
-
-    // mock getLaunchDarklyClient
-    getLaunchDarklyClientMock.mockResolvedValueOnce({
-      allFlagsState: async () => ({
-        toJSON: () => ({ termsAndConditions: true })
-      })
-    } as unknown as LDClient)
 
     // mock ApolloClient
     createApolloClientMock.mockReturnValueOnce(
@@ -75,15 +62,15 @@ describe('initAndAuthApp', () => {
     })
   })
 
-  it('should return with apolloClient, flags, redirect, and translations when auth user', async () => {
+  it('should return with apolloClient, redirect, and translations when auth user', async () => {
     const result = await initAndAuthApp({
-      AuthUser: mockAuthUser,
-      locale: 'en'
+      user: mockUser,
+      locale: 'en',
+      resolvedUrl: '/templates'
     })
 
     expect(result).toEqual({
       apolloClient: expect.any(ApolloClient),
-      flags: { termsAndConditions: true },
       redirect: {
         destination: '/users/terms-and-conditions',
         permanent: false
@@ -92,17 +79,17 @@ describe('initAndAuthApp', () => {
     })
   })
 
-  it('should return with apolloClient, flags, redirect, and translations when anonymous user', async () => {
+  it('should return with apolloClient, redirect, and translations when anonymous user', async () => {
     const result = await initAndAuthApp({
-      AuthUser: {
+      user: {
         id: null
-      } as unknown as AuthUser,
-      locale: 'en'
+      } as unknown as User,
+      locale: 'en',
+      resolvedUrl: '/templates'
     })
 
     expect(result).toEqual({
       apolloClient: expect.any(ApolloClient),
-      flags: { termsAndConditions: true },
       redirect: undefined,
       translations: mockSSRConfig
     })

@@ -10,7 +10,7 @@ import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 import { VisitorStatus } from '../../../../../__generated__/globalTypes'
 import { getStatusIcon, transformDuration } from '../utils'
 
-interface Props {
+interface VisitorCardHeaderProps {
   icon?: VisitorStatus | null
   name?: string | null
   location?: string | null
@@ -28,7 +28,7 @@ export function VisitorCardHeader({
   createdAt,
   duration,
   loading = true
-}: Props): ReactElement {
+}: VisitorCardHeaderProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const status = getStatusIcon(icon)
   const journeyDuration = transformDuration(t, duration)
@@ -36,7 +36,11 @@ export function VisitorCardHeader({
   return (
     <>
       {/* Desktop */}
-      <Stack direction="row" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+      <Stack
+        direction="row"
+        sx={{ display: { xs: 'none', sm: 'flex' } }}
+        data-testid="VisitorCardHeader"
+      >
         {loading ? (
           <Skeleton
             variant="circular"
@@ -119,7 +123,11 @@ export function VisitorCardHeader({
       </Stack>
 
       {/* Mobile */}
-      <Stack direction="row" sx={{ display: { xs: 'flex', sm: 'none' } }}>
+      <Stack
+        direction="row"
+        sx={{ display: { xs: 'flex', sm: 'none' } }}
+        data-testid="VisitorCardHeader"
+      >
         {loading ? (
           <Skeleton
             variant="circular"

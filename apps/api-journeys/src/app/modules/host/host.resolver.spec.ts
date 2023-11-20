@@ -242,7 +242,8 @@ describe('HostResolver', () => {
       teamId: 'teamId',
       updatedAt: new Date(),
       strategySlug: null,
-      tagIds: []
+      creatorDescription: null,
+      creatorImageBlockId: null
     }
 
     it('deletes an existing host', async () => {

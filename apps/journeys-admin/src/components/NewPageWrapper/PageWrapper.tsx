@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
@@ -18,31 +18,35 @@ import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
 interface PageWrapperProps {
   showAppHeader?: boolean
   title?: string
-  mainHeaderChildren?: ReactNode
+  showMainHeader?: boolean
   backHref?: string
   backHrefHistory?: boolean
+  mainHeaderChildren?: ReactNode
+  mainBodyPadding?: boolean
   children?: ReactNode
   bottomPanelChildren?: ReactNode
-  sidePanelTitle?: string | ReactNode
+  sidePanelTitle?: ReactNode
   /**
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */
   sidePanelChildren?: ReactNode
-  authUser?: AuthUser
+  user?: User
   initialState?: Partial<PageState>
 }
 
 export function PageWrapper({
   showAppHeader = true,
   title,
-  mainHeaderChildren,
+  showMainHeader = true,
   backHref,
   backHrefHistory,
+  mainHeaderChildren,
+  mainBodyPadding = true,
   children,
   bottomPanelChildren,
-  sidePanelTitle,
+  sidePanelTitle = '',
   sidePanelChildren,
-  authUser,
+  user,
   initialState
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
@@ -56,24 +60,27 @@ export function PageWrapper({
       <Box
         sx={{
           height: viewportHeight ?? '100vh',
-          overflow: 'hidden',
-          [theme.breakpoints.down('md')]: { overflowY: 'auto' }
+          minHeight: '-webkit-fill-available',
+          [theme.breakpoints.down('md')]: { overflowY: 'auto' },
+          overflow: 'hidden'
         }}
+        data-testid="JourneysAdminNewPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
           <NavigationDrawer
             open={open}
             onClose={setOpen}
-            authUser={authUser}
+            user={user}
             router={router}
           />
 
           <Stack
+            flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
               backgroundColor: 'background.default',
               width: { xs: '100vw', md: `calc(100vw - ${navbar.width})` },
-              pt: { xs: `${toolbar.height}px`, md: 0 },
+              pt: { xs: toolbar.height, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0
@@ -84,6 +91,7 @@ export function PageWrapper({
 
             <Stack
               component="main"
+              flexGrow={1}
               sx={{
                 width: {
                   xs: 'inherit',
@@ -94,14 +102,19 @@ export function PageWrapper({
                 }
               }}
             >
-              <MainPanelHeader
-                title={title}
-                backHref={backHref}
-                backHrefHistory={backHrefHistory}
+              {showMainHeader && (
+                <MainPanelHeader
+                  title={title}
+                  backHref={backHref}
+                  backHrefHistory={backHrefHistory}
+                >
+                  {mainHeaderChildren}
+                </MainPanelHeader>
+              )}
+              <MainPanelBody
+                mainBodyPadding={mainBodyPadding}
+                bottomPanelChildren={bottomPanelChildren}
               >
-                {mainHeaderChildren}
-              </MainPanelHeader>
-              <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
                 {children}
               </MainPanelBody>
             </Stack>

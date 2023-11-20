@@ -1,7 +1,8 @@
+const withBundleAnalyzer = require('@next/bundle-analyzer')
 const { composePlugins, withNx } = require('@nx/next')
-const withImages = require('next-images')
 
 const { i18n } = require('./next-i18next.config')
+
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
@@ -44,6 +45,11 @@ const nextConfig = {
         source: '/journeys/:slug/edit',
         destination: '/journeys/:slug',
         permanent: true
+      },
+      {
+        source: '/publisher/:slug/edit',
+        destination: '/publisher/:slug',
+        permanent: true
       }
     ]
   },
@@ -56,6 +62,20 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['shared-ui']
+  transpilePackages: ['shared-ui'],
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+        'node_modules/esbuild-linux-64/bin'
+      ]
+    },
+    fallbackNodePolyfills: false
+  }
 }
-module.exports = composePlugins(withImages, withNx)(nextConfig)
+const plugins = [withNx]
+if (process.env.ANALYZE === 'true') {
+  plugins.push(withBundleAnalyzer({ enabled: true, openAnalyzer: true }))
+}
+module.exports = composePlugins(...plugins)(nextConfig)

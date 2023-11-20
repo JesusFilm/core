@@ -26,11 +26,11 @@ export const GET_VISITOR_FOR_DETAILS = gql`
   }
 `
 
-interface Props {
+interface VisitorDetailsProps {
   id: string
 }
 
-export function VisitorDetails({ id }: Props): ReactElement {
+export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
   const { data } = useQuery<GetVisitorForDetails>(GET_VISITOR_FOR_DETAILS, {
     variables: { id }
   })
@@ -41,6 +41,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
       alignItems={{ xs: 'flex-start', sm: 'center' }}
       spacing={8}
       sx={{ pb: 5, px: 6, mx: { xs: -6, sm: '-30px', md: 0 } }}
+      data-testid="VisitorDetails"
     >
       {data?.visitor.lastChatStartedAt != null && (
         <Stack

@@ -33,12 +33,13 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { useSocialPreview } from '../../Editor/SocialProvider'
 import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
+
+import { CardWrapper } from './CardWrapper'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -114,12 +115,12 @@ export function CardList({
       id={selectedId}
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
+      testId="CardList"
     >
       {showNavigation === true && (
         <NavigationCard
           key="goals"
           id="goals"
-          testId="goals-navigation-card"
           title="Goals"
           destination={ActiveJourneyEditContent.Action}
           header={
@@ -152,7 +153,6 @@ export function CardList({
         <NavigationCard
           key="social"
           id="social"
-          testId="social-preview-navigation-card"
           title="Social Media"
           destination={ActiveJourneyEditContent.SocialPreview}
           header={
@@ -241,7 +241,7 @@ const CardItem = ({
       ref={provided != null ? provided.innerRef : null}
       id={id}
       key={id}
-      data-testid={`preview-${id}`}
+      data-testid={`CardItem-${id}`}
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -288,7 +288,7 @@ const CardItem = ({
         <FramePortal width={380} height={560} dir={rtl ? 'rtl' : 'ltr'}>
           <ThemeProvider
             themeName={cardBlock?.themeName ?? ThemeName.base}
-            themeMode={cardBlock?.themeMode ?? ThemeMode.light}
+            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
             rtl={rtl}
             locale={locale}
           >

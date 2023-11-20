@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -17,12 +17,12 @@ import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function ReportsJourneysPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
 
   return (
     <>
-      <NextSeo title={t('Journeys Report')} />
-      <PageWrapper title={t('Journeys Report')} authUser={AuthUser}>
+      <NextSeo title={t('Journeys Analytics')} />
+      <PageWrapper title={t('Journeys Analytics')} user={user}>
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <ReportsNavigation
             reportType={JourneysReportType.multipleFull}
@@ -35,27 +35,27 @@ function ReportsJourneysPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  if (AuthUser == null)
+})(async ({ user, locale, resolvedUrl }) => {
+  if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
+  const { redirect, translations } = await initAndAuthApp({
+    user,
+    locale,
+    resolvedUrl
   })
 
   if (redirect != null) return { redirect }
 
   return {
     props: {
-      flags,
       ...translations
     }
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(ReportsJourneysPage)

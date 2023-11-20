@@ -41,7 +41,7 @@ export const JOURNEY_CHAT_BUTTON_UPDATE = gql`
   }
 `
 
-interface Props {
+interface DetailsProps {
   journeyId?: string
   chatButtonId?: string
   currentPlatform: ChatPlatform
@@ -67,7 +67,7 @@ export function Details({
   setCurrentLink,
   helperInfo,
   enableIconSelect
-}: Props): ReactElement {
+}: DetailsProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyChatButtonUpdate] = useMutation<JourneyChatButtonUpdate>(
@@ -161,7 +161,7 @@ export function Details({
   }
 
   return (
-    <AccordionDetails sx={{ px: 6 }}>
+    <AccordionDetails sx={{ px: 6 }} data-testid="ChatOptionDetails">
       <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
         {enableIconSelect && (
           <FormControl variant="filled" fullWidth hiddenLabel>

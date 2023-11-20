@@ -33,6 +33,7 @@ describe('TeamCreateForm', () => {
         teamCreate: {
           id: 'teamId',
           title: 'Team Title',
+          publicTitle: null,
           __typename: 'Team',
           userTeams: []
         }
@@ -58,6 +59,7 @@ describe('TeamCreateForm', () => {
           {
             id: 'teamId',
             title: 'Team 1 Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }
@@ -122,6 +124,7 @@ describe('TeamCreateForm', () => {
             __typename: 'Team',
             id: 'teamId',
             title: 'Team Title',
+            publicTitle: null,
             userTeams: []
           }
         }
@@ -131,7 +134,7 @@ describe('TeamCreateForm', () => {
       { __ref: 'Team:teamId' },
       { __ref: 'Team:teamId' }
     ])
-    expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
+    expect(getByText('Team Title created.')).toBeInTheDocument()
   })
 
   it('validates form', async () => {
@@ -170,7 +173,7 @@ describe('TeamCreateForm', () => {
       target: { value: '12345678901234567890123456789012345678901' }
     })
     await waitFor(() =>
-      expect(getByText('Max {{ count }} Characters')).toBeInTheDocument()
+      expect(getByText('Max 40 Characters')).toBeInTheDocument()
     )
     fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
     fireEvent.click(getByRole('button', { name: 'Create' }))

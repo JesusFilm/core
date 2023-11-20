@@ -64,7 +64,7 @@ export function AccessAvatars({
   )
 }
 
-interface Props {
+interface WithRenderLogicProps {
   size: 'small' | 'medium' | 'large'
   max: number
   setOpen: (open: boolean) => void
@@ -86,7 +86,7 @@ const withRenderLogic = ({
   max,
   setOpen,
   showManageButton
-}: Props): ((values?: UserJourney[]) => ReactElement) => {
+}: WithRenderLogicProps): ((values?: UserJourney[]) => ReactElement) => {
   // small default sizes
   let diameter: number
   let fontSize: number | undefined
@@ -137,7 +137,7 @@ const withRenderLogic = ({
           return (
             user != null && (
               <Avatar
-                user={user}
+                apiUser={user}
                 notification={role === UserJourneyRole.inviteRequested}
                 key={user.id}
               />
@@ -153,6 +153,7 @@ const withRenderLogic = ({
           height: diameter
         }}
         role="button"
+        data-testid="JourneysAdminAccessAvatars"
       >
         <StyledBadge
           color="warning"

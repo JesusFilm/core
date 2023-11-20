@@ -13,17 +13,16 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import compact from 'lodash/compact'
 import Image from 'next/image'
 import { NextRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
-import { ReactElement, useState } from 'react'
+import { User } from 'next-firebase-auth'
+import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
-import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import BoxIcon from '@core/shared/ui/icons/Box'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
+import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
 import { GetMe } from '../../../../__generated__/GetMe'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
@@ -33,6 +32,7 @@ import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 
+import { ImpersonateDialog } from './ImpersonateDialog'
 import { NavigationListItem } from './NavigationListItem'
 import { UserMenu } from './UserMenu'
 
@@ -41,7 +41,7 @@ const DRAWER_WIDTH = '237px'
 export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
-  authUser?: AuthUser
+  user?: User
   router?: NextRouter
 }
 
@@ -53,6 +53,7 @@ export const GET_ME = gql`
       lastName
       email
       imageUrl
+      superAdmin
     }
   }
 `
@@ -102,7 +103,7 @@ export const StyledList = styled(List)({
 export function NavigationDrawer({
   open,
   onClose,
-  authUser,
+  user,
   router
 }: NavigationDrawerProps): ReactElement {
   const { data: activeJourneys } = useAdminJourneysQuery({
@@ -111,28 +112,39 @@ export function NavigationDrawer({
   const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
-  const [profileAnchorEl, setProfileAnchorEl] = useState(null)
-  const { globalReports } = useFlags()
+  const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLDivElement | null>(
+    null
+  )
+  const [impersonateOpen, setImpersonateOpen] = useState(false)
 
   const selectedPage = router?.pathname?.split('/')[1]
 
   const profileOpen = Boolean(profileAnchorEl)
-  const handleProfileClick = (event): void => {
+
+  function handleImpersonateClick(): void {
+    setImpersonateOpen(true)
+  }
+
+  function handleImpersonateClose(): void {
+    setImpersonateOpen(false)
+  }
+
+  function handleProfileClick(event: MouseEvent<HTMLDivElement>): void {
     setProfileAnchorEl(event.currentTarget)
   }
 
-  const handleProfileClose = (): void => {
+  function handleProfileClose(): void {
     setProfileAnchorEl(null)
   }
 
-  const handleClose = (): void => {
+  function handleClose(): void {
     onClose(!open)
   }
 
   const { data } = useQuery<GetMe>(GET_ME)
   const { data: userRoleData } = useUserRoleQuery()
 
-  const journeyTooltip = getJourneyTooltip(t, journeys, authUser?.id)
+  const journeyTooltip = getJourneyTooltip(t, journeys, user?.id)
 
   return (
     <StyledNavigationDrawer
@@ -140,6 +152,7 @@ export function NavigationDrawer({
       onClose={handleClose}
       variant={mdUp ? 'permanent' : 'temporary'}
       anchor="left"
+      data-testid="NavigationDrawer"
     >
       {open && mdUp && <Backdrop open={open} onClick={handleClose} />}
       <StyledList>
@@ -172,16 +185,7 @@ export function NavigationDrawer({
           link="/templates"
         />
 
-        {globalReports && (
-          <NavigationListItem
-            icon={<BarGroup3Icon />}
-            label="Reports"
-            selected={selectedPage === 'reports'}
-            link="/reports"
-          />
-        )}
-
-        {authUser != null && data?.me != null && (
+        {user?.id != null && data?.me != null && (
           <>
             <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
 
@@ -194,7 +198,20 @@ export function NavigationDrawer({
                 link="/publisher"
               />
             )}
-
+            {data.me.superAdmin === true && (
+              <NavigationListItem
+                icon={<UserProfile3Icon />}
+                label="Impersonate"
+                selected={false}
+                handleClick={handleImpersonateClick}
+              />
+            )}
+            {data.me.superAdmin === true && (
+              <ImpersonateDialog
+                open={impersonateOpen}
+                onClose={handleImpersonateClose}
+              />
+            )}
             <NavigationListItem
               icon={
                 <Avatar
@@ -208,11 +225,11 @@ export function NavigationDrawer({
               handleClick={handleProfileClick}
             />
             <UserMenu
-              user={data.me}
+              apiUser={data.me}
               profileOpen={profileOpen}
               profileAnchorEl={profileAnchorEl}
               handleProfileClose={handleProfileClose}
-              authUser={authUser}
+              user={user}
             />
           </>
         )}

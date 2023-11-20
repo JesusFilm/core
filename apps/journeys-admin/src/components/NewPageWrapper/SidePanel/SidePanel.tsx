@@ -144,7 +144,7 @@ export function SidePanel({
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: '100%',
-              height: `calc(100% - ${toolbar.height}px)`
+              height: `calc(100% - ${toolbar.height})`
             }
           }}
         >

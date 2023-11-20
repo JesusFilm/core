@@ -11,6 +11,11 @@ import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
 
 import { SIGN_UP_BLOCK_UPDATE_CONTENT, SignUpEdit } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('SignUpEdit', () => {
   const props: TreeBlock<SignUpFields> = {
     id: 'signUp.id',

@@ -26,6 +26,7 @@ export function TeamAvatars({
       sx={{
         cursor: onClick != null ? 'pointer' : 'default'
       }}
+      data-testid="TeamAvatars"
     >
       <AvatarGroup
         sx={{
@@ -49,7 +50,7 @@ export function TeamAvatars({
           }}
         >
           {take(userTeams, 5).map(({ user }) => (
-            <Avatar key={user.id} user={user} />
+            <Avatar key={user.id} apiUser={user} />
           ))}
         </AvatarGroup>
         {onClick != null && (

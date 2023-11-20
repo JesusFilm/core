@@ -505,6 +505,14 @@ export class StepNextEventCreateInput {
     value?: Nullable<string>;
 }
 
+export class StepPreviousEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    previousStepId: string;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
 export class TextResponseSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -596,6 +604,7 @@ export class JourneysFilter {
     template?: Nullable<boolean>;
     ids?: Nullable<string[]>;
     tagIds?: Nullable<string[]>;
+    languageIds?: Nullable<string[]>;
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
 }
@@ -616,6 +625,8 @@ export class JourneyUpdateInput {
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
+    creatorDescription?: Nullable<string>;
+    creatorImageBlockId?: Nullable<string>;
     primaryImageBlockId?: Nullable<string>;
     slug?: Nullable<string>;
     seoTitle?: Nullable<string>;
@@ -740,6 +751,7 @@ export class Journey {
     __typename?: 'Journey';
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
+    creatorImageBlock?: Nullable<ImageBlock>;
     chatButtons: ChatButton[];
     id: string;
     title: string;
@@ -747,6 +759,7 @@ export class Journey {
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
+    creatorDescription?: Nullable<string>;
     slug: string;
     archivedAt?: Nullable<DateTime>;
     deletedAt?: Nullable<DateTime>;
@@ -1014,6 +1027,15 @@ export class StepNextEvent implements Event {
     value?: Nullable<string>;
 }
 
+export class StepPreviousEvent implements Event {
+    __typename?: 'StepPreviousEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
 export class TextResponseSubmissionEvent implements Event {
     __typename?: 'TextResponseSubmissionEvent';
     id: string;
@@ -1177,6 +1199,7 @@ export class JourneyProfile {
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
     lastActiveTeamId?: Nullable<string>;
+    onboardingFormCompletedAt?: Nullable<DateTime>;
 }
 
 export class JourneyVisitor {
@@ -1413,6 +1436,8 @@ export abstract class IMutation {
 
     abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
+    abstract stepPreviousEventCreate(input: StepPreviousEventCreateInput): StepPreviousEvent | Promise<StepPreviousEvent>;
+
     abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 
     abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
@@ -1458,6 +1483,8 @@ export abstract class IMutation {
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract journeyProfileOnboardingFormComplete(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 

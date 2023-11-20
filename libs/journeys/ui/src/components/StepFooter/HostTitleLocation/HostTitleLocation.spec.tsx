@@ -38,6 +38,8 @@ describe('HostTitleLocation', () => {
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: null,
@@ -52,7 +54,8 @@ describe('HostTitleLocation', () => {
       src1: null,
       src2: null
     },
-    team: null
+    team: null,
+    tags: []
   }
 
   const rtlLanguage = {

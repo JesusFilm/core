@@ -106,6 +106,7 @@ export function TitleEdit(): ReactElement {
                 sx={{
                   pb: 4
                 }}
+                data-testid="TitleEdit"
               />
             </Form>
           )}
@@ -120,6 +121,7 @@ export function TitleEdit(): ReactElement {
           sx={{
             pb: 4
           }}
+          data-testid="TitleEdit"
         />
       )}
     </>

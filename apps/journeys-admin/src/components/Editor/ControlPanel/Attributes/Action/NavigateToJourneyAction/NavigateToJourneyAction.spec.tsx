@@ -20,6 +20,11 @@ import {
   NavigateToJourneyAction
 } from './NavigateToJourneyAction'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('NavigateToJourneyAction', () => {
   const journey: Journey = {
     __typename: 'Journey',
@@ -49,13 +54,16 @@ describe('NavigateToJourneyAction', () => {
     publishedAt: null,
     blocks: [] as TreeBlock[],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: null,
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it('shows no journey selected by default', () => {

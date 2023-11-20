@@ -34,7 +34,11 @@ export function ContainedIconButton({
   onClick
 }: ContainedIconProps): ReactElement {
   return (
-    <Card variant="outlined" sx={{ borderRadius: 2 }}>
+    <Card
+      variant="outlined"
+      sx={{ borderRadius: 2 }}
+      data-testid="JourneysAdminContainedIconButton"
+    >
       <CardActionArea onClick={onClick} disabled={disabled || loading}>
         <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
           <Box>

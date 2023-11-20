@@ -41,6 +41,10 @@ export const JOURNEY_FIELDS = gql`
     primaryImageBlock {
       ...ImageFields
     }
+    creatorDescription
+    creatorImageBlock {
+      ...ImageFields
+    }
     userJourneys {
       id
       role
@@ -68,6 +72,18 @@ export const JOURNEY_FIELDS = gql`
     team {
       id
       title
+      publicTitle
+    }
+    tags {
+      id
+      parentId
+      name {
+        value
+        language {
+          id
+        }
+        primary
+      }
     }
   }
 `
