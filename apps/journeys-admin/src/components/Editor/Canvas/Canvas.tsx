@@ -81,7 +81,7 @@ export function Canvas(): ReactElement {
     return () => window.removeEventListener('resize', setSpaceBetweenOnResize)
   }, [mdUp, sidePanel.width])
 
-  const handleSelectCard = (): void => {
+  function handleSelectCard(): void {
     // Prevent losing focus on empty input
     if (
       selectedBlock?.__typename === 'TypographyBlock' &&
