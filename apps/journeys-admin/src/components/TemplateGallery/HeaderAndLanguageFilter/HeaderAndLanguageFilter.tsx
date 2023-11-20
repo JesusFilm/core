@@ -295,12 +295,12 @@ export function HeaderAndLanguageFilter({
                       borderRadius: 1,
                       boxShadow: 2,
                       minWidth: 250,
-                      width: { xs: '100%', md: anchorEl?.clientWidth }
+                      width: { xs: '100%', lg: anchorEl?.clientWidth }
                     }}
                     placement="bottom"
                   >
                     <Stack>
-                      {sortedOptions.map(({ localName, nativeName, id }, i) => {
+                      {sortedOptions.map(({ localName, nativeName, id }) => {
                         function handleChange(): void {
                           values.languages.some(
                             (language) => language.id === id
