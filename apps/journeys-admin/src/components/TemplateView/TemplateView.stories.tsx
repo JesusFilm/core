@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { User } from 'next-firebase-auth'
 import { ComponentProps } from 'react'
@@ -27,7 +28,11 @@ import { TemplateView } from './TemplateView'
 const TemplateViewStory: Meta<typeof TemplateView> = {
   ...journeysAdminConfig,
   component: TemplateView,
-  title: 'Journeys-Admin/TemplateView'
+  title: 'Journeys-Admin/TemplateView',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const tag: Tag = {
@@ -197,7 +202,9 @@ const Template: StoryObj<
         ]}
       >
         <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-          <TemplateView authUser={args.authUser as unknown as User} />
+          <Box sx={{ height: '100%', overflow: 'hidden' }}>
+            <TemplateView authUser={args.authUser as unknown as User} />
+          </Box>
         </JourneyProvider>
       </MockedProvider>
     )
@@ -220,6 +227,7 @@ export const Complete = {
   args: {
     journey: {
       ...journey,
+      strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
       tags,
       creatorDescription:
         'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries',
