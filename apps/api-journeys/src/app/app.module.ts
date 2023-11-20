@@ -9,11 +9,10 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 
-import { NestHealthModule } from '@core/nest/health'
-
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { EventModule } from './modules/event/event.module'
+import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'

@@ -92,7 +92,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -139,7 +139,6 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      flags,
       ...translations
     }
   }

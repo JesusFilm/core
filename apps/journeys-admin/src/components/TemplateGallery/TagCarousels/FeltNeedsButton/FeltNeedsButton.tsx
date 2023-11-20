@@ -7,15 +7,16 @@ import { ReactElement, useCallback } from 'react'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
-import acceptanceImage from '../assets/acceptance.png'
-import depressionImage from '../assets/depression.png'
-import fearAnxietyImage from '../assets/fearAnxiety.png'
-import forgivenessImage from '../assets/forgiveness.png'
-import hopeImage from '../assets/hope.png'
-import lonelinessImage from '../assets/loneliness.png'
-import loveImage from '../assets/love.png'
-import securityImage from '../assets/security.png'
-import significanceImage from '../assets/significance.png'
+
+import acceptanceImage from './assets/acceptance.jpg'
+import depressionImage from './assets/depression.jpg'
+import fearAnxietyImage from './assets/fearAnxiety.jpg'
+import forgivenessImage from './assets/forgiveness.jpg'
+import hopeImage from './assets/hope.jpg'
+import lonelinessImage from './assets/loneliness.jpg'
+import loveImage from './assets/love.jpg'
+import securityImage from './assets/security.jpg'
+import significanceImage from './assets/significance.jpg'
 
 type ChildTag = Tag & { parentId: string }
 

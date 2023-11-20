@@ -3,7 +3,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetJourney_journey_blocks as Block,
@@ -652,23 +651,21 @@ const Template: StoryObj<typeof Editor> = {
   render: (args) => {
     return (
       <MockedProvider>
-        <FlagsProvider>
-          <Editor
-            journey={args.journey}
-            view={args.view ?? ActiveJourneyEditContent.Canvas}
+        <Editor
+          journey={args.journey}
+          view={args.view ?? ActiveJourneyEditContent.Canvas}
+        >
+          <PageWrapper
+            title={args.journey?.title ?? 'Edit Journey'}
+            mainHeaderChildren={<EditToolbar />}
+            bottomPanelChildren={<ControlPanel />}
+            customSidePanel={<Drawer />}
+            mainBodyPadding={false}
+            backHref="/journeys/nua-journey-ep-3-decision"
           >
-            <PageWrapper
-              title={args.journey?.title ?? 'Edit Journey'}
-              mainHeaderChildren={<EditToolbar />}
-              bottomPanelChildren={<ControlPanel />}
-              customSidePanel={<Drawer />}
-              mainBodyPadding={false}
-              backHref="/journeys/nua-journey-ep-3-decision"
-            >
-              <JourneyEdit />
-            </PageWrapper>
-          </Editor>
-        </FlagsProvider>
+            <JourneyEdit />
+          </PageWrapper>
+        </Editor>
       </MockedProvider>
     )
   }
