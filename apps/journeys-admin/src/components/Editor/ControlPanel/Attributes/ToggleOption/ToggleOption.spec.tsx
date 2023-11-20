@@ -6,6 +6,11 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { ToggleOption } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('ToggleOption', () => {
   const toggleOptionProps = {
     heading: 'Toggle Heading',

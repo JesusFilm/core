@@ -5,6 +5,7 @@ import crypto from 'crypto'
 import { configure } from '@testing-library/react'
 
 import { mswServer } from './test/mswServer'
+import './test/i18n'
 
 configure({ asyncUtilTimeout: 2500 })
 
@@ -31,3 +32,5 @@ Object.defineProperty(window.self, 'crypto', {
 beforeAll(() => mswServer.listen())
 afterEach(() => mswServer.resetHandlers())
 afterAll(() => mswServer.close())
+
+jest.mock('next/router', () => require('next-router-mock'))

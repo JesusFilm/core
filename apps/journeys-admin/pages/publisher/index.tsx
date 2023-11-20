@@ -1,28 +1,26 @@
-import { useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { GetUserRole } from '../../__generated__/GetUserRole'
 import { Role } from '../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useUserRoleQuery } from '../../src/libs/useUserRoleQuery'
 
 function TemplateIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const router = useRouter()
 
-  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const { data } = useUserRoleQuery()
   useEffect(() => {
     if (
       data != null &&
@@ -35,31 +33,34 @@ function TemplateIndex(): ReactElement {
   return (
     <>
       <NextSeo title={t('Templates Admin')} />
-      <PageWrapper title={t('Templates Admin')} authUser={AuthUser}>
+      <PageWrapper title={t('Templates Admin')} user={user}>
         <TemplateList />
       </PageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
+})(async ({ user, locale, resolvedUrl }) => {
+  if (user == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { redirect, translations } = await initAndAuthApp({
+    user,
+    locale,
+    resolvedUrl
   })
 
   if (redirect != null) return { redirect }
 
   return {
     props: {
-      flags,
       ...translations
     }
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(TemplateIndex)

@@ -1,5 +1,3 @@
-import BrushRounded from '@mui/icons-material/BrushRounded'
-import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -7,11 +5,15 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
+import Grid1Icon from '@core/shared/ui/icons/Grid1'
+import Image3Icon from '@core/shared/ui/icons/Image3'
+import StarsIcon from '@core/shared/ui/icons/Stars'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
+import { AIGallery } from './AIGallery'
 import { CustomImage } from './CustomImage'
 import { UnsplashAuthor, UnsplashGallery } from './UnsplashGallery'
 
@@ -114,27 +116,54 @@ export function ImageBlockEditor({
           variant="fullWidth"
         >
           <Tab
-            icon={<DashboardRounded />}
+            icon={<Grid1Icon />}
             label={<Typography variant="subtitle2">Gallery</Typography>}
             {...tabA11yProps('gallery', 0)}
           />
           <Tab
-            icon={<BrushRounded />}
+            icon={<Image3Icon />}
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />
+          <Tab
+            icon={<StarsIcon />}
+            label={<Typography variant="subtitle2">AI</Typography>}
+            {...tabA11yProps('custom', 3)}
+          />
         </Tabs>
       </Box>
-      <TabPanel name="gallery" value={tabValue} index={0}>
+      <TabPanel
+        name="gallery"
+        value={tabValue}
+        index={0}
+        sx={{ flexGrow: 1, overflow: 'scroll' }}
+      >
         <UnsplashGallery onChange={handleUnsplashChange} />
       </TabPanel>
-      <TabPanel name="custom" value={tabValue} index={1}>
+      <TabPanel
+        name="custom"
+        value={tabValue}
+        index={1}
+        sx={{ flexGrow: 1, overflow: 'scroll' }}
+      >
         <CustomImage
           onChange={handleSrcChange}
           setUploading={(upload) => setUploading(upload)}
           selectedBlock={selectedBlock}
           loading={uploading != null ? uploading : loading}
           error={error}
+        />
+      </TabPanel>
+      <TabPanel
+        name="generative"
+        value={tabValue}
+        index={2}
+        sx={{ flexGrow: 1, overflow: 'scroll' }}
+      >
+        <AIGallery
+          onChange={handleSrcChange}
+          setUploading={setUploading}
+          loading={uploading != null ? uploading : loading}
         />
       </TabPanel>
     </>

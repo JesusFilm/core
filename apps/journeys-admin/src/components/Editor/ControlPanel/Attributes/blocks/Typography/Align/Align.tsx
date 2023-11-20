@@ -1,12 +1,12 @@
 import { gql, useMutation } from '@apollo/client'
-import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
-import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
-import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
+import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
+import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
@@ -40,17 +40,17 @@ export function Align(): ReactElement {
     {
       value: TypographyAlign.left,
       label: 'Left',
-      icon: <FormatAlignLeftRoundedIcon />
+      icon: <AlignLeftIcon />
     },
     {
       value: TypographyAlign.center,
       label: 'Center',
-      icon: <FormatAlignCenterRoundedIcon />
+      icon: <AlignCenterIcon />
     },
     {
       value: TypographyAlign.right,
       label: 'Right',
-      icon: <FormatAlignRightRoundedIcon />
+      icon: <AlignRightIcon />
     }
   ]
 
@@ -78,6 +78,7 @@ export function Align(): ReactElement {
       value={selectedBlock?.align ?? TypographyAlign.left}
       onChange={handleChange}
       options={options}
+      testId="Align"
     />
   )
 }

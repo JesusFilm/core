@@ -16,6 +16,8 @@ describe('HostTitleLocation', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     title: 'my journey',
+    featuredAt: null,
+    strategySlug: null,
     slug: 'my-journey',
     language: {
       __typename: 'Language' as const,
@@ -36,6 +38,8 @@ describe('HostTitleLocation', () => {
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: null,
@@ -50,7 +54,8 @@ describe('HostTitleLocation', () => {
       src1: null,
       src2: null
     },
-    team: null
+    team: null,
+    tags: []
   }
 
   const rtlLanguage = {

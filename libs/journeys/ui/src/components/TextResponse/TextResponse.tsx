@@ -123,7 +123,7 @@ export const TextResponse = ({
   } = useEditor()
 
   return (
-    <Box sx={{ mb: 4 }}>
+    <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
       <Formik
         initialValues={initialValues}
         onSubmit={(values) => {
@@ -148,8 +148,13 @@ export const TextResponse = ({
                 onClick={(e) => e.stopPropagation()}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                disabled={selectedBlock !== undefined}
-                inputProps={{ maxLength: 1000 }}
+                inputProps={{
+                  maxLength: 1000,
+                  readOnly: selectedBlock !== undefined,
+                  sx: {
+                    pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                  }
+                }}
               />
               <LoadingButton
                 type="submit"

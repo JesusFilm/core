@@ -1,6 +1,4 @@
 import { gql, useLazyQuery } from '@apollo/client'
-import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
-import Check from '@mui/icons-material/Check'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
@@ -11,8 +9,13 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import CheckIcon from '@core/shared/ui/icons/Check'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { VideoDescription } from '../../VideoDescription'
@@ -35,14 +38,14 @@ export const GET_VIDEO = gql`
         primary
         value
       }
-      variant {
+      variant(languageId: $languageId) {
         id
         duration
         hls
       }
       variantLanguages {
         id
-        name(languageId: $languageId, primary: true) {
+        name {
           value
           primary
         }
@@ -50,6 +53,14 @@ export const GET_VIDEO = gql`
     }
   }
 `
+
+const DEFAULT_LANGUAGE_ID = '529'
+
+const DEFAULT_LANGUAGE = {
+  id: DEFAULT_LANGUAGE_ID,
+  localName: undefined,
+  nativeName: 'English'
+}
 
 export function LocalDetails({
   open,
@@ -59,15 +70,22 @@ export function LocalDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
   const [playing, setPlaying] = useState(false)
-
   const [openLanguage, setOpenLanguage] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>({
-    id: '529',
-    localName: undefined,
-    nativeName: 'English'
-  })
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<LanguageOption>(DEFAULT_LANGUAGE)
+
+  const {
+    state: { selectedBlock }
+  } = useEditor()
+
+  const videoBlock = selectedBlock as VideoBlock
+  const languageId =
+    videoBlock?.videoId === id
+      ? videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID
+      : DEFAULT_LANGUAGE_ID
+
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
-    variables: { id, languageId: '529' }
+    variables: { id, languageId }
   })
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
@@ -77,11 +95,11 @@ export function LocalDetails({
   const handleSelect = (): void => {
     onSelect({
       videoId: id,
-      videoVariantLanguageId: selectedLanguage.id,
+      videoVariantLanguageId: selectedLanguage?.id,
       duration: time,
       source: VideoBlockSource.internal,
-      startAt: 0,
-      endAt: time
+      startAt: videoBlock?.videoId === id ? videoBlock?.startAt : 0,
+      endAt: videoBlock?.videoId === id ? videoBlock?.endAt : time
     })
   }
 
@@ -94,9 +112,34 @@ export function LocalDetails({
   const videoDescription =
     data?.video?.description?.find(({ primary }) => primary)?.value ?? ''
 
+  function getVideoVariantLanguage(): LanguageOption | undefined {
+    const videoVariant = data?.video?.variantLanguages.find(
+      (variant) => variant.id === videoBlock?.videoVariantLanguageId
+    )
+
+    if (videoVariant != null) {
+      const { name } = videoVariant
+      const localName = name?.find(({ primary }) => !primary)?.value
+      const nativeName = name?.find(({ primary }) => primary)?.value
+      return { id, localName, nativeName }
+    }
+  }
+
+  useEffect(() => {
+    const newSelectedLanguage =
+      videoBlock?.videoId === id &&
+      videoBlock?.videoVariantLanguageId !== selectedLanguage?.id
+        ? getVideoVariantLanguage() ?? DEFAULT_LANGUAGE
+        : DEFAULT_LANGUAGE
+
+    setSelectedLanguage(newSelectedLanguage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data])
+
   useEffect(() => {
     if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
         fluid: true,
         controls: true,
         poster: data.video?.image ?? undefined
@@ -184,14 +227,19 @@ export function LocalDetails({
         sx={{ justifyContent: 'space-between' }}
       >
         <Chip
-          label="Other Languages"
+          label={selectedLanguage?.localName ?? selectedLanguage?.nativeName}
           onClick={() => setOpenLanguage(true)}
-          avatar={<ArrowDropDown />}
+          avatar={<ChevronDownIcon />}
           disabled={loading}
+          sx={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
         />
         <Button
           variant="contained"
-          startIcon={<Check />}
+          startIcon={<CheckIcon />}
           onClick={handleSelect}
           size="small"
           sx={{ backgroundColor: 'secondary.dark' }}

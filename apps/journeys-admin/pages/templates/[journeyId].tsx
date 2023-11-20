@@ -1,87 +1,72 @@
-import { gql, useQuery } from '@apollo/client'
-import {
-  AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
-} from 'next-firebase-auth'
-import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
-import { GetTemplate } from '../../__generated__/GetTemplate'
-import { JourneyView } from '../../src/components/JourneyView'
-import { Menu } from '../../src/components/JourneyView/Menu'
-import { PageWrapper } from '../../src/components/PageWrapper'
+import { PageWrapper } from '../../src/components/NewPageWrapper'
+import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
-
-export const GET_TEMPLATE = gql`
-  ${JOURNEY_FIELDS}
-  query GetTemplate($id: ID!) {
-    template: adminJourney(id: $id, idType: databaseId) {
-      ...JourneyFields
-    }
-  }
-`
+import { useJourneyQuery } from '../../src/libs/useJourneyQuery/useJourneyQuery'
 
 function TemplateDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const AuthUser = useAuthUser()
-  const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
-    variables: { id: router.query.journeyId }
+  const user = useUser()
+  const { data } = useJourneyQuery({
+    id: router.query.journeyId as string
   })
+  const template = data?.journey
   useInvalidJourneyRedirect(data)
 
   return (
     <>
       <NextSeo
-        title={data?.template?.title ?? t('Journey Template')}
-        description={data?.template?.description ?? undefined}
+        title={template?.title ?? t('Journey Template')}
+        description={template?.description ?? undefined}
       />
       <JourneyProvider
         value={{
-          journey: data?.template ?? undefined,
+          journey: template,
           variant: 'admin'
         }}
       >
         <PageWrapper
           title={t('Journey Template')}
-          authUser={AuthUser}
-          showDrawer
+          user={user}
           backHref="/templates"
-          menu={<Menu />}
+          mainPanelSx={{
+            backgroundColor: 'background.paper',
+            overflowX: 'hidden'
+          }}
+          backHrefHistory
         >
-          <JourneyView journeyType="Template" />
+          <TemplateView authUser={user} />
         </PageWrapper>
       </JourneyProvider>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
-  })
+export const getServerSideProps = withUserTokenSSR()(
+  async ({ user, locale, resolvedUrl }) => {
+    const { redirect, translations } = await initAndAuthApp({
+      user,
+      locale,
+      resolvedUrl
+    })
 
-  if (redirect != null) return { redirect }
+    if (redirect != null) return { redirect }
 
-  return {
-    props: {
-      flags,
-      ...translations
+    return {
+      props: {
+        ...translations
+      }
     }
   }
-})
+)
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateDetails)
+export default withUser()(TemplateDetails)

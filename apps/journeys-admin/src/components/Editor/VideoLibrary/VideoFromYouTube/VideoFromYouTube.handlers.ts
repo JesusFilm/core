@@ -75,8 +75,8 @@ const video1: YoutubeVideo = {
 
 export const getPlaylistItems = rest.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
-  (_req, res, ctx) => {
-    return res(
+  async (_req, res, ctx) => {
+    return await res(
       ctx.json<YoutubeVideosData>({
         items: [playlistItem1, playlistItem2, playlistItem3]
       })
@@ -86,8 +86,8 @@ export const getPlaylistItems = rest.get(
 
 export const getPlaylistItemsEmpty = rest.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
-  (_req, res, ctx) => {
-    return res(
+  async (_req, res, ctx) => {
+    return await res(
       ctx.json<YoutubeVideosData>({
         items: []
       })
@@ -97,25 +97,25 @@ export const getPlaylistItemsEmpty = rest.get(
 
 export const getPlaylistItemsWithOffsetAndUrl = rest.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
-  (req, res, ctx) => {
+  async (req, res, ctx) => {
     if (
       req.url.searchParams.get('id') === playlistItem2.contentDetails?.videoId
     ) {
-      return res(
+      return await res(
         ctx.json<YoutubeVideosData>({
           items: [playlistItem2]
         })
       )
     }
     if (req.url.searchParams.get('pageToken') !== 'nextPageToken') {
-      return res(
+      return await res(
         ctx.json<YoutubeVideosData>({
           items: [playlistItem1, playlistItem2],
           nextPageToken: 'nextPageToken'
         })
       )
     }
-    return res(
+    return await res(
       ctx.json<YoutubeVideosData>({
         items: [playlistItem3]
       })
@@ -125,8 +125,8 @@ export const getPlaylistItemsWithOffsetAndUrl = rest.get(
 
 export const getPlaylistItemsLoading = rest.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
-  (_req, res, ctx) => {
-    return res(
+  async (_req, res, ctx) => {
+    return await res(
       ctx.delay(1000 * 60 * 60 * 60),
       ctx.json<YoutubeVideosData>({
         items: []
@@ -137,17 +137,17 @@ export const getPlaylistItemsLoading = rest.get(
 
 export const getVideosWithOffsetAndUrl = rest.get(
   'https://www.googleapis.com/youtube/v3/videos',
-  (req, res, ctx) => {
+  async (req, res, ctx) => {
     if (
       req.url.searchParams.get('id') === playlistItem2.contentDetails?.videoId
     ) {
-      return res(
+      return await res(
         ctx.json<YoutubeVideosData>({
           items: [video1]
         })
       )
     }
-    return res(
+    return await res(
       ctx.json<YoutubeVideosData>({
         items: [video1]
       })
@@ -157,8 +157,8 @@ export const getVideosWithOffsetAndUrl = rest.get(
 
 export const getVideosLoading = rest.get(
   'https://www.googleapis.com/youtube/v3/videos',
-  (_req, res, ctx) => {
-    return res(
+  async (_req, res, ctx) => {
+    return await res(
       ctx.delay(1000 * 60 * 60 * 60),
       ctx.json<YoutubeVideosData>({
         items: []

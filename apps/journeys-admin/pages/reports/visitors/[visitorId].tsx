@@ -1,11 +1,11 @@
+import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -17,7 +17,7 @@ import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 function SingleVisitorReportsPage(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
 
   const id = router.query.visitorId as string
 
@@ -27,7 +27,7 @@ function SingleVisitorReportsPage(): ReactElement {
       <PageWrapper
         title={t("Visitor's Activity")}
         backHref="/reports/visitors"
-        authUser={AuthUser}
+        user={user}
         sidePanelChildren={<DetailsForm id={id} />}
         sidePanelTitle={t('Visitor Details')}
         backHrefHistory
@@ -38,24 +38,27 @@ function SingleVisitorReportsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
+})(async ({ user, locale, resolvedUrl }) => {
+  if (user == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { redirect, translations } = await initAndAuthApp({
+    user,
+    locale,
+    resolvedUrl
   })
 
   if (redirect != null) return { redirect }
 
   return {
     props: {
-      flags,
       ...translations
     }
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(SingleVisitorReportsPage)

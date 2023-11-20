@@ -37,7 +37,7 @@ describe('DuplicateJourneys', () => {
       }
     }))
 
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -77,6 +77,7 @@ describe('DuplicateJourneys', () => {
     )
     await waitFor(() => expect(result2).toHaveBeenCalled())
     await fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
+    expect(getByTestId('journey-duplicate-loader')).toBeInTheDocument()
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(handleCloseMenu).toHaveBeenCalled()
     expect(getByText('Journey Duplicated')).toBeInTheDocument()

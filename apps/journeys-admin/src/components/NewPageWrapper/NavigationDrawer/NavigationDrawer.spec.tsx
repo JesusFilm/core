@@ -1,13 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { AuthUser } from 'next-firebase-auth'
 import { NextRouter } from 'next/router'
-
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { User } from 'next-firebase-auth'
+import { SnackbarProvider } from 'notistack'
 
 import { Role } from '../../../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 
 import { GET_ME } from './NavigationDrawer'
 
@@ -43,13 +42,11 @@ describe('NavigationDrawer', () => {
   it('should render the default menu items', () => {
     const { getByText, getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     expect(getAllByRole('button')[0]).toContainElement(
-      getByTestId('ChevronLeftRoundedIcon')
+      getByTestId('ChevronLeftIcon')
     )
     expect(getByText('Discover')).toBeInTheDocument()
   })
@@ -89,24 +86,24 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ globalReports: true }}>
+        <SnackbarProvider>
           <NavigationDrawer
             open
             onClose={onClose}
-            authUser={
+            user={
               {
+                id: 'userId',
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
                 signOut
-              } as unknown as AuthUser
+              } as unknown as User
             }
           />
-        </FlagsProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
-    expect(getByText('Reports')).toBeInTheDocument()
     await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
   })
 
@@ -120,25 +117,7 @@ describe('NavigationDrawer', () => {
         />
       </MockedProvider>
     )
-    expect(getByTestId('Templates-list-item')).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
-  })
-
-  it('should select the reports button', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ globalReports: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            router={getRouter('/reports')}
-          />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByTestId('Reports-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemTemplates')).toHaveAttribute(
       'aria-selected',
       'true'
     )
@@ -147,9 +126,7 @@ describe('NavigationDrawer', () => {
   it('should hide the reports button', () => {
     const { queryByText } = render(
       <MockedProvider mocks={[]}>
-        <FlagsProvider flags={{ globalReports: false }}>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     expect(queryByText('Reports')).not.toBeInTheDocument()
@@ -190,23 +167,26 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          authUser={
-            {
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut
-            } as unknown as AuthUser
-          }
-          router={getRouter('/publisher/[journeyId]')}
-        />
+        <SnackbarProvider>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            user={
+              {
+                id: 'userId',
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as User
+            }
+            router={getRouter('/publisher/[journeyId]')}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByTestId('Publisher-list-item')).toHaveAttribute(
+      expect(getByTestId('NavigationListItemPublisher')).toHaveAttribute(
         'aria-selected',
         'true'
       )
@@ -248,24 +228,27 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          authUser={
-            {
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut
-            } as unknown as AuthUser
-          }
-        />
+        <SnackbarProvider>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            user={
+              {
+                id: 'userId',
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as User
+            }
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
       expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     )
-    expect(getByTestId('Profile-list-item')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemDiscover')).toHaveAttribute(
       'aria-selected',
       'false'
     )
@@ -273,6 +256,63 @@ describe('NavigationDrawer', () => {
     await waitFor(() => expect(getByText('Amin One')).toBeInTheDocument())
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
     await waitFor(() => expect(signOut).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(getByText('Logout successful')).toBeInTheDocument()
+    )
+  })
+
+  it('should not show user icon if logged out', async () => {
+    const { queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ME
+            },
+            result: {
+              data: {
+                me: {
+                  id: 'userId',
+                  firstName: 'Amin',
+                  lastName: 'One',
+                  imageUrl: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          user={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as User
+          }
+        />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(queryByRole('img', { name: 'Amin One' })).not.toBeInTheDocument()
+    )
   })
 
   it('should close the navigation drawer on chevron left click', () => {
@@ -282,7 +322,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     const button = getAllByRole('button')[0]
-    expect(button).toContainElement(getByTestId('ChevronLeftRoundedIcon'))
+    expect(button).toContainElement(getByTestId('ChevronLeftIcon'))
     fireEvent.click(button)
     expect(onClose).toHaveBeenCalled()
   })
@@ -293,7 +333,7 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer open onClose={onClose} router={getRouter('/')} />
       </MockedProvider>
     )
-    expect(getByTestId('ViewCarouselRoundedIcon').parentElement).toHaveStyle(
+    expect(getByTestId('JourneysIcon').parentElement).toHaveStyle(
       'color: #FFFFFF'
     )
   })

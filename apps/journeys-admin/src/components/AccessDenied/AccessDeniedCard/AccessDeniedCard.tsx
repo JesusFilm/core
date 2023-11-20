@@ -1,5 +1,3 @@
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
-import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
@@ -8,6 +6,9 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 interface AccessDeniedCardProps {
   stepNumber: number
@@ -27,7 +28,10 @@ export function AccessDeniedCard({
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Card sx={{ display: 'flex', flexDirection: 'row' }}>
+    <Card
+      sx={{ display: 'flex', flexDirection: 'row' }}
+      data-testid="AccessDeniedCard"
+    >
       <CardContent
         sx={{
           display: 'flex',
@@ -62,7 +66,7 @@ export function AccessDeniedCard({
       {handleRequestAccess != null &&
         (requestAccess ? (
           <Stack direction="row" sx={{ color: 'success.main' }}>
-            <CheckCircleRoundedIcon />
+            <CheckContainedIcon />
             <Typography>{t('Request Sent')}</Typography>
           </Stack>
         ) : (
@@ -70,7 +74,7 @@ export function AccessDeniedCard({
             <Button
               variant="contained"
               onClick={handleRequestAccess}
-              startIcon={<SupervisorAccountRoundedIcon />}
+              startIcon={<UsersProfiles2Icon />}
             >
               {t('Request Now')}
             </Button>

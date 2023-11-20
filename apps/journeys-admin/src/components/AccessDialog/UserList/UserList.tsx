@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import sortBy from 'lodash/sortBy'
 import { ReactElement, useMemo } from 'react'
 
-import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
+import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 
@@ -47,7 +47,7 @@ export function UserList({
   return (
     <>
       {loading === true ? (
-        <Box>
+        <Box data-testid="JourneysAdminUserList">
           <Typography variant="subtitle1">{title}</Typography>
           <List>
             {[0, 1, 2].map((i) => (

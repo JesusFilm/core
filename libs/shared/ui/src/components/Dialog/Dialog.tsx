@@ -1,24 +1,28 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
 import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import MuiDialogTitle from '@mui/material/DialogTitle'
 import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material/styles'
-import { ReactChild, ReactElement } from 'react'
+import { SxProps, styled } from '@mui/material/styles'
+import { ReactElement, ReactNode } from 'react'
 
 interface DialogProps {
-  open: boolean
-  onClose: () => void
+  open?: boolean
+  onClose?: () => void
   dialogTitle?: DialogTitle
   dialogAction?: DialogAction
   /** Prefer `dialogAction` when child elements are buttons */
-  dialogActionChildren?: ReactChild
+  dialogActionChildren?: ReactNode
   divider?: boolean
   fullscreen?: boolean
-  children?: ReactChild
+  children?: ReactNode
   container?: HTMLElement
+  loading?: boolean
+  testId?: string
+  sx?: SxProps
 }
 
 interface DialogAction {
@@ -75,16 +79,21 @@ export function Dialog({
   divider,
   fullscreen,
   children,
-  container
+  container,
+  loading = false,
+  testId,
+  sx
 }: DialogProps): ReactElement {
   return (
     <StyledDialog
-      open={open}
+      open={open === true}
       fullScreen={fullscreen}
       maxWidth="sm"
       fullWidth
       onClose={onClose}
       container={container}
+      data-testid={testId}
+      sx={sx}
     >
       {dialogTitle != null && (
         <MuiDialogTitle>
@@ -107,11 +116,13 @@ export function Dialog({
       {dialogAction != null ? (
         <DialogActions data-testid="dialog-action">
           {dialogAction.closeLabel != null && (
-            <Button onClick={onClose}>{dialogAction.closeLabel}</Button>
+            <Button onClick={onClose} disabled={loading}>
+              {dialogAction.closeLabel}
+            </Button>
           )}
-          <Button onClick={dialogAction?.onSubmit}>
+          <LoadingButton onClick={dialogAction?.onSubmit} loading={loading}>
             {dialogAction.submitLabel ?? 'Save'}
-          </Button>
+          </LoadingButton>
         </DialogActions>
       ) : dialogActionChildren != null ? (
         <DialogActions data-testid="dialog-action">

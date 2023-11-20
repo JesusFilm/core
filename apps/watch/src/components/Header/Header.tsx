@@ -36,16 +36,18 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
       >
         <Container maxWidth="xxl" disableGutters>
           <Toolbar sx={{ justifyContent: 'space-between' }}>
-            <NextLink href="/" passHref>
-              <a>
-                <Image
-                  src={logo}
-                  width="160"
-                  height="40"
-                  alt="Watch Logo"
-                  style={{ cursor: 'pointer' }}
-                />
-              </a>
+            <NextLink href="/" passHref legacyBehavior>
+              <Image
+                src={logo}
+                width="160"
+                height="40"
+                alt="Watch Logo"
+                style={{
+                  cursor: 'pointer',
+                  maxWidth: '100%',
+                  height: 'auto'
+                }}
+              />
             </NextLink>
             <Stack spacing={0.5} direction="row">
               <IconButton
@@ -82,6 +84,7 @@ export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
           transitionDuration: '225ms'
         }}
         timeout={{ exit: 2225 }}
+        data-testid="Header"
       >
         <LocalAppBar
           sx={{

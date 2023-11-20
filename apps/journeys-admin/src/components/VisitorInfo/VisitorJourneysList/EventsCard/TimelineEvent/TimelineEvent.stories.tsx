@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, Story } from '@storybook/react'
-import { ComponentProps, ReactElement } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ReactElement } from 'react'
 
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { TimelineItem } from '../../utils'
@@ -28,18 +28,19 @@ import {
 
 import { TimelineEvent } from '.'
 
-const TimelineEventStory = {
+const TimelineEventStory: Meta<typeof TimelineEvent> = {
   ...journeysAdminConfig,
   title:
-    'Journeys-Admin/VisitorInfo/VisitorJourneysList/EventsCard/TimelineEvent'
+    'Journeys-Admin/VisitorInfo/VisitorJourneysList/EventsCard/TimelineEvent',
+  component: TimelineEvent
 }
 
-interface Props {
+interface StoryItemProps {
   title?: string
   event: TimelineItem
 }
 
-function StoryItem({ title, event }: Props): ReactElement {
+function StoryItem({ title, event }: StoryItemProps): ReactElement {
   return (
     <>
       {title != null && (
@@ -53,36 +54,38 @@ function StoryItem({ title, event }: Props): ReactElement {
   )
 }
 
-const Template: Story<ComponentProps<typeof TimelineEvent>> = () => (
-  <Stack>
-    <StoryItem title="JourneyViewEvent" event={journeyViewEvent} />
-    <StoryItem title="ChatOpenedEevent" event={chatOpenedEvent} />
-    <StoryItem
-      title="TextResponseSubmissionEvent"
-      event={textResponseSubmissionEvent}
-    />
-    <StoryItem title="ButtonClickEvent" event={buttonClickNavigateEvent} />
-    <StoryItem event={buttonClickNavigateToBlockEvent} />
-    <StoryItem event={buttonClickNavigateToJourneyEvent} />
-    <StoryItem event={buttonClickLinkEvent} />
-    <StoryItem
-      title="RadioQuestionSubmissionEvent"
-      event={radioQuestionSubmissionEvent}
-    />
-    <StoryItem title="SignUpSubmissionEvent" event={signUpSubmissionEvent} />
+const Template: StoryObj<typeof TimelineEvent> = {
+  render: () => (
+    <Stack>
+      <StoryItem title="JourneyViewEvent" event={journeyViewEvent} />
+      <StoryItem title="ChatOpenedEevent" event={chatOpenedEvent} />
+      <StoryItem
+        title="TextResponseSubmissionEvent"
+        event={textResponseSubmissionEvent}
+      />
+      <StoryItem title="ButtonClickEvent" event={buttonClickNavigateEvent} />
+      <StoryItem event={buttonClickNavigateToBlockEvent} />
+      <StoryItem event={buttonClickNavigateToJourneyEvent} />
+      <StoryItem event={buttonClickLinkEvent} />
+      <StoryItem
+        title="RadioQuestionSubmissionEvent"
+        event={radioQuestionSubmissionEvent}
+      />
+      <StoryItem title="SignUpSubmissionEvent" event={signUpSubmissionEvent} />
 
-    <StoryItem title="StepNextEvent" event={stepNextEvent} />
-    <StoryItem title="StepViewEvent" event={stepViewEvent} />
+      <StoryItem title="StepNextEvent" event={stepNextEvent} />
+      <StoryItem title="StepViewEvent" event={stepViewEvent} />
 
-    <StoryItem title="VideoStartEvent" event={videoStartEvent} />
-    <StoryItem title="VideoPlayEvent" event={videoPlayEvent} />
-    <StoryItem title="VideoPauseEvent" event={videoPauseEvent} />
-    <StoryItem title="VideoProgressEvent" event={videoProgressEvent} />
-    <StoryItem title="VideoExpandEvent" event={videoExpandEvent} />
-    <StoryItem title="VideoCompleteEvent" event={videoCompleteEvent} />
-  </Stack>
-)
+      <StoryItem title="VideoStartEvent" event={videoStartEvent} />
+      <StoryItem title="VideoPlayEvent" event={videoPlayEvent} />
+      <StoryItem title="VideoPauseEvent" event={videoPauseEvent} />
+      <StoryItem title="VideoProgressEvent" event={videoProgressEvent} />
+      <StoryItem title="VideoExpandEvent" event={videoExpandEvent} />
+      <StoryItem title="VideoCompleteEvent" event={videoCompleteEvent} />
+    </Stack>
+  )
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default TimelineEventStory as Meta
+export default TimelineEventStory

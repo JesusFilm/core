@@ -63,7 +63,7 @@ export function Label(): ReactElement {
     selectedBlock != null ? { textResponseLabel: selectedBlock.label } : null
 
   return (
-    <Box sx={{ px: 6, py: 4 }}>
+    <Box sx={{ px: 6, py: 4 }} data-testid="Label">
       {selectedBlock != null ? (
         <Formik initialValues={initialValues} onSubmit={noop}>
           {({ values, errors, handleChange, handleBlur, setValues }) => (
@@ -78,13 +78,15 @@ export function Label(): ReactElement {
                 placeholder={t('Your answer here')}
                 inputProps={{ maxLength: 250 }}
                 onChange={handleChange}
-                onBlur={(e) => {
+                onBlur={async (e) => {
                   handleBlur(e)
                   if (values.textResponseLabel.trim() === '') {
                     e.target.value = t('Your answer here')
-                    setValues({ textResponseLabel: t('Your answer here') })
+                    await setValues({
+                      textResponseLabel: t('Your answer here')
+                    })
                   }
-                  errors.textResponseLabel == null && handleSubmit(e)
+                  if (errors.textResponseLabel == null) void handleSubmit(e)
                 }}
               />
             </Form>

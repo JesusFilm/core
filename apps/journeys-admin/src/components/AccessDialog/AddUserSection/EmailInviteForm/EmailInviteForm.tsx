@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
@@ -7,6 +6,8 @@ import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
+
+import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 
 import { UserInviteCreate } from '../../../../../__generated__/UserInviteCreate'
 
@@ -42,7 +43,7 @@ export function EmailInviteForm({
         variables: {
           journeyId,
           input: {
-            email: values.email
+            email: values.email.trim().toLowerCase()
           }
         },
         update(cache, { data }) {
@@ -85,6 +86,7 @@ export function EmailInviteForm({
   const usersToLowerCase = users.map((user) => user.toLowerCase())
   const validationSchema = object().shape({
     email: string()
+      .trim()
       .lowercase()
       .email(t('Please enter a valid email address'))
       .required(t('Required'))
@@ -98,7 +100,7 @@ export function EmailInviteForm({
       validationSchema={validationSchema}
     >
       {({ values, handleChange, handleBlur, errors, touched }) => (
-        <Form noValidate autoComplete="off">
+        <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
           <TextField
             label={t('Email')}
             name="email"
@@ -111,7 +113,7 @@ export function EmailInviteForm({
             error={errors.email != null && touched.email != null}
             helperText={
               touched?.email != null && errors.email != null
-                ? errors.email
+                ? (errors.email as string)
                 : t('No email notifications. New users get access instantly.')
             }
             InputProps={{
@@ -123,12 +125,12 @@ export function EmailInviteForm({
                     color="primary"
                     disabled={values.email === ''}
                   >
-                    <AddCircleOutlineIcon
+                    <AddSquare4Icon
                       sx={{
                         color:
                           values.email !== '' && errors.email == null
                             ? 'primary.main'
-                            : null
+                            : 'secondary.light'
                       }}
                     />
                   </IconButton>

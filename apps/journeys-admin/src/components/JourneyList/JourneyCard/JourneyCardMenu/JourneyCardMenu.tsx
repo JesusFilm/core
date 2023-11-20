@@ -1,8 +1,9 @@
 import { ApolloQueryResult } from '@apollo/client'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import { ReactElement, useState } from 'react'
+
+import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetAdminJourneys } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
@@ -55,7 +56,7 @@ export function JourneyCardMenu({
         aria-expanded={open ? 'true' : 'false'}
         onClick={handleOpenMenu}
       >
-        <MoreVertIcon />
+        <MoreIcon />
       </IconButton>
       <Menu
         id="journey-actions"
@@ -65,6 +66,7 @@ export function JourneyCardMenu({
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
+        data-testid="JourneyCardMenu"
       >
         {status === JourneyStatus.trashed ? (
           <TrashMenu

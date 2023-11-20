@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import ClickAwayListener from '@mui/base/ClickAwayListener'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithoutContactOutlined'
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined'
@@ -9,6 +8,7 @@ import RadioButtonUncheckedOutlinedIcon from '@mui/icons-material/RadioButtonUnc
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
@@ -202,6 +202,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
           justifyContent: 'flex-end',
           flexGrow: 1
         }}
+        data-testid="TeamSelect"
       >
         {activeTeam != null && (
           <Chip

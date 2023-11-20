@@ -29,7 +29,7 @@ export function NavigationListItem({
     <ListItemButton
       onClick={handleClick}
       aria-selected={selected}
-      data-testid={`${label}-list-item`}
+      data-testid={`NavigationListItem${label}`}
     >
       <Badge
         variant="dot"
@@ -59,7 +59,7 @@ const withLink = (link: string | undefined) =>
   function component(baseComponent: ReactElement) {
     if (link != null) {
       return (
-        <NextLink href={link} passHref>
+        <NextLink href={link} passHref legacyBehavior>
           {baseComponent}
         </NextLink>
       )

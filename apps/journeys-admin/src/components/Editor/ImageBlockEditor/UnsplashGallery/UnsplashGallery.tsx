@@ -162,9 +162,7 @@ export function UnsplashGallery({
   }
 
   return (
-    <Stack
-      sx={{ pt: 6, px: 6, height: 'calc(100vh - 231px)', overflowY: 'auto' }}
-    >
+    <Stack sx={{ p: 6 }} data-testid="UnsplashGallery">
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
       <UnsplashCollections onClick={handleCollectionChange} />
       <Stack sx={{ pt: 4, pb: 1 }}>
@@ -185,12 +183,7 @@ export function UnsplashGallery({
           onChange={handleChange}
         />
       )}
-      <LoadingButton
-        variant="outlined"
-        onClick={nextPage}
-        size="medium"
-        sx={{ mb: 9 }}
-      >
+      <LoadingButton variant="outlined" onClick={nextPage} size="medium">
         Load More
       </LoadingButton>
     </Stack>

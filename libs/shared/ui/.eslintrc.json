@@ -1,5 +1,10 @@
 {
-  "extends": ["plugin:@nrwl/nx/react", "../../../.eslintrc.json"],
+  "extends": [
+    "plugin:@nx/react-typescript",
+    "../../../.eslintrc.json",
+    "next",
+    "next/core-web-vitals"
+  ],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
@@ -11,10 +16,17 @@
       "parserOptions": {
         "project": ["libs/shared/ui/tsconfig.*?.json"]
       },
-      "rules": {}
+      "rules": {
+        "no-void": ["error", { "allowAsStatement": true }],
+        "@typescript-eslint/no-misused-promises": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.tsx", "*.jsx"],
       "rules": {}
     }
   ]

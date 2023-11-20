@@ -1,11 +1,11 @@
-import AddRounded from '@mui/icons-material/AddRounded'
-import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded'
-import EditRounded from '@mui/icons-material/EditRounded'
 import MuiFab from '@mui/material/Fab'
 import Zoom from '@mui/material/Zoom'
 import { ReactElement } from 'react'
 
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 interface FabProp {
   visible?: boolean
@@ -28,7 +28,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
   }
 
   return (
-    <Zoom in={visible} unmountOnExit>
+    <Zoom in={visible} unmountOnExit data-testid="Fab">
       {activeFab === ActiveFab.Add ? (
         <MuiFab
           variant="extended"
@@ -37,7 +37,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
           onClick={onAddClick}
           disabled={disabled}
         >
-          <AddRounded sx={{ mr: 3 }} />
+          <Plus2Icon sx={{ mr: 3 }} />
           Add
         </MuiFab>
       ) : activeFab === ActiveFab.Edit ? (
@@ -48,7 +48,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
           onClick={handleEditFab}
           disabled={disabled}
         >
-          <EditRounded sx={{ mr: 3 }} />
+          <Edit2Icon sx={{ mr: 3 }} />
           Edit
         </MuiFab>
       ) : (
@@ -59,7 +59,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
           onClick={handleSaveFab}
           disabled={disabled}
         >
-          <CheckCircleRounded sx={{ mr: 3 }} />
+          <CheckContainedIcon sx={{ mr: 3 }} />
           Done
         </MuiFab>
       )}

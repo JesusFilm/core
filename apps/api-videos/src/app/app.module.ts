@@ -1,18 +1,19 @@
 import { join } from 'path'
 
+import responseCachePlugin from '@apollo/server-plugin-response-cache'
 import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
+import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
-import responseCachePlugin from 'apollo-server-plugin-response-cache'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 
 import TranslationModule from '@core/nest/common/TranslationModule'
-import { NestHealthModule } from '@core/nest/health'
 
+import { NestHealthModule } from './modules/health/health.module'
 import { VideoModule } from './modules/video/video.module'
 import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
 
@@ -22,6 +23,7 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
     TranslationModule,
     VideoModule,
     VideoVariantModule,
+    CacheModule.register(),
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths:

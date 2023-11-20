@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -11,6 +11,10 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import {
+  StepAndCardBlockCreate,
+  StepAndCardBlockCreateVariables
+} from '../../../__generated__/StepAndCardBlockCreate'
 
 import { STEP_AND_CARD_BLOCK_CREATE } from './CardPreview'
 
@@ -24,41 +28,50 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('CardPreview', () => {
-  const mocks = [
-    {
-      request: {
-        query: STEP_AND_CARD_BLOCK_CREATE,
-        variables: {
+  const stepAndCardBlockCreateMock: MockedResponse<
+    StepAndCardBlockCreate,
+    StepAndCardBlockCreateVariables
+  > = {
+    request: {
+      query: STEP_AND_CARD_BLOCK_CREATE,
+      variables: {
+        stepBlockCreateInput: {
+          id: 'stepId',
+          journeyId: 'journeyId'
+        },
+        cardBlockCreateInput: {
+          id: 'cardId',
           journeyId: 'journeyId',
-          stepId: 'stepId',
-          cardId: 'cardId'
+          parentBlockId: 'stepId',
+          themeMode: ThemeMode.dark,
+          themeName: ThemeName.base
         }
-      },
-      result: {
-        data: {
-          stepBlockCreate: {
-            id: 'stepId',
-            parentBlockId: null,
-            parentOrder: 0,
-            locked: false,
-            nextBlockId: null,
-            __typename: 'StepBlock'
-          },
-          cardBlockCreate: {
-            id: 'cardId',
-            parentBlockId: 'stepId',
-            parentOrder: 0,
-            backgroundColor: null,
-            coverBlockId: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            __typename: 'CardBlock'
-          }
+      }
+    },
+    result: {
+      data: {
+        stepBlockCreate: {
+          id: 'stepId',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          __typename: 'StepBlock'
+        },
+        cardBlockCreate: {
+          id: 'cardId',
+          parentBlockId: 'stepId',
+          parentOrder: 0,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          __typename: 'CardBlock'
         }
       }
     }
-  ]
+  }
 
   it('should call onSelect when step is clicked', () => {
     const onSelect = jest.fn()
@@ -93,7 +106,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step.id'))
+    fireEvent.click(getByTestId('CardItem-step.id'))
     expect(onSelect).toHaveBeenCalledWith({ step })
   })
 
@@ -103,7 +116,7 @@ describe('CardPreview', () => {
     const onSelect = jest.fn()
 
     const { getAllByRole } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
         <JourneyProvider
           value={{
             journey: {
@@ -162,7 +175,7 @@ describe('CardPreview', () => {
     })
 
     const { getAllByRole } = render(
-      <MockedProvider cache={cache} mocks={mocks}>
+      <MockedProvider cache={cache} mocks={[stepAndCardBlockCreateMock]}>
         <JourneyProvider
           value={{
             journey: {
@@ -190,7 +203,7 @@ describe('CardPreview', () => {
     const onSelect = jest.fn()
 
     const { getByTestId } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
         <JourneyProvider
           value={{
             journey: {
@@ -210,7 +223,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('goals-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardGoals'))
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({ view: 'action' })
     )
@@ -220,7 +233,7 @@ describe('CardPreview', () => {
     const onSelect = jest.fn()
 
     const { getByTestId } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
         <JourneyProvider
           value={{
             journey: {
@@ -240,7 +253,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardSocial'))
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({ view: 'social' })
     )

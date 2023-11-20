@@ -13,8 +13,8 @@ import {
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 import { SocialProvider } from '../../Editor/SocialProvider'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 
 import { CardList } from '.'
 
@@ -246,7 +246,7 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    const dragHandle = getAllByTestId('DragHandleRoundedIcon')
+    const dragHandle = getAllByTestId('DragIcon')
     expect(dragHandle[0]).toHaveClass('MuiSvgIcon-root')
   })
 
@@ -264,7 +264,7 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    expect(getByTestId('goals-navigation-card')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardGoals')).toBeInTheDocument()
   })
 
   it('navigates on goals card click', async () => {
@@ -299,7 +299,7 @@ describe('CardList', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('goals-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardGoals'))
     expect(handleChange).toHaveBeenCalledWith('goals')
   })
 
@@ -317,7 +317,7 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardSocial')).toBeInTheDocument()
   })
 
   it('navigates on social preview card click', async () => {
@@ -352,7 +352,7 @@ describe('CardList', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardSocial'))
     expect(handleChange).toHaveBeenCalledWith('social')
   })
 
@@ -415,8 +415,8 @@ describe('CardList', () => {
         </SocialProvider>
       </MockedProvider>
     )
-    expect(getByTestId('goals-navigation-card')).toBeInTheDocument()
-    expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardGoals')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardSocial')).toBeInTheDocument()
   })
 
   it('should render the goal and social navigation card if the user is a publisher', () => {
@@ -449,8 +449,8 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    expect(getByTestId('goals-navigation-card')).toBeInTheDocument()
-    expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardGoals')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardSocial')).toBeInTheDocument()
   })
 
   it('should not render the goal and social navigation card if journey is a template', () => {
@@ -485,9 +485,7 @@ describe('CardList', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(queryByTestId('goals-navigation-card')).not.toBeInTheDocument()
-    expect(
-      queryByTestId('social-preview-navigation-card')
-    ).not.toBeInTheDocument()
+    expect(queryByTestId('NavigationCardGoals')).not.toBeInTheDocument()
+    expect(queryByTestId('NavigationCardSocial')).not.toBeInTheDocument()
   })
 })

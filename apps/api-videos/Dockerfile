@@ -1,8 +1,24 @@
-FROM node:16-alpine
+FROM node:18-alpine
+
+EXPOSE 4004
+
+ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-videos-client
+
+RUN apk upgrade --update-cache --available && \
+    apk add openssl1.1-compat && \
+    rm -rf /var/cache/apk/*
+
 WORKDIR /app
 COPY ./dist/apps/api-videos .
-EXPOSE 4004
+
 # dependencies that nestjs needs
-RUN npm install --production --silent
-RUN npm install tslib @nestjs/mapped-types pino-pretty@9.1.1
-CMD node ./main.js
+RUN npm install --production --silent --force
+
+WORKDIR /prisma
+COPY ./apps/api-videos/db .
+RUN npx prisma@^5.2.0 generate
+
+WORKDIR /app
+
+RUN npm install tslib@^2.6.2 @nestjs/mapped-types pino-pretty@^10.2.0 prisma@^5.2.0 @prisma/client@^5.2.0 --force
+CMD npx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js

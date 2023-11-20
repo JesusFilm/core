@@ -77,6 +77,11 @@ describe('Dialog', () => {
       fireEvent.click(getByRole('button', { name: 'Accept' }))
       expect(input.dialogAction?.onSubmit).toHaveBeenCalled()
     })
+
+    it('should show loading button if dialog is in submitting state', () => {
+      const { getByRole } = render(<Dialog {...input} loading />)
+      expect(getByRole('progressbar')).toBeInTheDocument()
+    })
   })
 
   describe('dialogActionChildren', () => {

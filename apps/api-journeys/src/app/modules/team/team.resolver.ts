@@ -9,6 +9,7 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import filter from 'lodash/filter'
 
 import { Prisma, Team, UserTeam } from '.prisma/api-journeys-client'
 import {
@@ -95,16 +96,17 @@ export class TeamResolver {
 
   @ResolveField()
   async userTeams(
-    @Parent() team: Team & { userTeams?: UserTeam[] }
+    @Parent() team: Team,
+    @CaslAbility({ optional: true }) ability?: AppAbility
   ): Promise<UserTeam[]> {
-    if (team.userTeams != null) return team.userTeams
-
-    return (
-      (await this.prismaService.team
-        .findUnique({
-          where: { id: team.id }
-        })
-        .userTeams()) ?? []
+    if (ability == null) return []
+    const userTeams = await this.prismaService.team
+      .findUnique({
+        where: { id: team.id }
+      })
+      .userTeams({ include: { team: { include: { userTeams: true } } } })
+    return filter(userTeams, (userTeam) =>
+      ability.can(Action.Read, subject('UserTeam', userTeam))
     )
   }
 }

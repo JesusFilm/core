@@ -1,4 +1,3 @@
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -7,6 +6,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { TeamManageWrapper } from './TeamManageWrapper'
 
@@ -36,7 +36,7 @@ export function TeamManageDialog({
           dialogActionChildren={
             <Stack flexGrow={1} sx={{ m: 4, mt: 2 }}>
               <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
-                <GroupAddIcon />
+                <UsersProfiles2Icon />
                 <Typography variant="subtitle1" sx={{ ml: 3 }}>
                   {t('Invite team member')}
                 </Typography>
@@ -45,6 +45,7 @@ export function TeamManageDialog({
             </Stack>
           }
           fullscreen={!smUp}
+          testId="TeamManageDialog"
         >
           <Stack spacing={4}>
             {userTeamList}

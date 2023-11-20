@@ -1,8 +1,8 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -11,7 +11,7 @@ import { TeamProvider } from '../TeamProvider'
 
 import { TeamCreateDialog } from '.'
 
-const TeamCreateDialogStory = {
+const TeamCreateDialogStory: Meta<typeof TeamCreateDialog> = {
   ...journeysAdminConfig,
   component: TeamCreateDialog,
   title: 'Journeys-Admin/Team/TeamCreateDialog'
@@ -31,6 +31,7 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
       teamCreate: {
         id: 'teamId',
         title: 'Jesus Film Project',
+        publicTitle: null,
         __typename: 'Team',
         userTeams: []
       }
@@ -38,7 +39,7 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
   }
 }
 
-const Template: Story = () => {
+const TeamCreateDialogComponent = (): ReactElement => {
   const [open, setOpen] = useState(true)
   return (
     <TeamProvider>
@@ -53,14 +54,39 @@ const Template: Story = () => {
   )
 }
 
-export const Default = Template.bind({})
-Default.parameters = {
-  apolloClient: {
-    mocks: [teamCreateMock]
-  }
-}
-Default.play = async () => {
-  userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
+const Template: StoryObj<typeof TeamCreateDialog> = {
+  render: () => <TeamCreateDialogComponent />
 }
 
-export default TeamCreateDialogStory as Meta
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [teamCreateMock]
+    }
+  },
+  play: async () => {
+    await userEvent.type(
+      screen.getAllByRole('textbox')[0],
+      'Jesus Film Project'
+    )
+  }
+}
+
+export const LegalName = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [teamCreateMock]
+    }
+  },
+  play: async () => {
+    await userEvent.type(
+      screen.getAllByRole('textbox')[0],
+      'Jesus Film Project'
+    )
+    await userEvent.type(screen.getAllByRole('textbox')[1], 'Legal Name JFP')
+  }
+}
+
+export default TeamCreateDialogStory

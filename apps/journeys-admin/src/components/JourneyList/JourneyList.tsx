@@ -1,12 +1,9 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import { AuthUser } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-
-import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
 
 import { ActiveJourneyList } from './ActiveJourneyList'
@@ -18,7 +15,7 @@ import { TrashedJourneyList } from './TrashedJourneyList'
 export interface JourneyListProps {
   sortOrder?: SortOrder
   event?: JourneyListEvent
-  authUser?: AuthUser
+  user?: User
 }
 
 export type JourneyListEvent =
@@ -33,11 +30,10 @@ export type JourneyListEvent =
   | 'refetchTrashed'
 
 export function JourneyList({
-  authUser
-}: Pick<JourneyListProps, 'authUser'>): ReactElement {
+  user
+}: Pick<JourneyListProps, 'user'>): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const router = useRouter()
-  const { journeysSummaryReport } = useFlags()
   const [event, setEvent] = useState<JourneyListEvent>()
 
   const handleClick = (event: JourneyListEvent): void => {
@@ -49,15 +45,17 @@ export function JourneyList({
   }
 
   const journeyListProps: JourneyListProps = {
-    authUser,
+    user,
     sortOrder,
     event
   }
 
   return (
     <>
-      {journeysSummaryReport && <MultipleSummaryReport />}
-      <Box sx={{ mx: { xs: -6, sm: 0 } }}>
+      <Box
+        sx={{ mx: { xs: -6, sm: 0 } }}
+        data-testid="JourneysAdminJourneyList"
+      >
         <Container disableGutters>
           <StatusTabPanel
             activeList={<ActiveJourneyList {...journeyListProps} />}

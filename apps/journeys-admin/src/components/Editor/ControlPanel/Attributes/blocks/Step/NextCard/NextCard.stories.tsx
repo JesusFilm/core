@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
+import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -22,10 +23,16 @@ import { Drawer } from '../../../../../Drawer'
 
 import { NextCard } from '.'
 
-const NextCardStory = {
+const NextCardStory: Meta<typeof NextCard> = {
   ...journeysAdminConfig,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Step/NextCard',
-  component: NextCard
+  component: NextCard,
+  // do not remove these parameters for this story, see: https://github.com/storybookjs/storybook/issues/17025
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
 const card = (index: number): TreeBlock<CardBlock> => {
@@ -107,67 +114,78 @@ const journeyTheme = {
   }
 } as unknown as Journey
 
-const Template: Story = ({ ...args }) => {
-  return (
-    <MockedProvider>
-      <JourneyProvider value={{ journey: journeyTheme, variant: 'admin' }}>
-        <EditorProvider
-          initialState={{
-            ...args,
-            steps: [block0, block1, block2, block3],
-            drawerTitle: 'Next Card Properties',
-            drawerChildren: <NextCard />,
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
+type Story = StoryObj<
+  ComponentProps<typeof NextCard> & { selectedBlock: TreeBlock<StepBlock> }
+>
+
+const Template: Story = {
+  render: ({ ...args }) => {
+    return (
+      <MockedProvider>
+        <JourneyProvider value={{ journey: journeyTheme, variant: 'admin' }}>
+          <EditorProvider
+            initialState={{
+              ...args,
+              steps: [block0, block1, block2, block3],
+              drawerTitle: 'Next Card Properties',
+              drawerMobileOpen: true,
+              drawerChildren: <NextCard />
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  selectedBlock: block1
+export const Default = {
+  ...Template,
+  args: {
+    selectedBlock: block1
+  }
 }
 
 // TODO: Hide VR only story from sidebar
 // https://github.com/storybookjs/storybook/issues/9209
-export const DefaultMobileConditions = Template.bind({})
-DefaultMobileConditions.args = {
-  selectedBlock: block1
-}
-
-DefaultMobileConditions.parameters = {
-  chromatic: {
-    viewports: [360]
-  }
-}
-DefaultMobileConditions.play = async () => {
-  const conditionsTab = await screen.getByRole('tab', { name: 'Conditions' })
-  await userEvent.click(conditionsTab)
-}
-
-export const Selected = Template.bind({})
-Selected.args = {
-  selectedBlock: block0
-}
-
-export const SelectedMobileConditions = Template.bind({})
-SelectedMobileConditions.args = {
-  selectedBlock: block0
-}
-
-SelectedMobileConditions.parameters = {
-  chromatic: {
-    viewports: [360]
+export const DefaultMobileConditions = {
+  ...Template,
+  args: {
+    selectedBlock: block1
+  },
+  parameters: {
+    chromatic: {
+      viewports: [360]
+    }
+  },
+  play: async () => {
+    const conditionsTab = await screen.getByRole('tab', { name: 'Conditions' })
+    await userEvent.click(conditionsTab)
   }
 }
 
-SelectedMobileConditions.play = async () => {
-  const conditionsTab = await screen.getByRole('tab', { name: 'Conditions' })
-  await userEvent.click(conditionsTab)
+export const Selected = {
+  ...Template,
+  args: {
+    selectedBlock: block0
+  }
 }
 
-export default NextCardStory as Meta
+export const SelectedMobileConditions = {
+  ...Template,
+  args: {
+    selectedBlock: block0
+  },
+  parameters: {
+    chromatic: {
+      viewports: [360]
+    }
+  },
+  play: async () => {
+    const conditionsTab = await screen.getByRole('tab', { name: 'Conditions' })
+    await userEvent.click(conditionsTab)
+  }
+}
+
+export default NextCardStory

@@ -6,7 +6,7 @@ import { FooterLink } from '../FooterLink'
 
 export function FooterLinks(): ReactElement {
   return (
-    <Stack direction="row" width="100%" spacing={20}>
+    <Stack direction="row" width="100%" spacing={20} data-testid="FooterLinks">
       <Stack direction="column" spacing={4}>
         <Typography
           variant="h6"

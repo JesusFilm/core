@@ -1,7 +1,8 @@
-import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded'
 import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
 import { ReactElement } from 'react'
+
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 export interface ManageAccessAvatarProps {
   diameter: number
@@ -28,8 +29,9 @@ export function ManageAccessAvatar({
             backgroundColor: 'divider'
           }
         }}
+        data-testid="ManageAccessAvatar"
       >
-        <GroupAddRoundedIcon
+        <UsersProfiles2Icon
           sx={{ color: 'secondary.light' }}
           fontSize={fontSize}
         />

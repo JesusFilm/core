@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react'
 
-import { GetAdminJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetAdminJourneys'
+import { GetAdminJourneys_journeys_userJourneys_user as ApiUser } from '../../../__generated__/GetAdminJourneys'
 
 import { Avatar } from '.'
 
 describe('Avatar', () => {
-  const user: User = {
+  const apiUser: ApiUser = {
     __typename: 'User',
     id: '1',
     firstName: 'Person',
@@ -14,12 +14,12 @@ describe('Avatar', () => {
   }
 
   it('should show avatar', () => {
-    const { getByRole } = render(<Avatar user={user} />)
+    const { getByRole } = render(<Avatar apiUser={apiUser} />)
     expect(getByRole('img')).toBeInTheDocument()
   })
 
   it('should show avatar with notification badge', () => {
-    const { getByLabelText } = render(<Avatar user={user} notification />)
+    const { getByLabelText } = render(<Avatar apiUser={apiUser} notification />)
     expect(getByLabelText('notification-badge')).toBeInTheDocument()
   })
 })

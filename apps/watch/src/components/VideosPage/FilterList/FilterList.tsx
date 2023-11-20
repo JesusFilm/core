@@ -186,7 +186,7 @@ export function FilterList({
       enableReinitialize
     >
       {({ values, setFieldValue, handleChange, handleBlur }) => (
-        <Box>
+        <Box data-testid="FilterList">
           <Accordion
             expanded={expanded === 'panel1'}
             onChange={handleExpandChange('panel1')}
@@ -194,7 +194,9 @@ export function FilterList({
             heading="Languages"
           >
             <LanguagesFilter
-              onChange={(language) => setFieldValue('language', language)}
+              onChange={async (language) =>
+                await setFieldValue('language', language)
+              }
               value={values.language}
               languages={languagesData?.languages}
               loading={languagesLoading}
@@ -207,8 +209,8 @@ export function FilterList({
             heading="Subtitles"
           >
             <LanguagesFilter
-              onChange={(subtitleLanguage) =>
-                setFieldValue('subtitleLanguage', subtitleLanguage)
+              onChange={async (subtitleLanguage) =>
+                await setFieldValue('subtitleLanguage', subtitleLanguage)
               }
               value={values.subtitleLanguage}
               languages={subtitleLanguages}

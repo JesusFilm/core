@@ -3,27 +3,25 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
+import {
+  CreateJourney,
+  CreateJourneyVariables
+} from '../../../__generated__/CreateJourney'
 import { GetLastActiveTeamIdAndTeams } from '../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { CREATE_JOURNEY } from '../../libs/useJourneyCreate'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
+import { CREATE_JOURNEY } from '../../libs/useJourneyCreateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../Team/TeamProvider'
 
-import { onboardingJourneys } from './data'
+import { getOnboardingJourneysMock } from './data'
 
 import { OnboardingPanelContent } from '.'
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -51,90 +49,104 @@ const variables = {
   captionTypographyContent: 'Deutoronomy 10:11',
   teamId: 'teamId'
 }
-
-const data = {
-  journeyCreate: {
-    createdAt: '2022-02-17T21:47:32.004Z',
-    description: variables.description,
-    id: variables.journeyId,
-    language: {
-      id: '529',
-      name: {
-        value: 'English',
-        primary: true
-      }
-    },
-    publishedAt: null,
-    slug: 'untitled-journey-journeyId',
-    status: 'draft',
-    themeMode: 'dark',
-    themeName: 'base',
-    title: variables.title,
-    __typename: 'Journey',
-    userJourneys: [
-      {
-        __typename: 'UserJourney',
-        id: 'user-journey-id',
-        user: {
-          __typename: 'User',
-          id: 'user-id1',
-          firstName: 'Admin',
-          lastName: 'One',
-          imageUrl: 'https://bit.ly/3Gth4Yf'
-        }
-      }
-    ]
-  },
-  stepBlockCreate: {
-    id: variables.stepId,
-    __typename: 'StepBlock'
-  },
-  cardBlockCreate: {
-    id: variables.cardId,
-    __typename: 'CardBlock'
-  },
-  imageBlockCreate: {
-    id: variables.imageId,
-    __typename: 'ImageBlock'
-  },
-  headlineTypographyBlockCreate: {
-    id: 'headlineTypographyId',
-    __typename: 'TypographyBlock'
-  },
-  bodyTypographyBlockCreate: {
-    id: 'bodyTypographyId',
-    __typename: 'TypographyBlock'
-  },
-  captionTypographyBlockCreate: {
-    id: 'captionTypographyId',
-    __typename: 'TypographyBlock'
-  }
-}
-
-const mocks = [
+const createJourneyMock: MockedResponse<CreateJourney, CreateJourneyVariables> =
   {
     request: {
       query: CREATE_JOURNEY,
       variables
     },
-    result: { data }
+    result: {
+      data: {
+        journeyCreate: {
+          createdAt: '2022-02-17T21:47:32.004Z',
+          description: variables.description,
+          id: variables.journeyId,
+          language: {
+            id: '529',
+            name: [
+              {
+                value: 'English',
+                primary: true,
+                __typename: 'Translation'
+              }
+            ],
+            __typename: 'Language'
+          },
+          publishedAt: null,
+          slug: 'untitled-journey-journeyId',
+          status: JourneyStatus.draft,
+          themeMode: ThemeMode.dark,
+          themeName: ThemeName.base,
+          title: variables.title,
+          __typename: 'Journey',
+          userJourneys: [
+            {
+              __typename: 'UserJourney',
+              id: 'user-journey-id',
+              user: {
+                __typename: 'User',
+                id: 'user-id1',
+                firstName: 'Admin',
+                lastName: 'One',
+                imageUrl: 'https://bit.ly/3Gth4Yf'
+              }
+            }
+          ]
+        },
+        stepBlockCreate: {
+          id: variables.stepId,
+          __typename: 'StepBlock'
+        },
+        cardBlockCreate: {
+          id: variables.cardId,
+          __typename: 'CardBlock'
+        },
+        imageBlockCreate: {
+          id: variables.imageId,
+          __typename: 'ImageBlock'
+        },
+        headlineTypographyBlockCreate: {
+          id: 'headlineTypographyId',
+          __typename: 'TypographyBlock'
+        },
+        bodyTypographyBlockCreate: {
+          id: 'bodyTypographyId',
+          __typename: 'TypographyBlock'
+        },
+        captionTypographyBlockCreate: {
+          id: 'captionTypographyId',
+          __typename: 'TypographyBlock'
+        }
+      }
+    }
   }
-]
-
-const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
-      teams: [],
+      teams: [
+        {
+          id: 'teamId',
+          title: 'Team Title',
+          __typename: 'Team',
+          publicTitle: 'Public Team Title',
+          userTeams: []
+        }
+      ],
       getJourneyProfile: {
         __typename: 'JourneyProfile',
-        lastActiveTeamId: null
+        lastActiveTeamId: 'teamId'
       }
     }
   }
 }
+const mocks: MockedResponse[] = [
+  createJourneyMock,
+  getOnboardingJourneysMock,
+  getTeamsMock
+]
 
 describe('OnboardingPanelContent', () => {
   it('should add a new journey on custom journey button click', async () => {
@@ -145,36 +157,16 @@ describe('OnboardingPanelContent', () => {
     mockUuidv4.mockReturnValueOnce(variables.cardId)
     mockUuidv4.mockReturnValueOnce(variables.imageId)
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          ...mocks,
-          {
-            ...getTeams,
-            result: {
-              data: {
-                teams: [
-                  { id: 'teamId', title: 'Team Title', __typename: 'Team' }
-                ],
-                getJourneyProfile: {
-                  __typename: 'JourneyProfile',
-                  lastActiveTeamId: 'teamId'
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <FlagsProvider flags={{ teams: true }}>
-          <TeamProvider>
-            <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
-          </TeamProvider>
-        </FlagsProvider>
+      <MockedProvider mocks={mocks}>
+        <TeamProvider>
+          <OnboardingPanelContent />
+        </TeamProvider>
       </MockedProvider>
     )
     await waitFor(() =>
       expect(
         getByRole('button', { name: 'Create Custom Journey' })
-      ).toBeInTheDocument()
+      ).not.toBeDisabled()
     )
     fireEvent.click(getByRole('button', { name: 'Create Custom Journey' }))
 
@@ -189,7 +181,7 @@ describe('OnboardingPanelContent', () => {
     })
   })
 
-  it('should not show create journey button when on shared with me and teams flag is true', async () => {
+  it('should not show create journey button when on shared with me', async () => {
     const result = jest.fn().mockReturnValueOnce({
       data: {
         teams: []
@@ -198,18 +190,17 @@ describe('OnboardingPanelContent', () => {
     const { queryByRole } = render(
       <MockedProvider
         mocks={[
-          ...mocks,
+          createJourneyMock,
+          getOnboardingJourneysMock,
           {
-            ...getTeams,
+            ...getTeamsMock,
             result
           }
         ]}
       >
-        <FlagsProvider flags={{ teams: true }}>
-          <TeamProvider>
-            <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
-          </TeamProvider>
-        </FlagsProvider>
+        <TeamProvider>
+          <OnboardingPanelContent />
+        </TeamProvider>
       </MockedProvider>
     )
 
@@ -219,27 +210,12 @@ describe('OnboardingPanelContent', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should show create journey button when on shared with me and teams flag is false', async () => {
-    const { getByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <FlagsProvider flags={{ teams: false }}>
-          <TeamProvider>
-            <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
-          </TeamProvider>
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(
-        getByRole('button', { name: 'Create Custom Journey' })
-      ).toBeInTheDocument()
-    )
-  })
-
   it('should display onboarding templates', async () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+        <TeamProvider>
+          <OnboardingPanelContent />
+        </TeamProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -255,25 +231,30 @@ describe('OnboardingPanelContent', () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
-    const { getByText } = render(
+    const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+        <TeamProvider>
+          <OnboardingPanelContent />
+        </TeamProvider>
       </MockedProvider>
     )
 
     await waitFor(() =>
       expect(getByText('template 1 title')).toBeInTheDocument()
     )
-    fireEvent.click(getByText('template 1 title'))
-    expect(push).toHaveBeenCalledWith(
-      '/templates/014c7add-288b-4f84-ac85-ccefef7a07d3'
-    )
+    expect(
+      getByRole('link', {
+        name: 'template 1 title Template template 1 title template 1 description'
+      })
+    ).toHaveAttribute('href', '/templates/014c7add-288b-4f84-ac85-ccefef7a07d3')
   })
 
   it('should redirect on See all link', () => {
     const { getByRole } = render(
-      <MockedProvider mocks={[]}>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+      <MockedProvider mocks={mocks}>
+        <TeamProvider>
+          <OnboardingPanelContent />
+        </TeamProvider>
       </MockedProvider>
     )
 
@@ -286,7 +267,9 @@ describe('OnboardingPanelContent', () => {
   it('should redirect on See all templates button', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
+        <TeamProvider>
+          <OnboardingPanelContent />
+        </TeamProvider>
       </MockedProvider>
     )
 

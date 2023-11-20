@@ -52,7 +52,7 @@ const noJourneysMock = {
 
 describe('TrashedTemplatesTab', () => {
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
     jest.setSystemTime(new Date('2021-12-11'))
   })
 
@@ -114,11 +114,11 @@ describe('TrashedTemplatesTab', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1, 2023DraftEnglish'
+        'a lower case titleJanuary 1, 2023English'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'An Old Template HeadingNovember 19, 2020 - Template created before the current year should also show the year in the datePublishedEnglish'
+      'An Old Template HeadingNovember 19, 2020 - Template created before the current year should also show the year in the dateEnglish'
     )
   })
 

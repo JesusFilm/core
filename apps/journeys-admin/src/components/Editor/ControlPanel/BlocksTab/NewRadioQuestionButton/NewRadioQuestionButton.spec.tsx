@@ -12,6 +12,11 @@ import { RADIO_QUESTION_BLOCK_CREATE } from './NewRadioQuestionButton'
 
 import { NewRadioQuestionButton } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'uuid'

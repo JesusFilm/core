@@ -118,7 +118,8 @@ export async function onboardingTemplates(action?: 'reset'): Promise<void> {
         width: 1152,
         height: 768,
         blurhash: 'UbLX6?~p9FtRkX.8ogD%IUj@M{adxaM_ofkW',
-        parentBlockId: card.id
+        parentBlockId: card.id,
+        parentOrder: 0
       }
     })
     await prisma.block.update({

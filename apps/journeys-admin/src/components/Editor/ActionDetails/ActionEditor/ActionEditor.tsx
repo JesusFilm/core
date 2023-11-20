@@ -1,7 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
-import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
-import WebOutlined from '@mui/icons-material/WebOutlined'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -9,6 +6,9 @@ import { ReactElement, ReactNode } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import BibleIcon from '@core/shared/ui/icons/Bible'
+import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
+import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 
 import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generated__/BlockFields'
@@ -107,13 +107,13 @@ export function ActionEditor({
   let icon: ReactNode
   switch (goalLabel?.(url)) {
     case 'Start a Conversation':
-      icon = <QuestionAnswerOutlined sx={{ color: 'secondary.light' }} />
+      icon = <MessageChat1Icon sx={{ color: 'secondary.light' }} />
       break
     case 'Link to Bible':
-      icon = <MenuBookRounded sx={{ color: 'secondary.light' }} />
+      icon = <BibleIcon sx={{ color: 'secondary.light' }} />
       break
     default:
-      icon = <WebOutlined sx={{ color: 'secondary.light' }} />
+      icon = <LinkAngledIcon sx={{ color: 'secondary.light' }} />
       break
   }
 

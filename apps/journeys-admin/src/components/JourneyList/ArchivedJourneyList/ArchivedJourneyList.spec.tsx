@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
@@ -113,11 +113,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1DraftEnglish'
+        'a lower case titleJanuary 1English'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the datePublishedEnglish'
+      'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the dateEnglish'
     )
   })
 
@@ -173,7 +173,7 @@ describe('ArchivedJourneyList', () => {
             <SnackbarProvider>
               <ArchivedJourneyList
                 event="restoreAllArchived"
-                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -199,7 +199,7 @@ describe('ArchivedJourneyList', () => {
               <SnackbarProvider>
                 <ArchivedJourneyList
                   event="restoreAllArchived"
-                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                  user={{ id: 'user-id1' } as unknown as User}
                 />
               </SnackbarProvider>
             </ThemeProvider>
@@ -251,7 +251,7 @@ describe('ArchivedJourneyList', () => {
             <SnackbarProvider>
               <ArchivedJourneyList
                 event="trashAllArchived"
-                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -277,7 +277,7 @@ describe('ArchivedJourneyList', () => {
               <SnackbarProvider>
                 <ArchivedJourneyList
                   event="trashAllArchived"
-                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                  user={{ id: 'user-id1' } as unknown as User}
                 />
               </SnackbarProvider>
             </ThemeProvider>

@@ -1,49 +1,50 @@
-import {
-  AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
-} from 'next-firebase-auth'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PageWrapper } from '../../src/components/NewPageWrapper'
-import { TemplateLibrary } from '../../src/components/TemplateLibrary'
+import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
 
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
-      <PageWrapper title={t('Journey Templates')} authUser={AuthUser}>
-        <TemplateLibrary />
+      <PageWrapper
+        title={t('Journey Templates')}
+        user={user}
+        mainPanelSx={{
+          backgroundColor: 'background.paper',
+          overflowX: 'hidden'
+        }}
+        showMainHeader={false}
+      >
+        <TemplateGallery />
       </PageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
-    locale
-  })
+export const getServerSideProps = withUserTokenSSR()(
+  async ({ user, locale, resolvedUrl }) => {
+    const { redirect, translations } = await initAndAuthApp({
+      user,
+      locale,
+      resolvedUrl
+    })
 
-  if (redirect != null) return { redirect }
+    if (redirect != null) return { redirect }
 
-  return {
-    props: {
-      flags,
-      ...translations
+    return {
+      props: {
+        ...translations
+      }
     }
   }
-})
+)
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(LibraryIndex)
+export default withUser()(LibraryIndex)

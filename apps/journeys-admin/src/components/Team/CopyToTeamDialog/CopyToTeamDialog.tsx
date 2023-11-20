@@ -1,4 +1,3 @@
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
@@ -9,13 +8,15 @@ import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { useTeam } from '../TeamProvider'
 
-interface DuplicateToTeamDialogProps {
+interface CopyToTeamDialogProps {
   title: string
   submitLabel?: string
   open: boolean
+  loading?: boolean
   onClose: () => void
   submitAction: (teamId: string) => Promise<void>
 }
@@ -24,10 +25,12 @@ export function CopyToTeamDialog({
   title,
   submitLabel = 'Copy',
   open,
+  loading,
   onClose,
   submitAction
-}: DuplicateToTeamDialogProps): ReactElement {
+}: CopyToTeamDialogProps): ReactElement {
   const { query, setActiveTeam } = useTeam()
+  const teams = query?.data?.teams ?? []
   const { t } = useTranslation('apps-journeys-admin')
   function handleClose(): void {
     onClose()
@@ -41,16 +44,19 @@ export function CopyToTeamDialog({
     values: FormikValues,
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
-    await setActiveTeam(
-      query?.data?.teams.find((team) => team.id === values.teamSelect) ?? null
-    )
+    // submitAction runs first so loading state can be shown
     await submitAction(values.teamSelect)
+    await setActiveTeam(
+      teams.find((team) => team.id === values.teamSelect) ?? null
+    )
+
     resetForm()
   }
 
   return (
     <Formik
-      initialValues={{ teamSelect: '' }}
+      initialValues={{ teamSelect: teams.length === 1 ? teams[0].id : '' }}
+      enableReinitialize
       onSubmit={handleSubmit}
       validationSchema={copyToSchema}
     >
@@ -59,6 +65,7 @@ export function CopyToTeamDialog({
           open={open}
           onClose={handleClose}
           dialogTitle={{ title: t(title) }}
+          loading={loading ?? isSubmitting}
           dialogAction={{
             onSubmit: () => {
               if (!isSubmitting) handleSubmit()
@@ -66,6 +73,7 @@ export function CopyToTeamDialog({
             closeLabel: t('Cancel'),
             submitLabel: submitLabel === 'Add' ? t('Add') : t('Copy')
           }}
+          testId="CopyToTeamDialog"
         >
           <FormControl variant="filled" hiddenLabel fullWidth>
             <TextField
@@ -73,7 +81,7 @@ export function CopyToTeamDialog({
               select
               error={Boolean(errors.teamSelect)}
               helperText={
-                errors.teamSelect ??
+                (errors.teamSelect as string) ??
                 t('Journey will be copied to selected team.')
               }
               variant="filled"
@@ -85,7 +93,7 @@ export function CopyToTeamDialog({
                 handleChange(e)
               }}
               SelectProps={{
-                IconComponent: KeyboardArrowDownIcon
+                IconComponent: ChevronDownIcon
               }}
               sx={{
                 '& >.MuiFormHelperText-contained': {

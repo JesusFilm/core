@@ -1,44 +1,51 @@
-import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
+
+import { simpleComponentConfig } from '../../../../libs/storybook'
 import { StyledList } from '../NavigationDrawer'
-
-import { NavigationListItemProps } from './NavigationListItem'
 
 import { NavigationListItem } from '.'
 
-const NavigationListItemStory = {
-  ...journeysAdminConfig,
+const NavigationListItemStory: Meta<typeof NavigationListItem> = {
+  ...simpleComponentConfig,
   component: NavigationListItem,
   title: 'Journeys-Admin/PageWrapper/NavigationDrawer/NavigationListItem'
 }
 
-const Template: Story = ({ ...args }: NavigationListItemProps) => (
-  <StyledList>
-    <NavigationListItem {...args} />
-  </StyledList>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  icon: <ExploreRoundedIcon />,
-  label: 'Discover',
-  selected: false
+const Template: StoryObj<typeof NavigationListItem> = {
+  render: ({ ...args }) => (
+    <StyledList>
+      <NavigationListItem {...args} />
+    </StyledList>
+  )
 }
 
-export const Selected = Template.bind({})
-Selected.args = {
-  icon: <ExploreRoundedIcon />,
-  label: 'Discover',
-  selected: true
+export const Default = {
+  ...Template,
+  args: {
+    icon: <JourneysIcon />,
+    label: 'Discover',
+    selected: false
+  }
 }
 
-export const WithBadge = Template.bind({})
-WithBadge.args = {
-  icon: <ExploreRoundedIcon />,
-  label: 'Discover',
-  tooltipText: 'tool tip text'
+export const Selected = {
+  ...Template,
+  args: {
+    icon: <JourneysIcon />,
+    label: 'Discover',
+    selected: true
+  }
 }
 
-export default NavigationListItemStory as Meta
+export const WithBadge = {
+  ...Template,
+  args: {
+    icon: <JourneysIcon />,
+    label: 'Discover',
+    tooltipText: 'tool tip text'
+  }
+}
+
+export default NavigationListItemStory

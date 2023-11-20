@@ -1,4 +1,4 @@
-import VisibilityIcon from '@mui/icons-material/Visibility'
+import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement } from 'react'
 
@@ -7,8 +7,8 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../DuplicateBlock'
 
 import { DeleteBlock } from './DeleteBlock'
@@ -20,14 +20,38 @@ export function EditToolbar(): ReactElement {
 
   return (
     <>
-      <IconButton
-        aria-label="Preview"
-        href={`/api/preview?slug=${journey?.slug ?? ''}`}
-        target="_blank"
-        disabled={journey == null || journey?.status === JourneyStatus.draft}
-      >
-        <VisibilityIcon />
-      </IconButton>
+      {journey != null && (
+        <>
+          <Chip
+            icon={<EyeOpenIcon />}
+            label="Preview"
+            component="a"
+            href={`/api/preview?slug=${journey.slug}`}
+            target="_blank"
+            variant="outlined"
+            clickable
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex'
+              }
+            }}
+          />
+          <IconButton
+            aria-label="Preview"
+            href={`/api/preview?slug=${journey.slug}`}
+            target="_blank"
+            sx={{
+              display: {
+                xs: 'flex',
+                md: 'none'
+              }
+            }}
+          >
+            <EyeOpenIcon />
+          </IconButton>
+        </>
+      )}
       <DeleteBlock
         variant="button"
         disabled={
@@ -37,7 +61,9 @@ export function EditToolbar(): ReactElement {
       <DuplicateBlock
         variant="button"
         disabled={
-          state.journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+          state.journeyEditContentComponent !==
+            ActiveJourneyEditContent.Canvas ||
+          state.selectedBlock?.__typename === 'VideoBlock'
         }
       />
       <Menu />

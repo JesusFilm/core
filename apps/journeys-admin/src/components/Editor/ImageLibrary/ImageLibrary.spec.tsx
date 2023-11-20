@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
@@ -32,13 +33,15 @@ describe('ImageLibrary', () => {
     it('should switch tabs', () => {
       const { getByText } = render(
         <MockedProvider>
-          <ImageLibrary
-            open
-            onClose={jest.fn()}
-            onChange={jest.fn()}
-            onDelete={jest.fn()}
-            selectedBlock={imageBlock}
-          />
+          <SnackbarProvider>
+            <ImageLibrary
+              open
+              onClose={jest.fn()}
+              onChange={jest.fn()}
+              onDelete={jest.fn()}
+              selectedBlock={imageBlock}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()
@@ -47,13 +50,15 @@ describe('ImageLibrary', () => {
     it('should render the Image Library on the right', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <ImageLibrary
-            open
-            onClose={jest.fn()}
-            onChange={jest.fn()}
-            onDelete={jest.fn()}
-            selectedBlock={imageBlock}
-          />
+          <SnackbarProvider>
+            <ImageLibrary
+              open
+              onClose={jest.fn()}
+              onChange={jest.fn()}
+              onDelete={jest.fn()}
+              selectedBlock={imageBlock}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()
@@ -66,18 +71,18 @@ describe('ImageLibrary', () => {
       const onClose = jest.fn()
       const { getAllByRole, getByTestId } = render(
         <MockedProvider>
-          <ImageLibrary
-            open
-            onClose={onClose}
-            onChange={jest.fn()}
-            onDelete={jest.fn()}
-            selectedBlock={imageBlock}
-          />
+          <SnackbarProvider>
+            <ImageLibrary
+              open
+              onClose={onClose}
+              onChange={jest.fn()}
+              onDelete={jest.fn()}
+              selectedBlock={imageBlock}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       )
-      expect(getAllByRole('button')[0]).toContainElement(
-        getByTestId('CloseIcon')
-      )
+      expect(getAllByRole('button')[0]).toContainElement(getByTestId('X2Icon'))
       fireEvent.click(getAllByRole('button')[0])
       expect(onClose).toHaveBeenCalled()
     })
@@ -91,13 +96,15 @@ describe('ImageLibrary', () => {
     it('should render the Image Library from the bottom', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <ImageLibrary
-            open
-            onClose={jest.fn()}
-            onChange={jest.fn()}
-            onDelete={jest.fn()}
-            selectedBlock={imageBlock}
-          />
+          <SnackbarProvider>
+            <ImageLibrary
+              open
+              onClose={jest.fn()}
+              onChange={jest.fn()}
+              onDelete={jest.fn()}
+              selectedBlock={imageBlock}
+            />
+          </SnackbarProvider>
         </MockedProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()

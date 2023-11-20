@@ -5,7 +5,7 @@ import {
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
-import { useCurrentUser } from '../../../../libs/useCurrentUser'
+import { useCurrentUserLazyQuery } from '../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../../libs/useUserTeamsAndInvitesQuery'
 import { useTeam } from '../../TeamProvider'
 import { UserTeamInviteForm } from '../../UserTeamInviteForm'
@@ -25,7 +25,7 @@ export function TeamManageWrapper({
   children
 }: TeamManageWrapperProps): ReactElement {
   const { activeTeam } = useTeam()
-  const { loadUser, data: currentUser } = useCurrentUser()
+  const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
   const { data, loading, emails } = useUserTeamsAndInvitesQuery(
     activeTeam != null
       ? {

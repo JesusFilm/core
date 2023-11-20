@@ -1,11 +1,12 @@
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
-import { MouseEvent, ReactElement, useMemo } from 'react'
+import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
 
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+// eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { StepFields } from '../Step/__generated__/StepFields'
@@ -40,6 +41,12 @@ export function Card({
       ? backgroundColor
       : // Card theme is determined in Conductor
         theme.palette.background.paper
+
+  useEffect(() => {
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', cardColor)
+  }, [cardColor])
 
   const coverBlock = children.find(
     (block) =>
@@ -93,7 +100,7 @@ export function Card({
 
   return (
     <Paper
-      data-testid={id}
+      data-testid={`JourneysCard-${id}`}
       sx={{
         display: 'flex',
         flexDirection: 'column',

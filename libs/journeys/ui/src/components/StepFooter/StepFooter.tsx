@@ -4,8 +4,6 @@ import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 
@@ -27,9 +25,8 @@ export function StepFooter({
 }: StepFooterProps): ReactElement {
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const { editableStepFooter } = useFlags()
   const hasAvatar =
-    (variant === 'admin' && editableStepFooter) ||
+    variant === 'admin' ||
     journey?.host?.src1 != null ||
     journey?.host?.src2 != null
 
@@ -39,7 +36,7 @@ export function StepFooter({
 
   return (
     <Box
-      data-testid="stepFooter"
+      data-testid="JourneysStepFooter"
       className="swiper-no-swiping"
       sx={{
         position: { xs: 'absolute', lg: 'relative' },

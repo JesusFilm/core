@@ -4,12 +4,21 @@ import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { TreeBlock, blockHistoryVar } from '../../libs/block'
+import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 
 import { BlockRenderer } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -36,7 +45,7 @@ describe('BlockRenderer', () => {
           input: {
             id: 'uuid',
             blockId: 'step',
-            value: 'Untitled'
+            value: 'Step {{number}}'
           }
         }
       },
@@ -457,6 +466,7 @@ describe('BlockRenderer', () => {
         }
       ]
     }
+    treeBlocksVar([block])
     blockHistoryVar([block])
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
@@ -493,6 +503,7 @@ describe('BlockRenderer', () => {
         }
       ]
     }
+    treeBlocksVar([block])
     blockHistoryVar([block])
     const { getByTestId, getByText } = render(
       <MockedProvider mocks={mocks}>
@@ -616,7 +627,9 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByTestId('video-main')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByTestId('JourneysVideo-main')).toBeInTheDocument()
+    )
   })
 
   it('should render Video with general wrapper and specific wrapper', () => {
@@ -678,7 +691,7 @@ describe('BlockRenderer', () => {
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
     ).toBe('video-wrapper')
     expect(getByTestId('video-wrapper')).toContainElement(
-      getByTestId('video-main')
+      getByTestId('JourneysVideo-main')
     )
   })
 })

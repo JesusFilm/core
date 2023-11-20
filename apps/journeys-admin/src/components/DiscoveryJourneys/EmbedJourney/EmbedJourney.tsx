@@ -3,6 +3,7 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -11,12 +12,15 @@ import { GetDiscoveryJourneys_discoveryJourneys as DiscoveryJourney } from '../.
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { FramePortal } from '../../FramePortal'
 
-interface Props {
+interface EmbedJourneyProps {
   slug: 'admin-left' | 'admin-right' | 'admin-center'
   discoveryJourney: DiscoveryJourney
 }
 
-export function EmbedJourney({ slug, discoveryJourney }: Props): ReactElement {
+export function EmbedJourney({
+  slug,
+  discoveryJourney
+}: EmbedJourneyProps): ReactElement {
   const dimensions = {
     xs: 'calc(210% + 64px)',
     sm: 'calc(166% + 64px)',
@@ -43,6 +47,7 @@ export function EmbedJourney({ slug, discoveryJourney }: Props): ReactElement {
         height: dimensions,
         width: dimensions
       }}
+      data-testid={`EmbedJourney-${slug}`}
     >
       {block != null && (
         <>
@@ -75,24 +80,26 @@ export function EmbedJourney({ slug, discoveryJourney }: Props): ReactElement {
             }}
           />
           <FramePortal height="100%" width="100%">
-            <ThemeProvider
-              themeName={ThemeName.base}
-              themeMode={ThemeMode.light}
-            >
-              <Box
-                sx={{
-                  height: '100%',
-                  width: '100%',
-                  borderRadius: 4,
-                  overflow: 'hidden',
-                  position: 'relative',
-                  cursor: 'pointer'
-                }}
+            <JourneyProvider value={{ variant: 'admin' }}>
+              <ThemeProvider
+                themeName={ThemeName.base}
+                themeMode={ThemeMode.light}
               >
-                <BlockRenderer block={block} />
-                <StepFooter title={discoveryJourney?.seoTitle ?? ''} />
-              </Box>
-            </ThemeProvider>
+                <Box
+                  sx={{
+                    height: '100%',
+                    width: '100%',
+                    borderRadius: 4,
+                    overflow: 'hidden',
+                    position: 'relative',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <BlockRenderer block={block} />
+                  <StepFooter title={discoveryJourney?.seoTitle ?? ''} />
+                </Box>
+              </ThemeProvider>
+            </JourneyProvider>
           </FramePortal>
         </>
       )}
