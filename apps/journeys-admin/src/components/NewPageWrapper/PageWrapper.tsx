@@ -30,6 +30,9 @@ interface PageWrapperProps {
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */
   sidePanelChildren?: ReactNode
+  // Either render default SidePanel with sidePanelChildren
+  // Or render customSidePanel
+  customSidePanel?: ReactNode
   user?: User
   initialState?: Partial<PageState>
 }
@@ -46,6 +49,7 @@ export function PageWrapper({
   bottomPanelChildren,
   sidePanelTitle = '',
   sidePanelChildren,
+  customSidePanel,
   user,
   initialState
 }: PageWrapperProps): ReactElement {
@@ -96,7 +100,7 @@ export function PageWrapper({
                 width: {
                   xs: 'inherit',
                   md:
-                    sidePanelChildren != null
+                    sidePanelChildren != null || customSidePanel != null
                       ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
                       : 'inherit'
                 }
@@ -121,6 +125,7 @@ export function PageWrapper({
             {sidePanelChildren != null && (
               <SidePanel title={sidePanelTitle}>{sidePanelChildren}</SidePanel>
             )}
+            {customSidePanel != null && customSidePanel}
           </Stack>
         </Stack>
       </Box>

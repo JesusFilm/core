@@ -11,11 +11,23 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { PageWrapper } from '../NewPageWrapper'
 import { ThemeProvider } from '../ThemeProvider'
 
+import { ControlPanel } from './ControlPanel'
+import { Drawer } from './Drawer'
 import { JourneyEdit } from './JourneyEdit'
 
 import { Editor } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 describe('Editor', () => {
   const journey: Journey = {
@@ -81,7 +93,12 @@ describe('Editor', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <Editor journey={journey}>
-              <JourneyEdit />
+              <PageWrapper
+                bottomPanelChildren={<ControlPanel />}
+                customSidePanel={<Drawer />}
+              >
+                <JourneyEdit />
+              </PageWrapper>
             </Editor>
           </ThemeProvider>
         </SnackbarProvider>
@@ -97,7 +114,12 @@ describe('Editor', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <Editor journey={journey} selectedStepId="step0.id">
-              <JourneyEdit />
+              <PageWrapper
+                bottomPanelChildren={<ControlPanel />}
+                customSidePanel={<Drawer />}
+              >
+                <JourneyEdit />
+              </PageWrapper>
             </Editor>
           </ThemeProvider>
         </SnackbarProvider>
@@ -116,7 +138,12 @@ describe('Editor', () => {
               journey={journey}
               view={ActiveJourneyEditContent.SocialPreview}
             >
-              <JourneyEdit />
+              <PageWrapper
+                bottomPanelChildren={<ControlPanel />}
+                customSidePanel={<Drawer />}
+              >
+                <JourneyEdit />
+              </PageWrapper>
             </Editor>
           </ThemeProvider>
         </SnackbarProvider>
