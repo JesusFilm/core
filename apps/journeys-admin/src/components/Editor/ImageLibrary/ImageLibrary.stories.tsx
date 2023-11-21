@@ -4,8 +4,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps, ReactElement, useState } from 'react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { listUnsplashCollectionMock } from '../ImageBlockEditor/UnsplashGallery/data'
 
@@ -21,11 +19,9 @@ const ImageLibraryComponent = (args): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
-    <FlagsProvider flags={{ segmind: args.segmind }}>
-      <MockedProvider mocks={[listUnsplashCollectionMock]}>
-        <ImageLibrary open={open} onClose={() => setOpen(false)} {...args} />
-      </MockedProvider>
-    </FlagsProvider>
+    <MockedProvider mocks={[listUnsplashCollectionMock]}>
+      <ImageLibrary open={open} onClose={() => setOpen(false)} {...args} />
+    </MockedProvider>
   )
 }
 

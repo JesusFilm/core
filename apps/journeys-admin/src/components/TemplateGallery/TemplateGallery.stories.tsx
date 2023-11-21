@@ -26,14 +26,7 @@ const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
 
 const Template: StoryObj<ComponentProps<typeof TemplateGallery>> = {
   render: () => (
-    <Box
-      sx={{
-        backgroundColor: 'background.paper',
-        p: 5,
-        height: '100%',
-        overflow: 'hidden'
-      }}
-    >
+    <Box sx={{ height: '100%', overflow: 'hidden' }}>
       <TemplateGallery />
     </Box>
   )

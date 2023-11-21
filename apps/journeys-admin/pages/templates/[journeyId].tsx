@@ -5,9 +5,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { JourneyView } from '../../src/components/JourneyView'
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -17,7 +15,6 @@ import { useJourneyQuery } from '../../src/libs/useJourneyQuery/useJourneyQuery'
 function TemplateDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const { templates } = useFlags()
   const user = useUser()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string
@@ -41,17 +38,10 @@ function TemplateDetails(): ReactElement {
           title={t('Journey Template')}
           user={user}
           backHref="/templates"
-          mainPanelSx={{
-            backgroundColor: 'background.paper',
-            overflowX: 'hidden'
-          }}
           backHrefHistory
+          mainBodyPadding={false}
         >
-          {templates ? (
-            <TemplateView authUser={user} />
-          ) : (
-            <JourneyView journeyType="Template" />
-          )}
+          <TemplateView authUser={user} />
         </PageWrapper>
       </JourneyProvider>
     </>
@@ -60,7 +50,7 @@ function TemplateDetails(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR()(
   async ({ user, locale, resolvedUrl }) => {
-    const { flags, redirect, translations } = await initAndAuthApp({
+    const { redirect, translations } = await initAndAuthApp({
       user,
       locale,
       resolvedUrl
@@ -70,7 +60,6 @@ export const getServerSideProps = withUserTokenSSR()(
 
     return {
       props: {
-        flags,
         ...translations
       }
     }

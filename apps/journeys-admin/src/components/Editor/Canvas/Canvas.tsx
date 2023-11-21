@@ -20,15 +20,14 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { FramePortal } from '../../FramePortal'
-import { Properties } from '../../JourneyView/Properties'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 import { DRAWER_WIDTH } from '../Drawer'
+import { Properties } from '../Properties'
 
 import { CardWrapper } from './CardWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -51,7 +50,6 @@ export function Canvas(): ReactElement {
   } = useEditor()
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
-  const { editableStepFooter } = useFlags()
   const { t } = useTranslation('apps-journeys-admin')
 
   useEffect(() => {
@@ -131,36 +129,34 @@ export function Canvas(): ReactElement {
         type: 'SetDrawerPropsAction',
         mobileOpen: false,
         title: t('Properties'),
-        children: <Properties journeyType="Journey" isPublisher={false} />
+        children: <Properties isPublisher={false} />
       })
     }
   }
 
   function handleFooterClick(): void {
-    if (editableStepFooter) {
-      dispatch({
-        type: 'SetSelectedComponentAction',
-        component: 'Footer'
-      })
-      dispatch({
-        type: 'SetActiveFabAction',
-        activeFab: ActiveFab.Add
-      })
-      dispatch({
-        type: 'SetActiveTabAction',
-        activeTab: ActiveTab.Properties
-      })
-      dispatch({
-        type: 'SetDrawerPropsAction',
-        title: t('Hosted By'),
-        mobileOpen: true,
-        children: <HostSidePanel />
-      })
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        id: 'hosted-by'
-      })
-    }
+    dispatch({
+      type: 'SetSelectedComponentAction',
+      component: 'Footer'
+    })
+    dispatch({
+      type: 'SetActiveFabAction',
+      activeFab: ActiveFab.Add
+    })
+    dispatch({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: t('Hosted By'),
+      mobileOpen: true,
+      children: <HostSidePanel />
+    })
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: 'hosted-by'
+    })
   }
 
   return (

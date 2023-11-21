@@ -10,10 +10,10 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { SocialImage } from '../../JourneyView/SocialImage'
 import { CreateJourneyButton } from '../CreateJourneyButton'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
+import { SocialImage } from './SocialImage'
 import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreatorDetails'
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
@@ -37,7 +37,7 @@ export function TemplateViewHeader({
         sx={{
           color: 'secondary.light',
           display: { xs: 'block', sm: 'none' },
-          pb: 6
+          pb: 4
         }}
         noWrap
       >
@@ -50,28 +50,14 @@ export function TemplateViewHeader({
           <Skeleton sx={{ width: '50%', maxWidth: 150 }} />
         )}
       </Typography>
-      <Stack direction="row" sx={{ gap: { xs: 4, sm: 6 } }}>
+      <Stack direction="row" sx={{ gap: { xs: 4, sm: 7 } }}>
         <Box
           sx={{
             flexShrink: 0,
             width: { xs: '107px', sm: '244px' }
           }}
         >
-          <SocialImage
-            height={{ xs: 107, sm: 244 }}
-            width={{ xs: 107, sm: 244 }}
-            sx={{
-              borderRadius: 3,
-              borderBottomRightRadius: {
-                xs: 12,
-                sm: hasCreatorDescription ? 0 : 12
-              },
-              borderBottomLeftRadius: {
-                xs: 12,
-                sm: hasCreatorDescription ? 0 : 12
-              }
-            }}
-          />
+          <SocialImage hasCreatorDescription={hasCreatorDescription} />
           {hasCreatorDescription && (
             <TemplateCreatorDetails
               creatorDetails={journey?.creatorDescription}
