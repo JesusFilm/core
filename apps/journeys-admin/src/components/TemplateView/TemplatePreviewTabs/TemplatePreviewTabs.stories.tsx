@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { fireEvent, within } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -37,6 +38,17 @@ export const Default = {
   ...Template,
   args: {
     journey
+  }
+}
+
+export const Videos = {
+  ...Template,
+  args: {
+    journey
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    fireEvent.click(canvas.getByText('{{count}} Videos'))
   }
 }
 
