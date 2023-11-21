@@ -8,8 +8,10 @@ variable "ecs_config" {
     zone_id      = string
     alb_dns_name = string
     alb_listener = object({
-      alb_arn  = string
-      protocol = string
+      alb_arn         = string
+      port            = number
+      protocol        = string
+      certificate_arn = string
     })
     alb_target_group = object({
       port              = number
