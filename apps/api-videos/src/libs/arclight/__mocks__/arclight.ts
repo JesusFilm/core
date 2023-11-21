@@ -47,13 +47,23 @@ export const fetchMediaLanguagesAndTransformToLanguages = jest
   .fn()
   .mockResolvedValue([
     {
-      id: '529'
+      languageId: '529',
+      bcp47: 'en',
+      name: 'English',
+      slug: 'english'
     }
   ])
+
 export const getArclightMediaComponents = jest
   .fn()
   .mockResolvedValue([mediaComponent])
+
 export const getArclightMediaComponent = jest
   .fn()
   .mockResolvedValue({ mediaComponentId: '123' })
+
 export const transformMediaComponentToVideo = jest.fn().mockResolvedValue({})
+
+export const handleArclightMediaComponent = jest
+  .fn()
+  .mockResolvedValue({ resumed: false, errors: {} })

@@ -1,6 +1,6 @@
 import {
   fetchMediaLanguagesAndTransformToLanguages,
-  getArclightMediaComponent,
+  //   getArclightMediaComponent,
   getArclightMediaComponents
 } from '../src/libs/arclight/arclight'
 import { getVideoIdsAndSlugs } from '../src/libs/postgresql/postgresql'
@@ -105,7 +105,7 @@ describe('main', () => {
     // Assert the expected function calls
     expect(getVideoIdsAndSlugs).toHaveBeenCalled()
     expect(fetchMediaLanguagesAndTransformToLanguages).toHaveBeenCalled()
-    // expect(getArclightMediaComponents).toHaveBeenCalled()
+    expect(getArclightMediaComponents).toHaveBeenCalled()
     // expect(getArclightMediaComponent).not.toHaveBeenCalled()
     // expect(handleArclightMediaComponent).not.toHaveBeenCalled()
   })
