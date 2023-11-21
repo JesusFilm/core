@@ -1,13 +1,10 @@
-import { MockedProvider } from '@apollo/client/testing'
-import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { Drawer } from '../../../Drawer'
+import { SidePanel } from '../../../../NewPageWrapper/SidePanel'
+import { SidePanelContainer } from '../../../../NewPageWrapper/SidePanelContainer'
 
 import { ToggleOptionProps } from './ToggleOption'
 
@@ -22,21 +19,11 @@ const ToggleOptionStory: Meta<typeof ToggleOption> = {
 const Template: StoryObj<typeof ToggleOption> = {
   render: ({ ...args }: ToggleOptionProps) => {
     return (
-      <MockedProvider>
-        <EditorProvider
-          initialState={{
-            drawerChildren: (
-              <Box sx={{ p: 4 }}>
-                <ToggleOption {...args} />
-              </Box>
-            ),
-            drawerTitle: 'Title',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </MockedProvider>
+      <SidePanel title="Title">
+        <SidePanelContainer border={false}>
+          <ToggleOption {...args} />
+        </SidePanelContainer>
+      </SidePanel>
     )
   }
 }

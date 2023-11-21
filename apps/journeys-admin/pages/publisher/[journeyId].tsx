@@ -16,9 +16,11 @@ import { GetPublisher } from '../../__generated__/GetPublisher'
 import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { Role } from '../../__generated__/globalTypes'
 import { Editor } from '../../src/components/Editor'
+import { ControlPanel } from '../../src/components/Editor/ControlPanel'
+import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
-import { PageWrapper } from '../../src/components/PageWrapper'
+import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
@@ -72,10 +74,12 @@ function TemplateEditPage(): ReactElement {
           >
             <PageWrapper
               title={data?.publisherTemplate?.title ?? t('Edit Template')}
-              showDrawer
-              user={user}
               backHref="/publisher"
-              menu={<EditToolbar />}
+              mainHeaderChildren={<EditToolbar />}
+              mainBodyPadding={false}
+              bottomPanelChildren={<ControlPanel />}
+              customSidePanel={<Drawer />}
+              user={user}
             >
               <JourneyEdit />
             </PageWrapper>

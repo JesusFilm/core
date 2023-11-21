@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
+import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -23,10 +23,10 @@ import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { FramePortal } from '../../FramePortal'
+import { usePageWrapperStyles } from '../../NewPageWrapper/utils/usePageWrapperStyles'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
-import { DRAWER_WIDTH } from '../Drawer'
 import { Properties } from '../Properties'
 
 import { CardWrapper } from './CardWrapper'
@@ -40,10 +40,13 @@ const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
 const TASKBAR_WIDTH = 72
 
+const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({}))
+
 export function Canvas(): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [spaceBetween, setSpaceBetween] = useState(16)
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const { sidePanel } = usePageWrapperStyles()
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const {
     state: { steps, selectedStep, selectedBlock, selectedComponent },
     dispatch
@@ -63,7 +66,7 @@ export function Canvas(): ReactElement {
       const spaceBetween = Math.max(
         MIN_SPACE_BETWEEN,
         (window.innerWidth -
-          Number(smUp) * (DRAWER_WIDTH + TASKBAR_WIDTH) -
+          Number(mdUp) * (+sidePanel.width.slice(0, 2) + TASKBAR_WIDTH) -
           362 -
           EDGE_SLIDE_WIDTH * 2) /
           2
@@ -76,15 +79,16 @@ export function Canvas(): ReactElement {
 
     window.addEventListener('resize', setSpaceBetweenOnResize)
     return () => window.removeEventListener('resize', setSpaceBetweenOnResize)
-  }, [smUp])
+  }, [mdUp, sidePanel.width])
 
-  function handleClick(): void {
+  function handleSelectCard(): void {
     // Prevent losing focus on empty input
     if (
       selectedBlock?.__typename === 'TypographyBlock' &&
       selectedBlock.content === ''
-    )
+    ) {
       return
+    }
     dispatch({
       type: 'SetSelectedBlockAction',
       block: selectedStep
@@ -104,6 +108,12 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: `${selectedStep?.id ?? ''}-next-block`
     })
+  }
+
+  const slideStyles = {
+    display: 'flex',
+    alignItems: 'center',
+    width: 362
   }
 
   function handleSlideChange(swiper: SwiperCore): void {
@@ -160,22 +170,9 @@ export function Canvas(): ReactElement {
   }
 
   return (
-    <Box
-      data-testid="EditorCanvas"
-      sx={{
-        backgroundColor: (theme) => theme.palette.background.paper,
-        '& .swiper-container': {
-          paddingX: 6,
-          paddingY: 2
-        },
-        '& .swiper-slide': {
-          display: 'flex',
-          justifyContent: 'center'
-        }
-      }}
-      onClick={handleClick}
-    >
-      <Swiper
+    <Box onClick={handleSelectCard} data-testid="EditorCanvas">
+      <StyledSwiperContainer
+        data-testid="step-container"
         slidesPerView="auto"
         spaceBetween={spaceBetween}
         centeredSlides
@@ -183,12 +180,13 @@ export function Canvas(): ReactElement {
         slideToClickedSlide={steps != null}
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={handleSlideChange}
+        sx={{ height: { xs: 580, md: 640 } }}
       >
         {steps != null ? (
           steps.map((step) => {
             const theme = getStepTheme(step, journey)
             return (
-              <SwiperSlide key={step.id} style={{ width: 362 }}>
+              <SwiperSlide key={step.id} style={slideStyles}>
                 <Box
                   data-testid={`step-${step.id}`}
                   sx={{
@@ -205,8 +203,8 @@ export function Canvas(): ReactElement {
                     outlineOffset: 4,
                     transform:
                       step.id === selectedStep?.id
-                        ? { xs: 'scale(0.9)', lg: 'scale(1)' }
-                        : { xs: 'scale(0.8)', lg: 'scale(0.9)' },
+                        ? { xs: 'scale(0.87)', md: 'scale(0.97)' }
+                        : { xs: 'scale(0.8)', md: 'scale(0.9)' },
                     height: 640
                   }}
                 >
@@ -282,7 +280,7 @@ export function Canvas(): ReactElement {
           })
         ) : (
           <>
-            <SwiperSlide style={{ width: 362 }}>
+            <SwiperSlide style={slideStyles}>
               <Skeleton
                 variant="rectangular"
                 width={362}
@@ -290,7 +288,7 @@ export function Canvas(): ReactElement {
                 sx={{ borderRadius: 5 }}
               />
             </SwiperSlide>
-            <SwiperSlide style={{ width: 362 }}>
+            <SwiperSlide style={slideStyles}>
               <Skeleton
                 variant="rectangular"
                 width={362}
@@ -303,7 +301,7 @@ export function Canvas(): ReactElement {
             </SwiperSlide>
           </>
         )}
-      </Swiper>
+      </StyledSwiperContainer>
     </Box>
   )
 }
