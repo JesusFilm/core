@@ -17,10 +17,7 @@ function LibraryIndex(): ReactElement {
       <PageWrapper
         title={t('Journey Templates')}
         user={user}
-        mainPanelSx={{
-          backgroundColor: 'background.paper',
-          overflowX: 'hidden'
-        }}
+        mainBodyPadding={false}
         showMainHeader={false}
       >
         <TemplateGallery />
@@ -31,7 +28,7 @@ function LibraryIndex(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR()(
   async ({ user, locale, resolvedUrl }) => {
-    const { flags, redirect, translations } = await initAndAuthApp({
+    const { redirect, translations } = await initAndAuthApp({
       user,
       locale,
       resolvedUrl
@@ -41,7 +38,6 @@ export const getServerSideProps = withUserTokenSSR()(
 
     return {
       props: {
-        flags,
         ...translations
       }
     }

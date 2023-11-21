@@ -38,11 +38,8 @@ function TemplateDetails(): ReactElement {
           title={t('Journey Template')}
           user={user}
           backHref="/templates"
-          mainPanelSx={{
-            backgroundColor: 'background.paper',
-            overflowX: 'hidden'
-          }}
           backHrefHistory
+          mainBodyPadding={false}
         >
           <TemplateView authUser={user} />
         </PageWrapper>
@@ -53,7 +50,7 @@ function TemplateDetails(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR()(
   async ({ user, locale, resolvedUrl }) => {
-    const { flags, redirect, translations } = await initAndAuthApp({
+    const { redirect, translations } = await initAndAuthApp({
       user,
       locale,
       resolvedUrl
@@ -63,7 +60,6 @@ export const getServerSideProps = withUserTokenSSR()(
 
     return {
       props: {
-        flags,
         ...translations
       }
     }

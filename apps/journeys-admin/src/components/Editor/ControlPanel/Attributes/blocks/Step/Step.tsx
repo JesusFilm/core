@@ -46,7 +46,7 @@ export function Step({
       onClick={() => {
         dispatch({
           type: 'SetDrawerPropsAction',
-          title: 'Next Card Properties',
+          title: t('Next Card Properties'),
           mobileOpen: true,
           children: <NextCard />
         })

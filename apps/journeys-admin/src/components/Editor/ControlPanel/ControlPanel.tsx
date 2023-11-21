@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import MuiFab from '@mui/material/Fab'
+import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
@@ -153,10 +154,7 @@ export function ControlPanel(): ReactElement {
   }
 
   return (
-    <Box
-      sx={{ width: '100%', position: 'relative' }}
-      data-testid="EditorControlPanel"
-    >
+    <Stack sx={{ height: '100%' }} data-testid="EditorControlPanel">
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
         {journeyEditContentComponent ===
           ActiveJourneyEditContent.SocialPreview && (
@@ -183,11 +181,11 @@ export function ControlPanel(): ReactElement {
             />
           )}
       </Box>
-      <Box
+      <Stack
         sx={{
           borderBottom: 1,
           borderColor: 'divider',
-          backgroundColor: (theme) => theme.palette.background.paper
+          backgroundColor: 'background.paper'
         }}
       >
         <Tabs
@@ -234,26 +232,30 @@ export function ControlPanel(): ReactElement {
             />
           )}
         </Tabs>
-      </Box>
-      <TabPanel name="control-panel" value={activeTab} index={0}>
-        <CardPreview
-          selected={selectedStep}
-          onSelect={handleSelectStepPreview}
-          steps={steps}
-          showAddButton
-          showNavigationCards
-          isDraggable
-          testId="ControlPanel"
-        />
-      </TabPanel>
-      <TabPanel name="control-panel" value={activeTab} index={1}>
-        {selected !== 'none' && selectedStep !== undefined && (
-          <Attributes selected={selected} step={selectedStep} />
-        )}
-      </TabPanel>
-      <TabPanel name="control-panel" value={activeTab} index={2}>
-        <BlocksTab />
-      </TabPanel>
-    </Box>
+      </Stack>
+      <Stack
+        justifyContent="center"
+        sx={{ backgroundColor: 'background.default', height: '100%' }}
+      >
+        <TabPanel name="control-panel" value={activeTab} index={0}>
+          <CardPreview
+            selected={selectedStep}
+            onSelect={handleSelectStepPreview}
+            steps={steps}
+            showAddButton
+            showNavigationCards
+            isDraggable
+          />
+        </TabPanel>
+        <TabPanel name="control-panel" value={activeTab} index={1}>
+          {selected !== 'none' && selectedStep !== undefined && (
+            <Attributes selected={selected} step={selectedStep} />
+          )}
+        </TabPanel>
+        <TabPanel name="control-panel" value={activeTab} index={2}>
+          <BlocksTab />
+        </TabPanel>
+      </Stack>
+    </Stack>
   )
 }

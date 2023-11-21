@@ -21,9 +21,11 @@ import {
 } from '../../__generated__/GetAdminJourney'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { Editor } from '../../src/components/Editor'
+import { ControlPanel } from '../../src/components/Editor/ControlPanel'
+import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
-import { PageWrapper } from '../../src/components/PageWrapper'
+import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 
@@ -70,9 +72,11 @@ function JourneyEditPage(): ReactElement {
       >
         <PageWrapper
           title={data?.journey?.title ?? t('Edit Journey')}
-          showDrawer
           backHref="/"
-          menu={<EditToolbar />}
+          mainHeaderChildren={<EditToolbar />}
+          mainBodyPadding={false}
+          bottomPanelChildren={<ControlPanel />}
+          customSidePanel={<Drawer />}
           user={user}
         >
           <JourneyEdit />
@@ -88,7 +92,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -135,7 +139,6 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      flags,
       ...translations
     }
   }

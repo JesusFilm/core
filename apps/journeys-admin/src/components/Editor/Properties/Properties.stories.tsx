@@ -3,7 +3,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -26,11 +25,9 @@ const Template: StoryObj<
 > = {
   render: ({ ...args }) => (
     <MockedProvider mocks={[]}>
-      <FlagsProvider>
-        <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-          <Properties {...args} />
-        </JourneyProvider>
-      </FlagsProvider>
+      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+        <Properties {...args} />
+      </JourneyProvider>
     </MockedProvider>
   )
 }

@@ -45,7 +45,7 @@ function TemplateCardPreviewItem({
     <Box
       sx={{
         position: 'relative',
-        width: { xs: 217, sm: 280 },
+        width: { xs: 193, sm: 267 },
         height: { xs: 300, sm: 420 }
       }}
       data-testid="TemplateCardPreviewItem"
@@ -105,6 +105,9 @@ export function TemplateCardPreview({
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      spaceBetween: 12
+    },
     [breakpoints.values.sm]: {
       spaceBetween: 28
     }
@@ -119,6 +122,8 @@ export function TemplateCardPreview({
       watchOverflow
       slidesPerView="auto"
       spaceBetween={12}
+      observer
+      observeParents
       breakpoints={swiperBreakpoints}
       autoHeight
       style={{
