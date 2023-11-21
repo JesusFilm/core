@@ -13,9 +13,9 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('HeaderAndLanguageFilter', () => {
-  it('should open the language filter dialog on button click', async () => {
+  it('should open the language filter popper on button click', async () => {
     const onChange = jest.fn()
-    const { getByRole, getAllByRole, getAllByText } = render(
+    const { getByRole, getAllByRole, getAllByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -98,11 +98,11 @@ describe('HeaderAndLanguageFilter', () => {
       expect(getAllByText('Journey Templates')[0]).toBeInTheDocument()
       fireEvent.click(getAllByRole('heading', { name: 'All Languages' })[0])
     })
-    fireEvent.focus(getByRole('combobox'))
-    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    fireEvent.click(getByRole('option', { name: 'German, Standard Deutsch' }))
-    fireEvent.click(getByRole('option', { name: 'French Français' }))
-    fireEvent.blur(getByRole('combobox'))
-    await waitFor(() => expect(onChange).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'German, Standard Deutsch' }))
+    await waitFor(() => expect(onChange).toHaveBeenCalledTimes(1))
+    fireEvent.click(getByRole('button', { name: 'French Français' }))
+    await waitFor(() => expect(onChange).toHaveBeenCalledTimes(2))
+    fireEvent.click(getByTestId('PresentationLayer'))
+    await waitFor(() => expect(onChange).toHaveBeenCalledTimes(3))
   })
 })

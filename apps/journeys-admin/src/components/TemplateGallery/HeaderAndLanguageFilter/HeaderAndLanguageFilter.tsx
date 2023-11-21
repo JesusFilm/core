@@ -1,15 +1,9 @@
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import ButtonBase from '@mui/material/ButtonBase'
-import Checkbox from '@mui/material/Checkbox'
-import MuiPopper from '@mui/material/Popper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { FieldArray, Form, Formik, FormikValues } from 'formik'
+import { FormikValues } from 'formik'
 import {
   ComponentProps,
   ReactElement,
@@ -25,15 +19,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
-
-const StyledPopperOption = styled(ButtonBase)(() => ({
-  backgroundColor: 'transparent',
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  flexGrow: 1
-}))
+import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 
@@ -264,111 +250,14 @@ export function HeaderAndLanguageFilter({
           }}
         />
       </Stack>
-
-      <Formik
-        initialValues={{
-          languages: languageOptions
-        }}
-        onSubmit={(values) => handleSubmit(values)}
-        enableReinitialize
-      >
-        {({ values, handleSubmit }) => (
-          <>
-            <Box
-              data-testid="PresentationLayer"
-              onClick={async () => {
-                await handleSubmit()
-                await setOpen(!open)
-              }}
-              sx={{
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                backgroundColor: 'transparent',
-                zIndex: 9999,
-                display: open ? 'block' : 'none'
-              }}
-            />
-            <Form
-              style={{
-                display: open ? 'block' : 'none',
-                width: '100%',
-                maxWidth: 'calc(100% - 25px)'
-              }}
-            >
-              <FieldArray name="languages">
-                {({ push, remove }) => (
-                  <MuiPopper
-                    open={open}
-                    anchorEl={anchorEl}
-                    sx={{
-                      zIndex: 9999,
-                      py: 2,
-                      backgroundColor: 'background.paper',
-                      borderRadius: 1,
-                      boxShadow: 2,
-                      minWidth: 250,
-                      width: { xs: '100%', md: anchorEl?.clientWidth }
-                    }}
-                    placement="bottom-start"
-                  >
-                    <Stack>
-                      {sortedOptions.map(({ localName, nativeName, id }) => {
-                        function handleChange(): void {
-                          values.languages.some(
-                            (language) => language.id === id
-                          )
-                            ? remove(
-                                values.languages.findIndex(
-                                  (lang) => lang.id === id
-                                )
-                              )
-                            : push({ id, localName, nativeName })
-                          handleSubmit()
-                        }
-                        return (
-                          <StyledPopperOption
-                            value={id}
-                            key={id}
-                            onClick={handleChange}
-                          >
-                            <Checkbox
-                              name="languages"
-                              value={id}
-                              icon={
-                                <CheckBoxOutlineBlankIcon fontSize="small" />
-                              }
-                              checkedIcon={<CheckBoxIcon fontSize="small" />}
-                              sx={{ mr: 2 }}
-                              onChange={handleChange}
-                              checked={values?.languages?.some(
-                                (language) => language.id === id
-                              )}
-                            />
-                            <Stack alignItems="flex-start" sx={{ pr: 2 }}>
-                              <Typography>{localName ?? nativeName}</Typography>
-                              {localName != null && nativeName != null && (
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {nativeName}
-                                </Typography>
-                              )}
-                            </Stack>
-                          </StyledPopperOption>
-                        )
-                      })}
-                    </Stack>
-                  </MuiPopper>
-                )}
-              </FieldArray>
-            </Form>
-          </>
-        )}
-      </Formik>
+      <LanguagesFilterPopper
+        initialValues={languageOptions}
+        onSubmit={handleSubmit}
+        setOpen={setOpen}
+        open={open}
+        anchorEl={anchorEl}
+        sortedLanguages={sortedOptions}
+      />
     </>
   )
 }
