@@ -125,7 +125,14 @@ export function Video({
   }, [startAt, endAt, muted, posterBlock, autoplay])
 
   useEffect(() => {
-    if (videoRef.current != null) videoRef.current.pause()
+    // HERE
+    if (
+      videoRef.current != null &&
+      activeBlock.children[0].children.find((block) => block.id === blockId) ==
+        null
+    ) {
+      videoRef.current.pause()
+    }
   }, [])
 
   const triggerTimes = useMemo(() => {
