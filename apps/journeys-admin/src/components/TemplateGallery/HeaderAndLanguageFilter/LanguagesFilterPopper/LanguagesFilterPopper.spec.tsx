@@ -4,6 +4,10 @@ import noop from 'lodash/noop'
 import { LanguagesFilterPopper } from './LanguagesFilterPopper'
 
 describe('LanguagesFilterPopper', () => {
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   it('should call on Submit on change', async () => {
     const onSubmit = jest.fn()
     const sortedLanguages = [
