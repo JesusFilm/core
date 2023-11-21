@@ -200,7 +200,10 @@ module "datadog_aurora" {
 module "journeys-admin" {
   source = "../../../apps/journeys-admin/infrastructure"
   ecs_config = merge(local.public_ecs_config, {
-
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/"
+      health_check_port = "80"
+    })
   })
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value

@@ -1,0 +1,16 @@
+name: Frontend push build
+on:
+  push:
+    branches:
+      - stage
+jobs:
+  journeys-admin:
+    uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-worker.yml@stage
+    with:
+      name: journeys-admin
+      env: stage
+      branch: ${{ github.ref_name }}
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}

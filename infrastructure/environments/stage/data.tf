@@ -47,15 +47,6 @@ data "aws_ssm_parameter" "doppler_api_videos_stage_token" {
 data "aws_ssm_parameter" "cloudflared_stage_token" {
   name = "/terraform/prd/CLOUDFLARED_STAGE_TOKEN"
 }
-
-data "aws_ssm_parameter" "doppler_journeys_stage_token" {
-  name = "/terraform/prd/DOPPLER_JOURNEYS_STAGE_TOKEN"
-}
-
 data "aws_ssm_parameter" "doppler_journeys_admin_stage_token" {
   name = "/terraform/prd/DOPPLER_JOURNEYS_ADMIN_STAGE_TOKEN"
-}
-
-data "aws_ssm_parameter" "doppler_watch_stage_token" {
-  name = "/terraform/prd/DOPPLER_WATCH_STAGE_TOKEN"
 }
