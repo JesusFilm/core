@@ -1,1 +1,1 @@
-export { Drawer, DRAWER_WIDTH } from './Drawer'
+export { Drawer } from './Drawer'

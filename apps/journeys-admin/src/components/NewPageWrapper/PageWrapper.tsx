@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { SxProps, useTheme } from '@mui/material/styles'
+import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
@@ -18,36 +18,40 @@ import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
 interface PageWrapperProps {
   showAppHeader?: boolean
   title?: string
-  mainHeaderChildren?: ReactNode
   showMainHeader?: boolean
   backHref?: string
   backHrefHistory?: boolean
+  mainHeaderChildren?: ReactNode
+  mainBodyPadding?: boolean
   children?: ReactNode
   bottomPanelChildren?: ReactNode
-  sidePanelTitle?: string | ReactNode
+  sidePanelTitle?: ReactNode
   /**
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */
   sidePanelChildren?: ReactNode
+  // Either render default SidePanel with sidePanelChildren
+  // Or render customSidePanel
+  customSidePanel?: ReactNode
   user?: User
   initialState?: Partial<PageState>
-  mainPanelSx?: SxProps
 }
 
 export function PageWrapper({
   showAppHeader = true,
   title,
-  mainHeaderChildren,
   showMainHeader = true,
   backHref,
   backHrefHistory,
+  mainHeaderChildren,
+  mainBodyPadding = true,
   children,
   bottomPanelChildren,
-  sidePanelTitle,
+  sidePanelTitle = '',
   sidePanelChildren,
+  customSidePanel,
   user,
-  initialState,
-  mainPanelSx
+  initialState
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -75,11 +79,12 @@ export function PageWrapper({
           />
 
           <Stack
+            flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
               backgroundColor: 'background.default',
               width: { xs: '100vw', md: `calc(100vw - ${navbar.width})` },
-              pt: { xs: `${toolbar.height}px`, md: 0 },
+              pt: { xs: toolbar.height, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0
@@ -90,11 +95,12 @@ export function PageWrapper({
 
             <Stack
               component="main"
+              flexGrow={1}
               sx={{
                 width: {
                   xs: 'inherit',
                   md:
-                    sidePanelChildren != null
+                    sidePanelChildren != null || customSidePanel != null
                       ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
                       : 'inherit'
                 }
@@ -110,8 +116,8 @@ export function PageWrapper({
                 </MainPanelHeader>
               )}
               <MainPanelBody
+                mainBodyPadding={mainBodyPadding}
                 bottomPanelChildren={bottomPanelChildren}
-                sx={mainPanelSx}
               >
                 {children}
               </MainPanelBody>
@@ -119,6 +125,7 @@ export function PageWrapper({
             {sidePanelChildren != null && (
               <SidePanel title={sidePanelTitle}>{sidePanelChildren}</SidePanel>
             )}
+            {customSidePanel != null && customSidePanel}
           </Stack>
         </Stack>
       </Box>

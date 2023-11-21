@@ -1,0 +1,1 @@
+export { TemplateVideoPlayer } from './TemplateVideoPlayer'
