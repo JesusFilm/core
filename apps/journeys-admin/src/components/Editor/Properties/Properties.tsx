@@ -1,8 +1,8 @@
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { SidePanel } from '../../NewPageWrapper/SidePanel'
-import { SidePanelContainer } from '../../NewPageWrapper/SidePanelContainer'
+import { SidePanel } from '../../PageWrapper/SidePanel'
+import { SidePanelContainer } from '../../PageWrapper/SidePanelContainer'
 
 import { AccessControl } from './AccessControl'
 import { JourneyDetails } from './JourneyDetails'

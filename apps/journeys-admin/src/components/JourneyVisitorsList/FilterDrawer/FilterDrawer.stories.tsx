@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { PageWrapper } from '../../NewPageWrapper'
+import { PageWrapper } from '../../PageWrapper'
 
 import { ClearAllButton } from './ClearAllButton'
 import { FilterDrawer } from './FilterDrawer'
