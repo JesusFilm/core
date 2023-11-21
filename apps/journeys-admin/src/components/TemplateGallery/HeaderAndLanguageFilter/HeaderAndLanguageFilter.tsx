@@ -14,6 +14,7 @@ import {
   ComponentProps,
   ReactElement,
   ReactNode,
+  useEffect,
   useMemo,
   useState
 } from 'react'
@@ -145,6 +146,11 @@ export function HeaderAndLanguageFilter({
   const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
+  useEffect(() => {
+    const popperAnchor = document?.getElementById('popperAnchorLayer')
+    if (popperAnchor != null) setAnchorEl(popperAnchor)
+  }, [anchorEl])
+
   const { data, loading } = useLanguagesQuery({
     languageId: '529',
     where: {
@@ -183,7 +189,6 @@ export function HeaderAndLanguageFilter({
   const localButtonProps: LocalButtonProps = {
     loading,
     onClick: (e) => {
-      setAnchorEl(e.currentTarget)
       setOpen(!open)
     }
   }
@@ -191,7 +196,6 @@ export function HeaderAndLanguageFilter({
   function handleSubmit(values: FormikValues): void {
     const ids = values.languages.map((language) => language.id)
     onChange(ids)
-    setOpen((prev) => !prev)
   }
 
   const options = useMemo(() => {
@@ -227,7 +231,7 @@ export function HeaderAndLanguageFilter({
         alignItems="center"
         direction="row"
         flexWrap={{ xs: 'wrap', md: 'initial' }}
-        sx={{ pb: { xs: 6, md: 9 } }}
+        sx={{ pb: { xs: 6, md: 9 }, position: 'relative' }}
       >
         {count === 2 && (
           <Trans t={t} values={{ firstLanguage, secondLanguage }}>
@@ -249,6 +253,16 @@ export function HeaderAndLanguageFilter({
             <LocalButton {...localButtonProps}>{{ firstLanguage }}</LocalButton>
           </Trans>
         )}
+        <Box
+          id="popperAnchorLayer"
+          sx={{
+            position: 'absolute',
+            width: 260,
+            backgroundColor: 'transparent',
+            left: { xs: '23px', md: '360px' },
+            top: { xs: '50px', md: '42px' }
+          }}
+        />
       </Stack>
 
       <Formik
@@ -264,6 +278,7 @@ export function HeaderAndLanguageFilter({
               data-testid="PresentationLayer"
               onClick={async () => {
                 await handleSubmit()
+                await setOpen(!open)
               }}
               sx={{
                 position: 'absolute',
@@ -295,9 +310,9 @@ export function HeaderAndLanguageFilter({
                       borderRadius: 1,
                       boxShadow: 2,
                       minWidth: 250,
-                      width: { xs: '100%', lg: anchorEl?.clientWidth }
+                      width: { xs: '100%', md: anchorEl?.clientWidth }
                     }}
-                    placement="bottom"
+                    placement="bottom-start"
                   >
                     <Stack>
                       {sortedOptions.map(({ localName, nativeName, id }) => {
@@ -311,6 +326,7 @@ export function HeaderAndLanguageFilter({
                                 )
                               )
                             : push({ id, localName, nativeName })
+                          handleSubmit()
                         }
                         return (
                           <StyledPopperOption
