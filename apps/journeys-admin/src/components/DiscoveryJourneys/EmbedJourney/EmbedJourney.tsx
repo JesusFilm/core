@@ -31,30 +31,30 @@ export function EmbedJourney({
       <Box
         sx={{
           mx: 'auto',
-          height: {
-            xs: 8.5,
-            md: 6.5
-          },
-          width: '82.5%',
-          backgroundColor: '#AAACBB',
-          borderRadius: '16px 16px 0 0',
-          opacity: 0.3
+          height: 16,
+          marginBottom: { xs: '-7.5px', md: '-9.5px' },
+          width: '80%',
+          backgroundColor: '#DADBDF',
+          borderRadius: '16px 16px 0 0'
         }}
       />
       <Box
         sx={{
           mx: 'auto',
-          height: {
-            xs: 8.5,
-            md: 6.5
-          },
+          height: 16,
+          marginBottom: { xs: '-7.5px', md: '-9.5px' },
           width: '90%',
-          backgroundColor: '#AAACBB',
-          borderRadius: '16px 16px 0 0',
-          opacity: 0.6
+          backgroundColor: '#C6C7D0',
+          borderRadius: '16px 16px 0 0'
         }}
       />
-      <Card sx={{ height: { xs: 200, sm: 340, md: 450 } }} variant="outlined">
+      <Card
+        sx={{
+          height: { xs: 200, sm: 340, md: 450 },
+          borderRadius: 4
+        }}
+        variant="outlined"
+      >
         <Box
           sx={{
             transform: {
