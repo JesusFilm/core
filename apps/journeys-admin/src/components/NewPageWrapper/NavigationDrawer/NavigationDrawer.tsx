@@ -18,7 +18,6 @@ import { useTranslation } from 'react-i18next'
 
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
 import BoxIcon from '@core/shared/ui/icons/Box'
-import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
 import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
@@ -147,11 +146,13 @@ export function NavigationDrawer({
               '> .MuiSvgIcon-root': {
                 color: 'secondary.dark',
                 backgroundColor: 'secondary.light',
-                borderRadius: 2
+                borderRadius: 2,
+                transition: (theme) => theme.transitions.create('transform'),
+                transform: { md: open ? 'rotate(180deg)' : 'rotate(0deg)' }
               }
             }}
           >
-            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            <ChevronRightIcon />
           </ListItemIcon>
         </ListItemButton>
 
