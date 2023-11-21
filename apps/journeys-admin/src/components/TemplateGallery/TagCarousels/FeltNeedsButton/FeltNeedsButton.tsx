@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
@@ -39,30 +40,67 @@ export function FeltNeedsButton({
   const tagImage = useCallback((tagLabel: string) => {
     switch (tagLabel) {
       case 'Acceptance':
-        return acceptanceImage
+        return {
+          tagImg: acceptanceImage,
+          backgroundStyle:
+            'linear-gradient(0deg, rgba(44, 224, 231, 0.8) 0%,rgba(44, 224, 231, 0) 60%,rgba(44, 224, 231, 0.0) 100%)'
+        }
       case 'Depression':
-        return depressionImage
+        return {
+          tagImg: depressionImage,
+          backgroundStyle:
+            'linear-gradient(0deg, rgba(66, 66, 66, 0.8) 0%,rgba(66, 66, 66, 0) 60%,rgba(66, 66, 66, 0.0) 100%)'
+        }
       case 'Fear/Anxiety':
-        return fearAnxietyImage
+        return {
+          tagImg: fearAnxietyImage,
+          backgroundStyle:
+            'linear-gradient(0deg, rgba(78, 20, 140, 0.8) 0%,rgba(78, 20, 140, 0) 60%,rgba(78, 20, 140, 0) 100%)'
+        }
       case 'Forgiveness':
-        return forgivenessImage
+        return {
+          tagImg: forgivenessImage,
+          backgroundStyle:
+            'linear-gradient(0deg, rgba(6, 214, 160, 0.8) 0%,rgba(6, 214, 160, 0) 60%,rgba(6, 214, 160, 0) 100%)'
+        }
       case 'Hope':
-        return hopeImage
+        return {
+          tagImg: hopeImage,
+          backgroundStyle:
+            'linear-gradient(0deg, rgba(255, 166, 134, 0.8) 0%,rgba(255, 166, 134, 0) 60%, rgba(255, 166, 134, 0) 100%)'
+        }
       case 'Loneliness':
-        return lonelinessImage
+        return {
+          tagImg: lonelinessImage,
+          backgroundStyle:
+            'linear-gradient(0deg, rgba(17, 138, 178, 0.8) 0%,rgba(17, 138, 178, 0) 60%, rgba(17, 138, 178, 0) 100%)'
+        }
       case 'Love':
-        return loveImage
+        return {
+          tagImg: loveImage,
+          backgroundStyle:
+            'linear-gradient(0deg, rgba(240, 80, 174, 0.8) 0%,rgba(240, 80, 174, 0) 60%, rgba(240, 80, 174, 0) 100%)'
+        }
       case 'Security':
-        return securityImage
+        return {
+          tagImg: securityImage,
+          backgroundStyle:
+            'linear-gradient(0deg, rgba(0, 127, 255, 0.8) 0%,rgba(0, 127, 255, 0) 60%, rgba(0, 127, 255, 0) 100%)'
+        }
       case 'Significance':
-        return significanceImage
+        return {
+          tagImg: significanceImage,
+          backgroundStyle:
+            'linear-gradient(0deg, rgba(255, 171, 0, 0.8) 0%,rgba(255, 171, 0, 0) 60%, rgba(255, 171, 0, 0) 100%)'
+        }
       default:
         return undefined
     }
   }, [])
 
   const tagLabel = tag?.name[0]?.value ?? ''
-  const image = tagImage(tagLabel)
+  const tagImageData = tagImage(tagLabel)
+  const image = tagImageData?.tagImg
 
   return tag != null ? (
     image != null ? (
@@ -83,22 +121,37 @@ export function FeltNeedsButton({
         }}
         onClick={() => onClick(tag.id)}
       >
+        <Box
+          data-testid="gradientLayer"
+          sx={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 2,
+            background: tagImageData?.backgroundStyle
+          }}
+        />
         <NextImage
           className="hoverStyles"
           src={image.src}
           layout="fill"
-          sx={{ borderRadius: 2 }}
+          sx={{
+            borderRadius: 2
+          }}
         />
         <Typography
           className="hoverStyles"
           variant="h3"
           sx={{
-            zIndex: 1,
+            zIndex: 3,
             display: { xs: 'none', md: 'flex' },
             position: 'absolute',
-            opacity: '60%',
+            opacity: '70%',
             left: 12,
-            bottom: 8
+            bottom: 8,
+            mixBlendMode: 'plus-lighter'
           }}
         >
           {tagLabel}
@@ -110,9 +163,10 @@ export function FeltNeedsButton({
             zIndex: 1,
             display: { md: 'none' },
             position: 'absolute',
-            opacity: '60%',
+            opacity: '70%',
             left: 8,
-            bottom: 4
+            bottom: 4,
+            mixBlendMode: 'plus-lighter'
           }}
         >
           {tagLabel}
