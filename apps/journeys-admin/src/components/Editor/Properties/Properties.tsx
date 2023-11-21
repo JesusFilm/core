@@ -22,7 +22,7 @@ export function Properties({ isPublisher }: PropertiesProps): ReactElement {
 
   return (
     <>
-      <SidePanel edit title={t('Properties')}>
+      <SidePanel withAdminDrawer title={t('Properties')}>
         <SidePanelContainer>
           <JourneyDetails isPublisher={isPublisher} />
         </SidePanelContainer>
