@@ -11,7 +11,6 @@ import {
   EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetJourney_journey as Journey,
@@ -141,31 +140,29 @@ describe('Canvas', () => {
   it.skip('should selected footer on click', () => {
     const { getByTestId, getByText } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ editableStepFooter: true }}>
-          <ThemeProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  id: 'journeyId',
-                  themeMode: ThemeMode.dark,
-                  themeName: ThemeName.base,
-                  language: {
-                    __typename: 'Language',
-                    id: '529',
-                    bcp47: 'en',
-                    iso3: 'eng'
-                  }
-                } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <EditorProvider initialState={initialState}>
-                <TestEditorState />
-                <Canvas />
-              </EditorProvider>
-            </JourneyProvider>
-          </ThemeProvider>
-        </FlagsProvider>
+        <ThemeProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base,
+                language: {
+                  __typename: 'Language',
+                  id: '529',
+                  bcp47: 'en',
+                  iso3: 'eng'
+                }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={initialState}>
+              <TestEditorState />
+              <Canvas />
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
       </MockedProvider>
     )
     expect(getByTestId('stepFooter')).toHaveStyle({

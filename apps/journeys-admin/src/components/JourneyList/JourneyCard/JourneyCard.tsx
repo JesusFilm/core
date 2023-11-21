@@ -58,6 +58,9 @@ export function JourneyCard({
           borderColor: 'divider'
         }
       }}
+      data-testid={
+        journey != null ? `JourneyCard-${journey.id}` : 'JourneyCard'
+      }
     >
       <>
         <NextLink

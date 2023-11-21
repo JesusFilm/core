@@ -84,6 +84,7 @@ export function Drawer(): ReactElement {
         borderRadius: 0,
         overflow: 'hidden'
       }}
+      data-testid="EditorDrawer"
     >
       <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
         {children}
@@ -99,6 +100,7 @@ export function Drawer(): ReactElement {
         sx={{
           display: { xs: 'block', sm: 'none' }
         }}
+        data-testid="EditorDrawer"
       >
         <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
           {children}

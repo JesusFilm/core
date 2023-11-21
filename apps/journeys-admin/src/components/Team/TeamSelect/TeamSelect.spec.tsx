@@ -3,12 +3,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
 import { OnboardingPanelContent } from '../../OnboardingPanelContent'
-import { onboardingJourneys } from '../../OnboardingPanelContent/data'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
@@ -125,13 +122,11 @@ describe('TeamSelect', () => {
   it('removes create journey buttons when on Shared With Me team', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider mocks={[]}>
-        <FlagsProvider flags={{ teams: true }}>
-          <TeamProvider>
-            <TeamSelect />
-            <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
-            <AddJourneyButton />
-          </TeamProvider>
-        </FlagsProvider>
+        <TeamProvider>
+          <TeamSelect />
+          <OnboardingPanelContent />
+          <AddJourneyButton />
+        </TeamProvider>
       </MockedProvider>
     )
     await waitFor(() =>

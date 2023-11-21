@@ -289,3 +289,228 @@ export const journeyVideoBlocks: Blocks[] = [
     nextBlockId: null
   }
 ]
+
+export const videoBlocksFiltered = [
+  {
+    __typename: 'VideoBlock',
+    id: '27c87b6a-8be5-4fb3-b2e0-a99d96df9c54',
+    parentBlockId: 'd90b28c6-d651-49e8-af90-eea4fff6b527',
+    parentOrder: 0,
+    muted: false,
+    autoplay: true,
+    startAt: 0,
+    endAt: 218,
+    posterBlockId: null,
+    fullsize: true,
+    videoId: 'ghTiJv0oVck',
+    videoVariantLanguageId: null,
+    source: 'youTube',
+    title: 'Invisible',
+    description:
+      'A homeless man struggles with others rejecting his helpful acts. Have you ever felt invisible?',
+    image: 'https://i.ytimg.com/vi/ghTiJv0oVck/hqdefault.jpg',
+    duration: 218,
+    objectFit: null,
+    video: null,
+    action: {
+      __typename: 'NavigateAction',
+      parentBlockId: '27c87b6a-8be5-4fb3-b2e0-a99d96df9c54',
+      gtmEventName: 'NavigateAction'
+    }
+  },
+  {
+    __typename: 'VideoBlock',
+    id: '46dafb32-2585-4e14-b97b-eb7a9ae71536',
+    parentBlockId: 'cefecdb3-fa67-4e4c-8a2b-449c39a5c70c',
+    parentOrder: 0,
+    muted: false,
+    autoplay: true,
+    startAt: 60,
+    endAt: 69,
+    posterBlockId: null,
+    fullsize: true,
+    videoId: '1_cl1301-0-0',
+    videoVariantLanguageId: '529',
+    source: 'internal',
+    title: null,
+    description: null,
+    image: null,
+    duration: null,
+    objectFit: 'fill',
+    video: {
+      __typename: 'Video',
+      id: '1_cl1301-0-0',
+      title: [
+        {
+          __typename: 'Translation',
+          value: 'StoryClubs: Birth of Jesus'
+        }
+      ],
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1301-0-0.mobileCinematicHigh.jpg',
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-cl1301-0-0',
+        hls: 'https://arc.gt/c8bne'
+      }
+    },
+    action: {
+      __typename: 'NavigateAction',
+      parentBlockId: '46dafb32-2585-4e14-b97b-eb7a9ae71536',
+      gtmEventName: 'NavigateAction'
+    }
+  },
+  {
+    __typename: 'VideoBlock',
+    id: '5b095694-6048-412e-96d4-729678fb7857',
+    parentBlockId: 'cd77dbbe-f694-4f96-9958-a6a279a1b80e',
+    parentOrder: 0,
+    muted: false,
+    autoplay: true,
+    startAt: 0,
+    endAt: 188,
+    posterBlockId: null,
+    fullsize: true,
+    videoId: '90XbaaQerz8',
+    videoVariantLanguageId: null,
+    source: 'youTube',
+    title: "Fighter Planes and Fast Cars -- Andreas' Story",
+    description:
+      'After living a life full of fighter planes and Porsches, Andreas realizes something is missing. \n\nJeremiah 29:11 \n"For I know the plans I have for you,” declares the LORD, “plans to prosper you and not to harm you, plans to give you hope and a future." \n\nEphesians 2:10 \n"For we are God’s handiwork, created in Christ Jesus to do good works, which God prepared in advance for us to do."',
+    image: 'https://i.ytimg.com/vi/90XbaaQerz8/hqdefault.jpg',
+    duration: 188,
+    objectFit: null,
+    video: null,
+    action: {
+      __typename: 'NavigateAction',
+      parentBlockId: '5b095694-6048-412e-96d4-729678fb7857',
+      gtmEventName: 'NavigateAction'
+    }
+  },
+  {
+    __typename: 'VideoBlock',
+    id: '70fb44fe-6bf0-4e7c-89f9-29801c903f8c',
+    parentBlockId: 'a13ede29-f497-4233-8558-04dce235c8a2',
+    parentOrder: 0,
+    muted: false,
+    autoplay: true,
+    startAt: 2048,
+    endAt: 2058,
+    posterBlockId: null,
+    fullsize: null,
+    videoId: '1_jf-0-0',
+    videoVariantLanguageId: '529',
+    source: 'internal',
+    title: null,
+    description: null,
+    image: null,
+    duration: null,
+    objectFit: null,
+    video: {
+      __typename: 'Video',
+      id: '1_jf-0-0',
+      title: [
+        {
+          __typename: 'Translation',
+          value: 'JESUS'
+        }
+      ],
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg?version=2',
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-jf-0-0',
+        hls: 'https://arc.gt/j67rz'
+      }
+    },
+    action: {
+      __typename: 'NavigateAction',
+      parentBlockId: '70fb44fe-6bf0-4e7c-89f9-29801c903f8c',
+      gtmEventName: 'NavigateAction'
+    }
+  },
+  {
+    __typename: 'VideoBlock',
+    id: 'af552762-8e5e-4fe8-82e1-a133e83343b3',
+    parentBlockId: '0caaf2c7-794a-489c-9aa1-5bf3aaa7b1d7',
+    parentOrder: 0,
+    muted: false,
+    autoplay: true,
+    startAt: 0,
+    endAt: 112,
+    posterBlockId: null,
+    fullsize: true,
+    videoId: '1_cl1303-0-0',
+    videoVariantLanguageId: '529',
+    source: 'internal',
+    title: null,
+    description: null,
+    image: null,
+    duration: 112,
+    objectFit: null,
+    video: {
+      __typename: 'Video',
+      id: '1_cl1303-0-0',
+      title: [
+        {
+          __typename: 'Translation',
+          value: 'StoryClubs: Miraculous Catch of Fish'
+        }
+      ],
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1303-0-0.mobileCinematicHigh.jpg',
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-cl1303-0-0',
+        hls: 'https://arc.gt/lq6z2'
+      }
+    },
+    action: {
+      __typename: 'NavigateAction',
+      parentBlockId: 'af552762-8e5e-4fe8-82e1-a133e83343b3',
+      gtmEventName: 'NavigateAction'
+    }
+  },
+  {
+    __typename: 'VideoBlock',
+    id: '7190f7be-00f1-406b-8e54-e8ca3cbbb7ce',
+    parentBlockId: '91cd55b9-bfd5-412c-9f08-342707727ca5',
+    parentOrder: 0,
+    muted: false,
+    autoplay: true,
+    startAt: 0,
+    endAt: 0,
+    posterBlockId: null,
+    fullsize: true,
+    videoId: '1_jf6125-0-0',
+    videoVariantLanguageId: '529',
+    source: 'internal',
+    title: null,
+    description: null,
+    image: null,
+    duration: 0,
+    objectFit: null,
+    video: {
+      __typename: 'Video',
+      id: '1_jf6125-0-0',
+      title: [
+        {
+          __typename: 'Translation',
+          value: "The Lord's Prayer"
+        }
+      ],
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6125-0-0.mobileCinematicHigh.jpg?version=2',
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-jf6125-0-0',
+        hls: 'https://arc.gt/wdq42'
+      }
+    },
+    action: {
+      __typename: 'NavigateAction',
+      parentBlockId: '7190f7be-00f1-406b-8e54-e8ca3cbbb7ce',
+      gtmEventName: 'NavigateAction'
+    }
+  }
+]

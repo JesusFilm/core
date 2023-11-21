@@ -1,9 +1,9 @@
 import { ApolloProvider } from '@apollo/client'
-import { datadogRum } from '@datadog/browser-rum'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
+import Script from 'next/script'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
@@ -12,7 +12,6 @@ import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
@@ -28,7 +27,6 @@ const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
-  flags?: { [key: string]: boolean }
 }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
@@ -53,23 +51,6 @@ function JourneysAdminApp({
     if (process.env.NEXT_PUBLIC_GTM_ID != null)
       TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
 
-    if (
-      process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
-      process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null
-    )
-      datadogRum.init({
-        applicationId: process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID,
-        clientToken: process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN,
-        site: 'datadoghq.com',
-        service: 'journeys-admin',
-        env: process.env.NEXT_PUBLIC_VERCEL_ENV,
-        version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-        sampleRate: 50,
-        sessionReplaySampleRate: 10,
-        trackInteractions: true,
-        defaultPrivacyLevel: 'mask-user-input'
-      })
-
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
     if (jssStyles != null) {
@@ -80,36 +61,67 @@ function JourneysAdminApp({
   }, [user])
 
   return (
-    <FlagsProvider flags={pageProps.flags}>
-      <CacheProvider value={emotionCache}>
-        <ThemeProvider>
-          <DefaultSeo
-            titleTemplate={t('%s | Next Steps')}
-            defaultTitle={t('Admin | Next Steps')}
+    <CacheProvider value={emotionCache}>
+      <ThemeProvider>
+        <DefaultSeo
+          titleTemplate={t('%s | Next Steps')}
+          defaultTitle={t('Admin | Next Steps')}
+        />
+        <HelpScoutBeacon />
+        <Head>
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width"
           />
-          <HelpScoutBeacon />
-          <Head>
-            <meta
-              name="viewport"
-              content="minimum-scale=1, initial-scale=1, width=device-width"
-            />
-          </Head>
-
-          <ApolloProvider client={apolloClient}>
-            <TeamProvider>
-              <SnackbarProvider
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right'
-                }}
-              >
-                <Component {...pageProps} />
-              </SnackbarProvider>
-            </TeamProvider>
-          </ApolloProvider>
-        </ThemeProvider>
-      </CacheProvider>
-    </FlagsProvider>
+        </Head>
+        {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
+          process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
+          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
+          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
+            <Script id="datadog-rum">
+              {`
+             (function(h,o,u,n,d) {
+               h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
+               d=o.createElement(u);d.async=1;d.src=n
+               n=o.getElementsByTagName(u)[0];n.parentNode.insertBefore(d,n)
+             })(window,document,'script','https://www.datadoghq-browser-agent.com/us1/v5/datadog-rum.js','DD_RUM')
+             window.DD_RUM.onReady(function() {
+               window.DD_RUM.init({
+                applicationId: '${
+                  process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID ?? ''
+                }',
+                clientToken: '${
+                  process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN ?? ''
+                }',
+                site: 'datadoghq.com',
+                service: 'journeys-admin',
+                env: '${process.env.NEXT_PUBLIC_VERCEL_ENV ?? ''}',
+                version: '${
+                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+                }',
+                sampleRate: 50,
+                sessionReplaySampleRate: 10,
+                trackInteractions: true,
+                defaultPrivacyLevel: 'mask-user-input'
+               });
+             })
+           `}
+            </Script>
+          )}
+        <ApolloProvider client={apolloClient}>
+          <TeamProvider>
+            <SnackbarProvider
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+            >
+              <Component {...pageProps} />
+            </SnackbarProvider>
+          </TeamProvider>
+        </ApolloProvider>
+      </ThemeProvider>
+    </CacheProvider>
   )
 }
 

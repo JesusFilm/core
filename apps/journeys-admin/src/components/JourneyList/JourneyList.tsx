@@ -4,9 +4,6 @@ import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-
-import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
 
 import { ActiveJourneyList } from './ActiveJourneyList'
@@ -37,7 +34,6 @@ export function JourneyList({
 }: Pick<JourneyListProps, 'user'>): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const router = useRouter()
-  const { journeysSummaryReport } = useFlags()
   const [event, setEvent] = useState<JourneyListEvent>()
 
   const handleClick = (event: JourneyListEvent): void => {
@@ -56,8 +52,10 @@ export function JourneyList({
 
   return (
     <>
-      {journeysSummaryReport && <MultipleSummaryReport />}
-      <Box sx={{ mx: { xs: -6, sm: 0 } }}>
+      <Box
+        sx={{ mx: { xs: -6, sm: 0 } }}
+        data-testid="JourneysAdminJourneyList"
+      >
         <Container disableGutters>
           <StatusTabPanel
             activeList={<ActiveJourneyList {...journeyListProps} />}

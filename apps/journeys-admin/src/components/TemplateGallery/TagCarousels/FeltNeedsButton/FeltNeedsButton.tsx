@@ -7,15 +7,16 @@ import { ReactElement, useCallback } from 'react'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
-import acceptanceImage from '../assets/acceptance.png'
-import depressionImage from '../assets/depression.png'
-import fearAnxietyImage from '../assets/fearAnxiety.png'
-import forgivenessImage from '../assets/forgiveness.png'
-import hopeImage from '../assets/hope.png'
-import lonelinessImage from '../assets/loneliness.png'
-import loveImage from '../assets/love.png'
-import securityImage from '../assets/security.png'
-import significanceImage from '../assets/significance.png'
+
+import acceptanceImage from './assets/acceptance.jpg'
+import depressionImage from './assets/depression.jpg'
+import fearAnxietyImage from './assets/fearAnxiety.jpg'
+import forgivenessImage from './assets/forgiveness.jpg'
+import hopeImage from './assets/hope.jpg'
+import lonelinessImage from './assets/loneliness.jpg'
+import loveImage from './assets/love.jpg'
+import securityImage from './assets/security.jpg'
+import significanceImage from './assets/significance.jpg'
 
 type ChildTag = Tag & { parentId: string }
 
@@ -69,12 +70,27 @@ export function FeltNeedsButton({
         key={`${tagLabel}-button}`}
         sx={{
           width: { xs: '150px', md: '222px' },
-          height: { xs: '56px', md: '110px' }
+          height: { xs: '56px', md: '110px' },
+          overflow: 'hidden',
+          '&:hover': {
+            '& .hoverStyles': {
+              transform: 'scale(1.05)'
+            }
+          },
+          '& .hoverStyles': {
+            transition: (theme) => theme.transitions.create('transform')
+          }
         }}
         onClick={() => onClick(tag.id)}
       >
-        <NextImage src={image.src} layout="fill" sx={{ borderRadius: 2 }} />
+        <NextImage
+          className="hoverStyles"
+          src={image.src}
+          layout="fill"
+          sx={{ borderRadius: 2 }}
+        />
         <Typography
+          className="hoverStyles"
           variant="h3"
           sx={{
             zIndex: 1,
@@ -88,6 +104,7 @@ export function FeltNeedsButton({
           {tagLabel}
         </Typography>
         <Typography
+          className="hoverStyles"
           variant="subtitle2"
           sx={{
             zIndex: 1,

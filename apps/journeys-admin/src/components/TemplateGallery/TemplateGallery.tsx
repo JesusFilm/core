@@ -1,5 +1,6 @@
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
 import { useRouter } from 'next/router'
@@ -42,75 +43,89 @@ export function TemplateGallery(): ReactElement {
   }
 
   return (
-    <Container disableGutters>
-      <HeaderAndLanguageFilter
-        selectedLanguageIds={selectedLanguageIds}
-        onChange={handleLanguageIdsChange}
-      />
-      <Grid
-        container
-        spacing={2}
+    <Paper
+      elevation={0}
+      square
+      sx={{ height: '100%' }}
+      data-testid="TemplateGallery"
+    >
+      <Container
+        maxWidth={false}
         sx={{
-          mb: { xs: 6, md: 9 }
+          maxWidth: { md: '90vw' },
+          px: { xs: 6, sm: 8 },
+          py: { xs: 6, sm: 9 }
         }}
-        id="TemplateGalleryTagsFilter"
       >
-        <Grid item xs={12} md={7}>
-          <TagsFilter
-            label={t('Topics, holidays, felt needs, collections')}
-            tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
-            onChange={handleTagIdsChange}
-            selectedTagIds={selectedTagIds}
-            popperElementId="TemplateGalleryTagsFilter"
-          />
-        </Grid>
-        <Grid item xs={12} md={5}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TagsFilter
-                label={t('Audience')}
-                tagNames={['Audience']}
-                onChange={handleTagIdsChange}
-                selectedTagIds={selectedTagIds}
-                popperElementId="TemplateGalleryAudienceTagsFilter"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TagsFilter
-                label={t('Genre')}
-                tagNames={['Genre']}
-                onChange={handleTagIdsChange}
-                selectedTagIds={selectedTagIds}
-                popperElementId="TemplateGalleryGenreTagsFilter"
-              />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              md={6}
-              id="TemplateGalleryAudienceTagsFilter"
-              sx={{ p: '0 !important' }}
-            />
-            <Grid
-              item
-              xs={12}
-              md={6}
-              id="TemplateGalleryGenreTagsFilter"
-              sx={{ p: '0 !important' }}
+        <HeaderAndLanguageFilter
+          selectedLanguageIds={selectedLanguageIds}
+          onChange={handleLanguageIdsChange}
+        />
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            mb: { xs: 1, md: 3 }
+          }}
+          id="TemplateGalleryTagsFilter"
+        >
+          <Grid item xs={12} md={7}>
+            <TagsFilter
+              label={t('Topics, holidays, felt needs, collections')}
+              tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
+              onChange={handleTagIdsChange}
+              selectedTagIds={selectedTagIds}
+              popperElementId="TemplateGalleryTagsFilter"
             />
           </Grid>
+          <Grid item xs={12} md={5}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TagsFilter
+                  label={t('Audience')}
+                  tagNames={['Audience']}
+                  onChange={handleTagIdsChange}
+                  selectedTagIds={selectedTagIds}
+                  popperElementId="TemplateGalleryAudienceTagsFilter"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TagsFilter
+                  label={t('Genre')}
+                  tagNames={['Genre']}
+                  onChange={handleTagIdsChange}
+                  selectedTagIds={selectedTagIds}
+                  popperElementId="TemplateGalleryGenreTagsFilter"
+                />
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                id="TemplateGalleryAudienceTagsFilter"
+                sx={{ p: '0 !important' }}
+              />
+              <Grid
+                item
+                xs={12}
+                md={6}
+                id="TemplateGalleryGenreTagsFilter"
+                sx={{ p: '0 !important' }}
+              />
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
-      <TagCarousels
-        selectedTagIds={selectedTagIds}
-        onChange={handleTagIdsChange}
-      />
-      <TemplateSections
-        tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
-        languageIds={
-          selectedLanguageIds.length > 0 ? selectedLanguageIds : undefined
-        }
-      />
-    </Container>
+        <TagCarousels
+          selectedTagIds={selectedTagIds}
+          onChange={handleTagIdsChange}
+        />
+        <TemplateSections
+          tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
+          languageIds={
+            selectedLanguageIds.length > 0 ? selectedLanguageIds : undefined
+          }
+        />
+      </Container>
+    </Paper>
   )
 }

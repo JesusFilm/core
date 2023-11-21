@@ -1,4 +1,5 @@
 import Container from '@mui/material/Container'
+import Paper from '@mui/material/Paper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
@@ -82,52 +83,64 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   }
 
   return (
-    <Container disableGutters>
-      <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
-        <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
-        <TemplateTags tags={journey?.tags} />
-        <TemplatePreviewTabs />
-        <Typography
-          variant="body2"
-          sx={{ display: { xs: 'block', sm: 'none' } }}
-        >
-          {journey?.description != null ? (
-            journey.description
-          ) : (
-            <>
-              {[0, 1, 2].map((value) => (
-                <Skeleton
-                  key={value}
-                  data-testid="TemplateViewDescriptionSkeleton"
-                  width="100%"
-                />
-              ))}
-            </>
+    <Paper
+      elevation={0}
+      square
+      sx={{ height: '100%' }}
+      data-testid="JourneysAdminTemplateView"
+    >
+      <Container
+        sx={{
+          px: { xs: 6, sm: 8 },
+          py: { xs: 6, sm: 9 }
+        }}
+      >
+        <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
+          <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
+          <TemplateTags tags={journey?.tags} />
+          <TemplatePreviewTabs />
+          <Typography
+            variant="body2"
+            sx={{ display: { xs: 'block', sm: 'none' } }}
+          >
+            {journey?.description != null ? (
+              journey.description
+            ) : (
+              <>
+                {[0, 1, 2].map((value) => (
+                  <Skeleton
+                    key={value}
+                    data-testid="TemplateViewDescriptionSkeleton"
+                    width="100%"
+                  />
+                ))}
+              </>
+            )}
+          </Typography>
+          {journey?.creatorDescription != null && (
+            <TemplateCreatorDetails
+              creatorDetails={journey?.creatorDescription}
+              creatorImage={journey?.creatorImageBlock?.src}
+              sx={{ display: { xs: 'flex', sm: 'none' } }}
+            />
           )}
-        </Typography>
-        {journey?.creatorDescription != null && (
-          <TemplateCreatorDetails
-            creatorDetails={journey?.creatorDescription}
-            creatorImage={journey?.creatorImageBlock?.src}
-            sx={{ display: { xs: 'flex', sm: 'none' } }}
-          />
-        )}
-        {journey?.strategySlug != null && (
-          <StrategySection
-            strategySlug={journey?.strategySlug}
-            variant="full"
-          />
-        )}
-        {relatedJourneys != null && relatedJourneys.length >= 1 && (
-          <TemplateGalleryCarousel
-            heading={t('Related Templates')}
-            items={relatedJourneys}
-            renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-            breakpoints={swiperBreakpoints}
-          />
-        )}
-        <TemplateFooter signedIn={authUser?.id != null} />
-      </Stack>
-    </Container>
+          {journey?.strategySlug != null && (
+            <StrategySection
+              strategySlug={journey?.strategySlug}
+              variant="full"
+            />
+          )}
+          {relatedJourneys != null && relatedJourneys.length >= 1 && (
+            <TemplateGalleryCarousel
+              heading={t('Related Templates')}
+              items={relatedJourneys}
+              renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+              breakpoints={swiperBreakpoints}
+            />
+          )}
+          <TemplateFooter signedIn={authUser?.id != null} />
+        </Stack>
+      </Container>
+    </Paper>
   )
 }

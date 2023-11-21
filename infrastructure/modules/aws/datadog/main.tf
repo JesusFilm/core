@@ -119,3 +119,15 @@ resource "datadog_integration_aws" "sandbox" {
   account_id = data.aws_caller_identity.current.account_id
   role_name  = "DatadogAWSIntegrationRole"
 }
+
+module "datadog_log_forwarder" {
+  source     = "terraform-aws-modules/datadog-forwarders/aws//modules/log_forwarder"
+  dd_api_key = data.aws_ssm_parameter.datadog_api_key.value
+
+}
+
+module "datadog_rds_enhanced_monitoring_forwarder" {
+  source = "terraform-aws-modules/datadog-forwarders/aws//modules/rds_enhanced_monitoring_forwarder"
+
+  dd_api_key = data.aws_ssm_parameter.datadog_api_key.value
+}

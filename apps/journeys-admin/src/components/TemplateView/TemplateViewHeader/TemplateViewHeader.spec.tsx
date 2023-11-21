@@ -18,6 +18,15 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('TemplateViewHeader', () => {
   it('should render the social image', () => {
     const primaryImageBlock: PrimaryImageBlock = {
@@ -157,7 +166,7 @@ describe('TemplateViewHeader', () => {
     expect(getByText('my cool journey')).toBeInTheDocument()
   })
 
-  it('should render Use Template button', async () => {
+  it('should render Use This Template button', async () => {
     const { getAllByText } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -176,7 +185,7 @@ describe('TemplateViewHeader', () => {
     )
 
     await waitFor(() =>
-      expect(getAllByText('Use Template')[0]).toBeInTheDocument()
+      expect(getAllByText('Use This Template')[0]).toBeInTheDocument()
     )
   })
 
@@ -221,7 +230,7 @@ describe('TemplateViewHeader', () => {
 
     expect(getAllByRole('link', { name: 'Edit' })[0]).toHaveAttribute(
       'href',
-      '/publisher/journeyId/edit'
+      '/publisher/journeyId'
     )
   })
 
@@ -243,7 +252,7 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(queryByTestId('EditTemplateSettings')).not.toBeInTheDocument()
+    expect(queryByTestId('TemplateEditButton')).not.toBeInTheDocument()
   })
 
   it('should render preview button', () => {

@@ -40,6 +40,7 @@ export function LanguageMenuItem({
         label="Language"
         icon={<Globe1Icon />}
         onClick={handleUpdateLanguage}
+        testId="Language"
       />
       {showLanguageDialog && (
         <DynamicLanguageDialog

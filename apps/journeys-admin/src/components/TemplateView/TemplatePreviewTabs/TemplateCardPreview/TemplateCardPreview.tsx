@@ -45,9 +45,10 @@ function TemplateCardPreviewItem({
     <Box
       sx={{
         position: 'relative',
-        width: { xs: 177, sm: 240 },
-        height: { xs: 280, sm: 380 }
+        width: { xs: 193, sm: 267 },
+        height: { xs: 300, sm: 420 }
       }}
+      data-testid="TemplateCardPreviewItem"
     >
       <Box
         sx={{
@@ -59,16 +60,16 @@ function TemplateCardPreviewItem({
           sx={{
             position: 'absolute',
             display: 'block',
-            width: { xs: 445, sm: 405 },
-            height: { xs: 698, sm: 633 },
+            width: { xs: 485, sm: 445 },
+            height: { xs: 738, sm: 673 },
             zIndex: 2,
             cursor: 'grab'
           }}
         />
         <FramePortal
           sx={{
-            width: { xs: 445, sm: 405 },
-            height: { xs: 698, sm: 633 }
+            width: { xs: 485, sm: 445 },
+            height: { xs: 738, sm: 673 }
           }}
           dir={rtl ? 'rtl' : 'ltr'}
         >
@@ -104,6 +105,9 @@ export function TemplateCardPreview({
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      spaceBetween: 12
+    },
     [breakpoints.values.sm]: {
       spaceBetween: 28
     }
@@ -118,6 +122,8 @@ export function TemplateCardPreview({
       watchOverflow
       slidesPerView="auto"
       spaceBetween={12}
+      observer
+      observeParents
       breakpoints={swiperBreakpoints}
       autoHeight
       style={{
@@ -153,8 +159,8 @@ export function TemplateCardPreview({
                 <Skeleton
                   data-testid="TemplateCardSkeleton"
                   sx={{
-                    width: { xs: 177, sm: 240 },
-                    height: { xs: 280, sm: 380 },
+                    width: { xs: 217, sm: 280 },
+                    height: { xs: 300, sm: 420 },
                     transform: 'scale(1)',
                     borderRadius: 2
                   }}

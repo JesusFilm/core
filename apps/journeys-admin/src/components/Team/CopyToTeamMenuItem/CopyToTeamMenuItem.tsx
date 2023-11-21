@@ -50,6 +50,7 @@ export function CopyToTeamMenuItem({
         onClick={() => {
           setDuplicateTeamDialogOpen(true)
         }}
+        testId="Copy"
       />
       <CopyToTeamDialog
         title={t('Copy to Another Team')}

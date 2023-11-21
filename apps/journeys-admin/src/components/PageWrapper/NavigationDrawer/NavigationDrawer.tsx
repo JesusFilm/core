@@ -17,9 +17,7 @@ import { User } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
-import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import BoxIcon from '@core/shared/ui/icons/Box'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -98,7 +96,6 @@ export function NavigationDrawer({
   const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const { globalReports } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
@@ -128,6 +125,7 @@ export function NavigationDrawer({
       onClose={handleClose}
       variant={smUp ? 'permanent' : 'temporary'}
       anchor="left"
+      data-testid="NavigationDrawer"
     >
       {open && smUp && <Backdrop open={open} onClick={handleClose} />}
       <StyledList>
@@ -159,15 +157,6 @@ export function NavigationDrawer({
           selected={selectedPage === 'templates'}
           link="/templates"
         />
-
-        {globalReports && (
-          <NavigationListItem
-            icon={<BarGroup3Icon />}
-            label="Analytics"
-            selected={selectedPage === 'reports'}
-            link="/reports"
-          />
-        )}
 
         {user != null && data?.me != null && (
           <>

@@ -13,20 +13,25 @@ interface ToggleButtonGroupProps<T = string | number> {
     icon?: ReactElement
   }>
   onChange: (value: T) => void
+  testId?: string
 }
 
 export function ToggleButtonGroup({
   label,
   options,
   value,
-  onChange
+  onChange,
+  testId
 }: ToggleButtonGroupProps): ReactElement {
   function handleChange(_event, value): void {
     onChange(value)
   }
 
   return (
-    <Stack sx={{ px: 6, py: 4 }}>
+    <Stack
+      sx={{ px: 6, py: 4 }}
+      data-testid={`ToggleButtonGroup${testId ?? ''}`}
+    >
       {label != null ? (
         <Typography variant="subtitle2" gutterBottom>
           {label}

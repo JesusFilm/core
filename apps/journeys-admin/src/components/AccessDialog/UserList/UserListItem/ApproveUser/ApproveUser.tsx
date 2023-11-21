@@ -89,6 +89,7 @@ export function ApproveUser({
       label={t('Approve')}
       icon={<CheckContainedIcon sx={{ color: 'secondary.light' }} />}
       onClick={handleClick}
+      testId="Approve"
     />
   )
 }
