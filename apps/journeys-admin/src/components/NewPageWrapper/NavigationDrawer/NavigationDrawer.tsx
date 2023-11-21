@@ -129,7 +129,7 @@ export function NavigationDrawer({
       data-testid="NavigationDrawer"
       sx={{
         display: 'flex',
-        width: open ? DRAWER_WIDTH : { xs: 0, md: 72 },
+        width: { xs: 0, md: 72 },
         '& .MuiDrawer-paper': {
           border: 0,
           backgroundColor: 'secondary.dark',
