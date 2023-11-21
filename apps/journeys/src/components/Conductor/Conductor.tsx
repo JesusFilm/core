@@ -83,6 +83,25 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
 
+  function checkRenderCard(blockId: string): boolean {
+    const prevBlock = blockHistory[blockHistory.length - 2]
+    const nextBlock =
+      activeBlock?.nextBlockId != null
+        ? treeBlocks.find(
+            (treeBlock) => treeBlock.id === activeBlock?.nextBlockId
+          )
+        : activeBlock?.parentOrder != null
+        ? treeBlocks[activeBlock.parentOrder + 1]
+        : undefined
+
+    const blockActive = activeBlock?.id === blockId
+    const prevBlockActive = prevBlock?.id === blockId
+    const nextBlockActive = nextBlock?.id === blockId
+
+    return blockActive
+    // return blockActive || prevBlockActive || nextBlockActive
+  }
+
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
   )
@@ -148,6 +167,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   useEffect(() => {
     setTreeBlocks(blocks)
+    // update current next and prev blocks
   }, [setTreeBlocks, blocks])
 
   // Update Swiper - navigate to activeBlock after NavigateBlockAction & going back to node of a branch
@@ -222,11 +242,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   key={block.id}
                   onClick={() => setShowNavigation(true)}
                 >
-                  {/* {({ isActive }) =>
-                    isActive && ( */}
                   <ThemeProvider {...theme} locale={locale} rtl={rtl} nested>
                     <Fade
-                      in={activeBlock?.id === block.id}
+                      in={checkRenderCard(block.id)}
                       mountOnEnter
                       unmountOnExit
                     >
@@ -257,8 +275,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                       </Stack>
                     </Fade>
                   </ThemeProvider>
-                  {/* )
-                  } */}
                 </SwiperSlide>
               )
             })}

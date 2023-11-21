@@ -124,17 +124,6 @@ export function Video({
     }
   }, [startAt, endAt, muted, posterBlock, autoplay])
 
-  useEffect(() => {
-    // HERE
-    if (
-      videoRef.current != null &&
-      activeBlock.children[0].children.find((block) => block.id === blockId) ==
-        null
-    ) {
-      videoRef.current.pause()
-    }
-  }, [])
-
   const triggerTimes = useMemo(() => {
     return children
       .filter((block) => block.__typename === 'VideoTriggerBlock')
@@ -263,6 +252,30 @@ export function Video({
 
   const isFillAndNotYoutube = (): boolean =>
     videoFit === 'cover' && source !== VideoBlockSource.youTube
+
+  useEffect(() => {
+    if (player != null) {
+      const handleVideoPause = (): void => {
+        void player.pause()
+      }
+
+      if (
+        activeBlock.children[0].children.find(
+          (block) => block.id === blockId
+        ) == null
+      ) {
+        player.on('playing', handleVideoPause)
+      } else {
+        void player.play()
+      }
+
+      return () => {
+        if (player != null) {
+          player.off('playing', handleVideoPause)
+        }
+      }
+    }
+  }, [player, activeBlock, blockId])
 
   return (
     <Box
