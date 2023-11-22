@@ -37,7 +37,6 @@ export class VisitorService {
       skip: after == null ? 0 : 1,
       take: first + 1
     })
-
     const sendResult = result.length > first ? result.slice(0, -1) : result
     return {
       edges: sendResult.map((visitor) => ({

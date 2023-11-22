@@ -1,63 +1,50 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { v4 as uuidv4 } from 'uuid'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import {
+  Journey,
+  JourneyVisitor,
+  Prisma,
+  Visitor
+} from '.prisma/api-journeys-client'
 
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 
 import { VisitorService } from './visitor.service'
-
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn()
-}))
-
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 const journey = {
   id: 'journey.id',
   teamId: 'team.id'
-}
-
+} as unknown as Journey
 const journeyVisitor = {
   journeyId: 'journey.id',
   visitorId: 'visitor.id'
-}
+} as unknown as JourneyVisitor
 const visitor = {
   id: 'visitor.id',
   userId: 'user.id',
   teamId: 'team.id'
-}
+} as unknown as Visitor
 
 describe('VisitorService', () => {
-  let service: VisitorService, prismaService: PrismaService
-
-  beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2021-02-18'))
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
+  let service: VisitorService, prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VisitorService, PrismaService]
+      providers: [
+        VisitorService,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
     }).compile()
 
     service = module.get<VisitorService>(VisitorService)
-    prismaService = module.get<PrismaService>(PrismaService)
-    prismaService.journey.findUnique = jest.fn().mockReturnValueOnce(journey)
-    prismaService.visitor.create = jest
-      .fn()
-      .mockImplementationOnce((input) => input.data)
-    prismaService.visitor.findMany = jest.fn().mockReturnValueOnce([])
-    prismaService.journeyVisitor.findUnique = jest
-      .fn()
-      .mockReturnValueOnce(journeyVisitor)
-    prismaService.journeyVisitor.upsert = jest
-      .fn()
-      .mockImplementationOnce((input) => input.create)
-    prismaService.journeyVisitor.findMany = jest.fn().mockReturnValueOnce([])
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
   describe('getList', () => {
@@ -71,6 +58,7 @@ describe('VisitorService', () => {
     }
 
     it('returns a visitors connection', async () => {
+      prismaService.visitor.findMany.mockResolvedValueOnce([])
       expect(
         await service.getList({ first: 50, filter: { teamId: 'teamId' } })
       ).toEqual(connection)
@@ -86,6 +74,7 @@ describe('VisitorService', () => {
     })
 
     it('allows pagination of the visitors connection', async () => {
+      prismaService.visitor.findMany.mockResolvedValueOnce([])
       await service.getList({
         first: 50,
         after: '1',
@@ -105,24 +94,58 @@ describe('VisitorService', () => {
 
   describe('getVisitorId', () => {
     it('should return visitor id', async () => {
-      prismaService.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      prismaService.visitor.upsert.mockResolvedValueOnce(visitor)
+      prismaService.journeyVisitor.upsert.mockResolvedValueOnce(journeyVisitor)
       expect(
         await service.getByUserIdAndJourneyId('user.id', 'journey.id')
       ).toEqual({ visitor, journeyVisitor })
     })
 
-    it('should create a new visitor if visitor does not exist', async () => {
-      prismaService.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
-      mockUuidv4.mockReturnValueOnce('newVisitor.id')
+    it('should throw error if journey not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      ).rejects.toThrow('Journey not found')
+    })
 
-      await service.getByUserIdAndJourneyId('user.id', 'journey.id')
-      expect(prismaService.visitor.create).toHaveBeenCalledWith({
-        data: {
-          ...visitor,
-          id: 'newVisitor.id',
-          createdAt: new Date()
-        }
-      })
+    it('should retry if visitor already exists', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      prismaService.visitor.upsert.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('', {
+          code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
+          clientVersion: ''
+        })
+      )
+      prismaService.visitor.upsert.mockResolvedValueOnce(visitor)
+      prismaService.journeyVisitor.upsert.mockResolvedValueOnce(journeyVisitor)
+      expect(
+        await service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      ).toEqual({ visitor, journeyVisitor })
+    })
+
+    it('should retry if journeyVisitor already exists', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      prismaService.visitor.upsert.mockResolvedValueOnce(visitor)
+      prismaService.visitor.upsert.mockResolvedValueOnce(visitor)
+      prismaService.journeyVisitor.upsert.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('', {
+          code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
+          clientVersion: ''
+        })
+      )
+      prismaService.journeyVisitor.upsert.mockResolvedValueOnce(journeyVisitor)
+      expect(
+        await service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      ).toEqual({ visitor, journeyVisitor })
+    })
+
+    it('should throw error if visitor upsert fails', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      prismaService.visitor.upsert.mockRejectedValueOnce(new Error())
+      await expect(
+        service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      ).rejects.toThrow()
     })
   })
 })
