@@ -68,7 +68,7 @@ export default defineConfig({
     // },
     // Video is not playing on chromium, so we use chrome instead
     {
-      name: 'chromium',
+      name: 'chrome-desktop',
       use: {
         ...devices['Desktop Chrome'],
         channel:
