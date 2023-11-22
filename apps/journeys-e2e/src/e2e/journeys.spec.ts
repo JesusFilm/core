@@ -10,7 +10,9 @@ test('journeys', async ({ page }) => {
   // test that user actually navigated to the choosen journey
   await expect(page).toHaveURL(/.*fact-or-fiction/)
   // Test Fact or Fiction screen
-  await expect(page.getByText('Fact or Fiction')).toBeInViewport()
+  await expect(
+    page.getByRole('heading', { name: 'Fact or Fiction' })
+  ).toBeInViewport()
   await page.getByRole('button', { name: 'Explore Now' }).click()
   // Test Video Screen
   await page.getByTestId('ConductorNavigationButtonNext').click()
