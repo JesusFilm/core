@@ -11,7 +11,11 @@ import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useBlocks } from '@core/journeys/ui/block'
+import {
+  nextActiveBlock,
+  prevActiveBlock,
+  useBlocks
+} from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -98,8 +102,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     const prevBlockActive = prevBlock?.id === blockId
     const nextBlockActive = nextBlock?.id === blockId
 
-    return blockActive
-    // return blockActive || prevBlockActive || nextBlockActive
+    // return blockActive
+    return blockActive || prevBlockActive || nextBlockActive
   }
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
@@ -224,7 +228,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             centeredSlidesBounds
             resizeObserver
             onSwiper={(swiper) => setSwiper(swiper)}
-            allowTouchMove={false}
+            allowTouchMove
+            onSlideNextTransitionStart={() => {
+              nextActiveBlock()
+            }}
+            onSlidePrevTransitionStart={() => {
+              prevActiveBlock()
+            }}
             onSlideChange={() => setShowHeaderFooter(true)}
             sx={{
               '.swiper-pagination': {

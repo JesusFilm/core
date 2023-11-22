@@ -99,6 +99,7 @@ export function BackgroundVideo({
     }
   }, [playerRef, startAt, endAt, source, video, videoId, setLoading])
 
+  // TODO: Fix pause
   useEffect(() => {
     if (videoRef.current != null) videoRef.current.pause()
   }, [])

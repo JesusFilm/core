@@ -253,6 +253,7 @@ export function Video({
   const isFillAndNotYoutube = (): boolean =>
     videoFit === 'cover' && source !== VideoBlockSource.youTube
 
+  // Plays and pauses videos while navigating cards
   useEffect(() => {
     if (player != null) {
       const handleVideoPause = (): void => {
@@ -265,6 +266,7 @@ export function Video({
         ) == null
       ) {
         player.on('playing', handleVideoPause)
+        void player.pause()
       } else {
         void player.play()
       }
