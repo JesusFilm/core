@@ -254,6 +254,7 @@ export function Video({
     videoFit === 'cover' && source !== VideoBlockSource.youTube
 
   // Plays and pauses videos while navigating cards
+  // TODO: handle auto play logic
   useEffect(() => {
     if (player != null) {
       const handleVideoPause = (): void => {
