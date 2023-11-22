@@ -3,7 +3,7 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useCallback } from 'react'
+import { ReactElement, useCallback, useState } from 'react'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
@@ -37,6 +37,8 @@ export function FeltNeedsButton({
   item: tag,
   onClick
 }: FeltNeedsButtonProps): ReactElement {
+  const [opacity, setOpacity] = useState(0)
+
   const tagImage = useCallback((tagLabel: string) => {
     switch (tagLabel) {
       case 'Acceptance':
@@ -130,13 +132,15 @@ export function FeltNeedsButton({
             left: 0,
             right: 0,
             zIndex: 2,
-            background: tagImageData?.backgroundStyle
+            background: tagImageData?.backgroundStyle,
+            opacity
           }}
         />
         <NextImage
           className="hoverStyles"
           src={image.src}
           layout="fill"
+          onLoadingComplete={() => setOpacity(1)}
           sx={{
             borderRadius: 2
           }}
