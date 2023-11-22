@@ -21,7 +21,7 @@ import { NavigationDrawer } from '.'
 const NavigationDrawerStory: Meta<typeof NavigationDrawer> = {
   ...journeysAdminConfig,
   component: NavigationDrawer,
-  title: 'Journeys-Admin/NewPageWrapper/NavigationDrawer'
+  title: 'Journeys-Admin/PageWrapper/NavigationDrawer'
 }
 
 const NavigationDrawerComponent = ({ ...args }): ReactElement => {

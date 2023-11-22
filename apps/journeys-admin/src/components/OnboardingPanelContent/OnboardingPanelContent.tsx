@@ -20,7 +20,7 @@ import {
 import { useJourneyCreateMutation } from '../../libs/useJourneyCreateMutation/useJourneyCreateMutation'
 import { ContainedIconButton } from '../ContainedIconButton'
 import { MediaListItem } from '../MediaListItem'
-import { SidePanelContainer } from '../NewPageWrapper/SidePanelContainer'
+import { SidePanelContainer } from '../PageWrapper/SidePanelContainer'
 import { useTeam } from '../Team/TeamProvider'
 
 export const ONBOARDING_IDS = [
