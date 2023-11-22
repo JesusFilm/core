@@ -43,6 +43,7 @@ export function HelpScoutBeacon(): ReactElement {
         onTouchStart={loadBeacon}
         onMouseOver={loadBeacon}
         onClick={handleClick}
+        aria-label="help"
         sx={{
           position: 'fixed',
           bottom: { xs: 13, md: 73 },
