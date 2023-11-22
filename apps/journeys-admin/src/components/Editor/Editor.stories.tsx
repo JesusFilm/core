@@ -21,7 +21,7 @@ import {
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { PageWrapper } from '../NewPageWrapper'
+import { PageWrapper } from '../PageWrapper'
 
 import { ControlPanel } from './ControlPanel'
 import { Drawer } from './Drawer'

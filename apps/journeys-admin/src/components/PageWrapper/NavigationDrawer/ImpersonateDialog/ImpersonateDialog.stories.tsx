@@ -9,7 +9,7 @@ import { ImpersonateDialog, USER_IMPERSONATE } from './ImpersonateDialog'
 const ImpersonateDialogStory: Meta<typeof ImpersonateDialog> = {
   ...journeysAdminConfig,
   component: ImpersonateDialog,
-  title: 'Journeys-Admin/NewPageWrapper/NavigationDrawer/ImpersonateDialog',
+  title: 'Journeys-Admin/PageWrapper/NavigationDrawer/ImpersonateDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

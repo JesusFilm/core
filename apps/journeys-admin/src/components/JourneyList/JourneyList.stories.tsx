@@ -5,7 +5,7 @@ import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { cache } from '../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { PageWrapper } from '../NewPageWrapper'
+import { PageWrapper } from '../PageWrapper'
 
 import { JourneyListProps } from './JourneyList'
 import {

@@ -11,7 +11,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { PageWrapper } from '../NewPageWrapper'
+import { PageWrapper } from '../PageWrapper'
 import { ThemeProvider } from '../ThemeProvider'
 
 import { ControlPanel } from './ControlPanel'

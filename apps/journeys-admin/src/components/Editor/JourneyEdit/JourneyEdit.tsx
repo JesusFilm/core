@@ -7,7 +7,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
-import { usePageWrapperStyles } from '../../NewPageWrapper/utils/usePageWrapperStyles'
+import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 import { ActionsTable } from '../ActionsTable'
 import { Canvas } from '../Canvas'
 import { SocialPreview } from '../SocialPreview/SocialPreview'
