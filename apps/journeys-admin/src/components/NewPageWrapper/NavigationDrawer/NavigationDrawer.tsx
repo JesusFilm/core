@@ -8,8 +8,7 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import { Theme, styled } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import { styled } from '@mui/material/styles'
 import compact from 'lodash/compact'
 import Image from 'next/image'
 import { NextRouter } from 'next/router'
@@ -19,7 +18,6 @@ import { useTranslation } from 'react-i18next'
 
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
 import BoxIcon from '@core/shared/ui/icons/Box'
-import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
 import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
@@ -58,30 +56,6 @@ export const GET_ME = gql`
   }
 `
 
-const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
-  width: '72px',
-  display: 'flex',
-  '& .MuiDrawer-paper': {
-    border: 0,
-    backgroundColor: theme.palette.secondary.dark,
-    overflowX: 'hidden',
-    ...(open === true && {
-      width: DRAWER_WIDTH,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen
-      })
-    }),
-    ...(open === false && {
-      width: theme.spacing(18),
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      })
-    })
-  }
-}))
-
 export const StyledList = styled(List)({
   display: 'flex',
   flexDirection: 'column',
@@ -111,7 +85,6 @@ export function NavigationDrawer({
   })
   const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLDivElement | null>(
     null
   )
@@ -147,14 +120,25 @@ export function NavigationDrawer({
   const journeyTooltip = getJourneyTooltip(t, journeys, user?.id)
 
   return (
-    <StyledNavigationDrawer
+    <Drawer
       open={open}
       onClose={handleClose}
-      variant={mdUp ? 'permanent' : 'temporary'}
+      variant="permanent"
       anchor="left"
       data-testid="NavigationDrawer"
+      sx={{
+        display: 'flex',
+        width: { xs: 0, md: 72 },
+        '& .MuiDrawer-paper': {
+          border: 0,
+          backgroundColor: 'secondary.dark',
+          overflowX: 'hidden',
+          transition: (theme) => theme.transitions.create('width'),
+          width: open ? DRAWER_WIDTH : { xs: 0, md: 72 }
+        }
+      }}
     >
-      {open && mdUp && <Backdrop open={open} onClick={handleClose} />}
+      <Backdrop open={open} onClick={handleClose} />
       <StyledList>
         <ListItemButton onClick={handleClose} data-testid="toggle-nav-drawer">
           <ListItemIcon
@@ -162,11 +146,13 @@ export function NavigationDrawer({
               '> .MuiSvgIcon-root': {
                 color: 'secondary.dark',
                 backgroundColor: 'secondary.light',
-                borderRadius: 2
+                borderRadius: 2,
+                transition: (theme) => theme.transitions.create('transform'),
+                transform: { md: open ? 'rotate(180deg)' : 'rotate(0deg)' }
               }
             }}
           >
-            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            <ChevronRightIcon />
           </ListItemIcon>
         </ListItemButton>
 
@@ -255,6 +241,6 @@ export function NavigationDrawer({
           </Box>
         </ListItem>
       </StyledList>
-    </StyledNavigationDrawer>
+    </Drawer>
   )
 }

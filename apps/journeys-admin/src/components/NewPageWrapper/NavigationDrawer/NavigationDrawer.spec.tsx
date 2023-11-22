@@ -46,7 +46,7 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     expect(getAllByRole('button')[0]).toContainElement(
-      getByTestId('ChevronLeftIcon')
+      getByTestId('ChevronRightIcon')
     )
     expect(getByText('Discover')).toBeInTheDocument()
   })
@@ -315,14 +315,14 @@ describe('NavigationDrawer', () => {
     )
   })
 
-  it('should close the navigation drawer on chevron left click', () => {
+  it('should close the navigation drawer on chevron click', () => {
     const { getAllByRole, getByTestId } = render(
       <MockedProvider>
         <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     const button = getAllByRole('button')[0]
-    expect(button).toContainElement(getByTestId('ChevronLeftIcon'))
+    expect(button).toContainElement(getByTestId('ChevronRightIcon'))
     fireEvent.click(button)
     expect(onClose).toHaveBeenCalled()
   })
