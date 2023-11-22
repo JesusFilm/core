@@ -73,9 +73,10 @@ export const Default = {
 }
 
 export const Loading = {
-  ...Default,
+  ...Template,
   args: {
-    loading: true
+    loading: true,
+    loadingBreakpoints: 5
   }
 }
 
