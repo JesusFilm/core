@@ -22,7 +22,7 @@ test('journeys', async ({ page }) => {
     animations: 'disabled',
     fullPage: true
   })
-  await page.getByText("Yes, it's a true story", { exact: false }).click()
+  await page.getByText('Yes, it’s a true story 👍').click()
   // Test Video Screen
   await page.getByTestId('ConductorNavigationButtonNext').click()
   // Test Jesus in History screen
