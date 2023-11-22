@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { PageWrapper } from '../../src/components/NewPageWrapper'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'

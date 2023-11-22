@@ -10,7 +10,7 @@ import { UserMenu } from '.'
 const UserMenuStory: Meta<typeof UserMenu> = {
   ...simpleComponentConfig,
   component: UserMenu,
-  title: 'Journeys-Admin/NewPageWrapper/NavigationDrawer/UserMenu'
+  title: 'Journeys-Admin/PageWrapper/NavigationDrawer/UserMenu'
 }
 
 const UserMenuComponent = (args): ReactElement => {

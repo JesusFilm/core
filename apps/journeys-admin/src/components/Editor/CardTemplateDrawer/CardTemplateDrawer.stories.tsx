@@ -3,13 +3,13 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { Drawer } from '../Drawer'
 
 import { CardTemplateDrawer } from '.'
 
 const CardTemplateDrawerStory: Meta<typeof CardTemplateDrawer> = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: CardTemplateDrawer,
   title: 'Journeys-Admin/Editor/CardTemplateDrawer'
 }

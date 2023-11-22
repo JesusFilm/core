@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 import { cache } from '../../libs/apolloClient/cache'
 import { PageProvider } from '../../libs/PageWrapperProvider'
 import { simpleComponentConfig } from '../../libs/storybook'
-import { SidePanel } from '../NewPageWrapper/SidePanel'
+import { SidePanel } from '../PageWrapper/SidePanel'
 import { TeamProvider } from '../Team/TeamProvider'
 
 import { getOnboardingJourneysMock } from './data'
