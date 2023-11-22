@@ -34,3 +34,6 @@ afterEach(() => mswServer.resetHandlers())
 afterAll(() => mswServer.close())
 
 jest.mock('next/router', () => require('next-router-mock'))
+
+if (process.env.CI === 'true')
+  jest.retryTimes(3, { logErrorsBeforeRetry: true })

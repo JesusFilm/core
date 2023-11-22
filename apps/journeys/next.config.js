@@ -36,6 +36,15 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['journeys-ui']
+  transpilePackages: ['journeys-ui'],
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+        'node_modules/esbuild-linux-64/bin'
+      ]
+    }
+  }
 }
 module.exports = composePlugins(withNx)(nextConfig)

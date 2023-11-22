@@ -10,7 +10,6 @@ import { defineConfig, devices } from '@playwright/test'
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  timeout: 60000,
   testDir: './src/e2e',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -70,7 +69,13 @@ export default defineConfig({
     // Video is not playing on chromium, so we use chrome instead
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] }
+      use: {
+        ...devices['Desktop Chrome'],
+        channel:
+          process.platform === 'linux' && process.arch === 'arm64'
+            ? 'chromium'
+            : 'chrome'
+      }
     }
   ]
 
