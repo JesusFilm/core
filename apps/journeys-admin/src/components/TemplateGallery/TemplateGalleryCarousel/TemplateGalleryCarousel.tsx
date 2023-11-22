@@ -29,7 +29,7 @@ interface TemplateGalleryCarouselProps<T> {
   heading?: string
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
-  loadingBreakpoints: CSSSelectorObjectOrCssVariables
+  loadingBreakpoints?: CSSSelectorObjectOrCssVariables
 }
 
 export function TemplateGalleryCarousel<T>({
