@@ -11,7 +11,11 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useBlocks } from '@core/journeys/ui/block'
+import {
+  nextActiveBlock,
+  prevActiveBlock,
+  useBlocks
+} from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -179,6 +183,25 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
 
+  useEffect(() => {
+    let touchstartX = 0
+    let touchendX = 0
+
+    function checkDirection(): void {
+      if (touchendX < touchstartX) nextActiveBlock()
+      if (touchendX > touchstartX) prevActiveBlock()
+    }
+
+    document.addEventListener('touchstart', (e) => {
+      touchstartX = e.changedTouches[0].screenX
+    })
+
+    document.addEventListener('touchend', (e) => {
+      touchendX = e.changedTouches[0].screenX
+      checkDirection()
+    })
+  }, [])
+
   return (
     <Box
       sx={{
@@ -197,7 +220,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         data-testid="Conductor"
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
-          <StyledSwiperContainer
+          {/* <StyledSwiperContainer
             dir={!rtl ? 'ltr' : 'rtl'}
             pagination={{ dynamicBullets: true }}
             slidesPerView="auto"
@@ -212,73 +235,51 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 display: showHeaderFooter ? 'block' : 'none'
               }
             }}
+          > */}
+          {/* {treeBlocks.map((block) => {
+            const theme = getStepTheme(block as TreeBlock<StepFields>, journey)
+            return (
+              <SwiperSlide
+                key={block.id}
+                onClick={() => setShowNavigation(true)}
+              >
+                {({ isActive }) =>
+                  isActive && ( */}
+          {/* <ThemeProvider {...theme} locale={locale} rtl={rtl} nested> */}
+          {/* <Fade in={activeBlock?.id === block.id} mountOnEnter unmountOnExit> */}
+          <Stack
+            justifyContent="center"
+            sx={{
+              maxHeight: {
+                xs: '100vh',
+                lg: 'calc(100vh - 80px)'
+              },
+              height: {
+                xs: 'inherit',
+                lg: 'calc(54.25vw + 102px)'
+              },
+              px: { lg: 6 }
+            }}
           >
-            {treeBlocks.map((block) => {
-              const theme = getStepTheme(
-                block as TreeBlock<StepFields>,
-                journey
-              )
-              return (
-                <SwiperSlide
-                  key={block.id}
-                  onClick={() => setShowNavigation(true)}
-                >
-                  {({ isActive }) =>
-                    isActive && (
-                      <ThemeProvider
-                        {...theme}
-                        locale={locale}
-                        rtl={rtl}
-                        nested
-                      >
-                        <Fade
-                          in={activeBlock?.id === block.id}
-                          mountOnEnter
-                          unmountOnExit
-                        >
-                          <Stack
-                            justifyContent="center"
-                            sx={{
-                              maxHeight: {
-                                xs: '100vh',
-                                lg: 'calc(100vh - 80px)'
-                              },
-                              height: {
-                                xs: 'inherit',
-                                lg: 'calc(54.25vw + 102px)'
-                              },
-                              px: { lg: 6 }
-                            }}
-                          >
-                            {showHeaderFooter && (
-                              <StepHeader sx={{ ...mobileNotchStyling }} />
-                            )}
-                            <BlockRenderer block={block} />
-                            <StepFooter
-                              sx={{
-                                visibility: showHeaderFooter
-                                  ? 'visible'
-                                  : 'hidden',
-                                ...mobileNotchStyling
-                              }}
-                            />
-                          </Stack>
-                        </Fade>
-                      </ThemeProvider>
-                    )
-                  }
-                </SwiperSlide>
-              )
-            })}
-            <NavigationButton
-              variant={rtl ? 'next' : 'prev'}
-              alignment="left"
+            {showHeaderFooter && <StepHeader sx={{ ...mobileNotchStyling }} />}
+            <BlockRenderer block={activeBlock} />
+            <StepFooter
+              sx={{
+                visibility: showHeaderFooter ? 'visible' : 'hidden',
+                ...mobileNotchStyling
+              }}
             />
-            <NavigationButton
-              variant={rtl ? 'prev' : 'next'}
-              alignment="right"
-            />
-          </StyledSwiperContainer>
+          </Stack>
+          {/* </Fade> */}
+          {/* </ThemeProvider> */}
+          {/* )
+                }
+              </SwiperSlide>
+            )
+          })} */}
+          <NavigationButton variant={rtl ? 'next' : 'prev'} alignment="left" />
+          <NavigationButton variant={rtl ? 'prev' : 'next'} alignment="right" />
+          {/* </StyledSwiperContainer> */}
         </Box>
       </Stack>
     </Box>
