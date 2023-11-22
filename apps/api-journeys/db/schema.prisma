@@ -118,7 +118,7 @@ model Event {
 }
 
 model Visitor {
-  id                        String           @id
+  id                        String           @id @default(uuid())
   createdAt                 DateTime         @default(now())
   countryCode               String?
   duration                  Int              @default(0)
@@ -144,6 +144,7 @@ model Visitor {
   journeyVisitors           JourneyVisitor[]
   team                      Team             @relation(fields: [teamId], references: [id])
 
+  @@unique([teamId, userId])
   @@index(teamId)
   @@index(createdAt(sort: Desc))
   @@index(userId)

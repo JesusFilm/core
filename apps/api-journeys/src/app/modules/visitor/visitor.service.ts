@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
-import { v4 as uuidv4 } from 'uuid'
 
 import { JourneyVisitor, Prisma, Visitor } from '.prisma/api-journeys-client'
 
 import { PageInfo } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 
 interface ListParams {
   after?: string | null
@@ -56,10 +56,13 @@ export class VisitorService {
   async getByUserIdAndJourneyId(
     userId: string,
     journeyId: string
-  ): Promise<{
-    visitor: Visitor
-    journeyVisitor: JourneyVisitor
-  }> {
+  ): Promise<
+    | {
+        visitor: Visitor
+        journeyVisitor: JourneyVisitor
+      }
+    | undefined
+  > {
     const journey = await this.prismaService.journey.findUnique({
       where: {
         id: journeyId
@@ -68,35 +71,48 @@ export class VisitorService {
 
     if (journey == null) throw new Error('Journey not found')
 
-    let visitor = await this.prismaService.visitor.findFirst({
-      where: { userId, teamId: journey.teamId }
-    })
+    let retry = true
+    while (retry) {
+      try {
+        const visitor = await this.prismaService.visitor.upsert({
+          where: {
+            teamId_userId: {
+              teamId: journey.teamId,
+              userId
+            }
+          },
+          create: {
+            teamId: journey.teamId,
+            userId
+          },
+          update: {}
+        })
+        const journeyVisitor = await this.prismaService.journeyVisitor.upsert({
+          where: {
+            journeyId_visitorId: {
+              journeyId,
+              visitorId: visitor.id
+            }
+          },
+          create: {
+            journeyId,
+            visitorId: visitor.id
+          },
+          update: {}
+        })
 
-    if (visitor == null) {
-      const id = uuidv4()
-      const createdAt = new Date()
-      visitor = await this.prismaService.visitor.create({
-        data: {
-          id,
-          teamId: journey.teamId,
-          userId,
-          createdAt
+        retry = false
+        return { visitor, journeyVisitor }
+      } catch (err) {
+        if (
+          !(err instanceof Prisma.PrismaClientKnownRequestError) ||
+          err.code !== ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+        ) {
+          retry = false
+          throw err
         }
-      })
+      }
     }
-    let journeyVisitor = await this.prismaService.journeyVisitor.findUnique({
-      where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } }
-    })
-    if (journeyVisitor == null) {
-      journeyVisitor = await this.prismaService.journeyVisitor.create({
-        data: {
-          journeyId,
-          visitorId: visitor.id
-        }
-      })
-    }
-
-    return { visitor, journeyVisitor }
   }
 
   async update(id: string, data: Partial<Visitor>): Promise<Visitor> {
