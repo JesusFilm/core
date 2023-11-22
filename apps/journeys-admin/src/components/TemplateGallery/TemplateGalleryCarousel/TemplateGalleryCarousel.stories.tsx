@@ -76,11 +76,6 @@ export const Loading = {
   ...Default,
   args: {
     loading: true
-  },
-  play: async () => {
-    await waitFor(async () => {
-      await userEvent.hover(screen.getByRole('group', { name: '1 / 8' }))
-    })
   }
 }
 
