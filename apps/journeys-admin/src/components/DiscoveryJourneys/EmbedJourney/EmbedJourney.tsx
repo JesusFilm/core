@@ -80,6 +80,7 @@ export function EmbedJourney({
             <ThemeProvider
               themeName={ThemeName.base}
               themeMode={ThemeMode.light}
+              nested
             >
               <Box
                 sx={{
