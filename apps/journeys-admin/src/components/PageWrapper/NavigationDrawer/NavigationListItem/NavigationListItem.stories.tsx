@@ -10,7 +10,7 @@ import { NavigationListItem } from '.'
 const NavigationListItemStory: Meta<typeof NavigationListItem> = {
   ...simpleComponentConfig,
   component: NavigationListItem,
-  title: 'Journeys-Admin/NewPageWrapper/NavigationDrawer/NavigationListItem'
+  title: 'Journeys-Admin/PageWrapper/NavigationDrawer/NavigationListItem'
 }
 
 const Template: StoryObj<typeof NavigationListItem> = {

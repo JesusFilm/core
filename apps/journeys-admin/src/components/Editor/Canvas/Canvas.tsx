@@ -23,7 +23,7 @@ import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { FramePortal } from '../../FramePortal'
-import { usePageWrapperStyles } from '../../NewPageWrapper/utils/usePageWrapperStyles'
+import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'

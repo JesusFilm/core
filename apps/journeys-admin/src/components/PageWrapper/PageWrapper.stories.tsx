@@ -25,7 +25,7 @@ import { PageWrapper } from '.'
 const PageWrapperStory: Meta<typeof PageWrapper> = {
   ...journeysAdminConfig,
   component: PageWrapper,
-  title: 'Journeys-Admin/NewPageWrapper',
+  title: 'Journeys-Admin/PageWrapper',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
