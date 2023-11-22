@@ -9,7 +9,6 @@ import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 interface EmbedJourneyProps {
   slug: 'admin-left' | 'admin-right' | 'admin-center'
   children: ReactNode
-  sx?: SxProps
 }
 
 export function EmbedJourney({
