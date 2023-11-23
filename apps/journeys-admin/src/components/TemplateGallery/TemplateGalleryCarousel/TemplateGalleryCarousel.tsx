@@ -78,12 +78,7 @@ export function TemplateGalleryCarousel<T>({
         >
           {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
             return (
-              <Box
-                key={`${heading ?? ''}-item-${i}`}
-                sx={{ mr: loadingBreakpoints }}
-              >
-                {renderItem({})}
-              </Box>
+              <Box key={`${heading ?? ''}-item-${i}`}>{renderItem({})}</Box>
             )
           })}
         </Stack>
