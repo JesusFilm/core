@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
+import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
@@ -50,6 +51,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
   const theme = useTheme()
   const viewportHeight = use100vh()
+  const router = useRouter()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
@@ -202,7 +204,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 px: { lg: 6 }
               }}
             >
-              {showHeaderFooter && (
+              {showHeaderFooter && router.query.noi == null && (
                 <StepHeader sx={{ ...mobileNotchStyling }} />
               )}
 
