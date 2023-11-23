@@ -108,7 +108,8 @@ export function TemplateSections({
           loading={loading}
           loadingSpacing={{
             xs: 1,
-            md: 8
+            md: 8,
+            xl: 11
           }}
         />
       )}
@@ -144,7 +145,8 @@ export function TemplateSections({
               breakpoints={swiperBreakpoints}
               loadingSpacing={{
                 xs: 1,
-                md: 8
+                md: 8,
+                xl: 11
               }}
             />
           )
