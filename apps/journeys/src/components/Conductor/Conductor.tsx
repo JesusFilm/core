@@ -170,6 +170,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
 
+  // TODO: fix step names
+
   return (
     <Box
       sx={{
