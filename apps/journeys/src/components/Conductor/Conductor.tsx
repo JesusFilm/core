@@ -55,6 +55,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
+  const stepTheme = getStepTheme(activeBlock, journey)
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -63,6 +64,19 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
     JOURNEY_VISITOR_UPDATE
   )
+
+  const isTouchScreenDevice = (): boolean => {
+    try {
+      document.createEvent('TouchEvent')
+      return true
+    } catch (e) {
+      return false
+    }
+  }
+
+  const disableTouchMove = !isTouchScreenDevice()
+    ? true
+    : activeBlock?.locked ?? false
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
@@ -123,18 +137,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     setTreeBlocks(blocks)
   }, [setTreeBlocks, blocks])
 
-  const mobileNotchStyling: SxProps = {
-    width: {
-      xs:
-        variant === 'default'
-          ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
-          : '100%',
-      lg: 'auto'
-    },
-    left: variant === 'default' ? 'env(safe-area-inset-left)' : undefined,
-    right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
-  }
-
   useEffect(() => {
     let touchstartX = 0
     let touchendX = 0
@@ -149,12 +151,23 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     })
 
     document.addEventListener('touchend', (e) => {
+      if (disableTouchMove) return
       touchendX = e.changedTouches[0].screenX
       checkDirection()
     })
-  }, [])
+  }, [disableTouchMove])
 
-  const stepTheme = getStepTheme(activeBlock, journey)
+  const mobileNotchStyling: SxProps = {
+    width: {
+      xs:
+        variant === 'default'
+          ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
+          : '100%',
+      lg: 'auto'
+    },
+    left: variant === 'default' ? 'env(safe-area-inset-left)' : undefined,
+    right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
+  }
 
   return (
     <Box
