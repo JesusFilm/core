@@ -12,8 +12,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
-import { StepNextEventCreate } from '@core/journeys/ui/Card/__generated__/StepNextEventCreate'
-import { StepPreviousEventCreate } from '@core/journeys/ui/Card/__generated__/StepPreviousEventCreate'
 import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
@@ -24,6 +22,8 @@ import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 import { StepFields } from '../../../../__generated__/StepFields'
+import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
+import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousEventCreate'
 
 const LeftNavigationContainer = styled(Box)`
   /* @noflip */
@@ -35,7 +35,7 @@ const RightNavigationContainer = styled(Box)`
 `
 
 interface NavigationButtonProps {
-  variant: 'prev' | 'next'
+  variant: 'previous' | 'next'
   alignment: 'left' | 'right'
 }
 
@@ -70,7 +70,7 @@ export function NavigationButton({
     activeBlock?.nextBlockId != null &&
     activeBlock?.nextBlockId !== activeBlock.id
   const canNavigate =
-    variant === 'prev'
+    variant === 'previous'
       ? !onFirstStep
       : !onLastStep || (onLastStep && navigateToAnotherBlock)
   const disabled = variant === 'next' && activeBlock?.locked
@@ -89,9 +89,12 @@ export function NavigationButton({
     }
   }, [showNavigation, setShowNavigation, activeBlock])
 
-  // should always be called with nextActiveBlock() and previousActiveBlock()
-  // should match with other handleNavigationEventCreate functions
-  function handleNavigationEventCreate(target: 'next' | 'prev'): void {
+  // should always be called with nextActiveBlock()
+  // should match with other handleNextNavigationEventCreate functions
+  // places used:
+  // libs/journeys/ui/src/components/Card/Card.tsx
+  // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  function handleNextNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
       activeBlock.id,
@@ -99,44 +102,26 @@ export function NavigationButton({
       treeBlocks,
       t
     )
-    const targetBlock =
-      target === 'next'
-        ? getNextBlock({ id: undefined, activeBlock })
-        : (blockHistory[blockHistory.length - 2] as TreeBlock<StepFields>)
+    const targetBlock = getNextBlock({ id: undefined, activeBlock })
     const targetStepName =
       targetBlock != null &&
       getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
 
-    const mutationInput = {
-      id,
-      blockId: activeBlock.id,
-      label: stepName,
-      value: targetStepName
-    }
-
-    if (target === 'next') {
-      void stepNextEventCreate({
-        variables: {
-          input: {
-            ...mutationInput,
-            nextStepId: targetBlock?.id
-          }
+    void stepNextEventCreate({
+      variables: {
+        input: {
+          id,
+          blockId: activeBlock.id,
+          label: stepName,
+          value: targetStepName,
+          nextStepId: targetBlock?.id
         }
-      })
-    } else {
-      void stepPreviousEventCreate({
-        variables: {
-          input: {
-            ...mutationInput,
-            previousStepId: targetBlock?.id
-          }
-        }
-      })
-    }
+      }
+    })
 
     TagManager.dataLayer({
       dataLayer: {
-        event: target === 'next' ? 'step_next' : 'step_prev',
+        event: 'step_next',
         eventId: id,
         blockId: activeBlock.id,
         stepName,
@@ -146,19 +131,63 @@ export function NavigationButton({
     })
   }
 
-  function handleNav(direction: 'next' | 'prev'): void {
+  // should always be called with previousActiveBlock()
+  // should match with other handlePreviousNavigationEventCreate functions
+  // places used:
+  // libs/journeys/ui/src/components/Card/Card.tsx
+  // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  function handlePreviousNavigationEventCreate(): void {
+    const id = uuidv4()
+    const stepName = getStepHeading(
+      activeBlock.id,
+      activeBlock.children,
+      treeBlocks,
+      t
+    )
+    const targetBlock = blockHistory[
+      blockHistory.length - 2
+    ] as TreeBlock<StepFields>
+    const targetStepName =
+      targetBlock != null &&
+      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
+
+    void stepPreviousEventCreate({
+      variables: {
+        input: {
+          id,
+          blockId: activeBlock.id,
+          label: stepName,
+          value: targetStepName,
+          previousStepId: targetBlock?.id
+        }
+      }
+    })
+
+    TagManager.dataLayer({
+      dataLayer: {
+        event: 'step_prev',
+        eventId: id,
+        blockId: activeBlock.id,
+        stepName,
+        targetStepId: targetBlock?.id,
+        targetStepName
+      }
+    })
+  }
+
+  function handleNav(direction: 'next' | 'previous'): void {
     if (direction === 'next') {
-      handleNavigationEventCreate('next')
+      handleNextNavigationEventCreate()
       nextActiveBlock()
     } else {
-      handleNavigationEventCreate('prev')
+      handlePreviousNavigationEventCreate()
       previousActiveBlock()
     }
   }
 
   // Issue using https://mui.com/material-ui/guides/right-to-left/#emotion-amp-styled-components for justifyContent
   const alignSx =
-    variant === 'prev'
+    variant === 'previous'
       ? {
           justifyContent: 'flex-start',
           ml:

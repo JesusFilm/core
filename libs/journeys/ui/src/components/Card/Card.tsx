@@ -116,9 +116,12 @@ export function Card({
       (child) => child.__typename === 'VideoBlock' && child.id !== coverBlockId
     ) != null
 
-  // should always be called with nextActiveBlock() and previousActiveBlock()
-  // should match with other handleNavigationEventCreate functions
-  function handleNavigationEventCreate(target: 'next' | 'prev'): void {
+  // should always be called with nextActiveBlock()
+  // should match with other handleNextNavigationEventCreate functions
+  // places used:
+  // libs/journeys/ui/src/components/Card/Card.tsx
+  // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  function handleNextNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
       activeBlock.id,
@@ -126,44 +129,26 @@ export function Card({
       treeBlocks,
       t
     )
-    const targetBlock =
-      target === 'next'
-        ? getNextBlock({ id: undefined, activeBlock })
-        : (blockHistory[blockHistory.length - 2] as TreeBlock<StepFields>)
+    const targetBlock = getNextBlock({ id: undefined, activeBlock })
     const targetStepName =
       targetBlock != null &&
       getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
 
-    const mutationInput = {
-      id,
-      blockId: activeBlock.id,
-      label: stepName,
-      value: targetStepName
-    }
-
-    if (target === 'next') {
-      void stepNextEventCreate({
-        variables: {
-          input: {
-            ...mutationInput,
-            nextStepId: targetBlock?.id
-          }
+    void stepNextEventCreate({
+      variables: {
+        input: {
+          id,
+          blockId: activeBlock.id,
+          label: stepName,
+          value: targetStepName,
+          nextStepId: targetBlock?.id
         }
-      })
-    } else {
-      void stepPreviousEventCreate({
-        variables: {
-          input: {
-            ...mutationInput,
-            previousStepId: targetBlock?.id
-          }
-        }
-      })
-    }
+      }
+    })
 
     TagManager.dataLayer({
       dataLayer: {
-        event: target === 'next' ? 'step_next' : 'step_prev',
+        event: 'step_next',
         eventId: id,
         blockId: activeBlock.id,
         stepName,
@@ -173,28 +158,71 @@ export function Card({
     })
   }
 
+  // should always be called with previousActiveBlock()
+  // should match with other handlePreviousNavigationEventCreate functions
+  // places used:
+  // libs/journeys/ui/src/components/Card/Card.tsx
+  // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  function handlePreviousNavigationEventCreate(): void {
+    const id = uuidv4()
+    const stepName = getStepHeading(
+      activeBlock.id,
+      activeBlock.children,
+      treeBlocks,
+      t
+    )
+    const targetBlock = blockHistory[
+      blockHistory.length - 2
+    ] as TreeBlock<StepFields>
+    const targetStepName =
+      targetBlock != null &&
+      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
+
+    void stepPreviousEventCreate({
+      variables: {
+        input: {
+          id,
+          blockId: activeBlock.id,
+          label: stepName,
+          value: targetStepName,
+          previousStepId: targetBlock?.id
+        }
+      }
+    })
+
+    TagManager.dataLayer({
+      dataLayer: {
+        event: 'step_prev',
+        eventId: id,
+        blockId: activeBlock.id,
+        stepName,
+        targetStepId: targetBlock?.id,
+        targetStepName
+      }
+    })
+  }
   const handleNavigation = (e: MouseEvent): void => {
     const view = e.view as unknown as Window
     if (rtl) {
       const divide = view.innerWidth * 0.66
       if (e.clientX <= divide) {
         if (!activeBlock?.locked) {
-          handleNavigationEventCreate('next')
+          handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        handleNavigationEventCreate('prev')
+        handlePreviousNavigationEventCreate()
         previousActiveBlock()
       }
     } else {
       const divide = view.innerWidth * 0.33
       if (e.clientX >= divide) {
         if (!activeBlock?.locked) {
-          handleNavigationEventCreate('next')
+          handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        handleNavigationEventCreate('prev')
+        handlePreviousNavigationEventCreate()
         previousActiveBlock()
       }
     }
