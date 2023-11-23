@@ -1,3 +1,4 @@
+import Fade from '@mui/material/Fade'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
 import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
@@ -30,7 +31,7 @@ export function Card({
 }: CardProps): ReactElement {
   const theme = useTheme()
   const { nextActiveBlock, prevActiveBlock, blockHistory } = useBlocks()
-  const { journey } = useJourney()
+  const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
     blockHistory.length - 1
@@ -98,7 +99,7 @@ export function Card({
     }
   }
 
-  return (
+  const Card: ReactElement = (
     <Paper
       data-testid={`JourneysCard-${id}`}
       sx={{
@@ -137,4 +138,21 @@ export function Card({
       )}
     </Paper>
   )
+
+  const WrappedCard = enhance(variant)
+
+  return WrappedCard(Card)
 }
+
+const enhance = (variant: 'default' | 'admin' | 'embed' | undefined) =>
+  function component(baseComponent: ReactElement) {
+    if (variant === 'default') {
+      return (
+        <Fade in timeout={500}>
+          {baseComponent}
+        </Fade>
+      )
+    } else {
+      return baseComponent
+    }
+  }

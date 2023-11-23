@@ -1,13 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
-import { SxProps, styled, useTheme } from '@mui/material/styles'
-import { ReactElement, useEffect, useState } from 'react'
+import { SxProps, useTheme } from '@mui/material/styles'
+import { ReactElement, useEffect } from 'react'
 import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
-import SwiperCore, { Pagination } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -24,17 +21,11 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-// Used to resolve dynamic viewport height on Safari
-
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
-import 'swiper/swiper.min.css'
-import 'swiper/components/pagination/pagination.min.css'
 import { NavigationButton } from './NavigationButton'
-
-SwiperCore.use([Pagination])
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -44,22 +35,6 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
   }
 `
 
-const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
-  background: theme.palette.grey[900],
-  height: 'inherit',
-  '.swiper-pagination': {
-    height: 16,
-    top: 16,
-    width: '84px !important'
-  },
-  '.swiper-pagination-bullet': {
-    background: theme.palette.common.white,
-    opacity: '60%'
-  },
-  '.swiper-pagination-bullet-active': {
-    opacity: '100%'
-  }
-}))
 export const JOURNEY_VISITOR_UPDATE = gql`
   mutation VisitorUpdateForCurrentUser($input: VisitorUpdateInput!) {
     visitorUpdateForCurrentUser(input: $input) {
@@ -72,15 +47,7 @@ interface ConductorProps {
 }
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const {
-    setTreeBlocks,
-    setShowNavigation,
-    setShowHeaderFooter,
-    treeBlocks,
-    blockHistory,
-    showHeaderFooter
-  } = useBlocks()
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
   const theme = useTheme()
   const viewportHeight = use100vh()
   const { journey, variant } = useJourney()
@@ -156,21 +123,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     setTreeBlocks(blocks)
   }, [setTreeBlocks, blocks])
 
-  // Update Swiper - navigate to activeBlock after NavigateBlockAction & going back to node of a branch
-  useEffect(() => {
-    if (
-      swiper != null &&
-      blockHistory.length > 0 &&
-      blockHistory[blockHistory.length - 1] != null
-    ) {
-      const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
-      if (activeIndex != null && swiper.activeIndex !== activeIndex) {
-        const allowFurtherOnSlideChange = false
-        swiper.slideTo(activeIndex, 0, allowFurtherOnSlideChange)
-      }
-    }
-  }, [swiper, blockHistory])
-
   const mobileNotchStyling: SxProps = {
     width: {
       xs:
@@ -188,8 +140,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     let touchendX = 0
 
     function checkDirection(): void {
-      if (touchendX < touchstartX) nextActiveBlock()
-      if (touchendX > touchstartX) prevActiveBlock()
+      if (touchendX + 300 < touchstartX) nextActiveBlock()
+      if (touchendX - 300 > touchstartX) prevActiveBlock()
     }
 
     document.addEventListener('touchstart', (e) => {
@@ -201,6 +153,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       checkDirection()
     })
   }, [])
+
+  const stepTheme = getStepTheme(activeBlock, journey)
 
   return (
     <Box
@@ -220,66 +174,38 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         data-testid="Conductor"
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
-          {/* <StyledSwiperContainer
-            dir={!rtl ? 'ltr' : 'rtl'}
-            pagination={{ dynamicBullets: true }}
-            slidesPerView="auto"
-            centeredSlides
-            centeredSlidesBounds
-            resizeObserver
-            onSwiper={(swiper) => setSwiper(swiper)}
-            allowTouchMove={false}
-            onSlideChange={() => setShowHeaderFooter(true)}
-            sx={{
-              '.swiper-pagination': {
-                display: showHeaderFooter ? 'block' : 'none'
-              }
-            }}
-          > */}
-          {/* {treeBlocks.map((block) => {
-            const theme = getStepTheme(block as TreeBlock<StepFields>, journey)
-            return (
-              <SwiperSlide
-                key={block.id}
-                onClick={() => setShowNavigation(true)}
-              >
-                {({ isActive }) =>
-                  isActive && ( */}
-          {/* <ThemeProvider {...theme} locale={locale} rtl={rtl} nested> */}
-          {/* <Fade in={activeBlock?.id === block.id} mountOnEnter unmountOnExit> */}
-          <Stack
-            justifyContent="center"
-            sx={{
-              maxHeight: {
-                xs: '100vh',
-                lg: 'calc(100vh - 80px)'
-              },
-              height: {
-                xs: 'inherit',
-                lg: 'calc(54.25vw + 102px)'
-              },
-              px: { lg: 6 }
-            }}
-          >
-            {showHeaderFooter && <StepHeader sx={{ ...mobileNotchStyling }} />}
-            <BlockRenderer block={activeBlock} />
-            <StepFooter
+          <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+            <Stack
+              justifyContent="center"
               sx={{
-                visibility: showHeaderFooter ? 'visible' : 'hidden',
-                ...mobileNotchStyling
+                maxHeight: {
+                  xs: '100vh',
+                  lg: 'calc(100vh - 80px)'
+                },
+                height: {
+                  xs: 'inherit',
+                  lg: 'calc(54.25vw + 102px)'
+                },
+                px: { lg: 6 }
               }}
-            />
-          </Stack>
-          {/* </Fade> */}
-          {/* </ThemeProvider> */}
-          {/* )
-                }
-              </SwiperSlide>
-            )
-          })} */}
+            >
+              {showHeaderFooter && (
+                <StepHeader sx={{ ...mobileNotchStyling }} />
+              )}
+
+              <BlockRenderer block={activeBlock} />
+
+              <StepFooter
+                sx={{
+                  visibility: showHeaderFooter ? 'visible' : 'hidden',
+                  ...mobileNotchStyling
+                }}
+              />
+            </Stack>
+          </ThemeProvider>
+
           <NavigationButton variant={rtl ? 'next' : 'prev'} alignment="left" />
           <NavigationButton variant={rtl ? 'prev' : 'next'} alignment="right" />
-          {/* </StyledSwiperContainer> */}
         </Box>
       </Stack>
     </Box>
