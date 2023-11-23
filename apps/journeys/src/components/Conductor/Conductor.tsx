@@ -144,7 +144,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     let touchendX = 0
 
     function checkDirection(): void {
-      if (touchendX + 300 < touchstartX) nextActiveBlock()
+      if (touchendX + 300 < touchstartX && !disableTouchMove) nextActiveBlock()
       if (touchendX - 300 > touchstartX) prevActiveBlock()
     }
 
@@ -153,7 +153,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     })
 
     document.addEventListener('touchend', (e) => {
-      if (disableTouchMove) return
       touchendX = e.changedTouches[0].screenX
       checkDirection()
     })
