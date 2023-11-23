@@ -4,7 +4,6 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
@@ -12,11 +11,23 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { PageWrapper } from '../PageWrapper'
 import { ThemeProvider } from '../ThemeProvider'
 
+import { ControlPanel } from './ControlPanel'
+import { Drawer } from './Drawer'
 import { JourneyEdit } from './JourneyEdit'
 
 import { Editor } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 describe('Editor', () => {
   const journey: Journey = {
@@ -77,34 +88,40 @@ describe('Editor', () => {
   }
 
   it('should render the element', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider>
-            <ThemeProvider>
-              <Editor journey={journey}>
+          <ThemeProvider>
+            <Editor journey={journey}>
+              <PageWrapper
+                bottomPanelChildren={<ControlPanel />}
+                customSidePanel={<Drawer />}
+              >
                 <JourneyEdit />
-              </Editor>
-            </ThemeProvider>
-          </FlagsProvider>
+              </PageWrapper>
+            </Editor>
+          </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByText('Journey')).toBeInTheDocument()
-    expect(getByText('Access Control')).toBeInTheDocument()
+    expect(getByTestId('side-header')).toHaveTextContent('Properties')
   })
 
   it('should display Next Card property', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider>
-            <ThemeProvider>
-              <Editor journey={journey} selectedStepId="step0.id">
+          <ThemeProvider>
+            <Editor journey={journey} selectedStepId="step0.id">
+              <PageWrapper
+                bottomPanelChildren={<ControlPanel />}
+                customSidePanel={<Drawer />}
+              >
                 <JourneyEdit />
-              </Editor>
-            </ThemeProvider>
-          </FlagsProvider>
+              </PageWrapper>
+            </Editor>
+          </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -116,16 +133,19 @@ describe('Editor', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider>
-            <ThemeProvider>
-              <Editor
-                journey={journey}
-                view={ActiveJourneyEditContent.SocialPreview}
+          <ThemeProvider>
+            <Editor
+              journey={journey}
+              view={ActiveJourneyEditContent.SocialPreview}
+            >
+              <PageWrapper
+                bottomPanelChildren={<ControlPanel />}
+                customSidePanel={<Drawer />}
               >
                 <JourneyEdit />
-              </Editor>
-            </ThemeProvider>
-          </FlagsProvider>
+              </PageWrapper>
+            </Editor>
+          </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

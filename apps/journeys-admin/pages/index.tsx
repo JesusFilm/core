@@ -11,12 +11,10 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-
 import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
 import { JourneyList } from '../src/components/JourneyList'
-import { PageWrapper } from '../src/components/NewPageWrapper'
 import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
+import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
@@ -35,27 +33,23 @@ export const ACCEPT_ALL_INVITES = gql`
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
-  const { teams } = useFlags()
   const router = useRouter()
 
   return (
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper
-        title={!teams ? t('Journeys') : undefined}
         user={user}
         mainHeaderChildren={
-          teams && (
-            <Stack
-              direction="row"
-              flexGrow={1}
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <TeamSelect onboarding={router.query.onboarding === 'true'} />
-              <TeamMenu />
-            </Stack>
-          )
+          <Stack
+            direction="row"
+            flexGrow={1}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <TeamSelect onboarding={router.query.onboarding === 'true'} />
+            <TeamMenu />
+          </Stack>
         }
         sidePanelChildren={<OnboardingPanelContent />}
         sidePanelTitle={t('Create a New Journey')}
@@ -72,7 +66,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -86,7 +80,6 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      flags,
       ...translations
     }
   }

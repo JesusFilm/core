@@ -10,7 +10,8 @@ import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
 import { DeleteHost } from '../../../../../../../../../__generated__/DeleteHost'
 import { UpdateJourneyHost } from '../../../../../../../../../__generated__/UpdateJourneyHost'
-import { SidePanelContainer } from '../../../../../../../NewPageWrapper/SidePanelContainer'
+import { SidePanel } from '../../../../../../../PageWrapper/SidePanel'
+import { SidePanelContainer } from '../../../../../../../PageWrapper/SidePanelContainer'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
 import { HostLocationFieldForm } from './HostLocationFieldForm'
@@ -27,9 +28,10 @@ export const DELETE_HOST = gql`
 
 interface HostFormProps {
   onClear: () => void
+  onClose: () => void
 }
 
-export function HostForm({ onClear }: HostFormProps): ReactElement {
+export function HostForm({ onClear, onClose }: HostFormProps): ReactElement {
   const [hostDelete] = useMutation<DeleteHost>(DELETE_HOST)
   const [journeyHostUpdate] =
     useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
@@ -58,7 +60,11 @@ export function HostForm({ onClear }: HostFormProps): ReactElement {
   }
 
   return (
-    <>
+    <SidePanel
+      title={t('Hosted By')}
+      withAdminDrawer
+      onClose={host == null ? onClose : undefined}
+    >
       <SidePanelContainer>
         <Stack
           direction="row"
@@ -91,6 +97,6 @@ export function HostForm({ onClear }: HostFormProps): ReactElement {
           </Typography>
         </Stack>
       </SidePanelContainer>
-    </>
+    </SidePanel>
   )
 }
