@@ -76,7 +76,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }
 
-  const disableTouchMove = !isTouchScreenDevice()
+  const enableTouchMove = isTouchScreenDevice()
     ? true
     : activeBlock?.locked ?? false
 
@@ -144,7 +144,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     let touchendX = 0
 
     function checkDirection(): void {
-      if (touchendX + 300 < touchstartX && !disableTouchMove) nextActiveBlock()
+      if (touchendX + 300 < touchstartX && enableTouchMove) nextActiveBlock()
       if (touchendX - 300 > touchstartX) prevActiveBlock()
     }
 
@@ -156,7 +156,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       touchendX = e.changedTouches[0].screenX
       checkDirection()
     })
-  }, [disableTouchMove])
+  }, [enableTouchMove])
 
   const mobileNotchStyling: SxProps = {
     width: {
