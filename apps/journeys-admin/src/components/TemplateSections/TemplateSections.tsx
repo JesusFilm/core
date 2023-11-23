@@ -89,11 +89,11 @@ export function TemplateSections({
     },
     [breakpoints.values.xl]: {
       slidesPerGroup: 6,
-      spaceBetween: 32
+      spaceBetween: 44
     },
     [breakpoints.values.xxl]: {
       slidesPerGroup: 7,
-      spaceBetween: 32
+      spaceBetween: 44
     }
   }
 
@@ -108,7 +108,8 @@ export function TemplateSections({
           loading={loading}
           loadingSpacing={{
             xs: 1,
-            md: 8
+            md: 8,
+            xl: 11
           }}
         />
       )}
@@ -144,7 +145,8 @@ export function TemplateSections({
               breakpoints={swiperBreakpoints}
               loadingSpacing={{
                 xs: 1,
-                md: 8
+                md: 8,
+                xl: 11
               }}
             />
           )
