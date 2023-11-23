@@ -85,6 +85,10 @@ export function TagCarousels({
         )}
         breakpoints={swiperBreakpoints}
         loading={loading}
+        loadingSpacing={{
+          xs: 5,
+          md: 5
+        }}
       />
       <Stack direction="row" gap={10}>
         {loading

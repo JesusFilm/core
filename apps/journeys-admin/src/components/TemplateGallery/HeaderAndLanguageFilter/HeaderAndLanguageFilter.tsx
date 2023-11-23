@@ -85,7 +85,9 @@ function LocalButton({
           }}
         >
           {loading === true ? (
-            <Skeleton width={61} />
+            <Skeleton
+              sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
+            />
           ) : (
             (children as unknown as ReactNode)
           )}
@@ -100,7 +102,9 @@ function LocalButton({
           }}
         >
           {loading === true ? (
-            <Skeleton width={61} />
+            <Skeleton
+              sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
+            />
           ) : (
             (children as unknown as ReactNode)
           )}
