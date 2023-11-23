@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { PageWrapper } from '../../NewPageWrapper'
+import { PageWrapper } from '../../PageWrapper'
 
 import { AddJourneyFab } from './AddJourneyFab'
 

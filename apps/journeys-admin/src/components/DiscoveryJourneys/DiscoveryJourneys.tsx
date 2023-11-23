@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
@@ -12,9 +11,15 @@ import { EmbedJourney } from './EmbedJourney'
 export function DiscoveryJourneys(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Stack
-      direction="row"
-      spacing={{ xs: 2, sm: 8 }}
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: 'repeat(3, calc(33.33% - 5.5px))',
+          sm: 'repeat(3, calc(33.33% - 21px))'
+        },
+        gap: { xs: 2, sm: 8 }
+      }}
       data-testid="JourneysAdminDiscoveryJourneys"
     >
       <EmbedJourney slug="admin-left">
@@ -82,6 +87,6 @@ export function DiscoveryJourneys(): ReactElement {
           </Button>
         </Box>
       </EmbedJourney>
-    </Stack>
+    </Box>
   )
 }

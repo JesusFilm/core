@@ -2,11 +2,9 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { ReactElement, ReactNode } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
-import { FramePortal } from '../../FramePortal'
 
 interface EmbedJourneyProps {
   slug: 'admin-left' | 'admin-right' | 'admin-center'
@@ -26,7 +24,7 @@ export function EmbedJourney({
       aria-label={`${slug}-embedded`}
       onClick={handleClick}
       data-testid={`EmbedJourney-${slug}`}
-      sx={{ cursor: 'pointer', flexGrow: 1 }}
+      sx={{ cursor: 'pointer' }}
     >
       <Box
         sx={{
@@ -77,25 +75,22 @@ export function EmbedJourney({
             transformOrigin: 'top left'
           }}
         >
-          <FramePortal height="100%" width="100%">
-            <JourneyProvider value={{ variant: 'admin' }}>
-              <ThemeProvider
-                themeName={ThemeName.base}
-                themeMode={ThemeMode.light}
-              >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                    height: '100%'
-                  }}
-                >
-                  {children}
-                </Box>
-              </ThemeProvider>
-            </JourneyProvider>
-          </FramePortal>
+          <ThemeProvider
+            themeName={ThemeName.base}
+            themeMode={ThemeMode.light}
+            nested
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                height: '100%'
+              }}
+            >
+              {children}
+            </Box>
+          </ThemeProvider>
         </Box>
       </Card>
     </Box>
