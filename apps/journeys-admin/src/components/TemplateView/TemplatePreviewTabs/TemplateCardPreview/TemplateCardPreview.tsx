@@ -2,6 +2,7 @@ import 'swiper/swiper.min.css'
 
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import SwiperCore, { Mousewheel, SwiperOptions } from 'swiper'
@@ -45,8 +46,10 @@ function TemplateCardPreviewItem({
     <Box
       sx={{
         position: 'relative',
-        width: { xs: 193, sm: 267 },
-        height: { xs: 300, sm: 420 }
+        width: { xs: 194, sm: 267 },
+        height: { xs: 295, sm: 404 },
+        backgroundColor: 'background.default',
+        borderRadius: 3
       }}
       data-testid="TemplateCardPreviewItem"
     >
@@ -113,7 +116,7 @@ export function TemplateCardPreview({
     }
   }
 
-  return (
+  return steps != null ? (
     <Swiper
       mousewheel={{
         forceToAxis: true
@@ -131,43 +134,42 @@ export function TemplateCardPreview({
         zIndex: 2
       }}
     >
-      {steps != null
-        ? steps.map((step) => {
-            return (
-              <SwiperSlide
-                data-testid="TemplateCardsSwiperSlide"
-                key={step.id}
-                style={{
-                  width: 'fit-content',
-                  zIndex: 2
-                }}
-              >
-                <TemplateCardPreviewItem step={step} />
-              </SwiperSlide>
-            )
-          })
-        : [0, 1, 2, 3, 4, 5, 6].map((value) => {
-            return (
-              <SwiperSlide
-                data-testid="TemplateCardsSwiperSlide"
-                key={value}
-                style={{
-                  width: 'fit-content',
-                  zIndex: 2
-                }}
-              >
-                <Skeleton
-                  data-testid="TemplateCardSkeleton"
-                  sx={{
-                    width: { xs: 217, sm: 280 },
-                    height: { xs: 300, sm: 420 },
-                    transform: 'scale(1)',
-                    borderRadius: 2
-                  }}
-                />
-              </SwiperSlide>
-            )
-          })}
+      {steps.map((step) => {
+        return (
+          <SwiperSlide
+            data-testid="TemplateCardsSwiperSlide"
+            key={step.id}
+            style={{
+              width: 'fit-content',
+              zIndex: 2
+            }}
+          >
+            <TemplateCardPreviewItem step={step} />
+          </SwiperSlide>
+        )
+      })}
     </Swiper>
+  ) : (
+    <Stack
+      data-testid="TemplateCardsPreviewPlaceholder"
+      direction="row"
+      sx={{ overflowY: 'visible' }}
+    >
+      {[0, 1, 2, 3, 4, 5, 6].map((value) => {
+        return (
+          <Skeleton
+            key={value}
+            data-testid="TemplateCardSkeleton"
+            sx={{
+              minWidth: { xs: 194, sm: 267 },
+              mr: { xs: 3, sm: 7 },
+              height: { xs: 295, sm: 404 },
+              transform: 'scale(1)',
+              borderRadius: 2
+            }}
+          />
+        )
+      })}
+    </Stack>
   )
 }

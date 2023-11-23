@@ -23,7 +23,7 @@ export function TagItem({
     <Stack
       direction="row"
       alignItems="center"
-      sx={{ width: 'max-content', height: '93px' }}
+      sx={{ width: 'inherit', height: '93px' }}
       data-testid={`TagItem${name ?? ''}`}
     >
       <Stack
