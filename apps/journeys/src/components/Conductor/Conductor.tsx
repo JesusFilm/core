@@ -273,11 +273,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               )
             })}
             <NavigationButton
-              variant={rtl ? 'next' : 'prev'}
+              variant={rtl ? 'next' : 'previous'}
               alignment="left"
             />
             <NavigationButton
-              variant={rtl ? 'prev' : 'next'}
+              variant={rtl ? 'previous' : 'next'}
               alignment="right"
             />
           </StyledSwiperContainer>

@@ -2,7 +2,7 @@ export type { TreeBlock } from './TreeBlock'
 export {
   useBlocks,
   nextActiveBlock,
-  prevActiveBlock,
+  previousActiveBlock,
   isActiveBlockOrDescendant,
   treeBlocksVar,
   blockHistoryVar
