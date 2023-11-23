@@ -97,7 +97,7 @@ describe('TemplateGallery', () => {
       query: { languageIds: [] }
     } as unknown as NextRouter)
 
-    const { getByRole, getAllByRole } = render(
+    const { getByRole, getAllByRole, getByTestId } = render(
       <MockedProvider
         mocks={[
           getJourneysWithoutLanguageIdsMock,
@@ -111,10 +111,9 @@ describe('TemplateGallery', () => {
     await waitFor(() =>
       fireEvent.click(getAllByRole('heading', { name: 'All Languages' })[0])
     )
-    fireEvent.focus(getByRole('combobox'))
-    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    fireEvent.click(getByRole('option', { name: 'French Français' }))
-    fireEvent.click(getByRole('button', { name: 'Save' }))
+
+    fireEvent.click(getByRole('button', { name: 'French Français' }))
+    fireEvent.click(getByTestId('PresentationLayer'))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith({
         push,
