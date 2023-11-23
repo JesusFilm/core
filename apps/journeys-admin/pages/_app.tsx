@@ -73,6 +73,7 @@ function JourneysAdminApp({
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width"
           />
+          <link rel="preconnect" href={process.env.NEXT_PUBLIC_GATEWAY_URL} />
         </Head>
         {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
           process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
