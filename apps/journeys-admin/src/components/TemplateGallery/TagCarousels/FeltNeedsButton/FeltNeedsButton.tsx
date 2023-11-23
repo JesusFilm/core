@@ -37,7 +37,7 @@ export function FeltNeedsButton({
   item: tag,
   onClick
 }: FeltNeedsButtonProps): ReactElement {
-  const [opacity, setOpacity] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   const tagImage = useCallback((tagLabel: string) => {
     switch (tagLabel) {
@@ -133,14 +133,14 @@ export function FeltNeedsButton({
             right: 0,
             zIndex: 2,
             background: tagImageData?.backgroundStyle,
-            opacity
+            opacity: loading ? 0 : 1
           }}
         />
         <NextImage
           className="hoverStyles"
           src={image.src}
           layout="fill"
-          onLoadingComplete={() => setOpacity(1)}
+          onLoadingComplete={() => setLoading(false)}
           sx={{
             borderRadius: 2
           }}
