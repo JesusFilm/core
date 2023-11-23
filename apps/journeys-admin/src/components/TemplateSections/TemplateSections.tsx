@@ -2,7 +2,6 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { CSSSelectorObjectOrCssVariables } from '@mui/system/styleFunctionSx'
 import map from 'lodash/map'
 import take from 'lodash/take'
 import { ReactElement, useState } from 'react'
@@ -98,11 +97,6 @@ export function TemplateSections({
     }
   }
 
-  const loadingBreakpoints: CSSSelectorObjectOrCssVariables = {
-    xs: 1,
-    md: 8
-  }
-
   return (
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {(loading || (collection != null && collection.length > 0)) && (
@@ -112,7 +106,10 @@ export function TemplateSections({
           renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
           breakpoints={swiperBreakpoints}
           loading={loading}
-          loadingBreakpoints={loadingBreakpoints}
+          loadingBreakpoints={{
+            xs: 1,
+            md: 8
+          }}
         />
       )}
       {!loading && collection != null && collection.length === 0 && (
@@ -145,7 +142,10 @@ export function TemplateSections({
               items={journeys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
-              loadingBreakpoints={loadingBreakpoints}
+              loadingBreakpoints={{
+                xs: 1,
+                md: 8
+              }}
             />
           )
       )}

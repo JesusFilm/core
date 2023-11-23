@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { CSSSelectorObjectOrCssVariables } from '@mui/system/styleFunctionSx'
+import { ResponsiveStyleValue } from '@mui/system/styleFunctionSx'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 import SwiperCore, { A11y, Mousewheel, Navigation, SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -29,7 +29,7 @@ interface TemplateGalleryCarouselProps<T> {
   heading?: string
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
-  loadingBreakpoints?: CSSSelectorObjectOrCssVariables
+  loadingBreakpoints?: ResponsiveStyleValue<string | number>
 }
 
 export function TemplateGalleryCarousel<T>({
@@ -69,6 +69,7 @@ export function TemplateGalleryCarousel<T>({
       {loading ? (
         <Stack
           direction="row"
+          spacing={loadingBreakpoints}
           sx={{
             mt: 4,
             minWidth: 'max-content',
