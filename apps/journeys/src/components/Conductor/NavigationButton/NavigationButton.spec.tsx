@@ -189,10 +189,10 @@ describe('NavigationButton', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[stepPreviousEventCreateMock]}>
-        <NavigationButton variant="prev" alignment="left" />
+        <NavigationButton variant="previous" alignment="left" />
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('ConductorNavigationButtonPrev'))
+    fireEvent.click(getByTestId('ConductorNavigationButtonPrevious'))
 
     await waitFor(() => expect(stepPreviousResult).toHaveBeenCalled())
 
@@ -228,12 +228,12 @@ describe('NavigationButton', () => {
       blockHistoryVar([step1, step2])
       const { getByTestId } = render(
         <MockedProvider mocks={[stepPreviousEventCreateMock]}>
-          <NavigationButton variant="prev" alignment="left" />
+          <NavigationButton variant="previous" alignment="left" />
         </MockedProvider>
       )
       expect(blockHistoryVar()[1].id).toBe('step2.id')
 
-      fireEvent.click(getByTestId('ConductorNavigationButtonPrev'))
+      fireEvent.click(getByTestId('ConductorNavigationButtonPrevious'))
 
       expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
@@ -243,11 +243,11 @@ describe('NavigationButton', () => {
       blockHistoryVar([step1])
       const { getByTestId } = render(
         <MockedProvider>
-          <NavigationButton variant="prev" alignment="left" />
+          <NavigationButton variant="previous" alignment="left" />
         </MockedProvider>
       )
 
-      expect(getByTestId('ConductorNavigationButtonPrev')).not.toBeVisible()
+      expect(getByTestId('ConductorNavigationButtonPrevious')).not.toBeVisible()
     })
 
     it('should hide right button if next step is locked', () => {
@@ -312,12 +312,12 @@ describe('NavigationButton', () => {
       blockHistoryVar([step1, step2])
       const { getByTestId } = render(
         <MockedProvider mocks={[stepPreviousEventCreateMock]}>
-          <NavigationButton variant="prev" alignment="right" />
+          <NavigationButton variant="previous" alignment="right" />
         </MockedProvider>
       )
       expect(blockHistoryVar()[1].id).toBe('step2.id')
 
-      fireEvent.click(getByTestId('ConductorNavigationButtonPrev'))
+      fireEvent.click(getByTestId('ConductorNavigationButtonPrevious'))
 
       expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
@@ -327,11 +327,11 @@ describe('NavigationButton', () => {
       blockHistoryVar([step1])
       const { getByTestId } = render(
         <MockedProvider>
-          <NavigationButton variant="prev" alignment="right" />
+          <NavigationButton variant="previous" alignment="right" />
         </MockedProvider>
       )
 
-      expect(getByTestId('ConductorNavigationButtonPrev')).not.toBeVisible()
+      expect(getByTestId('ConductorNavigationButtonPrevious')).not.toBeVisible()
     })
 
     it('should hide left button if next step is locked', () => {
