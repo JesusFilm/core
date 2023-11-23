@@ -29,7 +29,7 @@ interface TemplateGalleryCarouselProps<T> {
   heading?: string
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
-  loadingBreakpoints?: ResponsiveStyleValue<string | number>
+  loadingSpacing?: ResponsiveStyleValue<string | number>
 }
 
 export function TemplateGalleryCarousel<T>({
@@ -38,7 +38,7 @@ export function TemplateGalleryCarousel<T>({
   heading,
   breakpoints,
   loading = false,
-  loadingBreakpoints
+  loadingSpacing
 }: TemplateGalleryCarouselProps<T>): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [hovered, setHovered] = useState(false)
@@ -69,7 +69,7 @@ export function TemplateGalleryCarousel<T>({
       {loading ? (
         <Stack
           direction="row"
-          spacing={loadingBreakpoints}
+          spacing={loadingSpacing}
           sx={{
             mt: 4,
             minWidth: 'max-content',

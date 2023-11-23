@@ -106,7 +106,7 @@ export function TemplateSections({
           renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
           breakpoints={swiperBreakpoints}
           loading={loading}
-          loadingBreakpoints={{
+          loadingSpacing={{
             xs: 1,
             md: 8
           }}
@@ -142,7 +142,7 @@ export function TemplateSections({
               items={journeys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
-              loadingBreakpoints={{
+              loadingSpacing={{
                 xs: 1,
                 md: 8
               }}

@@ -85,7 +85,7 @@ export function TagCarousels({
         )}
         breakpoints={swiperBreakpoints}
         loading={loading}
-        loadingBreakpoints={{
+        loadingSpacing={{
           xs: 5,
           md: 5
         }}
