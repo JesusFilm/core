@@ -3,7 +3,15 @@ import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
+import { FormikValues } from 'formik'
+import {
+  ComponentProps,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -11,7 +19,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
-import { LanguageFilterDialog } from './LanguageFilterDialog'
+import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 
@@ -122,6 +130,12 @@ export function HeaderAndLanguageFilter({
 }: LanguageFilterProps): ReactElement {
   const [open, setOpen] = useState(false)
   const { t } = useTranslation('apps-journeys-admin')
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  useEffect(() => {
+    const popperAnchor = document?.getElementById('popperAnchorLayer')
+    if (popperAnchor != null) setAnchorEl(popperAnchor)
+  }, [anchorEl])
 
   const { data, loading } = useLanguagesQuery({
     languageId: '529',
@@ -160,8 +174,41 @@ export function HeaderAndLanguageFilter({
   }
   const localButtonProps: LocalButtonProps = {
     loading,
-    onClick: () => setOpen(true)
+    onClick: (e) => {
+      setOpen(!open)
+    }
   }
+
+  function handleSubmit(values: FormikValues): void {
+    const ids = values.languages.map((language) => language.id)
+    onChange(ids)
+  }
+
+  const options = useMemo(() => {
+    return (
+      data?.languages?.map(({ id, name }) => {
+        const localLanguageName = name.find(({ primary }) => !primary)?.value
+        const nativeLanguageName = name.find(({ primary }) => primary)?.value
+
+        return {
+          id,
+          localName: localLanguageName,
+          nativeName: nativeLanguageName
+        }
+      }) ?? []
+    )
+  }, [data?.languages])
+
+  const sortedOptions = useMemo(() => {
+    if (options.length > 0) {
+      return options.sort((a, b) => {
+        return (a.localName ?? a.nativeName ?? '').localeCompare(
+          b.localName ?? b.nativeName ?? ''
+        )
+      })
+    }
+    return []
+  }, [options])
 
   return (
     <>
@@ -170,7 +217,7 @@ export function HeaderAndLanguageFilter({
         alignItems="center"
         direction="row"
         flexWrap={{ xs: 'wrap', md: 'initial' }}
-        sx={{ pb: { xs: 6, md: 9 } }}
+        sx={{ pb: { xs: 6, md: 9 }, position: 'relative' }}
       >
         {count === 2 && (
           <Trans t={t} values={{ firstLanguage, secondLanguage }}>
@@ -192,14 +239,24 @@ export function HeaderAndLanguageFilter({
             <LocalButton {...localButtonProps}>{{ firstLanguage }}</LocalButton>
           </Trans>
         )}
+        <Box
+          id="popperAnchorLayer"
+          sx={{
+            position: 'absolute',
+            width: 260,
+            backgroundColor: 'transparent',
+            left: { xs: '23px', md: '360px' },
+            top: { xs: '50px', md: '42px' }
+          }}
+        />
       </Stack>
-      <LanguageFilterDialog
+      <LanguagesFilterPopper
+        initialValues={languageOptions}
+        onSubmit={handleSubmit}
+        setOpen={setOpen}
         open={open}
-        onClose={() => setOpen(false)}
-        onChange={onChange}
-        languages={data?.languages}
-        value={languageOptions}
-        loading={loading}
+        anchorEl={anchorEl}
+        sortedLanguages={sortedOptions}
       />
     </>
   )
