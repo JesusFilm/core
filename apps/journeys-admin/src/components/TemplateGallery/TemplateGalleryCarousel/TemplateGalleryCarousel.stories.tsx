@@ -76,7 +76,7 @@ export const Loading = {
   ...Template,
   args: {
     loading: true,
-    loadingBreakpoints: 5
+    loadingSpacing: 5
   }
 }
 
