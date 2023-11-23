@@ -10,7 +10,7 @@ import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Role } from '../../__generated__/globalTypes'
-import { PageWrapper } from '../../src/components/NewPageWrapper'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useUserRoleQuery } from '../../src/libs/useUserRoleQuery'

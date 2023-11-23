@@ -4,7 +4,6 @@ import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { cache } from '../../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { getDiscoveryJourneysMock } from '../../DiscoveryJourneys/data'
 import {
   defaultJourney,
   descriptiveJourney,
@@ -51,8 +50,7 @@ export const Default = {
               ]
             }
           }
-        },
-        getDiscoveryJourneysMock
+        }
       ]
     }
   }
@@ -76,8 +74,7 @@ export const NoJourneys = {
               journeys: []
             }
           }
-        },
-        getDiscoveryJourneysMock
+        }
       ]
     }
   }
@@ -91,7 +88,7 @@ export const Loading = {
   parameters: {
     apolloClient: {
       cache: cache(),
-      mocks: [getDiscoveryJourneysMock]
+      mocks: []
     }
   }
 }
@@ -105,7 +102,7 @@ export const ArchiveAll = {
   parameters: {
     apolloClient: {
       cache: cache(),
-      mocks: [getDiscoveryJourneysMock]
+      mocks: []
     }
   }
 }
@@ -119,7 +116,7 @@ export const TrashAll = {
   parameters: {
     apolloClient: {
       cache: cache(),
-      mocks: [getDiscoveryJourneysMock]
+      mocks: []
     }
   }
 }

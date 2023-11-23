@@ -23,7 +23,7 @@ import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsL
 import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
-import { PageWrapper } from '../../../../src/components/NewPageWrapper'
+import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 

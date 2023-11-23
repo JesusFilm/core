@@ -10,89 +10,123 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('PageWrapper', () => {
-  describe('smUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
-
-    it('should show title', () => {
-      const { getByText } = render(
+  describe('MainPanel', () => {
+    it('should show main header title', () => {
+      const { getByRole } = render(
         <MockedProvider>
           <PageWrapper title="Page title" />
         </MockedProvider>
       )
-      expect(getByText('Page title')).toBeInTheDocument()
+      expect(getByRole('main')).toHaveTextContent('Page title')
     })
 
     it('should show back button', () => {
-      const { getAllByRole } = render(
+      const { getByTestId } = render(
         <MockedProvider>
           <PageWrapper title="Page title" backHref="/" />
         </MockedProvider>
       )
-      expect(getAllByRole('link')[0]).toHaveAttribute('href', '/')
+      expect(getByTestId('ChevronLeftIcon').parentElement).toHaveAttribute(
+        'href',
+        '/'
+      )
     })
 
-    it('should show custom menu', () => {
-      const { getByText } = render(
+    it('should not show main panel header', () => {
+      const { queryByText } = render(
         <MockedProvider>
-          <PageWrapper title="Page title" menu={<>Custom Content</>} />
+          <PageWrapper title="Page Title" showMainHeader={false} />
         </MockedProvider>
       )
-      expect(getByText('Custom Content')).toBeInTheDocument()
+      expect(queryByText('Page Title')).not.toBeInTheDocument()
     })
 
-    it('should show children', () => {
+    it('should show main header children', () => {
+      const { getByRole } = render(
+        <MockedProvider>
+          <PageWrapper
+            title="Page title"
+            mainHeaderChildren={<>Custom Content</>}
+          />
+        </MockedProvider>
+      )
+      expect(getByRole('main')).toHaveTextContent('Custom Content')
+    })
+
+    it('should show main body children', () => {
       const { getByTestId } = render(
         <MockedProvider>
           <PageWrapper title="Page title">
-            <div data-testid="test">Hello</div>
+            <div>Child</div>
           </PageWrapper>
         </MockedProvider>
       )
-      expect(getByTestId('test')).toHaveTextContent('Hello')
+      expect(getByTestId('main-body')).toHaveTextContent('Child')
     })
 
-    it('should show the drawer on the left', () => {
-      const { getAllByRole, getByTestId, getByText } = render(
+    it('should show bottom panel children', () => {
+      const { getByTestId } = render(
         <MockedProvider>
-          <PageWrapper title="Page title" />
+          <PageWrapper
+            title="Page title"
+            bottomPanelChildren={<div>Bottom Panel</div>}
+          >
+            <div>Child</div>
+          </PageWrapper>
         </MockedProvider>
       )
-      expect(getAllByRole('button')[0]).toContainElement(
-        getByTestId('ChevronRightIcon')
-      )
-      fireEvent.click(getAllByRole('button')[0])
-      expect(getByText('Discover')).toBeInTheDocument()
+      expect(getByTestId('bottom-panel')).toHaveTextContent('Bottom Panel')
     })
   })
 
-  describe('smDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
-    )
+  describe('SidePanel', () => {
+    it('should show the side panel', () => {
+      const { getByTestId } = render(
+        <MockedProvider>
+          <PageWrapper
+            title="Page title"
+            sidePanelTitle="Side Panel"
+            sidePanelChildren={<div>Drawer</div>}
+          />
+        </MockedProvider>
+      )
+      expect(getByTestId('side-header')).toHaveTextContent('Side Panel')
+      expect(getByTestId('side-body')).toHaveTextContent('Drawer')
+    })
 
-    it('should show the drawer on mobile view', () => {
-      const { getAllByRole, getByTestId, getByText } = render(
+    it('should show the custom side panel', () => {
+      const { getByText } = render(
+        <MockedProvider>
+          <PageWrapper
+            title="Page title"
+            customSidePanel={<div>Custom Drawer</div>}
+          />
+        </MockedProvider>
+      )
+      expect(getByText('Custom Drawer')).toBeInTheDocument()
+    })
+  })
+
+  describe('Navigation', () => {
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
+
+    it('should show the side nav bar', () => {
+      ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+
+      const { getByTestId, getByText, queryByRole } = render(
         <MockedProvider>
           <PageWrapper title="Active Journeys" />
         </MockedProvider>
       )
-      expect(getByText('Active Journeys')).toBeInTheDocument()
-      const button = getAllByRole('button')[0]
-      expect(button).toContainElement(getByTestId('Menu1Icon'))
+      expect(
+        queryByRole('button', { name: 'open-drawer' })
+      ).not.toBeInTheDocument()
+
+      const button = getByTestId('toggle-nav-drawer')
       fireEvent.click(button)
       expect(getByText('Discover')).toBeInTheDocument()
-    })
-
-    it('should not show the drawer on mobile view', () => {
-      const { queryByTestId, getByText } = render(
-        <MockedProvider>
-          <PageWrapper title="Journey Edit" />
-        </MockedProvider>
-      )
-      expect(getByText('Journey Edit')).toBeInTheDocument()
-      expect(queryByTestId('Menu1Icon')).not.toBeInTheDocument()
     })
   })
 })
