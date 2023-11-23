@@ -51,7 +51,7 @@ export function SocialImage({
       ) : (
         <Skeleton
           data-testid="SocialImageSkeleton"
-          variant="rounded"
+          variant="rectangular"
           sx={{
             width: '100%',
             height: '100%'
