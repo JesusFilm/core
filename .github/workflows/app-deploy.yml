@@ -144,9 +144,9 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
       - run: npx playwright install --with-deps
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
       - run: npx playwright install-deps
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        if: steps.cache-playwright-browsers.outputs.cache-hit == 'true'
       - name: Run Playwright tests
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
