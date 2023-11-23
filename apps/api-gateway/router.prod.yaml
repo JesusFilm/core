@@ -35,3 +35,6 @@ telemetry:
   tracing:
     datadog:
       endpoint: default
+experimental_batching:
+  enabled: true
+  mode: batch_http_link
