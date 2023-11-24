@@ -30,8 +30,9 @@ export function TemplateSections({
   const { breakpoints } = useTheme()
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const { loading } = useJourneysQuery({
+  useJourneysQuery({
     variables: {
       where: {
         template: true,
@@ -67,6 +68,7 @@ export function TemplateSections({
         })
       })
       setContents(contents)
+      setLoading(false)
     }
   })
 
