@@ -1,11 +1,9 @@
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
-import { cache } from '../apolloClient/cache'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
 import { ACCEPT_ALL_INVITES, initAndAuthApp } from './initAndAuthApp'
