@@ -136,7 +136,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }, [setTreeBlocks, blocks])
 
   useEffect(() => {
-    console.log('SWIPE EFFECT')
     let touchstartX = 0
     let touchendX = 0
     const enableTouchMoveNext = activeBlock?.locked
