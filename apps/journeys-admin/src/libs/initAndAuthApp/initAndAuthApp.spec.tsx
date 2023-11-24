@@ -8,7 +8,7 @@ import { createApolloClient } from '../apolloClient'
 import { cache } from '../apolloClient/cache'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
-import { initAndAuthApp } from './initAndAuthApp'
+import { ACCEPT_ALL_INVITES, initAndAuthApp } from './initAndAuthApp'
 
 jest.mock('next-i18next/serverSideTranslations')
 jest.mock('../apolloClient')
@@ -41,19 +41,15 @@ describe('initAndAuthApp', () => {
       userConfig: i18nConfig
     }
   }
+  let apolloClient
 
   beforeEach(() => {
     // mock serverSideTranslation
     serverSideTranslationsMock.mockResolvedValueOnce(mockSSRConfig)
 
     // mock ApolloClient
-    createApolloClientMock.mockReturnValueOnce(
-      new ApolloClient<NormalizedCacheObject>({
-        uri: '',
-        cache: cache(),
-        name: 'journeys-admin'
-      })
-    )
+    apolloClient = { mutate: jest.fn() }
+    createApolloClientMock.mockReturnValueOnce(apolloClient)
 
     // mock checkConditionalRedirect
     checkConditionalRedirectMock.mockResolvedValueOnce({
@@ -69,8 +65,12 @@ describe('initAndAuthApp', () => {
       resolvedUrl: '/templates'
     })
 
+    expect(apolloClient.mutate).toHaveBeenCalledWith({
+      mutation: ACCEPT_ALL_INVITES
+    })
+
     expect(result).toEqual({
-      apolloClient: expect.any(ApolloClient),
+      apolloClient,
       redirect: {
         destination: '/users/terms-and-conditions',
         permanent: false
@@ -88,8 +88,10 @@ describe('initAndAuthApp', () => {
       resolvedUrl: '/templates'
     })
 
+    expect(apolloClient.mutate).not.toHaveBeenCalled()
+
     expect(result).toEqual({
-      apolloClient: expect.any(ApolloClient),
+      apolloClient,
       redirect: undefined,
       translations: mockSSRConfig
     })
