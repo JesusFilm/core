@@ -59,7 +59,7 @@ const withLink = (link: string | undefined) =>
   function component(baseComponent: ReactElement) {
     if (link != null) {
       return (
-        <NextLink href={link} passHref legacyBehavior>
+        <NextLink href={link} passHref legacyBehavior prefetch={false}>
           {baseComponent}
         </NextLink>
       )

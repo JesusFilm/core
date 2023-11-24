@@ -53,7 +53,12 @@ export function MainPanelHeader({
             </Box>
           ) : (
             backHref != null && (
-              <NextLink href={backHref} passHref legacyBehavior>
+              <NextLink
+                href={backHref}
+                passHref
+                legacyBehavior
+                prefetch={false}
+              >
                 <IconButton
                   edge="start"
                   size="small"

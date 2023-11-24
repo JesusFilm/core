@@ -25,6 +25,7 @@ export function VisitorCard({
         href={`/reports/visitors/${visitorNode?.visitorId ?? ''}`}
         passHref
         legacyBehavior
+        prefetch={false}
       >
         {block}
       </NextLink>
