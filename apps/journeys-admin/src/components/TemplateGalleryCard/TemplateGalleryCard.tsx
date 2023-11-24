@@ -92,6 +92,7 @@ export function TemplateGalleryCard({
         href={journey != null ? `/templates/${journey.id}` : ''}
         passHref
         legacyBehavior
+        prefetch={false}
       >
         <Box
           data-testid="templateGalleryCard"

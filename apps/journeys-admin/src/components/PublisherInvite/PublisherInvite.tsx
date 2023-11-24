@@ -30,7 +30,7 @@ export function PublisherInvite(): ReactElement {
           pb: 10
         }}
       >
-        <NextLink href="/" passHref legacyBehavior>
+        <NextLink href="/" passHref legacyBehavior prefetch={false}>
           <Image
             src={logo}
             alt="Next Steps"
@@ -62,7 +62,7 @@ export function PublisherInvite(): ReactElement {
           </Typography>
         </CardContent>
         <CardActions>
-          <NextLink href="/" passHref legacyBehavior>
+          <NextLink href="/" passHref legacyBehavior prefetch={false}>
             <Button variant="contained">Back to the Admin Panel</Button>
           </NextLink>
         </CardActions>

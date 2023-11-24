@@ -51,6 +51,7 @@ export function DefaultMenu({
         }
         passHref
         legacyBehavior
+        prefetch={false}
       >
         <MenuItem label="Edit" icon={<Edit2Icon color="secondary" />} />
       </NextLink>
@@ -64,7 +65,12 @@ export function DefaultMenu({
           }}
         />
       )}
-      <NextLink href={`/api/preview?slug=${slug}`} passHref legacyBehavior>
+      <NextLink
+        href={`/api/preview?slug=${slug}`}
+        passHref
+        legacyBehavior
+        prefetch={false}
+      >
         <MenuItem
           label="Preview"
           icon={<EyeOpenIcon color="secondary" />}
