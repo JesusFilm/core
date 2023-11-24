@@ -89,5 +89,5 @@ export interface GetAdminJourneys {
 export interface GetAdminJourneysVariables {
   status?: JourneyStatus[] | null;
   template?: boolean | null;
-  useLastActiveTeamId?: boolean | null;
+  teamId?: string | null;
 }

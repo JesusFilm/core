@@ -1,12 +1,8 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  GetAdminJourneys,
-  GetAdminJourneysVariables
-} from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
@@ -25,15 +21,20 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const archivedJourneysMock: MockedResponse<
-  GetAdminJourneys,
-  GetAdminJourneysVariables
-> = {
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
+const archivedJourneysMock = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.archived],
-      useLastActiveTeamId: true
+      status: [JourneyStatus.archived]
     }
   },
   result: {
@@ -43,15 +44,11 @@ const archivedJourneysMock: MockedResponse<
   }
 }
 
-const noJourneysMock: MockedResponse<
-  GetAdminJourneys,
-  GetAdminJourneysVariables
-> = {
+const noJourneysMock = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.archived],
-      useLastActiveTeamId: true
+      status: [JourneyStatus.archived]
     }
   },
   result: {
@@ -95,8 +92,7 @@ describe('ArchivedJourneyList', () => {
             request: {
               query: GET_ADMIN_JOURNEYS,
               variables: {
-                status: [JourneyStatus.archived],
-                useLastActiveTeamId: true
+                status: [JourneyStatus.archived]
               }
             },
             result: {

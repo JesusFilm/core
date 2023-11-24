@@ -9,12 +9,12 @@ export const GET_ADMIN_JOURNEYS = gql`
   query GetAdminJourneys(
     $status: [JourneyStatus!]
     $template: Boolean
-    $useLastActiveTeamId: Boolean
+    $teamId: ID
   ) {
     journeys: adminJourneys(
       status: $status
       template: $template
-      useLastActiveTeamId: $useLastActiveTeamId
+      teamId: $teamId
     ) {
       id
       title
