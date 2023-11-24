@@ -76,10 +76,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }
 
-  const enableTouchMove = isTouchScreenDevice()
-    ? true
-    : activeBlock?.locked ?? false
-
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
       const id = uuidv4()
@@ -140,11 +136,16 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }, [setTreeBlocks, blocks])
 
   useEffect(() => {
+    console.log('SWIPE EFFECT')
     let touchstartX = 0
     let touchendX = 0
+    const enableTouchMoveNext = activeBlock?.locked
+      ? false
+      : isTouchScreenDevice()
 
     function checkDirection(): void {
-      if (touchendX + 300 < touchstartX && enableTouchMove) nextActiveBlock()
+      if (touchendX + 300 < touchstartX && enableTouchMoveNext)
+        nextActiveBlock()
       if (touchendX - 300 > touchstartX) prevActiveBlock()
     }
 
@@ -156,7 +157,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       touchendX = e.changedTouches[0].screenX
       checkDirection()
     })
-  }, [enableTouchMove])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const mobileNotchStyling: SxProps = {
     width: {

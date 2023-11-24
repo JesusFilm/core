@@ -139,16 +139,25 @@ export function Card({
     </Paper>
   )
 
-  const WrappedCard = enhance(variant)
+  const WrappedCard = enhance(variant, id, activeBlock?.children[0].id)
 
   return WrappedCard(Card)
 }
 
-const enhance = (variant: 'default' | 'admin' | 'embed' | undefined) =>
+const enhance = (
+  variant: 'default' | 'admin' | 'embed' | undefined,
+  cardId: string,
+  activeCardId?: string
+) =>
   function component(baseComponent: ReactElement) {
     if (variant === 'default') {
       return (
-        <Fade in timeout={500}>
+        <Fade
+          in={activeCardId === cardId}
+          mountOnEnter
+          unmountOnExit
+          timeout={500}
+        >
           {baseComponent}
         </Fade>
       )
