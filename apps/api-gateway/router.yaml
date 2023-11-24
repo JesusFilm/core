@@ -20,3 +20,6 @@ health_check:
   enabled: true
 include_subgraph_errors:
   all: true
+experimental_batching:
+  enabled: true
+  mode: batch_http_link

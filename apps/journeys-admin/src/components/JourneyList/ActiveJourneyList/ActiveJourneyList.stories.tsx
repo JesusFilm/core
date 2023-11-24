@@ -1,9 +1,15 @@
+import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { cache } from '../../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../Team/TeamProvider'
 import {
   defaultJourney,
   descriptiveJourney,
@@ -23,8 +29,35 @@ const ActiveJourneyListStory: Meta<typeof ActiveJourneyList> = {
   }
 }
 
+const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: {
+    data: {
+      teams: [
+        {
+          id: 'teamId',
+          title: 'My Team',
+          publicTitle: '',
+          __typename: 'Team',
+          userTeams: []
+        }
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: 'teamId'
+      }
+    }
+  }
+}
+
 const Template: StoryObj<typeof ActiveJourneyList> = {
-  render: ({ ...args }) => <ActiveJourneyList {...args} />
+  render: ({ ...args }) => (
+    <TeamProvider>
+      <ActiveJourneyList {...args} />
+    </TeamProvider>
+  )
 }
 
 export const Default = {
@@ -33,11 +66,13 @@ export const Default = {
     apolloClient: {
       cache: cache(),
       mocks: [
+        getTeamsMock,
         {
           request: {
             query: GET_ADMIN_JOURNEYS,
             variables: {
-              status: [JourneyStatus.draft, JourneyStatus.published]
+              status: [JourneyStatus.draft, JourneyStatus.published],
+              teamId: 'teamId'
             }
           },
           result: {
@@ -62,11 +97,13 @@ export const NoJourneys = {
     apolloClient: {
       cache: cache(),
       mocks: [
+        getTeamsMock,
         {
           request: {
             query: GET_ADMIN_JOURNEYS,
             variables: {
-              status: [JourneyStatus.draft, JourneyStatus.published]
+              status: [JourneyStatus.draft, JourneyStatus.published],
+              teamId: 'teamId'
             }
           },
           result: {

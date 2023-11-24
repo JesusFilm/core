@@ -90,6 +90,7 @@ export function Menu(): ReactElement {
           href={`/api/preview?slug=${journey?.slug ?? ''}`}
           passHref
           legacyBehavior
+          prefetch={false}
         >
           <MenuItem
             label={t('Preview')}
@@ -116,6 +117,7 @@ export function Menu(): ReactElement {
           href={`/api/preview?slug=${journey?.slug ?? ''}`}
           passHref
           legacyBehavior
+          prefetch={false}
         >
           <MenuItem
             label={t('Preview')}

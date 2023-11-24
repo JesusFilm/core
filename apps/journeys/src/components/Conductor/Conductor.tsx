@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   nextActiveBlock,
-  prevActiveBlock,
+  previousActiveBlock,
   useBlocks
 } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -145,7 +145,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     function checkDirection(): void {
       if (touchendX + 300 < touchstartX && enableTouchMoveNext)
         nextActiveBlock()
-      if (touchendX - 300 > touchstartX) prevActiveBlock()
+      if (touchendX - 300 > touchstartX) previousActiveBlock()
     }
 
     document.addEventListener('touchstart', (e) => {
@@ -221,8 +221,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             </Stack>
           </ThemeProvider>
 
-          <NavigationButton variant={rtl ? 'next' : 'prev'} alignment="left" />
-          <NavigationButton variant={rtl ? 'prev' : 'next'} alignment="right" />
+          <NavigationButton
+            variant={rtl ? 'next' : 'previous'}
+            alignment="left"
+          />
+          <NavigationButton
+            variant={rtl ? 'previous' : 'next'}
+            alignment="right"
+          />
         </Box>
       </Stack>
     </Box>

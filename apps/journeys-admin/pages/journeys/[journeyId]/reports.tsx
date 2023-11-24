@@ -10,8 +10,6 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ACCEPT_ALL_INVITES } from '../..'
-import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
@@ -65,10 +63,6 @@ export const getServerSideProps = withUserTokenSSR({
   })
 
   if (redirect != null) return { redirect }
-
-  await apolloClient.mutate<AcceptAllInvites>({
-    mutation: ACCEPT_ALL_INVITES
-  })
 
   try {
     await apolloClient.query<GetAdminJourney>({
