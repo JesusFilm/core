@@ -136,6 +136,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }, [setTreeBlocks, blocks])
 
   useEffect(() => {
+    // TODO: bug doesn't work when first loaded when running the project
     let touchstartX = 0
     let touchendX = 0
     const enableTouchMoveNext = activeBlock?.locked
