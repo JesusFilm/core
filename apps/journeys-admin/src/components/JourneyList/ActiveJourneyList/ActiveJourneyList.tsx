@@ -10,9 +10,8 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { useAdminJourneysLazyQuery } from '../../../libs/useAdminJourneysLazyQuery'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { DiscoveryJourneys } from '../../DiscoveryJourneys'
-import { useTeam } from '../../Team/TeamProvider'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
 
@@ -43,8 +42,10 @@ export function ActiveJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { activeTeam } = useTeam()
-  const [getAdminJourneys, { data, refetch }] = useAdminJourneysLazyQuery()
+  const { data, refetch } = useAdminJourneysQuery({
+    status: [JourneyStatus.draft, JourneyStatus.published],
+    useLastActiveTeamId: true
+  })
   const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysArchive != null) {
@@ -67,16 +68,6 @@ export function ActiveJourneyList({
   })
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false)
   const [trashDialogOpen, setTrashDialogOpen] = useState(false)
-
-  useEffect(() => {
-    if (activeTeam === undefined) return
-    void getAdminJourneys({
-      variables: {
-        status: [JourneyStatus.draft, JourneyStatus.published],
-        teamId: activeTeam?.id
-      }
-    })
-  }, [getAdminJourneys, activeTeam])
 
   async function handleArchiveSubmit(): Promise<void> {
     try {

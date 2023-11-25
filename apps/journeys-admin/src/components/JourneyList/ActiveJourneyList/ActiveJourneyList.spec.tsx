@@ -3,13 +3,12 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '../../Team/TeamProvider'
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultJourney, oldJourney } from '../journeyListData'
 
@@ -25,12 +24,15 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const activeJourneysMock: MockedResponse = {
+const activeJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
-      teamId: 'teamId'
+      useLastActiveTeamId: true
     }
   },
   result: {
@@ -40,12 +42,15 @@ const activeJourneysMock: MockedResponse = {
   }
 }
 
-const noJourneysMock = {
+const noJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
-      teamId: 'teamId'
+      useLastActiveTeamId: true
     }
   },
   result: {
@@ -55,39 +60,14 @@ const noJourneysMock = {
   }
 }
 
-const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-  request: {
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-  },
-  result: {
-    data: {
-      teams: [
-        {
-          id: 'teamId',
-          title: 'Team Title',
-          publicTitle: null,
-          __typename: 'Team',
-          userTeams: []
-        }
-      ],
-      getJourneyProfile: {
-        __typename: 'JourneyProfile',
-        lastActiveTeamId: 'teamId'
-      }
-    }
-  }
-}
-
 describe('ActiveJourneyList', () => {
   it('should ask users to add a new journey', async () => {
-    const { getByRole, getByText } = render(
-      <MockedProvider mocks={[noJourneysMock, getTeamsMock]}>
+    const { getByText } = render(
+      <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
-          <TeamProvider>
-            <SnackbarProvider>
-              <ActiveJourneyList />
-            </SnackbarProvider>
-          </TeamProvider>
+          <SnackbarProvider>
+            <ActiveJourneyList />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -96,9 +76,6 @@ describe('ActiveJourneyList', () => {
     )
     expect(
       getByText('Create a journey, then find it here.')
-    ).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'Create a Journey' })
     ).toBeInTheDocument()
   })
 
@@ -148,22 +125,15 @@ describe('ActiveJourneyList', () => {
     it('should archive all journeys', async () => {
       const { getByText } = render(
         <MockedProvider
-          mocks={[
-            activeJourneysMock,
-            archiveJourneysMock,
-            noJourneysMock,
-            getTeamsMock
-          ]}
+          mocks={[activeJourneysMock, archiveJourneysMock, noJourneysMock]}
         >
           <ThemeProvider>
-            <TeamProvider>
-              <SnackbarProvider>
-                <ActiveJourneyList
-                  event="archiveAllActive"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </SnackbarProvider>
-            </TeamProvider>
+            <SnackbarProvider>
+              <ActiveJourneyList
+                event="archiveAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
@@ -178,20 +148,17 @@ describe('ActiveJourneyList', () => {
       const { getByRole, getByText } = render(
         <MockedProvider
           mocks={[
-            getTeamsMock,
             activeJourneysMock,
             { ...archiveJourneysMock, error: new Error('error') }
           ]}
         >
           <ThemeProvider>
-            <TeamProvider>
-              <SnackbarProvider>
-                <ActiveJourneyList
-                  event="archiveAllActive"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </SnackbarProvider>
-            </TeamProvider>
+            <SnackbarProvider>
+              <ActiveJourneyList
+                event="archiveAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
@@ -237,22 +204,15 @@ describe('ActiveJourneyList', () => {
     it('should trash all journeys', async () => {
       const { getByText } = render(
         <MockedProvider
-          mocks={[
-            activeJourneysMock,
-            trashJourneysMock,
-            noJourneysMock,
-            getTeamsMock
-          ]}
+          mocks={[activeJourneysMock, trashJourneysMock, noJourneysMock]}
         >
           <ThemeProvider>
-            <TeamProvider>
-              <SnackbarProvider>
-                <ActiveJourneyList
-                  event="trashAllActive"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </SnackbarProvider>
-            </TeamProvider>
+            <SnackbarProvider>
+              <ActiveJourneyList
+                event="trashAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
@@ -267,22 +227,19 @@ describe('ActiveJourneyList', () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
-            getTeamsMock,
             activeJourneysMock,
             { ...trashJourneysMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
-            <TeamProvider>
-              <ThemeProvider>
-                <SnackbarProvider>
-                  <ActiveJourneyList
-                    event="trashAllActive"
-                    user={{ id: 'user-id1' } as unknown as User}
-                  />
-                </SnackbarProvider>
-              </ThemeProvider>
-            </TeamProvider>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <ActiveJourneyList
+                  event="trashAllActive"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
