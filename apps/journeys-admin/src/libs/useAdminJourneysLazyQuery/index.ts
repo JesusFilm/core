@@ -1,1 +1,0 @@
-export { useAdminJourneysLazyQuery } from './useAdminJourneysLazyQuery'

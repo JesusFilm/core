@@ -81,7 +81,8 @@ export function NavigationDrawer({
   router
 }: NavigationDrawerProps): ReactElement {
   const { data: activeJourneys } = useAdminJourneysQuery({
-    status: [JourneyStatus.draft, JourneyStatus.published]
+    status: [JourneyStatus.draft, JourneyStatus.published],
+    useLastActiveTeamId: true
   })
   const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
