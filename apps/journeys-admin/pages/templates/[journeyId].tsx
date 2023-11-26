@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { PageWrapper } from '../../src/components/NewPageWrapper'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
@@ -38,11 +38,8 @@ function TemplateDetails(): ReactElement {
           title={t('Journey Template')}
           user={user}
           backHref="/templates"
-          mainPanelSx={{
-            backgroundColor: 'background.paper',
-            overflowX: 'hidden'
-          }}
           backHrefHistory
+          mainBodyPadding={false}
         >
           <TemplateView authUser={user} />
         </PageWrapper>
@@ -53,7 +50,7 @@ function TemplateDetails(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR()(
   async ({ user, locale, resolvedUrl }) => {
-    const { flags, redirect, translations } = await initAndAuthApp({
+    const { redirect, translations } = await initAndAuthApp({
       user,
       locale,
       resolvedUrl
@@ -63,7 +60,6 @@ export const getServerSideProps = withUserTokenSSR()(
 
     return {
       props: {
-        flags,
         ...translations
       }
     }

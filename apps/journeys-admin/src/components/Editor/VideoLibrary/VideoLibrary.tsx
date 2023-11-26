@@ -11,7 +11,6 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import MediaStrip1Icon from '@core/shared/ui/icons/MediaStrip1'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import X2Icon from '@core/shared/ui/icons/X2'
@@ -43,7 +42,6 @@ export function VideoLibrary({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
-  const { videoFromCloudflare } = useFlags()
 
   useEffect(() => {
     // opens video details if videoId is not null
@@ -136,14 +134,12 @@ export function VideoLibrary({
               {...tabA11yProps('video-from-youtube', 1)}
               sx={{ flexGrow: 1 }}
             />
-            {videoFromCloudflare && (
-              <Tab
-                icon={<Upload1Icon />}
-                label="Upload"
-                {...tabA11yProps('video-from-cloudflare', 2)}
-                sx={{ flexGrow: 1 }}
-              />
-            )}
+            <Tab
+              icon={<Upload1Icon />}
+              label="Upload"
+              {...tabA11yProps('video-from-cloudflare', 2)}
+              sx={{ flexGrow: 1 }}
+            />
           </Tabs>
         </Box>
         <TabPanel

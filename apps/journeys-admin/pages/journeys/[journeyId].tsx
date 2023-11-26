@@ -13,14 +13,14 @@ import { useTranslation } from 'react-i18next'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
-import { ACCEPT_ALL_INVITES } from '..'
-import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
 import {
   GetAdminJourney,
   GetAdminJourney_journey as Journey
 } from '../../__generated__/GetAdminJourney'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { Editor } from '../../src/components/Editor'
+import { ControlPanel } from '../../src/components/Editor/ControlPanel'
+import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
 import { PageWrapper } from '../../src/components/PageWrapper'
@@ -70,9 +70,11 @@ function JourneyEditPage(): ReactElement {
       >
         <PageWrapper
           title={data?.journey?.title ?? t('Edit Journey')}
-          showDrawer
           backHref="/"
-          menu={<EditToolbar />}
+          mainHeaderChildren={<EditToolbar />}
+          mainBodyPadding={false}
+          bottomPanelChildren={<ControlPanel />}
+          customSidePanel={<Drawer />}
           user={user}
         >
           <JourneyEdit />
@@ -88,17 +90,13 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
   })
 
   if (redirect != null) return { redirect }
-
-  await apolloClient.mutate<AcceptAllInvites>({
-    mutation: ACCEPT_ALL_INVITES
-  })
 
   let journey: Journey | null
   try {
@@ -135,7 +133,6 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      flags,
       ...translations
     }
   }

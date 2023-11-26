@@ -477,6 +477,22 @@ export interface StepBlockUpdateInput {
   locked?: boolean | null;
 }
 
+export interface StepNextEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  nextStepId: string;
+  label?: string | null;
+  value?: string | null;
+}
+
+export interface StepPreviousEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  previousStepId: string;
+  label?: string | null;
+  value?: string | null;
+}
+
 export interface StepViewEventCreateInput {
   id?: string | null;
   blockId: string;

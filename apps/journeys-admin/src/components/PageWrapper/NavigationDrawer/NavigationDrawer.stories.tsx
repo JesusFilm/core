@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
+import { NextRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 
@@ -12,7 +13,8 @@ import {
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
-import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
+
+import { GET_ME } from './NavigationDrawer'
 
 import { NavigationDrawer } from '.'
 
@@ -22,8 +24,9 @@ const NavigationDrawerStory: Meta<typeof NavigationDrawer> = {
   title: 'Journeys-Admin/PageWrapper/NavigationDrawer'
 }
 
-const NavigationDrawerComponent = (args): ReactElement => {
+const NavigationDrawerComponent = ({ ...args }): ReactElement => {
   const [open, setOpen] = useState(true)
+
   return (
     <MockedProvider
       mocks={[
@@ -79,6 +82,7 @@ const NavigationDrawerComponent = (args): ReactElement => {
             signOut: noop
           } as unknown as User
         }
+        router={{ pathname: undefined } as unknown as NextRouter}
       />
     </MockedProvider>
   )

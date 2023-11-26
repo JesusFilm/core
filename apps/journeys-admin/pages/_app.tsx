@@ -12,7 +12,6 @@ import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
@@ -28,7 +27,6 @@ const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
-  flags?: { [key: string]: boolean }
 }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
@@ -63,26 +61,30 @@ function JourneysAdminApp({
   }, [user])
 
   return (
-    <FlagsProvider flags={pageProps.flags}>
-      <CacheProvider value={emotionCache}>
-        <ThemeProvider>
-          <DefaultSeo
-            titleTemplate={t('%s | Next Steps')}
-            defaultTitle={t('Admin | Next Steps')}
+    <CacheProvider value={emotionCache}>
+      <ThemeProvider>
+        <DefaultSeo
+          titleTemplate={t('%s | Next Steps')}
+          defaultTitle={t('Admin | Next Steps')}
+        />
+        <HelpScoutBeacon />
+        <Head>
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width"
           />
-          <HelpScoutBeacon />
-          <Head>
-            <meta
-              name="viewport"
-              content="minimum-scale=1, initial-scale=1, width=device-width"
-            />
-          </Head>
-          {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
-            process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
-            process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
-            process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
-              <Script id="datadog-rum">
-                {`
+          <link
+            rel="preconnect"
+            href={process.env.NEXT_PUBLIC_GATEWAY_URL}
+            crossOrigin=""
+          />
+        </Head>
+        {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
+          process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
+          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
+          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
+            <Script id="datadog-rum">
+              {`
              (function(h,o,u,n,d) {
                h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
                d=o.createElement(u);d.async=1;d.src=n
@@ -109,23 +111,22 @@ function JourneysAdminApp({
                });
              })
            `}
-              </Script>
-            )}
-          <ApolloProvider client={apolloClient}>
-            <TeamProvider>
-              <SnackbarProvider
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right'
-                }}
-              >
-                <Component {...pageProps} />
-              </SnackbarProvider>
-            </TeamProvider>
-          </ApolloProvider>
-        </ThemeProvider>
-      </CacheProvider>
-    </FlagsProvider>
+            </Script>
+          )}
+        <ApolloProvider client={apolloClient}>
+          <TeamProvider>
+            <SnackbarProvider
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+            >
+              <Component {...pageProps} />
+            </SnackbarProvider>
+          </TeamProvider>
+        </ApolloProvider>
+      </ThemeProvider>
+    </CacheProvider>
   )
 }
 
