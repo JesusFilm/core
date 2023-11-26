@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 import { use100vh } from 'react-div-100vh'
@@ -135,16 +136,18 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     setTreeBlocks(blocks)
   }, [setTreeBlocks, blocks])
 
+  const enableTouchMoveNext = activeBlock?.locked
+    ? false
+    : isTouchScreenDevice()
+
   useEffect(() => {
     // TODO: bug doesn't work when first loaded when running the project
     let touchstartX = 0
     let touchendX = 0
-    const enableTouchMoveNext = !activeBlock?.locked
-    // : isTouchScreenDevice()
 
     function checkDirection(): void {
-      console.log(enableTouchMoveNext)
-      if (touchendX + 300 < touchstartX && enableTouchMoveNext)
+      if (touchendX + 300 < touchstartX)
+        // if (touchendX + 300 < touchstartX && enableTouchMoveNext)
         nextActiveBlock()
       if (touchendX - 300 > touchstartX) previousActiveBlock()
     }
@@ -207,6 +210,29 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 px: { lg: 6 }
               }}
             >
+              <Stack
+                sx={{
+                  position: 'absolute',
+                  mt: 1,
+                  lg: 0,
+                  zIndex: 10,
+                  top: 1,
+                  left: 1,
+                  backgroundColor: 'rgba(76, 175, 80, 0.3)'
+                }}
+              >
+                <Typography color="secondary">
+                  {`Unlocked: ${!activeBlock?.locked ? 'true' : 'false'}`}
+                </Typography>
+                <Typography color="secondary">
+                  {`Touch device: ${isTouchScreenDevice() ? 'true' : 'false'}`}
+                </Typography>
+                <Typography color="secondary">
+                  {`Enable touch move: ${
+                    enableTouchMoveNext ? 'true' : 'false'
+                  }`}
+                </Typography>
+              </Stack>
               {showHeaderFooter && router.query.noi == null && (
                 <StepHeader sx={{ ...mobileNotchStyling }} />
               )}
