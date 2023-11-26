@@ -139,9 +139,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     // TODO: bug doesn't work when first loaded when running the project
     let touchstartX = 0
     let touchendX = 0
-    const enableTouchMoveNext = activeBlock?.locked
-      ? false
-      : isTouchScreenDevice()
+    const enableTouchMoveNext = !activeBlock?.locked
+    // : isTouchScreenDevice()
 
     function checkDirection(): void {
       console.log(enableTouchMoveNext)
