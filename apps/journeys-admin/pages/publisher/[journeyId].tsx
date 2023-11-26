@@ -10,14 +10,16 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
 import { GetPublisher } from '../../__generated__/GetPublisher'
 import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { Role } from '../../__generated__/globalTypes'
-import { JourneyView } from '../../src/components/JourneyView'
-import { Menu } from '../../src/components/JourneyView/Menu'
+import { Editor } from '../../src/components/Editor'
+import { ControlPanel } from '../../src/components/Editor/ControlPanel'
+import { Drawer } from '../../src/components/Editor/Drawer'
+import { EditToolbar } from '../../src/components/Editor/EditToolbar'
+import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -41,7 +43,7 @@ export const GET_PUBLISHER = gql`
   }
 `
 
-function TemplateDetailsAdmin(): ReactElement {
+function TemplateEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
@@ -59,25 +61,29 @@ function TemplateDetailsAdmin(): ReactElement {
       {isPublisher === true && (
         <>
           <NextSeo
-            title={data?.publisherTemplate?.title ?? t('Template Details')}
+            title={
+              data?.publisherTemplate?.title != null
+                ? t('Edit {{title}}', { title: data.publisherTemplate.title })
+                : t('Edit Journey')
+            }
             description={data?.publisherTemplate?.description ?? undefined}
           />
-          <JourneyProvider
-            value={{
-              journey: data?.publisherTemplate ?? undefined,
-              variant: 'admin'
-            }}
+          <Editor
+            journey={data?.publisherTemplate ?? undefined}
+            selectedStepId={router.query.stepId as string | undefined}
           >
             <PageWrapper
-              title={t('Template Details')}
-              user={user}
-              showDrawer
+              title={data?.publisherTemplate?.title ?? t('Edit Template')}
               backHref="/publisher"
-              menu={<Menu />}
+              mainHeaderChildren={<EditToolbar />}
+              mainBodyPadding={false}
+              bottomPanelChildren={<ControlPanel />}
+              customSidePanel={<Drawer />}
+              user={user}
             >
-              <JourneyView journeyType="Template" />
+              <JourneyEdit />
             </PageWrapper>
-          </JourneyProvider>
+          </Editor>
         </>
       )}
       {data?.publisherTemplate != null && isPublisher !== true && (
@@ -96,7 +102,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { flags, redirect, translations } = await initAndAuthApp({
+  const { redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -106,7 +112,6 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      flags,
       ...translations
     }
   }
@@ -114,4 +119,4 @@ export const getServerSideProps = withUserTokenSSR({
 
 export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateDetailsAdmin)
+})(TemplateEditPage)

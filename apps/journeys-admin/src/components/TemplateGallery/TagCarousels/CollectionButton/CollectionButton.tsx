@@ -9,8 +9,9 @@ import { ReactElement, useCallback } from 'react'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
-import jesusFilmImage from '../assets/jesusFilm.png'
-import nuaImage from '../assets/nua.png'
+
+import jesusFilmImage from './assets/jesusFilm.jpg'
+import nuaImage from './assets/nua.jpg'
 
 type ChildTag = Tag & { parentId: string }
 
@@ -19,8 +20,18 @@ interface CollectionButtonProps {
   onClick: (value: string) => void
 }
 
-const StyledCollectionButton = styled(ButtonBase)(() => ({
-  borderRadius: '8px'
+const StyledCollectionButton = styled(ButtonBase)(({ theme }) => ({
+  borderRadius: '8px',
+  transition: theme.transitions.create('all'),
+  '& .backgroundImageHover': {
+    transition: theme.transitions.create('transform')
+  },
+  '&:hover': {
+    backgroundColor: theme.palette.grey[200],
+    '& .backgroundImageHover': {
+      transform: 'scale(1.05)'
+    }
+  }
 }))
 
 export function CollectionButton({
@@ -54,7 +65,10 @@ export function CollectionButton({
       <Stack
         gap={3}
         alignItems="center"
-        sx={{ [theme.breakpoints.up('md')]: { flexDirection: 'row' } }}
+        sx={{
+          [theme.breakpoints.up('md')]: { flexDirection: 'row' },
+          p: 2
+        }}
       >
         {tag != null ? (
           <Stack
@@ -66,17 +80,19 @@ export function CollectionButton({
               height: '64px',
               width: '64px',
               color: 'white',
-              borderRadius: 8
+              borderRadius: 8,
+              overflow: 'hidden'
             }}
           >
             {image != null ? (
               <NextImage
+                className="backgroundImageHover"
                 src={image.src}
                 layout="fill"
                 sx={{ borderRadius: 8 }}
               />
             ) : (
-              <InsertPhotoRoundedIcon />
+              <InsertPhotoRoundedIcon className="backgroundImageHover" />
             )}
           </Stack>
         ) : (

@@ -10,7 +10,6 @@ import { defineConfig, devices } from '@playwright/test'
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  timeout: 60000,
   testDir: './src/e2e',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -43,14 +42,26 @@ export default defineConfig({
     // },
     {
       name: 'chrome-desktop',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' }
+      use: {
+        ...devices['Desktop Chrome'],
+        channel:
+          process.platform === 'linux' && process.arch === 'arm64'
+            ? 'chromium'
+            : 'chrome'
+      }
     },
 
     // /* Test against mobile viewports. */
     // // By default it's using chromium channel, changed it to chrome so it can play the video
     {
       name: 'chrome-mobile',
-      use: { ...devices['Pixel 5'], channel: 'chrome' }
+      use: {
+        ...devices['Pixel 5'],
+        channel:
+          process.platform === 'linux' && process.arch === 'arm64'
+            ? 'chromium'
+            : 'chrome'
+      }
     }
     // {
     //   name: 'Mobile Safari',

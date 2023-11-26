@@ -2,7 +2,7 @@ import {
   blockHistoryVar,
   isActiveBlockOrDescendant,
   nextActiveBlock,
-  prevActiveBlock,
+  previousActiveBlock,
   treeBlocksVar
 } from './block'
 
@@ -143,7 +143,7 @@ describe('block', () => {
     })
   })
 
-  describe('prevActiveBlock', () => {
+  describe('previousActiveBlock', () => {
     it('should navigate to previous step in tree', () => {
       blockHistoryVar([
         { ...step, id: 'step1.id' },
@@ -151,7 +151,7 @@ describe('block', () => {
         { ...step, id: 'step3.id' }
       ])
 
-      prevActiveBlock()
+      previousActiveBlock()
 
       expect(blockHistoryVar()).toHaveLength(2)
       expect(blockHistoryVar()[0].id).toBe('step1.id')
@@ -161,7 +161,7 @@ describe('block', () => {
     it('should not navigate if no previous block exists in tree', () => {
       blockHistoryVar([{ ...step, id: 'step1.id' }])
 
-      prevActiveBlock()
+      previousActiveBlock()
 
       expect(blockHistoryVar()).toHaveLength(1)
       expect(blockHistoryVar()[0].id).toBe('step1.id')

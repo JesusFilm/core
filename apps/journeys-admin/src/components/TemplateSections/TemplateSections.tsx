@@ -30,8 +30,9 @@ export function TemplateSections({
   const { breakpoints } = useTheme()
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const { loading } = useJourneysQuery({
+  useJourneysQuery({
     variables: {
       where: {
         template: true,
@@ -67,33 +68,34 @@ export function TemplateSections({
         })
       })
       setContents(contents)
+      setLoading(false)
     }
   })
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       slidesPerGroup: 2,
-      spaceBetween: 20
+      spaceBetween: 4
     },
     [breakpoints.values.sm]: {
       slidesPerGroup: 3,
-      spaceBetween: 20
+      spaceBetween: 4
     },
     [breakpoints.values.md]: {
       slidesPerGroup: 4,
-      spaceBetween: 48
+      spaceBetween: 32
     },
     [breakpoints.values.lg]: {
       slidesPerGroup: 5,
-      spaceBetween: 48
+      spaceBetween: 32
     },
     [breakpoints.values.xl]: {
       slidesPerGroup: 6,
-      spaceBetween: 48
+      spaceBetween: 44
     },
     [breakpoints.values.xxl]: {
       slidesPerGroup: 7,
-      spaceBetween: 48
+      spaceBetween: 44
     }
   }
 
@@ -106,6 +108,11 @@ export function TemplateSections({
           renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
           breakpoints={swiperBreakpoints}
           loading={loading}
+          loadingSpacing={{
+            xs: 1,
+            md: 8,
+            xl: 11
+          }}
         />
       )}
       {!loading && collection != null && collection.length === 0 && (
@@ -138,6 +145,11 @@ export function TemplateSections({
               items={journeys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
+              loadingSpacing={{
+                xs: 1,
+                md: 8,
+                xl: 11
+              }}
             />
           )
       )}

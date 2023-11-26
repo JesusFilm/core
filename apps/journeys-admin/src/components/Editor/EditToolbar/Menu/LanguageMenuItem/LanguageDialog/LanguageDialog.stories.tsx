@@ -7,7 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { GET_LANGUAGES } from '../../../../../../libs/useLanguagesQuery'
-import { defaultJourney } from '../../../../../JourneyView/data'
+import { defaultJourney } from '../../../../data'
 
 import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
 

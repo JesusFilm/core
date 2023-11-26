@@ -136,4 +136,22 @@ describe('LanguageAutocomplete', () => {
     )
     expect(getByRole('progressbar')).toBeInTheDocument()
   })
+
+  it('should call onBlur on blur', async () => {
+    const onBlur = jest.fn()
+    const { getByRole } = render(
+      <MultipleLanguageAutocomplete
+        onChange={jest.fn()}
+        onBlur={onBlur}
+        values={[{ id: '529', localName: undefined, nativeName: 'English' }]}
+        languages={languages}
+        loading={false}
+      />
+    )
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'French Français' }))
+    fireEvent.blur(getByRole('combobox'))
+    expect(onBlur).toHaveBeenCalled()
+  })
 })

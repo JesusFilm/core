@@ -11,8 +11,6 @@ import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ACCEPT_ALL_INVITES } from '../../..'
-import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
 import { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
 import {
   GetJourneyVisitors,
@@ -23,7 +21,7 @@ import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsL
 import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
-import { PageWrapper } from '../../../../src/components/NewPageWrapper'
+import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 
@@ -244,17 +242,13 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
   })
 
   if (redirect != null) return { redirect }
-
-  await apolloClient.mutate<AcceptAllInvites>({
-    mutation: ACCEPT_ALL_INVITES
-  })
 
   try {
     await apolloClient.query<GetAdminJourney>({
@@ -279,7 +273,6 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      flags,
       ...translations
     }
   }

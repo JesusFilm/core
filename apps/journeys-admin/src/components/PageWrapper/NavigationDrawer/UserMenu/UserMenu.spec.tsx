@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
+import { SnackbarProvider } from 'notistack'
 
 import { UserMenu } from './UserMenu'
 
@@ -11,28 +12,30 @@ describe('UserMenu', () => {
   it('should render the menu', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
-        <UserMenu
-          apiUser={{
-            __typename: 'User',
-            id: 'userId',
-            firstName: 'Amin',
-            lastName: 'One',
-            imageUrl: 'https://bit.ly/3Gth4Yf',
-            email: 'amin@email.com',
-            superAdmin: false
-          }}
-          profileOpen
-          profileAnchorEl={null}
-          handleProfileClose={handleProfileClose}
-          user={
-            {
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
+        <SnackbarProvider>
+          <UserMenu
+            apiUser={{
+              __typename: 'User',
+              id: 'userId',
+              firstName: 'Amin',
+              lastName: 'One',
+              imageUrl: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
-              signOut
-            } as unknown as User
-          }
-        />
+              superAdmin: false
+            }}
+            profileOpen
+            profileAnchorEl={null}
+            handleProfileClose={handleProfileClose}
+            user={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as User
+            }
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
@@ -40,35 +43,40 @@ describe('UserMenu', () => {
     expect(getByRole('menuitem', { name: 'Logout' })).toBeInTheDocument()
   })
 
-  it('should call signOut on logout click', () => {
-    const { getByRole } = render(
+  it('should call signOut on logout click', async () => {
+    const { getByRole, getByText } = render(
       <MockedProvider>
-        <UserMenu
-          apiUser={{
-            __typename: 'User',
-            id: 'userId',
-            firstName: 'Amin',
-            lastName: 'One',
-            imageUrl: 'https://bit.ly/3Gth4Yf',
-            email: 'amin@email.com',
-            superAdmin: false
-          }}
-          profileOpen
-          profileAnchorEl={null}
-          handleProfileClose={handleProfileClose}
-          user={
-            {
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
+        <SnackbarProvider>
+          <UserMenu
+            apiUser={{
+              __typename: 'User',
+              id: 'userId',
+              firstName: 'Amin',
+              lastName: 'One',
+              imageUrl: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
-              signOut
-            } as unknown as User
-          }
-        />
+              superAdmin: false
+            }}
+            profileOpen
+            profileAnchorEl={null}
+            handleProfileClose={handleProfileClose}
+            user={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as User
+            }
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
     expect(signOut).toHaveBeenCalled()
+    await waitFor(() =>
+      expect(getByText('Logout successful')).toBeInTheDocument()
+    )
   })
 })
