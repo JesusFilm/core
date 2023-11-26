@@ -144,6 +144,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       : isTouchScreenDevice()
 
     function checkDirection(): void {
+      console.log(enableTouchMoveNext)
       if (touchendX + 300 < touchstartX && enableTouchMoveNext)
         nextActiveBlock()
       if (touchendX - 300 > touchstartX) previousActiveBlock()
