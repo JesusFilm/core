@@ -50,13 +50,14 @@ export function VideoControls({
   const [active, setActive] = useState(true)
   const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
-  const [volume, setVolume] = useState(0)
+  const [volume, setVolume] = useState(100)
   // Explicit muted state since player.muted state lags when video paused
   const [muted, setMuted] = useState(mute)
   // Explicit fullscreen state since player.fullscreen state lags when video paused
   const [fullscreen, setFullscreen] = useState(
     fscreen.fullscreenElement != null || (player.isFullscreen() ?? false)
   )
+
   const {
     showHeaderFooter,
     setShowHeaderFooter,
