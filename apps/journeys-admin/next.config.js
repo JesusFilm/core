@@ -71,7 +71,8 @@ const nextConfig = {
         'node_modules/esbuild-linux-64/bin'
       ]
     },
-    fallbackNodePolyfills: false
+    fallbackNodePolyfills: false,
+    instrumentationHook: true
   }
 }
 const plugins = [withNx]
