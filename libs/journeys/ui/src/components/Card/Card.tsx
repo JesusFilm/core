@@ -282,12 +282,7 @@ const enhance = (
   function component(baseComponent: ReactElement) {
     if (variant === 'default') {
       return (
-        <Fade
-          in={activeCardId === cardId}
-          mountOnEnter
-          unmountOnExit
-          timeout={500}
-        >
+        <Fade in={activeCardId === cardId} timeout={500}>
           {baseComponent}
         </Fade>
       )

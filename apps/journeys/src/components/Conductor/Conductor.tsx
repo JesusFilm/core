@@ -141,7 +141,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     : isTouchScreenDevice()
 
   useEffect(() => {
-    // TODO: bug doesn't work when first loaded when running the project
     let touchstartX = 0
     let touchendX = 0
 
@@ -173,8 +172,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     left: variant === 'default' ? 'env(safe-area-inset-left)' : undefined,
     right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
-
-  // TODO: fix step names
 
   return (
     <Box
