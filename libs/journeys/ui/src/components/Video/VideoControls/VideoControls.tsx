@@ -57,7 +57,6 @@ export function VideoControls({
   const [fullscreen, setFullscreen] = useState(
     fscreen.fullscreenElement != null || (player.isFullscreen() ?? false)
   )
-
   const {
     showHeaderFooter,
     setShowHeaderFooter,
