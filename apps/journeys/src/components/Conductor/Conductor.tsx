@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
@@ -76,6 +76,32 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       return false
     }
   }
+  const enableTouchMoveNext = activeBlock?.locked
+    ? false
+    : isTouchScreenDevice()
+
+  // ScrollBlock: https:// gist.github.com/reecelucas/2f510e6b8504008deaaa52732202d2da
+  const scroll = useRef(false)
+  if (typeof document !== 'undefined') {
+    const html = document.documentElement
+    const body = document.body
+
+    if (body != null || !scroll.current) {
+      const scrollBarWidth = window.innerWidth - html.clientWidth
+      const bodyPaddingRight =
+        parseInt(
+          window.getComputedStyle(body).getPropertyValue('padding-right')
+        ) ?? 0
+
+      html.style.position = 'relative' /* [1] */
+      body.style.position = 'relative' /* [1] */
+      html.style.overflow = 'hidden' /* [2] */
+      body.style.overflow = 'hidden' /* [2] */
+      body.style.paddingRight = `${bodyPaddingRight + scrollBarWidth}px`
+
+      scroll.current = true
+    }
+  }
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
@@ -136,17 +162,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     setTreeBlocks(blocks)
   }, [setTreeBlocks, blocks])
 
-  const enableTouchMoveNext = activeBlock?.locked
-    ? false
-    : isTouchScreenDevice()
-
   useEffect(() => {
     let touchstartX = 0
     let touchendX = 0
 
     function checkDirection(): void {
-      if (touchendX + 100 < touchstartX && enableTouchMoveNext)
-        nextActiveBlock()
+      if (touchendX + 100 < touchstartX) nextActiveBlock()
       if (touchendX - 100 > touchstartX) previousActiveBlock()
     }
 
