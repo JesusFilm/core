@@ -1,4 +1,4 @@
-// version 5
+// version 6
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { PrismaClient } from '.prisma/api-tags-client'
@@ -54,15 +54,11 @@ async function main(): Promise<void> {
     'Health',
     'Relationships',
     'Finances',
-    'Work',
-    'Marriage',
+    'Work & Success',
     'Addiction',
     'Anger',
-    'Success',
     'Prayer',
     'Apologetics',
-    "Jesus' Teachings",
-    "Jesus' Love",
     "Jesus' Life",
     'Holy Spirit',
     'Gospel presentations'
@@ -71,17 +67,13 @@ async function main(): Promise<void> {
     'Christmas',
     'Easter',
     'Ramadan',
-    'Festival of Sacrifice',
-    'Night of Power',
     'New Years',
-    'Mid-Autumn Festival',
-    "Women's Day",
-    'World Cup',
+    'Festivals',
     'World Youth Day',
-    'Olympics',
+    'Sport Events',
     'Halloween',
     "Valentine's Day",
-    "Mother's Day",
+    "Mother's & Women's Day",
     "Father's Day"
   ])
   await upsertTag('Audience', [
@@ -93,6 +85,7 @@ async function main(): Promise<void> {
     'Children',
     'Seeker',
     'New Believer',
+    'Youth',
     'Mature Believer',
     'Honor/Shame',
     'Fear/Power',
@@ -106,7 +99,8 @@ async function main(): Promise<void> {
     'Explainer',
     'Animation',
     'Inspirational',
-    'Testimonies'
+    'Testimonies',
+    'Series'
   ])
   await upsertTag(
     'Collections',
