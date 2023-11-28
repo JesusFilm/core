@@ -36,6 +36,7 @@ interface TemplateGalleryCarouselProps<T> {
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
   loadingSpacing?: ComponentProps<typeof Stack>['spacing']
+  slidesOffsetBefore?: number
 }
 
 export function TemplateGalleryCarousel<T>({
@@ -44,7 +45,8 @@ export function TemplateGalleryCarousel<T>({
   heading,
   breakpoints,
   loading = false,
-  loadingSpacing
+  loadingSpacing,
+  slidesOffsetBefore
 }: TemplateGalleryCarouselProps<T>): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [hovered, setHovered] = useState(false)
@@ -97,6 +99,7 @@ export function TemplateGalleryCarousel<T>({
           watchOverflow
           allowTouchMove
           observer
+          slidesOffsetBefore={slidesOffsetBefore}
           observeParents
           resizeObserver
           mousewheel={{ forceToAxis: true }}
