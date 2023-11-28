@@ -83,7 +83,8 @@ export function TemplateGalleryCarousel<T>({
           sx={{
             mt: 4,
             minWidth: 'max-content',
-            boxSizing: 'unset'
+            boxSizing: 'unset',
+            ml: slidesOffsetBefore != null ? slidesOffsetBefore / 4 : 0
           }}
         >
           {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
