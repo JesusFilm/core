@@ -9,7 +9,7 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PageWrapper } from '../../../src/components/NewPageWrapper'
+import { PageWrapper } from '../../../src/components/PageWrapper'
 import { VisitorInfo } from '../../../src/components/VisitorInfo'
 import { DetailsForm } from '../../../src/components/VisitorInfo/DetailsForm'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'

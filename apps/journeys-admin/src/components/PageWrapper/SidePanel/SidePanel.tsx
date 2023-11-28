@@ -13,25 +13,23 @@ import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 interface SidePanelProps {
   children: ReactNode
-  title?: string | ReactNode
-  sidePanelTitleAction?: ReactNode
-  // TODO: Refactor to open via usePage state, combine with mobileDrawerOpen
+  title?: ReactNode
   open?: boolean
-  // TODO: Remove once admin edit page is refactored to use new PageWrapper
-  edit?: boolean
+  // TODO: Remove if admin edit page uses SidePanel instead of Drawer
+  withAdminDrawer?: boolean
   onClose?: () => void
 }
 
 interface DrawerContentProps {
-  title?: string | ReactNode
-  children: ReactNode
-  action?: ReactNode
+  title?: ReactNode
+  children?: ReactNode
+  onClose?: () => void
 }
 
 function DrawerContent({
   title,
   children,
-  action
+  onClose
 }: DrawerContentProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   return (
@@ -46,12 +44,26 @@ function DrawerContent({
           variant={toolbar.variant}
           sx={{ justifyContent: 'space-between' }}
         >
-          {title != null && (
-            <Typography variant="subtitle1" component="div" noWrap>
-              {title}
-            </Typography>
-          )}
-          {action}
+          <>
+            {title != null &&
+              (typeof title === 'string' ? (
+                <Typography variant="subtitle1" component="div" noWrap>
+                  {title}
+                </Typography>
+              ) : (
+                title
+              ))}
+            {onClose != null && (
+              <IconButton
+                data-testid="close-side-drawer"
+                onClick={onClose}
+                sx={{ display: 'inline-flex' }}
+                edge="end"
+              >
+                <X2Icon />
+              </IconButton>
+            )}
+          </>
         </Toolbar>
       </AppBar>
       <Stack
@@ -72,62 +84,65 @@ export function SidePanel({
   children,
   title,
   open = true,
-  edit = false,
+  withAdminDrawer = false,
   onClose
 }: SidePanelProps): ReactElement {
   const { toolbar, sidePanel } = usePageWrapperStyles()
+
   const {
     state: { mobileDrawerOpen },
     dispatch
   } = usePage()
+
+  const desktopStyle = {
+    display: { xs: 'none', md: 'flex' },
+    width: sidePanel.width,
+    flexShrink: 1,
+    '& .MuiDrawer-paper': {
+      overflowX: 'hidden',
+      boxSizing: 'border-box',
+      width: sidePanel.width,
+      height: '100%'
+    }
+  }
+  const mobileStyle = {
+    display: { xs: 'flex', md: 'none' },
+    width: '100%',
+    flexShrink: 1,
+    '& .MuiDrawer-paper': {
+      boxSizing: 'border-box',
+      width: '100%',
+      height: `calc(100% - ${toolbar.height})`
+    }
+  }
 
   const handleClose = (): void => {
     dispatch({
       type: 'SetMobileDrawerOpenAction',
       mobileDrawerOpen: false
     })
+    onClose?.()
   }
 
   return (
     <>
       <Drawer
+        elevation={1}
         anchor="right"
         variant="persistent"
         open={onClose != null ? open : true}
         hideBackdrop
-        data-testid="side-drawer"
-        sx={{
-          display: edit
-            ? { xs: 'none', sm: 'flex' }
-            : { xs: 'none', md: 'flex' },
-          width: sidePanel.width,
-          flexShrink: 1,
-          '& .MuiDrawer-paper': {
-            overflowX: 'hidden',
-            boxSizing: 'border-box',
-            width: sidePanel.width,
-            height: '100%'
-          }
-        }}
+        data-testid="side-panel"
+        sx={desktopStyle}
       >
         <DrawerContent
           title={title}
-          action={
-            onClose != null && (
-              <IconButton
-                onClick={onClose}
-                sx={{ display: 'inline-flex' }}
-                edge="end"
-              >
-                <X2Icon />
-              </IconButton>
-            )
-          }
+          onClose={onClose != null ? handleClose : undefined}
         >
           {children}
         </DrawerContent>
       </Drawer>
-      {edit ? (
+      {withAdminDrawer ? (
         <Stack sx={{ display: { xs: 'flex', sm: 'none' } }}>{children}</Stack>
       ) : (
         <Drawer
@@ -136,30 +151,10 @@ export function SidePanel({
           open={mobileDrawerOpen}
           hideBackdrop
           transitionDuration={300}
-          data-testid="mobile-side-drawer"
-          sx={{
-            display: { xs: 'flex', md: 'none' },
-            width: '100%',
-            flexShrink: 1,
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: '100%',
-              height: `calc(100% - ${toolbar.height})`
-            }
-          }}
+          data-testid="mobile-side-panel"
+          sx={mobileStyle}
         >
-          <DrawerContent
-            title={title}
-            action={
-              <IconButton
-                onClick={handleClose}
-                sx={{ display: 'inline-flex' }}
-                edge="end"
-              >
-                <X2Icon />
-              </IconButton>
-            }
-          >
+          <DrawerContent title={title} onClose={handleClose}>
             {children}
           </DrawerContent>
         </Drawer>

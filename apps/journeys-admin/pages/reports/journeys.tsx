@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 
 import { JourneysReportType } from '../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
-import { PageWrapper } from '../../src/components/NewPageWrapper'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 

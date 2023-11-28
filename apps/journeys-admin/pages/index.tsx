@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
@@ -11,24 +10,12 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
 import { JourneyList } from '../src/components/JourneyList'
-import { PageWrapper } from '../src/components/NewPageWrapper'
 import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
+import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
-
-export const ACCEPT_ALL_INVITES = gql`
-  mutation AcceptAllInvites {
-    userTeamInviteAcceptAll {
-      id
-    }
-    userInviteAcceptAll {
-      id
-    }
-  }
-`
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -66,17 +53,13 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, redirect, translations } = await initAndAuthApp({
+  const { redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
   })
 
   if (redirect != null) return { redirect }
-
-  await apolloClient.mutate<AcceptAllInvites>({
-    mutation: ACCEPT_ALL_INVITES
-  })
 
   return {
     props: {

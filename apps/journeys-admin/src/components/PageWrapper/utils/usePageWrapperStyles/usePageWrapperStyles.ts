@@ -24,6 +24,6 @@ export function usePageWrapperStyles(): PageWrapperStyles {
           : '12px'
     },
     sidePanel: { width: '327px' },
-    bottomPanel: { height: '300px' }
+    bottomPanel: { height: '250px' }
   }
 }

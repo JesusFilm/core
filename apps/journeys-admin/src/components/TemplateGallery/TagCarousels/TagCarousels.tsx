@@ -77,7 +77,10 @@ export function TagCarousels({
   }
 
   return (
-    <Stack gap={7} sx={{ mb: { xs: 10, md: 16 } }}>
+    <Stack
+      gap={7}
+      sx={{ mb: { xs: 10, md: 16 }, height: { xs: 219, md: 234 } }}
+    >
       <TemplateGalleryCarousel
         items={feltNeedsTags}
         renderItem={(itemProps) => (
@@ -85,6 +88,10 @@ export function TagCarousels({
         )}
         breakpoints={swiperBreakpoints}
         loading={loading}
+        loadingSpacing={{
+          xs: 5,
+          md: 5
+        }}
       />
       <Stack direction="row" gap={10}>
         {loading

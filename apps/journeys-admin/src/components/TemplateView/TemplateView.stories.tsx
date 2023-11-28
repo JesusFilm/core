@@ -253,7 +253,7 @@ export const Complete = {
 export const Loading = {
   ...Template,
   args: {
-    ...Default.args,
+    ...Complete.args,
     journey: undefined
   }
 }

@@ -1282,10 +1282,10 @@ input StepViewEventCreateInput {
   """
   id: ID
 
-  """Id of the StepBlock"""
+  """Id of the current StepBlock"""
   blockId: ID!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   value: String
 }
 
@@ -1745,7 +1745,7 @@ extend type Query {
   where the user is not a member of a team but is an editor or owner of the
   journey
   """
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]!
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!

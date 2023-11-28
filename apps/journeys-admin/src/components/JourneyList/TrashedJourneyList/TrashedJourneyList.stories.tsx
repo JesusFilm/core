@@ -47,7 +47,8 @@ export const Default = {
         request: {
           query: GET_ADMIN_JOURNEYS,
           variables: {
-            status: [JourneyStatus.trashed]
+            status: [JourneyStatus.trashed],
+            useLastActiveTeamId: true
           }
         },
         result: {
@@ -73,7 +74,8 @@ export const NoJourneys = {
         request: {
           query: GET_ADMIN_JOURNEYS,
           variables: {
-            status: [JourneyStatus.trashed]
+            status: [JourneyStatus.trashed],
+            useLastActiveTeamId: true
           }
         },
         result: {
