@@ -21,6 +21,7 @@ resource "aws_rds_cluster" "default" {
   allow_major_version_upgrade     = true
   final_snapshot_identifier       = "${var.name}-${var.env}-final-snapshot"
   db_cluster_parameter_group_name = "aurora-postgresql13-cluster-replication"
+  enabled_cloudwatch_logs_exports = ["postgresql"]
   serverlessv2_scaling_configuration {
     max_capacity = 16
     min_capacity = 0.5
@@ -34,8 +35,9 @@ resource "aws_rds_cluster_instance" "default" {
   engine_version     = aws_rds_cluster.default.engine_version
   promotion_tier     = 1
 
-  monitoring_interval = 30
-  monitoring_role_arn = aws_iam_role.rds_enhanced_monitoring.arn
+  performance_insights_enabled = true
+  monitoring_interval          = 15
+  monitoring_role_arn          = aws_iam_role.rds_enhanced_monitoring.arn
 }
 
 resource "aws_ssm_parameter" "parameter" {
