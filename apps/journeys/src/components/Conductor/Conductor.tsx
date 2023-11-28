@@ -98,27 +98,27 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }, [activeBlock, enableTouchMoveNext])
 
   // ScrollBlock: https:// gist.github.com/reecelucas/2f510e6b8504008deaaa52732202d2da
-  const scroll = useRef(false)
-  if (typeof document !== 'undefined') {
-    const html = document.documentElement
-    const body = document.body
+  // const scroll = useRef(false)
+  // if (typeof document !== 'undefined') {
+  //   const html = document.documentElement
+  //   const body = document.body
 
-    if (body != null || !scroll.current) {
-      const scrollBarWidth = window.innerWidth - html.clientWidth
-      const bodyPaddingRight =
-        parseInt(
-          window.getComputedStyle(body).getPropertyValue('padding-right')
-        ) ?? 0
+  //   if (body != null || !scroll.current) {
+  //     const scrollBarWidth = window.innerWidth - html.clientWidth
+  //     const bodyPaddingRight =
+  //       parseInt(
+  //         window.getComputedStyle(body).getPropertyValue('padding-right')
+  //       ) ?? 0
 
-      html.style.position = 'relative' /* [1] */
-      body.style.position = 'relative' /* [1] */
-      html.style.overflow = 'hidden' /* [2] */
-      body.style.overflow = 'hidden' /* [2] */
-      body.style.paddingRight = `${bodyPaddingRight + scrollBarWidth}px`
+  //     html.style.position = 'relative' /* [1] */
+  //     body.style.position = 'relative' /* [1] */
+  //     html.style.overflow = 'hidden' /* [2] */
+  //     body.style.overflow = 'hidden' /* [2] */
+  //     body.style.paddingRight = `${bodyPaddingRight + scrollBarWidth}px`
 
-      scroll.current = true
-    }
-  }
+  //     scroll.current = true
+  //   }
+  // }
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
