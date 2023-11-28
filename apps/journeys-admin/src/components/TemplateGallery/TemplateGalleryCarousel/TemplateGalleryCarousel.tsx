@@ -70,6 +70,8 @@ export function TemplateGalleryCarousel<T>({
       data-testid={`${
         heading?.replace(' ', '') ?? ''
       }-template-gallery-carousel`}
+      onMouseOver={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       {heading != null && <Typography variant="h5">{heading}</Typography>}
       {loading ? (
@@ -105,12 +107,7 @@ export function TemplateGalleryCarousel<T>({
         >
           {items.map((item) => {
             return (
-              <SwiperSlide
-                key={item.id}
-                data-testid={`journey-${item.id}`}
-                onMouseOver={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
-              >
+              <SwiperSlide key={item.id} data-testid={`journey-${item.id}`}>
                 {renderItem({ item })}
               </SwiperSlide>
             )
