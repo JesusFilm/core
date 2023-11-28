@@ -168,13 +168,6 @@ export function Menu(): ReactElement {
         ) : (
           <BlockMenu />
         )}
-        {journey?.template === true && isPublisher != null && (
-          <MenuItem
-            label={t('Description')}
-            icon={<Edit2Icon />}
-            onClick={handleOpenTemplateSettingsDialog}
-          />
-        )}
         {journey?.template !== true && (
           <MenuItem
             label={t('Title')}

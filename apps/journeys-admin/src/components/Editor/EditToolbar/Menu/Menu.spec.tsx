@@ -220,9 +220,8 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Template Settings' })
     ).toBeInTheDocument()
     await waitFor(() => {
-      expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
+      expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
     })
-    expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
