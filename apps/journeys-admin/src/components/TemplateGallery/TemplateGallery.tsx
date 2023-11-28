@@ -36,6 +36,12 @@ export function TemplateGallery(): ReactElement {
     void router.push(router)
   }
 
+  function handleTagIdChange(selectedTagId: string): void {
+    setSelectedTagIds([selectedTagId])
+    router.query.tagIds = selectedTagId
+    void router.push(router)
+  }
+
   function handleLanguageIdsChange(values: string[]): void {
     setSelectedLanguageIds(values)
     router.query.languageIds = values
@@ -117,7 +123,7 @@ export function TemplateGallery(): ReactElement {
         </Grid>
         <TagCarousels
           selectedTagIds={selectedTagIds}
-          onChange={handleTagIdsChange}
+          onChange={handleTagIdChange}
         />
         <TemplateSections
           tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
