@@ -15,7 +15,7 @@ export function NavigationButton({
   link
 }: NavigationButtonProps): ReactElement {
   return (
-    <NextLink href={link} passHref legacyBehavior>
+    <NextLink href={link} passHref legacyBehavior prefetch={false}>
       <Button
         aria-selected={selected}
         variant={selected ? 'contained' : 'outlined'}
@@ -25,6 +25,7 @@ export function NavigationButton({
           borderRadius: 1,
           backgroundColor: selected ? undefined : 'background.paper'
         }}
+        data-testid="NavigationButton"
       >
         <Typography variant="subtitle1">{value}</Typography>
       </Button>

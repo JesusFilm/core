@@ -111,12 +111,23 @@ export class JourneyResolver {
     @CaslAccessible('Journey') accessibleJourneys: Prisma.JourneyWhereInput,
     @Args('status') status?: JourneyStatus[],
     @Args('template') template?: boolean,
-    @Args('teamId') teamId?: string
+    @Args('teamId') teamId?: string,
+    @Args('useLastActiveTeamId') useLastActiveTeamId?: boolean
   ): Promise<Journey[]> {
     const filter: Prisma.JourneyWhereInput = {}
+    if (useLastActiveTeamId === true) {
+      const profile = await this.prismaService.journeyProfile.findUnique({
+        where: { userId }
+      })
+      if (profile == null)
+        throw new GraphQLError('journey profile not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      filter.teamId = profile.lastActiveTeamId ?? undefined
+    }
     if (teamId != null) {
       filter.teamId = teamId
-    } else if (template !== true) {
+    } else if (template !== true && filter.teamId == null) {
       // if not looking for templates then only return journeys where:
       //   1. the user is an owner or editor
       //   2. not a member of the team
@@ -425,6 +436,8 @@ export class JourneyResolver {
               data: {
                 ...omit(journey, [
                   'primaryImageBlockId',
+                  'creatorImageBlockId',
+                  'creatorDescription',
                   'publishedAt',
                   'hostId',
                   'teamId',
@@ -790,9 +803,19 @@ export class JourneyResolver {
   @ResolveField()
   @FromPostgresql()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
-    const filter: Prisma.BlockWhereInput = { journeyId: journey.id }
-    if (journey.primaryImageBlockId != null)
-      filter.id = { not: journey.primaryImageBlockId }
+    const filter: Prisma.BlockWhereInput = {
+      journeyId: journey.id
+    }
+    const idNotIn: string[] = []
+    if (journey.primaryImageBlockId != null) {
+      idNotIn.push(journey.primaryImageBlockId)
+    }
+    if (journey.creatorImageBlockId != null) {
+      idNotIn.push(journey.creatorImageBlockId)
+    }
+    if (idNotIn.length > 0) {
+      filter.id = { notIn: idNotIn }
+    }
     return await this.prismaService.block.findMany({
       where: filter,
       orderBy: { parentOrder: 'asc' },
@@ -828,6 +851,17 @@ export class JourneyResolver {
     if (journey.primaryImageBlockId == null) return null
     const block = await this.prismaService.block.findUnique({
       where: { id: journey.primaryImageBlockId },
+      include: { action: true }
+    })
+    if (block?.journeyId !== journey.id) return null
+    return block
+  }
+
+  @ResolveField()
+  async creatorImageBlock(@Parent() journey: Journey): Promise<Block | null> {
+    if (journey.creatorImageBlockId == null) return null
+    const block = await this.prismaService.block.findUnique({
+      where: { id: journey.creatorImageBlockId },
       include: { action: true }
     })
     if (block?.journeyId !== journey.id) return null

@@ -2,8 +2,6 @@ import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import {
   JourneyStatus,
   ThemeMode,
@@ -62,6 +60,8 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: 'My awesome journey',
@@ -76,34 +76,29 @@ type Story = StoryObj<
   ComponentProps<typeof HostAvatars> & {
     variant: 'default' | 'admin' | 'embed'
     journey: Journey
-    editableStepFooter: boolean
   }
 >
 
 const Template: Story = {
-  render: ({ variant = 'default', journey, editableStepFooter, ...args }) => (
-    <FlagsProvider flags={{ editableStepFooter }}>
-      <JourneyProvider value={{ variant, journey }}>
-        <Stack direction="row">
-          <HostAvatars hasPlaceholder={variant === 'admin'} {...args} />
-        </Stack>
-      </JourneyProvider>
-    </FlagsProvider>
+  render: ({ variant = 'default', journey, ...args }) => (
+    <JourneyProvider value={{ variant, journey }}>
+      <Stack direction="row">
+        <HostAvatars hasPlaceholder={variant === 'admin'} {...args} />
+      </Stack>
+    </JourneyProvider>
   )
 }
 
 export const Default = {
   ...Template,
   args: {
-    journey,
-    editableStepFooter: true
+    journey
   }
 }
 
 export const Empty = {
   ...Template,
   args: {
-    editableStepFooter: true,
     variant: 'admin',
     journey: { ...journey, host: { ...hostData, src1: null } }
   }

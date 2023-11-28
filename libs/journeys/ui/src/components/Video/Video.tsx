@@ -124,6 +124,10 @@ export function Video({
     }
   }, [startAt, endAt, muted, posterBlock, autoplay])
 
+  useEffect(() => {
+    if (videoRef.current != null) videoRef.current.pause()
+  }, [])
+
   const triggerTimes = useMemo(() => {
     return children
       .filter((block) => block.__typename === 'VideoTriggerBlock')
@@ -139,7 +143,7 @@ export function Video({
     const startTime = startAt ?? 0
 
     const handleStopLoading = (): void => {
-      if (player != null && player.currentTime() < startTime) {
+      if (player != null && (player.currentTime() ?? 0) < startTime) {
         player.currentTime(startTime)
       }
       setLoading(false)
@@ -203,7 +207,7 @@ export function Video({
       const handleDurationChange = (): void => {
         if (player != null) {
           const playerDuration =
-            player.duration() > 0 ? player.duration() : null
+            (player.duration() ?? 0) > 0 ? player.duration() : null
 
           if (playerDuration != null) {
             setVideoEndTime(Math.min(videoEndTime, playerDuration))

@@ -11,7 +11,7 @@ import { ReactElement, ReactNode } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import X2Icon from '@core/shared/ui/icons/X2'
 
-export const DRAWER_WIDTH = 328
+import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 
 interface DrawerContentProps {
   title?: string
@@ -52,6 +52,7 @@ function DrawerContent({
 }
 
 export function Drawer(): ReactElement {
+  const { sidePanel } = usePageWrapperStyles()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
     state: {
@@ -73,17 +74,18 @@ export function Drawer(): ReactElement {
     <Paper
       elevation={0}
       sx={{
-        display: { xs: 'none', sm: 'block' },
+        display: { xs: 'none', md: 'block' },
         position: 'absolute',
         top: 0,
         right: 0,
         height: '100%',
-        width: '328px',
+        width: sidePanel.width,
         borderLeft: 1,
         borderColor: 'divider',
         borderRadius: 0,
         overflow: 'hidden'
       }}
+      data-testid="EditorDrawer"
     >
       <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
         {children}
@@ -97,8 +99,9 @@ export function Drawer(): ReactElement {
         open={mobileOpen}
         onClose={handleDrawerToggle}
         sx={{
-          display: { xs: 'block', sm: 'none' }
+          display: { xs: 'block', md: 'none' }
         }}
+        data-testid="EditorDrawer"
       >
         <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
           {children}

@@ -1,11 +1,12 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { fireEvent, within } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { publishedJourney } from '../../JourneyView/data'
+import { publishedJourney } from '../../Editor/data'
 
 import { journeyVideoBlocks } from './data'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
@@ -37,6 +38,17 @@ export const Default = {
   ...Template,
   args: {
     journey
+  }
+}
+
+export const Videos = {
+  ...Template,
+  args: {
+    journey
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    fireEvent.click(canvas.getByText('{{count}} Videos'))
   }
 }
 

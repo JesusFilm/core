@@ -10,10 +10,11 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { SocialImage } from '../../JourneyView/SocialImage'
 import { CreateJourneyButton } from '../CreateJourneyButton'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
+import { SocialImage } from './SocialImage'
+import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreatorDetails'
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
 interface TemplateViewHeaderProps {
@@ -26,16 +27,17 @@ export function TemplateViewHeader({
   authUser
 }: TemplateViewHeaderProps): ReactElement {
   const { journey } = useJourney()
+  const hasCreatorDescription = journey?.creatorDescription != null
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
-    <Stack data-testid="TemplateViewHeader">
+    <Stack data-testid="JourneysAdminTemplateViewHeader">
       <Typography
         variant="overline"
         sx={{
           color: 'secondary.light',
           display: { xs: 'block', sm: 'none' },
-          pb: 6
+          pb: 4
         }}
         noWrap
       >
@@ -48,13 +50,21 @@ export function TemplateViewHeader({
           <Skeleton sx={{ width: '50%', maxWidth: 150 }} />
         )}
       </Typography>
-      <Stack direction="row" sx={{ gap: { xs: 4, sm: 6 } }}>
+      <Stack direction="row" sx={{ gap: { xs: 4, sm: 7 } }}>
         <Box
           sx={{
-            flexShrink: 0
+            flexShrink: 0,
+            width: { xs: '107px', sm: '244px' }
           }}
         >
-          <SocialImage height={smUp ? 244 : 107} width={smUp ? 244 : 107} />
+          <SocialImage hasCreatorDescription={hasCreatorDescription} />
+          {hasCreatorDescription && (
+            <TemplateCreatorDetails
+              creatorDetails={journey?.creatorDescription}
+              creatorImage={journey?.creatorImageBlock?.src}
+              sx={{ display: { xs: 'none', sm: 'flex' } }}
+            />
+          )}
         </Box>
         <Stack
           direction="column"
@@ -122,14 +132,18 @@ export function TemplateViewHeader({
           >
             <CreateJourneyButton signedIn={authUser?.id != null} />
             <PreviewTemplateButton slug={journey?.slug} />
-            {isPublisher === true && <TemplateEditButton />}
+            {journey != null && isPublisher === true && (
+              <TemplateEditButton journeyId={journey.id} />
+            )}
           </Box>
         </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
         <CreateJourneyButton signedIn={authUser?.id != null} />
         <PreviewTemplateButton slug={journey?.slug} />
-        {isPublisher === true && authUser.id != null && <TemplateEditButton />}
+        {journey != null && isPublisher === true && (
+          <TemplateEditButton journeyId={journey.id} />
+        )}
       </Box>
     </Stack>
   )

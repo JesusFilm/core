@@ -79,6 +79,8 @@ const defaultJourney: Journey = {
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
@@ -137,7 +139,7 @@ export const WithContent = {
     await userEvent.click(nextButton)
     await waitFor(async () => {
       await expect(
-        screen.getAllByTestId('ConductorNavigationContainerPrev')[1]
+        screen.getAllByTestId('ConductorNavigationContainerPrevious')[1]
       ).toBeInTheDocument()
     })
   }

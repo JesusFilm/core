@@ -13,6 +13,7 @@ type Journey @key(fields: "id") {
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
+  creatorDescription: String
   slug: String!
   archivedAt: DateTime
   deletedAt: DateTime
@@ -94,6 +95,10 @@ extend type Query {
     status: [JourneyStatus!]
     template: Boolean
     teamId: ID
+    """
+    Use Last Active Team Id from JourneyProfile (if null will error)
+    """
+    useLastActiveTeamId: Boolean
   ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
@@ -128,6 +133,8 @@ input JourneyUpdateInput {
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
+  creatorDescription: String
+  creatorImageBlockId: ID
   primaryImageBlockId: ID
   slug: String
   seoTitle: String

@@ -38,7 +38,7 @@ export function Step({
 
   return (
     <Attribute
-      id={`${id}-next-block`}
+      id={`next-step-${id}`}
       icon={locked ? <Lock1Icon /> : <LockOpen1Icon />}
       name="Next Card"
       value={heading}
@@ -46,11 +46,12 @@ export function Step({
       onClick={() => {
         dispatch({
           type: 'SetDrawerPropsAction',
-          title: 'Next Card Properties',
+          title: t('Next Card Properties'),
           mobileOpen: true,
           children: <NextCard />
         })
       }}
+      testId={`Step-${id}`}
     />
   )
 }

@@ -1,13 +1,13 @@
-import { MockedProvider } from '@apollo/client/testing'
-import Drawer from '@mui/material/Drawer'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 
+import { cache } from '../../libs/apolloClient/cache'
+import { PageProvider } from '../../libs/PageWrapperProvider'
 import { simpleComponentConfig } from '../../libs/storybook'
+import { SidePanel } from '../PageWrapper/SidePanel'
+import { TeamProvider } from '../Team/TeamProvider'
 
-import { onboardingJourneys } from './data'
+import { getOnboardingJourneysMock } from './data'
 import { OnboardingPanelContent } from './OnboardingPanelContent'
 
 const OnboardingPanelContentStory: Meta<typeof OnboardingPanelContent> = {
@@ -16,22 +16,37 @@ const OnboardingPanelContentStory: Meta<typeof OnboardingPanelContent> = {
   title: 'Journeys-Admin/OnboardingPanelContent'
 }
 
-const OnboardingPanelContentComponent = (): ReactElement => {
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
-
-  return (
-    <MockedProvider>
-      <Drawer anchor={isMobile ? 'bottom' : 'left'} open>
-        <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
-      </Drawer>
-    </MockedProvider>
-  )
-}
-
 const Template: StoryObj<typeof OnboardingPanelContent> = {
-  render: () => <OnboardingPanelContentComponent />
+  render: (): ReactElement => {
+    return (
+      <TeamProvider>
+        <PageProvider initialState={{ mobileDrawerOpen: true }}>
+          <SidePanel title="Create A New Journey">
+            <OnboardingPanelContent />
+          </SidePanel>
+        </PageProvider>
+      </TeamProvider>
+    )
+  }
 }
 
-export const Default = { ...Template }
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [getOnboardingJourneysMock]
+    }
+  }
+}
+
+export const Loading = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [{ ...getOnboardingJourneysMock, delay: 100000000000000 }]
+    }
+  }
+}
 
 export default OnboardingPanelContentStory

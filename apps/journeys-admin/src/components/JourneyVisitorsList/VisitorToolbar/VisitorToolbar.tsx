@@ -37,7 +37,10 @@ export function VisitorToolbar({
   }
 
   return (
-    <Box sx={{ display: { sm: 'block', md: 'none' } }}>
+    <Box
+      sx={{ display: { sm: 'block', md: 'none' } }}
+      data-testid="VisitorToolbar"
+    >
       <IconButton>
         <FilterIcon onClick={handleOpen} />
       </IconButton>

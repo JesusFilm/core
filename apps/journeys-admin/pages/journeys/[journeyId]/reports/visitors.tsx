@@ -1,6 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -12,20 +11,17 @@ import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ACCEPT_ALL_INVITES } from '../../..'
-import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
 import { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
 import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
 } from '../../../../__generated__/GetJourneyVisitors'
-import { GetJourneyVisitorsCount } from '../../../../__generated__/GetJourneyVisitorsCount'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
-import { PageWrapper } from '../../../../src/components/NewPageWrapper'
+import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 
@@ -83,14 +79,15 @@ function JourneyVisitorsPage(): ReactElement {
   const router = useRouter()
   const journeyId = router.query.journeyId as string
 
-  const { data } = useQuery<GetJourneyVisitorsCount>(
-    GET_JOURNEY_VISITORS_COUNT,
-    {
-      variables: {
-        filter: { journeyId }
-      }
-    }
-  )
+  // Hide visitors count
+  // const { data } = useQuery<GetJourneyVisitorsCount>(
+  //   GET_JOURNEY_VISITORS_COUNT,
+  //   {
+  //     variables: {
+  //       filter: { journeyId }
+  //     }
+  //   }
+  // )
 
   const [visitorEdges, setVisitorEdges] = useState<VisitorEdge[]>([])
   const [hasNextPage, setHasNextPage] = useState(false)
@@ -191,11 +188,12 @@ function JourneyVisitorsPage(): ReactElement {
             alignItems="center"
             justifyContent="space-between"
           >
-            {data?.journeyVisitorCount != null && (
+            {/* Hide visitors count */}
+            {/* {data?.journeyVisitorCount != null && (
               <Typography variant="caption" sx={{ pl: 4 }}>
                 {data?.journeyVisitorCount}
               </Typography>
-            )}
+            )} */}
             <VisitorToolbar
               handleChange={handleChange}
               sortSetting={sortSetting}
@@ -228,7 +226,7 @@ function JourneyVisitorsPage(): ReactElement {
       >
         <JourneyVisitorsList
           visitorEdges={visitorEdges}
-          visitorsCount={data?.journeyVisitorCount}
+          visitorsCount={undefined} // Hide data?.journeyVisitorCount
           fetchNext={handleFetchNext}
           loading={loading}
           hasNextPage={hasNextPage}
@@ -244,17 +242,13 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
   })
 
   if (redirect != null) return { redirect }
-
-  await apolloClient.mutate<AcceptAllInvites>({
-    mutation: ACCEPT_ALL_INVITES
-  })
 
   try {
     await apolloClient.query<GetAdminJourney>({
@@ -279,7 +273,6 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      flags,
       ...translations
     }
   }

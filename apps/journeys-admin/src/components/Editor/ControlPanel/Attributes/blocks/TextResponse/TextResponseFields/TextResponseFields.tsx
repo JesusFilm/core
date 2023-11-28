@@ -7,7 +7,7 @@ import { MinRows } from './MinRows'
 
 export function TextResponseFields(): ReactElement {
   return (
-    <Stack>
+    <Stack data-testid="TextResponseFields">
       <Label />
       <Hint />
       <MinRows />

@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
 import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -16,7 +17,6 @@ import SettingsIcon from '@core/shared/ui/icons/Settings'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
-import { TemplateSettingsDialog } from '../../../JourneyView/TemplateSettings/TemplateSettingsDialog'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
 
@@ -25,6 +25,7 @@ import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
 import { DescriptionDialog } from './DescriptionDialog'
 import { LanguageMenuItem } from './LanguageMenuItem'
 import { ReportMenuItem } from './ReportMenuItem'
+import { TemplateSettingsDialog } from './TemplateSettingsDialog'
 import { TitleDialog } from './TitleDialog'
 
 export const GET_ROLE = gql`
@@ -41,49 +42,44 @@ export function Menu(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
-
   const { journey } = useJourney()
-
+  const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetRole>(GET_ROLE)
-
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
-
-  const [showTitleDialog, setShowTitleDialog] = useState(false)
-  const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
-  const [showTemplateSettingsDialog, setShowTemplateSettingsDialog] =
+  const [titleDialogOpen, setTitleDialogOpen] = useState(false)
+  const [descriptionDialogOpen, setDescriptionDialogOpen] = useState(false)
+  const [templateSettingsDialogOpen, setTemplateSettingsDialogOpen] =
     useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+
+  function handleShowMenu(event: React.MouseEvent<HTMLButtonElement>): void {
     setAnchorEl(event.currentTarget)
   }
-  const handleCloseMenu = (): void => {
+  function handleCloseMenu(): void {
     setAnchorEl(null)
   }
-
-  const handleUpdateTitle = (): void => {
-    setShowTitleDialog(true)
-  }
-
-  const handleCloseTitle = (): void => {
-    setShowTitleDialog(false)
+  function handleOpenTitleDialog(): void {
+    setTitleDialogOpen(true)
     setAnchorEl(null)
   }
-
-  const handleUpdateDescription = (): void => {
-    setShowDescriptionDialog(true)
-  }
-
-  const handleCloseDescription = (): void => {
-    setShowDescriptionDialog(false)
+  function handleCloseTitleDialog(): void {
+    setTitleDialogOpen(false)
     setAnchorEl(null)
   }
-
-  const handleUpdateTemplateSettings = (): void => {
-    setShowTemplateSettingsDialog(true)
+  function handleOpenDescriptionDialog(): void {
+    setDescriptionDialogOpen(true)
+    setAnchorEl(null)
   }
-
-  const handleCloseTemplateSettings = (): void => {
-    setShowTemplateSettingsDialog(false)
+  function handleCloseDescriptionDialog(): void {
+    setDescriptionDialogOpen(false)
+    setAnchorEl(null)
+  }
+  function handleOpenTemplateSettingsDialog(): void {
+    setTemplateSettingsDialogOpen(true)
+    setAnchorEl(null)
+  }
+  function handleCloseTemplateSettingsDialog(): void {
+    setTemplateSettingsDialogOpen(false)
     setAnchorEl(null)
   }
 
@@ -94,9 +90,10 @@ export function Menu(): ReactElement {
           href={`/api/preview?slug=${journey?.slug ?? ''}`}
           passHref
           legacyBehavior
+          prefetch={false}
         >
           <MenuItem
-            label="Preview"
+            label={t('Preview')}
             icon={<EyeOpenIcon />}
             openInNew
             onClick={handleCloseMenu}
@@ -120,9 +117,10 @@ export function Menu(): ReactElement {
           href={`/api/preview?slug=${journey?.slug ?? ''}`}
           passHref
           legacyBehavior
+          prefetch={false}
         >
           <MenuItem
-            label="Preview"
+            label={t('Preview')}
             icon={<EyeOpenIcon />}
             openInNew
             onClick={handleCloseMenu}
@@ -132,9 +130,11 @@ export function Menu(): ReactElement {
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         <Divider />
         {journey != null && journey.template === true && (
-          <NextLink href={`/publisher/${journey.id}`} passHref legacyBehavior>
-            <MenuItem label="Publisher Settings" icon={<SettingsIcon />} />
-          </NextLink>
+          <MenuItem
+            label={t('Template Settings')}
+            icon={<SettingsIcon />}
+            onClick={handleOpenTemplateSettingsDialog}
+          />
         )}
       </>
     )
@@ -145,7 +145,7 @@ export function Menu(): ReactElement {
       <IconButton
         id="edit-journey-actions"
         edge="end"
-        aria-label="Edit Journey Actions"
+        aria-label={t('Edit Journey Actions')}
         aria-controls="edit-journey-actions"
         aria-haspopup="true"
         aria-expanded={anchorEl != null ? 'true' : undefined}
@@ -168,25 +168,18 @@ export function Menu(): ReactElement {
         ) : (
           <BlockMenu />
         )}
-        {journey?.template === true && isPublisher != null && (
+        {journey?.template !== true && (
           <MenuItem
-            label="Description"
+            label={t('Title')}
             icon={<Edit2Icon />}
-            onClick={handleUpdateTemplateSettings}
+            onClick={handleOpenTitleDialog}
           />
         )}
         {journey?.template !== true && (
           <MenuItem
-            label="Title"
-            icon={<Edit2Icon />}
-            onClick={handleUpdateTitle}
-          />
-        )}
-        {journey?.template !== true && (
-          <MenuItem
-            label="Description"
+            label={t('Description')}
             icon={<File5Icon />}
-            onClick={handleUpdateDescription}
+            onClick={handleOpenDescriptionDialog}
           />
         )}
         {(journey?.template !== true || isPublisher != null) && (
@@ -203,14 +196,14 @@ export function Menu(): ReactElement {
             <CopyMenuItem journey={journey} onClose={handleCloseMenu} />
           )}
       </MuiMenu>
-      <TitleDialog open={showTitleDialog} onClose={handleCloseTitle} />
+      <TitleDialog open={titleDialogOpen} onClose={handleCloseTitleDialog} />
       <DescriptionDialog
-        open={showDescriptionDialog}
-        onClose={handleCloseDescription}
+        open={descriptionDialogOpen}
+        onClose={handleCloseDescriptionDialog}
       />
       <TemplateSettingsDialog
-        open={showTemplateSettingsDialog}
-        onClose={handleCloseTemplateSettings}
+        open={templateSettingsDialogOpen}
+        onClose={handleCloseTemplateSettingsDialog}
       />
     </>
   )

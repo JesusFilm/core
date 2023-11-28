@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { User } from 'next-firebase-auth'
 import { ComponentProps } from 'react'
@@ -18,7 +19,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
-import { defaultJourney, publishedJourney } from '../JourneyView/data'
+import { defaultJourney, publishedJourney } from '../Editor/data'
 
 import { journeyVideoBlocks } from './TemplatePreviewTabs/data'
 import { parentTags, tags } from './TemplateTags/data'
@@ -27,7 +28,11 @@ import { TemplateView } from './TemplateView'
 const TemplateViewStory: Meta<typeof TemplateView> = {
   ...journeysAdminConfig,
   component: TemplateView,
-  title: 'Journeys-Admin/TemplateView'
+  title: 'Journeys-Admin/TemplateView',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const tag: Tag = {
@@ -197,7 +202,9 @@ const Template: StoryObj<
         ]}
       >
         <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-          <TemplateView authUser={args.authUser as unknown as User} />
+          <Box sx={{ height: '100%', overflow: 'hidden' }}>
+            <TemplateView authUser={args.authUser as unknown as User} />
+          </Box>
         </JourneyProvider>
       </MockedProvider>
     )
@@ -220,7 +227,21 @@ export const Complete = {
   args: {
     journey: {
       ...journey,
-      tags
+      strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
+      tags,
+      creatorDescription:
+        'Created by a Name of a Mission or Missionaries Organisation label by a Name of a Mission or Missionaries',
+      creatorImageBlock: {
+        id: 'creatorImageBlock.id',
+        parentBlockId: null,
+        parentOrder: 3,
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'photo-1552410260-0fd9b577afa6',
+        width: 6000,
+        height: 4000,
+        blurhash: 'LHFr#AxW9a%L0KM{IVRkoMD%D%R*',
+        __typename: 'ImageBlock'
+      }
     },
     authUser: 'user.id',
     getJourneysMock,
@@ -232,7 +253,7 @@ export const Complete = {
 export const Loading = {
   ...Template,
   args: {
-    ...Default.args,
+    ...Complete.args,
     journey: undefined
   }
 }

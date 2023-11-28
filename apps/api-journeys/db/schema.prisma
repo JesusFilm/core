@@ -100,6 +100,7 @@ model Event {
   radioOptionBlockId      String?
   email                   String?
   nextStepId              String?
+  previousStepId          String?
   position                Float?
   source                  VideoBlockSource?
   progress                Int?
@@ -309,6 +310,8 @@ model Journey {
   seoTitle            String?
   seoDescription      String?
   primaryImageBlockId String?          @unique
+  creatorImageBlockId String?          @unique
+  creatorDescription  String?
   template            Boolean?         @default(false)
   teamId              String
   hostId              String?
@@ -323,7 +326,8 @@ model Journey {
   host                Host?            @relation(fields: [hostId], references: [id])
   journeyTags         JourneyTag[]
   actions             Action[]
-  primaryImageBlock   Block?           @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
+  primaryImageBlock   Block?           @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
+  creatorImageBlock   Block?           @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
   journeyVisitors     JourneyVisitor[]
   strategySlug        String?
 
@@ -433,6 +437,7 @@ model Block {
   coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
   coverBlockParent        Block?               @relation("CoverBlock")
   primaryImageBlockParent Journey?             @relation("PrimaryImageBlock")
+  creatorImageBlockParent Journey?             @relation("CreatorImageBlock")
   nextBlock               Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
   nextBlockParents        Block[]              @relation("NextBlock")
   parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)

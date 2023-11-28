@@ -11,5 +11,7 @@ module.exports = {
    * Example: "nx affected --targets=test --update-snapshot"
    * More info: https://jestjs.io/docs/upgrading-to-jest29#snapshot-format
    */
-  snapshotFormat: { escapeString: true, printBasicPrototype: true }
+  snapshotFormat: { escapeString: true, printBasicPrototype: true },
+  // https://jestjs.io/blog/2022/04/25/jest-28#github-actions-reporter
+  reporters: process.env.CI === 'true' ? ['github-actions'] : undefined
 }

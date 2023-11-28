@@ -57,6 +57,7 @@ export function VideoLanguage({
           height: '100%'
         }
       }}
+      data-testid="VideoLanguage"
     >
       <AppBar position="static" color="default">
         <Toolbar>

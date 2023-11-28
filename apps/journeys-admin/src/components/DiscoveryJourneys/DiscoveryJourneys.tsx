@@ -1,87 +1,92 @@
-import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Fade from '@mui/material/Fade'
-import Stack from '@mui/material/Stack'
-import { ReactElement, memo } from 'react'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 
-import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
-
-import {
-  GetDiscoveryJourneys_discoveryJourneys as DiscoveryJourney,
-  GetDiscoveryJourneys
-} from '../../../__generated__/GetDiscoveryJourneys'
+import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { EmbedJourney } from './EmbedJourney'
 
-export const GET_DISCOVERY_JOURNEYS = gql`
-  ${BLOCK_FIELDS}
-  query GetDiscoveryJourneys($where: JourneysFilter) {
-    discoveryJourneys: journeys(where: $where) {
-      id
-      seoTitle
-      blocks {
-        ...BlockFields
-      }
-    }
-  }
-`
-
-const discoveryJourneyIds = [
-  '336ea06f-c08a-4d27-9bb7-16336d1a1f98',
-  'f76713ff-1ec0-499c-87fa-5aa394ca66cf',
-  '22ff40a2-b3a3-48af-b48a-6f9ee600bf33'
-]
-
-export const DiscoveryJourneys = memo(
-  function DiscoveryJourneys(): ReactElement {
-    const { data } = useQuery<GetDiscoveryJourneys>(GET_DISCOVERY_JOURNEYS, {
-      variables: {
-        where: {
-          ids: discoveryJourneyIds
-        }
-      }
-    })
-
-    const discoveryJourneys: DiscoveryJourney[] = []
-    data?.discoveryJourneys.forEach((discoveryJourney) => {
-      discoveryJourneys[discoveryJourneyIds.indexOf(discoveryJourney.id)] =
-        discoveryJourney
-    })
-
-    return (
-      <Container sx={{ px: { xs: 6, sm: 0 } }}>
-        <Stack
-          direction="row"
-          spacing={{ xs: 2, sm: 8 }}
-          sx={{ height: { xs: 200, sm: 340, md: 450 } }}
-        >
-          <Fade in timeout={1000}>
-            <Box flexGrow={1} height="100%">
-              <EmbedJourney
-                slug="admin-left"
-                discoveryJourney={discoveryJourneys[0]}
-              />
-            </Box>
-          </Fade>
-          <Fade in timeout={2000}>
-            <Box flexGrow={1} height="100%">
-              <EmbedJourney
-                slug="admin-center"
-                discoveryJourney={discoveryJourneys[1]}
-              />
-            </Box>
-          </Fade>
-          <Fade in timeout={3000}>
-            <Box flexGrow={1} height="100%">
-              <EmbedJourney
-                slug="admin-right"
-                discoveryJourney={discoveryJourneys[2]}
-              />
-            </Box>
-          </Fade>
-        </Stack>
-      </Container>
-    )
-  }
-)
+export function DiscoveryJourneys(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: 'repeat(3, calc(33.33% - 5.5px))',
+          sm: 'repeat(3, calc(33.33% - 21px))'
+        },
+        gap: { xs: 2, sm: 8 }
+      }}
+      data-testid="JourneysAdminDiscoveryJourneys"
+    >
+      <EmbedJourney slug="admin-left">
+        <Typography variant="h1" gutterBottom textAlign="center">
+          ⚠️
+        </Typography>
+        <Typography variant="h6" gutterBottom textAlign="center">
+          {t('Beta version')}
+        </Typography>
+        <Typography variant="h2" gutterBottom textAlign="center">
+          {t('NEW HERE?')}
+        </Typography>
+        <Typography gutterBottom textAlign="center">
+          {t(
+            'You are one of the first users to test our product. Learn about limitations.'
+          )}
+        </Typography>
+        <Box py={6}>
+          <Button size="large" fullWidth endIcon={<ArrowRightIcon />}>
+            {t('Start Here')}
+          </Button>
+        </Box>
+      </EmbedJourney>
+      <EmbedJourney slug="admin-center">
+        <Typography variant="h1" gutterBottom textAlign="center">
+          🧭
+        </Typography>
+        <Typography variant="h6" gutterBottom textAlign="center">
+          {t('Help center')}
+        </Typography>
+        <Typography variant="h2" gutterBottom textAlign="center">
+          {t('TUTORIALS')}
+        </Typography>
+        <Typography gutterBottom textAlign="center">
+          <Trans t={t}>
+            Watch our video tutorials
+            <br />
+            or ask a question
+          </Trans>
+        </Typography>
+        <Box py={6}>
+          <Button size="large" fullWidth endIcon={<ArrowRightIcon />}>
+            {t('Learn More')}
+          </Button>
+        </Box>
+      </EmbedJourney>
+      <EmbedJourney slug="admin-right">
+        <Typography variant="h1" gutterBottom textAlign="center">
+          💬
+        </Typography>
+        <Typography variant="h6" gutterBottom textAlign="center">
+          {t('Free one-on-one')}
+        </Typography>
+        <Typography variant="h2" gutterBottom textAlign="center">
+          {t('ONBOARDING')}
+        </Typography>
+        <Typography gutterBottom textAlign="center">
+          {t(
+            'Get hands-on guidance and personalized support or share your feedback.'
+          )}
+        </Typography>
+        <Box py={6}>
+          <Button size="large" fullWidth endIcon={<ArrowRightIcon />}>
+            {t('Request Now')}
+          </Button>
+        </Box>
+      </EmbedJourney>
+    </Box>
+  )
+}

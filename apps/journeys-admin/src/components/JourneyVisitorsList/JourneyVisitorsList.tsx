@@ -32,7 +32,7 @@ export function JourneyVisitorsList({
   const { t } = useTranslation('apps-journeys-admin')
   const hasVisitors = visitorEdges != null && visitorEdges.length > 0
   return (
-    <Container disableGutters>
+    <Container disableGutters data-testid="JourneysAdminJourneyVisitorsList">
       <Stack
         spacing={6}
         alignItems="center"

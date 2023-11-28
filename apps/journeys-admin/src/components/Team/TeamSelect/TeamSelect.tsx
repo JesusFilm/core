@@ -36,22 +36,24 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
   const anchorRef = useRef(null)
   const [open, setOpen] = useState(onboarding ?? false)
 
-  const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
-    UPDATE_LAST_ACTIVE_TEAM_ID
-  )
+  const [updateLastActiveTeamId, { client }] =
+    useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
 
   function handleChange(event: SelectChangeEvent): void {
     const team = query?.data?.teams.find(
       (team) => team.id === event.target.value
     )
+    setActiveTeam(team ?? null)
     void updateLastActiveTeamId({
       variables: {
         input: {
           lastActiveTeamId: team?.id ?? null
         }
+      },
+      onCompleted() {
+        void client.refetchQueries({ include: ['GetAdminJourneys'] })
       }
     })
-    setActiveTeam(team ?? null)
   }
 
   return (
@@ -62,6 +64,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         alignItems="center"
         sx={{ overflow: 'hidden', flexGrow: 1 }}
         ref={anchorRef}
+        data-testid="TeamSelect"
       >
         <UsersProfiles2Icon sx={{ mr: 1, ml: '3px' }} />
         <FormControl variant="standard" sx={{ minWidth: 100 }}>

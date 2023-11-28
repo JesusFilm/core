@@ -25,6 +25,7 @@ export function VisitorCard({
         href={`/reports/visitors/${visitorNode?.visitorId ?? ''}`}
         passHref
         legacyBehavior
+        prefetch={false}
       >
         {block}
       </NextLink>
@@ -77,6 +78,7 @@ export function VisitorCard({
           borderTopRightRadius: { xs: 0, sm: 12 }
         }
       }}
+      data-testid="VisitorCard"
     >
       {!loading ? withLink(Content) : Content}
     </Card>

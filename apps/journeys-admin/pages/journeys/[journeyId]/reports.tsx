@@ -10,13 +10,11 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ACCEPT_ALL_INVITES } from '../..'
-import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
-import { PageWrapper } from '../../../src/components/NewPageWrapper'
+import { PageWrapper } from '../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
@@ -30,9 +28,9 @@ function JourneyReportsPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Journey Report')} />
+      <NextSeo title={t('Journey Analytics')} />
       <PageWrapper
-        title={t('Journey Report')}
+        title={t('Journey Analytics')}
         user={user}
         backHref={`/journeys/${journeyId}`}
       >
@@ -58,17 +56,13 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
   })
 
   if (redirect != null) return { redirect }
-
-  await apolloClient.mutate<AcceptAllInvites>({
-    mutation: ACCEPT_ALL_INVITES
-  })
 
   try {
     await apolloClient.query<GetAdminJourney>({
@@ -93,7 +87,6 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      flags,
       ...translations
     }
   }

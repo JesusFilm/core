@@ -1,8 +1,5 @@
-import {
-  ApolloClient,
-  NormalizedCacheObject,
-  createHttpLink
-} from '@apollo/client'
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+import { BatchHttpLink } from '@apollo/client/link/batch-http'
 import { setContext } from '@apollo/client/link/context'
 import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
@@ -14,7 +11,7 @@ export function createApolloClient(
   token: string
 ): ApolloClient<NormalizedCacheObject> {
   const isSsrMode = typeof window === 'undefined'
-  const httpLink = createHttpLink({
+  const httpLink = new BatchHttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
   })
 
@@ -36,7 +33,8 @@ export function createApolloClient(
     link: authLink.concat(httpLink),
     cache: cache(),
     name: 'journeys-admin',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
+    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
+    connectToDevTools: true
   })
 }
 

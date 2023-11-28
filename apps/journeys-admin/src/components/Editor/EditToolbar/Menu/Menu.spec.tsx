@@ -95,7 +95,7 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -159,7 +159,7 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Create Template' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -217,13 +217,12 @@ describe('EditToolbar Menu', () => {
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
     expect(
-      getByRole('menuitem', { name: 'Publisher Settings' })
+      getByRole('menuitem', { name: 'Template Settings' })
     ).toBeInTheDocument()
     await waitFor(() => {
-      expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
+      expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
     })
-    expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Report' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -303,7 +302,7 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
   })
 
-  it('should link back to publisher page on click', () => {
+  it('should open templates dialog', () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'stepId',
@@ -314,7 +313,7 @@ describe('EditToolbar Menu', () => {
       children: []
     }
 
-    const { getByRole } = render(
+    const { getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -335,11 +334,14 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-
-    fireEvent.click(getByRole('button'))
     expect(
-      getByRole('menuitem', { name: 'Publisher Settings' })
-    ).toHaveAttribute('href', '/publisher/journeyId')
+      queryByRole('dialog', { name: 'Template Settings' })
+    ).not.toBeInTheDocument()
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Template Settings' }))
+    expect(
+      getByRole('dialog', { name: 'Template Settings' })
+    ).toBeInTheDocument()
   })
 
   it('should handle edit journey title', () => {
@@ -393,55 +395,6 @@ describe('EditToolbar Menu', () => {
     const menu = getByRole('button')
     fireEvent.click(menu)
     fireEvent.click(getByRole('menuitem', { name: 'Description' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Cancel' }))
-    expect(menu).not.toHaveAttribute('aria-expanded')
-  })
-
-  it('should handle edit journey title and description if user is publisher', async () => {
-    const { getByRole, queryByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_ROLE
-              },
-              result: {
-                data: {
-                  getUserRole: {
-                    id: 'userRoleId',
-                    userId: '1',
-                    roles: [Role.publisher]
-                  }
-                }
-              }
-            }
-          ]}
-        >
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journeyId',
-                slug: 'my-journey',
-                template: true,
-                tags: []
-              } as unknown as Journey
-            }}
-          >
-            <EditorProvider>
-              <Menu />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    expect(queryByRole('menuitem', { name: 'Title' })).not.toBeInTheDocument()
-    await waitFor(() =>
-      fireEvent.click(getByRole('menuitem', { name: 'Description' }))
-    )
     expect(getByRole('dialog')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     expect(menu).not.toHaveAttribute('aria-expanded')

@@ -1,1 +1,1 @@
-export { NavigationDrawer } from './NavigationDrawer'
+export { NavigationDrawer, GET_ME } from './NavigationDrawer'

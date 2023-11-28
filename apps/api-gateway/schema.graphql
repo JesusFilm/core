@@ -642,6 +642,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  creatorImageBlock: ImageBlock
   chatButtons: [ChatButton!]!
   id: ID!
   title: String!
@@ -649,6 +650,7 @@ type Journey
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
+  creatorDescription: String
   slug: String!
   archivedAt: DateTime
   deletedAt: DateTime
@@ -752,6 +754,8 @@ input JourneyUpdateInput
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
+  creatorDescription: String
+  creatorImageBlockId: ID
   primaryImageBlockId: ID
   slug: String
   seoTitle: String
@@ -942,6 +946,12 @@ enum LanguageIdType
 {
   databaseId @join__enumValue(graph: LANGUAGES)
   bcp47 @join__enumValue(graph: LANGUAGES)
+}
+
+input LanguagesFilter
+  @join__type(graph: LANGUAGES)
+{
+  ids: [ID!]
 }
 
 type LanguageWithSlug
@@ -1141,6 +1151,7 @@ type Mutation
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @join__field(graph: JOURNEYS)
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent! @join__field(graph: JOURNEYS)
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent! @join__field(graph: JOURNEYS)
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @join__field(graph: JOURNEYS)
@@ -1329,7 +1340,7 @@ type Query
   where the user is not a member of a team but is an editor or owner of the
   journey
   """
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
@@ -1375,7 +1386,7 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-  languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
+  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
   getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
@@ -1640,15 +1651,57 @@ input StepNextEventCreateInput
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Id of the current StepBlock"""
   blockId: ID!
 
-  """id of the mext stepBlock"""
+  """id of the next stepBlock"""
   nextStepId: ID!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   label: String
 
   """stepName of the next stepBlock"""
+  value: String
+}
+
+type StepPreviousEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+
+  """ID of the journey that the stepBlock belongs to"""
+  journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
+
+  """stepName of the current stepBlock"""
+  label: String
+
+  """stepName of the previous stepBlock"""
+  value: String
+}
+
+input StepPreviousEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+
+  """Id of the current StepBlock"""
+  blockId: ID!
+
+  """id of the previous stepBlock"""
+  previousStepId: ID!
+
+  """stepName of the current stepBlock"""
+  label: String
+
+  """stepName of the previous stepBlock"""
   value: String
 }
 
@@ -1678,9 +1731,11 @@ input StepViewEventCreateInput
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Id of the current StepBlock"""
   blockId: ID!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   value: String
 }
 

@@ -18,13 +18,14 @@ export function MultipleSummaryReport(): ReactElement {
         width: '100%',
         backgroundColor: 'background.paper'
       }}
+      data-testid="JourneysAdminMultipleSummaryReport"
     >
       <Container maxWidth="lg" sx={{ px: { xs: 6, sm: 8 } }}>
         <Stack direction="row" spacing={4} sx={{ py: 2 }}>
           <Typography variant="subtitle1" sx={{ pt: 1 }}>
             Reports
           </Typography>
-          <NextLink href="/reports" passHref legacyBehavior>
+          <NextLink href="/reports" passHref legacyBehavior prefetch={false}>
             <Button
               size="small"
               variant="text"

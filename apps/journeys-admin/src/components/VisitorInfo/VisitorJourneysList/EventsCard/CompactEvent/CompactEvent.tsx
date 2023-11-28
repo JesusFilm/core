@@ -24,6 +24,7 @@ export function CompactEvent({
           flex: 0
         }
       }}
+      data-testid="CompactEvent"
     >
       <TimelineSeparator sx={{ ml: '41px', mr: '26px' }}>
         <TimelineConnector sx={{ flexGrow: '2' }} />

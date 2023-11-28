@@ -1,7 +1,5 @@
 import { render } from '@testing-library/react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import {
   JourneyStatus,
   ThemeMode,
@@ -57,6 +55,8 @@ describe('HostAvatars', () => {
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: 'My awesome journey',
@@ -111,17 +111,9 @@ describe('HostAvatars', () => {
   describe('hasPlaceholder', () => {
     it('renders placeholder if no images are set', () => {
       const { getByTestId } = render(
-        <FlagsProvider
-          flags={{
-            editableStepFooter: true
-          }}
-        >
-          <JourneyProvider
-            value={{ journey: { ...journey }, variant: 'admin' }}
-          >
-            <HostAvatars hasPlaceholder />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey: { ...journey }, variant: 'admin' }}>
+          <HostAvatars hasPlaceholder />
+        </JourneyProvider>
       )
 
       const adminPlaceholderElement = getByTestId('host-avatar-placeholder')
@@ -135,16 +127,14 @@ describe('HostAvatars', () => {
       }
 
       const { getByTestId, getByRole } = render(
-        <FlagsProvider flags={{ editableStepFooter: true }}>
-          <JourneyProvider
-            value={{
-              journey: { ...journey, host: oneAvatarHost },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatars hasPlaceholder />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider
+          value={{
+            journey: { ...journey, host: oneAvatarHost },
+            variant: 'admin'
+          }}
+        >
+          <HostAvatars hasPlaceholder />
+        </JourneyProvider>
       )
 
       const avatars = getByRole('img')

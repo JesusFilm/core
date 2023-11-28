@@ -4,6 +4,8 @@ on:
     branches: [main, feature/*]
   pull_request:
     branches: [main, feature/*]
+  merge_group:
+    branches: [main]
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -141,8 +143,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node-version: [18]
+        # https://jestjs.io/docs/cli#--shard
+        shard: ['1/3', '2/3', '3/3']
     services:
       postgres:
         image: postgres
@@ -181,11 +186,15 @@ jobs:
           targets: prisma-generate
           all: true
           parallel: 1
+      - name: Get number of CPU cores
+        id: cpu-cores
+        uses: SimenB/github-actions-cpu-cores@v2
       - name: run tests
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: test
-          args: --ci --silent
+          args: --ci --silent --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }}
+          parallel: 1
       - name: download codecov
         run: |
           curl -o /usr/local/bin/codecov https://uploader.codecov.io/latest/linux/codecov

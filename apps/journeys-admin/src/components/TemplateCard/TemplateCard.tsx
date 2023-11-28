@@ -78,6 +78,7 @@ export function TemplateCard({
               }
             : undefined
       }}
+      data-testid="JourneysAdminTemplateCard"
     >
       {journey?.primaryImageBlock?.src != null ? (
         <CardMedia
@@ -127,6 +128,7 @@ export function TemplateCard({
           }
           passHref
           legacyBehavior
+          prefetch={false}
         >
           <CardActionArea>
             <CardContent>

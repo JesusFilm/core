@@ -10,7 +10,7 @@ import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Role } from '../../__generated__/globalTypes'
-import { PageWrapper } from '../../src/components/NewPageWrapper'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useUserRoleQuery } from '../../src/libs/useUserRoleQuery'
@@ -46,7 +46,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { flags, redirect, translations } = await initAndAuthApp({
+  const { redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -56,7 +56,6 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      flags,
       ...translations
     }
   }

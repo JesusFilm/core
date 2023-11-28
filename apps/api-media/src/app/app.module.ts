@@ -9,10 +9,9 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 
-import { NestHealthModule } from '@core/nest/health'
-
 import { CloudflareImageModule } from './modules/cloudflare/image/image.module'
 import { CloudflareVideoModule } from './modules/cloudflare/video/video.module'
+import { NestHealthModule } from './modules/health/health.module'
 import { SegmindModule } from './modules/segmind/segmind.module'
 import { UnsplashImageModule } from './modules/unsplash/image/image.module'
 

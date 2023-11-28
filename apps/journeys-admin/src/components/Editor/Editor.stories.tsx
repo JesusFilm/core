@@ -3,7 +3,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetJourney_journey_blocks as Block,
@@ -24,6 +23,8 @@ import {
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
 
+import { ControlPanel } from './ControlPanel'
+import { Drawer } from './Drawer'
 import { EditToolbar } from './EditToolbar'
 import { JourneyEdit } from './JourneyEdit'
 
@@ -631,6 +632,8 @@ const journey: Journey = {
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   blocks,
   featuredAt: null,
@@ -648,21 +651,21 @@ const Template: StoryObj<typeof Editor> = {
   render: (args) => {
     return (
       <MockedProvider>
-        <FlagsProvider>
-          <Editor
-            journey={args.journey}
-            view={args.view ?? ActiveJourneyEditContent.Canvas}
+        <Editor
+          journey={args.journey}
+          view={args.view ?? ActiveJourneyEditContent.Canvas}
+        >
+          <PageWrapper
+            title={args.journey?.title ?? 'Edit Journey'}
+            mainHeaderChildren={<EditToolbar />}
+            bottomPanelChildren={<ControlPanel />}
+            customSidePanel={<Drawer />}
+            mainBodyPadding={false}
+            backHref="/journeys/nua-journey-ep-3-decision"
           >
-            <PageWrapper
-              title={args.journey?.title ?? 'Edit Journey'}
-              showDrawer
-              menu={<EditToolbar />}
-              backHref="/journeys/nua-journey-ep-3-decision"
-            >
-              <JourneyEdit />
-            </PageWrapper>
-          </Editor>
-        </FlagsProvider>
+            <JourneyEdit />
+          </PageWrapper>
+        </Editor>
       </MockedProvider>
     )
   }
@@ -677,7 +680,7 @@ export const SocialPreview = {
   ...Template,
   args: { journey },
   play: async () => {
-    const button = screen.getByTestId('social-preview-navigation-card')
+    const button = screen.getByTestId('NavigationCardSocial')
     await userEvent.click(button)
     await waitFor(async () => {
       await screen.getByText('Social App View')
@@ -689,7 +692,7 @@ export const Goals = {
   ...Template,
   args: { journey },
   play: async () => {
-    const button = screen.getByTestId('goals-navigation-card')
+    const button = screen.getByTestId('NavigationCardGoals')
     await userEvent.click(button)
     await waitFor(async () => {
       await screen.getByText('Every Journey has a goal')

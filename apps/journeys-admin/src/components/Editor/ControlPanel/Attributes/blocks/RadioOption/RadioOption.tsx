@@ -45,6 +45,7 @@ export function RadioOption({
             children: <Action />
           })
         }}
+        testId="RadioOption"
       />
     </>
   )

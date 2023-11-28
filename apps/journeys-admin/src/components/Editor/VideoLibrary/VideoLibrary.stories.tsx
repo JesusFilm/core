@@ -4,8 +4,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { userEvent, waitFor, within } from '@storybook/testing-library'
 import { ReactElement, useState } from 'react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { videos } from './VideoFromLocal/data'
@@ -123,13 +121,11 @@ const VideoLibraryDefault = ({ onSelect }): ReactElement => {
         }
       ]}
     >
-      <FlagsProvider flags={{ videoFromCloudflare: true }}>
-        <VideoLibrary
-          open={open}
-          onClose={() => setOpen(false)}
-          onSelect={onSelect}
-        />
-      </FlagsProvider>
+      <VideoLibrary
+        open={open}
+        onClose={() => setOpen(false)}
+        onSelect={onSelect}
+      />
     </MockedProvider>
   )
 }

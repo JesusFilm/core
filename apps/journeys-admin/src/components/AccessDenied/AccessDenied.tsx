@@ -31,6 +31,7 @@ export function AccessDenied({
         alignItems="center"
         justifyContent="center"
         sx={{ width: '100%', height: '100vh' }}
+        data-testid="JourneysAdminAccessDenied"
       >
         <Box sx={{ width: { xs: '296px', sm: '587px', md: '759px' } }}>
           <Stack
@@ -109,7 +110,7 @@ export function AccessDenied({
           </List>
           <Stack direction="row" justifyContent="space-between" sx={{ mt: 7 }}>
             <Box display={{ xs: 'none', sm: 'flex' }}>
-              <NextLink href="/" passHref legacyBehavior>
+              <NextLink href="/" passHref legacyBehavior prefetch={false}>
                 <Button
                   sx={{ color: 'primary.main' }}
                   startIcon={<ChevronLeftIcon />}
@@ -120,7 +121,7 @@ export function AccessDenied({
               </NextLink>
             </Box>
             <Box display={{ xs: 'flex', sm: 'none' }}>
-              <NextLink href="/" passHref legacyBehavior>
+              <NextLink href="/" passHref legacyBehavior prefetch={false}>
                 <Button
                   sx={{ color: 'primary.main' }}
                   startIcon={<ChevronLeftIcon />}
@@ -134,6 +135,7 @@ export function AccessDenied({
               href="mailto:support@nextstep.is?subject=Need%20help%20with%20requesting%20editing%20access%20to%20the%20journey"
               passHref
               legacyBehavior
+              prefetch={false}
             >
               <Button
                 sx={{

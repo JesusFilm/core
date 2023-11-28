@@ -5,6 +5,7 @@ import crypto from 'crypto'
 import { configure } from '@testing-library/react'
 
 import { mswServer } from './test/mswServer'
+import './test/i18n'
 
 configure({ asyncUtilTimeout: 2500 })
 
@@ -33,3 +34,6 @@ afterEach(() => mswServer.resetHandlers())
 afterAll(() => mswServer.close())
 
 jest.mock('next/router', () => require('next-router-mock'))
+
+if (process.env.CI === 'true')
+  jest.retryTimes(3, { logErrorsBeforeRetry: true })

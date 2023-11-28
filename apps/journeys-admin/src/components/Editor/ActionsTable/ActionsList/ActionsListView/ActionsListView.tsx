@@ -59,6 +59,7 @@ export function ActionsListView({
           backgroundColor: 'transparent',
           display: mdUp ? 'block' : 'none'
         }}
+        data-testid="ActionsListViewDesktop"
       >
         <Table>
           <TableHead sx={{ borderBottom: '1.5px solid #DEDFE0' }}>
@@ -141,6 +142,7 @@ export function ActionsListView({
           border: '1px solid #DEDFE0',
           display: mdUp ? 'none' : 'block'
         }}
+        data-testid="ActionsListViewMobile"
       >
         <Table>
           <TableHead sx={{ borderBottom: '1.5px solid #DEDFE0' }}>

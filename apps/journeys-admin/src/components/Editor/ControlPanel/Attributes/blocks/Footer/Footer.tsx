@@ -16,7 +16,7 @@ export function Footer(): ReactElement {
   const { dispatch } = useEditor()
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
-  const hostName = journey?.host?.title ?? t('None')
+  const hostName = journey?.host?.title
 
   const translatedPlatforms = [
     { value: ChatPlatform.facebook, label: t('Facebook') },
@@ -61,7 +61,7 @@ export function Footer(): ReactElement {
         id="hosted-by"
         icon={<UserProfileCircleIcon />}
         name={t('Hosted By')}
-        value={hostName as string}
+        value={hostName ?? t('None')}
         description={t("Host's name")}
         onClick={() => {
           dispatch({

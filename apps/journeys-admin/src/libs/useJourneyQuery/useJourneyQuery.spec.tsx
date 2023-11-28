@@ -49,6 +49,8 @@ describe('useJourneyQuery', () => {
       strategySlug: null,
       blocks: [],
       primaryImageBlock: null,
+      creatorDescription: null,
+      creatorImageBlock: null,
       chatButtons: [],
       host: null,
       team: null,
