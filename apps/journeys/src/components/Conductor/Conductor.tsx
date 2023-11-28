@@ -68,19 +68,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     JOURNEY_VISITOR_UPDATE
   )
 
-  // TODO: fix for touch laptops detection
-  const isTouchScreenDevice = (): boolean => {
-    try {
-      document.createEvent('TouchEvent')
-      return true
-    } catch (e) {
-      return false
-    }
-  }
-
-  const enableTouchMoveNext = activeBlock?.locked
-    ? false
-    : isTouchScreenDevice()
+  const enableTouchMoveNext = !activeBlock?.locked ?? false
 
   useEffect(() => {
     let touchstartX = 0
@@ -250,9 +238,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               >
                 <Typography color="secondary">
                   {`Unlocked: ${!activeBlock?.locked ? 'true' : 'false'}`}
-                </Typography>
-                <Typography color="secondary">
-                  {`Touch device: ${isTouchScreenDevice() ? 'true' : 'false'}`}
                 </Typography>
                 <Typography color="secondary">
                   {`Enable touch move: ${
