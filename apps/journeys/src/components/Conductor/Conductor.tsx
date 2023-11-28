@@ -75,9 +75,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     let touchendX = 0
 
     function checkDirection(): void {
-      if (touchendX + 100 < touchstartX && enableTouchMoveNext)
-        nextActiveBlock()
-      if (touchendX - 100 > touchstartX) previousActiveBlock()
+      if (touchendX + 50 < touchstartX && enableTouchMoveNext) nextActiveBlock()
+      if (touchendX - 50 > touchstartX) previousActiveBlock()
     }
 
     function touchStart(e): void {
