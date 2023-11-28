@@ -68,6 +68,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     JOURNEY_VISITOR_UPDATE
   )
 
+  // TODO: fix for touch laptops detection
   const isTouchScreenDevice = (): boolean => {
     try {
       document.createEvent('TouchEvent')
@@ -76,9 +77,38 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       return false
     }
   }
+
   const enableTouchMoveNext = activeBlock?.locked
     ? false
     : isTouchScreenDevice()
+
+  useEffect(() => {
+    let touchstartX = 0
+    let touchendX = 0
+
+    function checkDirection(): void {
+      if (touchendX + 100 < touchstartX && enableTouchMoveNext)
+        nextActiveBlock()
+      if (touchendX - 100 > touchstartX) previousActiveBlock()
+    }
+
+    function touchStart(e): void {
+      touchstartX = e.changedTouches[0].screenX
+    }
+
+    function touchEnd(e): void {
+      touchendX = e.changedTouches[0].screenX
+      checkDirection()
+    }
+
+    document.addEventListener('touchstart', touchStart)
+    document.addEventListener('touchend', touchEnd)
+
+    return () => {
+      document.removeEventListener('touchstart', touchStart)
+      document.removeEventListener('touchend', touchEnd)
+    }
+  }, [activeBlock, enableTouchMoveNext])
 
   // ScrollBlock: https:// gist.github.com/reecelucas/2f510e6b8504008deaaa52732202d2da
   const scroll = useRef(false)
@@ -161,26 +191,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   useEffect(() => {
     setTreeBlocks(blocks)
   }, [setTreeBlocks, blocks])
-
-  useEffect(() => {
-    let touchstartX = 0
-    let touchendX = 0
-
-    function checkDirection(): void {
-      if (touchendX + 100 < touchstartX) nextActiveBlock()
-      if (touchendX - 100 > touchstartX) previousActiveBlock()
-    }
-
-    document.addEventListener('touchstart', (e) => {
-      touchstartX = e.changedTouches[0].screenX
-    })
-
-    document.addEventListener('touchend', (e) => {
-      touchendX = e.changedTouches[0].screenX
-      checkDirection()
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const mobileNotchStyling: SxProps = {
     width: {
