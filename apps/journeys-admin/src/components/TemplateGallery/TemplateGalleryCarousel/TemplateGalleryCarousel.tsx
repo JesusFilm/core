@@ -102,7 +102,7 @@ export function TemplateGalleryCarousel<T>({
           watchOverflow
           allowTouchMove
           observer
-          slidesOffsetBefore={slidesOffsetBefore}
+          slidesOffsetBefore={slidesOffsetBefore ?? 0}
           observeParents
           resizeObserver
           mousewheel={{ forceToAxis: true }}
