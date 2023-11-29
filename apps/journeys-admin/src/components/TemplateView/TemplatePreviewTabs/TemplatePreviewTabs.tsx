@@ -68,9 +68,7 @@ export function TemplatePreviewTabs(): ReactElement {
         <Tab
           label={
             steps != null ? (
-              t('{{count}} Cards', {
-                count: steps?.length ?? 0
-              })
+              t('{{count}} Cards', { count: steps.length })
             ) : (
               <Skeleton width={72} height="100%" />
             )
@@ -81,10 +79,8 @@ export function TemplatePreviewTabs(): ReactElement {
         <Tab
           disabled={videos?.length === 0 || videos == null}
           label={
-            steps != null ? (
-              t('{{count}} Videos', {
-                count: videos?.length ?? 0
-              })
+            videos != null ? (
+              t('{{count}} Videos', { count: videos.length })
             ) : (
               <Skeleton width={72} height="100%" />
             )

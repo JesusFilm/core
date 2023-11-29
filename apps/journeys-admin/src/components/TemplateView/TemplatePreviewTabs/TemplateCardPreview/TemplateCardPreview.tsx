@@ -158,13 +158,13 @@ export function TemplateCardPreview({
       {[0, 1, 2, 3, 4, 5, 6].map((value) => {
         return (
           <Skeleton
+            variant="rounded"
             key={value}
             data-testid="TemplateCardSkeleton"
             sx={{
               minWidth: { xs: 194, sm: 267 },
               mr: { xs: 3, sm: 7 },
               height: { xs: 295, sm: 404 },
-              transform: 'scale(1)',
               borderRadius: 2
             }}
           />
