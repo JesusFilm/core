@@ -72,8 +72,7 @@ const nextConfig = {
       ]
     },
     fallbackNodePolyfills: false
-  },
-  output: 'standalone'
+  }
 }
 const plugins = [withNx]
 if (process.env.ANALYZE === 'true') {

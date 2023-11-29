@@ -1,16 +1,12 @@
-FROM node:18-alpine
+FROM node:18-bullseye-slim
 
 EXPOSE 3000
 
-RUN apk upgrade --update-cache --available && \
-    apk add libc6-compat python3 build-base g++ cairo-dev pixman pango && \
-    rm -rf /var/cache/apk/*
-
 WORKDIR /app
-COPY ./dist/apps/journeys-admin/.next/standalone .
-COPY ./package-lock.json .
+COPY ./dist/apps/journeys-admin .
 
 # dependencies
-RUN npm install --omit=dev 
+RUN npm i -g next
+RUN npm i --omit=dev --force --silent
 
-CMD node ./apps/journeys-admin/server.js
+CMD npm start
