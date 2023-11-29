@@ -5,8 +5,6 @@ variable "ecs_config" {
     subnets      = list(string)
     alb_dns_name = string
     zone_id      = string
-    zone_id      = string
-    alb_dns_name = string
     alb_listener = object({
       alb_arn  = string
       protocol = string
