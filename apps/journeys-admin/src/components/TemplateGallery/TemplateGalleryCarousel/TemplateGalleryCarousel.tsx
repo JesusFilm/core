@@ -105,9 +105,20 @@ export function TemplateGalleryCarousel<T>({
           breakpoints={breakpoints}
           onSwiper={(swiper) => setSwiper(swiper)}
         >
-          {items.map((item) => {
+          {items.map((item, index) => {
             return (
-              <SwiperSlide key={item.id} data-testid={`journey-${item.id}`}>
+              <SwiperSlide
+                key={item.id}
+                data-testid={`journey-${item.id}`}
+                onMouseOver={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
+                onFocus={() => {
+                  if (swiper?.isEnd as boolean) {
+                    swiper?.slideTo(0)
+                  }
+                  swiper?.slideTo(index)
+                }}
+              >
                 {renderItem({ item })}
               </SwiperSlide>
             )
