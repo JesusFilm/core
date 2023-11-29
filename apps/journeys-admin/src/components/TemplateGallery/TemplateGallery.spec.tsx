@@ -4,6 +4,8 @@ import { NextRouter, useRouter } from 'next/router'
 
 import '../../../test/i18n'
 
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+
 import {
   getJourneysMock,
   getJourneysWithoutLanguageIdsMock,
@@ -32,7 +34,21 @@ describe('TemplateGallery', () => {
         mocks={[
           getJourneysWithoutLanguageIdsMock,
           getLanguagesMock,
-          getTagsMock
+          getTagsMock,
+          {
+            ...getJourneysMock,
+            request: {
+              query: GET_JOURNEYS,
+              variables: {
+                where: {
+                  template: true,
+                  orderByRecent: true,
+                  tagIds: ['acceptanceTagId'],
+                  languageIds: ['529']
+                }
+              }
+            }
+          }
         ]}
       >
         <TemplateGallery />
@@ -60,7 +76,27 @@ describe('TemplateGallery', () => {
     } as unknown as NextRouter)
 
     const { getByRole, queryByRole } = render(
-      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
+      <MockedProvider
+        mocks={[
+          getJourneysMock,
+          getLanguagesMock,
+          getTagsMock,
+          {
+            ...getJourneysMock,
+            request: {
+              query: GET_JOURNEYS,
+              variables: {
+                where: {
+                  template: true,
+                  orderByRecent: true,
+                  tagIds: ['acceptanceTagId'],
+                  languageIds: ['529']
+                }
+              }
+            }
+          }
+        ]}
+      >
         <TemplateGallery />
       </MockedProvider>
     )
@@ -101,6 +137,20 @@ describe('TemplateGallery', () => {
       <MockedProvider
         mocks={[
           getJourneysWithoutLanguageIdsMock,
+          {
+            ...getJourneysWithoutLanguageIdsMock,
+            request: {
+              query: GET_JOURNEYS,
+              variables: {
+                where: {
+                  template: true,
+                  orderByRecent: true,
+                  tagIds: undefined,
+                  languageIds: ['496']
+                }
+              }
+            }
+          },
           getLanguagesMock,
           getTagsMock
         ]}
@@ -132,7 +182,40 @@ describe('TemplateGallery', () => {
     } as unknown as NextRouter)
 
     const { getByRole } = render(
-      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
+      <MockedProvider
+        mocks={[
+          {
+            ...getJourneysMock,
+            request: {
+              query: GET_JOURNEYS,
+              variables: {
+                where: {
+                  template: true,
+                  orderByRecent: true,
+                  tagIds: undefined,
+                  languageIds: ['529']
+                }
+              }
+            }
+          },
+          {
+            ...getJourneysMock,
+            request: {
+              query: GET_JOURNEYS,
+              variables: {
+                where: {
+                  template: true,
+                  orderByRecent: true,
+                  tagIds: ['acceptanceTagId'],
+                  languageIds: ['529']
+                }
+              }
+            }
+          },
+          getLanguagesMock,
+          getTagsMock
+        ]}
+      >
         <TemplateGallery />
       </MockedProvider>
     )
