@@ -90,7 +90,6 @@ export function TemplateGalleryCard({
       <CardActionArea
         sx={{
           backgroundColor: 'transparent',
-          width: 'content-fit',
           p: 2,
           transition: (theme) => theme.transitions.create('background-color'),
           '&:focus': {
