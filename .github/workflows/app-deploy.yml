@@ -1,7 +1,7 @@
 name: App Deploy
 on:
   push:
-    branches: [main, feature/*]
+    branches: [main, stage, feature/*]
   pull_request:
     branches: [main, feature/*]
   merge_group:
