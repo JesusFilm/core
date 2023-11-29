@@ -293,6 +293,12 @@ export class CardBlockUpdateInput {
     themeName?: Nullable<ThemeName>;
 }
 
+export class FormBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+}
+
 export class IconBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
@@ -804,6 +810,14 @@ export class CardBlock implements Block {
     fullscreen: boolean;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
+}
+
+export class FormBlock implements Block {
+    __typename?: 'FormBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
 }
 
 export class GridContainerBlock implements Block {
@@ -1379,6 +1393,8 @@ export abstract class IMutation {
     abstract cardBlockCreate(input: CardBlockCreateInput): CardBlock | Promise<CardBlock>;
 
     abstract cardBlockUpdate(id: string, input: CardBlockUpdateInput, journeyId?: Nullable<string>): CardBlock | Promise<CardBlock>;
+
+    abstract formBlockCreate(input: FormBlockCreateInput): FormBlock | Promise<FormBlock>;
 
     abstract iconBlockCreate(input: IconBlockCreateInput): IconBlock | Promise<IconBlock>;
 

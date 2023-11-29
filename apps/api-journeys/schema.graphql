@@ -142,6 +142,7 @@ extend type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): CardBlock!
+  formBlockCreate(input: FormBlockCreateInput!): FormBlock!
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
   iconBlockUpdate(
     id: ID!
@@ -439,6 +440,19 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+}
+
+type FormBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+}
+
+input FormBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
 }
 
 enum GridDirection {
@@ -1745,7 +1759,14 @@ extend type Query {
   where the user is not a member of a team but is an editor or owner of the
   journey
   """
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+
+    """Use Last Active Team Id from JourneyProfile (if null will error)"""
+    useLastActiveTeamId: Boolean
+  ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!

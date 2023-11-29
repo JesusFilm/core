@@ -394,6 +394,24 @@ interface Event
   value: String
 }
 
+type FormBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+}
+
+input FormBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
 enum GridAlignItems
   @join__type(graph: JOURNEYS)
 {
@@ -1069,6 +1087,7 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): CardBlock! @join__field(graph: JOURNEYS)
+  formBlockCreate(input: FormBlockCreateInput!): FormBlock! @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
   iconBlockUpdate(
     id: ID!
@@ -1340,7 +1359,14 @@ type Query
   where the user is not a member of a team but is an editor or owner of the
   journey
   """
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+
+    """Use Last Active Team Id from JourneyProfile (if null will error)"""
+    useLastActiveTeamId: Boolean
+  ): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)

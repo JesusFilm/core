@@ -7,7 +7,7 @@ import {
 } from '@formium/types'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { formiumClient } from '../../libs/formiumClient'
+import { formiumClient } from '../../libs/onboardingFormiumClient'
 import ArrowRight from '../icons/ArrowRight'
 
 import { FormiumForm } from './FormiumForm'

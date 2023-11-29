@@ -816,6 +816,7 @@ export class JourneyResolver {
     if (idNotIn.length > 0) {
       filter.id = { notIn: idNotIn }
     }
+
     return await this.prismaService.block.findMany({
       where: filter,
       orderBy: { parentOrder: 'asc' },

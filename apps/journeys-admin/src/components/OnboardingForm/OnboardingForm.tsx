@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 
 import { FormiumForm } from '@core/shared/ui/FormiumForm'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+import { formiumClient } from '@core/shared/ui/onboardingFormiumClient'
 
 import { JourneyProfileOnboardingFormComplete } from '../../../__generated__/JourneyProfileOnboardingFormComplete'
 
@@ -53,6 +54,7 @@ export function OnboardingForm({
       </Stack>
       <FormiumForm
         form={form}
+        formiumClient={formiumClient}
         userId={user.id}
         email={user.email}
         hiddenPageTitle
