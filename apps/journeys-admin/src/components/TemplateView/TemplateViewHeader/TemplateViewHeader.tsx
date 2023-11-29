@@ -99,7 +99,9 @@ export function TemplateViewHeader({
               <Skeleton
                 data-testid="TemplateViewTitleSkeleton"
                 sx={{
+                  transform: 'scale(1, 0.8)',
                   width: { xs: '100%', sm: '50%' },
+                  height: { xs: 26, sm: 38 },
                   maxWidth: { xs: 200, sm: 400 }
                 }}
               />

@@ -21,7 +21,7 @@ export function SocialImage({
         position: 'relative',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'background.default',
+        backgroundColor: journey != null ? 'background.default' : 'transparent',
         overflow: 'hidden',
         width: { xs: 107, sm: 244 },
         height: { xs: 107, sm: 244 },
@@ -52,7 +52,10 @@ export function SocialImage({
         <Skeleton
           data-testid="SocialImageSkeleton"
           variant="rectangular"
-          sx={{ width: '100%', height: '100%' }}
+          sx={{
+            width: '100%',
+            height: '100%'
+          }}
         />
       )}
     </Stack>
