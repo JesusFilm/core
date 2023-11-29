@@ -70,7 +70,7 @@ export function TagCarousels({
           md: 5
         }}
       />
-      <Stack direction="row" gap={10}>
+      <Stack direction="row" gap={10} sx={{ ml: -2 }}>
         {loading
           ? [0, 1].map((item, index) => {
               return (
