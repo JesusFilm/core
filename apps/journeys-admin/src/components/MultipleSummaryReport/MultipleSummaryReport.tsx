@@ -25,7 +25,7 @@ export function MultipleSummaryReport(): ReactElement {
           <Typography variant="subtitle1" sx={{ pt: 1 }}>
             Reports
           </Typography>
-          <NextLink href="/reports" passHref legacyBehavior>
+          <NextLink href="/reports" passHref legacyBehavior prefetch={false}>
             <Button
               size="small"
               variant="text"

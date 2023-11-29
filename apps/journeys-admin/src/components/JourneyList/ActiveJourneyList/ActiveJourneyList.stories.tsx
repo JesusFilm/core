@@ -37,7 +37,8 @@ export const Default = {
           request: {
             query: GET_ADMIN_JOURNEYS,
             variables: {
-              status: [JourneyStatus.draft, JourneyStatus.published]
+              status: [JourneyStatus.draft, JourneyStatus.published],
+              useLastActiveTeamId: true
             }
           },
           result: {
@@ -66,7 +67,8 @@ export const NoJourneys = {
           request: {
             query: GET_ADMIN_JOURNEYS,
             variables: {
-              status: [JourneyStatus.draft, JourneyStatus.published]
+              status: [JourneyStatus.draft, JourneyStatus.published],
+              useLastActiveTeamId: true
             }
           },
           result: {

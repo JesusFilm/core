@@ -37,7 +37,7 @@ rm -rf bin
 # - update .devcontainer/post-create-command.sh apollo router version (...nix/vX.X.X)
 # - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
 # - inform all developers to rebuild their containers
-curl -sSL https://router.apollo.dev/download/nix/v1.13.2 | sh
+curl -sSL https://router.apollo.dev/download/nix/v1.34.1 | sh
 mv router apps/api-gateway/
 
 # install doppler

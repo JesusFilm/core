@@ -12,7 +12,12 @@ interface ReportMenuItemProps {
 
 export function ReportMenuItem({ journey }: ReportMenuItemProps): ReactElement {
   return (
-    <NextLink href={`/journeys/${journey.id}/reports`} passHref legacyBehavior>
+    <NextLink
+      href={`/journeys/${journey.id}/reports`}
+      passHref
+      legacyBehavior
+      prefetch={false}
+    >
       <MenuItem label="Analytics" icon={<BarChartSquare3Icon />} />
     </NextLink>
   )

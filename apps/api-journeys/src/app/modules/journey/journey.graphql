@@ -95,6 +95,10 @@ extend type Query {
     status: [JourneyStatus!]
     template: Boolean
     teamId: ID
+    """
+    Use Last Active Team Id from JourneyProfile (if null will error)
+    """
+    useLastActiveTeamId: Boolean
   ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!

@@ -97,7 +97,7 @@ export function OnboardingPanelContent(): ReactElement {
       <SidePanelContainer border={false}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="subtitle1">{t('Use Template')}</Typography>
-          <NextLink href="/templates" passHref legacyBehavior>
+          <NextLink href="/templates" passHref legacyBehavior prefetch={false}>
             <Link
               underline="none"
               variant="subtitle2"
@@ -131,7 +131,7 @@ export function OnboardingPanelContent(): ReactElement {
         )
       )}
       <SidePanelContainer border={false}>
-        <NextLink href="/templates" passHref legacyBehavior>
+        <NextLink href="/templates" passHref legacyBehavior prefetch={false}>
           <Button
             variant="outlined"
             startIcon={<Grid1Icon />}

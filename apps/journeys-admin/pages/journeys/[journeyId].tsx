@@ -13,8 +13,6 @@ import { useTranslation } from 'react-i18next'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
-import { ACCEPT_ALL_INVITES } from '..'
-import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
 import {
   GetAdminJourney,
   GetAdminJourney_journey as Journey
@@ -99,10 +97,6 @@ export const getServerSideProps = withUserTokenSSR({
   })
 
   if (redirect != null) return { redirect }
-
-  await apolloClient.mutate<AcceptAllInvites>({
-    mutation: ACCEPT_ALL_INVITES
-  })
 
   let journey: Journey | null
   try {

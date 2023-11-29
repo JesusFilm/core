@@ -257,8 +257,8 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
     target_group_arn = aws_alb_target_group.alb_target_group.arn
   }
   condition {
-    path_pattern {
-      values = var.service_config.alb_target_group.path_pattern
+    host_header {
+      values = ["${var.service_config.name}.${data.aws_route53_zone.zone.name}"]
     }
   }
 }

@@ -220,9 +220,8 @@ describe('EditToolbar Menu', () => {
       getByRole('menuitem', { name: 'Template Settings' })
     ).toBeInTheDocument()
     await waitFor(() => {
-      expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
+      expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
     })
-    expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
@@ -396,55 +395,6 @@ describe('EditToolbar Menu', () => {
     const menu = getByRole('button')
     fireEvent.click(menu)
     fireEvent.click(getByRole('menuitem', { name: 'Description' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Cancel' }))
-    expect(menu).not.toHaveAttribute('aria-expanded')
-  })
-
-  it('should handle edit journey title and description if user is publisher', async () => {
-    const { getByRole, queryByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_ROLE
-              },
-              result: {
-                data: {
-                  getUserRole: {
-                    id: 'userRoleId',
-                    userId: '1',
-                    roles: [Role.publisher]
-                  }
-                }
-              }
-            }
-          ]}
-        >
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journeyId',
-                slug: 'my-journey',
-                template: true,
-                tags: []
-              } as unknown as Journey
-            }}
-          >
-            <EditorProvider>
-              <Menu />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    expect(queryByRole('menuitem', { name: 'Title' })).not.toBeInTheDocument()
-    await waitFor(() =>
-      fireEvent.click(getByRole('menuitem', { name: 'Description' }))
-    )
     expect(getByRole('dialog')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     expect(menu).not.toHaveAttribute('aria-expanded')

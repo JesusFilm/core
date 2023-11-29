@@ -11,7 +11,6 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
-import { useTeam } from '../../Team/TeamProvider'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
@@ -41,10 +40,9 @@ export function ArchivedJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { activeTeam } = useTeam()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.archived],
-    teamId: activeTeam?.id
+    useLastActiveTeamId: true
   })
 
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {

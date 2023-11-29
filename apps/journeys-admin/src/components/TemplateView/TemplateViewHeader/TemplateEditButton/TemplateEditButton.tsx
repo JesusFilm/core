@@ -15,7 +15,12 @@ export function TemplateEditButton({
   const { t } = useTranslation()
 
   return (
-    <NextLink href={`/publisher/${journeyId}`} passHref legacyBehavior>
+    <NextLink
+      href={`/publisher/${journeyId}`}
+      passHref
+      legacyBehavior
+      prefetch={false}
+    >
       <Button startIcon={<Edit2Icon />} data-testid="TemplateEditButton">
         {t('Edit')}
       </Button>

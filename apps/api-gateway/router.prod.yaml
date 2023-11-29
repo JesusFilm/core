@@ -8,6 +8,8 @@ cors:
     # journeys-admin
     - https://admin.nextstep.is
     - https://admin-stage.nextstep.is
+    - https://journeys-admin.central.jesusfilm.org
+    - https://journeys-admin.stage.central.jesusfilm.org
     # journeys
     - https://your.nextstep.is
     - https://your-stage.nextstep.is
@@ -35,3 +37,6 @@ telemetry:
   tracing:
     datadog:
       endpoint: default
+experimental_batching:
+  enabled: true
+  mode: batch_http_link
