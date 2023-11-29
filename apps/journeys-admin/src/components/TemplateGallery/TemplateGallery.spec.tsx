@@ -4,8 +4,6 @@ import { NextRouter, useRouter } from 'next/router'
 
 import '../../../test/i18n'
 
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
-
 import {
   getJourneysMock,
   getJourneysWithoutLanguageIdsMock,
