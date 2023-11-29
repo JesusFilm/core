@@ -168,7 +168,6 @@ export const getJourneysMock: MockedResponse<
       where: {
         template: true,
         orderByRecent: true,
-        tagIds: ['acceptanceTagId'],
         languageIds: ['529']
       }
     }

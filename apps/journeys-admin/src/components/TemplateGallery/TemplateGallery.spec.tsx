@@ -4,6 +4,8 @@ import { NextRouter, useRouter } from 'next/router'
 
 import '../../../test/i18n'
 
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+
 import {
   getJourneysMock,
   getJourneysWithoutLanguageIdsMock,
@@ -132,7 +134,27 @@ describe('TemplateGallery', () => {
     } as unknown as NextRouter)
 
     const { getByRole } = render(
-      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
+      <MockedProvider
+        mocks={[
+          getJourneysMock,
+          {
+            ...getJourneysMock,
+            request: {
+              query: GET_JOURNEYS,
+              variables: {
+                where: {
+                  template: true,
+                  orderByRecent: true,
+                  tagIds: undefined,
+                  languageIds: ['529']
+                }
+              }
+            }
+          },
+          getLanguagesMock,
+          getTagsMock
+        ]}
+      >
         <TemplateGallery />
       </MockedProvider>
     )
