@@ -402,6 +402,10 @@ type FormBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  action: Action
+  projectId: String
+  apiToken: String
+  formSlug: String
 }
 
 input FormBlockCreateInput
@@ -410,6 +414,14 @@ input FormBlockCreateInput
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+}
+
+input FormBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  projectId: String
+  apiToken: String
+  formSlug: String
 }
 
 enum GridAlignItems
@@ -1088,6 +1100,13 @@ type Mutation
     journeyId: ID
   ): CardBlock! @join__field(graph: JOURNEYS)
   formBlockCreate(input: FormBlockCreateInput!): FormBlock! @join__field(graph: JOURNEYS)
+  formBlockUpdate(
+    id: ID!
+    input: FormBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): FormBlock @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
   iconBlockUpdate(
     id: ID!

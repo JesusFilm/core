@@ -7,7 +7,10 @@ import omit from 'lodash/omit'
 import { Block } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
-import { FormBlockCreateInput } from '../../../__generated__/graphql'
+import {
+  FormBlockCreateInput,
+  FormBlockUpdateInput
+} from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -57,5 +60,34 @@ export class FormBlockResolver {
         })
       return block
     })
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async formBlockUpdate(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string,
+    @Args('input') input: FormBlockUpdateInput
+  ): Promise<Block> {
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: {
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+    if (block == null)
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.blockService.update(id, input)
   }
 }

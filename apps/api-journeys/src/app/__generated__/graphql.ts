@@ -299,6 +299,12 @@ export class FormBlockCreateInput {
     parentBlockId: string;
 }
 
+export class FormBlockUpdateInput {
+    projectId?: Nullable<string>;
+    apiToken?: Nullable<string>;
+    formSlug?: Nullable<string>;
+}
+
 export class IconBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
@@ -818,6 +824,10 @@ export class FormBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    action?: Nullable<Action>;
+    projectId?: Nullable<string>;
+    apiToken?: Nullable<string>;
+    formSlug?: Nullable<string>;
 }
 
 export class GridContainerBlock implements Block {
@@ -1395,6 +1405,8 @@ export abstract class IMutation {
     abstract cardBlockUpdate(id: string, input: CardBlockUpdateInput, journeyId?: Nullable<string>): CardBlock | Promise<CardBlock>;
 
     abstract formBlockCreate(input: FormBlockCreateInput): FormBlock | Promise<FormBlock>;
+
+    abstract formBlockUpdate(id: string, input: FormBlockUpdateInput, journeyId?: Nullable<string>): Nullable<FormBlock> | Promise<Nullable<FormBlock>>;
 
     abstract iconBlockCreate(input: IconBlockCreateInput): IconBlock | Promise<IconBlock>;
 

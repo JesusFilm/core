@@ -143,6 +143,13 @@ extend type Mutation {
     journeyId: ID
   ): CardBlock!
   formBlockCreate(input: FormBlockCreateInput!): FormBlock!
+  formBlockUpdate(
+    id: ID!
+    input: FormBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): FormBlock
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
   iconBlockUpdate(
     id: ID!
@@ -447,12 +454,22 @@ type FormBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  action: Action
+  projectId: String
+  apiToken: String
+  formSlug: String
 }
 
 input FormBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+}
+
+input FormBlockUpdateInput {
+  projectId: String
+  apiToken: String
+  formSlug: String
 }
 
 enum GridDirection {

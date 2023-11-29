@@ -3,6 +3,10 @@ type FormBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  action: Action
+  projectId: String
+  apiToken: String
+  formSlug: String
 }
 
 input FormBlockCreateInput {
@@ -11,6 +15,20 @@ input FormBlockCreateInput {
   parentBlockId: ID!
 }
 
+input FormBlockUpdateInput {
+  projectId: String
+  apiToken: String
+  formSlug: String
+}
+
 extend type Mutation {
   formBlockCreate(input: FormBlockCreateInput!): FormBlock!
+  formBlockUpdate(
+    id: ID!
+    input: FormBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): FormBlock
 }
