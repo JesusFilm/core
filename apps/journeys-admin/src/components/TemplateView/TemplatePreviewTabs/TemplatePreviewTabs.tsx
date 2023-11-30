@@ -2,6 +2,7 @@ import 'swiper/swiper.min.css'
 import 'swiper/components/scrollbar/scrollbar.min.css'
 
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { ReactElement, useMemo, useState } from 'react'
@@ -65,17 +66,25 @@ export function TemplatePreviewTabs(): ReactElement {
         sx={{ borderBottom: 1, borderColor: 'divider', mb: { xs: 3, sm: 7 } }}
       >
         <Tab
-          label={t('{{count}} Cards', {
-            count: steps?.length ?? 0
-          })}
+          label={
+            steps != null ? (
+              t('{{count}} Cards', { count: steps.length })
+            ) : (
+              <Skeleton width={72} height="100%" />
+            )
+          }
           {...tabA11yProps('cards-preview-tab', 0)}
           sx={{ flexGrow: { xs: 1, sm: 0 }, minWidth: { sm: 200 } }}
         />
         <Tab
           disabled={videos?.length === 0 || videos == null}
-          label={t('{{count}} Videos', {
-            count: videos?.length ?? 0
-          })}
+          label={
+            videos != null ? (
+              t('{{count}} Videos', { count: videos.length })
+            ) : (
+              <Skeleton width={72} height="100%" />
+            )
+          }
           {...tabA11yProps('videos-preview-tab', 1)}
           sx={{ flexGrow: { xs: 1, sm: 0 }, minWidth: { sm: 200 } }}
         />
