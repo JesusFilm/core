@@ -57,7 +57,9 @@ export function Form({
         icon={<StarsIcon />}
         name="Credentials"
         value={
-          projectId != null && apiToken != null && formSlug != null
+          (projectId != null || projectId !== '') &&
+          (apiToken != null || apiToken !== '') &&
+          (formSlug != null || formSlug !== '')
             ? 'Complete'
             : 'Incomplete'
         }
