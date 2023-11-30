@@ -52,7 +52,7 @@ describe('TemplateGallery', () => {
     expect(getByRole('heading', { level: 5, name: 'Hope' })).toBeInTheDocument()
   })
 
-  it('should render templates filtered via tags', async () => {
+  it('should render templates with multiple filtered tags', async () => {
     const push = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
@@ -119,6 +119,37 @@ describe('TemplateGallery', () => {
         push,
         query: {
           languageIds: ['496']
+        }
+      })
+    })
+  })
+
+  it('should render templates with a felt needs tags selected', async () => {
+    const push = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      push,
+      query: { tagIds: [], languageIds: ['529'] }
+    } as unknown as NextRouter)
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
+        <TemplateGallery />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(
+        getByRole('button', { name: 'Acceptance Acceptance' })
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.click(getByRole('button', { name: 'Acceptance Acceptance' }))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        push,
+        query: {
+          tagIds: 'acceptanceTagId',
+          languageIds: ['529']
         }
       })
     })

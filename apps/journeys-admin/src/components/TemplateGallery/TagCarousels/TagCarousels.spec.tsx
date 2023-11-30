@@ -58,22 +58,7 @@ describe('TagCarousels', () => {
       })
     )
 
-    expect(onChange).toHaveBeenCalledWith(
-      ['acceptanceTagId'],
-      [
-        'acceptanceTagId',
-        'depressionTagId',
-        'fearTagId',
-        'forgivenessTagId',
-        'hopeTagId',
-        'lonelinessTagId',
-        'loveTagId',
-        'securityTagId',
-        'significanceTagId',
-        'jesusFilmTagId',
-        'nuaTagId'
-      ]
-    )
+    expect(onChange).toHaveBeenCalledWith('acceptanceTagId')
   })
 
   it('should filter by collections tag', async () => {
@@ -98,65 +83,6 @@ describe('TagCarousels', () => {
       })
     )
 
-    expect(onChange).toHaveBeenCalledWith(
-      ['nuaTagId'],
-      [
-        'acceptanceTagId',
-        'depressionTagId',
-        'fearTagId',
-        'forgivenessTagId',
-        'hopeTagId',
-        'lonelinessTagId',
-        'loveTagId',
-        'securityTagId',
-        'significanceTagId',
-        'jesusFilmTagId',
-        'nuaTagId'
-      ]
-    )
-  })
-
-  it('should preserve existing selected tags on filter', async () => {
-    const onChange = jest.fn()
-    const { getByRole } = render(
-      <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels
-          selectedTagIds={['addictionTagId', 'acceptanceTagId', 'nuaTagId']}
-          onChange={onChange}
-        />
-      </MockedProvider>
-    )
-
-    await waitFor(async () => {
-      await expect(
-        getByRole('button', {
-          name: 'NUA NUA'
-        })
-      ).toBeInTheDocument()
-    })
-
-    fireEvent.click(
-      getByRole('button', {
-        name: 'NUA NUA'
-      })
-    )
-
-    // Should remove tags that don't belong to these carousels, keep existing tags without duplicates
-    expect(onChange).toHaveBeenCalledWith(
-      ['acceptanceTagId', 'nuaTagId'],
-      [
-        'acceptanceTagId',
-        'depressionTagId',
-        'fearTagId',
-        'forgivenessTagId',
-        'hopeTagId',
-        'lonelinessTagId',
-        'loveTagId',
-        'securityTagId',
-        'significanceTagId',
-        'jesusFilmTagId',
-        'nuaTagId'
-      ]
-    )
+    expect(onChange).toHaveBeenCalledWith('nuaTagId')
   })
 })
