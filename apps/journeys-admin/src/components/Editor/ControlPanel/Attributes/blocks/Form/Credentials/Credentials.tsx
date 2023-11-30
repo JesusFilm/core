@@ -37,7 +37,7 @@ export function Credentials(): ReactElement {
   const selectedBlock = state.selectedBlock as TreeBlock<FormBlock> | undefined
 
   async function handleSubmitProjectId(projectId: string): Promise<void> {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || projectId === selectedBlock.projectId) return
     await formBlockUpdateCredentials({
       variables: {
         id: selectedBlock.id,
@@ -63,7 +63,7 @@ export function Credentials(): ReactElement {
   }
 
   async function handleSubmitApiToken(apiToken: string): Promise<void> {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || apiToken === selectedBlock.apiToken) return
     await formBlockUpdateCredentials({
       variables: {
         id: selectedBlock.id,
@@ -89,7 +89,7 @@ export function Credentials(): ReactElement {
   }
 
   async function handleSubmitFormSlug(formSlug: string): Promise<void> {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || formSlug === selectedBlock.formSlug) return
     await formBlockUpdateCredentials({
       variables: {
         id: selectedBlock.id,
@@ -125,6 +125,7 @@ export function Credentials(): ReactElement {
       <TextFieldForm
         id="apiToken"
         label="Api Token"
+        type="password"
         initialValue={selectedBlock?.apiToken ?? ''}
         onSubmit={handleSubmitApiToken}
       />
