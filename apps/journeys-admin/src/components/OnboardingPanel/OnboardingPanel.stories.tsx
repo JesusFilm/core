@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 
-import { cache } from '../../libs/apolloClient/cache'
 import { PageProvider } from '../../libs/PageWrapperProvider'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { SidePanel } from '../PageWrapper/SidePanel'
@@ -35,7 +34,6 @@ export const Default = {
   ...Template,
   parameters: {
     apolloClient: {
-      cache: cache(),
       mocks: [getTeamsMock, getOnboardingJourneysMock]
     }
   }

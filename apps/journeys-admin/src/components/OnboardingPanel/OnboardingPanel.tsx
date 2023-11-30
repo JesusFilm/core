@@ -21,7 +21,7 @@ const DynamicOnboardingList = dynamic(
       /* webpackChunkName: "OnboardingList" */
       './OnboardingList'
     ).then((mod) => mod.OnboardingList),
-  { ssr: false }
+  { ssr: false, loading: () => <OnboardingListLoading /> }
 )
 
 export function OnboardingPanel(): ReactElement {

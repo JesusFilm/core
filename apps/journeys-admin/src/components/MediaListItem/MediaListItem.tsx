@@ -126,7 +126,7 @@ export function MediaListItem({
                 className="overflow-text"
                 sx={{ ...fadeOverflowText('overline'), mt: 2 }}
               >
-                {loading === true ? <Skeleton width={100} /> : overline}
+                {loading === true ? <Skeleton width={82} /> : overline}
               </Typography>
             )}
 
@@ -137,7 +137,7 @@ export function MediaListItem({
                   className="overflow-text"
                   sx={{ ...fadeOverflowText('subtitle1') }}
                 >
-                  {loading === true ? <Skeleton /> : title}
+                  {loading === true ? <Skeleton width={156} /> : title}
                 </Typography>
               }
               secondary={
@@ -148,7 +148,7 @@ export function MediaListItem({
                     className="overflow-text"
                     sx={{ ...fadeOverflowText('body2') }}
                   >
-                    {loading === true ? <Skeleton /> : description}
+                    {loading === true ? <Skeleton width={128} /> : description}
                   </Typography>
                 )
               }
