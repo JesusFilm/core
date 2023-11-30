@@ -60,7 +60,7 @@ export function Form({
         formiumClient={formiumClient}
         userId={user.id}
         email={user.email}
-        submitText="Next"
+        submitText="Submit"
         onSubmit={handleSubmit}
       />
     </div>

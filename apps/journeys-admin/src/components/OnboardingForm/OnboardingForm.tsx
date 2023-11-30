@@ -61,6 +61,7 @@ export function OnboardingForm({
         submitText={t('Next')}
         submitIcon={<ArrowRightIcon />}
         onSubmit={handleSubmit}
+        headerAsPageTitle
       />
     </Stack>
   )

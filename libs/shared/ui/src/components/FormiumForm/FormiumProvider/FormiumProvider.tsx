@@ -4,6 +4,7 @@ export interface FormiumProviderContext {
   hiddenPageTitle?: boolean
   submitText?: string
   submitIcon?: ReactNode
+  headerAsPageTitle?: boolean
 }
 
 const FormiumContext = createContext<FormiumProviderContext>({})
@@ -22,7 +23,7 @@ export function FormiumProvider({
   ...props
 }: FormiumProviderProps): ReactElement {
   return (
-    <FormiumContext.Provider value={{ ...props }}>
+    <FormiumContext.Provider value={{ headerAsPageTitle: false, ...props }}>
       {children}
     </FormiumContext.Provider>
   )
