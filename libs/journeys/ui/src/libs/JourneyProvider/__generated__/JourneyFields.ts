@@ -125,11 +125,63 @@ export interface JourneyFields_blocks_CardBlock {
   fullscreen: boolean;
 }
 
+export interface JourneyFields_blocks_FormBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+  language: JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction_journey_language;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type JourneyFields_blocks_FormBlock_action = JourneyFields_blocks_FormBlock_action_NavigateAction | JourneyFields_blocks_FormBlock_action_NavigateToBlockAction | JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction | JourneyFields_blocks_FormBlock_action_LinkAction | JourneyFields_blocks_FormBlock_action_EmailAction;
+
 export interface JourneyFields_blocks_FormBlock {
   __typename: "FormBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  projectId: string | null;
+  apiToken: string | null;
+  formSlug: string | null;
+  action: JourneyFields_blocks_FormBlock_action | null;
 }
 
 export interface JourneyFields_blocks_IconBlock {

@@ -23,7 +23,7 @@ export const FORM_BLOCK_CREATE = gql`
   }
 `
 
-export function NewFormiumFormButton(): ReactElement {
+export function NewFormButton(): ReactElement {
   const [formBlockCreate] = useMutation<FormBlockCreate>(FORM_BLOCK_CREATE)
   const { journey } = useJourney()
   const {

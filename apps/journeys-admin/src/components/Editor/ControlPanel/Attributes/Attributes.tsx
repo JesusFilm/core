@@ -10,6 +10,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   Button,
   Card,
+  Form,
   Image,
   RadioOption,
   SignUp,
@@ -96,6 +97,10 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
 
       case 'TextResponseBlock': {
         return withMoveButtons(<TextResponse {...selected} />)
+      }
+
+      case 'FormBlock': {
+        return withMoveButtons(<Form {...selected} />)
       }
 
       default:

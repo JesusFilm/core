@@ -4,7 +4,7 @@ import MuiTypography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { NewButtonButton } from './NewButtonButton'
-import { NewFormiumFormButton } from './NewFormiumFormButon'
+import { NewFormButton } from './NewFormButon'
 import { NewImageButton } from './NewImageButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
 import { NewSignUpButton } from './NewSignUpButton'
@@ -31,7 +31,7 @@ export function BlocksTab(): ReactElement {
         <NewTextResponseButton />
         <NewSignUpButton />
         <NewButtonButton />
-        <NewFormiumFormButton />
+        <NewFormButton />
       </Stack>
       <Box
         sx={{

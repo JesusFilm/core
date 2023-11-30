@@ -23,8 +23,8 @@ export interface GetPublisherTemplate_publisherTemplate_language {
   name: GetPublisherTemplate_publisherTemplate_language_name[];
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock {
-  __typename: "FormBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -123,6 +123,65 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {
    * background.
    */
   fullscreen: boolean;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+  language: GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToJourneyAction_journey_language;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action = GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToJourneyAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_EmailAction;
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock {
+  __typename: "FormBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  projectId: string | null;
+  apiToken: string | null;
+  formSlug: string | null;
+  action: GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_IconBlock {
@@ -571,7 +630,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   triggerAction: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_FormBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
+export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_FormBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
 
 export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
   __typename: "ImageBlock";
