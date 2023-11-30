@@ -122,7 +122,7 @@ const mocks: MockedResponse[] = [
   getTeamsMock
 ]
 
-describe('OnboardingPanelContent', () => {
+describe('OnboardingPanel', () => {
   it('should add a new journey on custom journey button click', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
