@@ -7,22 +7,23 @@ import { simpleComponentConfig } from '../../libs/storybook'
 import { SidePanel } from '../PageWrapper/SidePanel'
 import { TeamProvider } from '../Team/TeamProvider'
 
-import { getOnboardingJourneysMock } from './data'
-import { OnboardingPanelContent } from './OnboardingPanelContent'
+import { getOnboardingJourneysMock, getTeamsMock } from './data'
 
-const OnboardingPanelContentStory: Meta<typeof OnboardingPanelContent> = {
+import { OnboardingPanel } from '.'
+
+const OnboardingPanelStory: Meta<typeof OnboardingPanel> = {
   ...simpleComponentConfig,
-  component: OnboardingPanelContent,
-  title: 'Journeys-Admin/OnboardingPanelContent'
+  component: OnboardingPanel,
+  title: 'Journeys-Admin/OnboardingPanel'
 }
 
-const Template: StoryObj<typeof OnboardingPanelContent> = {
+const Template: StoryObj<typeof OnboardingPanel> = {
   render: (): ReactElement => {
     return (
       <TeamProvider>
         <PageProvider initialState={{ mobileDrawerOpen: true }}>
           <SidePanel title="Create A New Journey">
-            <OnboardingPanelContent />
+            <OnboardingPanel />
           </SidePanel>
         </PageProvider>
       </TeamProvider>
@@ -35,7 +36,7 @@ export const Default = {
   parameters: {
     apolloClient: {
       cache: cache(),
-      mocks: [getOnboardingJourneysMock]
+      mocks: [getTeamsMock, getOnboardingJourneysMock]
     }
   }
 }
@@ -44,9 +45,12 @@ export const Loading = {
   ...Template,
   parameters: {
     apolloClient: {
-      mocks: [{ ...getOnboardingJourneysMock, delay: 100000000000000 }]
+      mocks: [
+        { ...getTeamsMock, delay: 100000000000000 },
+        { ...getOnboardingJourneysMock, delay: 100000000000000 }
+      ]
     }
   }
 }
 
-export default OnboardingPanelContentStory
+export default OnboardingPanelStory

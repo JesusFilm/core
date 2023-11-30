@@ -7,21 +7,17 @@ import {
   CreateJourney,
   CreateJourneyVariables
 } from '../../../__generated__/CreateJourney'
-import { GetLastActiveTeamIdAndTeams } from '../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { CREATE_JOURNEY } from '../../libs/useJourneyCreateMutation'
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '../Team/TeamProvider'
+import { TeamProvider } from '../Team/TeamProvider'
 
-import { getOnboardingJourneysMock } from './data'
+import { getOnboardingJourneysMock, getTeamsMock } from './data'
 
-import { OnboardingPanelContent } from '.'
+import { OnboardingPanel } from '.'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -120,28 +116,6 @@ const createJourneyMock: MockedResponse<CreateJourney, CreateJourneyVariables> =
       }
     }
   }
-const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-  request: {
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-  },
-  result: {
-    data: {
-      teams: [
-        {
-          id: 'teamId',
-          title: 'Team Title',
-          __typename: 'Team',
-          publicTitle: 'Public Team Title',
-          userTeams: []
-        }
-      ],
-      getJourneyProfile: {
-        __typename: 'JourneyProfile',
-        lastActiveTeamId: 'teamId'
-      }
-    }
-  }
-}
 const mocks: MockedResponse[] = [
   createJourneyMock,
   getOnboardingJourneysMock,
@@ -159,7 +133,7 @@ describe('OnboardingPanelContent', () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
@@ -199,7 +173,7 @@ describe('OnboardingPanelContent', () => {
         ]}
       >
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
@@ -214,7 +188,7 @@ describe('OnboardingPanelContent', () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
@@ -234,7 +208,7 @@ describe('OnboardingPanelContent', () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
@@ -253,7 +227,7 @@ describe('OnboardingPanelContent', () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
@@ -268,7 +242,7 @@ describe('OnboardingPanelContent', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <TeamProvider>
-          <OnboardingPanelContent />
+          <OnboardingPanel />
         </TeamProvider>
       </MockedProvider>
     )
