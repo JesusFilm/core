@@ -15,7 +15,8 @@ import {
 
 interface Context {
   query: QueryResult<GetLastActiveTeamIdAndTeams, OperationVariables>
-  activeTeam: Team | null
+  /** activeTeam is null if loaded and set intentionally */
+  activeTeam: Team | null | undefined
   setActiveTeam: (team: Team | null) => void
 }
 
@@ -54,7 +55,9 @@ export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
 `
 
 export function TeamProvider({ children }: TeamProviderProps): ReactElement {
-  const [activeTeamId, setActiveTeamId] = useState<string | null>(null)
+  const [activeTeamId, setActiveTeamId] = useState<string | null | undefined>(
+    undefined
+  )
   const query = useQuery<GetLastActiveTeamIdAndTeams>(
     GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
     {
@@ -82,7 +85,9 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
     }
   }
   const activeTeam =
-    query.data?.teams.find((team) => team.id === activeTeamId) ?? null
+    activeTeamId != null
+      ? query.data?.teams.find((team) => team.id === activeTeamId) ?? null
+      : activeTeamId
   return (
     <TeamContext.Provider value={{ query, activeTeam, setActiveTeam }}>
       {children}

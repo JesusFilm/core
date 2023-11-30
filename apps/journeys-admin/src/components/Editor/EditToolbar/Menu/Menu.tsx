@@ -90,6 +90,7 @@ export function Menu(): ReactElement {
           href={`/api/preview?slug=${journey?.slug ?? ''}`}
           passHref
           legacyBehavior
+          prefetch={false}
         >
           <MenuItem
             label={t('Preview')}
@@ -116,6 +117,7 @@ export function Menu(): ReactElement {
           href={`/api/preview?slug=${journey?.slug ?? ''}`}
           passHref
           legacyBehavior
+          prefetch={false}
         >
           <MenuItem
             label={t('Preview')}
@@ -165,13 +167,6 @@ export function Menu(): ReactElement {
           <CardMenu />
         ) : (
           <BlockMenu />
-        )}
-        {journey?.template === true && isPublisher != null && (
-          <MenuItem
-            label={t('Description')}
-            icon={<Edit2Icon />}
-            onClick={handleOpenTemplateSettingsDialog}
-          />
         )}
         {journey?.template !== true && (
           <MenuItem

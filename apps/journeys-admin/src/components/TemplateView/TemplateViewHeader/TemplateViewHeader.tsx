@@ -10,10 +10,10 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { SocialImage } from '../../JourneyView/SocialImage'
 import { CreateJourneyButton } from '../CreateJourneyButton'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
+import { SocialImage } from './SocialImage'
 import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreatorDetails'
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
@@ -57,21 +57,7 @@ export function TemplateViewHeader({
             width: { xs: '107px', sm: '244px' }
           }}
         >
-          <SocialImage
-            height={{ xs: 107, sm: 244 }}
-            width={{ xs: 107, sm: 244 }}
-            sx={{
-              borderRadius: 3,
-              borderBottomRightRadius: {
-                xs: 12,
-                sm: hasCreatorDescription ? 0 : 12
-              },
-              borderBottomLeftRadius: {
-                xs: 12,
-                sm: hasCreatorDescription ? 0 : 12
-              }
-            }}
-          />
+          <SocialImage hasCreatorDescription={hasCreatorDescription} />
           {hasCreatorDescription && (
             <TemplateCreatorDetails
               creatorDetails={journey?.creatorDescription}
@@ -113,7 +99,9 @@ export function TemplateViewHeader({
               <Skeleton
                 data-testid="TemplateViewTitleSkeleton"
                 sx={{
+                  transform: 'scale(1, 0.8)',
                   width: { xs: '100%', sm: '50%' },
+                  height: { xs: 26, sm: 38 },
                   maxWidth: { xs: 200, sm: 400 }
                 }}
               />

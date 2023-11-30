@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import MuiFab from '@mui/material/Fab'
+import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
@@ -18,10 +19,10 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
-import { Properties } from '../../JourneyView/Properties'
 import { ActionDetails } from '../ActionDetails'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
+import { Properties } from '../Properties'
 
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
@@ -83,7 +84,7 @@ export function ControlPanel(): ReactElement {
               type: 'SetDrawerPropsAction',
               mobileOpen: false,
               title: t('Properties'),
-              children: <Properties journeyType="Journey" isPublisher={false} />
+              children: <Properties isPublisher={false} />
             })
           }
           break
@@ -112,7 +113,7 @@ export function ControlPanel(): ReactElement {
           type: 'SetDrawerPropsAction',
           mobileOpen: false,
           title: t('Properties'),
-          children: <Properties journeyType="Journey" isPublisher={false} />
+          children: <Properties isPublisher={false} />
         })
       }
     } else if (view === ActiveJourneyEditContent.Action) {
@@ -153,10 +154,7 @@ export function ControlPanel(): ReactElement {
   }
 
   return (
-    <Box
-      sx={{ width: '100%', position: 'relative' }}
-      data-testid="EditorControlPanel"
-    >
+    <Stack sx={{ height: '100%' }} data-testid="EditorControlPanel">
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
         {journeyEditContentComponent ===
           ActiveJourneyEditContent.SocialPreview && (
@@ -183,11 +181,11 @@ export function ControlPanel(): ReactElement {
             />
           )}
       </Box>
-      <Box
+      <Stack
         sx={{
           borderBottom: 1,
           borderColor: 'divider',
-          backgroundColor: (theme) => theme.palette.background.paper
+          backgroundColor: 'background.paper'
         }}
       >
         <Tabs
@@ -234,26 +232,30 @@ export function ControlPanel(): ReactElement {
             />
           )}
         </Tabs>
-      </Box>
-      <TabPanel name="control-panel" value={activeTab} index={0}>
-        <CardPreview
-          selected={selectedStep}
-          onSelect={handleSelectStepPreview}
-          steps={steps}
-          showAddButton
-          showNavigationCards
-          isDraggable
-          testId="ControlPanel"
-        />
-      </TabPanel>
-      <TabPanel name="control-panel" value={activeTab} index={1}>
-        {selected !== 'none' && selectedStep !== undefined && (
-          <Attributes selected={selected} step={selectedStep} />
-        )}
-      </TabPanel>
-      <TabPanel name="control-panel" value={activeTab} index={2}>
-        <BlocksTab />
-      </TabPanel>
-    </Box>
+      </Stack>
+      <Stack
+        justifyContent="center"
+        sx={{ backgroundColor: 'background.default', height: '100%' }}
+      >
+        <TabPanel name="control-panel" value={activeTab} index={0}>
+          <CardPreview
+            selected={selectedStep}
+            onSelect={handleSelectStepPreview}
+            steps={steps}
+            showAddButton
+            showNavigationCards
+            isDraggable
+          />
+        </TabPanel>
+        <TabPanel name="control-panel" value={activeTab} index={1}>
+          {selected !== 'none' && selectedStep !== undefined && (
+            <Attributes selected={selected} step={selectedStep} />
+          )}
+        </TabPanel>
+        <TabPanel name="control-panel" value={activeTab} index={2}>
+          <BlocksTab />
+        </TabPanel>
+      </Stack>
+    </Stack>
   )
 }

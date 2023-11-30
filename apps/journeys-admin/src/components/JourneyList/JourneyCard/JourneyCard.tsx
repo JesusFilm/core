@@ -67,6 +67,7 @@ export function JourneyCard({
           href={journey != null ? `/journeys/${journey.id}` : ''}
           passHref
           legacyBehavior
+          prefetch={false}
         >
           <CardActionArea>
             <CardContent

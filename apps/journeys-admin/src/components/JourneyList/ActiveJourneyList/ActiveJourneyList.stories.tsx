@@ -4,7 +4,6 @@ import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { cache } from '../../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { getDiscoveryJourneysMock } from '../../DiscoveryJourneys/data'
 import {
   defaultJourney,
   descriptiveJourney,
@@ -38,7 +37,8 @@ export const Default = {
           request: {
             query: GET_ADMIN_JOURNEYS,
             variables: {
-              status: [JourneyStatus.draft, JourneyStatus.published]
+              status: [JourneyStatus.draft, JourneyStatus.published],
+              useLastActiveTeamId: true
             }
           },
           result: {
@@ -51,8 +51,7 @@ export const Default = {
               ]
             }
           }
-        },
-        getDiscoveryJourneysMock
+        }
       ]
     }
   }
@@ -68,7 +67,8 @@ export const NoJourneys = {
           request: {
             query: GET_ADMIN_JOURNEYS,
             variables: {
-              status: [JourneyStatus.draft, JourneyStatus.published]
+              status: [JourneyStatus.draft, JourneyStatus.published],
+              useLastActiveTeamId: true
             }
           },
           result: {
@@ -76,8 +76,7 @@ export const NoJourneys = {
               journeys: []
             }
           }
-        },
-        getDiscoveryJourneysMock
+        }
       ]
     }
   }
@@ -91,7 +90,7 @@ export const Loading = {
   parameters: {
     apolloClient: {
       cache: cache(),
-      mocks: [getDiscoveryJourneysMock]
+      mocks: []
     }
   }
 }
@@ -105,7 +104,7 @@ export const ArchiveAll = {
   parameters: {
     apolloClient: {
       cache: cache(),
-      mocks: [getDiscoveryJourneysMock]
+      mocks: []
     }
   }
 }
@@ -119,7 +118,7 @@ export const TrashAll = {
   parameters: {
     apolloClient: {
       cache: cache(),
-      mocks: [getDiscoveryJourneysMock]
+      mocks: []
     }
   }
 }

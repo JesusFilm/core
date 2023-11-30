@@ -73,7 +73,7 @@ export function MediaListItem({
   }
 
   return (
-    <NextLink href={href ?? ''} passHref legacyBehavior>
+    <NextLink href={href ?? ''} passHref legacyBehavior prefetch={false}>
       <ListItemButton
         disabled={loading}
         sx={{

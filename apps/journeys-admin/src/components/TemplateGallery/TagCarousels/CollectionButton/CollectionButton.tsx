@@ -9,8 +9,9 @@ import { ReactElement, useCallback } from 'react'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
-import jesusFilmImage from '../assets/jesusFilm.png'
-import nuaImage from '../assets/nua.png'
+
+import jesusFilmImage from './assets/jesusFilm.jpg'
+import nuaImage from './assets/nua.jpg'
 
 type ChildTag = Tag & { parentId: string }
 

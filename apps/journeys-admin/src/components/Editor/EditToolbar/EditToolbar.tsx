@@ -1,5 +1,6 @@
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
 import {
@@ -19,7 +20,12 @@ export function EditToolbar(): ReactElement {
   const { state } = useEditor()
 
   return (
-    <>
+    <Stack
+      direction="row"
+      alignItems="center"
+      justifyContent="flex-end"
+      flexGrow={1}
+    >
       {journey != null && (
         <>
           <Chip
@@ -67,6 +73,6 @@ export function EditToolbar(): ReactElement {
         }
       />
       <Menu />
-    </>
+    </Stack>
   )
 }

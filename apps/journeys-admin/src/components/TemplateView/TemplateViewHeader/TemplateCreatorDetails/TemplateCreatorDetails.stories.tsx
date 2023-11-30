@@ -2,33 +2,21 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { SocialImage } from '../../../JourneyView/SocialImage'
+import { SocialImage } from '../SocialImage'
 
 import { TemplateCreatorDetails } from './TemplateCreatorDetails'
 
 const TemplateCreatorStory: Meta<typeof TemplateCreatorDetails> = {
   ...journeysAdminConfig,
-  title: 'Journeys-Admin/TemplateView/TemplateCreatorDetails',
+  title:
+    'Journeys-Admin/TemplateView/TemplateViewHeader/TemplateCreatorDetails',
   component: TemplateCreatorDetails
 }
 
 const Template: StoryObj<typeof TemplateCreatorDetails> = {
   render: (args) => (
     <Box sx={{ width: 244 }}>
-      <SocialImage
-        height={244}
-        width={244}
-        sx={{
-          display: { xs: 'none', sm: 'block' },
-          borderRadius: 3,
-          borderBottomRightRadius: {
-            sm: 0
-          },
-          borderBottomLeftRadius: {
-            sm: 0
-          }
-        }}
-      />
+      <SocialImage hasCreatorDescription />
       <TemplateCreatorDetails {...args} />
     </Box>
   )
