@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 import { use100vh } from 'react-div-100vh'
@@ -175,14 +174,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         height: viewportHeight ?? '100vh',
         background: theme.palette.grey[900],
         p: { lg: 6 },
-        overflow: 'hidden'
+        overflow: 'hidden',
+        overscrollBehaviorY: 'none'
       }}
     >
       <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
         {showHeaderFooter && router.query.noi == null && (
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
-        <Stack sx={{ height: 'inherit' }}>
+        <Stack sx={{ height: '100%' }}>
           <BlockRenderer block={activeBlock} />
 
           <NavigationButton
