@@ -114,8 +114,6 @@ export function TemplateGalleryCarousel<T>({
               <SwiperSlide
                 key={item.id}
                 data-testid={`journey-${item.id}`}
-                onMouseOver={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
                 onFocus={() => {
                   if (swiper?.isEnd as boolean) {
                     swiper?.slideTo(0)
