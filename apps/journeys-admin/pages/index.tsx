@@ -11,7 +11,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyList } from '../src/components/JourneyList'
-import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
+import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
@@ -38,7 +38,7 @@ function IndexPage(): ReactElement {
             <TeamMenu />
           </Stack>
         }
-        sidePanelChildren={<OnboardingPanelContent />}
+        sidePanelChildren={<OnboardingPanel />}
         sidePanelTitle={t('Create a New Journey')}
       >
         <JourneyList user={user} />
