@@ -19,6 +19,28 @@ on:
         required: true
       JFP_AWS_SECRET_ACCESS_KEY:
         required: true
+      DOPPLER_API_GATEWAY_TOKEN:
+        required: true
+      DOPPLER_API_JOURNEYS_TOKEN:
+        required: true
+      DOPPLER_API_LANGUAGES_TOKEN:
+        required: true
+      DOPPLER_API_TAGS_TOKEN:
+        required: true
+      DOPPLER_API_USERS_TOKEN:
+        required: true
+      DOPPLER_API_VIDEOS_TOKEN:
+        required: true
+      DOPPLER_API_MEDIA_TOKEN:
+        required: true
+      DOPPLER_JOURNEYS_TOKEN:
+        required: true
+      DOPPLER_JOURNEYS_ADMIN_TOKEN:
+        required: true
+      DOPPLER_WATCH_TOKEN:
+        required: true
+      DOPPLER_WATCH_ADMIN_TOKEN:
+        required: true
 
 jobs:
   build-and-deploy:
@@ -58,6 +80,13 @@ jobs:
       - name: nx Install
         run: npm install -g nx --silent
 
+      - name: Install Doppler
+        run: |
+          sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+          curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
+          echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
+          sudo apt-get update && sudo apt-get -y install doppler
+
       - name: Get affected apps
         run: |
           echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apps/${{ inputs.name }})" >> $GITHUB_OUTPUT
@@ -67,8 +96,20 @@ jobs:
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
+        env:
+          DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
+          DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
+          DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}
+          DOPPLER_API_TAGS_TOKEN: ${{ secrets.DOPPLER_API_TAGS_TOKEN }}
+          DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
+          DOPPLER_API_VIDEOS_TOKEN: ${{ secrets.DOPPLER_API_VIDEOS_TOKEN }}
+          DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
+          DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
+          DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
+          DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+          DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
         with:
-          targets: build
+          targets: fetch-secrets, build
           projects: ${{ inputs.name }}
           args: --c=production
 
