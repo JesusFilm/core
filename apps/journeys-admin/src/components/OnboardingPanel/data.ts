@@ -1,15 +1,17 @@
 import { MockedResponse } from '@apollo/client/testing'
 
+import { GetLastActiveTeamIdAndTeams } from '../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GetOnboardingJourneys,
   GetOnboardingJourneysVariables,
   GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
 } from '../../../__generated__/GetOnboardingJourneys'
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '../Team/TeamProvider'
 
 import {
   GET_ONBOARDING_JOURNEYS,
   ONBOARDING_IDS
-} from './OnboardingPanelContent'
+} from './OnboardingList/OnboardingList'
 
 export const onboardingJourneys: OnboardingJourneys[] = [
   {
@@ -68,6 +70,29 @@ export const onboardingJourneys: OnboardingJourneys[] = [
     }
   }
 ]
+
+export const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: {
+    data: {
+      teams: [
+        {
+          id: 'teamId',
+          title: 'Team Title',
+          __typename: 'Team',
+          publicTitle: 'Public Team Title',
+          userTeams: []
+        }
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: 'teamId'
+      }
+    }
+  }
+}
 
 export const getOnboardingJourneysMock: MockedResponse<
   GetOnboardingJourneys,
