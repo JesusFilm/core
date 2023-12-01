@@ -10,6 +10,7 @@ variable "ecs_config" {
       port            = number
       protocol        = string
       certificate_arn = string
+      dns_name        = string
     })
     alb_target_group = object({
       port              = number

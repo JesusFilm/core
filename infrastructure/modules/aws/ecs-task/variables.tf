@@ -24,7 +24,13 @@ variable "service_config" {
     zone_id        = string
     is_public      = bool
 
-    alb_listener = any
+    alb_listener = object({
+      alb_arn         = string
+      port            = number
+      protocol        = string
+      certificate_arn = optional(string)
+      dns_name        = optional(string)
+    })
 
     alb_target_group = object({
       port              = number

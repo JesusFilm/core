@@ -202,7 +202,11 @@ module "journeys-admin" {
   ecs_config = merge(local.public_ecs_config, {
     alb_target_group = merge(local.alb_target_group, {
       health_check_path = "/"
-      health_check_port = "80"
+      health_check_port = "443"
+    })
+    alb_listener = merge(local.public_ecs_config.alb_listener, {
+      dns_name = "admin-stage.nextstep.is"
+      certificate_arn = data.aws_acm_certificate.acm_nextstep_is.arn
     })
   })
   env           = "stage"
