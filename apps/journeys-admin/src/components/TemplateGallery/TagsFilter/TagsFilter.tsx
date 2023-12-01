@@ -188,7 +188,14 @@ export function TagsFilter({
           </Typography>
         </Stack>
       )}
-      ChipProps={{ size: 'small' }}
+      ChipProps={{
+        size: 'small',
+        sx: {
+          '&.MuiChip-root': {
+            maxWidth: 'calc(100% - 15px)'
+          }
+        }
+      }}
       slotProps={{
         popper: {
           sx: {
