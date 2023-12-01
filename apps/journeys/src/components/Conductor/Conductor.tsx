@@ -174,8 +174,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         height: viewportHeight ?? '100vh',
         background: theme.palette.grey[900],
         p: { lg: 6 },
-        overflow: 'hidden',
-        overscrollBehaviorY: 'none'
+        overflow: 'hidden'
       }}
     >
       <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
