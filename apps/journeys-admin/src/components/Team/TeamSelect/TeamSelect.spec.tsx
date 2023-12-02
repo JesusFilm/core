@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
@@ -23,6 +24,11 @@ jest.mock('react-i18next', () => ({
       t: (str: string) => str
     }
   }
+}))
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
 }))
 
 describe('TeamSelect', () => {
@@ -84,30 +90,42 @@ describe('TeamSelect', () => {
       <MockedProvider
         mocks={[getMultipleTeamsMock, updateLastActiveTeamIdMock]}
       >
-        <TeamProvider>
-          <TeamSelect />
-          <TestComponent />
-        </TeamProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamSelect />
+            <TestComponent />
+          </TeamProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('button')).toHaveTextContent('Team Title')
+      expect(
+        getByRole('button', {
+          name: 'Team Title'
+        })
+      ).toBeInTheDocument()
     )
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
-    await userEvent.click(getByRole('button'))
-    await waitFor(() => expect(screen.getByRole('listbox')).toBeInTheDocument())
+    await userEvent.click(
+      getByRole('button', {
+        name: 'Team Title'
+      })
+    )
+    // await waitFor(() => expect(screen.getByRole('listbox')).toBeInTheDocument())
     expect(getByText('Shared With Me')).toBeInTheDocument()
-    fireEvent.click(getByRole('option', { name: 'Team Title2' }))
+    fireEvent.click(getByRole('listitem', { name: 'Team Title2' }))
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title2')
   })
 
   it('shows onboarding popover', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider mocks={[getMultipleTeamsMock]}>
-        <TeamProvider>
-          <TeamSelect onboarding />
-          <TestComponent />
-        </TeamProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamSelect onboarding />
+            <TestComponent />
+          </TeamProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -122,11 +140,13 @@ describe('TeamSelect', () => {
   it('removes create journey buttons when on Shared With Me team', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider mocks={[]}>
-        <TeamProvider>
-          <TeamSelect />
-          <CreateJourneyButton />
-          <AddJourneyButton />
-        </TeamProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamSelect />
+            <CreateJourneyButton />
+            <AddJourneyButton />
+          </TeamProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>

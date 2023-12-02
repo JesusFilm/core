@@ -76,7 +76,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
 }
 
 describe('TeamProvider', () => {
-  it('show show list of teams', async () => {
+  it('should show list of teams', async () => {
     const { getByText } = render(
       <MockedProvider mocks={[getTeamsMock]}>
         <TeamProvider>

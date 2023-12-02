@@ -9,7 +9,7 @@ import {
   TeamProvider
 } from '../TeamProvider'
 
-import { TeamMenu } from '.'
+import { TeamMenu } from './TeamMenu'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
