@@ -111,7 +111,6 @@ describe('TeamSelect', () => {
         name: 'Team Title'
       })
     )
-    // await waitFor(() => expect(screen.getByRole('listbox')).toBeInTheDocument())
     expect(getByText('Shared With Me')).toBeInTheDocument()
     fireEvent.click(getByRole('listitem', { name: 'Team Title2' }))
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title2')

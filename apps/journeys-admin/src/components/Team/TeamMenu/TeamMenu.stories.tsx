@@ -10,7 +10,7 @@ import {
   TeamProvider
 } from '../TeamProvider'
 
-import { TeamMenu } from '.'
+import { TeamMenu } from './TeamMenu'
 
 const TeamMenuStory: Meta<typeof TeamMenu> = {
   ...journeysAdminConfig,
