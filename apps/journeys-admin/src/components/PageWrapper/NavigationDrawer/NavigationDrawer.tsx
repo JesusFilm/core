@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import Avatar from '@mui/material/Avatar'
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
@@ -8,20 +8,19 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import { Theme, styled } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import { styled } from '@mui/material/styles'
 import compact from 'lodash/compact'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+import { NextRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
-import { ReactElement, useState } from 'react'
+import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
 import BoxIcon from '@core/shared/ui/icons/Box'
-import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
+import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
 import { GetMe } from '../../../../__generated__/GetMe'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
@@ -29,9 +28,9 @@ import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 
+import { ImpersonateDialog } from './ImpersonateDialog'
 import { NavigationListItem } from './NavigationListItem'
 import { UserMenu } from './UserMenu'
 
@@ -41,31 +40,21 @@ export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
   user?: User
+  router?: NextRouter
 }
 
-const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
-  width: '72px',
-  display: 'flex',
-  '& .MuiDrawer-paper': {
-    border: 0,
-    backgroundColor: theme.palette.secondary.dark,
-    overflowX: 'hidden',
-    ...(open === true && {
-      width: DRAWER_WIDTH,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen
-      })
-    }),
-    ...(open === false && {
-      width: theme.spacing(18),
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      })
-    })
+export const GET_ME = gql`
+  query GetMe {
+    me {
+      id
+      firstName
+      lastName
+      email
+      imageUrl
+      superAdmin
+    }
   }
-}))
+`
 
 export const StyledList = styled(List)({
   display: 'flex',
@@ -88,29 +77,41 @@ export const StyledList = styled(List)({
 export function NavigationDrawer({
   open,
   onClose,
-  user
+  user,
+  router
 }: NavigationDrawerProps): ReactElement {
   const { data: activeJourneys } = useAdminJourneysQuery({
-    status: [JourneyStatus.draft, JourneyStatus.published]
+    status: [JourneyStatus.draft, JourneyStatus.published],
+    useLastActiveTeamId: true
   })
   const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+  const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLDivElement | null>(
+    null
+  )
+  const [impersonateOpen, setImpersonateOpen] = useState(false)
 
   const selectedPage = router?.pathname?.split('/')[1]
 
   const profileOpen = Boolean(profileAnchorEl)
-  const handleProfileClick = (event): void => {
+
+  function handleImpersonateClick(): void {
+    setImpersonateOpen(true)
+  }
+
+  function handleImpersonateClose(): void {
+    setImpersonateOpen(false)
+  }
+
+  function handleProfileClick(event: MouseEvent<HTMLDivElement>): void {
     setProfileAnchorEl(event.currentTarget)
   }
 
-  const handleProfileClose = (): void => {
+  function handleProfileClose(): void {
     setProfileAnchorEl(null)
   }
 
-  const handleClose = (): void => {
+  function handleClose(): void {
     onClose(!open)
   }
 
@@ -120,14 +121,25 @@ export function NavigationDrawer({
   const journeyTooltip = getJourneyTooltip(t, journeys, user?.id)
 
   return (
-    <StyledNavigationDrawer
+    <Drawer
       open={open}
       onClose={handleClose}
-      variant={smUp ? 'permanent' : 'temporary'}
+      variant="permanent"
       anchor="left"
       data-testid="NavigationDrawer"
+      sx={{
+        display: 'flex',
+        width: { xs: 0, md: 72 },
+        '& .MuiDrawer-paper': {
+          border: 0,
+          backgroundColor: 'secondary.dark',
+          overflowX: 'hidden',
+          transition: (theme) => theme.transitions.create('width'),
+          width: open ? DRAWER_WIDTH : { xs: 0, md: 72 }
+        }
+      }}
     >
-      {open && smUp && <Backdrop open={open} onClick={handleClose} />}
+      <Backdrop open={open} onClick={handleClose} />
       <StyledList>
         <ListItemButton onClick={handleClose} data-testid="toggle-nav-drawer">
           <ListItemIcon
@@ -135,18 +147,20 @@ export function NavigationDrawer({
               '> .MuiSvgIcon-root': {
                 color: 'secondary.dark',
                 backgroundColor: 'secondary.light',
-                borderRadius: 2
+                borderRadius: 2,
+                transition: (theme) => theme.transitions.create('transform'),
+                transform: { md: open ? 'rotate(180deg)' : 'rotate(0deg)' }
               }
             }}
           >
-            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            <ChevronRightIcon />
           </ListItemIcon>
         </ListItemButton>
 
         <NavigationListItem
           icon={<JourneysIcon />}
           label="Discover"
-          selected={selectedPage === 'journeys' || selectedPage === ''} // empty string for when page is index. UPDATE when we add the actual index page
+          selected={selectedPage === 'journeys' || selectedPage === ''} // empty for when page is index. UPDATE when we add the actual index page
           link="/"
           tooltipText={journeyTooltip}
         />
@@ -158,7 +172,7 @@ export function NavigationDrawer({
           link="/templates"
         />
 
-        {user != null && data?.me != null && (
+        {user?.id != null && data?.me != null && (
           <>
             <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
 
@@ -171,7 +185,20 @@ export function NavigationDrawer({
                 link="/publisher"
               />
             )}
-
+            {data.me.superAdmin === true && (
+              <NavigationListItem
+                icon={<UserProfile3Icon />}
+                label="Impersonate"
+                selected={false}
+                handleClick={handleImpersonateClick}
+              />
+            )}
+            {data.me.superAdmin === true && (
+              <ImpersonateDialog
+                open={impersonateOpen}
+                onClose={handleImpersonateClose}
+              />
+            )}
             <NavigationListItem
               icon={
                 <Avatar
@@ -215,6 +242,6 @@ export function NavigationDrawer({
           </Box>
         </ListItem>
       </StyledList>
-    </StyledNavigationDrawer>
+    </Drawer>
   )
 }

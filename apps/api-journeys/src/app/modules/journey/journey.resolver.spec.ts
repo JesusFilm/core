@@ -9,6 +9,7 @@ import {
   ChatButton,
   Host,
   Journey,
+  JourneyProfile,
   Prisma,
   Team,
   ThemeMode,
@@ -400,6 +401,43 @@ describe('JourneyResolver', () => {
             AND: [accessibleJourneys, { template: true }]
           }
         })
+      })
+    })
+
+    describe('useLastActiveTeamId', () => {
+      it('should get journeys belonging to last active team', async () => {
+        prismaService.journeyProfile.findUnique.mockResolvedValue({
+          lastActiveTeamId: 'teamId'
+        } as unknown as JourneyProfile)
+        expect(
+          await resolver.adminJourneys(
+            'userId',
+            accessibleJourneys,
+            undefined,
+            undefined,
+            undefined,
+            true
+          )
+        ).toEqual([journey])
+        expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+          where: {
+            AND: [accessibleJourneys, { teamId: 'teamId' }]
+          }
+        })
+      })
+
+      it('should throw error if profile not found', async () => {
+        prismaService.journeyProfile.findUnique.mockResolvedValue(null)
+        await expect(
+          resolver.adminJourneys(
+            'userId',
+            accessibleJourneys,
+            undefined,
+            undefined,
+            undefined,
+            true
+          )
+        ).rejects.toThrow('journey profile not found')
       })
     })
 

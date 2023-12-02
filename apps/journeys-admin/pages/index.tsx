@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
@@ -11,23 +10,11 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
 import { JourneyList } from '../src/components/JourneyList'
-import { PageWrapper } from '../src/components/NewPageWrapper'
-import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
+import { OnboardingPanel } from '../src/components/OnboardingPanel'
+import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
-
-export const ACCEPT_ALL_INVITES = gql`
-  mutation AcceptAllInvites {
-    userTeamInviteAcceptAll {
-      id
-    }
-    userInviteAcceptAll {
-      id
-    }
-  }
-`
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -49,7 +36,7 @@ function IndexPage(): ReactElement {
             <TeamSelect onboarding={router.query.onboarding === 'true'} />
           </Stack>
         }
-        sidePanelChildren={<OnboardingPanelContent />}
+        sidePanelChildren={<OnboardingPanel />}
         sidePanelTitle={t('Create a New Journey')}
       >
         <JourneyList user={user} />
@@ -64,17 +51,13 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, redirect, translations } = await initAndAuthApp({
+  const { redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
   })
 
   if (redirect != null) return { redirect }
-
-  await apolloClient.mutate<AcceptAllInvites>({
-    mutation: ACCEPT_ALL_INVITES
-  })
 
   return {
     props: {

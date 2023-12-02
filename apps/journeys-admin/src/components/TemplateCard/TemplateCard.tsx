@@ -128,6 +128,7 @@ export function TemplateCard({
           }
           passHref
           legacyBehavior
+          prefetch={false}
         >
           <CardActionArea>
             <CardContent>

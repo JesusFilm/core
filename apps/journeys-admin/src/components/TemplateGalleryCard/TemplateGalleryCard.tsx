@@ -70,7 +70,7 @@ export function TemplateGalleryCard({
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer',
-        width: { xs: 130, md: 180 },
+        width: { xs: 130, md: 180, xl: 240 },
         borderRadius: 2,
         p: 2,
         '& .MuiImageBackground-root': {
@@ -92,6 +92,7 @@ export function TemplateGalleryCard({
         href={journey != null ? `/templates/${journey.id}` : ''}
         passHref
         legacyBehavior
+        prefetch={false}
       >
         <Box
           data-testid="templateGalleryCard"
@@ -136,8 +137,8 @@ export function TemplateGalleryCard({
             <Skeleton
               variant="rectangular"
               sx={{
-                width: { xs: 130, md: 180 },
-                height: { xs: 130, md: 180 },
+                width: { xs: 130, md: 180, xl: 240 },
+                height: { xs: 130, md: 180, xl: 240 },
                 borderColor: 'divider',
                 borderRadius: 2,
                 backgroundColor: 'background.default'

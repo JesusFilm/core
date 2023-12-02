@@ -60,20 +60,24 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
   const listItemRefs = useRef<Array<HTMLDivElement | null>>([])
   const activeItemRef = useRef<HTMLDivElement | null>(null)
 
-  const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
-    UPDATE_LAST_ACTIVE_TEAM_ID
-  )
+  const [updateLastActiveTeamId, { client }] =
+    useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
 
   function handleChange(newTeamId: string): void {
     const team = query?.data?.teams.find((team) => team.id === newTeamId)
+    setActiveTeam(team ?? null)
+
     void updateLastActiveTeamId({
       variables: {
         input: {
           lastActiveTeamId: team?.id ?? null
         }
+      },
+      onCompleted() {
+        void client.refetchQueries({ include: ['GetAdminJourneys'] })
       }
     })
-    setActiveTeam(team ?? null)
+
     setOpenTeamDropdown(false)
   }
 

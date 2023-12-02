@@ -52,6 +52,12 @@ module "public_bastion_security_group" {
       protocol    = "tcp"
       cidr_blocks = ["172.221.20.111/32"]
     },
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["47.36.114.169/32"]
+    },
     // EC2_INSTANCE_CONNECT
     {
       from_port   = 22
