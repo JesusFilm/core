@@ -112,7 +112,7 @@ describe('TeamSelect', () => {
       })
     )
     expect(getByText('Shared With Me')).toBeInTheDocument()
-    fireEvent.click(getByRole('listitem', { name: 'Team Title2' }))
+    fireEvent.click(getByText('Team Title2'))
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title2')
   })
 
