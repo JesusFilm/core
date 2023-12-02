@@ -1,6 +1,6 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -63,9 +63,8 @@ export function TemplateGalleryCard({
       : ''
 
   return (
-    <Card
+    <CardActionArea
       aria-label="templateGalleryCard"
-      variant="outlined"
       sx={{
         border: 'none',
         backgroundColor: 'transparent',
@@ -73,11 +72,11 @@ export function TemplateGalleryCard({
         width: { xs: 130, md: 180, xl: 240 },
         borderRadius: 2,
         p: 2,
+        transition: (theme) => theme.transitions.create('background-color'),
         '& .MuiImageBackground-root': {
           transition: (theme) => theme.transitions.create('transform')
         },
         '&:hover': {
-          transition: (theme) => theme.transitions.create('background-color'),
           backgroundColor: (theme) => theme.palette.grey[200],
           '& .MuiImageBackground-root': {
             transform: 'scale(1.05)'
@@ -85,6 +84,10 @@ export function TemplateGalleryCard({
           '& .hoverImageEffects': {
             opacity: 0.3
           }
+        },
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: (theme) => theme.palette.primary.main
         }
       }}
     >
@@ -213,6 +216,6 @@ export function TemplateGalleryCard({
           </Stack>
         </Box>
       </NextLink>
-    </Card>
+    </CardActionArea>
   )
 }

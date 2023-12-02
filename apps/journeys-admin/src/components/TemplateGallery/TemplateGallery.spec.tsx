@@ -6,6 +6,9 @@ import '../../../test/i18n'
 
 import {
   getJourneysMock,
+  getJourneysMockWithAcceptanceTag,
+  getJourneysMockWithoutTagsEnglish,
+  getJourneysMockWithoutTagsFrench,
   getJourneysWithoutLanguageIdsMock,
   getLanguagesMock,
   getTagsMock
@@ -32,7 +35,8 @@ describe('TemplateGallery', () => {
         mocks={[
           getJourneysWithoutLanguageIdsMock,
           getLanguagesMock,
-          getTagsMock
+          getTagsMock,
+          getJourneysMockWithAcceptanceTag
         ]}
       >
         <TemplateGallery />
@@ -60,7 +64,14 @@ describe('TemplateGallery', () => {
     } as unknown as NextRouter)
 
     const { getByRole, queryByRole } = render(
-      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
+      <MockedProvider
+        mocks={[
+          getJourneysMock,
+          getLanguagesMock,
+          getTagsMock,
+          getJourneysMockWithAcceptanceTag
+        ]}
+      >
         <TemplateGallery />
       </MockedProvider>
     )
@@ -101,6 +112,7 @@ describe('TemplateGallery', () => {
       <MockedProvider
         mocks={[
           getJourneysWithoutLanguageIdsMock,
+          getJourneysMockWithoutTagsFrench,
           getLanguagesMock,
           getTagsMock
         ]}
@@ -132,7 +144,14 @@ describe('TemplateGallery', () => {
     } as unknown as NextRouter)
 
     const { getByRole } = render(
-      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
+      <MockedProvider
+        mocks={[
+          getJourneysMockWithoutTagsEnglish,
+          getJourneysMockWithAcceptanceTag,
+          getLanguagesMock,
+          getTagsMock
+        ]}
+      >
         <TemplateGallery />
       </MockedProvider>
     )

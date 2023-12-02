@@ -112,6 +112,11 @@ export function FeltNeedsButton({
           width: { xs: '150px', md: '222px' },
           height: { xs: '56px', md: '110px' },
           overflow: 'hidden',
+          '&:focus': {
+            outline: '2px solid',
+            outlineColor: (theme) => theme.palette.primary.main,
+            outlineOffset: '2px'
+          },
           '&:hover': {
             '& .hoverStyles': {
               transform: 'scale(1.05)'
