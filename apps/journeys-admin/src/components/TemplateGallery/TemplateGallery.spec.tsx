@@ -47,13 +47,15 @@ describe('TemplateGallery', () => {
     ).toBeInTheDocument()
     await waitFor(() =>
       expect(
-        getAllByRole('heading', { name: 'All Languages' })[0]
+        getAllByRole('heading', { name: 'English' })[0]
       ).toBeInTheDocument()
     )
-    expect(
-      getByRole('heading', { level: 5, name: 'Acceptance' })
-    ).toBeInTheDocument()
-    expect(getByRole('heading', { level: 5, name: 'Hope' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { level: 6, name: 'Acceptance' })
+      ).toBeInTheDocument()
+    )
+    expect(getByRole('heading', { level: 6, name: 'Hope' })).toBeInTheDocument()
   })
 
   it('should render templates with multiple filtered tags', async () => {
