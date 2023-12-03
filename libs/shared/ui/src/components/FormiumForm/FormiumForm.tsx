@@ -1,4 +1,4 @@
-import { FormiumClient } from '@formium/client'
+import { createClient } from '@formium/client'
 import {
   FormiumForm as Formium,
   FormiumComponents,
@@ -46,7 +46,6 @@ const formiumComponents: FormiumComponents = {
 // Formium Component
 interface FormiumFormProps extends FormiumProviderContext {
   form: Form
-  formiumClient: FormiumClient
   userId: string | null
   email: string | null
   onSubmit?: () => void
@@ -54,15 +53,14 @@ interface FormiumFormProps extends FormiumProviderContext {
 
 export function FormiumForm({
   form,
-  formiumClient,
   userId,
   email,
   onSubmit,
   ...props
 }: FormiumFormProps): ReactElement {
   async function handleSubmit(values: FormikValues): Promise<void> {
-    if (formiumClient == null || form == null) return
-    await formiumClient.submitForm(form.slug, {
+    if (form == null) return
+    await createClient(form.projectId).submitForm(form.slug, {
       ...values,
       hiddenUserId: userId,
       hiddenUserEmail: email

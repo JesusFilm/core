@@ -1,6 +1,7 @@
 import { subject } from '@casl/ability'
+import { createClient } from '@formium/client'
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
@@ -9,7 +10,8 @@ import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
   FormBlockCreateInput,
-  FormBlockUpdateInput
+  FormBlockUpdateInput,
+  JSON
 } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
@@ -89,5 +91,19 @@ export class FormBlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
     return await this.blockService.update(id, input)
+  }
+
+  @ResolveField('form')
+  async form(@Parent() block: Block): Promise<JSON | null> {
+    const { projectId, apiToken, formSlug } = block
+    if (projectId == null || apiToken == null || formSlug == null) return null
+    const formiumClient = createClient(projectId, {
+      apiToken
+    })
+    try {
+      return await formiumClient.getFormBySlug(formSlug)
+    } catch (e) {
+      return null
+    }
   }
 }

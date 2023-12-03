@@ -12,6 +12,8 @@ directive @extends on OBJECT | INTERFACE
 
 scalar DateTime
 
+scalar JSON
+
 enum ThemeMode {
   dark
   light
@@ -449,14 +451,19 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
+type Formium {
+  form: JSON
+  formiumClient: JSON
+}
+
 type FormBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   action: Action
+  form: JSON
   projectId: String
-  apiToken: String
   formSlug: String
 }
 

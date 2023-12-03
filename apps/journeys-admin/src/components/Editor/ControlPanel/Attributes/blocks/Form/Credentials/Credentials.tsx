@@ -21,9 +21,7 @@ export const FORM_BLOCK_UPDATE = gql`
   ) {
     formBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
-      projectId
-      apiToken
-      formSlug
+      form
     }
   }
 `
@@ -35,9 +33,11 @@ export function Credentials(): ReactElement {
   const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as TreeBlock<FormBlock> | undefined
+  const initalProjectId = selectedBlock?.form.projectId ?? ''
+  const initalFormSlug = selectedBlock?.form.slug ?? ''
 
   async function handleSubmitProjectId(projectId: string): Promise<void> {
-    if (selectedBlock == null || projectId === selectedBlock.projectId) return
+    if (selectedBlock == null || projectId === initalProjectId) return
     await formBlockUpdateCredentials({
       variables: {
         id: selectedBlock.id,
@@ -63,7 +63,7 @@ export function Credentials(): ReactElement {
   }
 
   async function handleSubmitApiToken(apiToken: string): Promise<void> {
-    if (selectedBlock == null || apiToken === selectedBlock.apiToken) return
+    if (selectedBlock == null) return
     await formBlockUpdateCredentials({
       variables: {
         id: selectedBlock.id,
@@ -89,7 +89,7 @@ export function Credentials(): ReactElement {
   }
 
   async function handleSubmitFormSlug(formSlug: string): Promise<void> {
-    if (selectedBlock == null || formSlug === selectedBlock.formSlug) return
+    if (selectedBlock == null || formSlug === initalFormSlug) return
     await formBlockUpdateCredentials({
       variables: {
         id: selectedBlock.id,
@@ -119,20 +119,21 @@ export function Credentials(): ReactElement {
       <TextFieldForm
         id="projectId"
         label="Project Id"
-        initialValue={selectedBlock?.projectId ?? ''}
+        initialValue={initalProjectId}
         onSubmit={handleSubmitProjectId}
       />
       <TextFieldForm
         id="apiToken"
         label="Api Token"
         type="password"
-        initialValue={selectedBlock?.apiToken ?? ''}
+        initialValue=""
+        placeholder="Tokens are displayed only once"
         onSubmit={handleSubmitApiToken}
       />
       <TextFieldForm
         id="formSlug"
         label="Form Slug"
-        initialValue={selectedBlock?.formSlug ?? ''}
+        initialValue={initalFormSlug}
         onSubmit={handleSubmitFormSlug}
       />
 

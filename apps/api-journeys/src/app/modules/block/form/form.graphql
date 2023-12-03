@@ -4,9 +4,7 @@ type FormBlock implements Block {
   parentBlockId: ID
   parentOrder: Int
   action: Action
-  projectId: String
-  apiToken: String
-  formSlug: String
+  form: JSON
 }
 
 input FormBlockCreateInput {

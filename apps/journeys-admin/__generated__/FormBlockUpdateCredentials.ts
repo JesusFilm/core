@@ -12,9 +12,7 @@ import { FormBlockUpdateInput } from "./globalTypes";
 export interface FormBlockUpdateCredentials_formBlockUpdate {
   __typename: "FormBlock";
   id: string;
-  projectId: string | null;
-  apiToken: string | null;
-  formSlug: string | null;
+  form: any | null;
 }
 
 export interface FormBlockUpdateCredentials {

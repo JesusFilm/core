@@ -825,9 +825,7 @@ export class FormBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     action?: Nullable<Action>;
-    projectId?: Nullable<string>;
-    apiToken?: Nullable<string>;
-    formSlug?: Nullable<string>;
+    form?: Nullable<JSON>;
 }
 
 export class GridContainerBlock implements Block {
@@ -1569,4 +1567,5 @@ export class User {
 }
 
 export type DateTime = String;
+export type JSON = any;
 type Nullable<T> = T | null;
