@@ -1,0 +1,1 @@
+export { useAdminJourneysSuspenseQuery } from './useAdminJourneysSuspenseQuery'

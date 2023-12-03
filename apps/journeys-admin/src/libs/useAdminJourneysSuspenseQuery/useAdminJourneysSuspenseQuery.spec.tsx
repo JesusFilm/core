@@ -8,10 +8,9 @@ import {
   ThemeName,
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
+import { GET_ADMIN_JOURNEYS } from '../useAdminJourneysQuery/useAdminJourneysQuery'
 
-import { GET_ADMIN_JOURNEYS } from './useAdminJourneysQuery'
-
-import { useAdminJourneysQuery } from '.'
+import { useAdminJourneysSuspenseQuery } from '.'
 
 describe('useAdminJourneysQuery', () => {
   it('should get journeys', async () => {
@@ -63,7 +62,7 @@ describe('useAdminJourneysQuery', () => {
 
     renderHook(
       () =>
-        useAdminJourneysQuery({
+        useAdminJourneysSuspenseQuery({
           status: [JourneyStatus.draft],
           template: true
         }),
