@@ -13,6 +13,8 @@ export interface FormBlockUpdateCredentials_formBlockUpdate {
   __typename: "FormBlock";
   id: string;
   form: any | null;
+  projectId: string | null;
+  formSlug: string | null;
 }
 
 export interface FormBlockUpdateCredentials {

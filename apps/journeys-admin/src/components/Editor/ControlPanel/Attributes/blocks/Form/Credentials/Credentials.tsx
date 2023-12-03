@@ -22,6 +22,8 @@ export const FORM_BLOCK_UPDATE = gql`
     formBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
       form
+      projectId
+      formSlug
     }
   }
 `
@@ -33,8 +35,8 @@ export function Credentials(): ReactElement {
   const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as TreeBlock<FormBlock> | undefined
-  const initalProjectId = selectedBlock?.form.projectId ?? ''
-  const initalFormSlug = selectedBlock?.form.slug ?? ''
+  const initalProjectId = selectedBlock?.projectId ?? ''
+  const initalFormSlug = selectedBlock?.formSlug ?? ''
 
   async function handleSubmitProjectId(projectId: string): Promise<void> {
     if (selectedBlock == null || projectId === initalProjectId) return
@@ -127,7 +129,7 @@ export function Credentials(): ReactElement {
         label="Api Token"
         type="password"
         initialValue=""
-        placeholder="Tokens are displayed only once"
+        helperText="Tokens are displayed only once"
         onSubmit={handleSubmitApiToken}
       />
       <TextFieldForm

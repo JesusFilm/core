@@ -4,6 +4,8 @@ type FormBlock implements Block {
   parentBlockId: ID
   parentOrder: Int
   action: Action
+  projectId: String
+  formSlug: String
   form: JSON
 }
 

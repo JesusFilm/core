@@ -403,9 +403,9 @@ type FormBlock implements Block
   parentBlockId: ID
   parentOrder: Int
   action: Action
-  form: JSON
   projectId: String
   formSlug: String
+  form: JSON
 }
 
 input FormBlockCreateInput
@@ -422,13 +422,6 @@ input FormBlockUpdateInput
   projectId: String
   apiToken: String
   formSlug: String
-}
-
-type Formium
-  @join__type(graph: JOURNEYS)
-{
-  form: JSON
-  formiumClient: JSON
 }
 
 enum GridAlignItems

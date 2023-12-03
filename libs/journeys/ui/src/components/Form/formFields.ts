@@ -8,6 +8,8 @@ export const FORM_FIELDS = gql`
     id
     parentBlockId
     parentOrder
+    projectId
+    formSlug
     form
     action {
       ...ActionFields

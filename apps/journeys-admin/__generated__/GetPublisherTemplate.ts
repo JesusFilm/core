@@ -178,6 +178,8 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  projectId: string | null;
+  formSlug: string | null;
   form: any | null;
   action: GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action | null;
 }

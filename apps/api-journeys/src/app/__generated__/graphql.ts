@@ -825,6 +825,8 @@ export class FormBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     action?: Nullable<Action>;
+    projectId?: Nullable<string>;
+    formSlug?: Nullable<string>;
     form?: Nullable<JSON>;
 }
 

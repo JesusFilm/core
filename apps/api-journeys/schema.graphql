@@ -451,20 +451,15 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
-type Formium {
-  form: JSON
-  formiumClient: JSON
-}
-
 type FormBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   action: Action
-  form: JSON
   projectId: String
   formSlug: String
+  form: JSON
 }
 
 input FormBlockCreateInput {
