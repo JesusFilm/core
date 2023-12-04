@@ -1,5 +1,6 @@
 import { Form, FormElementAction, FormElementType } from '@formium/types'
 import Typography from '@mui/material/Typography'
+import flowRight from 'lodash/flowRight'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
@@ -40,16 +41,42 @@ interface PageChild {
 }
 
 export function Header({ page: { title } }: HeaderProps): ReactElement {
-  const { hiddenPageTitle } = useFormium()
+  const { hideHeader, headerAsPageTitle } = useFormium()
 
-  return hiddenPageTitle === true ? (
-    <NextSeo title={title} />
-  ) : (
-    <>
-      <NextSeo title={title} />
-      <Typography variant="h4" sx={{ pb: '30px' }}>
-        {title}
-      </Typography>
-    </>
+  const Header: ReactElement = (
+    <Typography variant="h4" sx={{ pb: '30px' }}>
+      {title}
+    </Typography>
   )
+
+  const enhance = flowRight(
+    withPageTitleUpdate(title, headerAsPageTitle),
+    withHeader(title, hideHeader)
+  )
+  const EnhancedHeader = enhance(Header)
+
+  return EnhancedHeader
 }
+
+const withPageTitleUpdate = (title: string, headerAsPageTitle?: boolean) =>
+  function component(baseComponent: ReactElement) {
+    if (headerAsPageTitle === true) {
+      return (
+        <>
+          <NextSeo title={title} />
+          {baseComponent}
+        </>
+      )
+    } else {
+      return baseComponent
+    }
+  }
+
+const withHeader = (title: string, hideHeader?: boolean) =>
+  function component(baseComponent: ReactElement) {
+    if (hideHeader === true) {
+      return <></>
+    } else {
+      return baseComponent
+    }
+  }

@@ -105,12 +105,7 @@ describe('FormiumForm', () => {
 
   it('should hide page title', () => {
     const { queryByText } = render(
-      <FormiumForm
-        form={form}
-        userId="user.id"
-        email="user.email"
-        hiddenPageTitle
-      />
+      <FormiumForm form={form} userId="user.id" email="user.email" hideHeader />
     )
 
     expect(queryByText('single-page-test')).not.toBeInTheDocument()

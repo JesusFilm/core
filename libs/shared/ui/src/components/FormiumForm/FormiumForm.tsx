@@ -8,8 +8,6 @@ import { Form } from '@formium/types'
 import { FormikValues } from 'formik'
 import { ReactElement } from 'react'
 
-// import { formiumClient } from '../../libs/onboardingFormiumClient'
-
 import { Checkbox } from './formComponents/Checkbox'
 import { FormControl } from './formComponents/FormControl'
 import { Header } from './formComponents/Header'
