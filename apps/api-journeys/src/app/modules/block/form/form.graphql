@@ -1,0 +1,34 @@
+type FormBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  action: Action
+  projectId: String
+  formSlug: String
+  form: Json
+}
+
+input FormBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
+input FormBlockUpdateInput {
+  projectId: String
+  apiToken: String
+  formSlug: String
+}
+
+extend type Mutation {
+  formBlockCreate(input: FormBlockCreateInput!): FormBlock!
+  formBlockUpdate(
+    id: ID!
+    input: FormBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): FormBlock
+}
