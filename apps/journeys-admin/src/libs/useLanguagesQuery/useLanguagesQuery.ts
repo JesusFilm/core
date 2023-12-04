@@ -1,4 +1,4 @@
-import { UseSuspenseQueryResult, gql, useSuspenseQuery } from '@apollo/client'
+import { QueryResult, gql, useQuery } from '@apollo/client'
 
 import {
   GetLanguages,
@@ -19,13 +19,10 @@ export const GET_LANGUAGES = gql`
 
 export function useLanguagesQuery(
   variables?: GetLanguagesVariables
-): UseSuspenseQueryResult<GetLanguages, GetLanguagesVariables> {
-  const query = useSuspenseQuery<GetLanguages, GetLanguagesVariables>(
-    GET_LANGUAGES,
-    {
-      variables
-    }
-  )
+): QueryResult<GetLanguages, GetLanguagesVariables> {
+  const query = useQuery<GetLanguages, GetLanguagesVariables>(GET_LANGUAGES, {
+    variables
+  })
 
   return query
 }
