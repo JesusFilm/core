@@ -1541,4 +1541,5 @@ export class User {
 }
 
 export type DateTime = String;
+export type Json = any;
 type Nullable<T> = T | null;
