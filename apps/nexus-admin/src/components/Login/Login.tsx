@@ -1,12 +1,7 @@
 import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'
 import { Box, Stack, Typography } from '@mui/material'
 import { getApp } from 'firebase/app'
-import {
-  EmailAuthProvider,
-  FacebookAuthProvider,
-  GoogleAuthProvider,
-  getAuth
-} from 'firebase/auth'
+import { GoogleAuthProvider, getAuth } from 'firebase/auth'
 import { FC, useEffect, useState } from 'react'
 
 export const Login: FC = () => {
@@ -24,19 +19,11 @@ export const Login: FC = () => {
     signInFlow: 'popup',
     signInOptions: [
       {
-        provider: EmailAuthProvider.PROVIDER_ID,
-        fullLabel: 'Login with Email'
-      },
-      {
         provider: GoogleAuthProvider.PROVIDER_ID,
         customParameters: {
           prompt: 'select_account'
         },
         fullLabel: 'Login with Google'
-      },
-      {
-        provider: FacebookAuthProvider.PROVIDER_ID,
-        fullLabel: 'Login with Facebook'
       }
     ],
     callbacks: {
