@@ -635,6 +635,7 @@ enum join__Graph {
   TAGS @join__graph(name: "tags", url: "http://127.0.0.1:4006/graphql")
   USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql")
   VIDEOS @join__graph(name: "videos", url: "http://127.0.0.1:4004/graphql")
+  NEXUS @join__graph(name: "nexus", url: "http://127.0.0.1:4007/graphql")
 }
 
 type Journey
@@ -668,6 +669,16 @@ type Journey
   tags: [Tag!]!
   userJourneys: [UserJourney!]
 }
+
+type Nexus 
+  @join__type(graph: NEXUS, key: "id") 
+{
+  id: ID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+}
+
 
 input JourneyCreateInput
   @join__type(graph: JOURNEYS)

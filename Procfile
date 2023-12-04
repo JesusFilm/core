@@ -11,3 +11,5 @@ languages-watcher: nx watcher api-languages
 videos-serve: nx serve api-videos
 videos-watcher: nx watcher api-videos
 gateway: nx serve api-gateway
+nexus-serve: nx serve api-nexus
+nexus-watcher: nx watcher api-nexus
