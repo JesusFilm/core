@@ -24,3 +24,7 @@ subgraphs:
     routing_url: http://127.0.0.1:4006/graphql
     schema:
       file: ../api-tags/schema.graphql
+  nexus:
+    routing_url: http://127.0.0.1:4007/graphql
+    schema:
+      file: ../api-nexus/schema.graphql
