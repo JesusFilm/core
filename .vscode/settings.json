@@ -70,7 +70,17 @@
       "name": "videos",
       "database": "videos",
       "username": "postgres"
-    }
+    },
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "name": "nexus",
+      "driver": "PostgreSQL",
+      "database": "nexus",
+      "username": "postgres",
+      "password": "postgres"
+    },
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true

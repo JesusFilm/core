@@ -1,0 +1,29 @@
+scalar DateTime
+
+type Channel @key(fields: "id") {
+  id: ID!
+  nexusId: String
+  name: String!
+  platform: String
+}
+
+input ChannelCreateInput {
+  id: ID
+  nexusId: String!
+  name: String!
+  platform: String!
+}
+
+input ChannelUpdateInput {
+  name: String
+  nexusId: String
+  platform: String
+}
+
+input ChannelFilter {
+  ids: [ID!]
+  name: String
+  nexusId: String
+  limit: Int
+}
+

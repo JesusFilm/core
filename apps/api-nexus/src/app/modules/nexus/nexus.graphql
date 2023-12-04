@@ -1,0 +1,30 @@
+scalar DateTime
+
+type Nexus @key(fields: "id") {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+}
+
+input NexusCreateInput {
+  id: ID
+  name: String!
+  description: String
+  createdAt: DateTime!
+}
+
+input NexusUpdateInput {
+  name: String
+  description: String
+}
+
+input NexusFilter {
+  ids: [ID!]
+  name: String
+  description: String
+  createdAt: DateTime
+  limit: Int
+  orderByRecent: Boolean
+}
+

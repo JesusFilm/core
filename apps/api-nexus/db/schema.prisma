@@ -1,0 +1,37 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = env("PRISMA_LOCATION")
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("PG_DATABASE_URL")
+}
+
+model Nexus {
+    id          String   @id @default(uuid())
+    name        String
+    description String?
+    createdAt   DateTime @default(now())
+}
+
+model UserNexus {
+    id      String @id @default(uuid())
+    userId  String
+    nexusId String
+    role    String
+}
+
+model Channel {
+    id       String @id @default(uuid())
+    nexusId  String
+    name     String
+    platform String
+}
+
+model Resource {
+    id      String @id @default(uuid())
+    name    String
+    refLink String
+    vidoId  String
+}
