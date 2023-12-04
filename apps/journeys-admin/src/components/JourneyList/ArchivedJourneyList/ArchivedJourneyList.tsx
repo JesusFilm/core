@@ -17,8 +17,8 @@ import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 const Dialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "core/shared/ui/Dialog" */
-      '@core/shared/ui/Dialog'
+      /* webpackChunkName: "core/shared/ui-dynamic/Dialog" */
+      '@core/shared/ui-dynamic/Dialog'
     ).then((mod) => mod.Dialog),
   { ssr: false }
 )
