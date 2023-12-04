@@ -87,13 +87,6 @@ export const NoJourneys = {
   }
 }
 
-export const Loading = {
-  ...Template,
-  args: {
-    mocks: []
-  }
-}
-
 export const UnarchiveAll = {
   ...Template,
   args: {

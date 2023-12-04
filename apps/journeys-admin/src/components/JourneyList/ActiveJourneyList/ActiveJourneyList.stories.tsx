@@ -82,19 +82,6 @@ export const NoJourneys = {
   }
 }
 
-export const Loading = {
-  ...Template,
-  args: {
-    mocks: []
-  },
-  parameters: {
-    apolloClient: {
-      cache: cache(),
-      mocks: []
-    }
-  }
-}
-
 export const ArchiveAll = {
   ...Template,
   args: {

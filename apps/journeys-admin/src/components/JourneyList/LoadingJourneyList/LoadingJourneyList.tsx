@@ -2,7 +2,6 @@ import MuiAvatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
@@ -26,34 +25,32 @@ function LoadingJourneyCard(): ReactElement {
         }
       }}
     >
-      <CardActionArea>
-        <CardContent
+      <CardContent
+        sx={{
+          px: 6,
+          py: 4
+        }}
+      >
+        <Typography
+          variant="subtitle1"
+          component="div"
+          noWrap
+          gutterBottom
+          sx={{ color: 'secondary.main' }}
+        >
+          <Skeleton variant="text" width={400} />
+        </Typography>
+        <Typography
+          variant="caption"
+          noWrap
           sx={{
-            px: 6,
-            py: 4
+            display: 'block',
+            color: 'secondary.main'
           }}
         >
-          <Typography
-            variant="subtitle1"
-            component="div"
-            noWrap
-            gutterBottom
-            sx={{ color: 'secondary.main' }}
-          >
-            <Skeleton variant="text" width={400} />
-          </Typography>
-          <Typography
-            variant="caption"
-            noWrap
-            sx={{
-              display: 'block',
-              color: 'secondary.main'
-            }}
-          >
-            <Skeleton variant="text" width={120} />
-          </Typography>
-        </CardContent>
-      </CardActionArea>
+          <Skeleton variant="text" width={120} />
+        </Typography>
+      </CardContent>
       <CardActions
         sx={{
           px: 6,
@@ -79,19 +76,13 @@ function LoadingJourneyCard(): ReactElement {
                 borderColor: 'primary.contrastText'
               },
               '> .MuiAvatarGroup-avatar': {
-                backgroundColor: 'primary.main'
+                backgroundColor: 'primary.contrastText'
               }
             }}
           >
             {[0, 1, 2].map((i) => (
               <MuiAvatar key={i}>
-                <Skeleton
-                  variant="circular"
-                  height={31}
-                  width={31}
-                  animation={false}
-                  sx={{ bgcolor: 'divider' }}
-                />
+                <Skeleton variant="circular" height={31} width={31} />
               </MuiAvatar>
             ))}
           </AvatarGroup>
