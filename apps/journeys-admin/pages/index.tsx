@@ -1,6 +1,6 @@
 import { ApolloProvider } from '@apollo/client'
 import Stack from '@mui/material/Stack'
-import { GetServerSideProps } from 'next'
+import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import { AuthAction, useUser, withUser } from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -49,7 +49,7 @@ function IndexPage(): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const translations = await serverSideTranslations(
     locale ?? 'en',
     ['apps-journeys-admin', 'libs-journeys-ui'],
