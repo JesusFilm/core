@@ -115,7 +115,7 @@ export function Credentials(): ReactElement {
 
   return (
     <Stack spacing={6} sx={{ px: 6, py: 4 }}>
-      <Typography>Tokens are displayed only once</Typography>
+      <Typography>Values are displayed only once</Typography>
       <TextFieldForm
         id="projectId"
         label="Project Id"
