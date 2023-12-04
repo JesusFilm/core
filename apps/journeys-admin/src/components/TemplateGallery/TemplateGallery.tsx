@@ -3,25 +3,15 @@ import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ReactElement, Suspense, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TemplateSections } from '../TemplateSections'
 
-import { LocalButtonLoading } from './HeaderAndLanguageFilter/LocalButtonLoading/LocalButtionLoading'
+import { HeaderAndLanguageFilter } from './HeaderAndLanguageFilter'
 import { TagCarousels } from './TagCarousels'
 import { TagsFilter } from './TagsFilter'
-
-const DynamicHeaderAndLanguageFilter = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "HeaderAndLanguageFilter" */
-      './HeaderAndLanguageFilter'
-    ).then((mod) => mod.HeaderAndLanguageFilter),
-  { ssr: false, loading: () => <LocalButtonLoading /> }
-)
 
 export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -75,12 +65,10 @@ export function TemplateGallery(): ReactElement {
           py: { xs: 6, sm: 9 }
         }}
       >
-        <Suspense fallback={<LocalButtonLoading />}>
-          <DynamicHeaderAndLanguageFilter
-            selectedLanguageIds={selectedLanguageIds}
-            onChange={handleLanguageIdsChange}
-          />
-        </Suspense>
+        <HeaderAndLanguageFilter
+          selectedLanguageIds={selectedLanguageIds}
+          onChange={handleLanguageIdsChange}
+        />
         <Grid
           container
           spacing={2}
