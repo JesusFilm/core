@@ -11,13 +11,7 @@ import { Attribute } from '../../Attribute'
 
 import { Credentials } from './Credentials'
 
-export function Form({
-  id,
-  projectId,
-  apiToken,
-  formSlug,
-  action
-}: TreeBlock<FormBlock>): ReactElement {
+export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
   const { dispatch } = useEditor()
 
   const selectedAction = actions.find((act) => act.value === action?.__typename)
@@ -56,13 +50,7 @@ export function Form({
         id={`${id}-form-credentials`}
         icon={<StarsIcon />}
         name="Credentials"
-        value={
-          (projectId != null || projectId !== '') &&
-          (apiToken != null || apiToken !== '') &&
-          (formSlug != null || formSlug !== '')
-            ? 'Complete'
-            : 'Incomplete'
-        }
+        value={form != null ? 'Complete' : 'Incomplete'}
         description="Formium Credentials"
         onClick={() => {
           dispatch({
