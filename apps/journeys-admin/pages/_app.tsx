@@ -67,6 +67,11 @@ function JourneysAdminApp({
             href={process.env.NEXT_PUBLIC_GATEWAY_URL}
             crossOrigin=""
           />
+          <link
+            rel="preconnect"
+            href="https://identitytoolkit.googleapis.com"
+            crossOrigin=""
+          />
         </Head>
         {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
           process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
