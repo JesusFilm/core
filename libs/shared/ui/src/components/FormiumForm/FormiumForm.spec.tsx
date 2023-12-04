@@ -1,3 +1,4 @@
+import { FormiumClient, createClient } from '@formium/client'
 import {
   Form,
   FormElementType,
@@ -7,17 +8,17 @@ import {
 } from '@formium/types'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { formiumClient } from '../../libs/formiumClient'
 import ArrowRight from '../icons/ArrowRight'
 
 import { FormiumForm } from './FormiumForm'
 
-jest.mock('@core/shared/ui/formiumClient', () => ({
+jest.mock('@formium/client', () => ({
   __esModule: true,
-  formiumClient: {
-    submitForm: jest.fn()
-  }
+  createClient: jest.fn()
 }))
+const mockCreateClient = createClient as jest.MockedFunction<
+  typeof createClient
+>
 
 const form: Form = {
   actionIds: [],
@@ -76,6 +77,11 @@ describe('FormiumForm', () => {
 
   it('should submit form', async () => {
     const handleSubmit = jest.fn()
+    const mockFormiumClient = {
+      submitForm: handleSubmit
+    } as unknown as FormiumClient
+    mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
     const { getByRole } = render(
       <FormiumForm
         form={form}
@@ -88,16 +94,13 @@ describe('FormiumForm', () => {
     fireEvent.click(getByRole('button', { name: 'Submit' }))
 
     await waitFor(() => {
-      expect(formiumClient.submitForm).toHaveBeenCalledWith(
-        'single-page-test',
-        {
-          field: '',
-          hiddenUserId: 'user.id',
-          hiddenUserEmail: 'user.email'
-        }
-      )
+      expect(handleSubmit).toHaveBeenCalledWith('single-page-test', {
+        field: '',
+        hiddenUserId: 'user.id',
+        hiddenUserEmail: 'user.email'
+      })
     })
-    expect(handleSubmit).toHaveBeenCalled()
+    expect(mockFormiumClient.submitForm).toHaveBeenCalled()
   })
 
   it('should hide page title', () => {
