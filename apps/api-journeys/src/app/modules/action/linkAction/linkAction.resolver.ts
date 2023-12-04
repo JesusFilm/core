@@ -55,7 +55,8 @@ export class LinkActionResolver {
           'ButtonBlock',
           'VideoBlock',
           'VideoTriggerBlock',
-          'TextResponseBlock'
+          'TextResponseBlock',
+          'FormBlock'
         ],
         block.typename
       )

@@ -403,7 +403,7 @@ type FormBlock implements Block
   parentBlockId: ID
   parentOrder: Int
   action: Action
-  form: JSON
+  form: Json
 }
 
 input FormBlockCreateInput
@@ -955,7 +955,7 @@ enum JourneyVisitorSort
   activity @join__enumValue(graph: JOURNEYS)
 }
 
-scalar JSON
+scalar Json
   @join__type(graph: JOURNEYS)
 
 type Language

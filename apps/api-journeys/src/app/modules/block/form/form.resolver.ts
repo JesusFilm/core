@@ -11,7 +11,7 @@ import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import {
   FormBlockCreateInput,
   FormBlockUpdateInput,
-  JSON
+  Json
 } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
@@ -94,14 +94,15 @@ export class FormBlockResolver {
   }
 
   @ResolveField('form')
-  async form(@Parent() block: Block): Promise<JSON | null> {
+  async form(@Parent() block: Block): Promise<Json | null> {
     const { projectId, apiToken, formSlug } = block
     if (projectId == null || apiToken == null || formSlug == null) return null
     const formiumClient = createClient(projectId, {
       apiToken
     })
     try {
-      return await formiumClient.getFormBySlug(formSlug)
+      const form = await formiumClient.getFormBySlug(formSlug)
+      return form
     } catch (e) {
       return null
     }

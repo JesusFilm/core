@@ -12,7 +12,7 @@ directive @extends on OBJECT | INTERFACE
 
 scalar DateTime
 
-scalar JSON
+scalar Json
 
 enum ThemeMode {
   dark
@@ -457,7 +457,7 @@ type FormBlock implements Block {
   parentBlockId: ID
   parentOrder: Int
   action: Action
-  form: JSON
+  form: Json
 }
 
 input FormBlockCreateInput {
