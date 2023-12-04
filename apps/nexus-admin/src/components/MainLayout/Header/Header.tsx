@@ -1,10 +1,10 @@
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
 import TranslateOutlinedIcon from '@mui/icons-material/TranslateOutlined'
-import { Avatar, IconButton, Stack, Typography } from '@mui/material'
+import { Avatar, Badge, IconButton, Stack, Typography } from '@mui/material'
 import { FC } from 'react'
 
 interface HeaderProps {
-  title: string
+  title?: string
 }
 
 export const Header: FC<HeaderProps> = ({ title }) => {
@@ -23,7 +23,9 @@ export const Header: FC<HeaderProps> = ({ title }) => {
           <TranslateOutlinedIcon />
         </IconButton>
         <IconButton>
-          <NotificationsNoneOutlinedIcon />
+          <Badge color="primary" variant="dot">
+            <NotificationsNoneOutlinedIcon />
+          </Badge>
         </IconButton>
         <Avatar
           alt="Remy Sharp"

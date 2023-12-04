@@ -4,10 +4,11 @@ import { Header } from './Header'
 import { Sidebar } from './Sidebar'
 
 interface MainLayoutProps {
+  title?: string
   children: ReactNode
 }
 
-export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
+export const MainLayout: FC<MainLayoutProps> = ({ children, title }) => {
   return (
     <Stack
       direction="row"
@@ -25,7 +26,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
           px: 3
         }}
       >
-        <Header title="Title" />
+        <Header title={title} />
         <Box>{children}</Box>
       </Stack>
     </Stack>
