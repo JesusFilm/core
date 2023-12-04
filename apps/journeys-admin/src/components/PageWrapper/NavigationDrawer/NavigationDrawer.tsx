@@ -28,6 +28,7 @@ import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
+import { loadBeacon } from '../../HelpScoutBeacon/HelpScoutBeacon'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 
 import { ImpersonateDialog } from './ImpersonateDialog'
@@ -115,6 +116,14 @@ export function NavigationDrawer({
     onClose(!open)
   }
 
+  function handleClickHelp(): void {
+  loadBeacon()
+    if (window.Beacon != null) {
+        window.Beacon('open')
+      }
+    
+  }
+
   const { data } = useQuery<GetMe>(GET_ME)
   const { data: userRoleData } = useUserRoleQuery()
 
@@ -138,7 +147,7 @@ export function NavigationDrawer({
           width: open ? DRAWER_WIDTH : { xs: 0, md: 72 }
         }
       }}
-    >
+      >
       <Backdrop open={open} onClick={handleClose} />
       <StyledList>
         <ListItemButton onClick={handleClose} data-testid="toggle-nav-drawer">
@@ -165,6 +174,14 @@ export function NavigationDrawer({
           tooltipText={journeyTooltip}
         />
 
+        <NavigationListItem
+          icon={<JourneysIcon />}
+          label="Help"
+          selected={false} // empty for when page is index. UPDATE when we add the actual index page
+          handleClick={() => handleClickHelp()}
+          link="/"
+          tooltipText={journeyTooltip}
+          />
         <NavigationListItem
           icon={<Bag5Icon />}
           label="Templates"
