@@ -22,7 +22,7 @@ interface CollectionButtonProps {
 
 const StyledCollectionButton = styled(ButtonBase)(({ theme }) => ({
   borderRadius: '8px',
-  transition: theme.transitions.create('all'),
+  transition: theme.transitions.create('background-color'),
   '& .backgroundImageHover': {
     transition: theme.transitions.create('transform')
   },
@@ -60,6 +60,13 @@ export function CollectionButton({
       disableTouchRipple
       onClick={() => {
         if (tag != null) onClick(tag.id)
+      }}
+      sx={{
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: (theme) => theme.palette.primary.main,
+          outlineOffset: '2px'
+        }
       }}
     >
       <Stack
