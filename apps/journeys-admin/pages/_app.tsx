@@ -1,4 +1,3 @@
-import { ApolloProvider } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
@@ -15,7 +14,6 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
-import { TeamProvider } from '../src/components/Team/TeamProvider'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
