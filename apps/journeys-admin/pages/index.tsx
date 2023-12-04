@@ -1,3 +1,4 @@
+import { ApolloProvider } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
@@ -12,7 +13,9 @@ import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
+import { TeamProvider } from '../src/components/Team/TeamProvider'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
+import { createApolloClient } from '../src/libs/apolloClient'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -20,27 +23,29 @@ function IndexPage(): ReactElement {
   const router = useRouter()
 
   return (
-    <>
-      <NextSeo title={t('Journeys')} />
-      <PageWrapper
-        user={user}
-        mainHeaderChildren={
-          <Stack
-            direction="row"
-            flexGrow={1}
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <TeamSelect onboarding={router.query.onboarding === 'true'} />
-            <TeamMenu />
-          </Stack>
-        }
-        sidePanelChildren={<OnboardingPanel />}
-        sidePanelTitle={t('Create a New Journey')}
-      >
-        <JourneyList user={user} />
-      </PageWrapper>
-    </>
+    <ApolloProvider client={createApolloClient(user)}>
+      <TeamProvider>
+        <NextSeo title={t('Journeys')} />
+        <PageWrapper
+          user={user}
+          mainHeaderChildren={
+            <Stack
+              direction="row"
+              flexGrow={1}
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <TeamSelect onboarding={router.query.onboarding === 'true'} />
+              <TeamMenu />
+            </Stack>
+          }
+          sidePanelChildren={<OnboardingPanel />}
+          sidePanelTitle={t('Create a New Journey')}
+        >
+          <JourneyList user={user} />
+        </PageWrapper>
+      </TeamProvider>
+    </ApolloProvider>
   )
 }
 
@@ -59,5 +64,7 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
 }
 
 export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
+  whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+  LoaderComponent: () => <></>
 })(IndexPage)

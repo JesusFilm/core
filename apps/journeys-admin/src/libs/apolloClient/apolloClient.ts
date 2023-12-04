@@ -1,35 +1,29 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { BatchHttpLink } from '@apollo/client/link/batch-http'
 import { setContext } from '@apollo/client/link/context'
-import { getApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { User } from 'next-firebase-auth'
 import { useMemo } from 'react'
 
 import { cache } from './cache'
 
 export function createApolloClient(
-  token: string
+  user: User
 ): ApolloClient<NormalizedCacheObject> {
-  const isSsrMode = typeof window === 'undefined'
   const httpLink = new BatchHttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
   })
 
-  const authLink = setContext(async (_, { headers }) => {
-    const firebaseToken = isSsrMode
-      ? token
-      : (await getAuth(getApp()).currentUser?.getIdToken()) ?? token
+  const authLink = setContext(async (_) => {
+    const Authorization = await user.getIdToken()
 
     return {
       headers: {
-        ...(!isSsrMode ? headers : []),
-        Authorization: firebaseToken
+        Authorization
       }
     }
   })
 
   return new ApolloClient({
-    ssrMode: typeof window === 'undefined',
     link: authLink.concat(httpLink),
     cache: cache(),
     name: 'journeys-admin',

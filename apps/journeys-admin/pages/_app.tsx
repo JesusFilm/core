@@ -17,7 +17,6 @@ import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { TeamProvider } from '../src/components/Team/TeamProvider'
 import { ThemeProvider } from '../src/components/ThemeProvider'
-import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
 import '../public/swiper-pagination-override.css'
@@ -39,14 +38,6 @@ function JourneysAdminApp({
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const user =
-    pageProps.userSerialized != null
-      ? JSON.parse(pageProps.userSerialized)
-      : null
-
-  const token = user?._token ?? ''
-  const apolloClient = useApollo(token)
-
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_GTM_ID != null)
       TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
@@ -57,8 +48,8 @@ function JourneysAdminApp({
       jssStyles.parentElement?.removeChild(jssStyles)
     }
 
-    TagManager.dataLayer({ dataLayer: { userId: user?.id } })
-  }, [user])
+    // TagManager.dataLayer({ dataLayer: { userId: user?.id } })
+  }, [])
 
   return (
     <CacheProvider value={emotionCache}>
@@ -113,18 +104,14 @@ function JourneysAdminApp({
            `}
             </Script>
           )}
-        <ApolloProvider client={apolloClient}>
-          <TeamProvider>
-            <SnackbarProvider
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right'
-              }}
-            >
-              <Component {...pageProps} />
-            </SnackbarProvider>
-          </TeamProvider>
-        </ApolloProvider>
+        <SnackbarProvider
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+        >
+          <Component {...pageProps} />
+        </SnackbarProvider>
       </ThemeProvider>
     </CacheProvider>
   )
