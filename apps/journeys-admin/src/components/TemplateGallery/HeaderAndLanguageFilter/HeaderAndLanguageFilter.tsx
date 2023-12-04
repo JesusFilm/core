@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-// import Skeleton from '@mui/material/Skeleton'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { FormikValues } from 'formik'
@@ -54,7 +54,11 @@ interface LocalButtonProps
   loading?: boolean
 }
 
-function LocalButton({ children, ...props }: LocalButtonProps): ReactElement {
+function LocalButton({
+  children,
+  loading,
+  ...props
+}: LocalButtonProps): ReactElement {
   return (
     <Box sx={{ flex: 1, overflow: 'hidden' }}>
       <Button
@@ -80,7 +84,13 @@ function LocalButton({ children, ...props }: LocalButtonProps): ReactElement {
             overflow: 'hidden'
           }}
         >
-          {children as unknown as ReactNode}
+          {loading === true ? (
+            <Skeleton
+              sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
+            />
+          ) : (
+            (children as unknown as ReactNode)
+          )}
         </Typography>
         <Typography
           variant="h6"
@@ -91,15 +101,23 @@ function LocalButton({ children, ...props }: LocalButtonProps): ReactElement {
             overflow: 'hidden'
           }}
         >
-          {children as unknown as ReactNode}
+          {loading === true ? (
+            <Skeleton
+              sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
+            />
+          ) : (
+            (children as unknown as ReactNode)
+          )}
         </Typography>
-        <>
-          <ChevronDownIcon
-            fontSize="large"
-            sx={{ display: { xs: 'none', md: 'block' } }}
-          />
-          <ChevronDownIcon sx={{ display: { xs: 'block', md: 'none' } }} />
-        </>
+        {loading !== true && (
+          <>
+            <ChevronDownIcon
+              fontSize="large"
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            />
+            <ChevronDownIcon sx={{ display: { xs: 'block', md: 'none' } }} />
+          </>
+        )}
       </Button>
     </Box>
   )
@@ -123,7 +141,7 @@ export function HeaderAndLanguageFilter({
     if (popperAnchor != null) setAnchorEl(popperAnchor)
   }, [anchorEl])
 
-  const { data } = useLanguagesQuery({
+  const { data, loading } = useLanguagesQuery({
     languageId: '529',
     where: {
       ids: [
@@ -159,6 +177,7 @@ export function HeaderAndLanguageFilter({
     sx: { flex: 0 }
   }
   const localButtonProps: LocalButtonProps = {
+    loading,
     onClick: (e) => {
       setOpen(!open)
     }
