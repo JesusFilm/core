@@ -1,21 +1,18 @@
 import Stack from '@mui/material/Stack'
+import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import { AuthAction, useUser, withUser } from 'next-firebase-auth'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import i18nConfig from '../next-i18next.config'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
-import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -47,26 +44,19 @@ function IndexPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
-
-  const { redirect, translations } = await initAndAuthApp({
-    user,
-    locale,
-    resolvedUrl
-  })
-
-  if (redirect != null) return { redirect }
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+  const translations = await serverSideTranslations(
+    locale ?? 'en',
+    ['apps-journeys-admin', 'libs-journeys-ui'],
+    i18nConfig
+  )
 
   return {
     props: {
       ...translations
     }
   }
-})
+}
 
 export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
