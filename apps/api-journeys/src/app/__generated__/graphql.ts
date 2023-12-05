@@ -826,6 +826,8 @@ export class FormBlock implements Block {
     parentOrder?: Nullable<number>;
     action?: Nullable<Action>;
     form?: Nullable<Json>;
+    projectId?: Nullable<string>;
+    formSlug?: Nullable<string>;
 }
 
 export class GridContainerBlock implements Block {
