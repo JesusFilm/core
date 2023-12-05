@@ -8,7 +8,7 @@ import { MainLayout } from '../../src/components/MainLayout'
 const ChannelsPage = () => {
   const [openCreateChannelModal, setOpenCreateChannelModal] =
     useState<boolean>(false)
-  const [deleteChannelModal, setDeleteChannelModal] = useState<boolean>(true)
+  const [deleteChannelModal, setDeleteChannelModal] = useState<boolean>(false)
 
   return (
     <MainLayout title="Channels">

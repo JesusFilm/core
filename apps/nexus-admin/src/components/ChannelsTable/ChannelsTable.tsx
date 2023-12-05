@@ -1,10 +1,14 @@
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import { Chip, IconButton } from '@mui/material'
+import { Chip, IconButton, Popover, Stack, Typography } from '@mui/material'
 import { GridCellParams } from '@mui/x-data-grid'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { Table } from '../Table'
 
 export const ChannelsTable: FC = () => {
+  const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
+
   const columns = [
     { field: 'channelName', headerName: 'Channel name', flex: 1 },
     { field: 'category', headerName: 'Category', flex: 1 },
@@ -33,7 +37,7 @@ export const ChannelsTable: FC = () => {
       flex: 1,
       sortable: false,
       renderCell: () => (
-        <IconButton>
+        <IconButton onClick={(event) => setMorePopup(event.currentTarget)}>
           <MoreHorizIcon fontSize="small" />
         </IconButton>
       )
@@ -71,5 +75,35 @@ export const ChannelsTable: FC = () => {
     }
   ]
 
-  return <Table columns={columns} rows={rows} />
+  return (
+    <>
+      <Table columns={columns} rows={rows} />
+      <Popover
+        open={Boolean(morePopup)}
+        anchorEl={morePopup}
+        onClose={() => setMorePopup(null)}
+      >
+        <Stack sx={{ p: 4 }} spacing={4}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={2}
+            sx={{ cursor: 'pointer' }}
+          >
+            <BorderColorOutlinedIcon />
+            <Typography>Edit</Typography>
+          </Stack>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={2}
+            sx={{ cursor: 'pointer' }}
+          >
+            <DeleteOutlineOutlinedIcon />
+            <Typography>Delete</Typography>
+          </Stack>
+        </Stack>
+      </Popover>
+    </>
+  )
 }
