@@ -201,4 +201,83 @@ describe('FormBlock', () => {
       ).toBeNull()
     })
   })
+
+  describe('projects', () => {
+    it('returns projects', async () => {
+      const mockFormiumClient = {
+        getMyProjects: jest.fn(() => [{ id: 'projectId', name: 'projectName' }])
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      await resolver.projects({
+        ...block
+      })
+
+      expect(mockFormiumClient.getMyProjects).toHaveBeenCalled()
+      expect(mockFormiumClient.getMyProjects()).toEqual([
+        { id: 'projectId', name: 'projectName' }
+      ])
+    })
+
+    it('returns null if client fails to fetch projects', async () => {
+      const mockFormiumClient = {
+        getMyProjects: jest.fn().mockRejectedValueOnce(new Error('error'))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      expect(
+        await resolver.projects({
+          ...block
+        })
+      ).toBeNull()
+    })
+
+    it('returns null if there are missing credentials', async () => {
+      expect(
+        await resolver.projects({
+          ...block,
+          apiToken: null
+        })
+      ).toBeNull()
+    })
+  })
+
+  describe('forms', () => {
+    it('returns projects', async () => {
+      const mockFormiumClient = {
+        findForms: jest.fn(() => ['form-slug'])
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      await resolver.forms({
+        ...block
+      })
+
+      expect(mockFormiumClient.findForms).toHaveBeenCalled()
+      expect(mockFormiumClient.findForms()).toEqual(['form-slug'])
+    })
+
+    it('returns null if client fails to fetch forms', async () => {
+      const mockFormiumClient = {
+        findForms: jest.fn().mockRejectedValueOnce(new Error('error'))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      expect(
+        await resolver.forms({
+          ...block
+        })
+      ).toBeNull()
+    })
+
+    it('returns null if there are missing credentials', async () => {
+      expect(
+        await resolver.forms({
+          ...block,
+          projectId: null,
+          apiToken: null
+        })
+      ).toBeNull()
+    })
+  })
 })

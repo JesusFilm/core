@@ -156,4 +156,29 @@ describe('BlockResolver', () => {
       )
     })
   })
+
+  describe('block', () => {
+    it('returns block', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+
+      expect(await resolver.block('blockId')).toEqual(blockWithUserTeam)
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(resolver.block('blockId')).rejects.toThrow('block not found')
+    })
+  })
 })
