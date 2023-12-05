@@ -1,1 +1,1 @@
-export { Dialog } from './Dialog'
+export { Dialog } from '@core/shared/ui/Dialog'
