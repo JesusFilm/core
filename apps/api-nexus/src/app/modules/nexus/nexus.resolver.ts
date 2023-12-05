@@ -1,4 +1,4 @@
-import { Args, Mutation, Query , Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -44,23 +44,26 @@ export class NexusResolver {
   async nexusCreate(
     @Args('input') input: NexusCreateInput
   ): Promise<Nexus | undefined> {
-    const id = input.id ?? uuidv4()
+    const id = uuidv4()
     // eslint-disable-next-line no-useless-catch
     try {
-      const nexus = await this.prismaService.$transaction(async (tx) => {
-        await tx.nexus.create({
+      return await this.prismaService.$transaction(async (tx) => {
+        const nexus = await tx.nexus.create({
           data: {
             id,
-            name: input.name
+            ...input
           }
         })
-        if (nexus == null)
-          throw new GraphQLError('nexus not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
+        await tx.userNexus.create({
+          data: {
+            id: uuidv4(),
+            userId: '001',
+            nexusId: nexus.id,
+            role: 'owner'
+          }
+        })
         return nexus
       })
-      return nexus
     } catch (err) {
       throw err
     }
@@ -95,6 +98,6 @@ export class NexusResolver {
     }
   }
 
-//   @Mutation()
-//   async nexusDelete(): Promise<Nexus> {}
+  //   @Mutation()
+  //   async nexusDelete(): Promise<Nexus> {}
 }
