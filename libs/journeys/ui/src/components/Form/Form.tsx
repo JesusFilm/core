@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
+import { useUser } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
 import { FormiumForm } from '@core/shared/ui/FormiumForm'
@@ -13,12 +13,7 @@ import { FormFields } from './__generated__/FormFields'
 
 export function Form({ form, action }: TreeBlock<FormFields>): ReactElement {
   const router = useRouter()
-
-  // TODO: add real user
-  const user = {
-    id: 'test_id',
-    email: 'test_email'
-  } as unknown as User
+  const user = useUser()
 
   function handleSubmit(): void {
     handleAction(router, action)
