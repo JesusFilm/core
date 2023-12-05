@@ -105,7 +105,7 @@ export function TemplateGalleryCard({
             height: 'inherit'
           }}
         >
-          {journey != null ? (
+          {journey?.title != 'Dev' ? (
             <Stack
               justifyContent="center"
               alignItems="center"
@@ -147,7 +147,8 @@ export function TemplateGalleryCard({
                 height: { xs: 130, md: 180, xl: 240 },
                 borderColor: 'divider',
                 borderRadius: 2,
-                backgroundColor: 'background.default'
+                backgroundColor: 'background.default',
+                ml: -2
               }}
             />
           )}
