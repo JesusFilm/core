@@ -8,11 +8,13 @@ import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { LoggerModule } from 'nestjs-pino'
 
+import { ChannelsModule } from './modules/channel/channel.module'
 import { NexusModule } from './modules/nexus/nexus.module'
 
 @Module({
   imports: [
     NexusModule,
+    ChannelsModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths:

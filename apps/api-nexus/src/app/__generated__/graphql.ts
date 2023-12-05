@@ -9,7 +9,6 @@
 /* eslint-disable */
 
 export class ChannelCreateInput {
-    id?: Nullable<string>;
     nexusId: string;
     name: string;
     platform: string;

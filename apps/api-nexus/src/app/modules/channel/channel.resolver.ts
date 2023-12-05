@@ -1,4 +1,4 @@
-import { Args, Mutation, Query , Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -20,10 +20,20 @@ export class ChannelResolver {
     const filter: Prisma.ChannelWhereInput = {}
     if (where?.ids != null) filter.id = { in: where?.ids }
 
-    return await this.prismaService.channel.findMany({
+    // return []
+
+    const channels = await this.prismaService.channel.findMany({
       where: filter,
-      take: where?.limit ?? undefined,
+      take: where?.limit ?? undefined
     })
+
+    console.log('channels', channels)
+
+    // if(channels == null) {
+    //   return []
+    // }
+
+    return channels
   }
 
   @Query()
@@ -43,25 +53,17 @@ export class ChannelResolver {
   async channelCreate(
     @Args('input') input: ChannelCreateInput
   ): Promise<Channel | undefined> {
-    const id = input.id ?? uuidv4()
     // eslint-disable-next-line no-useless-catch
     try {
-      const channel = await this.prismaService.$transaction(async (tx) => {
-        await tx.channel.create({
+      return await this.prismaService.$transaction(async (tx) => {
+        const channel = await tx.channel.create({
           data: {
-            id,
-            name: input.name,
-            nexusId: input.nexusId,
-            platform: input.platform
+            id: uuidv4(),
+            ...input
           }
         })
-        if (channel == null)
-          throw new GraphQLError('channel not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
         return channel
       })
-      return channel
     } catch (err) {
       throw err
     }
@@ -97,6 +99,6 @@ export class ChannelResolver {
     }
   }
 
-//   @Mutation()
-//   async channelDelete(): Promise<Channel> {}
+  //   @Mutation()
+  //   async channelDelete(): Promise<Channel> {}
 }
