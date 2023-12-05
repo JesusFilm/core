@@ -6,9 +6,11 @@ import { TableHeader } from './TableHeader'
 interface TableProps {
   columns: GridColDef[]
   rows: any[]
+  title: string
+  subtitle: string
 }
 
-export const Table: FC<TableProps> = ({ columns, rows }) => {
+export const Table: FC<TableProps> = ({ columns, rows, title, subtitle }) => {
   return (
     <Paper>
       <DataGrid
@@ -24,6 +26,12 @@ export const Table: FC<TableProps> = ({ columns, rows }) => {
         pageSizeOptions={[5, 10]}
         slots={{
           toolbar: TableHeader
+        }}
+        slotProps={{
+          toolbar: {
+            title: title,
+            subtitle: subtitle
+          }
         }}
         sx={{
           fontFamily: 'Montserrat',

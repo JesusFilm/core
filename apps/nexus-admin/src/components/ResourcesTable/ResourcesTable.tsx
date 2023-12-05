@@ -1,35 +1,30 @@
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import { Chip, IconButton, Popover, Stack, Typography } from '@mui/material'
-import { GridCellParams } from '@mui/x-data-grid'
+import { IconButton, Popover, Stack, Typography } from '@mui/material'
 import { FC, useState } from 'react'
 import { Table } from '../Table'
 
-export const ChannelsTable: FC = () => {
+export const ResourcesTable: FC = () => {
   const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
 
   const columns = [
-    { field: 'channelName', headerName: 'Channel name', flex: 1 },
+    { field: 'channelName', headerName: 'Video ID', flex: 1 },
     { field: 'category', headerName: 'Category', flex: 1 },
     {
       field: 'platform',
-      headerName: 'Platform',
+      headerName: 'Languages',
       flex: 1
     },
     {
-      field: 'user',
-      headerName: 'User',
-      flex: 1,
-      renderCell: ({ row }: GridCellParams) => {
-        return (
-          <Chip
-            clickable={!row.user}
-            label={row.user ? 'Connected' : 'Connect now'}
-            color={row.user ? 'success' : 'default'}
-          />
-        )
-      }
+      field: 'platform',
+      headerName: 'Ownership',
+      flex: 1
+    },
+    {
+      field: 'platform',
+      headerName: 'Filename',
+      flex: 1
     },
     {
       field: 'action',
@@ -80,7 +75,7 @@ export const ChannelsTable: FC = () => {
       <Table
         columns={columns}
         rows={rows}
-        title="Channels Created"
+        title="Resources"
         subtitle="Additional description if required"
       />
       <Popover
