@@ -59,7 +59,94 @@ export function TagCarousels({
       sx={{ mb: { xs: 10, md: 16 }, height: { xs: 219, md: 234 } }}
     >
       <TemplateGalleryCarousel
-        items={feltNeedsTags}
+        items={
+          loading
+            ? [
+                {
+                  id: '1',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'Acceptance',
+                      primary: true
+                    }
+                  ]
+                },
+                {
+                  id: '2',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'Depression',
+                      primary: true
+                    }
+                  ]
+                },
+                {
+                  id: '3',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'Fear/Anxiety',
+                      primary: true
+                    }
+                  ]
+                },
+                {
+                  id: '4',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'Forgiveness',
+                      primary: true
+                    }
+                  ]
+                },
+                {
+                  id: '5',
+                  name: [
+                    { __typename: 'Translation', value: 'Hope', primary: true }
+                  ]
+                },
+                {
+                  id: '6',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'Loneliness',
+                      primary: true
+                    }
+                  ]
+                },
+                {
+                  id: '7',
+                  name: [
+                    { __typename: 'Translation', value: 'Love', primary: true }
+                  ]
+                },
+                {
+                  id: '8',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'Security',
+                      primary: true
+                    }
+                  ]
+                },
+                {
+                  id: '9',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'Significance',
+                      primary: true
+                    }
+                  ]
+                }
+              ]
+            : feltNeedsTags
+        }
         renderItem={(itemProps) => (
           <FeltNeedsButton {...itemProps} onClick={handleChange} />
         )}

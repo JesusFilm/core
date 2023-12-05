@@ -76,57 +76,42 @@ export function TemplateGalleryCarousel<T>({
       onMouseLeave={() => setHovered(false)}
     >
       {heading != null && <Typography variant="h5">{heading}</Typography>}
-      {loading ? (
-        <Stack
-          direction="row"
-          spacing={loadingSpacing}
-          sx={{
-            mt: 4,
-            minWidth: 'max-content',
-            boxSizing: 'unset',
-            ml: slidesOffsetBefore != null ? slidesOffsetBefore / 4 : 0
-          }}
-        >
-          {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
-            return (
-              <Box key={`${heading ?? ''}-item-${i}`}>{renderItem({})}</Box>
-            )
-          })}
-        </Stack>
-      ) : (
-        <StyledSwiperContainer
-          freeMode
-          speed={850}
-          slidesPerView="auto"
-          spaceBetween={20}
-          watchOverflow
-          allowTouchMove
-          observer
-          slidesOffsetBefore={slidesOffsetBefore ?? 0}
-          observeParents
-          resizeObserver
-          mousewheel={{ forceToAxis: true }}
-          breakpoints={breakpoints}
-          onSwiper={(swiper) => setSwiper(swiper)}
-        >
-          {items.map((item, index) => {
-            return (
-              <SwiperSlide
-                key={item.id}
-                data-testid={`journey-${item.id}`}
-                onFocus={() => {
-                  if (swiper?.isEnd as boolean) {
-                    swiper?.slideTo(0)
-                  }
-                  swiper?.slideTo(index)
-                }}
-              >
-                {renderItem({ item })}
-              </SwiperSlide>
-            )
-          })}
-        </StyledSwiperContainer>
-      )}
+
+      <StyledSwiperContainer
+        freeMode
+        speed={850}
+        slidesPerView="auto"
+        spaceBetween={20}
+        watchOverflow
+        allowTouchMove
+        observer
+        slidesOffsetBefore={slidesOffsetBefore ?? 0}
+        observeParents
+        resizeObserver
+        mousewheel={{ forceToAxis: true }}
+        breakpoints={breakpoints}
+        onSwiper={(swiper) => setSwiper(swiper)}
+      >
+        {items.map((item, index) => {
+          return (
+            <SwiperSlide
+              key={item.id}
+              data-testid={`journey-${item.id}`}
+              onFocus={() => {
+                if (swiper?.isEnd as boolean) {
+                  swiper?.slideTo(0)
+                }
+                swiper?.slideTo(index)
+              }}
+              style={{
+                marginRight: 20
+              }}
+            >
+              {renderItem({ item })}
+            </SwiperSlide>
+          )
+        })}
+      </StyledSwiperContainer>
 
       <NavButton
         variant="prev"
