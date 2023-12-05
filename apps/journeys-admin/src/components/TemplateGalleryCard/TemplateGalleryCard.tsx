@@ -1,6 +1,6 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
-import CardActionArea from '@mui/material/CardActionArea'
+import Card from '@mui/material/Card'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -63,14 +63,16 @@ export function TemplateGalleryCard({
       : ''
 
   return (
-    <CardActionArea
+    <Card
       aria-label="templateGalleryCard"
+      tabIndex={0}
       sx={{
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer',
         width: { xs: 130, md: 180, xl: 240 },
         borderRadius: 2,
+        boxShadow: 'none',
         p: 2,
         transition: (theme) => theme.transitions.create('background-color'),
         '& .MuiImageBackground-root': {
@@ -120,6 +122,7 @@ export function TemplateGalleryCard({
                 <>
                   <HoverLayer className="hoverImageEffects" />
                   <Image
+                    priority
                     className="MuiImageBackground-root"
                     src={journey?.primaryImageBlock?.src}
                     alt={journey?.primaryImageBlock.alt}
@@ -216,6 +219,6 @@ export function TemplateGalleryCard({
           </Stack>
         </Box>
       </NextLink>
-    </CardActionArea>
+    </Card>
   )
 }

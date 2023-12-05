@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
+import { Suspense } from 'react'
 
 import {
   GetAdminJourneys,
@@ -66,7 +67,9 @@ describe('ActiveJourneyList', () => {
       <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveJourneyList />
+            <Suspense>
+              <ActiveJourneyList />
+            </Suspense>
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -79,34 +82,23 @@ describe('ActiveJourneyList', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveJourneyList />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(3)
-    )
-  })
-
   describe('Archive All', () => {
-    it('should display the archive all dialog', () => {
+    it('should display the archive all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[activeJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList event="archiveAllActive" />
+              <Suspense>
+                <ActiveJourneyList event="archiveAllActive" />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
-      expect(getByText('Archive Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Archive Journeys')).toBeInTheDocument()
+      )
     })
 
     const result = jest.fn(() => ({
@@ -129,10 +121,12 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList
-                event="archiveAllActive"
-                user={{ id: 'user-id1' } as unknown as User}
-              />
+              <Suspense>
+                <ActiveJourneyList
+                  event="archiveAllActive"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -154,10 +148,12 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList
-                event="archiveAllActive"
-                user={{ id: 'user-id1' } as unknown as User}
-              />
+              <Suspense>
+                <ActiveJourneyList
+                  event="archiveAllActive"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -184,21 +180,24 @@ describe('ActiveJourneyList', () => {
       result
     }
 
-    it('should display the trash all dialog', () => {
+    it('should display the trash all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[activeJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList
-                event="trashAllActive"
-                user={{ id: 'user-id1' } as unknown as User}
-              />
+              <Suspense>
+                <ActiveJourneyList
+                  event="trashAllActive"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-
-      expect(getByText('Trash Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Trash Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should trash all journeys', async () => {
@@ -208,10 +207,12 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList
-                event="trashAllActive"
-                user={{ id: 'user-id1' } as unknown as User}
-              />
+              <Suspense>
+                <ActiveJourneyList
+                  event="trashAllActive"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -234,10 +235,12 @@ describe('ActiveJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ActiveJourneyList
-                  event="trashAllActive"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
+                <Suspense>
+                  <ActiveJourneyList
+                    event="trashAllActive"
+                    user={{ id: 'user-id1' } as unknown as User}
+                  />
+                </Suspense>
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>

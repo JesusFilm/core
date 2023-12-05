@@ -81,7 +81,7 @@ describe('TemplateGalleryCarousel', () => {
   })
 
   it('should focus elements in the carousel', async () => {
-    const { getAllByRole } = render(
+    const { getAllByLabelText } = render(
       <TemplateGalleryCarousel
         heading="Easter"
         items={[journey, { ...journey, id: '2', title: 'Featured Template 2' }]}
@@ -91,10 +91,16 @@ describe('TemplateGalleryCarousel', () => {
     )
 
     await waitFor(async () => await userEvent.tab())
-    expect(getAllByRole('button')[0]).toHaveStyle('outline: 2px solid')
+    expect(getAllByLabelText('templateGalleryCard')[0]).toHaveStyle(
+      'outline: 2px solid'
+    )
     await waitFor(async () => await userEvent.tab())
-    expect(getAllByRole('button')[1]).toHaveStyle('outline: 2px solid')
-    expect(getAllByRole('button')[0]).toHaveStyle('outline: 0')
+    expect(getAllByLabelText('templateGalleryCard')[1]).toHaveStyle(
+      'outline: 2px solid'
+    )
+    expect(getAllByLabelText('templateGalleryCard')[0]).not.toHaveStyle(
+      'outline: 2px solid'
+    )
   })
 
   it('should render TemplateGalleryCarousel with placeholder items', () => {
