@@ -818,6 +818,12 @@ export class CardBlock implements Block {
     themeName?: Nullable<ThemeName>;
 }
 
+export class Project {
+    __typename?: 'Project';
+    id: string;
+    name: string;
+}
+
 export class FormBlock implements Block {
     __typename?: 'FormBlock';
     id: string;
@@ -826,7 +832,9 @@ export class FormBlock implements Block {
     parentOrder?: Nullable<number>;
     action?: Nullable<Action>;
     form?: Nullable<Json>;
+    projects?: Nullable<Project[]>;
     projectId?: Nullable<string>;
+    forms?: Nullable<string[]>;
     formSlug?: Nullable<string>;
 }
 

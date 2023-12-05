@@ -451,6 +451,11 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
+type Project {
+  id: String!
+  name: String!
+}
+
 type FormBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -458,7 +463,9 @@ type FormBlock implements Block {
   parentOrder: Int
   action: Action
   form: Json
+  projects: [Project!]
   projectId: String
+  forms: [String!]
   formSlug: String
 }
 

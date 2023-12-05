@@ -11,7 +11,8 @@ import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import {
   FormBlockCreateInput,
   FormBlockUpdateInput,
-  Json
+  Json,
+  Project
 } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
@@ -93,10 +94,51 @@ export class FormBlockResolver {
     return await this.blockService.update(id, input)
   }
 
+  @ResolveField('projects')
+  async projects(@Parent() block: Block): Promise<Project[] | null> {
+    const { apiToken } = block
+    if (apiToken === null) return null
+
+    try {
+      const projectsData =
+        (await (await createClient('', { apiToken })).getMyProjects()).data ??
+        []
+
+      return projectsData.map((project) => ({
+        id: project.id,
+        name: project.name
+      }))
+    } catch (e) {
+      return null
+    }
+  }
+
+  @ResolveField('forms')
+  async forms(@Parent() block: Block): Promise<string[] | null> {
+    const { projectId, apiToken } = block
+    if (projectId == null || apiToken == null) return null
+
+    try {
+      const formsData =
+        (
+          await (
+            await createClient(projectId, {
+              apiToken
+            })
+          ).findForms()
+        ).data ?? []
+
+      return formsData.map((form) => form.slug)
+    } catch (e) {
+      return null
+    }
+  }
+
   @ResolveField('form')
   async form(@Parent() block: Block): Promise<Json | null> {
     const { projectId, apiToken, formSlug } = block
     if (projectId == null || apiToken == null || formSlug == null) return null
+
     const formiumClient = createClient(projectId, {
       apiToken
     })

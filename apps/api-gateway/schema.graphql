@@ -404,7 +404,9 @@ type FormBlock implements Block
   parentOrder: Int
   action: Action
   form: Json
+  projects: [Project!]
   projectId: String
+  forms: [String!]
   formSlug: String
 }
 
@@ -1363,6 +1365,13 @@ type PowerBiEmbed
 
   """The date and time (UTC) of token expiration"""
   expiration: String!
+}
+
+type Project
+  @join__type(graph: JOURNEYS)
+{
+  id: String!
+  name: String!
 }
 
 type Query
