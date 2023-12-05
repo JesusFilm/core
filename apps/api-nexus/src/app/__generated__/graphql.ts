@@ -29,10 +29,8 @@ export class ChannelFilter {
 }
 
 export class NexusCreateInput {
-    id?: Nullable<string>;
     name: string;
     description?: Nullable<string>;
-    createdAt: DateTime;
 }
 
 export class NexusUpdateInput {
@@ -65,11 +63,25 @@ export class Nexus {
     createdAt: DateTime;
 }
 
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract nexuses(where?: Nullable<NexusFilter>): Nexus[] | Promise<Nexus[]>;
+
+    abstract nexus(id: string): Nexus | Promise<Nexus>;
+}
+
 export class Translation {
     __typename?: 'Translation';
     value: string;
     language: Language;
     primary: boolean;
+}
+
+export abstract class IMutation {
+    abstract nexusCreate(input: NexusCreateInput): Nexus | Promise<Nexus>;
+
+    abstract nexusUpdate(id: string, input: NexusUpdateInput): Nexus | Promise<Nexus>;
 }
 
 export class Language {

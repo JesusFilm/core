@@ -670,16 +670,6 @@ type Journey
   userJourneys: [UserJourney!]
 }
 
-type Nexus 
-  @join__type(graph: NEXUS, key: "id") 
-{
-  id: ID!
-  name: String!
-  description: String
-  createdAt: DateTime!
-}
-
-
 input JourneyCreateInput
   @join__type(graph: JOURNEYS)
 {
@@ -3055,3 +3045,41 @@ input VisitorUpdateInput
   """The referring url of the visitor"""
   referrer: String
 }
+
+""""api-nexus"""
+type Nexus 
+  @join__type(graph: NEXUS, key: "id") 
+{
+  id: ID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+}
+
+input NexusCreateInput 
+  @join__type(graph: NEXUS)
+{
+  id: ID
+  name: String!
+  description: String
+  createdAt: DateTime!
+}
+
+input NexusUpdateInput 
+  @join__type(graph: NEXUS)
+{
+  name: String
+  description: String
+}
+
+input NexusFilter 
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  description: String
+  createdAt: DateTime
+  limit: Int
+  orderByRecent: Boolean
+}
+

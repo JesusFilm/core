@@ -8,10 +8,8 @@ type Nexus @key(fields: "id") {
 }
 
 input NexusCreateInput {
-  id: ID
   name: String!
   description: String
-  createdAt: DateTime!
 }
 
 input NexusUpdateInput {
@@ -28,3 +26,13 @@ input NexusFilter {
   orderByRecent: Boolean
 }
 
+
+extend type Query {
+  nexuses(where: NexusFilter): [Nexus!]!
+  nexus(id: ID!): Nexus!
+}
+
+extend type Mutation {
+  nexusCreate(input: NexusCreateInput!): Nexus!
+  nexusUpdate(id: ID!, input: NexusUpdateInput!): Nexus!
+}
