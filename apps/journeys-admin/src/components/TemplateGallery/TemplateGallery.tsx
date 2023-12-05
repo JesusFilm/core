@@ -127,12 +127,12 @@ export function TemplateGallery(): ReactElement {
           selectedTagIds={selectedTagIds}
           onChange={handleTagIdChange}
         />
-        {/* <TemplateSections
+        <TemplateSections
           tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
           languageIds={
             selectedLanguageIds.length > 0 ? selectedLanguageIds : undefined
           }
-        /> */}
+        />
       </Container>
     </Paper>
   )
