@@ -17,7 +17,7 @@ export const GET_TAGS = gql`
   }
 `
 
-type ChildTag = Tag & { parentId: string }
+export type ChildTag = Tag & { parentId: string }
 
 export function useTagsQuery(): QueryResult<GetTags> & {
   parentTags: Tag[]

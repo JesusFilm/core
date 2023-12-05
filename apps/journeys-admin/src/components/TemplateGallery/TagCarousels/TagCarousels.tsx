@@ -8,6 +8,7 @@ import { TemplateGalleryCarousel } from '../TemplateGalleryCarousel'
 
 import { CollectionButton } from './CollectionButton'
 import { FeltNeedsButton } from './FeltNeedsButton'
+import { ChildTag } from '../../../libs/useTagsQuery/useTagsQuery'
 
 interface TagCarouselsProps {
   selectedTagIds: string[]
@@ -61,14 +62,12 @@ export function TagCarousels({
       <TemplateGalleryCarousel
         items={
           loading
-            ? [
+            ? ([
                 {
                   id: '1',
                   name: [
                     {
-                      __typename: 'Translation',
-                      value: 'Acceptance',
-                      primary: true
+                      value: 'Acceptance'
                     }
                   ]
                 },
@@ -76,9 +75,7 @@ export function TagCarousels({
                   id: '2',
                   name: [
                     {
-                      __typename: 'Translation',
-                      value: 'Depression',
-                      primary: true
+                      value: 'Depression'
                     }
                   ]
                 },
@@ -86,9 +83,7 @@ export function TagCarousels({
                   id: '3',
                   name: [
                     {
-                      __typename: 'Translation',
-                      value: 'Fear/Anxiety',
-                      primary: true
+                      value: 'Fear/Anxiety'
                     }
                   ]
                 },
@@ -96,41 +91,31 @@ export function TagCarousels({
                   id: '4',
                   name: [
                     {
-                      __typename: 'Translation',
-                      value: 'Forgiveness',
-                      primary: true
+                      value: 'Forgiveness'
                     }
                   ]
                 },
                 {
                   id: '5',
-                  name: [
-                    { __typename: 'Translation', value: 'Hope', primary: true }
-                  ]
+                  name: [{ value: 'Hope' }]
                 },
                 {
                   id: '6',
                   name: [
                     {
-                      __typename: 'Translation',
-                      value: 'Loneliness',
-                      primary: true
+                      value: 'Loneliness'
                     }
                   ]
                 },
                 {
                   id: '7',
-                  name: [
-                    { __typename: 'Translation', value: 'Love', primary: true }
-                  ]
+                  name: [{ value: 'Love' }]
                 },
                 {
                   id: '8',
                   name: [
                     {
-                      __typename: 'Translation',
-                      value: 'Security',
-                      primary: true
+                      value: 'Security'
                     }
                   ]
                 },
@@ -138,13 +123,11 @@ export function TagCarousels({
                   id: '9',
                   name: [
                     {
-                      __typename: 'Translation',
-                      value: 'Significance',
-                      primary: true
+                      value: 'Significance'
                     }
                   ]
                 }
-              ]
+              ] as ChildTag[])
             : feltNeedsTags
         }
         renderItem={(itemProps) => (

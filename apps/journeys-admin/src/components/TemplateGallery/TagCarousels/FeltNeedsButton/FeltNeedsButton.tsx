@@ -108,6 +108,7 @@ export function FeltNeedsButton({
     image != null ? (
       <StyledFeltNeedsButton
         key={`${tagLabel}-button}`}
+        disabled={loading}
         sx={{
           width: { xs: '150px', md: '222px' },
           height: { xs: '56px', md: '110px' },
