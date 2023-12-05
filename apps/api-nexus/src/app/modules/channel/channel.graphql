@@ -8,7 +8,6 @@ type Channel @key(fields: "id") {
 }
 
 input ChannelCreateInput {
-  id: ID
   nexusId: String!
   name: String!
   platform: String!
@@ -27,3 +26,12 @@ input ChannelFilter {
   limit: Int
 }
 
+extend type Query {
+  channels(where: ChannelFilter): [Channel!]
+  channel(id: ID!): Channel!
+}
+
+extend type Mutation {
+  channelCreate(input: ChannelCreateInput!): Channel!
+  channelUpdate(id: ID!, input: ChannelUpdateInput!): Channel!
+}
