@@ -88,28 +88,28 @@ export const Complete = {
   args: {
     item: {
       ...journey,
-      title: 'Where did Jesus body go',
+      // title: 'Where did Jesus body go',
       primaryImageBlock: {
-        id: 'image1.id',
-        __typename: 'ImageBlock',
-        parentBlockId: null,
-        parentOrder: 0,
+        // id: 'image1.id',
+        // __typename: 'ImageBlock',
+        // parentBlockId: null,
+        // parentOrder: 0,
         src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-        alt: 'random image from unsplash',
-        width: 1920,
-        height: 1080,
-        blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+        // alt: 'random image from unsplash',
+        // width: 1920,
+        // height: 1080,
+        // blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
       },
       language: {
-        __typename: 'Language',
-        id: '529',
-        name: [
-          {
-            __typename: 'Translation',
-            value: 'Kalagan, Tagalu Kalua',
-            primary: true
-          }
-        ]
+        // __typename: 'Language',
+        // id: '529',
+        // name: [
+          // {
+            // __typename: 'Translation',
+            // value: 'Kalagan, Tagalu Kalua',
+            // primary: true
+          // }
+        // ]
       }
     }
   }

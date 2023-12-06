@@ -105,7 +105,7 @@ export function TemplateGalleryCard({
             height: 'inherit'
           }}
         >
-          {journey?.title != 'Dev' ? (
+          {journey?.title !== 'Dev' ? (
             <Stack
               justifyContent="center"
               alignItems="center"
@@ -168,7 +168,7 @@ export function TemplateGalleryCard({
               py: 3
             }}
           >
-            {journey != null ? (
+            {journey?.title !== 'Dev' ? (
               <>
                 <Typography
                   variant="overline2"
@@ -181,6 +181,7 @@ export function TemplateGalleryCard({
                 >
                   {date} ● {displayLanguage}
                 </Typography>
+                
                 <Box
                   sx={{
                     display: { xs: 'none', md: '-webkit-box' },
@@ -197,7 +198,7 @@ export function TemplateGalleryCard({
                       my: 1
                     }}
                   >
-                    {journey.title}
+                    {journey?.title}
                   </Typography>
                 </Box>
                 <Box
@@ -216,15 +217,15 @@ export function TemplateGalleryCard({
                       my: 1
                     }}
                   >
-                    {journey.title}
+                    {journey?.title}
                   </Typography>
                 </Box>
               </>
             ) : (
               <Box>
-                <Skeleton variant="text" sx={{ width: '100%' }} />
-                <Skeleton variant="text" sx={{ width: '100%' }} />
-                <Skeleton variant="text" sx={{ width: '60%' }} />
+                <Skeleton variant="text" sx={{ fontSize: 'large', width: '100%', ml: -2 }} />
+                <Skeleton variant="text" sx={{ fontSize: 'large', width: '100%', ml: -2  }} />
+                <Skeleton variant="text" sx={{ fontSize: 'large', width: '50%', ml: -2  }} />
               </Box>
             )}
           </Stack>
