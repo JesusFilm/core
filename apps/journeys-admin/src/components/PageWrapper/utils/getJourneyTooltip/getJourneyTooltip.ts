@@ -17,7 +17,6 @@ export function getJourneyTooltip(
     const currentUserJourney = journey.userJourneys?.find(
       (userJourney) => userJourney?.user?.id === userId
     )
-
     if (currentUserJourney?.role === UserJourneyRole.owner) {
       journey.userJourneys?.forEach((userJourney) => {
         if (userJourney.role === UserJourneyRole.inviteRequested) {

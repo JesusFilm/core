@@ -55,7 +55,7 @@ export const GET_ME = gql`
 interface UserNavigationProps {
   user: User
   selectedPage?: string
-  setTooltip: (value: string | undefined) => void
+  setTooltip?: (value: string | undefined) => void
 }
 
 export function UserNavigation({
@@ -83,10 +83,10 @@ export function UserNavigation({
         : undefined
     ) {
       case JourneyTooltip.newEditingRequest:
-        setTooltip(t('New Editing Request'))
+        setTooltip?.(t('New Editing Request'))
         break
       case JourneyTooltip.newJourney:
-        setTooltip(t('New Journey'))
+        setTooltip?.(t('New Journey'))
         break
     }
   }, [journeysData.journeys, user.id, t, setTooltip])

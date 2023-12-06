@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
-import { UserMenu } from './UserMenu'
+import { UserMenu } from '.'
 
 describe('UserMenu', () => {
   const handleProfileClose = jest.fn()
@@ -74,7 +74,7 @@ describe('UserMenu', () => {
     )
     expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
-    expect(signOut).toHaveBeenCalled()
+    await waitFor(() => expect(signOut).toHaveBeenCalled())
     await waitFor(() =>
       expect(getByText('Logout successful')).toBeInTheDocument()
     )

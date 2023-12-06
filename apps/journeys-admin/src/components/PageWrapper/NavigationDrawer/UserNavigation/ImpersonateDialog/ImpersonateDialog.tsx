@@ -14,7 +14,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import {
   UserImpersonate,
   UserImpersonateVariables
-} from '../../../../../__generated__/UserImpersonate'
+} from '../../../../../../__generated__/UserImpersonate'
 
 export const USER_IMPERSONATE = gql`
   mutation UserImpersonate($email: String!) {
@@ -96,6 +96,7 @@ export function ImpersonateDialog({
             submitLabel: t('Impersonate')
           }}
           loading={isSubmitting}
+          testId="ImpersonateDialog"
         >
           <Form>
             <Alert severity="warning" sx={{ mb: 5 }}>

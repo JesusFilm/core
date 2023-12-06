@@ -9,7 +9,6 @@ import Tooltip from '@mui/material/Tooltip'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { NextRouter } from 'next/router'
 import type { User } from 'next-firebase-auth'
 import { ReactElement, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -33,24 +32,23 @@ const UserNavigation = dynamic(
 )
 
 interface NavigationDrawerProps {
-  open: boolean
-  onClose: (value: boolean) => void
+  open?: boolean
+  onClose?: (value: boolean) => void
   user?: User
-  router?: NextRouter
+  selectedPage?: string
 }
 
 export function NavigationDrawer({
   open,
   onClose,
   user,
-  router
+  selectedPage
 }: NavigationDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const selectedPage = router?.pathname?.split('/')[1]
   const [tooltip, setTooltip] = useState<string | undefined>()
 
   function handleClose(): void {
-    onClose(!open)
+    onClose?.(open !== true)
   }
 
   return (
@@ -68,12 +66,12 @@ export function NavigationDrawer({
           backgroundColor: 'secondary.dark',
           overflowX: 'hidden',
           transition: (theme) => theme.transitions.create('width'),
-          width: open ? DRAWER_WIDTH : { xs: 0, md: 72 },
+          width: open === true ? DRAWER_WIDTH : { xs: 0, md: 72 },
           zIndex: (theme) => theme.zIndex.drawer + 1
         }
       }}
     >
-      <Backdrop open={open} onClick={handleClose} />
+      <Backdrop open={open === true} onClick={handleClose} />
       <List
         component="nav"
         sx={{
@@ -109,7 +107,10 @@ export function NavigationDrawer({
           }
         }}
       >
-        <ListItemButton onClick={handleClose} data-testid="toggle-nav-drawer">
+        <ListItemButton
+          onClick={handleClose}
+          data-testid="NavigationListItemToggle"
+        >
           <ListItemIcon
             sx={{
               '> .MuiSvgIcon-root': {
@@ -118,7 +119,9 @@ export function NavigationDrawer({
                 borderRadius: 2,
                 transition: (theme) =>
                   theme.transitions.create(['transform', 'background-color']),
-                transform: { md: open ? 'rotate(180deg)' : 'rotate(0deg)' },
+                transform: {
+                  md: open === true ? 'rotate(180deg)' : 'rotate(0deg)'
+                },
                 '&:hover': {
                   backgroundColor: 'background.paper'
                 }
