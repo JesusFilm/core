@@ -10,12 +10,18 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../__generated__/globalTypes'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -60,6 +66,14 @@ export const getServerSideProps = withUserTokenSSR({
   })
 
   if (redirect != null) return { redirect }
+
+  await apolloClient.query<GetAdminJourneys, GetAdminJourneysVariables>({
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      useLastActiveTeamId: true
+    }
+  })
 
   return {
     props: {
