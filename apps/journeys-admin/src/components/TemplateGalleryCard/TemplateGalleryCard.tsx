@@ -105,63 +105,53 @@ export function TemplateGalleryCard({
             height: 'inherit'
           }}
         >
-          <Stack
-            justifyContent="center"
-            alignItems="center"
-            sx={{
-              position: 'relative',
-              aspectRatio: 1,
-              overflow: 'hidden',
-              borderRadius: 2,
-              alignItems: 'center',
-              backgroundColor: 'background.default'
-            }}
-          >
-            <HoverLayer className="hoverImageEffects" />
-            <Box
-              sx={{
-                position: 'absolute',
-                display: journey != null ? 'none' : 'block',
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0,
-                zIndex: 3,
-                backgroundColor: 'background.default',
-                borderColor: 'divider',
-                borderRadius: 2
-              }}
-            />
-            <Image
-              priority
-              className="MuiImageBackground-root"
-              src={
-                journey?.primaryImageBlock?.src ??
-                'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
-              }
-              alt={
-                journey?.primaryImageBlock?.alt ??
-                'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
-              }
-              fill
-              sizes="(max-width: 900px) 240px, 480px"
-              style={{
-                objectFit: 'cover'
-              }}
-            />
+          {journey != null ? (
             <Stack
+              justifyContent="center"
+              alignItems="center"
               sx={{
-                zIndex: journey?.primaryImageBlock?.src != null ? -1 : 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'background.default',
-                justifyContent: 'center',
-                alignItems: 'center'
+                position: 'relative',
+                aspectRatio: 1,
+                overflow: 'hidden',
+                borderRadius: 2,
+                alignItems: 'center',
+                backgroundColor: 'background.default'
               }}
             >
-              <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
+              {journey?.primaryImageBlock?.src != null ? (
+                <>
+                  <HoverLayer className="hoverImageEffects" />
+                  <Image
+                    priority
+                    className="MuiImageBackground-root"
+                    src={journey?.primaryImageBlock?.src}
+                    alt={journey?.primaryImageBlock.alt}
+                    fill
+                    sizes="(max-width: 900px) 240px, 480px"
+                    style={{
+                      objectFit: 'cover'
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  <HoverLayer className="hoverImageEffects" />
+                  <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
+                </>
+              )}
             </Stack>
-          </Stack>
+          ) : (
+            <Skeleton
+              variant="rectangular"
+              sx={{
+                width: { xs: 130, md: 180, xl: 240 },
+                height: { xs: 130, md: 180, xl: 240 },
+                borderColor: 'divider',
+                borderRadius: 2,
+                backgroundColor: 'background.default'
+              }}
+            />
+          )}
           <Stack
             sx={{
               px: 0,
