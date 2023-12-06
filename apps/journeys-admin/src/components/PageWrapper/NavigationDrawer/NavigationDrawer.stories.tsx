@@ -1,6 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { User } from 'next-firebase-auth'
+import { ComponentProps, ReactElement, useState } from 'react'
 
 import {
   GetAdminJourneys,
@@ -110,15 +111,22 @@ const getAdminJourneysMock: MockedResponse<
   }
 }
 
-const Template: StoryObj<typeof NavigationDrawer> = {
-  render: ({ ...args }) => <NavigationDrawer {...args} />
+function NavigationDrawerComponent(
+  props: ComponentProps<typeof NavigationDrawer>
+): ReactElement {
+  const [open, setOpen] = useState(true)
+  return <NavigationDrawer open={open} onClose={setOpen} {...props} />
 }
 
-export const Default = { ...Template, args: { open: true, selectedPage: '' } }
+const Template: StoryObj<typeof NavigationDrawer> = {
+  render: ({ ...args }) => <NavigationDrawerComponent {...args} />
+}
+
+export const Default = { ...Template, args: { selectedPage: '' } }
 
 export const WithBadge = {
   ...Template,
-  args: { open: true, selectedPage: '', user },
+  args: { selectedPage: '', user },
   parameters: {
     apolloClient: {
       cache: cache(),

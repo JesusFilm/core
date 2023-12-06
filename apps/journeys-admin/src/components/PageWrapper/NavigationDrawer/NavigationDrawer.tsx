@@ -1,4 +1,5 @@
 import Backdrop from '@mui/material/Backdrop'
+import Badge from '@mui/material/Badge'
 import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -138,7 +139,14 @@ export function NavigationDrawer({
               data-testid="NavigationListItemDiscover"
             >
               <ListItemIcon>
-                <JourneysIcon />
+                <Badge
+                  variant="dot"
+                  color="warning"
+                  overlap="circular"
+                  invisible={tooltip == null}
+                >
+                  <JourneysIcon />
+                </Badge>
               </ListItemIcon>
               <ListItemText primary={t('Discover')} />
             </ListItemButton>
