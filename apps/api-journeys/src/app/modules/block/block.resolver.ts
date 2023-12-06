@@ -114,7 +114,11 @@ export class BlockResolver {
   }
 
   @Query()
-  async block(@Args('id') id: string): Promise<Block> {
+  @UseGuards(AppCaslGuard)
+  async block(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
+  ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
       where: { id },
       include: {
@@ -133,6 +137,10 @@ export class BlockResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     }
+    if (!ability.can(Action.Read, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to read block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     return block
   }
 }

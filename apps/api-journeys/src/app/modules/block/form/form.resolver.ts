@@ -95,9 +95,9 @@ export class FormBlockResolver {
   }
 
   @ResolveField('projects')
-  async projects(@Parent() block: Block): Promise<Project[] | null> {
+  async projects(@Parent() block: Block): Promise<Project[]> {
     const { apiToken } = block
-    if (apiToken === null) return null
+    if (apiToken === null) return []
 
     try {
       const projectsData =
@@ -109,14 +109,14 @@ export class FormBlockResolver {
         name: project.name
       }))
     } catch (e) {
-      return null
+      return []
     }
   }
 
   @ResolveField('forms')
-  async forms(@Parent() block: Block): Promise<string[] | null> {
+  async forms(@Parent() block: Block): Promise<string[]> {
     const { projectId, apiToken } = block
-    if (projectId == null || apiToken == null) return null
+    if (projectId == null || apiToken == null) return []
 
     try {
       const formsData =
@@ -130,7 +130,7 @@ export class FormBlockResolver {
 
       return formsData.map((form) => form.slug)
     } catch (e) {
-      return null
+      return []
     }
   }
 

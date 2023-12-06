@@ -219,7 +219,7 @@ describe('FormBlock', () => {
       ])
     })
 
-    it('returns null if client fails to fetch projects', async () => {
+    it('returns empty array if client fails to fetch projects', async () => {
       const mockFormiumClient = {
         getMyProjects: jest.fn().mockRejectedValueOnce(new Error('error'))
       } as unknown as FormiumClient
@@ -229,16 +229,16 @@ describe('FormBlock', () => {
         await resolver.projects({
           ...block
         })
-      ).toBeNull()
+      ).toEqual([])
     })
 
-    it('returns null if there are missing credentials', async () => {
+    it('returns empty array if there are missing credentials', async () => {
       expect(
         await resolver.projects({
           ...block,
           apiToken: null
         })
-      ).toBeNull()
+      ).toEqual([])
     })
   })
 
@@ -257,7 +257,7 @@ describe('FormBlock', () => {
       expect(mockFormiumClient.findForms()).toEqual(['form-slug'])
     })
 
-    it('returns null if client fails to fetch forms', async () => {
+    it('returns empty array if client fails to fetch forms', async () => {
       const mockFormiumClient = {
         findForms: jest.fn().mockRejectedValueOnce(new Error('error'))
       } as unknown as FormiumClient
@@ -267,17 +267,17 @@ describe('FormBlock', () => {
         await resolver.forms({
           ...block
         })
-      ).toBeNull()
+      ).toEqual([])
     })
 
-    it('returns null if there are missing credentials', async () => {
+    it('returns empty array if there are missing credentials', async () => {
       expect(
         await resolver.forms({
           ...block,
           projectId: null,
           apiToken: null
         })
-      ).toBeNull()
+      ).toEqual([])
     })
   })
 })

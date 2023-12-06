@@ -1,4 +1,4 @@
-type Project {
+type FormiumProject {
   id: String!
   name: String!
 }
@@ -10,7 +10,7 @@ type FormBlock implements Block {
   parentOrder: Int
   action: Action
   form: Json
-  projects: [Project!]
+  projects: [FormiumProject!]
   projectId: String
   forms: [String!]
   formSlug: String
@@ -30,12 +30,5 @@ input FormBlockUpdateInput {
 
 extend type Mutation {
   formBlockCreate(input: FormBlockCreateInput!): FormBlock!
-  formBlockUpdate(
-    id: ID!
-    input: FormBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): FormBlock
+  formBlockUpdate(id: ID!, input: FormBlockUpdateInput!): FormBlock
 }

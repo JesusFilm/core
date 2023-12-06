@@ -161,7 +161,9 @@ describe('BlockResolver', () => {
     it('returns block', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
 
-      expect(await resolver.block('blockId')).toEqual(blockWithUserTeam)
+      expect(await resolver.block(ability, 'blockId')).toEqual(
+        blockWithUserTeam
+      )
       expect(prismaService.block.findUnique).toHaveBeenCalledWith({
         where: { id: 'blockId' },
         include: {
@@ -178,7 +180,16 @@ describe('BlockResolver', () => {
 
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
-      await expect(resolver.block('blockId')).rejects.toThrow('block not found')
+      await expect(resolver.block(ability, 'blockId')).rejects.toThrow(
+        'block not found'
+      )
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(resolver.block(ability, 'blockId')).rejects.toThrow(
+        'user is not allowed to read block'
+      )
     })
   })
 })
