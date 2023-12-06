@@ -12,6 +12,7 @@ import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourn
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
+import dynamic from 'next/dynamic'
 
 interface Contents {
   [key: string]: { category: string; journeys: Journey[] }
@@ -101,22 +102,20 @@ export function TemplateSections({
 
   return (
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
-      {(loading || (collection != null && collection.length > 0)) && (
-        <TemplateGalleryCarousel
-          heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
-          items={collection}
-          renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-          breakpoints={swiperBreakpoints}
-          loading={loading}
-          slidesOffsetBefore={-8}
-          loadingSpacing={{
-            xs: 1,
-            md: 8,
-            xl: 11
-          }}
-        />
-      )}
-      {!loading && collection != null && collection.length === 0 && (
+      <TemplateGalleryCarousel
+        heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
+        items={collection}
+        renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+        breakpoints={swiperBreakpoints}
+        loading={loading}
+        slidesOffsetBefore={-8}
+        loadingSpacing={{
+          xs: 1,
+          md: 8,
+          xl: 11
+        }}
+      />
+      {!loading && collection.length === 0 && (
         <Paper
           elevation={0}
           variant="outlined"
