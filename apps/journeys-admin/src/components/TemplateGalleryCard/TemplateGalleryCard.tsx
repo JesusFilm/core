@@ -123,8 +123,7 @@ export function TemplateGalleryCard({
               <Box
                 sx={{
                   position: 'absolute',
-                  display:
-                    journey?.primaryImageBlock?.src != null ? 'none' : 'block',
+                  display: journey != null ? 'none' : 'block',
                   top: 0,
                   right: 0,
                   bottom: 0,
