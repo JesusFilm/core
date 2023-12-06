@@ -54,6 +54,7 @@ export class NexusResolver {
             ...input
           }
         })
+
         await tx.userNexus.create({
           data: {
             id: uuidv4(),
@@ -98,6 +99,24 @@ export class NexusResolver {
     }
   }
 
-  //   @Mutation()
-  //   async nexusDelete(): Promise<Nexus> {}
+  @Mutation()
+  async nexusDelete(@Args('id') id: string): Promise<Nexus> {
+    const nexus = await this.prismaService.nexus.findUnique({
+      where: { id }
+    })
+
+    if (nexus == null)
+      throw new GraphQLError('nexus not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+
+    // eslint-disable-next-line no-useless-catch
+    try {
+      return await this.prismaService.nexus.delete({
+        where: { id }
+      })
+    } catch (err) {
+      throw err
+    }
+  }
 }

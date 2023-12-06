@@ -1,14 +1,14 @@
-directive @key(fields: _FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
+# directive @key(fields: _FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
 
-directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
+# directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
 
-directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
+# directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
 
-directive @external(reason: String) on OBJECT | FIELD_DEFINITION
+# directive @external(reason: String) on OBJECT | FIELD_DEFINITION
 
-directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+# directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
 
-directive @extends on OBJECT | INTERFACE
+# directive @extends on OBJECT | INTERFACE
 
 scalar DateTime
 
@@ -19,6 +19,17 @@ type Nexus
   name: String!
   description: String
   createdAt: DateTime!
+  createdAt: DateTime
+  status: NexusStatus!
+}
+
+type Channel
+  @key(fields: "id")
+{
+  id: ID!
+  nexusId: String
+  name: String!
+  platform: String
 }
 
 union _Entity = Nexus
