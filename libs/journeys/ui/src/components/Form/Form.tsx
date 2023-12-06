@@ -11,7 +11,11 @@ import { TreeBlock } from '../../libs/block'
 
 import { FormFields } from './__generated__/FormFields'
 
-export function Form({ form, action }: TreeBlock<FormFields>): ReactElement {
+export function Form({
+  id,
+  form,
+  action
+}: TreeBlock<FormFields>): ReactElement {
   const router = useRouter()
   const user = useUser()
 
@@ -21,6 +25,7 @@ export function Form({ form, action }: TreeBlock<FormFields>): ReactElement {
 
   return form != null ? (
     <div
+      data-testid={`FormBlock-${id}`}
       onClick={(event) => {
         event.stopPropagation()
       }}
