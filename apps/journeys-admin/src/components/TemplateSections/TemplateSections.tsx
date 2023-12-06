@@ -107,13 +107,7 @@ export function TemplateSections({
           items={collection}
           renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
           breakpoints={swiperBreakpoints}
-          loading={loading}
           slidesOffsetBefore={-8}
-          loadingSpacing={{
-            xs: 1,
-            md: 8,
-            xl: 11
-          }}
         />
       )}
       {!loading && collection != null && collection.length === 0 && (
@@ -144,6 +138,7 @@ export function TemplateSections({
             <TemplateGalleryCarousel
               heading={category}
               items={journeys}
+              loading={loading}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-8}

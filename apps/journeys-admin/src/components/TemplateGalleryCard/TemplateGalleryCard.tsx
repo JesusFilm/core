@@ -118,7 +118,7 @@ export function TemplateGalleryCard({
             }}
           >
             <HoverLayer className="hoverImageEffects" />
-            <Skeleton
+            <Box
               sx={{
                 position: 'absolute',
                 display: journey != null ? 'none' : 'block',
