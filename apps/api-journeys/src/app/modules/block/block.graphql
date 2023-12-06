@@ -9,6 +9,10 @@ extend type Journey {
   blocks: [Block!]
 }
 
+extend type Query {
+  block(id: ID!): Block!
+}
+
 extend type Mutation {
   """
   blockDelete returns the updated sibling blocks on successful delete

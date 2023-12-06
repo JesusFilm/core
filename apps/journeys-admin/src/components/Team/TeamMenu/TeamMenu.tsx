@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
+import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -11,17 +12,39 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { MenuItem } from '../../MenuItem'
 import { TeamAvatars } from '../TeamAvatars'
-import { TeamCreateDialog } from '../TeamCreateDialog'
-import { TeamManageDialog } from '../TeamManageDialog'
 import { useTeam } from '../TeamProvider'
-import { TeamUpdateDialog } from '../TeamUpdateDialog'
+
+const DynamicTeamCreateDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TeamCreateDialog" */
+      '../TeamCreateDialog'
+    ).then((mod) => mod.TeamCreateDialog),
+  { ssr: false }
+)
+const DynamicTeamUpdateDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TeamUpdateDialog" */
+      '../TeamUpdateDialog'
+    ).then((mod) => mod.TeamUpdateDialog),
+  { ssr: false }
+)
+const DynamicTeamManageDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TeamManageDialog" */
+      '../TeamManageDialog'
+    ).then((mod) => mod.TeamManageDialog),
+  { ssr: false }
+)
 
 export function TeamMenu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const [teamCreateOpen, setTeamCreateOpen] = useState(false)
-  const [teamUpdateOpen, setTeamUpdateOpen] = useState(false)
-  const [teamManageOpen, setTeamManageOpen] = useState(false)
+  const [teamCreateOpen, setTeamCreateOpen] = useState<boolean | undefined>()
+  const [teamUpdateOpen, setTeamUpdateOpen] = useState<boolean | undefined>()
+  const [teamManageOpen, setTeamManageOpen] = useState<boolean | undefined>()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -33,27 +56,25 @@ export function TeamMenu(): ReactElement {
 
   return (
     <>
-      <TeamCreateDialog
-        open={teamCreateOpen}
-        onCreate={() => {
-          setTeamManageOpen(true)
-        }}
-        onClose={() => {
-          setTeamCreateOpen(false)
-        }}
-      />
-      <TeamUpdateDialog
-        open={teamUpdateOpen}
-        onClose={() => {
-          setTeamUpdateOpen(false)
-        }}
-      />
-      <TeamManageDialog
-        open={teamManageOpen}
-        onClose={() => {
-          setTeamManageOpen(false)
-        }}
-      />
+      {teamCreateOpen != null && (
+        <DynamicTeamCreateDialog
+          open={teamCreateOpen}
+          onCreate={() => setTeamManageOpen(true)}
+          onClose={() => setTeamCreateOpen(false)}
+        />
+      )}
+      {teamUpdateOpen != null && (
+        <DynamicTeamUpdateDialog
+          open={teamUpdateOpen}
+          onClose={() => setTeamUpdateOpen(false)}
+        />
+      )}
+      {teamManageOpen != null && (
+        <DynamicTeamManageDialog
+          open={teamManageOpen}
+          onClose={() => setTeamManageOpen(false)}
+        />
+      )}
 
       {activeTeam != null && (
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>

@@ -201,4 +201,85 @@ describe('FormBlock', () => {
       ).toBeNull()
     })
   })
+
+  describe('projects', () => {
+    it('returns projects', async () => {
+      const mockFormiumClient = {
+        getMyProjects: jest.fn(() => ({
+          data: [{ id: 'projectId', name: 'projectName' }]
+        }))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      expect(
+        await resolver.projects({
+          ...block
+        })
+      ).toEqual([{ id: 'projectId', name: 'projectName' }])
+      expect(mockFormiumClient.getMyProjects).toHaveBeenCalled()
+    })
+
+    it('returns empty array if client fails to fetch projects', async () => {
+      const mockFormiumClient = {
+        getMyProjects: jest.fn().mockRejectedValueOnce(new Error('error'))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      expect(
+        await resolver.projects({
+          ...block
+        })
+      ).toEqual([])
+    })
+
+    it('returns empty array if there are missing credentials', async () => {
+      expect(
+        await resolver.projects({
+          ...block,
+          apiToken: null
+        })
+      ).toEqual([])
+    })
+  })
+
+  describe('forms', () => {
+    it('returns forms', async () => {
+      const mockFormiumClient = {
+        findForms: jest.fn(() => ({
+          data: [{ slug: 'form-slug', name: 'form name' }]
+        }))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      expect(
+        await resolver.forms({
+          ...block
+        })
+      ).toEqual([{ id: 'form-slug', name: 'form name' }])
+      expect(mockFormiumClient.findForms).toHaveBeenCalled()
+    })
+
+    it('returns empty array if client fails to fetch forms', async () => {
+      const mockFormiumClient = {
+        findForms: jest.fn().mockRejectedValueOnce(new Error('error'))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      expect(
+        await resolver.forms({
+          ...block
+        })
+      ).toEqual([])
+    })
+
+    it('returns empty array if there are missing credentials', async () => {
+      expect(
+        await resolver.forms({
+          ...block,
+          projectId: null,
+          apiToken: null
+        })
+      ).toEqual([])
+    })
+  })
 })
