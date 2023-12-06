@@ -62,6 +62,23 @@
       "options": {
         "lintFilePatterns": ["apps/nexus-admin/**/*.{ts,tsx,js,jsx}"]
       }
+    },
+
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+          },
+          {
+            "command": "rm -rf apps/nexus-admin/__generated__"
+          },
+          {
+            "command": "npx apollo client:codegen --config apps/nexus-admin/apollo.config.js --target typescript --outputFlat apps/nexus-admin/__generated__"
+          }
+        ]
+      }
     }
   },
   "tags": []
