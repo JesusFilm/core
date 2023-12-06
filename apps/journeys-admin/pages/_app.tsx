@@ -67,7 +67,6 @@ function JourneysAdminApp({
           titleTemplate={t('%s | Next Steps')}
           defaultTitle={t('Admin | Next Steps')}
         />
-        <HelpScoutBeacon />
         <Head>
           <meta
             name="viewport"
@@ -121,6 +120,7 @@ function JourneysAdminApp({
                 horizontal: 'right'
               }}
             >
+              <HelpScoutBeacon />
               <Component {...pageProps} />
             </SnackbarProvider>
           </TeamProvider>

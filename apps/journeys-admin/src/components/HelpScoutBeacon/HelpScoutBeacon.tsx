@@ -1,6 +1,25 @@
+import { gql, useQuery } from '@apollo/client'
 import Fab from '@mui/material/Fab'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
+
+import { GetUser } from '../../../__generated__/GetUser'
+
+export const GET_USER = gql`
+  query GetUser {
+    me {
+      id
+      email
+      firstName
+      lastName
+    }
+  }
+`
+
+interface FormObject {
+  name: string
+  email: string
+}
 
 declare global {
   interface Window {
@@ -9,11 +28,18 @@ declare global {
         fn: 'config',
         config: { mode: 'askFirst'; enableFabAnimation: boolean }
       ) => void) &
-      ((fn: 'open') => void)
+      ((fn: 'open') => void) &
+      ((fn: 'prefill', formObject: FormObject) => void)
   }
 }
 
+// Remaining todo: add test
+
 export function HelpScoutBeacon(): ReactElement {
+  // turn into its own reusable query
+  // other Beacon functionalities will need this when opening the beacon for the first time
+  const { data } = useQuery<GetUser>(GET_USER)
+
   const { breakpoints } = useTheme()
   function loadBeacon(): void {
     if (typeof window.Beacon === 'undefined') {
@@ -34,6 +60,13 @@ export function HelpScoutBeacon(): ReactElement {
   function handleClick(): void {
     if (window.Beacon != null) {
       window.Beacon('open')
+
+      if (data?.me != null) {
+        window.Beacon('prefill', {
+          name: `${data.me.firstName} ${data.me.lastName ?? ''}`,
+          email: data.me.email
+        })
+      }
     }
   }
 
