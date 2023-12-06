@@ -1,9 +1,9 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { BatchHttpLink } from '@apollo/client/link/batch-http'
 import { setContext } from '@apollo/client/link/context'
-import { getApp } from 'firebase/app'
+import { isPast } from 'date-fns'
 import { getAuth } from 'firebase/auth'
-import { useMemo } from 'react'
+import jwtDecode, { JwtPayload } from 'jwt-decode'
 
 import { cache as createCache } from './cache'
 
@@ -11,21 +11,25 @@ const ssrMode = typeof window === 'undefined'
 const cache = ssrMode ? undefined : createCache()
 
 export function createApolloClient(
-  token: string
+  token?: string
 ): ApolloClient<NormalizedCacheObject> {
+  let _token = token
   const httpLink = new BatchHttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
   })
 
   const authLink = setContext(async (_, { headers }) => {
-    const firebaseToken = ssrMode
-      ? token
-      : (await getAuth(getApp()).currentUser?.getIdToken()) ?? token
+    if (!ssrMode && _token != null) {
+      const exp = jwtDecode<JwtPayload>(_token).exp
+      if (exp == null || isPast(new Date(exp * 1000))) {
+        _token = await getAuth().currentUser?.getIdToken()
+      }
+    }
 
     return {
       headers: {
         ...(!ssrMode ? headers : []),
-        Authorization: firebaseToken
+        Authorization: _token
       }
     }
   })
@@ -38,8 +42,4 @@ export function createApolloClient(
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
     connectToDevTools: true
   })
-}
-
-export function useApollo(token: string): ApolloClient<NormalizedCacheObject> {
-  return useMemo(() => createApolloClient(token), [token])
 }

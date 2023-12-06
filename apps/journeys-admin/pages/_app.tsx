@@ -7,7 +7,7 @@ import Script from 'next/script'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 
@@ -17,7 +17,7 @@ import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { TeamProvider } from '../src/components/Team/TeamProvider'
 import { ThemeProvider } from '../src/components/ThemeProvider'
-import { useApollo } from '../src/libs/apolloClient'
+import { createApolloClient } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
 import '../public/swiper-pagination-override.css'
@@ -44,8 +44,10 @@ function JourneysAdminApp({
       ? JSON.parse(pageProps.userSerialized)
       : null
 
-  const token = user?._token ?? ''
-  const apolloClient = useApollo(token)
+  const apolloClient = useMemo(
+    () => createApolloClient(user?._token),
+    [user?._token]
+  )
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_GTM_ID != null)
