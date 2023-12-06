@@ -127,6 +127,7 @@ export function TemplateGalleryCard({
                     src={journey?.primaryImageBlock?.src}
                     alt={journey?.primaryImageBlock.alt}
                     fill
+                    sizes="(max-width: 600px) 240px, 240px"
                     style={{
                       objectFit: 'cover'
                     }}
