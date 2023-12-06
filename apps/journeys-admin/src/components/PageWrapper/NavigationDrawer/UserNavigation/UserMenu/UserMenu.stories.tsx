@@ -1,30 +1,27 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ReactElement, useState } from 'react'
 
-import { simpleComponentConfig } from '../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
 
 import { UserMenu } from '.'
 
 const UserMenuStory: Meta<typeof UserMenu> = {
   ...simpleComponentConfig,
   component: UserMenu,
-  title: 'Journeys-Admin/PageWrapper/NavigationDrawer/UserMenu'
+  title: 'Journeys-Admin/PageWrapper/NavigationDrawer/UserNavigation/UserMenu'
 }
 
 const UserMenuComponent = (args): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
-    <MockedProvider>
-      <UserMenu
-        {...args}
-        profileOpen={open}
-        profileAnchorEl={null}
-        handleProfileClose={() => setOpen(!open)}
-      />
-    </MockedProvider>
+    <UserMenu
+      {...args}
+      profileOpen={open}
+      profileAnchorEl={null}
+      handleProfileClose={() => setOpen(!open)}
+    />
   )
 }
 
