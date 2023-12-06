@@ -11,8 +11,9 @@ import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import {
   FormBlockCreateInput,
   FormBlockUpdateInput,
-  Json,
-  Project
+  FormiumForm,
+  FormiumProject,
+  Json
 } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
@@ -95,7 +96,7 @@ export class FormBlockResolver {
   }
 
   @ResolveField('projects')
-  async projects(@Parent() block: Block): Promise<Project[]> {
+  async projects(@Parent() block: Block): Promise<FormiumProject[]> {
     const { apiToken } = block
     if (apiToken === null) return []
 
@@ -114,7 +115,7 @@ export class FormBlockResolver {
   }
 
   @ResolveField('forms')
-  async forms(@Parent() block: Block): Promise<string[]> {
+  async forms(@Parent() block: Block): Promise<FormiumForm[]> {
     const { projectId, apiToken } = block
     if (projectId == null || apiToken == null) return []
 
@@ -128,7 +129,10 @@ export class FormBlockResolver {
           ).findForms()
         ).data ?? []
 
-      return formsData.map((form) => form.slug)
+      return formsData.map((form) => ({
+        id: form.slug,
+        name: form.name
+      }))
     } catch (e) {
       return []
     }
@@ -143,8 +147,7 @@ export class FormBlockResolver {
       apiToken
     })
     try {
-      const form = await formiumClient.getFormBySlug(formSlug)
-      return form
+      return await formiumClient.getFormBySlug(formSlug)
     } catch (e) {
       return null
     }

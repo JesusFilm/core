@@ -145,13 +145,7 @@ extend type Mutation {
     journeyId: ID
   ): CardBlock!
   formBlockCreate(input: FormBlockCreateInput!): FormBlock!
-  formBlockUpdate(
-    id: ID!
-    input: FormBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): FormBlock
+  formBlockUpdate(id: ID!, input: FormBlockUpdateInput!): FormBlock
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
   iconBlockUpdate(
     id: ID!
@@ -521,8 +515,19 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
-type Project {
+type FormiumProject {
+  """The projectId of the project"""
   id: String!
+
+  """The name of the project"""
+  name: String!
+}
+
+type FormiumForm {
+  """The formSlug of the form"""
+  id: String!
+
+  """The name of the form"""
   name: String!
 }
 
@@ -533,9 +538,9 @@ type FormBlock implements Block {
   parentOrder: Int
   action: Action
   form: Json
-  projects: [Project!]
+  projects: [FormiumProject!]
   projectId: String
-  forms: [String!]
+  forms: [FormiumForm!]
   formSlug: String
 }
 

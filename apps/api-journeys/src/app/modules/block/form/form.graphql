@@ -1,5 +1,22 @@
 type FormiumProject {
+  """
+  The projectId of the project
+  """
   id: String!
+  """
+  The name of the project
+  """
+  name: String!
+}
+
+type FormiumForm {
+  """
+  The formSlug of the form
+  """
+  id: String!
+  """
+  The name of the form
+  """
   name: String!
 }
 
@@ -12,7 +29,7 @@ type FormBlock implements Block {
   form: Json
   projects: [FormiumProject!]
   projectId: String
-  forms: [String!]
+  forms: [FormiumForm!]
   formSlug: String
 }
 

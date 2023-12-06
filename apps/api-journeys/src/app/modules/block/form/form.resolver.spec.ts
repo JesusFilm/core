@@ -205,18 +205,18 @@ describe('FormBlock', () => {
   describe('projects', () => {
     it('returns projects', async () => {
       const mockFormiumClient = {
-        getMyProjects: jest.fn(() => [{ id: 'projectId', name: 'projectName' }])
+        getMyProjects: jest.fn(() => ({
+          data: [{ id: 'projectId', name: 'projectName' }]
+        }))
       } as unknown as FormiumClient
       mockCreateClient.mockReturnValueOnce(mockFormiumClient)
 
-      await resolver.projects({
-        ...block
-      })
-
+      expect(
+        await resolver.projects({
+          ...block
+        })
+      ).toEqual([{ id: 'projectId', name: 'projectName' }])
       expect(mockFormiumClient.getMyProjects).toHaveBeenCalled()
-      expect(mockFormiumClient.getMyProjects()).toEqual([
-        { id: 'projectId', name: 'projectName' }
-      ])
     })
 
     it('returns empty array if client fails to fetch projects', async () => {
@@ -243,18 +243,20 @@ describe('FormBlock', () => {
   })
 
   describe('forms', () => {
-    it('returns projects', async () => {
+    it('returns forms', async () => {
       const mockFormiumClient = {
-        findForms: jest.fn(() => ['form-slug'])
+        findForms: jest.fn(() => ({
+          data: [{ slug: 'form-slug', name: 'form name' }]
+        }))
       } as unknown as FormiumClient
       mockCreateClient.mockReturnValueOnce(mockFormiumClient)
 
-      await resolver.forms({
-        ...block
-      })
-
+      expect(
+        await resolver.forms({
+          ...block
+        })
+      ).toEqual([{ id: 'form-slug', name: 'form name' }])
       expect(mockFormiumClient.findForms).toHaveBeenCalled()
-      expect(mockFormiumClient.findForms()).toEqual(['form-slug'])
     })
 
     it('returns empty array if client fails to fetch forms', async () => {

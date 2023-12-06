@@ -404,9 +404,9 @@ type FormBlock implements Block
   parentOrder: Int
   action: Action
   form: Json
-  projects: [Project!]
+  projects: [FormiumProject!]
   projectId: String
-  forms: [String!]
+  forms: [FormiumForm!]
   formSlug: String
 }
 
@@ -424,6 +424,26 @@ input FormBlockUpdateInput
   projectId: String
   apiToken: String
   formSlug: String
+}
+
+type FormiumForm
+  @join__type(graph: JOURNEYS)
+{
+  """The formSlug of the form"""
+  id: String!
+
+  """The name of the form"""
+  name: String!
+}
+
+type FormiumProject
+  @join__type(graph: JOURNEYS)
+{
+  """The projectId of the project"""
+  id: String!
+
+  """The name of the project"""
+  name: String!
 }
 
 enum GridAlignItems
@@ -1105,13 +1125,7 @@ type Mutation
     journeyId: ID
   ): CardBlock! @join__field(graph: JOURNEYS)
   formBlockCreate(input: FormBlockCreateInput!): FormBlock! @join__field(graph: JOURNEYS)
-  formBlockUpdate(
-    id: ID!
-    input: FormBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): FormBlock @join__field(graph: JOURNEYS)
+  formBlockUpdate(id: ID!, input: FormBlockUpdateInput!): FormBlock @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
   iconBlockUpdate(
     id: ID!
@@ -1365,13 +1379,6 @@ type PowerBiEmbed
 
   """The date and time (UTC) of token expiration"""
   expiration: String!
-}
-
-type Project
-  @join__type(graph: JOURNEYS)
-{
-  id: String!
-  name: String!
 }
 
 type Query

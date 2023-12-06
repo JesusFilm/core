@@ -860,8 +860,14 @@ export class CardBlock implements Block {
     themeName?: Nullable<ThemeName>;
 }
 
-export class Project {
-    __typename?: 'Project';
+export class FormiumProject {
+    __typename?: 'FormiumProject';
+    id: string;
+    name: string;
+}
+
+export class FormiumForm {
+    __typename?: 'FormiumForm';
     id: string;
     name: string;
 }
@@ -874,9 +880,9 @@ export class FormBlock implements Block {
     parentOrder?: Nullable<number>;
     action?: Nullable<Action>;
     form?: Nullable<Json>;
-    projects?: Nullable<Project[]>;
+    projects?: Nullable<FormiumProject[]>;
     projectId?: Nullable<string>;
-    forms?: Nullable<string[]>;
+    forms?: Nullable<FormiumForm[]>;
     formSlug?: Nullable<string>;
 }
 
@@ -1416,7 +1422,7 @@ export abstract class IMutation {
 
     abstract formBlockCreate(input: FormBlockCreateInput): FormBlock | Promise<FormBlock>;
 
-    abstract formBlockUpdate(id: string, input: FormBlockUpdateInput, journeyId?: Nullable<string>): Nullable<FormBlock> | Promise<Nullable<FormBlock>>;
+    abstract formBlockUpdate(id: string, input: FormBlockUpdateInput): Nullable<FormBlock> | Promise<Nullable<FormBlock>>;
 
     abstract iconBlockCreate(input: IconBlockCreateInput): IconBlock | Promise<IconBlock>;
 
