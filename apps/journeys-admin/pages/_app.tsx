@@ -1,4 +1,4 @@
-import { ApolloProvider } from '@apollo/client'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
@@ -7,7 +7,7 @@ import Script from 'next/script'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement, useEffect, useMemo } from 'react'
+import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 
@@ -17,7 +17,7 @@ import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { TeamProvider } from '../src/components/Team/TeamProvider'
 import { ThemeProvider } from '../src/components/ThemeProvider'
-import { createApolloClient } from '../src/libs/apolloClient'
+import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
 import '../public/swiper-pagination-override.css'
@@ -27,6 +27,7 @@ const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
+  initialApolloState?: NormalizedCacheObject
 }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
@@ -44,10 +45,10 @@ function JourneysAdminApp({
       ? JSON.parse(pageProps.userSerialized)
       : null
 
-  const apolloClient = useMemo(
-    () => createApolloClient(user?._token),
-    [user?._token]
-  )
+  const apolloClient = useApollo({
+    initialState: pageProps.initialApolloState,
+    token: user?._token
+  })
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_GTM_ID != null)
