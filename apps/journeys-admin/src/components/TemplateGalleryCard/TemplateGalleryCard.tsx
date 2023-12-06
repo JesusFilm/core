@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
@@ -118,7 +118,7 @@ export function TemplateGalleryCard({
             }}
           >
             <HoverLayer className="hoverImageEffects" />
-            <Box
+            <Skeleton
               sx={{
                 position: 'absolute',
                 display: journey != null ? 'none' : 'block',
@@ -127,7 +127,9 @@ export function TemplateGalleryCard({
                 bottom: 0,
                 left: 0,
                 zIndex: 3,
-                backgroundColor: 'background.default'
+                backgroundColor: 'background.default',
+                borderColor: 'divider',
+                borderRadius: 2
               }}
             />
             <Image
