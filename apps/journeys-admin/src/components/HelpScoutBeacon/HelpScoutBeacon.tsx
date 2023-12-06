@@ -8,6 +8,10 @@ interface EventObject {
   title: string
 }
 
+interface SessionObject {
+  lastAction: string
+}
+
 declare global {
   interface Window {
     Beacon?: ((fn: 'init', id: string) => void) &
@@ -18,15 +22,10 @@ declare global {
       ((fn: 'open') => void) &
       ((fn: 'event', eventObject: EventObject) => void) &
       ((fn: 'suggest') => void) &
-      ((fn: 'search', query: string) => void)
+      ((fn: 'search', query: string) => void) &
+      ((fn: 'session-data', sessionObject: SessionObject) => void)
   }
 }
-
-// add new variables to this global state
-// event - for figuring out the even that has happened through the title
-// suggest - the thing we would like the user to see
-// search with params relating to where they're at
-// do we even need the event?
 
 export function HelpScoutBeacon(): ReactElement {
   const { breakpoints } = useTheme()

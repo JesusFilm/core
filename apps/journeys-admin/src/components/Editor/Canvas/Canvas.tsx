@@ -22,6 +22,7 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
+import { prefillBeaconSearch } from '../../../libs/prefillBeaconSearch'
 import { FramePortal } from '../../FramePortal'
 import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
@@ -167,6 +168,7 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: 'hosted-by'
     })
+    prefillBeaconSearch('hosted')
   }
 
   return (

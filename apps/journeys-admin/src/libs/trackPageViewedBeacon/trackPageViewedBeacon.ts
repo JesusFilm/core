@@ -6,7 +6,6 @@ export function trackPageViewedBeacon(title: string): void {
       url: document.location.href,
       title
     })
-    console.log(document.location.href)
     window.Beacon('suggest')
   }
 }
