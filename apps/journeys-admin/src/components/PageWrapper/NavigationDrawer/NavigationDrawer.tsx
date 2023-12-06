@@ -173,7 +173,7 @@ export function NavigationDrawer({
           </Suspense>
         )}
         <ListItem component="div" sx={{ flexGrow: '1 !important' }} />
-        <ListItem component="div">
+        <ListItem component="div" sx={{ mb: 1.5 }}>
           <ListItemIcon>
             <Image
               src={taskbarIcon}
