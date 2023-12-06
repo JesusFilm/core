@@ -47,7 +47,7 @@ export function HelpScoutBeacon(): ReactElement {
         sx={{
           position: 'fixed',
           bottom: { xs: 13, md: 73 },
-          zIndex: 1201,
+          zIndex: (theme) => theme.zIndex.drawer + 2,
           left: 9,
           width: 54,
           height: 54,
