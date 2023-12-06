@@ -8,6 +8,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum NexusStatus {
+    deleted = "deleted",
+    published = "published"
+}
+
 export class ChannelCreateInput {
     nexusId: string;
     name: string;
@@ -54,20 +59,26 @@ export class Channel {
     platform?: Nullable<string>;
 }
 
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract channels(where?: Nullable<ChannelFilter>): Nullable<Channel[]> | Promise<Nullable<Channel[]>>;
+
+    abstract channel(id: string): Channel | Promise<Channel>;
+
+    abstract nexuses(where?: Nullable<NexusFilter>): Nexus[] | Promise<Nexus[]>;
+
+    abstract nexus(id: string): Nexus | Promise<Nexus>;
+}
+
 export class Nexus {
     __typename?: 'Nexus';
     id: string;
     name: string;
     description?: Nullable<string>;
     createdAt: DateTime;
-}
-
-export abstract class IQuery {
-    __typename?: 'IQuery';
-
-    abstract nexuses(where?: Nullable<NexusFilter>): Nexus[] | Promise<Nexus[]>;
-
-    abstract nexus(id: string): Nexus | Promise<Nexus>;
+    deletedAt?: Nullable<DateTime>;
+    status: NexusStatus;
 }
 
 export class Translation {
@@ -78,9 +89,17 @@ export class Translation {
 }
 
 export abstract class IMutation {
+    abstract channelCreate(input: ChannelCreateInput): Channel | Promise<Channel>;
+
+    abstract channelUpdate(id: string, input: ChannelUpdateInput): Channel | Promise<Channel>;
+
+    abstract channelDelete(id: string): Channel | Promise<Channel>;
+
     abstract nexusCreate(input: NexusCreateInput): Nexus | Promise<Nexus>;
 
     abstract nexusUpdate(id: string, input: NexusUpdateInput): Nexus | Promise<Nexus>;
+
+    abstract nexusDelete(id: string): Nexus | Promise<Nexus>;
 }
 
 export class Language {

@@ -99,6 +99,24 @@ export class ChannelResolver {
     }
   }
 
-  //   @Mutation()
-  //   async channelDelete(): Promise<Channel> {}
+  @Mutation()
+  async channelDelete(@Args('id') id: string): Promise<Channel> {
+    const channel = await this.prismaService.channel.findUnique({
+      where: { id }
+    })
+
+    if (channel == null)
+      throw new GraphQLError('channel not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+
+    // eslint-disable-next-line no-useless-catch
+    try {
+      return await this.prismaService.channel.delete({
+        where: { id }
+      })
+    } catch (err) {
+      throw err
+    }
+  }
 }
