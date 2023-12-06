@@ -1,5 +1,4 @@
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
-import { BatchHttpLink } from '@apollo/client/link/batch-http'
+import { ApolloClient, HttpLink, NormalizedCacheObject } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { isPast } from 'date-fns'
 import { getAuth } from 'firebase/auth'
@@ -14,7 +13,7 @@ export function createApolloClient(
   token?: string
 ): ApolloClient<NormalizedCacheObject> {
   let _token = token
-  const httpLink = new BatchHttpLink({
+  const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
   })
 
