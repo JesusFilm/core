@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
@@ -123,6 +123,8 @@ export function TemplateGalleryCard({
               <Box
                 sx={{
                   position: 'absolute',
+                  display:
+                    journey?.primaryImageBlock?.src != null ? 'none' : 'block',
                   top: 0,
                   right: 0,
                   bottom: 0,
@@ -131,24 +133,24 @@ export function TemplateGalleryCard({
                   backgroundColor: 'background.default'
                 }}
               />
-              {journey?.primaryImageBlock?.src != null ? (
-                <Image
-                  priority
-                  className="MuiImageBackground-root"
-                  src={journey?.primaryImageBlock?.src}
-                  alt={journey?.primaryImageBlock.alt}
-                  fill
-                  sizes="(max-width: 0px) 240px, 480px"
-                  style={{
-                    objectFit: 'cover'
-                  }}
-                />
-              ) : (
+              {/* {journey?.primaryImageBlock?.src != null ? ( */}
+              <Image
+                priority
+                className="MuiImageBackground-root"
+                src={journey?.primaryImageBlock?.src ?? ''}
+                alt={journey?.primaryImageBlock?.alt ?? ''}
+                fill
+                sizes="(max-width: 0px) 240px, 480px"
+                style={{
+                  objectFit: 'cover'
+                }}
+              />
+              {/* ) : (
                 <>
                   <HoverLayer className="hoverImageEffects" />
                   <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
                 </>
-              )}
+              )} */}
             </>
           </Stack>
           {/* ) : (
