@@ -105,7 +105,6 @@ export function TemplateGalleryCard({
             height: 'inherit'
           }}
         >
-          {/* {journey != null ? ( */}
           <Stack
             justifyContent="center"
             alignItems="center"
@@ -131,7 +130,6 @@ export function TemplateGalleryCard({
                 backgroundColor: 'background.default'
               }}
             />
-            {/* {journey?.primaryImageBlock?.src != null ? ( */}
             <Image
               priority
               className="MuiImageBackground-root"
@@ -161,50 +159,7 @@ export function TemplateGalleryCard({
             >
               <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
             </Stack>
-            {/* ) : (
-                <>
-                  <HoverLayer className="hoverImageEffects" />
-                  <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
-                </>
-              )} */}
           </Stack>
-          {/* ) : (
-            <Stack
-              justifyContent="center"
-              alignItems="center"
-              sx={{
-                position: 'relative',
-                aspectRatio: 1,
-                overflow: 'hidden',
-                borderRadius: 2,
-                alignItems: 'center',
-                backgroundColor: 'background.default'
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  left: 0,
-                  zIndex: 2,
-                  backgroundColor: 'background.default'
-                }}
-              ></Box>
-              <Image
-                priority
-                className="MuiImageBackground-root"
-                src=""
-                alt="loadingSkeleton"
-                fill
-                sizes="(max-width: 600px) 240px, 240px"
-                style={{
-                  objectFit: 'cover'
-                }}
-              />
-            </Stack>
-          )} */}
           <Stack
             sx={{
               px: 0,
