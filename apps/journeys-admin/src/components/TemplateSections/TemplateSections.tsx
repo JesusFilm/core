@@ -138,7 +138,6 @@ export function TemplateSections({
             <TemplateGalleryCarousel
               heading={category}
               items={journeys}
-              loading={loading}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-8}
