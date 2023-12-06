@@ -868,7 +868,7 @@ export class FormiumProject {
 
 export class FormiumForm {
     __typename?: 'FormiumForm';
-    id: string;
+    slug: string;
     name: string;
 }
 
@@ -880,9 +880,9 @@ export class FormBlock implements Block {
     parentOrder?: Nullable<number>;
     action?: Nullable<Action>;
     form?: Nullable<Json>;
-    projects?: Nullable<FormiumProject[]>;
+    projects: FormiumProject[];
     projectId?: Nullable<string>;
-    forms?: Nullable<FormiumForm[]>;
+    forms: FormiumForm[];
     formSlug?: Nullable<string>;
 }
 

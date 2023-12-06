@@ -1,5 +1,6 @@
 import { subject } from '@casl/ability'
 import { createClient } from '@formium/client'
+import { Project } from '@formium/types'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
@@ -71,7 +72,7 @@ export class FormBlockResolver {
   async formBlockUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('input') input: FormBlockUpdateInput
+    @Args('input') { apiToken, projectId, formSlug }: FormBlockUpdateInput
   ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
       where: { id },
@@ -84,68 +85,78 @@ export class FormBlockResolver {
         }
       }
     })
+
     if (block == null)
       throw new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
       })
+
     if (!ability.can(Action.Update, subject('Journey', block.journey)))
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.update(id, input)
+
+    let projects: Project[] = []
+    try {
+      if (apiToken != null) {
+        projects = (await createClient('', { apiToken }).getMyProjects()).data
+      }
+    } catch (e) {
+      throw new GraphQLError('invalid token value', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
+    }
+    if (
+      projectId != null &&
+      projects.find((project) => project.id === projectId) == null
+    )
+      throw new GraphQLError('invalid project id', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
+
+    return await this.blockService.update(id, { apiToken, projectId, formSlug })
   }
 
   @ResolveField('projects')
-  async projects(@Parent() block: Block): Promise<FormiumProject[]> {
-    const { apiToken } = block
+  async projects(@Parent() { apiToken }: Block): Promise<FormiumProject[]> {
     if (apiToken === null) return []
 
     try {
       const projectsData =
-        (await (await createClient('', { apiToken })).getMyProjects()).data ??
-        []
+        (await createClient('', { apiToken }).getMyProjects()).data ?? []
 
-      return projectsData.map((project) => ({
-        id: project.id,
-        name: project.name
-      }))
+      return projectsData.map(({ id, name }) => ({ id, name }))
     } catch (e) {
       return []
     }
   }
 
   @ResolveField('forms')
-  async forms(@Parent() block: Block): Promise<FormiumForm[]> {
-    const { projectId, apiToken } = block
+  async forms(
+    @Parent() { projectId, apiToken }: Block
+  ): Promise<FormiumForm[]> {
     if (projectId == null || apiToken == null) return []
 
     try {
       const formsData =
-        (
-          await (
-            await createClient(projectId, {
-              apiToken
-            })
-          ).findForms()
-        ).data ?? []
+        (await createClient(projectId, { apiToken }).findForms()).data ?? []
 
-      return formsData.map((form) => ({
-        id: form.slug,
-        name: form.name
-      }))
+      return formsData.map(({ slug, name }) => ({ slug, name }))
     } catch (e) {
       return []
     }
   }
 
   @ResolveField('form')
-  async form(@Parent() block: Block): Promise<Json | null> {
-    const { projectId, apiToken, formSlug } = block
+  async form(
+    @Parent() { projectId, apiToken, formSlug }: Block
+  ): Promise<Json | null> {
     if (projectId == null || apiToken == null || formSlug == null) return null
 
     const formiumClient = createClient(projectId, {
       apiToken
     })
+
     try {
       return await formiumClient.getFormBySlug(formSlug)
     } catch (e) {

@@ -141,23 +141,56 @@ describe('FormBlock', () => {
     })
 
     it('updates a FormBlock', async () => {
+      const mockFormiumClient = {
+        getMyProjects: jest.fn(() => ({
+          data: [{ id: 'projectId', name: 'projectName' }]
+        }))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
 
-    it('throws error if not found', async () => {
+    it('throws error if block not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
 
-    it('throws error if not authorized', async () => {
+    it('throws error if user not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
         resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('user is not allowed to update block')
+    })
+
+    it('throws error if token is invalid', async () => {
+      const mockFormiumClient = {
+        getMyProjects: jest.fn().mockRejectedValueOnce(new Error('error'))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await expect(
+        resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('invalid token value')
+    })
+
+    it('throws error is project id is invalid', async () => {
+      const mockFormiumClient = {
+        getMyProjects: jest.fn(() => ({
+          data: [{ id: 'invalid-projectId', name: 'projectName' }]
+        }))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await expect(
+        resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('invalid project id')
     })
   })
 
@@ -255,7 +288,7 @@ describe('FormBlock', () => {
         await resolver.forms({
           ...block
         })
-      ).toEqual([{ id: 'form-slug', name: 'form name' }])
+      ).toEqual([{ slug: 'form-slug', name: 'form name' }])
       expect(mockFormiumClient.findForms).toHaveBeenCalled()
     })
 
