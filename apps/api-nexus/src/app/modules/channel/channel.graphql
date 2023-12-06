@@ -2,7 +2,7 @@ scalar DateTime
 
 type Channel @key(fields: "id") {
   id: ID!
-  nexusId: String
+  nexusId: String!
   name: String!
   platform: String
 }
