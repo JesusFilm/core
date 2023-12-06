@@ -118,39 +118,55 @@ export function TemplateGalleryCard({
               backgroundColor: 'background.default'
             }}
           >
-            <>
-              <HoverLayer className="hoverImageEffects" />
-              <Box
-                sx={{
-                  position: 'absolute',
-                  display: journey != null ? 'none' : 'block',
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  left: 0,
-                  zIndex: 3,
-                  backgroundColor: 'background.default'
-                }}
-              />
-              {/* {journey?.primaryImageBlock?.src != null ? ( */}
-              <Image
-                priority
-                className="MuiImageBackground-root"
-                src={journey?.primaryImageBlock?.src ?? ''}
-                alt={journey?.primaryImageBlock?.alt ?? ''}
-                fill
-                sizes="(max-width: 0px) 240px, 480px"
-                style={{
-                  objectFit: 'cover'
-                }}
-              />
-              {/* ) : (
+            <HoverLayer className="hoverImageEffects" />
+            <Box
+              sx={{
+                position: 'absolute',
+                display: journey != null ? 'none' : 'block',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+                zIndex: 3,
+                backgroundColor: 'background.default'
+              }}
+            />
+            {/* {journey?.primaryImageBlock?.src != null ? ( */}
+            <Image
+              priority
+              className="MuiImageBackground-root"
+              src={
+                journey?.primaryImageBlock?.src ??
+                'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
+              }
+              alt={
+                journey?.primaryImageBlock?.alt ??
+                'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
+              }
+              fill
+              sizes="(max-width: 900px) 240px, 480px"
+              style={{
+                objectFit: 'cover'
+              }}
+            />
+            <Stack
+              sx={{
+                zIndex: journey?.primaryImageBlock?.src != null ? -1 : 0,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'background.default',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
+            </Stack>
+            {/* ) : (
                 <>
                   <HoverLayer className="hoverImageEffects" />
                   <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
                 </>
               )} */}
-            </>
           </Stack>
           {/* ) : (
             <Stack
