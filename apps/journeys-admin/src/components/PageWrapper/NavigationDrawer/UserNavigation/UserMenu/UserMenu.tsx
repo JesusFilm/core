@@ -1,3 +1,4 @@
+import { useApolloClient } from '@apollo/client'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -32,6 +33,8 @@ export function UserMenu({
 }: UserMenuProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
+  const client = useApolloClient()
+
   return (
     <Menu
       anchorEl={profileAnchorEl}
@@ -76,6 +79,7 @@ export function UserMenu({
         icon={<Logout2Icon fontSize="small" />}
         onClick={async () => {
           handleProfileClose()
+          await client.resetStore()
           await user.signOut()
           await enqueueSnackbar(t('Logout successful'), {
             variant: 'success',
