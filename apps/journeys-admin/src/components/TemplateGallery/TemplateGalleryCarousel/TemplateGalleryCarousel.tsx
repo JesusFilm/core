@@ -85,7 +85,7 @@ export function TemplateGalleryCarousel<T>({
         watchOverflow
         allowTouchMove
         observer
-        slidesOffsetBefore={slidesOffsetBefore ?? 0}
+        // slidesOffsetBefore={slidesOffsetBefore ?? 0}
         observeParents
         resizeObserver
         mousewheel={{ forceToAxis: true }}
@@ -104,7 +104,8 @@ export function TemplateGalleryCarousel<T>({
                 swiper?.slideTo(index)
               }}
               style={{
-                marginRight: 20
+                marginRight: 20, //todo: change to breakpoints
+                marginLeft: slidesOffsetBefore != null ? slidesOffsetBefore : 0
               }}
             >
               {renderItem({ item })}

@@ -106,7 +106,40 @@ export function TemplateSections({
         items={
           collection.length !== 0
             ? collection
-            : [
+            : ([
+                {
+                  __typename: 'Journey',
+                  title: 'Dev',
+                  createdAt: '2023-11-12T22:47:45.085Z',
+                  publishedAt: '2023-11-12T22:47:45.085Z',
+                  description: 'first',
+                  // language: {
+                  //   id: '529',
+                  //   name: [
+                  //     {
+                  //       value: 'English',
+                  //       primary: true
+                  //     }
+                  //   ]
+                  // },
+                  // status: 'published',
+                  // seoTitle: null,
+                  // seoDescription: null,
+                  // template: true,
+                  // userJourneys: [],
+                  primaryImageBlock: {
+                    //   __typename: 'ImageBlock',
+                    //   id: '54cb6949-a65f-452d-83ec-41e7c39a1d46',
+                    //   parentBlockId: null,
+                    //   parentOrder: 1,
+                    src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+                    alt: 'onboarding primary'
+                    //   width: 1152,
+                    //   height: 768,
+                    //   blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7'
+                  },
+                  tags: []
+                },
                 {
                   __typename: 'Journey',
                   title: 'Dev',
@@ -139,8 +172,107 @@ export function TemplateSections({
                     //   blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7'
                   },
                   tags: []
-                } as unknown as Journey
-              ]
+                },
+                {
+                  __typename: 'Journey',
+                  title: 'Dev',
+                  createdAt: '2023-11-12T22:47:45.085Z',
+                  publishedAt: '2023-11-12T22:47:45.085Z',
+
+                  // language: {
+                  //   id: '529',
+                  //   name: [
+                  //     {
+                  //       value: 'English',
+                  //       primary: true
+                  //     }
+                  //   ]
+                  // },
+                  // status: 'published',
+                  // seoTitle: null,
+                  // seoDescription: null,
+                  // template: true,
+                  // userJourneys: [],
+                  primaryImageBlock: {
+                    //   __typename: 'ImageBlock',
+                    //   id: '54cb6949-a65f-452d-83ec-41e7c39a1d46',
+                    //   parentBlockId: null,
+                    //   parentOrder: 1,
+                    src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+                    alt: 'onboarding primary'
+                    //   width: 1152,
+                    //   height: 768,
+                    //   blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7'
+                  },
+                  tags: []
+                },
+                {
+                  __typename: 'Journey',
+                  title: 'Dev',
+                  createdAt: '2023-11-12T22:47:45.085Z',
+                  publishedAt: '2023-11-12T22:47:45.085Z',
+
+                  // language: {
+                  //   id: '529',
+                  //   name: [
+                  //     {
+                  //       value: 'English',
+                  //       primary: true
+                  //     }
+                  //   ]
+                  // },
+                  // status: 'published',
+                  // seoTitle: null,
+                  // seoDescription: null,
+                  // template: true,
+                  // userJourneys: [],
+                  primaryImageBlock: {
+                    //   __typename: 'ImageBlock',
+                    //   id: '54cb6949-a65f-452d-83ec-41e7c39a1d46',
+                    //   parentBlockId: null,
+                    //   parentOrder: 1,
+                    src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+                    alt: 'onboarding primary'
+                    //   width: 1152,
+                    //   height: 768,
+                    //   blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7'
+                  },
+                  tags: []
+                },
+                {
+                  __typename: 'Journey',
+                  title: 'Dev',
+                  createdAt: '2023-11-12T22:47:45.085Z',
+                  publishedAt: '2023-11-12T22:47:45.085Z',
+
+                  // language: {
+                  //   id: '529',
+                  //   name: [
+                  //     {
+                  //       value: 'English',
+                  //       primary: true
+                  //     }
+                  //   ]
+                  // },
+                  // status: 'published',
+                  // seoTitle: null,
+                  // seoDescription: null,
+                  // template: true,
+                  // userJourneys: [],
+                  primaryImageBlock: {
+                    //   __typename: 'ImageBlock',
+                    //   id: '54cb6949-a65f-452d-83ec-41e7c39a1d46',
+                    //   parentBlockId: null,
+                    //   parentOrder: 1,
+                    src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+                    alt: 'onboarding primary'
+                    //   width: 1152,
+                    //   height: 768,
+                    //   blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7'
+                  },
+                  tags: []
+                }
+              ] as unknown as Journey[])
         }
         renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
         breakpoints={swiperBreakpoints}
