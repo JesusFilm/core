@@ -2,14 +2,15 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement, useState } from 'react'
 
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
 
 import { ImpersonateDialog, USER_IMPERSONATE } from './ImpersonateDialog'
 
 const ImpersonateDialogStory: Meta<typeof ImpersonateDialog> = {
   ...journeysAdminConfig,
   component: ImpersonateDialog,
-  title: 'Journeys-Admin/PageWrapper/NavigationDrawer/ImpersonateDialog',
+  title:
+    'Journeys-Admin/PageWrapper/NavigationDrawer/UserNavigation/ImpersonateDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

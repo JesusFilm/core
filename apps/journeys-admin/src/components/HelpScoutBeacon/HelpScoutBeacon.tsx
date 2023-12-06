@@ -14,7 +14,7 @@ declare global {
 }
 
 export function HelpScoutBeacon(): ReactElement {
-  const { breakpoints } = useTheme()
+  const { breakpoints, zIndex } = useTheme()
   function loadBeacon(): void {
     if (typeof window.Beacon === 'undefined') {
       const script = document.createElement('script')
@@ -47,7 +47,7 @@ export function HelpScoutBeacon(): ReactElement {
         sx={{
           position: 'fixed',
           bottom: { xs: 13, md: 73 },
-          zIndex: 1201,
+          zIndex: (theme) => theme.zIndex.drawer + 2,
           left: 9,
           width: 54,
           height: 54,
@@ -66,7 +66,7 @@ export function HelpScoutBeacon(): ReactElement {
       </Fab>
       <style>{`
         #beacon-container {
-          z-index: 1500;
+          z-index: ${zIndex.drawer + 2};
           position: sticky;
         }
         .hsds-beacon .BeaconFabButtonFrame.is-configDisplayLeft,
