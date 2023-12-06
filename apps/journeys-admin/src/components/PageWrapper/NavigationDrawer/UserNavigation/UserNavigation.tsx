@@ -21,8 +21,6 @@ import { useUserRoleSuspenseQuery } from '../../../../libs/useUserRoleSuspenseQu
 import { getJourneyTooltip } from '../../utils/getJourneyTooltip'
 import { JourneyTooltip } from '../../utils/getJourneyTooltip/getJourneyTooltip'
 
-import { NavigationListItem } from './NavigationListItem'
-
 const ImpersonateDialog = dynamic(
   async () =>
     await import(

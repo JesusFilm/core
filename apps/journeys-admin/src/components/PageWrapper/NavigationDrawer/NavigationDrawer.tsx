@@ -68,7 +68,8 @@ export function NavigationDrawer({
           backgroundColor: 'secondary.dark',
           overflowX: 'hidden',
           transition: (theme) => theme.transitions.create('width'),
-          width: open ? DRAWER_WIDTH : { xs: 0, md: 72 }
+          width: open ? DRAWER_WIDTH : { xs: 0, md: 72 },
+          zIndex: (theme) => theme.zIndex.drawer + 1
         }
       }}
     >
