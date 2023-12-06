@@ -37,11 +37,20 @@ export function BackgroundMedia(): ReactElement {
     coverBlock?.__typename.toString() ?? 'VideoBlock'
   )
 
+  function trackBeaconSearch(params: string): void {
+    if (window.Beacon != null) {
+      window.Beacon('search', params)
+    }
+  }
+
   const handleTypeChange = (
     event: MouseEvent<HTMLElement>,
     selected: string
   ): void => {
     if (selected != null) setBlockType(selected)
+    selected != null && selected === 'ImageBlock'
+      ? trackBeaconSearch('Background Image')
+      : trackBeaconSearch('Background Video')
   }
 
   const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({

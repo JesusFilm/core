@@ -2,6 +2,12 @@ import Fab from '@mui/material/Fab'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
 
+interface EventObject {
+  type: string
+  url: string
+  title: string
+}
+
 declare global {
   interface Window {
     Beacon?: ((fn: 'init', id: string) => void) &
@@ -9,9 +15,18 @@ declare global {
         fn: 'config',
         config: { mode: 'askFirst'; enableFabAnimation: boolean }
       ) => void) &
-      ((fn: 'open') => void)
+      ((fn: 'open') => void) &
+      ((fn: 'event', eventObject: EventObject) => void) &
+      ((fn: 'suggest') => void) &
+      ((fn: 'search', query: string) => void)
   }
 }
+
+// add new variables to this global state
+// event - for figuring out the even that has happened through the title
+// suggest - the thing we would like the user to see
+// search with params relating to where they're at
+// do we even need the event?
 
 export function HelpScoutBeacon(): ReactElement {
   const { breakpoints } = useTheme()

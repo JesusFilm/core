@@ -38,11 +38,20 @@ export function ImageBlockEditor({
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
   const [uploading, setUploading] = useState<boolean>()
 
+  function trackBeaconSearch(params: string): void {
+    if (window.Beacon != null) {
+      window.Beacon('search', params)
+    }
+  }
+
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
     setTabValue(newValue)
+    if (newValue === 0) trackBeaconSearch('Unsplash Image')
+    if (newValue === 1) trackBeaconSearch('Custom Image')
+    if (newValue === 2) trackBeaconSearch('AI Image')
   }
 
   const srcSchema = object().shape({

@@ -51,11 +51,20 @@ export function VideoLibrary({
     }
   }, [selectedBlock, open])
 
+  function trackBeaconSearch(params: string): void {
+    if (window.Beacon != null) {
+      window.Beacon('search', params)
+    }
+  }
+
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
     setActiveTab(newValue)
+    if (newValue === 0) trackBeaconSearch('Arclight Video')
+    if (newValue === 1) trackBeaconSearch('Youtube Video')
+    if (newValue === 2) trackBeaconSearch('Custom Video')
   }
 
   const onSelect = (block: VideoBlockUpdateInput): void => {

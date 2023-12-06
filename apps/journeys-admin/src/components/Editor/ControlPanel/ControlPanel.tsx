@@ -44,6 +44,12 @@ export function ControlPanel(): ReactElement {
 
   const selected = selectedComponent ?? selectedBlock ?? 'none'
 
+  function handleBeacon(params: string): void {
+    if (window.Beacon != null) {
+      window.Beacon('search', params)
+    }
+  }
+
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
@@ -87,9 +93,12 @@ export function ControlPanel(): ReactElement {
               children: <Properties isPublisher={false} />
             })
           }
+          handleBeacon('Journeys')
           break
       }
     }
+    if (newValue === ActiveTab.Properties) handleBeacon('Properties')
+    if (newValue === ActiveTab.Blocks) handleBeacon('Blocks')
   }
 
   const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
