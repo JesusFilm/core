@@ -1,0 +1,1 @@
+export { trackPageViewedBeacon } from './trackPageViewedBeacon'

@@ -1,0 +1,1 @@
+export { prefillBeaconSearch } from './prefillBeaconSearch'

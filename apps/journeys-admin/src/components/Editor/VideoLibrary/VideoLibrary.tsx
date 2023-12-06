@@ -19,6 +19,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
+import { prefillBeaconSearch } from '../../../libs/prefillBeaconSearch'
 
 import { VideoDetails } from './VideoDetails'
 import { VideoFromCloudflare } from './VideoFromCloudflare'
@@ -51,20 +52,14 @@ export function VideoLibrary({
     }
   }, [selectedBlock, open])
 
-  function trackBeaconSearch(params: string): void {
-    if (window.Beacon != null) {
-      window.Beacon('search', params)
-    }
-  }
-
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
     setActiveTab(newValue)
-    if (newValue === 0) trackBeaconSearch('Arclight Video')
-    if (newValue === 1) trackBeaconSearch('Youtube Video')
-    if (newValue === 2) trackBeaconSearch('Custom Video')
+    if (newValue === 0) prefillBeaconSearch('Arclight Video')
+    if (newValue === 1) prefillBeaconSearch('Youtube Video')
+    if (newValue === 2) prefillBeaconSearch('Custom Video')
   }
 
   const onSelect = (block: VideoBlockUpdateInput): void => {

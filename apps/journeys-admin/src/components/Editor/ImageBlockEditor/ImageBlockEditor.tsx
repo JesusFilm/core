@@ -11,6 +11,7 @@ import StarsIcon from '@core/shared/ui/icons/Stars'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import { prefillBeaconSearch } from '../../../libs/prefillBeaconSearch'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
 import { AIGallery } from './AIGallery'
@@ -38,20 +39,14 @@ export function ImageBlockEditor({
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
   const [uploading, setUploading] = useState<boolean>()
 
-  function trackBeaconSearch(params: string): void {
-    if (window.Beacon != null) {
-      window.Beacon('search', params)
-    }
-  }
-
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
     setTabValue(newValue)
-    if (newValue === 0) trackBeaconSearch('Unsplash Image')
-    if (newValue === 1) trackBeaconSearch('Custom Image')
-    if (newValue === 2) trackBeaconSearch('AI Image')
+    if (newValue === 0) prefillBeaconSearch('Unsplash Image')
+    if (newValue === 1) prefillBeaconSearch('Custom Image')
+    if (newValue === 2) prefillBeaconSearch('AI Image')
   }
 
   const srcSchema = object().shape({

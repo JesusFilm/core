@@ -11,6 +11,7 @@ import Image3Icon from '@core/shared/ui/icons/Image3'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
+import { prefillBeaconSearch } from '../../../../../../../libs/prefillBeaconSearch'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
 
 import { BackgroundMediaImage } from './Image/BackgroundMediaImage'
@@ -37,20 +38,14 @@ export function BackgroundMedia(): ReactElement {
     coverBlock?.__typename.toString() ?? 'VideoBlock'
   )
 
-  function trackBeaconSearch(params: string): void {
-    if (window.Beacon != null) {
-      window.Beacon('search', params)
-    }
-  }
-
   const handleTypeChange = (
     event: MouseEvent<HTMLElement>,
     selected: string
   ): void => {
     if (selected != null) setBlockType(selected)
     selected != null && selected === 'ImageBlock'
-      ? trackBeaconSearch('Background Image')
-      : trackBeaconSearch('Background Video')
+      ? prefillBeaconSearch('Background Image')
+      : prefillBeaconSearch('Background Video')
   }
 
   const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({

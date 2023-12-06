@@ -19,6 +19,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
+import { prefillBeaconSearch } from '../../../libs/prefillBeaconSearch'
 import { ActionDetails } from '../ActionDetails'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
@@ -43,12 +44,6 @@ export function ControlPanel(): ReactElement {
   } = useEditor()
 
   const selected = selectedComponent ?? selectedBlock ?? 'none'
-
-  function handleBeacon(params: string): void {
-    if (window.Beacon != null) {
-      window.Beacon('search', params)
-    }
-  }
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -93,12 +88,12 @@ export function ControlPanel(): ReactElement {
               children: <Properties isPublisher={false} />
             })
           }
-          handleBeacon('Journeys')
+          prefillBeaconSearch('Journeys')
           break
       }
     }
-    if (newValue === ActiveTab.Properties) handleBeacon('Properties')
-    if (newValue === ActiveTab.Blocks) handleBeacon('Blocks')
+    if (newValue === ActiveTab.Properties) prefillBeaconSearch('Properties')
+    if (newValue === ActiveTab.Blocks) prefillBeaconSearch('Blocks')
   }
 
   const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {

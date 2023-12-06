@@ -64,17 +64,6 @@ export function StatusTabPanel({
       ?.tabIndex ?? 0
   const [activeTab, setActiveTab] = useState(tabIndex)
 
-  function trackPageViewEvent(title: string): void {
-    if (window.Beacon != null) {
-      window.Beacon('event', {
-        type: 'page-viewed',
-        url: document.location.href,
-        title
-      })
-      window.Beacon('suggest')
-    }
-  }
-
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
@@ -85,15 +74,12 @@ export function StatusTabPanel({
       switch (newValue) {
         case 0:
           setActiveEvent('refetchActive')
-          trackPageViewEvent('refetchActive')
           break
         case 1:
           setActiveEvent('refetchArchived')
-          trackPageViewEvent('refetchArchived')
           break
         case 2:
           setActiveEvent('refetchTrashed')
-          trackPageViewEvent('refetchTrashed')
           break
       }
       const tabParam =
