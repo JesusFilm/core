@@ -108,7 +108,7 @@ export function UserNavigation({
 
   return user.id != null && data.me != null ? (
     <>
-      <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
+      <Divider sx={{ mb: 0.5, mx: 6, borderColor: 'secondary.main' }} />
       {userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true && (
         <NextLink href="/publisher" passHref legacyBehavior prefetch={false}>
           <ListItemButton
