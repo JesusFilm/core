@@ -141,16 +141,30 @@ export function TemplateGalleryCard({
               )}
             </Stack>
           ) : (
-            <Skeleton
-              variant="rectangular"
+            <Stack
+              justifyContent="center"
+              alignItems="center"
               sx={{
-                width: { xs: 130, md: 180, xl: 240 },
-                height: { xs: 130, md: 180, xl: 240 },
-                borderColor: 'divider',
+                position: 'relative',
+                aspectRatio: 1,
+                overflow: 'hidden',
                 borderRadius: 2,
+                alignItems: 'center',
                 backgroundColor: 'background.default'
               }}
-            />
+            >
+              <Image
+                priority
+                className="MuiImageBackground-root"
+                src=""
+                alt="loadingSkeleton"
+                fill
+                sizes="(max-width: 600px) 240px, 240px"
+                style={{
+                  objectFit: 'cover'
+                }}
+              />
+            </Stack>
           )}
           <Stack
             sx={{
