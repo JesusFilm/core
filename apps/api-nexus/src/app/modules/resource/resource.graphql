@@ -1,0 +1,38 @@
+type Resource @key(fields: "id") {
+  id: ID!
+  nexusId: String!
+  name: String!
+  refLink: String
+  videoId: String
+}
+
+input ResourceCreateInput {
+  nexusId: String!
+  name: String!
+  refLink: String
+  videoId: String
+}
+
+input ResourceUpdateInput {
+  name: String
+  refLink: String
+  videoId: String
+}
+
+input ResourceFilter {
+  ids: [ID!]
+  name: String
+  nexusId: String
+  limit: Int
+}
+
+extend type Query {
+  resources(where: ResourceFilter): [Resource!]
+  resource(id: ID!): Resource!
+}
+
+extend type Mutation {
+  resourceCreate(input: ResourceCreateInput!): Resource!
+  resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
+  resourceDelete(id: ID!): Resource!
+}

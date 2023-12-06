@@ -27,9 +27,19 @@ type Channel
   @key(fields: "id")
 {
   id: ID!
-  nexusId: String
+  nexusId: String!
   name: String!
   platform: String
+}
+
+type Resource
+  @key(fields: "id")
+{
+  id: ID!
+  nexusId: String!
+  name: String!
+  refLink: String
+  videoId: String
 }
 
 union _Entity = Nexus

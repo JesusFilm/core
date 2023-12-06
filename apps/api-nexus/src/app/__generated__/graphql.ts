@@ -51,10 +51,30 @@ export class NexusFilter {
     orderByRecent?: Nullable<boolean>;
 }
 
+export class ResourceCreateInput {
+    nexusId: string;
+    name: string;
+    refLink?: Nullable<string>;
+    videoId?: Nullable<string>;
+}
+
+export class ResourceUpdateInput {
+    name?: Nullable<string>;
+    refLink?: Nullable<string>;
+    videoId?: Nullable<string>;
+}
+
+export class ResourceFilter {
+    ids?: Nullable<string[]>;
+    name?: Nullable<string>;
+    nexusId?: Nullable<string>;
+    limit?: Nullable<number>;
+}
+
 export class Channel {
     __typename?: 'Channel';
     id: string;
-    nexusId?: Nullable<string>;
+    nexusId: string;
     name: string;
     platform?: Nullable<string>;
 }
@@ -69,6 +89,10 @@ export abstract class IQuery {
     abstract nexuses(where?: Nullable<NexusFilter>): Nexus[] | Promise<Nexus[]>;
 
     abstract nexus(id: string): Nexus | Promise<Nexus>;
+
+    abstract resources(where?: Nullable<ResourceFilter>): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+
+    abstract resource(id: string): Resource | Promise<Resource>;
 }
 
 export class Nexus {
@@ -79,6 +103,15 @@ export class Nexus {
     createdAt: DateTime;
     deletedAt?: Nullable<DateTime>;
     status: NexusStatus;
+}
+
+export class Resource {
+    __typename?: 'Resource';
+    id: string;
+    nexusId: string;
+    name: string;
+    refLink?: Nullable<string>;
+    videoId?: Nullable<string>;
 }
 
 export class Translation {
@@ -100,6 +133,12 @@ export abstract class IMutation {
     abstract nexusUpdate(id: string, input: NexusUpdateInput): Nexus | Promise<Nexus>;
 
     abstract nexusDelete(id: string): Nexus | Promise<Nexus>;
+
+    abstract resourceCreate(input: ResourceCreateInput): Resource | Promise<Resource>;
+
+    abstract resourceUpdate(id: string, input: ResourceUpdateInput): Resource | Promise<Resource>;
+
+    abstract resourceDelete(id: string): Resource | Promise<Resource>;
 }
 
 export class Language {

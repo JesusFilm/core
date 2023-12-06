@@ -14,7 +14,7 @@ model Nexus {
     description String?
     createdAt   DateTime    @default(now())
     deletedAt   DateTime?
-    status      NexusStatus
+    status      NexusStatus @default(published)
     userNexuses UserNexus[]
     channels    Channel[]
     resources   Resource[]
@@ -42,10 +42,10 @@ model Channel {
 }
 
 model Resource {
-    id      String @id @default(uuid())
+    id      String  @id @default(uuid())
     nexusId String
     name    String
-    refLink String
-    vidoId  String
-    nexus   Nexus  @relation(fields: [nexusId], references: [id])
+    refLink String?
+    videoId String?
+    nexus   Nexus   @relation(fields: [nexusId], references: [id])
 }
