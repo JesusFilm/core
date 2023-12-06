@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import JourneysIcon from '@core/shared/ui/icons/Journey'
 
 import { simpleComponentConfig } from '../../../../libs/storybook'
-import { StyledList } from '../NavigationDrawer'
+import { StyledList } from '../UserNavigation'
 
 import { NavigationListItem } from '.'
 

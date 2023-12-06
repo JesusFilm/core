@@ -1,13 +1,17 @@
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 
+export enum JourneyTooltip {
+  newEditingRequest,
+  newJourney
+}
+
 export function getJourneyTooltip(
-  t: (str: string) => string,
-  journeys?: Journey[],
-  userId?: string | null
-): string | undefined {
-  let actionRequiredMessage: string | undefined
-  let newJourneyMessage: string | undefined
+  journeys: Journey[],
+  userId: string
+): JourneyTooltip | undefined {
+  let actionRequiredMessage: JourneyTooltip | undefined
+  let newJourneyMessage: JourneyTooltip | undefined
 
   journeys?.forEach((journey) => {
     const currentUserJourney = journey.userJourneys?.find(
@@ -17,7 +21,7 @@ export function getJourneyTooltip(
     if (currentUserJourney?.role === UserJourneyRole.owner) {
       journey.userJourneys?.forEach((userJourney) => {
         if (userJourney.role === UserJourneyRole.inviteRequested) {
-          actionRequiredMessage = t('New editing request')
+          actionRequiredMessage = JourneyTooltip.newEditingRequest
         }
       })
     }
@@ -27,7 +31,7 @@ export function getJourneyTooltip(
       currentUserJourney != null &&
       currentUserJourney.openedAt == null
     ) {
-      newJourneyMessage = t('New journey')
+      newJourneyMessage = JourneyTooltip.newJourney
     }
   })
 

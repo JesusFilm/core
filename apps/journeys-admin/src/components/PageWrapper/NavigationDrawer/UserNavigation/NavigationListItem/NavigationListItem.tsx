@@ -24,12 +24,11 @@ export function NavigationListItem({
   handleClick,
   tooltipText
 }: NavigationListItemProps): ReactElement {
-  const color = selected ? 'background.paper' : 'secondary.light'
   const ListItem: ReactElement = (
     <ListItemButton
       onClick={handleClick}
-      aria-selected={selected}
       data-testid={`NavigationListItem${label}`}
+      selected={selected}
     >
       <Badge
         variant="dot"
@@ -44,9 +43,9 @@ export function NavigationListItem({
           }
         }}
       >
-        <ListItemIcon sx={{ color }}>{icon}</ListItemIcon>
+        <ListItemIcon>{icon}</ListItemIcon>
       </Badge>
-      <ListItemText primary={label} sx={{ color }} />
+      <ListItemText primary={label} />
     </ListItemButton>
   )
   const enhance = flowRight(withLink(link), withTooltip(tooltipText))

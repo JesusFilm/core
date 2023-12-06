@@ -12,8 +12,8 @@ import { useTranslation } from 'react-i18next'
 
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
 
-import { GetMe_me as ApiUser } from '../../../../../__generated__/GetMe'
-import { MenuItem } from '../../../MenuItem'
+import { GetMe_me as ApiUser } from '../../../../../../__generated__/GetMe'
+import { MenuItem } from '../../../../MenuItem'
 
 export interface UserMenuProps {
   apiUser: ApiUser
