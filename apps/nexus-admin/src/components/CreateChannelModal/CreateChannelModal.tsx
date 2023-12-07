@@ -1,24 +1,46 @@
 import {
   Button,
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   TextField
 } from '@mui/material'
+import { useFormik } from 'formik'
 import { FC } from 'react'
+import * as yup from 'yup'
+import { Channel } from '../../../pages/channels'
 import { Modal } from '../Modal'
 
 interface CreateChannelModalProps {
   open: boolean
   onClose: () => void
+  onCreate: (channelData: Partial<Channel>) => void
 }
+
+const channelValidationSchema = yup.object({
+  name: yup.string().required('Name is required'),
+  platform: yup.string().required('Platform is required')
+})
 
 export const CreateChannelModal: FC<CreateChannelModalProps> = ({
   open,
-  onClose
+  onClose,
+  onCreate
 }) => {
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      platform: ''
+    },
+    validationSchema: channelValidationSchema,
+    onSubmit: (values) => {
+      onCreate(values)
+    }
+  })
+
   return (
     <Modal
       title="Create New Channel"
@@ -27,19 +49,38 @@ export const CreateChannelModal: FC<CreateChannelModalProps> = ({
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
           <Button onClick={onClose}>Cancel</Button>
-          <Button>Create Channel</Button>
+          <Button onClick={formik.submitForm}>Create Channel</Button>
         </Stack>
       }
     >
       <Stack spacing={4}>
-        <TextField label="Channel Name" variant="filled" />
-        <TextField label="Channel Description" variant="filled" />
+        <TextField
+          label="Channel Name"
+          variant="filled"
+          id="name"
+          name="name"
+          value={formik.values.name}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.name && Boolean(formik.errors.name)}
+          helperText={formik.touched.name && formik.errors.name}
+        />
         <FormControl variant="filled" sx={{ m: 1, minWidth: 120 }}>
           <InputLabel>Platform Type</InputLabel>
-          <Select value={'youtube'} onChange={() => {}}>
+          <Select
+            id="name"
+            name="platform"
+            value={formik.values.platform}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.platform && Boolean(formik.errors.platform)}
+          >
             <MenuItem value={'youtube'}>Youtube</MenuItem>
           </Select>
         </FormControl>
+        {formik.touched.platform && Boolean(formik.errors.platform) && (
+          <FormHelperText error>{formik.errors.platform}</FormHelperText>
+        )}
       </Stack>
     </Modal>
   )
