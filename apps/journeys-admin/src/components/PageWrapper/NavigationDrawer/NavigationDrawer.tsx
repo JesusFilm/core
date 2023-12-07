@@ -1,133 +1,56 @@
-import { gql, useQuery } from '@apollo/client'
-import Avatar from '@mui/material/Avatar'
 import Backdrop from '@mui/material/Backdrop'
-import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
+import Badge from '@mui/material/Badge'
 import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import { styled } from '@mui/material/styles'
-import compact from 'lodash/compact'
+import ListItemText from '@mui/material/ListItemText'
+import Tooltip from '@mui/material/Tooltip'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { NextRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
-import { MouseEvent, ReactElement, useState } from 'react'
+import NextLink from 'next/link'
+import type { User } from 'next-firebase-auth'
+import { ReactElement, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
-import BoxIcon from '@core/shared/ui/icons/Box'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
-import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
-import { GetMe } from '../../../../__generated__/GetMe'
-import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
-import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
-import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { loadBeacon } from '../../HelpScoutBeacon/HelpScoutBeacon'
-import { getJourneyTooltip } from '../utils/getJourneyTooltip'
-
-import { ImpersonateDialog } from './ImpersonateDialog'
-import { NavigationListItem } from './NavigationListItem'
-import { UserMenu } from './UserMenu'
 
 const DRAWER_WIDTH = '237px'
 
-export interface NavigationDrawerProps {
-  open: boolean
-  onClose: (value: boolean) => void
+const UserNavigation = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "UserNavigation" */
+      './UserNavigation'
+    ).then((mod) => mod.UserNavigation),
+  { ssr: false }
+)
+
+interface NavigationDrawerProps {
+  open?: boolean
+  onClose?: (value: boolean) => void
   user?: User
-  router?: NextRouter
+  selectedPage?: string
 }
-
-export const GET_ME = gql`
-  query GetMe {
-    me {
-      id
-      firstName
-      lastName
-      email
-      imageUrl
-      superAdmin
-    }
-  }
-`
-
-export const StyledList = styled(List)({
-  display: 'flex',
-  flexDirection: 'column',
-  '& .MuiListItemButton-root, & .MuiListItem-root': {
-    paddingLeft: 0,
-    marginBottom: 6,
-    '& .MuiListItemIcon-root': {
-      minWidth: 'unset',
-      width: '72px',
-      justifyContent: 'center'
-    },
-    '& .MuiListItemText-primary': {
-      fontSize: '15px',
-      fontWeight: 'bold'
-    }
-  }
-})
 
 export function NavigationDrawer({
   open,
   onClose,
   user,
-  router
+  selectedPage
 }: NavigationDrawerProps): ReactElement {
-  const { data: activeJourneys } = useAdminJourneysQuery({
-    status: [JourneyStatus.draft, JourneyStatus.published],
-    useLastActiveTeamId: true
-  })
-  const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
-  const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLDivElement | null>(
-    null
-  )
-  const [impersonateOpen, setImpersonateOpen] = useState(false)
-
-  const selectedPage = router?.pathname?.split('/')[1]
-
-  const profileOpen = Boolean(profileAnchorEl)
-
-  function handleImpersonateClick(): void {
-    setImpersonateOpen(true)
-  }
-
-  function handleImpersonateClose(): void {
-    setImpersonateOpen(false)
-  }
-
-  function handleProfileClick(event: MouseEvent<HTMLDivElement>): void {
-    setProfileAnchorEl(event.currentTarget)
-  }
-
-  function handleProfileClose(): void {
-    setProfileAnchorEl(null)
-  }
+  const [tooltip, setTooltip] = useState<string | undefined>()
 
   function handleClose(): void {
-    onClose(!open)
+    onClose?.(open !== true)
   }
-
-  function handleClickHelp(): void {
-  loadBeacon()
-    if (window.Beacon != null) {
-        window.Beacon('open')
-      }
-    
-  }
-
-  const { data } = useQuery<GetMe>(GET_ME)
-  const { data: userRoleData } = useUserRoleQuery()
-
-  const journeyTooltip = getJourneyTooltip(t, journeys, user?.id)
 
   return (
     <Drawer
@@ -144,21 +67,65 @@ export function NavigationDrawer({
           backgroundColor: 'secondary.dark',
           overflowX: 'hidden',
           transition: (theme) => theme.transitions.create('width'),
-          width: open ? DRAWER_WIDTH : { xs: 0, md: 72 }
+          width: open === true ? DRAWER_WIDTH : { xs: 0, md: 72 },
+          zIndex: (theme) => theme.zIndex.drawer + 1
         }
       }}
+    >
+      <Backdrop open={open === true} onClick={handleClose} />
+      <List
+        component="nav"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          gap: 1.5,
+          '& .MuiListItemButton-root, & .MuiListItem-root': {
+            paddingLeft: 0,
+            flexGrow: 0,
+            '& .MuiListItemIcon-root': {
+              minWidth: 'unset',
+              width: '72px',
+              justifyContent: 'center'
+            },
+            '& .MuiListItemText-primary': {
+              fontSize: '15px',
+              fontWeight: 'bold'
+            },
+            '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+              color: 'secondary.light',
+              transition: (theme) => theme.transitions.create('color')
+            },
+            '&.Mui-selected, &:hover, &.Mui-selected:hover': {
+              backgroundColor: 'transparent',
+              '& .MuiListItemIcon-root': {
+                color: 'background.paper'
+              },
+              '& .MuiListItemText-primary': {
+                color: 'background.paper'
+              }
+            }
+          }
+        }}
       >
-      <Backdrop open={open} onClick={handleClose} />
-      <StyledList>
-        <ListItemButton onClick={handleClose} data-testid="toggle-nav-drawer">
+        <ListItemButton
+          onClick={handleClose}
+          data-testid="NavigationListItemToggle"
+        >
           <ListItemIcon
             sx={{
               '> .MuiSvgIcon-root': {
-                color: 'secondary.dark',
                 backgroundColor: 'secondary.light',
+                color: 'secondary.dark',
                 borderRadius: 2,
-                transition: (theme) => theme.transitions.create('transform'),
-                transform: { md: open ? 'rotate(180deg)' : 'rotate(0deg)' }
+                transition: (theme) =>
+                  theme.transitions.create(['transform', 'background-color']),
+                transform: {
+                  md: open === true ? 'rotate(180deg)' : 'rotate(0deg)'
+                },
+                '&:hover': {
+                  backgroundColor: 'background.paper'
+                }
               }
             }}
           >
@@ -166,81 +133,48 @@ export function NavigationDrawer({
           </ListItemIcon>
         </ListItemButton>
 
-        <NavigationListItem
-          icon={<JourneysIcon />}
-          label="Discover"
-          selected={selectedPage === 'journeys' || selectedPage === ''} // empty for when page is index. UPDATE when we add the actual index page
-          link="/"
-          tooltipText={journeyTooltip}
-        />
-
-        <NavigationListItem
-          icon={<JourneysIcon />}
-          label="Help"
-          selected={false} // empty for when page is index. UPDATE when we add the actual index page
-          handleClick={() => handleClickHelp()}
-          link="/"
-          tooltipText={journeyTooltip}
-          />
-        <NavigationListItem
-          icon={<Bag5Icon />}
-          label="Templates"
-          selected={selectedPage === 'templates'}
-          link="/templates"
-        />
-
-        {user?.id != null && data?.me != null && (
-          <>
-            <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
-
-            {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
-              true && (
-              <NavigationListItem
-                icon={<BoxIcon />}
-                label="Publisher"
-                selected={selectedPage === 'publisher'}
-                link="/publisher"
-              />
-            )}
-            {data.me.superAdmin === true && (
-              <NavigationListItem
-                icon={<UserProfile3Icon />}
-                label="Impersonate"
-                selected={false}
-                handleClick={handleImpersonateClick}
-              />
-            )}
-            {data.me.superAdmin === true && (
-              <ImpersonateDialog
-                open={impersonateOpen}
-                onClose={handleImpersonateClose}
-              />
-            )}
-            <NavigationListItem
-              icon={
-                <Avatar
-                  alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
-                  src={data.me.imageUrl ?? undefined}
-                  sx={{ width: 24, height: 24 }}
-                />
-              }
-              label="Profile"
-              selected={false}
-              handleClick={handleProfileClick}
-            />
-            <UserMenu
-              apiUser={data.me}
-              profileOpen={profileOpen}
-              profileAnchorEl={profileAnchorEl}
-              handleProfileClose={handleProfileClose}
+        <NextLink href="/" passHref legacyBehavior prefetch={false}>
+          <Tooltip title={tooltip} placement="right" arrow>
+            <ListItemButton
+              selected={selectedPage === 'journeys' || selectedPage === ''}
+              data-testid="NavigationListItemDiscover"
+            >
+              <ListItemIcon>
+                <Badge
+                  variant="dot"
+                  color="warning"
+                  overlap="circular"
+                  invisible={tooltip == null}
+                >
+                  <JourneysIcon />
+                </Badge>
+              </ListItemIcon>
+              <ListItemText primary={t('Discover')} />
+            </ListItemButton>
+          </Tooltip>
+        </NextLink>
+        <NextLink href="/templates" passHref legacyBehavior prefetch={false}>
+          <ListItemButton
+            selected={selectedPage === 'templates'}
+            data-testid="NavigationListItemTemplates"
+          >
+            <ListItemIcon>
+              <Bag5Icon />
+            </ListItemIcon>
+            <ListItemText primary={t('Templates')} />
+          </ListItemButton>
+        </NextLink>
+        {user?.id != null && (
+          <Suspense>
+            <UserNavigation
               user={user}
+              selectedPage={selectedPage}
+              setTooltip={setTooltip}
             />
-          </>
+          </Suspense>
         )}
-      </StyledList>
-      <Box sx={{ flexGrow: 1 }} />
-      <StyledList>
-        <ListItem>
+        <ListItem component="div" sx={{ flexGrow: '1 !important' }} />
+        <ListItem component="div" sx={{ mb: 1.5 }}>
           <ListItemIcon>
             <Image
               src={taskbarIcon}
@@ -249,16 +183,14 @@ export function NavigationDrawer({
               alt="Next Steps Logo"
             />
           </ListItemIcon>
-          <Box sx={{ display: 'flex' }}>
-            <Image
-              src={nextstepsTitle}
-              width={106}
-              height={24}
-              alt="Next Steps Title"
-            />
-          </Box>
+          <Image
+            src={nextstepsTitle}
+            width={106}
+            height={24}
+            alt="Next Steps Title"
+          />
         </ListItem>
-      </StyledList>
+      </List>
     </Drawer>
   )
 }

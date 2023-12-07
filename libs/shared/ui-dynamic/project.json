@@ -1,0 +1,48 @@
+{
+  "name": "shared-ui-dynamic",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/ui-dynamic/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["libs/shared/ui-dynamic/**/*.{ts,tsx,js,jsx}"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b libs/shared/ui-dynamic/tsconfig.json"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/shared/ui"],
+      "options": {
+        "jestConfig": "libs/shared/ui-dynamic/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "demo": {
+      "executor": "@nx/storybook:storybook",
+      "options": {
+        "port": 4400,
+        "configDir": ".storybook"
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/libs/shared/ui-dynamic/cobertura-coverage.xml -F libs.shared.ui"
+      }
+    }
+  },
+  "tags": []
+}
