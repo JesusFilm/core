@@ -36,9 +36,6 @@ export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
   query GetLastActiveTeamIdAndTeams {
     getJourneyProfile {
       lastActiveTeamId
-      userId
-      acceptedTermsAt
-      onboardingFormCompletedAt
     }
     teams {
       id
