@@ -30,11 +30,9 @@ export function TemplateSections({
   const { breakpoints } = useTheme()
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
-  const [showNoResults, setShowNoResults] = useState<boolean>(false)
+  const [loading, setLoading] = useState(true)
 
-  const { loading: apolloLoading } = useJourneysQuery({
-    // todo remove once cache working for this page - Nisal
-    fetchPolicy: 'cache-only',
+  useJourneysQuery({
     variables: {
       where: {
         template: true,
@@ -70,7 +68,7 @@ export function TemplateSections({
         })
       })
       setContents(contents)
-      setShowNoResults(true)
+      setLoading(false)
     }
   })
 
@@ -103,13 +101,13 @@ export function TemplateSections({
 
   return (
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
-      {(apolloLoading || (collection != null && collection.length > 0)) && (
+      {(loading || (collection != null && collection.length > 0)) && (
         <TemplateGalleryCarousel
           heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
           items={collection}
           renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
           breakpoints={swiperBreakpoints}
-          loading={apolloLoading}
+          loading={loading}
           slidesOffsetBefore={-8}
           loadingSpacing={{
             xs: 1,
@@ -118,7 +116,7 @@ export function TemplateSections({
           }}
         />
       )}
-      {showNoResults && collection != null && collection.length === 0 && (
+      {!loading && collection != null && collection.length === 0 && (
         <Paper
           elevation={0}
           variant="outlined"
@@ -149,6 +147,11 @@ export function TemplateSections({
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-8}
+              loadingSpacing={{
+                xs: 1,
+                md: 8,
+                xl: 11
+              }}
             />
           )
       )}

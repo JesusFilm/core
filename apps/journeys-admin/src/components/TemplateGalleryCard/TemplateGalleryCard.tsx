@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -54,8 +53,6 @@ export function TemplateGalleryCard({
   const displayLanguage = abbreviateLanguageName(
     localLanguage ?? nativeLanguage
   )
-
-  const theme = useTheme()
 
   const date =
     journey != null
@@ -125,13 +122,11 @@ export function TemplateGalleryCard({
                 <>
                   <HoverLayer className="hoverImageEffects" />
                   <Image
-                    rel="preload"
                     priority
                     className="MuiImageBackground-root"
                     src={journey?.primaryImageBlock?.src}
                     alt={journey?.primaryImageBlock.alt}
                     fill
-                    sizes={`(max-width: ${theme.breakpoints.values.md}px) 240px, 280px`}
                     style={{
                       objectFit: 'cover'
                     }}
