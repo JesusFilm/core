@@ -35,7 +35,17 @@ export const getServerSideProps = withUserTokenSSR()(
       resolvedUrl
     })
 
-    await apolloClient.query({ query: GET_JOURNEYS })
+    await apolloClient.query({
+      query: GET_JOURNEYS,
+      variables: {
+        where: {
+          template: true,
+          orderByRecent: true,
+          tagIds: undefined,
+          languageIds: ['529']
+        }
+      }
+    })
 
     if (redirect != null) return { redirect }
 
