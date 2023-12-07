@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
 
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -28,16 +29,19 @@ function LibraryIndex(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR()(
   async ({ user, locale, resolvedUrl }) => {
-    const { redirect, translations } = await initAndAuthApp({
+    const { apolloClient, redirect, translations } = await initAndAuthApp({
       user,
       locale,
       resolvedUrl
     })
 
+    await apolloClient.query({ query: GET_JOURNEYS })
+
     if (redirect != null) return { redirect }
 
     return {
       props: {
+        initialApolloState: apolloClient.cache.extract(),
         ...translations
       }
     }
