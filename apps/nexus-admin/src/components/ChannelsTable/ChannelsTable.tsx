@@ -3,6 +3,7 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { Chip, IconButton, Popover, Stack, Typography } from '@mui/material'
 import { GridCellParams } from '@mui/x-data-grid'
+import { useGoogleLogin } from '@react-oauth/google'
 import { FC, useState } from 'react'
 import { Channel } from '../../../pages/channels'
 import { Table } from '../Table'
@@ -21,6 +22,12 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
   const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
   const [channelId, setChannelId] = useState<string>('')
 
+  const googleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: (tokenResponse) => console.log(tokenResponse),
+    scope: 'https://www.googleapis.com/auth/youtube.upload'
+  })
+
   const columns = [
     { field: 'name', headerName: 'Channel name', flex: 1 },
     {
@@ -38,6 +45,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
             clickable={!row.user}
             label={row.user ? 'Connected' : 'Connect now'}
             color={row.user ? 'success' : 'default'}
+            onClick={() => googleLogin()}
           />
         )
       }

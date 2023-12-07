@@ -2,6 +2,7 @@ import { ApolloProvider } from '@apollo/client'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
@@ -57,7 +58,11 @@ function NexusAdminApp({
               horizontal: 'right'
             }}
           >
-            <Component {...pageProps} />
+            <GoogleOAuthProvider
+              clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ''}
+            >
+              <Component {...pageProps} />
+            </GoogleOAuthProvider>
           </SnackbarProvider>
         </ApolloProvider>
       </ThemeProvider>
