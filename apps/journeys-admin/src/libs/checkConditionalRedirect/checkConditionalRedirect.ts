@@ -1,22 +1,9 @@
-import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { isAfter, parseISO } from 'date-fns'
 import { Redirect } from 'next'
 
-import { GetJourneyProfileAndTeams } from '../../../__generated__/GetJourneyProfileAndTeams'
-
-export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
-  query GetJourneyProfileAndTeams {
-    getJourneyProfile {
-      id
-      userId
-      acceptedTermsAt
-      onboardingFormCompletedAt
-    }
-    teams {
-      id
-    }
-  }
-`
+import { GetLastActiveTeamIdAndTeams } from '../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '../../components/Team/TeamProvider'
 
 interface CheckConditionalRedirectProps {
   apolloClient: ApolloClient<NormalizedCacheObject>
@@ -27,8 +14,8 @@ export async function checkConditionalRedirect({
   apolloClient,
   resolvedUrl
 }: CheckConditionalRedirectProps): Promise<Redirect | undefined> {
-  const { data } = await apolloClient.query<GetJourneyProfileAndTeams>({
-    query: GET_JOURNEY_PROFILE_AND_TEAMS
+  const { data } = await apolloClient.query<GetLastActiveTeamIdAndTeams>({
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   })
 
   const currentRedirect = new URL(

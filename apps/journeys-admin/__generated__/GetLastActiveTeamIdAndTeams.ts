@@ -10,6 +10,9 @@
 export interface GetLastActiveTeamIdAndTeams_getJourneyProfile {
   __typename: "JourneyProfile";
   lastActiveTeamId: string | null;
+  userId: string;
+  acceptedTermsAt: any | null;
+  onboardingFormCompletedAt: any | null;
 }
 
 export interface GetLastActiveTeamIdAndTeams_teams_userTeams_user {
