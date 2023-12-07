@@ -63,36 +63,43 @@ export function Index() {
       alignItems="center"
       justifyContent="center"
       sx={{ minHeight: '100vh' }}
+      spacing={4}
     >
-      <Box
-        display="grid"
-        gridTemplateColumns="repeat(4, 1fr)"
-        alignItems="center"
-        gap={4}
-      >
-        {nexusApps.map((nexusApp) => (
-          <Box gridColumn="span 1" key={nexusApp.id}>
-            <Card key={nexusApp.id} sx={{ maxWidth: 345, minWidth: 200 }}>
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {nexusApp.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {nexusApp.description}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button onClick={() => redirectToDashboard(nexusApp.id)}>
-                  Select
-                </Button>
-              </CardActions>
-            </Card>
-          </Box>
-        ))}
-        <Fab color="primary" onClick={() => setOpenCreateNexusModal(true)}>
-          <AddIcon />
-        </Fab>
-      </Box>
+      {nexusApps.length > 0 ? (
+        <Box
+          display="grid"
+          gridTemplateColumns="repeat(4, 1fr)"
+          alignItems="center"
+          gap={4}
+        >
+          {nexusApps.map((nexusApp) => (
+            <Box gridColumn="span 1" key={nexusApp.id}>
+              <Card key={nexusApp.id} sx={{ maxWidth: 345, minWidth: 200 }}>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {nexusApp.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {nexusApp.description}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button onClick={() => redirectToDashboard(nexusApp.id)}>
+                    Select
+                  </Button>
+                </CardActions>
+              </Card>
+            </Box>
+          ))}
+        </Box>
+      ) : (
+        <Typography>
+          You currently don't have any apps. Please start by creating one.
+        </Typography>
+      )}
+      <Fab color="primary" onClick={() => setOpenCreateNexusModal(true)}>
+        <AddIcon />
+      </Fab>
       {/* <Typography>Hi {user.email}!</Typography>
       <Button variant="contained" onClick={logout}>
         Log out
