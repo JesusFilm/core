@@ -149,6 +149,7 @@ export function FeltNeedsButton({
           sx={{
             borderRadius: 2
           }}
+          sizes="(max-width: 900px): 120px, 240px"
         />
         <Typography
           className="hoverStyles"
