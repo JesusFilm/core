@@ -1,4 +1,1 @@
-import { TrashedJourneyList } from './TrashedJourneyList'
-
-export default TrashedJourneyList
-export { TrashedJourneyList }
+export { TrashedJourneyList } from './TrashedJourneyList'

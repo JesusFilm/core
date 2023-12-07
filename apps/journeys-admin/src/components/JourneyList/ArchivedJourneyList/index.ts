@@ -1,4 +1,1 @@
-import { ArchivedJourneyList } from './ArchivedJourneyList'
-
-export default ArchivedJourneyList
-export { ArchivedJourneyList }
+export { ArchivedJourneyList } from './ArchivedJourneyList'

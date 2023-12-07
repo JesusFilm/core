@@ -1,4 +1,1 @@
-import { ActiveJourneyList } from './ActiveJourneyList'
-
-export default ActiveJourneyList
-export { ActiveJourneyList }
+export { ActiveJourneyList } from './ActiveJourneyList'
