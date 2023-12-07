@@ -97,6 +97,7 @@ export function CollectionButton({
                 src={image.src}
                 layout="fill"
                 sx={{ borderRadius: 8 }}
+                sizes="128px"
               />
             ) : (
               <InsertPhotoRoundedIcon className="backgroundImageHover" />
