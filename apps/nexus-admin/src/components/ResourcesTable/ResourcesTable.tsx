@@ -2,28 +2,30 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { IconButton, Popover, Stack, Typography } from '@mui/material'
+import { GridCellParams } from '@mui/x-data-grid'
 import { FC, useState } from 'react'
+import { Resource } from '../../../pages/resources'
 import { Table } from '../Table'
 
-export const ResourcesTable: FC = () => {
+interface ResourcesTableProps {
+  data: Resource[] | []
+  onEdit: (channelId: string) => void
+  onDelete: (channelId: string) => void
+}
+
+export const ResourcesTable: FC<ResourcesTableProps> = ({
+  data,
+  onEdit,
+  onDelete
+}) => {
   const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
+  const [resourceId, setResourceId] = useState<string>('')
 
   const columns = [
-    { field: 'channelName', headerName: 'Video ID', flex: 1 },
-    { field: 'category', headerName: 'Category', flex: 1 },
+    { field: 'name', headerName: 'Name', flex: 1 },
     {
-      field: 'platform',
-      headerName: 'Languages',
-      flex: 1
-    },
-    {
-      field: 'platform',
-      headerName: 'Ownership',
-      flex: 1
-    },
-    {
-      field: 'platform',
-      headerName: 'Filename',
+      field: 'videoId',
+      headerName: 'VideoId',
       flex: 1
     },
     {
@@ -31,42 +33,16 @@ export const ResourcesTable: FC = () => {
       headerName: 'Action',
       flex: 1,
       sortable: false,
-      renderCell: () => (
-        <IconButton onClick={(event) => setMorePopup(event.currentTarget)}>
+      renderCell: ({ row }: GridCellParams) => (
+        <IconButton
+          onClick={(event) => {
+            setMorePopup(event.currentTarget)
+            setResourceId(row.id)
+          }}
+        >
           <MoreHorizIcon fontSize="small" />
         </IconButton>
       )
-    }
-  ]
-
-  const rows = [
-    {
-      id: 1,
-      channelName: 'Jesus Film',
-      category: 'Category',
-      platform: 'Youtube',
-      user: true
-    },
-    {
-      id: 2,
-      channelName: 'Jesus Film',
-      category: 'Category',
-      platform: 'Youtube',
-      user: false
-    },
-    {
-      id: 3,
-      channelName: 'Jesus Film',
-      category: 'Category',
-      platform: 'Youtube',
-      user: false
-    },
-    {
-      id: 4,
-      channelName: 'Jesus Film',
-      category: 'Category',
-      platform: 'Youtube',
-      user: true
     }
   ]
 
@@ -74,7 +50,7 @@ export const ResourcesTable: FC = () => {
     <>
       <Table
         columns={columns}
-        rows={rows}
+        rows={data}
         title="Resources"
         subtitle="Additional description if required"
       />
@@ -89,6 +65,10 @@ export const ResourcesTable: FC = () => {
             alignItems="center"
             spacing={2}
             sx={{ cursor: 'pointer' }}
+            onClick={() => {
+              onEdit(resourceId)
+              setMorePopup(null)
+            }}
           >
             <BorderColorOutlinedIcon />
             <Typography>Edit</Typography>
@@ -98,6 +78,10 @@ export const ResourcesTable: FC = () => {
             alignItems="center"
             spacing={2}
             sx={{ cursor: 'pointer' }}
+            onClick={() => {
+              onDelete(resourceId)
+              setMorePopup(null)
+            }}
           >
             <DeleteOutlineOutlinedIcon />
             <Typography>Delete</Typography>
