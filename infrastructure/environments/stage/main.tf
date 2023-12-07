@@ -196,3 +196,18 @@ module "datadog_aurora" {
       db_instance_name = module.api-languages.database.aws_rds_cluster.id
   }]
 }
+
+module "mq" {
+  source                = "../../../apps/mq/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  env                   = "stage"
+  doppler_token         = data.aws_ssm_parameter.doppler_api_media_stage_token.value
+  subnet_group_name     = module.stage.vpc.db_subnet_group_name
+  vpc_security_group_id = module.stage.private_rds_security_group_id
+}
+
+module "redis" {
+  source     = "../../modules/aws/elasticache"
+  cluster_id = "redis-stage"
+  subnet_ids = [module.stage.vpc.private_subnets[*].id]
+}
