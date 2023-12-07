@@ -1,7 +1,7 @@
 import { ApolloClient, HttpLink, NormalizedCacheObject } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
-import { isPast } from 'date-fns'
-import jwtDecode, { JwtPayload } from 'jwt-decode'
+import { getApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
 import { useMemo } from 'react'
 
 import { cache } from './cache'
@@ -16,23 +16,15 @@ export function createApolloClient(
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
   })
 
-  let _token = token
   const authLink = setContext(async (_, { headers }) => {
-    if (!ssrMode && _token != null) {
-      const exp = jwtDecode<JwtPayload>(_token).exp
-      if (exp == null || isPast(new Date(exp * 1000))) {
-        const { getAuth } = await import(
-          /* webpackChunkName: "firebase/auth" */
-          'firebase/auth'
-        )
-        _token = await getAuth().currentUser?.getIdToken()
-      }
-    }
+    const firebaseToken = ssrMode
+      ? token
+      : (await getAuth(getApp()).currentUser?.getIdToken()) ?? token
 
     return {
       headers: {
         ...(!ssrMode ? headers : []),
-        Authorization: _token
+        Authorization: firebaseToken
       }
     }
   })
