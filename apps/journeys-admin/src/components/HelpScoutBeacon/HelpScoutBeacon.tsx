@@ -2,6 +2,11 @@ import Fab from '@mui/material/Fab'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
 
+interface SessionObject {
+  journeyPreview: string
+  team: string
+}
+
 declare global {
   interface Window {
     Beacon?: ((fn: 'init', id: string) => void) &
@@ -9,7 +14,8 @@ declare global {
         fn: 'config',
         config: { mode: 'askFirst'; enableFabAnimation: boolean }
       ) => void) &
-      ((fn: 'open') => void)
+      ((fn: 'open') => void) &
+      ((fn: 'session-data', sessionObject: SessionObject) => void)
   }
 }
 

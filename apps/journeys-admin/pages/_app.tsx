@@ -7,20 +7,26 @@ import Script from 'next/script'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, Suspense, lazy, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 import i18nConfig from '../next-i18next.config'
-import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { TeamProvider } from '../src/components/Team/TeamProvider'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
 import '../public/swiper-pagination-override.css'
+
+const HelpScoutBeacon = lazy(async () => {
+  const mod = await import(
+    /* webpackChunkName: "helpScoutBeacon" */ '../src/components/HelpScoutBeacon'
+  )
+  return { default: mod.HelpScoutBeacon }
+})
 
 initAuth()
 const clientSideEmotionCache = createEmotionCache({})
@@ -67,7 +73,9 @@ function JourneysAdminApp({
           titleTemplate={t('%s | Next Steps')}
           defaultTitle={t('Admin | Next Steps')}
         />
-        <HelpScoutBeacon />
+        <Suspense fallback={<></>}>
+          <HelpScoutBeacon />
+        </Suspense>
         <Head>
           <meta
             name="viewport"
