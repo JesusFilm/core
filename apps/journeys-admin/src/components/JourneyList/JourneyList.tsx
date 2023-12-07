@@ -3,9 +3,8 @@ import Container from '@mui/material/Container'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
-import { ReactElement, Suspense, lazy, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
-import { DiscoveryJourneys } from '../DiscoveryJourneys'
 import { StatusTabPanel } from '../StatusTabPanel'
 
 import { AddJourneyFab } from './AddJourneyFab'
@@ -29,28 +28,31 @@ export type JourneyListEvent =
   | 'deleteAllTrashed'
   | 'refetchTrashed'
 
-const ActiveJourneyList = lazy(
+const ActiveJourneyList = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "ActiveJourneyList" */
       './ActiveJourneyList'
-    )
+    ).then((mod) => mod.ActiveJourneyList),
+  { loading: () => <LoadingJourneyList /> }
 )
 
-const ArchivedJourneyList = lazy(
+const ArchivedJourneyList = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "ArchivedJourneyList" */
       './ArchivedJourneyList'
-    )
+    ).then((mod) => mod.ArchivedJourneyList),
+  { loading: () => <LoadingJourneyList /> }
 )
 
-const TrashedJourneyList = lazy(
+const TrashedJourneyList = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "TrashedJourneyList" */
       './TrashedJourneyList'
-    )
+    ).then((mod) => mod.TrashedJourneyList),
+  { loading: () => <LoadingJourneyList /> }
 )
 
 export function JourneyList({
@@ -84,26 +86,13 @@ export function JourneyList({
       >
         <Container disableGutters>
           <StatusTabPanel
-            activeList={
-              <Suspense fallback={<LoadingJourneyList />}>
-                <ActiveJourneyList {...journeyListProps} />
-              </Suspense>
-            }
-            archivedList={
-              <Suspense fallback={<LoadingJourneyList />}>
-                <ArchivedJourneyList {...journeyListProps} />
-              </Suspense>
-            }
-            trashedList={
-              <Suspense fallback={<LoadingJourneyList />}>
-                <TrashedJourneyList {...journeyListProps} />
-              </Suspense>
-            }
+            activeList={<ActiveJourneyList {...journeyListProps} />}
+            archivedList={<ArchivedJourneyList {...journeyListProps} />}
+            trashedList={<TrashedJourneyList {...journeyListProps} />}
             setActiveEvent={handleClick}
             setSortOrder={setSortOrder}
             sortOrder={sortOrder}
           />
-          <DiscoveryJourneys />
         </Container>
       </Box>
       {activeTab === 'active' && <AddJourneyFab />}

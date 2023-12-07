@@ -4,7 +4,10 @@ import { ReactElement, ReactNode } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../__generated__/globalTypes'
 
 interface EmbedJourneyProps {
   slug: 'admin-left' | 'admin-right' | 'admin-center'
