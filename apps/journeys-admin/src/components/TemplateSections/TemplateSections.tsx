@@ -33,6 +33,8 @@ export function TemplateSections({
   const [loading, setLoading] = useState(true)
 
   useJourneysQuery({
+    // todo remove once cache working for this page - Nisal
+    fetchPolicy: 'cache-only',
     variables: {
       where: {
         template: true,
