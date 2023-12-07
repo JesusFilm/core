@@ -4,6 +4,7 @@ import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
+import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
@@ -42,6 +43,13 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     UserTeamModule,
     UserTeamInviteModule,
     VisitorModule,
+    BullModule.forRoot({
+      connection: {
+        host: 'redis',
+        port: 6379
+      }
+    }),
+    BullModule.registerQueue({ name: 'api-journeys-email' }),
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths:

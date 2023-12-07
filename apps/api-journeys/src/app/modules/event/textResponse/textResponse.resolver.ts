@@ -13,11 +13,14 @@ import {
 import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
+import { TextResponseService } from './textResponse.service'
+
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly textResponseService: TextResponseService
   ) {}
 
   @Mutation()
@@ -62,6 +65,12 @@ export class TextResponseSubmissionEventResolver {
         }
       })
     ])
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id: journeyId },
+      include: { host: true }
+    })
+    if (journey?.host != null)
+      await this.textResponseService.sendEmail(journey, input.value)
     return textResponseSubmissionEvent as TextResponseSubmissionEvent
   }
 }
