@@ -12,24 +12,25 @@ declare global {
       ((fn: 'open') => void)
   }
 }
-export function loadBeacon(): void {
-  if (typeof window.Beacon === 'undefined') {
-    const script = document.createElement('script')
-    script.id = 'beacon'
-    script.text = `!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`
-    document.head.appendChild(script)
-  }
-  if (window.Beacon != null) {
-    window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')
-    window.Beacon('config', {
-      mode: 'askFirst',
-      enableFabAnimation: false
-    })
-  }
-}
 
 export function HelpScoutBeacon(): ReactElement {
   const { breakpoints } = useTheme()
+    if (typeof window !== 'undefined'){
+
+      if(typeof window.Beacon === 'undefined') {
+        const script = document.createElement('script')
+        script.id = 'beacon'
+        script.text = `!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`
+        document.head.appendChild(script)
+      }
+      if (window.Beacon != null) {
+        window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')
+        window.Beacon('config', {
+          mode: 'askFirst',
+          enableFabAnimation: false
+        })
+      }
+    } 
 
   function handleClick(): void {
     if (window.Beacon != null) {
@@ -40,8 +41,8 @@ export function HelpScoutBeacon(): ReactElement {
   return (
     <>
       <Fab
-        onTouchStart={loadBeacon}
-        onMouseOver={loadBeacon}
+        // onTouchStart={loadBeacon}
+        // onMouseOver={loadBeacon}
         onClick={handleClick}
         aria-label="help"
         sx={{
