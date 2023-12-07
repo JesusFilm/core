@@ -4,14 +4,25 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { Chip, IconButton, Popover, Stack, Typography } from '@mui/material'
 import { GridCellParams } from '@mui/x-data-grid'
 import { FC, useState } from 'react'
+import { Channel } from '../../../pages/channels'
 import { Table } from '../Table'
 
-export const ChannelsTable: FC = () => {
+interface ChannelsTableProps {
+  data: Channel[] | []
+  onEdit: (channelId: string) => void
+  onDelete: (channelId: string) => void
+}
+
+export const ChannelsTable: FC<ChannelsTableProps> = ({
+  data,
+  onEdit,
+  onDelete
+}) => {
   const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
+  const [channelId, setChannelId] = useState<string>('')
 
   const columns = [
-    { field: 'channelName', headerName: 'Channel name', flex: 1 },
-    { field: 'category', headerName: 'Category', flex: 1 },
+    { field: 'name', headerName: 'Channel name', flex: 1 },
     {
       field: 'platform',
       headerName: 'Platform',
@@ -36,42 +47,16 @@ export const ChannelsTable: FC = () => {
       headerName: 'Action',
       flex: 1,
       sortable: false,
-      renderCell: () => (
-        <IconButton onClick={(event) => setMorePopup(event.currentTarget)}>
+      renderCell: ({ row }: GridCellParams) => (
+        <IconButton
+          onClick={(event) => {
+            setMorePopup(event.currentTarget)
+            setChannelId(row.id)
+          }}
+        >
           <MoreHorizIcon fontSize="small" />
         </IconButton>
       )
-    }
-  ]
-
-  const rows = [
-    {
-      id: 1,
-      channelName: 'Jesus Film',
-      category: 'Category',
-      platform: 'Youtube',
-      user: true
-    },
-    {
-      id: 2,
-      channelName: 'Jesus Film',
-      category: 'Category',
-      platform: 'Youtube',
-      user: false
-    },
-    {
-      id: 3,
-      channelName: 'Jesus Film',
-      category: 'Category',
-      platform: 'Youtube',
-      user: false
-    },
-    {
-      id: 4,
-      channelName: 'Jesus Film',
-      category: 'Category',
-      platform: 'Youtube',
-      user: true
     }
   ]
 
@@ -79,7 +64,7 @@ export const ChannelsTable: FC = () => {
     <>
       <Table
         columns={columns}
-        rows={rows}
+        rows={data}
         title="Channels Created"
         subtitle="Additional description if required"
       />
@@ -94,6 +79,10 @@ export const ChannelsTable: FC = () => {
             alignItems="center"
             spacing={2}
             sx={{ cursor: 'pointer' }}
+            onClick={() => {
+              onEdit(channelId)
+              setMorePopup(null)
+            }}
           >
             <BorderColorOutlinedIcon />
             <Typography>Edit</Typography>
@@ -103,6 +92,10 @@ export const ChannelsTable: FC = () => {
             alignItems="center"
             spacing={2}
             sx={{ cursor: 'pointer' }}
+            onClick={() => {
+              onDelete(channelId)
+              setMorePopup(null)
+            }}
           >
             <DeleteOutlineOutlinedIcon />
             <Typography>Delete</Typography>
