@@ -93,6 +93,7 @@ export function CollectionButton({
           >
             {image != null ? (
               <NextImage
+                rel="preload"
                 className="backgroundImageHover"
                 src={image.src}
                 layout="fill"

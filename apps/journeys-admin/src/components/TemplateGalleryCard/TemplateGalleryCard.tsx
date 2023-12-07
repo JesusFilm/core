@@ -125,6 +125,7 @@ export function TemplateGalleryCard({
                 <>
                   <HoverLayer className="hoverImageEffects" />
                   <Image
+                    rel="preload"
                     priority
                     className="MuiImageBackground-root"
                     src={journey?.primaryImageBlock?.src}
