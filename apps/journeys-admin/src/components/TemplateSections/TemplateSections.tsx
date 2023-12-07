@@ -30,9 +30,9 @@ export function TemplateSections({
   const { breakpoints } = useTheme()
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
-  const [loading, setLoading] = useState(true)
+  const [showNoResults, setShowNoResults] = useState<boolean>(false)
 
-  useJourneysQuery({
+  const { loading: apolloLoading } = useJourneysQuery({
     variables: {
       where: {
         template: true,
@@ -68,7 +68,7 @@ export function TemplateSections({
         })
       })
       setContents(contents)
-      setLoading(false)
+      setShowNoResults(true)
     }
   })
 
@@ -101,13 +101,13 @@ export function TemplateSections({
 
   return (
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
-      {(loading || (collection != null && collection.length > 0)) && (
+      {(apolloLoading || (collection != null && collection.length > 0)) && (
         <TemplateGalleryCarousel
           heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
           items={collection}
           renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
           breakpoints={swiperBreakpoints}
-          loading={loading}
+          loading={apolloLoading}
           slidesOffsetBefore={-8}
           loadingSpacing={{
             xs: 1,
@@ -116,7 +116,7 @@ export function TemplateSections({
           }}
         />
       )}
-      {!loading && collection != null && collection.length === 0 && (
+      {showNoResults && collection != null && collection.length === 0 && (
         <Paper
           elevation={0}
           variant="outlined"
@@ -147,11 +147,6 @@ export function TemplateSections({
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-8}
-              loadingSpacing={{
-                xs: 1,
-                md: 8,
-                xl: 11
-              }}
             />
           )
       )}
