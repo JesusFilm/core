@@ -12,11 +12,11 @@ import {
 } from '@mui/material'
 import { AuthAction, withUser } from 'next-firebase-auth'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CreateNexusModal } from '../src/components/CreateNexusModal'
 import { Loader } from '../src/components/Loader'
 
-const GET_NEXUSES = gql`
+export const GET_NEXUSES = gql`
   query {
     nexuses {
       id
@@ -43,11 +43,13 @@ export function Index() {
   //   await user.signOut()
   // }
 
-  const { loading } = useQuery(GET_NEXUSES, {
-    onCompleted: ({ nexuses }) => {
-      setNexusApps(nexuses)
+  const { data, loading } = useQuery(GET_NEXUSES)
+
+  useEffect(() => {
+    if (data) {
+      setNexusApps(data.nexuses)
     }
-  })
+  }, [data])
 
   if (loading) {
     return <Loader />
@@ -94,7 +96,7 @@ export function Index() {
         </Box>
       ) : (
         <Typography>
-          You currently don't have any apps. Please start by creating one.
+          You currently don't have nexus apps. Please start by creating one.
         </Typography>
       )}
       <Fab color="primary" onClick={() => setOpenCreateNexusModal(true)}>
