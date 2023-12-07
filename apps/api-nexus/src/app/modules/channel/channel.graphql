@@ -1,5 +1,3 @@
-scalar DateTime
-
 type Channel @key(fields: "id") {
   id: ID!
   nexusId: String!

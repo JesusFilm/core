@@ -1,5 +1,3 @@
-scalar DateTime
-
 type Nexus @key(fields: "id") {
   id: ID!
   name: String!

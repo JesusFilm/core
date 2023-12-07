@@ -249,6 +249,15 @@ input CardBlockUpdateInput
   themeName: ThemeName
 }
 
+type Channel
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  nexusId: String!
+  name: String!
+  platform: String
+}
+
 type ChatButton
   @join__type(graph: JOURNEYS)
 {
@@ -348,6 +357,7 @@ type CloudflareVideo
 
 scalar DateTime
   @join__type(graph: JOURNEYS)
+  @join__type(graph: NEXUS)
 
 type Device
   @join__type(graph: JOURNEYS)
@@ -632,10 +642,10 @@ enum join__Graph {
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
+  NEXUS @join__graph(name: "nexus", url: "http://127.0.0.1:4007/graphql")
   TAGS @join__graph(name: "tags", url: "http://127.0.0.1:4006/graphql")
   USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql")
   VIDEOS @join__graph(name: "videos", url: "http://127.0.0.1:4004/graphql")
-  NEXUS @join__graph(name: "nexus", url: "http://127.0.0.1:4007/graphql")
 }
 
 type Journey
@@ -1285,6 +1295,24 @@ input NavigateToJourneyActionInput
   journeyId: String!
 }
 
+type Nexus
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+  deletedAt: DateTime
+  status: NexusStatus
+}
+
+enum NexusStatus
+  @join__type(graph: NEXUS)
+{
+  published @join__enumValue(graph: NEXUS)
+  deleted @join__enumValue(graph: NEXUS)
+}
+
 type OperatingSystem
   @join__type(graph: JOURNEYS)
 {
@@ -1329,6 +1357,7 @@ type Query
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
+  @join__type(graph: NEXUS)
   @join__type(graph: TAGS)
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
@@ -1483,6 +1512,16 @@ input RadioQuestionSubmissionEventCreateInput
 
   """label of the selected radioOption block"""
   value: String
+}
+
+type Resource
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  nexusId: String!
+  name: String!
+  refLink: String
+  videoId: String
 }
 
 enum Role
@@ -3045,41 +3084,3 @@ input VisitorUpdateInput
   """The referring url of the visitor"""
   referrer: String
 }
-
-""""api-nexus"""
-type Nexus 
-  @join__type(graph: NEXUS, key: "id") 
-{
-  id: ID!
-  name: String!
-  description: String
-  createdAt: DateTime!
-}
-
-input NexusCreateInput 
-  @join__type(graph: NEXUS)
-{
-  id: ID
-  name: String!
-  description: String
-  createdAt: DateTime!
-}
-
-input NexusUpdateInput 
-  @join__type(graph: NEXUS)
-{
-  name: String
-  description: String
-}
-
-input NexusFilter 
-  @join__type(graph: NEXUS)
-{
-  ids: [ID!]
-  name: String
-  description: String
-  createdAt: DateTime
-  limit: Int
-  orderByRecent: Boolean
-}
-

@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Nexus, Prisma } from '.prisma/api-nexus-client'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import {
   NexusCreateInput,
@@ -42,6 +43,7 @@ export class NexusResolver {
 
   @Mutation()
   async nexusCreate(
+    @CurrentUserId() userId: string,
     @Args('input') input: NexusCreateInput
   ): Promise<Nexus | undefined> {
     const id = uuidv4()
@@ -58,7 +60,7 @@ export class NexusResolver {
         await tx.userNexus.create({
           data: {
             id: uuidv4(),
-            userId: '001',
+            userId,
             nexusId: nexus.id,
             role: 'owner'
           }
