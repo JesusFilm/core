@@ -64,27 +64,42 @@ export function StatusTabPanel({
       ?.tabIndex ?? 0
   const [activeTab, setActiveTab] = useState(tabIndex)
 
+  function trackPageViewBeacon(url: string, title: string): void {
+    if (window.Beacon !== undefined) {
+      window.Beacon('event', {
+        type: 'page-viewed',
+        url,
+        title
+      })
+    }
+  }
+
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
     if (newValue != null) {
       setActiveTab(newValue)
+      const tabParam =
+        journeyStatusTabs.find((status) => status.tabIndex === newValue)
+          ?.queryParam ?? journeyStatusTabs[0].queryParam
+
+      const url = `${document.location.href}?tab=${tabParam}`
       // ensure tab data is refreshed on change
       switch (newValue) {
         case 0:
           setActiveEvent('refetchActive')
+          trackPageViewBeacon(url, 'active-tab')
           break
         case 1:
           setActiveEvent('refetchArchived')
+          trackPageViewBeacon(url, 'archive-tab')
           break
         case 2:
           setActiveEvent('refetchTrashed')
+          trackPageViewBeacon(url, 'trashed-tab')
           break
       }
-      const tabParam =
-        journeyStatusTabs.find((status) => status.tabIndex === newValue)
-          ?.queryParam ?? journeyStatusTabs[0].queryParam
       void router.push(
         {
           query: { tab: tabParam }
