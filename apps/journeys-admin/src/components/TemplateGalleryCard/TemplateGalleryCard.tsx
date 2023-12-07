@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -53,6 +54,8 @@ export function TemplateGalleryCard({
   const displayLanguage = abbreviateLanguageName(
     localLanguage ?? nativeLanguage
   )
+
+  const theme = useTheme()
 
   const date =
     journey != null
@@ -127,7 +130,7 @@ export function TemplateGalleryCard({
                     src={journey?.primaryImageBlock?.src}
                     alt={journey?.primaryImageBlock.alt}
                     fill
-                    sizes="(max-width: 900px) 240px, 480px"
+                    sizes={`(max-width: ${theme.breakpoints.values.md}px) 130px, (max-width: ${theme.breakpoints.values.xl}px) 180px, 240px`}
                     style={{
                       objectFit: 'cover'
                     }}
