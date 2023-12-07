@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
