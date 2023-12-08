@@ -9,7 +9,7 @@ import {
   descriptiveTemplate,
   oldTemplate,
   publishedTemplate
-} from '../TemplateLibrary/TemplateListData'
+} from './data'
 
 import { TemplateList } from '.'
 

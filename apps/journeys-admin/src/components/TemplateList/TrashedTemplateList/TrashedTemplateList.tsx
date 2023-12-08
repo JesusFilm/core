@@ -3,11 +3,10 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
@@ -17,9 +16,19 @@ import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
 } from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
-import { TemplateCard } from '../../TemplateCard'
+import { LoadingTemplateList } from '../LoadingTemplateList'
+import { TemplateListItem } from '../TemplateListItem'
 
-export function TrashedTemplates({
+const Dialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "core/shared/ui-dynamic/Dialog" */
+      '@core/shared/ui-dynamic/Dialog'
+    ).then((mod) => mod.Dialog),
+  { ssr: false }
+)
+
+export function TrashedTemplateList({
   sortOrder,
   event
 }: Omit<JourneyListProps, 'user'>): ReactElement {
@@ -49,8 +58,12 @@ export function TrashedTemplates({
       }
     }
   })
-  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState<
+    boolean | undefined
+  >()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<
+    boolean | undefined
+  >()
 
   async function handleRestoreSubmit(): Promise<void> {
     try {
@@ -119,46 +132,39 @@ export function TrashedTemplates({
 
   return (
     <>
-      <Box>
-        {sortedJourneys != null ? (
-          <>
-            {sortedJourneys.map((journey) => (
-              <TemplateCard
-                key={journey.id}
-                journey={journey}
-                isPublisher
-                refetch={refetch}
-              />
-            ))}
+      {sortedJourneys != null ? (
+        <Box>
+          {sortedJourneys.map((journey) => (
+            <TemplateListItem
+              key={journey.id}
+              journey={journey}
+              refetch={refetch}
+            />
+          ))}
 
-            {sortedJourneys.length === 0 && (
-              <Card
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  pt: 20,
-                  pb: 16,
-                  borderBottomLeftRadius: { xs: 0, sm: 12 },
-                  borderBottomRightRadius: { xs: 0, sm: 12 },
-                  borderTopLeftRadius: 0,
-                  borderTopRightRadius: 0
-                }}
-              >
-                <Typography variant="subtitle1" align="center" gutterBottom>
-                  {t('Your trashed templates will appear here.')}
-                </Typography>
-              </Card>
-            )}
-          </>
-        ) : (
-          <>
-            {[0, 1, 2].map((index) => (
-              <TemplateCard key={`templateCard${index}`} isPublisher />
-            ))}
-          </>
-        )}
-      </Box>
+          {sortedJourneys.length === 0 && (
+            <Card
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                pt: 20,
+                pb: 16,
+                borderBottomLeftRadius: { xs: 0, sm: 12 },
+                borderBottomRightRadius: { xs: 0, sm: 12 },
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0
+              }}
+            >
+              <Typography variant="subtitle1" align="center" gutterBottom>
+                {t('Your trashed templates will appear here.')}
+              </Typography>
+            </Card>
+          )}
+        </Box>
+      ) : (
+        <LoadingTemplateList hideHelperText />
+      )}
       <Stack alignItems="center">
         <Typography
           variant="caption"
@@ -169,44 +175,48 @@ export function TrashedTemplates({
           {t('Trashed templates are moved here for up to 40 days.')}
         </Typography>
       </Stack>
-      <Dialog
-        open={restoreDialogOpen}
-        onClose={handleClose}
-        dialogTitle={{
-          title: t('Restore Templates'),
-          closeButton: true
-        }}
-        dialogAction={{
-          onSubmit: handleRestoreSubmit,
-          submitLabel: t('Restore'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t(
-            'Are you sure you would like to restore all trashed templates immediately?'
-          )}
-        </Typography>
-      </Dialog>
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleClose}
-        dialogTitle={{
-          title: t('Delete Templates Forever'),
-          closeButton: true
-        }}
-        dialogAction={{
-          onSubmit: handleDeleteSubmit,
-          submitLabel: t('Delete Forever'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t(
-            'Are you sure you would like to permanently delete all trashed templates immediately?'
-          )}
-        </Typography>
-      </Dialog>
+      {restoreDialogOpen != null && (
+        <Dialog
+          open={restoreDialogOpen}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Restore Templates'),
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: handleRestoreSubmit,
+            submitLabel: t('Restore'),
+            closeLabel: t('Cancel')
+          }}
+        >
+          <Typography>
+            {t(
+              'Are you sure you would like to restore all trashed templates immediately?'
+            )}
+          </Typography>
+        </Dialog>
+      )}
+      {deleteDialogOpen != null && (
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Delete Templates Forever'),
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: handleDeleteSubmit,
+            submitLabel: t('Delete Forever'),
+            closeLabel: t('Cancel')
+          }}
+        >
+          <Typography>
+            {t(
+              'Are you sure you would like to permanently delete all trashed templates immediately?'
+            )}
+          </Typography>
+        </Dialog>
+      )}
     </>
   )
 }
