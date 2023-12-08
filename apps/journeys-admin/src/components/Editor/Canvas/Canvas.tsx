@@ -173,7 +173,9 @@ export function Canvas(): ReactElement {
 
     router.query.param = 'step-footer'
     void router.push(router)
-    setBeaconPageViewed('StepFooter')
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed('Step Footer')
+    })
   }
 
   return (
