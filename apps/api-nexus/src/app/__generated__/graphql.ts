@@ -30,6 +30,13 @@ export class ChannelFilter {
     name?: Nullable<string>;
     nexusId?: Nullable<string>;
     limit?: Nullable<number>;
+    connected?: Nullable<boolean>;
+}
+
+export class ConnectYoutubeChannelInput {
+    channelId: string;
+    authCode: string;
+    redirectUri: string;
 }
 
 export class NexusCreateInput {
@@ -77,6 +84,7 @@ export class Channel {
     nexusId: string;
     name: string;
     platform?: Nullable<string>;
+    connected?: Nullable<boolean>;
 }
 
 export abstract class IQuery {
@@ -127,6 +135,8 @@ export abstract class IMutation {
     abstract channelUpdate(id: string, input: ChannelUpdateInput): Channel | Promise<Channel>;
 
     abstract channelDelete(id: string): Channel | Promise<Channel>;
+
+    abstract connectYoutubeChannel(input: ConnectYoutubeChannelInput): Channel | Promise<Channel>;
 
     abstract nexusCreate(input: NexusCreateInput): Nexus | Promise<Nexus>;
 

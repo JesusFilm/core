@@ -258,6 +258,31 @@ type Channel
   platform: String
 }
 
+input ChannelCreateInput
+  @join__type(graph: NEXUS)
+{
+  nexusId: String!
+  name: String!
+  platform: String!
+}
+
+input ChannelFilter
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  nexusId: String
+  limit: Int
+}
+
+input ChannelUpdateInput
+  @join__type(graph: NEXUS)
+{
+  name: String
+  nexusId: String
+  platform: String
+}
+
 type ChatButton
   @join__type(graph: JOURNEYS)
 {
@@ -1023,6 +1048,7 @@ enum MessagePlatform
 type Mutation
   @join__type(graph: JOURNEYS)
   @join__type(graph: MEDIA)
+  @join__type(graph: NEXUS)
   @join__type(graph: USERS)
 {
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
@@ -1241,6 +1267,15 @@ type Mutation
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
+  channelCreate(input: ChannelCreateInput!): Channel! @join__field(graph: NEXUS)
+  channelUpdate(id: ID!, input: ChannelUpdateInput!): Channel! @join__field(graph: NEXUS)
+  channelDelete(id: ID!): Channel! @join__field(graph: NEXUS)
+  nexusCreate(input: NexusCreateInput!): Nexus! @join__field(graph: NEXUS)
+  nexusUpdate(id: ID!, input: NexusUpdateInput!): Nexus! @join__field(graph: NEXUS)
+  nexusDelete(id: ID!): Nexus! @join__field(graph: NEXUS)
+  resourceCreate(input: ResourceCreateInput!): Resource! @join__field(graph: NEXUS)
+  resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource! @join__field(graph: NEXUS)
+  resourceDelete(id: ID!): Resource! @join__field(graph: NEXUS)
   userImpersonate(email: String!): String @join__field(graph: USERS)
 }
 
@@ -1303,14 +1338,39 @@ type Nexus
   description: String
   createdAt: DateTime!
   deletedAt: DateTime
-  status: NexusStatus
+  status: NexusStatus!
+}
+
+input NexusCreateInput
+  @join__type(graph: NEXUS)
+{
+  name: String!
+  description: String
+}
+
+input NexusFilter
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  description: String
+  createdAt: DateTime
+  limit: Int
+  orderByRecent: Boolean
 }
 
 enum NexusStatus
   @join__type(graph: NEXUS)
 {
-  published @join__enumValue(graph: NEXUS)
   deleted @join__enumValue(graph: NEXUS)
+  published @join__enumValue(graph: NEXUS)
+}
+
+input NexusUpdateInput
+  @join__type(graph: NEXUS)
+{
+  name: String
+  description: String
 }
 
 type OperatingSystem
@@ -1423,6 +1483,12 @@ type Query
   getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
+  channels(where: ChannelFilter): [Channel!] @join__field(graph: NEXUS)
+  channel(id: ID!): Channel! @join__field(graph: NEXUS)
+  nexuses(where: NexusFilter): [Nexus!]! @join__field(graph: NEXUS)
+  nexus(id: ID!): Nexus! @join__field(graph: NEXUS)
+  resources(where: ResourceFilter): [Resource!] @join__field(graph: NEXUS)
+  resource(id: ID!): Resource! @join__field(graph: NEXUS)
   tags: [Tag!]! @join__field(graph: TAGS)
   me: User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
@@ -1520,6 +1586,32 @@ type Resource
   id: ID!
   nexusId: String!
   name: String!
+  refLink: String
+  videoId: String
+}
+
+input ResourceCreateInput
+  @join__type(graph: NEXUS)
+{
+  nexusId: String!
+  name: String!
+  refLink: String
+  videoId: String
+}
+
+input ResourceFilter
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  nexusId: String
+  limit: Int
+}
+
+input ResourceUpdateInput
+  @join__type(graph: NEXUS)
+{
+  name: String
   refLink: String
   videoId: String
 }

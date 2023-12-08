@@ -3,6 +3,18 @@ type Channel @key(fields: "id") {
   nexusId: String!
   name: String!
   platform: String
+  connected: Boolean
+  channelYoutubeCredential: ChannelYoutubeCredential
+}
+
+type ChannelYoutubeCredential {
+  id: ID!
+  channelId: String
+  channel: Channel
+  youtubeId: String
+  imageUrl: String
+  redirectUrl: String
+  refreshToken: String
 }
 
 input ChannelCreateInput {
@@ -22,6 +34,13 @@ input ChannelFilter {
   name: String
   nexusId: String
   limit: Int
+  connected: Boolean
+}
+
+input ConnectYoutubeChannelInput {
+  channelId: String!
+  authCode: String!
+  redirectUri: String!
 }
 
 extend type Query {
@@ -33,4 +52,5 @@ extend type Mutation {
   channelCreate(input: ChannelCreateInput!): Channel!
   channelUpdate(id: ID!, input: ChannelUpdateInput!): Channel!
   channelDelete(id: ID!): Channel!
+  connectYoutubeChannel(input: ConnectYoutubeChannelInput!): Channel!
 }
