@@ -20,7 +20,7 @@ const i18nConfig = {
     locales: ['en']
   },
   localePath,
-  partialBundledLanguages: isBrowser && true
+  react: { useSuspense: false }
 }
 
 module.exports = i18nConfig
