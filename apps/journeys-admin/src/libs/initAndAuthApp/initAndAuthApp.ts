@@ -47,7 +47,7 @@ export async function initAndAuthApp({
     user?.id != null ? user.getIdToken() : null
   ])
 
-  const apolloClient = createApolloClient(token != null ? token : '')
+  const apolloClient = createApolloClient(token ?? undefined)
 
   if (token == null) {
     return { apolloClient, redirect: undefined, translations }

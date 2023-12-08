@@ -28,6 +28,10 @@
       "@core/shared/ui/*": [
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
+      ],
+      "@core/shared/ui-dynamic/*": [
+        "libs/shared/ui-dynamic/src/components/*",
+        "libs/shared/ui-dynamic/src/libs/*"
       ]
     }
   },

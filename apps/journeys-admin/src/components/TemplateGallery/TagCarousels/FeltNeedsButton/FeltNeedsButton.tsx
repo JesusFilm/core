@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Skeleton from '@mui/material/Skeleton'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useCallback, useState } from 'react'
 
@@ -38,6 +38,7 @@ export function FeltNeedsButton({
   onClick
 }: FeltNeedsButtonProps): ReactElement {
   const [loading, setLoading] = useState(true)
+  const theme = useTheme()
 
   const tagImage = useCallback((tagLabel: string) => {
     switch (tagLabel) {
@@ -112,6 +113,11 @@ export function FeltNeedsButton({
           width: { xs: '150px', md: '222px' },
           height: { xs: '56px', md: '110px' },
           overflow: 'hidden',
+          '&:focus': {
+            outline: '2px solid',
+            outlineColor: (theme) => theme.palette.primary.main,
+            outlineOffset: '2px'
+          },
           '&:hover': {
             '& .hoverStyles': {
               transform: 'scale(1.05)'
@@ -144,6 +150,7 @@ export function FeltNeedsButton({
           sx={{
             borderRadius: 2
           }}
+          sizes={`(max-width: ${theme.breakpoints.values.md}px): 120px, 240px`}
         />
         <Typography
           className="hoverStyles"

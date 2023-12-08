@@ -22,7 +22,7 @@ interface CollectionButtonProps {
 
 const StyledCollectionButton = styled(ButtonBase)(({ theme }) => ({
   borderRadius: '8px',
-  transition: theme.transitions.create('all'),
+  transition: theme.transitions.create('background-color'),
   '& .backgroundImageHover': {
     transition: theme.transitions.create('transform')
   },
@@ -61,6 +61,13 @@ export function CollectionButton({
       onClick={() => {
         if (tag != null) onClick(tag.id)
       }}
+      sx={{
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: (theme) => theme.palette.primary.main,
+          outlineOffset: '2px'
+        }
+      }}
     >
       <Stack
         gap={3}
@@ -90,6 +97,7 @@ export function CollectionButton({
                 src={image.src}
                 layout="fill"
                 sx={{ borderRadius: 8 }}
+                sizes="128px"
               />
             ) : (
               <InsertPhotoRoundedIcon className="backgroundImageHover" />

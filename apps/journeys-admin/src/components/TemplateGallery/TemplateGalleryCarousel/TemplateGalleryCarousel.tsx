@@ -36,6 +36,7 @@ interface TemplateGalleryCarouselProps<T> {
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
   loadingSpacing?: ComponentProps<typeof Stack>['spacing']
+  slidesOffsetBefore?: number
 }
 
 export function TemplateGalleryCarousel<T>({
@@ -44,7 +45,8 @@ export function TemplateGalleryCarousel<T>({
   heading,
   breakpoints,
   loading = false,
-  loadingSpacing
+  loadingSpacing,
+  slidesOffsetBefore
 }: TemplateGalleryCarouselProps<T>): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [hovered, setHovered] = useState(false)
@@ -81,7 +83,8 @@ export function TemplateGalleryCarousel<T>({
           sx={{
             mt: 4,
             minWidth: 'max-content',
-            boxSizing: 'unset'
+            boxSizing: 'unset',
+            ml: slidesOffsetBefore != null ? slidesOffsetBefore / 4 : 0
           }}
         >
           {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
@@ -99,15 +102,25 @@ export function TemplateGalleryCarousel<T>({
           watchOverflow
           allowTouchMove
           observer
+          slidesOffsetBefore={slidesOffsetBefore ?? 0}
           observeParents
           resizeObserver
           mousewheel={{ forceToAxis: true }}
           breakpoints={breakpoints}
           onSwiper={(swiper) => setSwiper(swiper)}
         >
-          {items.map((item) => {
+          {items.map((item, index) => {
             return (
-              <SwiperSlide key={item.id} data-testid={`journey-${item.id}`}>
+              <SwiperSlide
+                key={item.id}
+                data-testid={`journey-${item.id}`}
+                onFocus={() => {
+                  if (swiper?.isEnd as boolean) {
+                    swiper?.slideTo(0)
+                  }
+                  swiper?.slideTo(index)
+                }}
+              >
                 {renderItem({ item })}
               </SwiperSlide>
             )

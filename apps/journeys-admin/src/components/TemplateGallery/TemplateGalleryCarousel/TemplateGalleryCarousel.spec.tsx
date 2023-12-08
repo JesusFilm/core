@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SwiperOptions } from 'swiper'
 
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
@@ -8,6 +9,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+import { TemplateGalleryCard } from '../../TemplateGalleryCard'
 
 import { TemplateGalleryCarousel } from './TemplateGalleryCarousel'
 
@@ -76,6 +78,29 @@ describe('TemplateGalleryCarousel', () => {
     expect(items[1]).toHaveTextContent('Featured Template 2')
     expect(getByRole('button', { name: 'prev-button' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'next-button' })).toBeInTheDocument()
+  })
+
+  it('should focus elements in the carousel', async () => {
+    const { getAllByLabelText } = render(
+      <TemplateGalleryCarousel
+        heading="Easter"
+        items={[journey, { ...journey, id: '2', title: 'Featured Template 2' }]}
+        renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+        breakpoints={swiperBreakpoints}
+      />
+    )
+
+    await waitFor(async () => await userEvent.tab())
+    expect(getAllByLabelText('templateGalleryCard')[0]).toHaveStyle(
+      'outline: 2px solid'
+    )
+    await waitFor(async () => await userEvent.tab())
+    expect(getAllByLabelText('templateGalleryCard')[1]).toHaveStyle(
+      'outline: 2px solid'
+    )
+    expect(getAllByLabelText('templateGalleryCard')[0]).not.toHaveStyle(
+      'outline: 2px solid'
+    )
   })
 
   it('should render TemplateGalleryCarousel with placeholder items', () => {
