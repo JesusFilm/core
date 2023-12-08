@@ -80,13 +80,6 @@ export function StatusTabPanel({
           break
         case 2:
           setActiveEvent('refetchTrashed')
-          if (window.Beacon != null) {
-            window.Beacon('event', {
-              type: 'page-viewed',
-              url: 'https://journeys-admin-2118-jesusfilm.vercel.app/?tab=trashed',
-              title: 'clicked on trashed tab'
-            })
-          }
           break
       }
       const tabParam =

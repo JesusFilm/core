@@ -4,6 +4,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import SwiperCore from 'swiper'
@@ -22,6 +23,7 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
+import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../FramePortal'
 import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
@@ -43,6 +45,7 @@ const TASKBAR_WIDTH = 72
 const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({}))
 
 export function Canvas(): ReactElement {
+  const router = useRouter()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [spaceBetween, setSpaceBetween] = useState(16)
   const { sidePanel } = usePageWrapperStyles()
@@ -167,6 +170,10 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: 'hosted-by'
     })
+
+    router.query.param = 'step-footer'
+    void router.push(router)
+    setBeaconPageViewed('StepFooter')
   }
 
   return (
