@@ -1,5 +1,6 @@
+const isBrowser = typeof window !== 'undefined'
 let localePath
-if (typeof window !== 'undefined') {
+if (isBrowser) {
   // browser
   localePath = './public/locales'
 } else if (process.env.VERCEL == null || process.env.CI != null) {
@@ -7,7 +8,7 @@ if (typeof window !== 'undefined') {
   localePath = require('path').resolve('../../libs/locales')
 } else {
   // vercel run time
-  localePath = '/app/public/locales'
+  localePath = require('path').resolve('./public/locales')
 }
 
 /**
@@ -18,7 +19,8 @@ const i18nConfig = {
     defaultLocale: 'en',
     locales: ['en']
   },
-  localePath
+  localePath,
+  partialBundledLanguages: isBrowser && true
 }
 
 module.exports = i18nConfig
