@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
-import { Suspense } from 'react'
 
 import {
   GetAdminJourneys,
@@ -84,9 +83,7 @@ describe('TrashedJourneyList', () => {
       <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <Suspense>
-              <TrashedJourneyList />
-            </Suspense>
+            <TrashedJourneyList />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -134,9 +131,7 @@ describe('TrashedJourneyList', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <Suspense>
-              <TrashedJourneyList sortOrder={SortOrder.TITLE} />
-            </Suspense>
+            <TrashedJourneyList sortOrder={SortOrder.TITLE} />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -176,9 +171,7 @@ describe('TrashedJourneyList', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <Suspense>
-              <TrashedJourneyList sortOrder={SortOrder.TITLE} />
-            </Suspense>
+            <TrashedJourneyList sortOrder={SortOrder.TITLE} />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -211,9 +204,7 @@ describe('TrashedJourneyList', () => {
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <TrashedJourneyList event="restoreAllTrashed" />
-              </Suspense>
+              <TrashedJourneyList event="restoreAllTrashed" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -231,12 +222,10 @@ describe('TrashedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <TrashedJourneyList
-                  event="restoreAllTrashed"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </Suspense>
+              <TrashedJourneyList
+                event="restoreAllTrashed"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -257,18 +246,14 @@ describe('TrashedJourneyList', () => {
           ]}
         >
           <SnackbarProvider>
-            <Suspense>
-              <ThemeProvider>
-                <SnackbarProvider>
-                  <Suspense>
-                    <TrashedJourneyList
-                      event="restoreAllTrashed"
-                      user={{ id: 'user-id1' } as unknown as User}
-                    />
-                  </Suspense>
-                </SnackbarProvider>
-              </ThemeProvider>
-            </Suspense>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <TrashedJourneyList
+                  event="restoreAllTrashed"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -299,9 +284,7 @@ describe('TrashedJourneyList', () => {
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <TrashedJourneyList event="deleteAllTrashed" />
-              </Suspense>
+              <TrashedJourneyList event="deleteAllTrashed" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -318,12 +301,10 @@ describe('TrashedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <TrashedJourneyList
-                  event="deleteAllTrashed"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </Suspense>
+              <TrashedJourneyList
+                event="deleteAllTrashed"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -344,18 +325,14 @@ describe('TrashedJourneyList', () => {
           ]}
         >
           <SnackbarProvider>
-            <Suspense>
-              <ThemeProvider>
-                <SnackbarProvider>
-                  <Suspense>
-                    <TrashedJourneyList
-                      event="deleteAllTrashed"
-                      user={{ id: 'user-id1' } as unknown as User}
-                    />
-                  </Suspense>
-                </SnackbarProvider>
-              </ThemeProvider>
-            </Suspense>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <TrashedJourneyList
+                  event="deleteAllTrashed"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
