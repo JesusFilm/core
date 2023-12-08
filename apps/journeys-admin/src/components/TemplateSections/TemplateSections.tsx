@@ -33,6 +33,8 @@ export function TemplateSections({
   const [showNoResults, setShowNoResults] = useState<boolean>(false)
 
   const { loading: apolloLoading } = useJourneysQuery({
+    // todo remove once cache working for this page - Nisal
+    fetchPolicy: 'cache-only',
     variables: {
       where: {
         template: true,

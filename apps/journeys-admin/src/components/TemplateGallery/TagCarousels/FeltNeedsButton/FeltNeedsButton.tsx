@@ -143,6 +143,8 @@ export function FeltNeedsButton({
           }}
         />
         <NextImage
+          rel="preload"
+          priority
           className="hoverStyles"
           src={image.src}
           layout="fill"
