@@ -34,11 +34,13 @@ model UserNexus {
 }
 
 model Channel {
-    id       String @id @default(uuid())
-    nexusId  String
-    name     String
-    platform String
-    nexus    Nexus  @relation(fields: [nexusId], references: [id])
+    id                       String                    @id @default(uuid())
+    nexusId                  String
+    name                     String
+    platform                 String
+    connected                Boolean                   @default(false)
+    nexus                    Nexus                     @relation(fields: [nexusId], references: [id])
+    channelYoutubeCredential ChannelYoutubeCredential?
 }
 
 model Resource {
@@ -48,4 +50,14 @@ model Resource {
     refLink String?
     videoId String?
     nexus   Nexus   @relation(fields: [nexusId], references: [id])
+}
+
+model ChannelYoutubeCredential {
+    id           String  @id @default(uuid())
+    channelId    String  @unique
+    channel      Channel @relation(fields: [channelId], references: [id])
+    youtubeId    String
+    imageUrl     String
+    redirectUrl  String
+    refreshToken String
 }
