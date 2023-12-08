@@ -91,21 +91,25 @@ describe('TeamMenu', () => {
       )
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'New Team' }))
-    expect(getByText('Create Team')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Create Team')).toBeInTheDocument())
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() =>
       expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
     )
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Rename' }))
-    expect(getByText('Change Team Name')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('Change Team Name')).toBeInTheDocument()
+    )
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() =>
       expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
     )
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Members' }))
-    expect(getByText('Invite team member')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('Invite team member')).toBeInTheDocument()
+    )
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByTestId('dialog-close-button')).not.toBeInTheDocument()

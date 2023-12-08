@@ -14,6 +14,7 @@ import {
   useRef,
   useState
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
@@ -40,6 +41,7 @@ export function JourneySort({
   open,
   disabled
 }: JourneySortProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [showSortOrder, setShowSortOrder] = useState(open ?? false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const breakpoints = useBreakpoints()
@@ -99,7 +101,7 @@ export function JourneySort({
   return (
     <>
       <Chip
-        label={sortOrder != null ? sortOrderLabel[sortOrder] : 'Sort By'}
+        label={sortOrder != null ? sortOrderLabel[sortOrder] : t('Sort By')}
         onClick={handleClick}
         ref={chipRef}
         sx={{

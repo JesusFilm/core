@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
+import { Suspense } from 'react'
 
 import {
   GetAdminJourneys,
@@ -83,7 +84,9 @@ describe('TrashedJourneyList', () => {
       <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedJourneyList />
+            <Suspense>
+              <TrashedJourneyList />
+            </Suspense>
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -131,7 +134,9 @@ describe('TrashedJourneyList', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedJourneyList sortOrder={SortOrder.TITLE} />
+            <Suspense>
+              <TrashedJourneyList sortOrder={SortOrder.TITLE} />
+            </Suspense>
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -171,7 +176,9 @@ describe('TrashedJourneyList', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedJourneyList sortOrder={SortOrder.TITLE} />
+            <Suspense>
+              <TrashedJourneyList sortOrder={SortOrder.TITLE} />
+            </Suspense>
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -183,21 +190,6 @@ describe('TrashedJourneyList', () => {
       )
     )
     expect(getAllByLabelText('journey-card')[1]).toBeUndefined()
-  })
-
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <TrashedJourneyList />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(3)
-    )
   })
 
   describe('Restore All', () => {
@@ -214,18 +206,22 @@ describe('TrashedJourneyList', () => {
       result
     }
 
-    it('should display the restore all dialog', () => {
+    it('should display the restore all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedJourneyList event="restoreAllTrashed" />
+              <Suspense>
+                <TrashedJourneyList event="restoreAllTrashed" />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
-      expect(getByText('Restore Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Restore Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should restore all journeys', async () => {
@@ -235,10 +231,12 @@ describe('TrashedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedJourneyList
-                event="restoreAllTrashed"
-                user={{ id: 'user-id1' } as unknown as User}
-              />
+              <Suspense>
+                <TrashedJourneyList
+                  event="restoreAllTrashed"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -259,14 +257,18 @@ describe('TrashedJourneyList', () => {
           ]}
         >
           <SnackbarProvider>
-            <ThemeProvider>
-              <SnackbarProvider>
-                <TrashedJourneyList
-                  event="restoreAllTrashed"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </SnackbarProvider>
-            </ThemeProvider>
+            <Suspense>
+              <ThemeProvider>
+                <SnackbarProvider>
+                  <Suspense>
+                    <TrashedJourneyList
+                      event="restoreAllTrashed"
+                      user={{ id: 'user-id1' } as unknown as User}
+                    />
+                  </Suspense>
+                </SnackbarProvider>
+              </ThemeProvider>
+            </Suspense>
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -292,17 +294,21 @@ describe('TrashedJourneyList', () => {
       result
     }
 
-    it('should display the delete all dialog', () => {
+    it('should display the delete all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedJourneyList event="deleteAllTrashed" />
+              <Suspense>
+                <TrashedJourneyList event="deleteAllTrashed" />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-      expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+      )
     })
 
     it('should trash all journeys', async () => {
@@ -312,10 +318,12 @@ describe('TrashedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedJourneyList
-                event="deleteAllTrashed"
-                user={{ id: 'user-id1' } as unknown as User}
-              />
+              <Suspense>
+                <TrashedJourneyList
+                  event="deleteAllTrashed"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -336,14 +344,18 @@ describe('TrashedJourneyList', () => {
           ]}
         >
           <SnackbarProvider>
-            <ThemeProvider>
-              <SnackbarProvider>
-                <TrashedJourneyList
-                  event="deleteAllTrashed"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </SnackbarProvider>
-            </ThemeProvider>
+            <Suspense>
+              <ThemeProvider>
+                <SnackbarProvider>
+                  <Suspense>
+                    <TrashedJourneyList
+                      event="deleteAllTrashed"
+                      user={{ id: 'user-id1' } as unknown as User}
+                    />
+                  </Suspense>
+                </SnackbarProvider>
+              </ThemeProvider>
+            </Suspense>
           </SnackbarProvider>
         </MockedProvider>
       )

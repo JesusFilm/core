@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -54,6 +55,8 @@ export function TemplateGalleryCard({
     localLanguage ?? nativeLanguage
   )
 
+  const theme = useTheme()
+
   const date =
     journey != null
       ? intlFormat(parseISO(journey.createdAt), {
@@ -65,19 +68,20 @@ export function TemplateGalleryCard({
   return (
     <Card
       aria-label="templateGalleryCard"
-      variant="outlined"
+      tabIndex={0}
       sx={{
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer',
         width: { xs: 130, md: 180, xl: 240 },
         borderRadius: 2,
+        boxShadow: 'none',
         p: 2,
+        transition: (theme) => theme.transitions.create('background-color'),
         '& .MuiImageBackground-root': {
           transition: (theme) => theme.transitions.create('transform')
         },
         '&:hover': {
-          transition: (theme) => theme.transitions.create('background-color'),
           backgroundColor: (theme) => theme.palette.grey[200],
           '& .MuiImageBackground-root': {
             transform: 'scale(1.05)'
@@ -85,6 +89,10 @@ export function TemplateGalleryCard({
           '& .hoverImageEffects': {
             opacity: 0.3
           }
+        },
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: (theme) => theme.palette.primary.main
         }
       }}
     >
@@ -117,10 +125,12 @@ export function TemplateGalleryCard({
                 <>
                   <HoverLayer className="hoverImageEffects" />
                   <Image
+                    priority
                     className="MuiImageBackground-root"
                     src={journey?.primaryImageBlock?.src}
                     alt={journey?.primaryImageBlock.alt}
                     fill
+                    sizes={`(max-width: ${theme.breakpoints.values.md}px) 240px, 280px`}
                     style={{
                       objectFit: 'cover'
                     }}

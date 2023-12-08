@@ -1,4 +1,4 @@
-import { ApolloProvider } from '@apollo/client'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
@@ -27,6 +27,7 @@ const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
+  initialApolloState?: NormalizedCacheObject
 }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
@@ -44,8 +45,10 @@ function JourneysAdminApp({
       ? JSON.parse(pageProps.userSerialized)
       : null
 
-  const token = user?._token ?? ''
-  const apolloClient = useApollo(token)
+  const apolloClient = useApollo({
+    initialState: pageProps.initialApolloState,
+    token: user?._token
+  })
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_GTM_ID != null)
