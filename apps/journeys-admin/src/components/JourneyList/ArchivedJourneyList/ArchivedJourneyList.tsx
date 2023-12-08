@@ -9,10 +9,11 @@ import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { useAdminJourneysSuspenseQuery } from '../../../libs/useAdminJourneysSuspenseQuery'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
+import { LoadingJourneyList } from '../LoadingJourneyList'
 
 const Dialog = dynamic(
   async () =>
@@ -48,7 +49,7 @@ export function ArchivedJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useAdminJourneysSuspenseQuery({
+  const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.archived],
     useLastActiveTeamId: true
   })
@@ -137,35 +138,40 @@ export function ArchivedJourneyList({
     }
   }, [event, refetch])
 
-  const sortedJourneys = sortJourneys(data.journeys, sortOrder)
+  const sortedJourneys =
+    data?.journeys != null ? sortJourneys(data.journeys, sortOrder) : undefined
 
   return (
     <>
-      <Box>
-        {sortedJourneys.map((journey) => (
-          <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
-        ))}
-        {sortedJourneys.length === 0 && (
-          <>
-            <Card
-              variant="outlined"
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                py: 20,
-                borderBottomLeftRadius: { xs: 0, sm: 12 },
-                borderBottomRightRadius: { xs: 0, sm: 12 },
-                borderTopLeftRadius: 0,
-                borderTopRightRadius: 0
-              }}
-            >
-              <Typography variant="subtitle1" align="center">
-                {t('No archived journeys.')}
-              </Typography>
-            </Card>
-          </>
-        )}
-      </Box>
+      {sortedJourneys == null ? (
+        <LoadingJourneyList hideHelperText />
+      ) : (
+        <Box>
+          {sortedJourneys.map((journey) => (
+            <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
+          ))}
+          {sortedJourneys.length === 0 && (
+            <>
+              <Card
+                variant="outlined"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  py: 20,
+                  borderBottomLeftRadius: { xs: 0, sm: 12 },
+                  borderBottomRightRadius: { xs: 0, sm: 12 },
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0
+                }}
+              >
+                <Typography variant="subtitle1" align="center">
+                  {t('No archived journeys.')}
+                </Typography>
+              </Card>
+            </>
+          )}
+        </Box>
+      )}
       <Stack alignItems="center">
         <Typography
           variant="caption"
