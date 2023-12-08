@@ -18,7 +18,8 @@ export function DiscoveryJourneys(): ReactElement {
           xs: 'repeat(3, calc(33.33% - 5.5px))',
           sm: 'repeat(3, calc(33.33% - 21px))'
         },
-        gap: { xs: 2, sm: 8 }
+        gap: { xs: 2, sm: 8 },
+        pt: { xs: 3, sm: 5 }
       }}
       data-testid="JourneysAdminDiscoveryJourneys"
     >

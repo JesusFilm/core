@@ -93,7 +93,13 @@ function LoadingJourneyCard(): ReactElement {
   )
 }
 
-export function LoadingJourneyList(): ReactElement {
+interface LoadingJourneyListProps {
+  hideHelperText?: boolean
+}
+
+export function LoadingJourneyList({
+  hideHelperText = false
+}: LoadingJourneyListProps): ReactElement {
   return (
     <>
       <Box>
@@ -103,17 +109,19 @@ export function LoadingJourneyList(): ReactElement {
           </>
         ))}
       </Box>
-      <Stack alignItems="center">
-        <Typography
-          variant="caption"
-          align="center"
-          component="div"
-          sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
-        >
-          <Skeleton variant="text" width={255} sx={{ mx: 'auto' }} />
-          <Skeleton variant="text" width={220} sx={{ mx: 'auto' }} />
-        </Typography>
-      </Stack>
+      {!hideHelperText && (
+        <Stack alignItems="center">
+          <Typography
+            variant="caption"
+            align="center"
+            component="div"
+            sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
+          >
+            <Skeleton variant="text" width={255} sx={{ mx: 'auto' }} />
+            <Skeleton variant="text" width={220} sx={{ mx: 'auto' }} />
+          </Typography>
+        </Stack>
+      )}
     </>
   )
 }
