@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
+import uniq from 'lodash/uniq'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -18,12 +19,26 @@ export function TemplateGallery(): ReactElement {
   const router = useRouter()
   const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
     router.query.languageIds != null
-      ? castArray(router.query.languageIds)
+      ? (router.query.languageIds as string).split(',')
       : ['529']
   )
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     router.query.tagIds != null ? castArray(router.query.tagIds) : []
   )
+  const buildQueryString = ({
+    tagIds = selectedTagIds,
+    languageIds = selectedLanguageIds
+  }): string => {
+    const base = router.basePath
+    const params: string[] = []
+    if (languageIds.length > 0) {
+      params.push(`languageIds=${uniq(languageIds).join(',')}`)
+    }
+    if (tagIds.length > 0) {
+      params.push(`tagIds=${uniq(tagIds).join(',')}`)
+    }
+    return params.length === 0 ? base : `${base}?${params.join('&')}`
+  }
 
   function handleTagIdsChange(
     newSelectedTagIds: string[],
@@ -34,20 +49,17 @@ export function TemplateGallery(): ReactElement {
       ...newSelectedTagIds
     ]
     setSelectedTagIds(tagIds)
-    router.query.tagIds = tagIds
-    void router.push(router)
+    void router.push(buildQueryString({ tagIds }))
   }
 
   function handleTagIdChange(selectedTagId: string): void {
     setSelectedTagIds([selectedTagId])
-    router.query.tagIds = selectedTagId
-    void router.push(router)
+    void router.push(buildQueryString({ tagIds: [selectedTagId] }))
   }
 
   function handleLanguageIdsChange(values: string[]): void {
     setSelectedLanguageIds(values)
-    router.query.languageIds = values
-    void router.push(router)
+    void router.push(buildQueryString({ languageIds: values }))
   }
 
   return (
