@@ -18,9 +18,11 @@ export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
-    router.query.languageIds != null
-      ? uniq((router.query.languageIds as string).split(','))
-      : ['529']
+    router.query.languageIds == null
+      ? ['529']
+      : router.query.languageIds === ''
+      ? []
+      : uniq(castArray(router.query.languageIds))
   )
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     router.query.tagIds != null ? uniq(castArray(router.query.tagIds)) : []
