@@ -84,6 +84,7 @@ extend type Mutation {
   resourceCreate(input: ResourceCreateInput!): Resource!
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
+  addResourcefromGoogleDrive(input: AddResourceFromGoogleDriveInput!): Resource!
 }
 
 type Nexus
@@ -149,6 +150,12 @@ input ResourceFilter {
   name: String
   nexusId: String
   limit: Int
+}
+
+input AddResourceFromGoogleDriveInput {
+  accessToken: String!
+  fileId: String!
+  nexusId: String!
 }
 
 scalar _FieldSet

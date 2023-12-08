@@ -26,6 +26,12 @@ input ResourceFilter {
   limit: Int
 }
 
+input AddResourceFromGoogleDriveInput {
+  accessToken: String!
+  fileId: String!
+  nexusId: String!
+}
+
 extend type Query {
   resources(where: ResourceFilter): [Resource!]
   resource(id: ID!): Resource!
@@ -35,4 +41,5 @@ extend type Mutation {
   resourceCreate(input: ResourceCreateInput!): Resource!
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
+  addResourcefromGoogleDrive(input: AddResourceFromGoogleDriveInput!): Resource!
 }

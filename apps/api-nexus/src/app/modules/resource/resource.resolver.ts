@@ -51,7 +51,7 @@ export class ResourceResolver {
         const resource = await tx.resource.create({
           data: {
             id: uuidv4(),
-            ...input,
+            ...input
           }
         })
         return resource
@@ -110,5 +110,55 @@ export class ResourceResolver {
     } catch (err) {
       throw err
     }
+  }
+
+  @Mutation()
+  async addResourcefromGoogleDrive(
+    @Args('input')
+    input: {
+      accessToken: string
+      fileId: string
+      nexusId: string
+    }
+  ): Promise<Resource | null> {
+    const getFileResponse = await getResourceFromGoogleDrive(
+      input.accessToken,
+      input.fileId
+    )
+
+    const resource = await this.prismaService.resource.create({
+      data: {
+        id: uuidv4(),
+        nexusId: input.nexusId,
+        name: getFileResponse.name,
+        videoId: getFileResponse.id
+      }
+    })
+
+    return resource
+  }
+}
+
+async function getResourceFromGoogleDrive(
+  accessToken: string,
+  fileId: string
+): Promise<{
+  id: string
+  name: string
+}> {
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${fileId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    )
+    return await response.json()
+  } catch (error) {
+    console.error('Error getting resource from Google Drive:', error.message)
+    throw error
   }
 }
