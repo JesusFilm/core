@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
-import uniq from 'lodash/uniq'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -18,50 +17,37 @@ export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
-    router.query.languageIds == null
-      ? ['529']
-      : router.query.languageIds === ''
-      ? []
-      : uniq(castArray(router.query.languageIds))
+    router.query.languageIds != null
+      ? castArray(router.query.languageIds)
+      : ['529']
   )
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
-    router.query.tagIds != null ? uniq(castArray(router.query.tagIds)) : []
+    router.query.tagIds != null ? castArray(router.query.tagIds) : []
   )
-  const buildQueryString = ({
-    tagIds = selectedTagIds,
-    languageIds = selectedLanguageIds
-  }): string => {
-    const base = router.basePath
-    const params: string[] = []
-    if (languageIds.length > 0) {
-      params.push(`languageIds=${uniq(languageIds).join(',')}`)
-    }
-    if (tagIds.length > 0) {
-      params.push(`tagIds=${uniq(tagIds).join(',')}`)
-    }
-    return params.length === 0 ? base : `${base}?${params.join('&')}`
-  }
 
   function handleTagIdsChange(
     newSelectedTagIds: string[],
     availableTagIds: string[]
   ): void {
-    const tagIds = uniq([
+    const tagIds = [
       ...difference(selectedTagIds, availableTagIds),
       ...newSelectedTagIds
-    ])
+    ]
     setSelectedTagIds(tagIds)
-    void router.push(buildQueryString({ tagIds }))
+    router.query.tagIds = tagIds
+    void router.push(router)
   }
 
   function handleTagIdChange(selectedTagId: string): void {
     setSelectedTagIds([selectedTagId])
-    void router.push(buildQueryString({ tagIds: [selectedTagId] }))
+    router.query.tagIds = selectedTagId
+    void router.push(router)
   }
 
   function handleLanguageIdsChange(values: string[]): void {
-    setSelectedLanguageIds(uniq(values))
-    void router.push(buildQueryString({ languageIds: values }))
+    setSelectedLanguageIds(values)
+    router.query.languageIds = values
+    void router.push(router)
   }
 
   return (

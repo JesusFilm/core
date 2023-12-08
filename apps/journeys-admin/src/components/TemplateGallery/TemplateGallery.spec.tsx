@@ -62,7 +62,7 @@ describe('TemplateGallery', () => {
     const push = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
-      query: { tagIds: undefined, languageIds: '529' }
+      query: { tagIds: [], languageIds: ['529'] }
     } as unknown as NextRouter)
 
     const { getByRole, queryByRole } = render(
@@ -94,16 +94,20 @@ describe('TemplateGallery', () => {
     expect(
       queryByRole('heading', { level: 5, name: 'Hope' })
     ).not.toBeInTheDocument()
-    expect(push).toHaveBeenCalledWith(
-      'undefined?languageIds=529&tagIds=acceptanceTagId'
-    )
+    expect(push).toHaveBeenCalledWith({
+      push,
+      query: {
+        tagIds: ['acceptanceTagId'],
+        languageIds: ['529']
+      }
+    })
   })
 
   it('should render templates filtered via language ids', async () => {
     const push = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
-      query: { languageIds: '' }
+      query: { languageIds: [] }
     } as unknown as NextRouter)
 
     const { getByRole, getAllByRole, getByTestId } = render(
@@ -125,7 +129,12 @@ describe('TemplateGallery', () => {
     fireEvent.click(getByRole('button', { name: 'French Français' }))
     fireEvent.click(getByTestId('PresentationLayer'))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('undefined?languageIds=496')
+      expect(push).toHaveBeenCalledWith({
+        push,
+        query: {
+          languageIds: ['496']
+        }
+      })
     })
   })
 
@@ -133,7 +142,7 @@ describe('TemplateGallery', () => {
     const push = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
-      query: { tagIds: undefined, languageIds: '529' }
+      query: { tagIds: [], languageIds: ['529'] }
     } as unknown as NextRouter)
 
     const { getByRole } = render(
@@ -157,9 +166,13 @@ describe('TemplateGallery', () => {
 
     fireEvent.click(getByRole('button', { name: 'Acceptance Acceptance' }))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        'undefined?languageIds=529&tagIds=acceptanceTagId'
-      )
+      expect(push).toHaveBeenCalledWith({
+        push,
+        query: {
+          tagIds: 'acceptanceTagId',
+          languageIds: ['529']
+        }
+      })
     })
   })
 })

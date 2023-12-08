@@ -7,7 +7,7 @@ if (typeof window !== 'undefined') {
   localePath = require('path').resolve('../../libs/locales')
 } else {
   // vercel run time
-  localePath = require('path').resolve('./public/locales')
+  localePath = '/app/public/locales'
 }
 
 /**
