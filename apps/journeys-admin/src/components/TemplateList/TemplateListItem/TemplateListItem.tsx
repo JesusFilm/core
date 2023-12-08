@@ -20,21 +20,19 @@ import MoreIcon from '@core/shared/ui/icons/More'
 import {
   GetAdminJourneys_journeys as AdminJourney,
   GetAdminJourneys
-} from '../../../__generated__/GetAdminJourneys'
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
-import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
+} from '../../../../__generated__/GetAdminJourneys'
+import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
+import { JourneyCardMenu } from '../../JourneyList/JourneyCard/JourneyCardMenu'
 
-export interface TemplateCardProps {
+export interface TemplateListItemProps {
   journey?: AdminJourney | Journey
-  isPublisher?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
-export function TemplateCard({
+export function TemplateListItem({
   journey,
-  isPublisher,
   refetch
-}: TemplateCardProps): ReactElement {
+}: TemplateListItemProps): ReactElement {
   const nativeLanguage =
     journey?.language.name.find(({ primary }) => primary)?.value ?? ''
   const localLanguage = journey?.language.name.find(
@@ -69,14 +67,7 @@ export function TemplateCard({
           borderBottomRightRadius: { xs: 0, sm: 12 },
           borderBottom: '1px solid',
           borderColor: 'divider'
-        },
-        '&:first-of-type':
-          isPublisher !== true
-            ? {
-                borderTopLeftRadius: { xs: 0, sm: 12 },
-                borderTopRightRadius: { xs: 0, sm: 12 }
-              }
-            : undefined
+        }
       }}
       data-testid="JourneysAdminTemplateCard"
     >
@@ -119,13 +110,7 @@ export function TemplateCard({
         }}
       >
         <NextLink
-          href={
-            journey != null
-              ? `/${isPublisher === true ? 'publisher' : 'templates'}/${
-                  journey.id
-                }`
-              : ''
-          }
+          href={journey != null ? `/publisher/${journey.id}` : ''}
           passHref
           legacyBehavior
           prefetch={false}
@@ -137,7 +122,12 @@ export function TemplateCard({
                   <Typography variant="subtitle1" noWrap>
                     {journey.title}
                   </Typography>
-                  <Typography variant="body2" noWrap sx={{ fontSize: 12 }}>
+                  <Typography
+                    variant="body2"
+                    noWrap
+                    sx={{ fontSize: 12 }}
+                    suppressHydrationWarning
+                  >
                     {date}
                     {journey?.description != null
                       ? ` - ${journey.description}`
@@ -153,13 +143,12 @@ export function TemplateCard({
             </CardContent>
           </CardActionArea>
         </NextLink>
-
         <CardActions sx={{ px: 4, py: 2 }}>
           <Stack
             direction="row"
             alignItems="center"
             sx={{
-              mt: isPublisher !== true ? 2 : 0,
+              mt: 0,
               display: 'flex',
               justifyContent: 'flex-start',
               width: '100%'
@@ -183,27 +172,22 @@ export function TemplateCard({
                 />
               </>
             )}
-
-            {isPublisher === true && (
-              <Box sx={{ display: 'flex', ml: 'auto' }}>
-                {journey != null ? (
-                  <JourneyCardMenu
-                    id={journey.id}
-                    status={journey.status}
-                    slug={journey.slug}
-                    published={journey.publishedAt != null}
-                    template
-                    refetch={refetch}
-                  />
-                ) : (
-                  <>
-                    <IconButton disabled>
-                      <MoreIcon />
-                    </IconButton>
-                  </>
-                )}
-              </Box>
-            )}
+            <Box sx={{ display: 'flex', ml: 'auto' }}>
+              {journey != null ? (
+                <JourneyCardMenu
+                  id={journey.id}
+                  status={journey.status}
+                  slug={journey.slug}
+                  published={journey.publishedAt != null}
+                  template
+                  refetch={refetch}
+                />
+              ) : (
+                <IconButton disabled>
+                  <MoreIcon />
+                </IconButton>
+              )}
+            </Box>
           </Stack>
         </CardActions>
       </Stack>

@@ -3,11 +3,10 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
@@ -15,11 +14,21 @@ import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
 } from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
-import { JourneyListProps } from '../../JourneyList/JourneyList'
+import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
-import { TemplateCard } from '../../TemplateCard'
+import { LoadingTemplateList } from '../LoadingTemplateList'
+import { TemplateListItem } from '../TemplateListItem'
 
-export function ArchivedTemplates({
+const Dialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "core/shared/ui-dynamic/Dialog" */
+      '@core/shared/ui-dynamic/Dialog'
+    ).then((mod) => mod.Dialog),
+  { ssr: false }
+)
+
+export function ArchivedTemplateList({
   sortOrder,
   event
 }: Omit<JourneyListProps, 'user'>): ReactElement {
@@ -49,8 +58,10 @@ export function ArchivedTemplates({
       }
     }
   })
-  const [openRestoreDialog, setOpenRestoreDialog] = useState(false)
-  const [openTrashDialog, setOpenTrashDialog] = useState(false)
+  const [openRestoreDialog, setOpenRestoreDialog] = useState<
+    boolean | undefined
+  >()
+  const [openTrashDialog, setOpenTrashDialog] = useState<boolean | undefined>()
 
   async function handleRestoreSubmit(): Promise<void> {
     try {
@@ -108,45 +119,38 @@ export function ArchivedTemplates({
 
   return (
     <>
-      <Box>
-        {sortedJourneys != null ? (
-          <>
-            {sortedJourneys.map((journey) => (
-              <TemplateCard
-                key={journey.id}
-                journey={journey}
-                isPublisher
-                refetch={refetch}
-              />
-            ))}
-            {sortedJourneys.length === 0 && (
-              <Card
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  pt: 20,
-                  pb: 16,
-                  borderBottomLeftRadius: { xs: 0, sm: 12 },
-                  borderBottomRightRadius: { xs: 0, sm: 12 },
-                  borderTopLeftRadius: 0,
-                  borderTopRightRadius: 0
-                }}
-              >
-                <Typography variant="subtitle1" align="center" gutterBottom>
-                  {t('No archived templates.')}
-                </Typography>
-              </Card>
-            )}
-          </>
-        ) : (
-          <>
-            {[0, 1, 2].map((index) => (
-              <TemplateCard key={`templateCard${index}`} isPublisher />
-            ))}
-          </>
-        )}
-      </Box>
+      {sortedJourneys != null ? (
+        <Box>
+          {sortedJourneys.map((journey) => (
+            <TemplateListItem
+              key={journey.id}
+              journey={journey}
+              refetch={refetch}
+            />
+          ))}
+          {sortedJourneys.length === 0 && (
+            <Card
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                pt: 20,
+                pb: 16,
+                borderBottomLeftRadius: { xs: 0, sm: 12 },
+                borderBottomRightRadius: { xs: 0, sm: 12 },
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0
+              }}
+            >
+              <Typography variant="subtitle1" align="center" gutterBottom>
+                {t('No archived templates.')}
+              </Typography>
+            </Card>
+          )}
+        </Box>
+      ) : (
+        <LoadingTemplateList hideHelperText />
+      )}
       <Stack alignItems="center">
         <Typography
           variant="caption"
@@ -157,44 +161,48 @@ export function ArchivedTemplates({
           {t('Archived templates are delisted from the Template Library.')}
         </Typography>
       </Stack>
-      <Dialog
-        open={openRestoreDialog}
-        onClose={handleClose}
-        dialogTitle={{
-          title: t('Unarchive Templates'),
-          closeButton: true
-        }}
-        dialogAction={{
-          onSubmit: handleRestoreSubmit,
-          submitLabel: t('Unarchive'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t(
-            'Are you sure you would like to unarchive all archived templates immediately?'
-          )}
-        </Typography>
-      </Dialog>
-      <Dialog
-        open={openTrashDialog}
-        onClose={handleClose}
-        dialogTitle={{
-          title: t('Trash Templates'),
-          closeButton: true
-        }}
-        dialogAction={{
-          onSubmit: handleTrashSubmit,
-          submitLabel: t('Trash'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t(
-            'Are you sure you would like to trash all archived templates immediately?'
-          )}
-        </Typography>
-      </Dialog>
+      {openRestoreDialog != null && (
+        <Dialog
+          open={openRestoreDialog}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Unarchive Templates'),
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: handleRestoreSubmit,
+            submitLabel: t('Unarchive'),
+            closeLabel: t('Cancel')
+          }}
+        >
+          <Typography>
+            {t(
+              'Are you sure you would like to unarchive all archived templates immediately?'
+            )}
+          </Typography>
+        </Dialog>
+      )}
+      {openTrashDialog != null && (
+        <Dialog
+          open={openTrashDialog}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Trash Templates'),
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: handleTrashSubmit,
+            submitLabel: t('Trash'),
+            closeLabel: t('Cancel')
+          }}
+        >
+          <Typography>
+            {t(
+              'Are you sure you would like to trash all archived templates immediately?'
+            )}
+          </Typography>
+        </Dialog>
+      )}
     </>
   )
 }
