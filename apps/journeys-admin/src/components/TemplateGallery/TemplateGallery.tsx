@@ -19,11 +19,11 @@ export function TemplateGallery(): ReactElement {
   const router = useRouter()
   const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
     router.query.languageIds != null
-      ? (router.query.languageIds as string).split(',')
+      ? uniq((router.query.languageIds as string).split(','))
       : ['529']
   )
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
-    router.query.tagIds != null ? castArray(router.query.tagIds) : []
+    router.query.tagIds != null ? uniq(castArray(router.query.tagIds)) : []
   )
   const buildQueryString = ({
     tagIds = selectedTagIds,
@@ -44,10 +44,10 @@ export function TemplateGallery(): ReactElement {
     newSelectedTagIds: string[],
     availableTagIds: string[]
   ): void {
-    const tagIds = [
+    const tagIds = uniq([
       ...difference(selectedTagIds, availableTagIds),
       ...newSelectedTagIds
-    ]
+    ])
     setSelectedTagIds(tagIds)
     void router.push(buildQueryString({ tagIds }))
   }
@@ -58,7 +58,7 @@ export function TemplateGallery(): ReactElement {
   }
 
   function handleLanguageIdsChange(values: string[]): void {
-    setSelectedLanguageIds(values)
+    setSelectedLanguageIds(uniq(values))
     void router.push(buildQueryString({ languageIds: values }))
   }
 

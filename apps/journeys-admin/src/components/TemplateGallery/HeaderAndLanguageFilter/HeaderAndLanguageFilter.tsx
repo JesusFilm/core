@@ -167,7 +167,6 @@ export function HeaderAndLanguageFilter({
     (languageName) => languageName.localName ?? languageName.nativeName ?? ' '
   )
   const [firstLanguage, secondLanguage] = languageNames
-  const count = languageNames.length
 
   const journeyTemplatesTypographyProps: LocalTypographyProps = {
     sx: { flexBasis: { xs: '100%', md: 'initial' } }
@@ -223,7 +222,7 @@ export function HeaderAndLanguageFilter({
         flexWrap={{ xs: 'wrap', md: 'initial' }}
         sx={{ pb: { xs: 6, md: 9 }, position: 'relative' }}
       >
-        {count === 2 && (
+        {selectedLanguageIds.length === 2 && (
           <Trans t={t} values={{ firstLanguage, secondLanguage }}>
             <LocalTypography {...journeyTemplatesTypographyProps}>
               Journey Templates
@@ -234,8 +233,12 @@ export function HeaderAndLanguageFilter({
             </LocalButton>
           </Trans>
         )}
-        {count !== 2 && (
-          <Trans t={t} values={{ firstLanguage }} count={count}>
+        {selectedLanguageIds.length !== 2 && (
+          <Trans
+            t={t}
+            values={{ firstLanguage }}
+            count={selectedLanguageIds.length}
+          >
             <LocalTypography {...journeyTemplatesTypographyProps}>
               Journey Templates
             </LocalTypography>
