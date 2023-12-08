@@ -166,8 +166,6 @@ describe('FormBlock', () => {
         resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('user is not allowed to update block')
     })
-
-    it.skip('should validate apiToken')
   })
 
   describe('form', () => {
