@@ -3,6 +3,10 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import {
+  GetJourneys,
+  GetJourneysVariables
+} from '../../__generated__/GetJourneys'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -35,7 +39,7 @@ export const getServerSideProps = withUserTokenSSR()(
       resolvedUrl
     })
 
-    await apolloClient.query({
+    await apolloClient.query<GetJourneys, GetJourneysVariables>({
       // from apps/journeys-admin/src/components/TemplateSections/TemplateSections.tsx useJourneysQuery
       query: GET_JOURNEYS,
       variables: {
@@ -52,7 +56,8 @@ export const getServerSideProps = withUserTokenSSR()(
 
     return {
       props: {
-        ...translations
+        ...translations,
+        initialApolloState: apolloClient.cache.extract()
       }
     }
   }
