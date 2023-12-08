@@ -9,11 +9,13 @@ import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { useAdminJourneysSuspenseQuery } from '../../../libs/useAdminJourneysSuspenseQuery'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import type { JourneyListProps } from '../JourneyList'
+import { LoadingJourneyList } from '../LoadingJourneyList'
 
 import { ActivePriorityList } from './ActivePriorityList'
 import { AddJourneyButton } from './AddJourneyButton'
+import { DiscoveryJourneys } from './DiscoveryJourneys'
 
 const Dialog = dynamic(
   async () =>
@@ -48,7 +50,7 @@ export function ActiveJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useAdminJourneysSuspenseQuery({
+  const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
     useLastActiveTeamId: true
   })
@@ -138,36 +140,41 @@ export function ActiveJourneyList({
 
   return (
     <>
-      <Box>
-        <ActivePriorityList
-          journeys={data.journeys}
-          sortOrder={sortOrder}
-          refetch={refetch}
-          user={user}
-        />
-        {data.journeys.length === 0 && (
-          <Card
-            variant="outlined"
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              py: 20,
-              borderBottomLeftRadius: { xs: 0, sm: 12 },
-              borderBottomRightRadius: { xs: 0, sm: 12 },
-              borderTopLeftRadius: 0,
-              borderTopRightRadius: 0
-            }}
-          >
-            <Typography variant="subtitle1" align="center" gutterBottom>
-              {t('No journeys to display.')}
-            </Typography>
-            <Typography variant="caption" align="center" gutterBottom>
-              {t('Create a journey, then find it here.')}
-            </Typography>
-            <AddJourneyButton />
-          </Card>
-        )}
-      </Box>
+      {data?.journeys == null ? (
+        <LoadingJourneyList hideHelperText />
+      ) : (
+        <Box>
+          <ActivePriorityList
+            journeys={data.journeys}
+            sortOrder={sortOrder}
+            refetch={refetch}
+            user={user}
+          />
+          {data.journeys.length === 0 && (
+            <Card
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                py: 20,
+                borderBottomLeftRadius: { xs: 0, sm: 12 },
+                borderBottomRightRadius: { xs: 0, sm: 12 },
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0
+              }}
+            >
+              <Typography variant="subtitle1" align="center" gutterBottom>
+                {t('No journeys to display.')}
+              </Typography>
+              <Typography variant="caption" align="center" gutterBottom>
+                {t('Create a journey, then find it here.')}
+              </Typography>
+              <AddJourneyButton />
+            </Card>
+          )}
+        </Box>
+      )}
+      <DiscoveryJourneys />
       <Stack alignItems="center">
         <Typography
           variant="caption"

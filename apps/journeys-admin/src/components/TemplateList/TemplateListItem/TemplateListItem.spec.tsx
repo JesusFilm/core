@@ -1,24 +1,13 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 
-import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
-import {
-  defaultTemplate,
-  descriptiveTemplate,
-  oldTemplate
-} from '../TemplateLibrary/TemplateListData'
+import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
+import { defaultTemplate, descriptiveTemplate, oldTemplate } from '../data'
 
-import { TemplateCard } from '.'
+import { TemplateListItem } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
-describe('TemplateCard', () => {
+describe('TemplateListItem', () => {
   it('should render', () => {
-    const { getByText } = render(<TemplateCard journey={oldTemplate} />)
+    const { getByText } = render(<TemplateListItem journey={oldTemplate} />)
     expect(getByText('An Old Template Heading')).toBeInTheDocument()
     expect(
       getByText(
@@ -29,7 +18,9 @@ describe('TemplateCard', () => {
   })
 
   it('should show native and local language', () => {
-    const { getByText } = render(<TemplateCard journey={descriptiveTemplate} />)
+    const { getByText } = render(
+      <TemplateListItem journey={descriptiveTemplate} />
+    )
     expect(getByText('普通話 (Chinese, Mandarin)')).toBeInTheDocument()
   })
 
@@ -53,23 +44,12 @@ describe('TemplateCard', () => {
         ]
       }
     }
-    const { getByText } = render(<TemplateCard journey={template} />)
+    const { getByText } = render(<TemplateListItem journey={template} />)
     expect(getByText('English')).toBeInTheDocument()
   })
 
   it('should link to template details', () => {
-    const { getByRole } = render(<TemplateCard journey={defaultTemplate} />)
-    expect(getByRole('link')).toHaveAttribute('href', '/templates/template-id')
-  })
-
-  it('should link to publisher template details', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <TemplateCard journey={defaultTemplate} isPublisher />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
+    const { getByRole } = render(<TemplateListItem journey={defaultTemplate} />)
     expect(getByRole('link')).toHaveAttribute('href', '/publisher/template-id')
   })
 })
