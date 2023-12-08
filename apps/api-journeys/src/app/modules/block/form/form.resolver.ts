@@ -21,6 +21,8 @@ import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
 
+import { validateFormCredentials } from './validateFormCredentials'
+
 @Resolver('FormBlock')
 export class FormBlockResolver {
   constructor(
@@ -72,7 +74,7 @@ export class FormBlockResolver {
   async formBlockUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('input') { apiToken, projectId, formSlug }: FormBlockUpdateInput
+    @Args('input') input: FormBlockUpdateInput
   ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
       where: { id },
@@ -96,25 +98,9 @@ export class FormBlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
 
-    let projects: Project[] = []
-    try {
-      if (apiToken != null) {
-        projects = (await createClient('', { apiToken }).getMyProjects()).data
-      }
-    } catch (e) {
-      throw new GraphQLError('invalid token value', {
-        extensions: { code: 'BAD_USER_INPUT' }
-      })
-    }
-    if (
-      projectId != null &&
-      projects.find((project) => project.id === projectId) == null
-    )
-      throw new GraphQLError('invalid project id', {
-        extensions: { code: 'BAD_USER_INPUT' }
-      })
+    const validatedInput = await validateFormCredentials({ input, block })
 
-    return await this.blockService.update(id, { apiToken, projectId, formSlug })
+    return await this.blockService.update(id, validatedInput)
   }
 
   @ResolveField('projects')

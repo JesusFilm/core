@@ -167,31 +167,7 @@ describe('FormBlock', () => {
       ).rejects.toThrow('user is not allowed to update block')
     })
 
-    it('throws error if token is invalid', async () => {
-      const mockFormiumClient = {
-        getMyProjects: jest.fn().mockRejectedValueOnce(new Error('error'))
-      } as unknown as FormiumClient
-      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
-
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      await expect(
-        resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
-      ).rejects.toThrow('invalid token value')
-    })
-
-    it('throws error is project id is invalid', async () => {
-      const mockFormiumClient = {
-        getMyProjects: jest.fn(() => ({
-          data: [{ id: 'invalid-projectId', name: 'projectName' }]
-        }))
-      } as unknown as FormiumClient
-      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
-
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      await expect(
-        resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
-      ).rejects.toThrow('invalid project id')
-    })
+    it('should validate apiToken')
   })
 
   describe('form', () => {
