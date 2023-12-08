@@ -1,9 +1,10 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { JourneyStatus } from '../../../__generated__/globalTypes'
+import { cache } from '../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+
 import {
   defaultTemplate,
   descriptiveTemplate,
@@ -16,7 +17,7 @@ import { TemplateList } from '.'
 const TemplateListStory: Meta<typeof TemplateList> = {
   ...journeysAdminConfig,
   component: TemplateList,
-  title: 'Journeys-Admin/TemplatesList',
+  title: 'Journeys-Admin/TemplateList',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -24,9 +25,15 @@ const TemplateListStory: Meta<typeof TemplateList> = {
 }
 
 const Template: StoryObj<typeof TemplateList> = {
-  render: ({ ...args }) => (
-    <MockedProvider
-      mocks={[
+  render: ({ ...args }) => <TemplateList {...args} />
+}
+
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [
         {
           request: {
             query: GET_ADMIN_JOURNEYS,
@@ -46,19 +53,11 @@ const Template: StoryObj<typeof TemplateList> = {
             }
           }
         }
-      ]}
-    >
-      <TemplateList {...args.props} />
-    </MockedProvider>
-  )
-}
-
-export const Default = {
-  ...Template,
-  args: {
-    props: {
-      event: ''
+      ]
     }
+  },
+  args: {
+    event: ''
   }
 }
 
