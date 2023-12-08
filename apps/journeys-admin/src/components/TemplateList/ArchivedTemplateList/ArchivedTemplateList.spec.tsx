@@ -4,33 +4,27 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import {
+  RESTORE_ARCHIVED_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
 import { SortOrder } from '../../JourneyList/JourneySort'
-import {
-  DELETE_TRASHED_JOURNEYS,
-  RESTORE_TRASHED_JOURNEYS
-} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
-import {
-  defaultTemplate,
-  oldTemplate
-} from '../../TemplateLibrary/TemplateListData'
 import { ThemeProvider } from '../../ThemeProvider'
+import { defaultTemplate, oldTemplate } from '../data'
 
-import { TrashedTemplates } from '.'
+import { ArchivedTemplateList } from '.'
 
-const trashedJourneysMock = {
+const archivedJourneysMock = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.trashed],
+      status: [JourneyStatus.archived],
       template: true
     }
   },
   result: {
     data: {
-      journeys: [
-        { ...defaultTemplate, trashedAt: '2021-12-07T03:22:41.135Z' },
-        { ...oldTemplate, trashedAt: '2021-12-07T03:22:41.135Z' }
-      ]
+      journeys: [defaultTemplate, oldTemplate]
     }
   }
 }
@@ -39,7 +33,7 @@ const noJourneysMock = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.trashed],
+      status: [JourneyStatus.archived],
       template: true
     }
   },
@@ -50,18 +44,13 @@ const noJourneysMock = {
   }
 }
 
-describe('TrashedTemplatesTab', () => {
-  beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2021-12-11'))
-  })
-
+describe('ArchivedTemplateList', () => {
   it('should render templates in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
-      <MockedProvider mocks={[trashedJourneysMock]}>
+      <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedTemplates />
+            <ArchivedTemplateList />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -77,14 +66,9 @@ describe('TrashedTemplatesTab', () => {
   })
 
   it('should order templates in alphabetical order', async () => {
-    const trashedLowerCaseJourneyTitle = {
+    const lowerCaseJourneyTitle = {
       ...defaultTemplate,
-      title: 'a lower case title',
-      trashedAt: '2021-12-07T03:22:41.135Z'
-    }
-    const trashedOldJourney = {
-      ...oldTemplate,
-      trashedAt: '2021-12-07T03:22:41.135Z'
+      title: 'a lower case title'
     }
     const { getAllByLabelText } = render(
       <MockedProvider
@@ -93,13 +77,13 @@ describe('TrashedTemplatesTab', () => {
             request: {
               query: GET_ADMIN_JOURNEYS,
               variables: {
-                status: [JourneyStatus.trashed],
+                status: [JourneyStatus.archived],
                 template: true
               }
             },
             result: {
               data: {
-                journeys: [trashedLowerCaseJourneyTitle, trashedOldJourney]
+                journeys: [lowerCaseJourneyTitle, oldTemplate]
               }
             }
           }
@@ -107,14 +91,14 @@ describe('TrashedTemplatesTab', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedTemplates sortOrder={SortOrder.TITLE} />
+            <ArchivedTemplateList sortOrder={SortOrder.TITLE} />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1, 2023English'
+        'a lower case titleJanuary 1English'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
@@ -122,50 +106,12 @@ describe('TrashedTemplatesTab', () => {
     )
   })
 
-  it('should exclude templates older than 40 days', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ADMIN_JOURNEYS,
-              variables: {
-                status: [JourneyStatus.trashed],
-                template: true
-              }
-            },
-            result: {
-              data: {
-                journeys: [
-                  { ...defaultTemplate, trashedAt: '2021-12-07T03:22:41.135Z' },
-                  { ...oldTemplate, trashedAt: '2021-10-31T03:22:41.135Z' }
-                ]
-              }
-            }
-          }
-        ]}
-      >
-        <ThemeProvider>
-          <SnackbarProvider>
-            <TrashedTemplates sortOrder={SortOrder.TITLE} />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'Default Template Heading'
-      )
-    )
-    expect(getAllByLabelText('template-card')[1]).toBeUndefined()
-  })
-
   it('should render loading skeleton', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedTemplates />
+            <ArchivedTemplateList />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -175,41 +121,43 @@ describe('TrashedTemplatesTab', () => {
     )
   })
 
-  describe('Restore All', () => {
+  describe('Unarchive All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultTemplate.id, status: 'published' }]
+      data: {
+        journeysRestore: [{ id: defaultTemplate.id, status: 'published' }]
+      }
     }))
-    const restoreJourneysMock = {
+    const archiveJourneysMock = {
       request: {
-        query: RESTORE_TRASHED_JOURNEYS,
-        variables: {
-          ids: [defaultTemplate.id, oldTemplate.id]
-        }
+        query: RESTORE_ARCHIVED_JOURNEYS,
+        variables: { ids: [defaultTemplate.id, oldTemplate.id] }
       },
       result
     }
 
-    it('should display the restore all dialog', () => {
+    it('should display the unarchive all dialog', async () => {
       const { getByText } = render(
-        <MockedProvider mocks={[trashedJourneysMock]}>
+        <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedTemplates event="restoreAllTrashed" />
+              <ArchivedTemplateList event="restoreAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-      expect(getByText('Restore Templates')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Unarchive Templates')).toBeInTheDocument()
+      )
     })
 
-    it('should restore all journeys', async () => {
+    it('should unarchive all templates', async () => {
       const { getByText } = render(
         <MockedProvider
-          mocks={[trashedJourneysMock, restoreJourneysMock, noJourneysMock]}
+          mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedTemplates event="restoreAllTrashed" />
+              <ArchivedTemplateList event="restoreAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -217,7 +165,7 @@ describe('TrashedTemplatesTab', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Restore'))
+      fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
@@ -225,14 +173,14 @@ describe('TrashedTemplatesTab', () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
-            trashedJourneysMock,
-            { ...restoreJourneysMock, error: new Error('error') }
+            archivedJourneysMock,
+            { ...archiveJourneysMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <TrashedTemplates event="restoreAllTrashed" />
+                <ArchivedTemplateList event="restoreAllArchived" />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
@@ -241,18 +189,20 @@ describe('TrashedTemplatesTab', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Restore'))
+      fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
 
-  describe('Delete All', () => {
+  describe('Trash All', () => {
     const result = jest.fn(() => ({
-      data: { journeysDelete: [{ id: defaultTemplate.id, status: 'deleted' }] }
+      data: {
+        journeysTrash: [{ id: defaultTemplate.id, status: 'trashAllArchived' }]
+      }
     }))
-    const deleteJourneysMock = {
+    const trashJourneysMock = {
       request: {
-        query: DELETE_TRASHED_JOURNEYS,
+        query: TRASH_ARCHIVED_JOURNEYS,
         variables: {
           ids: [defaultTemplate.id, oldTemplate.id]
         }
@@ -260,27 +210,27 @@ describe('TrashedTemplatesTab', () => {
       result
     }
 
-    it('should display the delete all dialog', () => {
+    it('should display the trash all dialog', () => {
       const { getByText } = render(
-        <MockedProvider mocks={[trashedJourneysMock]}>
+        <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedTemplates event="deleteAllTrashed" />
+              <ArchivedTemplateList event="trashAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-      expect(getByText('Delete Templates Forever')).toBeInTheDocument()
+      expect(getByText('Trash Templates')).toBeInTheDocument()
     })
 
     it('should trash all templates', async () => {
       const { getByText } = render(
         <MockedProvider
-          mocks={[trashedJourneysMock, deleteJourneysMock, noJourneysMock]}
+          mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedTemplates event="deleteAllTrashed" />
+              <ArchivedTemplateList event="trashAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -288,7 +238,7 @@ describe('TrashedTemplatesTab', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Delete Forever'))
+      fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
@@ -296,14 +246,14 @@ describe('TrashedTemplatesTab', () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
-            trashedJourneysMock,
-            { ...deleteJourneysMock, error: new Error('error') }
+            archivedJourneysMock,
+            { ...trashJourneysMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <TrashedTemplates event="deleteAllTrashed" />
+                <ArchivedTemplateList event="trashAllArchived" />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
@@ -312,7 +262,7 @@ describe('TrashedTemplatesTab', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Delete Forever'))
+      fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
