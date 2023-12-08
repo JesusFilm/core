@@ -39,6 +39,8 @@ export const getServerSideProps = withUserTokenSSR()(
       resolvedUrl
     })
 
+    if (redirect != null) return { redirect }
+
     await apolloClient.query<GetJourneys, GetJourneysVariables>({
       // from apps/journeys-admin/src/components/TemplateSections/TemplateSections.tsx useJourneysQuery
       query: GET_JOURNEYS,
@@ -51,8 +53,6 @@ export const getServerSideProps = withUserTokenSSR()(
         }
       }
     })
-
-    if (redirect != null) return { redirect }
 
     return {
       props: {
