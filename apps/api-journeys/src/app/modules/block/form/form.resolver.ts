@@ -1,6 +1,5 @@
 import { subject } from '@casl/ability'
 import { createClient } from '@formium/client'
-import { Project } from '@formium/types'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
