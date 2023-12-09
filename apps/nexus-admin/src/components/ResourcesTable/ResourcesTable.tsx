@@ -25,7 +25,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
     { field: 'name', headerName: 'Name', flex: 1 },
     {
       field: 'videoId',
-      headerName: 'VideoId',
+      headerName: 'Video ID',
       flex: 1
     },
     {
