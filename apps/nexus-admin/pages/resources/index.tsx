@@ -1,5 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Stack } from '@mui/material'
+import { AuthAction, withUser } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import { DeleteModal } from '../../src/components/DeleteModal'
@@ -197,4 +198,6 @@ const ResourcesPage = () => {
   )
 }
 
-export default ResourcesPage
+export default withUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
+})(ResourcesPage)
