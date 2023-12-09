@@ -2,6 +2,8 @@ FROM node:18-bullseye-slim
 
 EXPOSE 3000
 
+ENV VERCEL=true
+
 WORKDIR /app
 COPY ./dist/apps/journeys-admin .
 
