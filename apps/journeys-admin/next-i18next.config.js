@@ -19,7 +19,8 @@ const i18nConfig = {
     defaultLocale: 'en',
     locales: ['en']
   },
-  localePath
+  localePath,
+  debug: true
 }
 
 module.exports = i18nConfig
