@@ -33,15 +33,10 @@ type NexusApp = {
 }
 
 export function Index() {
-  // const user = useUser()
   const [nexusApps, setNexusApps] = useState<NexusApp[] | []>([])
   const [openCreateNexusModal, setOpenCreateNexusModal] =
     useState<boolean>(false)
   const router = useRouter()
-
-  // const logout = async () => {
-  //   await user.signOut()
-  // }
 
   const { data, loading } = useQuery(GET_NEXUSES)
 
@@ -102,10 +97,6 @@ export function Index() {
       <Fab color="primary" onClick={() => setOpenCreateNexusModal(true)}>
         <AddIcon />
       </Fab>
-      {/* <Typography>Hi {user.email}!</Typography>
-      <Button variant="contained" onClick={logout}>
-        Log out
-      </Button> */}
       <CreateNexusModal
         open={openCreateNexusModal}
         onClose={() => setOpenCreateNexusModal(false)}

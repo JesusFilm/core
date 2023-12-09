@@ -1,5 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Stack } from '@mui/material'
+import { AuthAction, withUser } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
 import { ChannelsTable } from '../../src/components/ChannelsTable'
 import { CreateChannelModal } from '../../src/components/CreateChannelModal'
@@ -186,4 +187,6 @@ const ChannelsPage = () => {
   )
 }
 
-export default ChannelsPage
+export default withUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
+})(ChannelsPage)
