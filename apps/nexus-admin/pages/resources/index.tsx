@@ -1,10 +1,20 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Stack } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import { DeleteModal } from '../../src/components/DeleteModal'
 import { MainLayout } from '../../src/components/MainLayout'
 import { ResourcesTable } from '../../src/components/ResourcesTable'
+
+export const GET_RESOURCES = gql`
+  query {
+    resources {
+      id
+      name
+      videoId
+    }
+  }
+`
 
 const RESOURCE_LOAD = gql`
   mutation AddResourceFromGoogleDrive(
@@ -13,8 +23,6 @@ const RESOURCE_LOAD = gql`
     addResourcefromGoogleDrive(input: $input) {
       id
       name
-      nexusId
-      refLink
       videoId
     }
   }
@@ -25,8 +33,6 @@ const RESOURCE_DELETE = gql`
     resourceDelete(id: $resourceId) {
       id
       name
-      nexusId
-      refLink
       videoId
     }
   }
@@ -41,11 +47,21 @@ export type Resource = {
 const ResourcesPage = () => {
   const [deleteResourceModal, setDeleteResourceModal] = useState<boolean>(false)
   const [resourceId, setResourceId] = useState<string>('')
+  const [resources, setResources] = useState<Resource[] | []>([])
   const [openPicker, authResponse] = useDrivePicker()
-  const [resourceDelete] = useMutation(RESOURCE_DELETE)
-  const [resourceLoad] = useMutation(RESOURCE_LOAD)
   const nexusId =
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
+
+  const { data } = useQuery(GET_RESOURCES)
+
+  useEffect(() => {
+    if (data) {
+      setResources(data?.resources)
+    }
+  }, [data])
+
+  const [resourceDelete] = useMutation(RESOURCE_DELETE)
+  const [resourceLoad] = useMutation(RESOURCE_LOAD)
 
   const openGooglePicker = () => {
     openPicker({
@@ -95,13 +111,7 @@ const ResourcesPage = () => {
           </Button>
         </Stack>
         <ResourcesTable
-          data={[
-            {
-              id: '1',
-              name: 'Test',
-              videoId: '23125Asdafa9821cxdsfrw2'
-            }
-          ]}
+          data={resources}
           onEdit={(resourceId) => {
             setResourceId(resourceId)
             setDeleteResourceModal(true)
