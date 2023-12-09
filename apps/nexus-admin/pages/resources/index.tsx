@@ -5,10 +5,21 @@ import useDrivePicker from 'react-google-drive-picker'
 import { DeleteModal } from '../../src/components/DeleteModal'
 import { MainLayout } from '../../src/components/MainLayout'
 import { ResourcesTable } from '../../src/components/ResourcesTable'
+import { UpdateResourceModal } from '../../src/components/UpdateResourceModal'
 
 export const GET_RESOURCES = gql`
   query {
     resources {
+      id
+      name
+      videoId
+    }
+  }
+`
+
+const GET_RESOURCE = gql`
+  query Resource($resourceId: ID!) {
+    resource(id: $resourceId) {
       id
       name
       videoId
@@ -21,6 +32,16 @@ const RESOURCE_LOAD = gql`
     $input: AddResourceFromGoogleDriveInput!
   ) {
     addResourcefromGoogleDrive(input: $input) {
+      id
+      name
+      videoId
+    }
+  }
+`
+
+const RESOURCE_UPDATE = gql`
+  mutation ResourceUpdate($resourceId: ID!, $input: ResourceUpdateInput!) {
+    resourceUpdate(id: $resourceId, input: $input) {
       id
       name
       videoId
@@ -48,11 +69,22 @@ const ResourcesPage = () => {
   const [deleteResourceModal, setDeleteResourceModal] = useState<boolean>(false)
   const [resourceId, setResourceId] = useState<string>('')
   const [resources, setResources] = useState<Resource[] | []>([])
+  const [resource, setResource] = useState<Resource | null>(null)
+  const [openUpdateResourceModal, setOpenUpdateResourceModal] =
+    useState<boolean>(false)
+
   const [openPicker, authResponse] = useDrivePicker()
   const nexusId =
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
 
   const { data } = useQuery(GET_RESOURCES)
+  const { data: resourceData } = useQuery(GET_RESOURCE, {
+    skip: !resourceId,
+    variables: {
+      resourceId,
+      nexusId
+    }
+  })
 
   useEffect(() => {
     if (data) {
@@ -60,8 +92,15 @@ const ResourcesPage = () => {
     }
   }, [data])
 
-  const [resourceDelete] = useMutation(RESOURCE_DELETE)
+  useEffect(() => {
+    if (resourceData) {
+      setResource(resourceData?.resource)
+    }
+  }, [resourceData])
+
   const [resourceLoad] = useMutation(RESOURCE_LOAD)
+  const [resourceUpdate] = useMutation(RESOURCE_UPDATE)
+  const [resourceDelete] = useMutation(RESOURCE_DELETE)
 
   const openGooglePicker = () => {
     openPicker({
@@ -114,7 +153,7 @@ const ResourcesPage = () => {
           data={resources}
           onEdit={(resourceId) => {
             setResourceId(resourceId)
-            setDeleteResourceModal(true)
+            setOpenUpdateResourceModal(true)
           }}
           onDelete={(resourceId) => {
             setResourceId(resourceId)
@@ -122,6 +161,23 @@ const ResourcesPage = () => {
           }}
         />
       </Stack>
+      <UpdateResourceModal
+        open={openUpdateResourceModal}
+        onClose={() => setOpenUpdateResourceModal(false)}
+        data={resource}
+        onUpdate={(resourceData) => {
+          resourceUpdate({
+            variables: {
+              resourceId,
+              input: resourceData
+            },
+            onCompleted: () => {
+              setOpenUpdateResourceModal(false)
+            },
+            refetchQueries: [GET_RESOURCES]
+          })
+        }}
+      />
       <DeleteModal
         open={deleteResourceModal}
         onClose={() => setDeleteResourceModal(false)}
