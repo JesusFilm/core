@@ -1,12 +1,30 @@
+import { gql, useMutation } from '@apollo/client'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import { Chip, IconButton, Popover, Stack, Typography } from '@mui/material'
+import {
+  Avatar,
+  Chip,
+  IconButton,
+  Popover,
+  Stack,
+  Typography
+} from '@mui/material'
 import { GridCellParams } from '@mui/x-data-grid'
 import { useGoogleLogin } from '@react-oauth/google'
 import { FC, useState } from 'react'
-import { Channel } from '../../../pages/channels'
+import { Channel, GET_CHANNELS } from '../../../pages/channels'
 import { Table } from '../Table'
+
+const CHANNEL_CONNECT = gql`
+  mutation ConnectChannel($input: ConnectYoutubeChannelInput!) {
+    connectYoutubeChannel(input: $input) {
+      id
+      platform
+      connected
+    }
+  }
+`
 
 interface ChannelsTableProps {
   data: Channel[] | []
@@ -21,14 +39,39 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
 }) => {
   const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
   const [channelId, setChannelId] = useState<string>('')
+  const [channelConnect] = useMutation(CHANNEL_CONNECT, {
+    refetchQueries: [GET_CHANNELS]
+  })
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
-    onSuccess: (tokenResponse) => console.log(tokenResponse),
+    onSuccess: ({ code }) => {
+      channelConnect({
+        variables: {
+          input: {
+            channelId,
+            authCode: code,
+            redirectUri:
+              process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI ??
+              'http://localhost:5357'
+          }
+        }
+      })
+    },
     scope: 'https://www.googleapis.com/auth/youtube.upload'
   })
 
   const columns = [
+    {
+      field: 'image',
+      headerName: 'Thumbnail',
+      flex: 1,
+      renderCell: ({ row }: GridCellParams) => {
+        return row.channelYoutubeCredential?.imageUrl ? (
+          <Avatar src={row.channelYoutubeCredential?.imageUrl} alt={row.name} />
+        ) : null
+      }
+    },
     { field: 'name', headerName: 'Channel name', flex: 1 },
     {
       field: 'platform',
@@ -36,16 +79,27 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
       flex: 1
     },
     {
-      field: 'user',
-      headerName: 'User',
+      field: 'youtubeId',
+      headerName: 'Youtube ID',
+      flex: 2,
+      renderCell: ({ row }: GridCellParams) => {
+        return <>{row.channelYoutubeCredential?.youtubeId}</>
+      }
+    },
+    {
+      field: 'connected',
+      headerName: 'Status',
       flex: 1,
       renderCell: ({ row }: GridCellParams) => {
         return (
           <Chip
-            clickable={!row.user}
-            label={row.user ? 'Connected' : 'Connect now'}
-            color={row.user ? 'success' : 'default'}
-            onClick={() => googleLogin()}
+            clickable={!row.connected}
+            label={!!row.connected ? 'Connected' : 'Connect now'}
+            color={!!row.connected ? 'success' : 'default'}
+            onClick={() => {
+              setChannelId(row.id)
+              googleLogin()
+            }}
           />
         )
       }

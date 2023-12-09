@@ -7,13 +7,17 @@ import { DeleteModal } from '../../src/components/DeleteModal'
 import { MainLayout } from '../../src/components/MainLayout'
 import { UpdateChannelModal } from '../../src/components/UpdateChannelModal'
 
-const GET_CHANNELS = gql`
+export const GET_CHANNELS = gql`
   query {
     channels {
       id
-      nexusId
       name
       platform
+      connected
+      channelYoutubeCredential {
+        imageUrl
+        youtubeId
+      }
     }
   }
 `
