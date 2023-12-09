@@ -6,6 +6,20 @@ import { DeleteModal } from '../../src/components/DeleteModal'
 import { MainLayout } from '../../src/components/MainLayout'
 import { ResourcesTable } from '../../src/components/ResourcesTable'
 
+const RESOURCE_LOAD = gql`
+  mutation AddResourceFromGoogleDrive(
+    $input: AddResourceFromGoogleDriveInput!
+  ) {
+    addResourcefromGoogleDrive(input: $input) {
+      id
+      name
+      nexusId
+      refLink
+      videoId
+    }
+  }
+`
+
 const RESOURCE_DELETE = gql`
   mutation ResourceDelete($resourceId: ID!) {
     resourceDelete(id: $resourceId) {
@@ -29,6 +43,9 @@ const ResourcesPage = () => {
   const [resourceId, setResourceId] = useState<string>('')
   const [openPicker, authResponse] = useDrivePicker()
   const [resourceDelete] = useMutation(RESOURCE_DELETE)
+  const [resourceLoad] = useMutation(RESOURCE_LOAD)
+  const nexusId =
+    typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
 
   const openGooglePicker = () => {
     openPicker({
@@ -42,8 +59,24 @@ const ResourcesPage = () => {
         if (data.action === 'cancel') {
           console.log('User clicked cancel/close button')
         }
-        console.log(data)
-        console.log(authResponse)
+
+        if (data.action === 'picked') {
+          loadResourceFromGoogleDrive(data.docs?.[0]?.id)
+        }
+      }
+    })
+  }
+
+  const loadResourceFromGoogleDrive = (fileId: string) => {
+    const accessToken = authResponse?.access_token
+
+    resourceLoad({
+      variables: {
+        input: {
+          accessToken,
+          fileId,
+          nexusId
+        }
       }
     })
   }
