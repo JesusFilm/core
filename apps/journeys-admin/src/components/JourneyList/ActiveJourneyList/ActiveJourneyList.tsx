@@ -3,21 +3,28 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Dialog } from '@core/shared/ui/Dialog'
-
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
-import { DiscoveryJourneys } from '../../DiscoveryJourneys'
-import { useTeam } from '../../Team/TeamProvider'
-import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
+import { LoadingJourneyList } from '../LoadingJourneyList'
 
 import { ActivePriorityList } from './ActivePriorityList'
 import { AddJourneyButton } from './AddJourneyButton'
+import { DiscoveryJourneys } from './DiscoveryJourneys'
+
+const Dialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "core/shared/ui-dynamic/Dialog" */
+      '@core/shared/ui-dynamic/Dialog'
+    ).then((mod) => mod.Dialog),
+  { ssr: false }
+)
 
 export const ARCHIVE_ACTIVE_JOURNEYS = gql`
   mutation ArchiveActiveJourneys($ids: [ID!]!) {
@@ -43,10 +50,9 @@ export function ActiveJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { activeTeam } = useTeam()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
-    teamId: activeTeam?.id
+    useLastActiveTeamId: true
   })
   const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
@@ -68,8 +74,10 @@ export function ActiveJourneyList({
       }
     }
   })
-  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false)
-  const [trashDialogOpen, setTrashDialogOpen] = useState(false)
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState<
+    boolean | undefined
+  >()
+  const [trashDialogOpen, setTrashDialogOpen] = useState<boolean | undefined>()
 
   async function handleArchiveSubmit(): Promise<void> {
     try {
@@ -132,53 +140,41 @@ export function ActiveJourneyList({
 
   return (
     <>
-      <Box>
-        {data?.journeys != null ? (
-          <>
-            <ActivePriorityList
-              journeys={data.journeys}
-              sortOrder={sortOrder}
-              refetch={refetch}
-              user={user}
-            />
-            {data.journeys.length === 0 && (
-              <Card
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  py: 20,
-                  borderBottomLeftRadius: { xs: 0, sm: 12 },
-                  borderBottomRightRadius: { xs: 0, sm: 12 },
-                  borderTopLeftRadius: 0,
-                  borderTopRightRadius: 0
-                }}
-              >
-                <Typography variant="subtitle1" align="center" gutterBottom>
-                  {t('No journeys to display.')}
-                </Typography>
-                <Typography variant="caption" align="center" gutterBottom>
-                  {t('Create a journey, then find it here.')}
-                </Typography>
-                <AddJourneyButton />
-              </Card>
-            )}
-          </>
-        ) : (
-          <>
-            {[0, 1, 2].map((index) => (
-              <JourneyCard key={`journeyCard${index}`} />
-            ))}
-          </>
-        )}
-      </Box>
-      <Box
-        sx={{
-          pt: { xs: 6, sm: 8 }
-        }}
-      >
-        <DiscoveryJourneys />
-      </Box>
+      {data?.journeys == null ? (
+        <LoadingJourneyList hideHelperText />
+      ) : (
+        <Box>
+          <ActivePriorityList
+            journeys={data.journeys}
+            sortOrder={sortOrder}
+            refetch={refetch}
+            user={user}
+          />
+          {data.journeys.length === 0 && (
+            <Card
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                py: 20,
+                borderBottomLeftRadius: { xs: 0, sm: 12 },
+                borderBottomRightRadius: { xs: 0, sm: 12 },
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0
+              }}
+            >
+              <Typography variant="subtitle1" align="center" gutterBottom>
+                {t('No journeys to display.')}
+              </Typography>
+              <Typography variant="caption" align="center" gutterBottom>
+                {t('Create a journey, then find it here.')}
+              </Typography>
+              <AddJourneyButton />
+            </Card>
+          )}
+        </Box>
+      )}
+      <DiscoveryJourneys />
       <Stack alignItems="center">
         <Typography
           variant="caption"
@@ -191,44 +187,48 @@ export function ActiveJourneyList({
           )}
         </Typography>
       </Stack>
-      <Dialog
-        open={archiveDialogOpen}
-        onClose={handleClose}
-        dialogTitle={{
-          title: t('Archive Journeys'),
-          closeButton: true
-        }}
-        dialogAction={{
-          onSubmit: handleArchiveSubmit,
-          submitLabel: t('Archive'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t(
-            'Are you sure you would like to archive all active journeys immediately?'
-          )}
-        </Typography>
-      </Dialog>
-      <Dialog
-        open={trashDialogOpen}
-        onClose={handleClose}
-        dialogTitle={{
-          title: t('Trash Journeys'),
-          closeButton: true
-        }}
-        dialogAction={{
-          onSubmit: handleTrashSubmit,
-          submitLabel: t('Trash'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t(
-            'Are you sure you would like to trash all active journeys immediately?'
-          )}
-        </Typography>
-      </Dialog>
+      {archiveDialogOpen != null && (
+        <Dialog
+          open={archiveDialogOpen}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Archive Journeys'),
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: handleArchiveSubmit,
+            submitLabel: t('Archive'),
+            closeLabel: t('Cancel')
+          }}
+        >
+          <Typography>
+            {t(
+              'Are you sure you would like to archive all active journeys immediately?'
+            )}
+          </Typography>
+        </Dialog>
+      )}
+      {trashDialogOpen != null && (
+        <Dialog
+          open={trashDialogOpen}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Trash Journeys'),
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: handleTrashSubmit,
+            submitLabel: t('Trash'),
+            closeLabel: t('Cancel')
+          }}
+        >
+          <Typography>
+            {t(
+              'Are you sure you would like to trash all active journeys immediately?'
+            )}
+          </Typography>
+        </Dialog>
+      )}
     </>
   )
 }

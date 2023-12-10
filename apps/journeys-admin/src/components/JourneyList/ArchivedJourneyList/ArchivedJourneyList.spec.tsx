@@ -1,8 +1,13 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
+import { Suspense } from 'react'
 
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
@@ -21,20 +26,15 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
-const archivedJourneysMock = {
+const archivedJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.archived]
+      status: [JourneyStatus.archived],
+      useLastActiveTeamId: true
     }
   },
   result: {
@@ -44,11 +44,15 @@ const archivedJourneysMock = {
   }
 }
 
-const noJourneysMock = {
+const noJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.archived]
+      status: [JourneyStatus.archived],
+      useLastActiveTeamId: true
     }
   },
   result: {
@@ -64,7 +68,9 @@ describe('ArchivedJourneyList', () => {
       <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ArchivedJourneyList />
+            <Suspense>
+              <ArchivedJourneyList />
+            </Suspense>
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -92,7 +98,8 @@ describe('ArchivedJourneyList', () => {
             request: {
               query: GET_ADMIN_JOURNEYS,
               variables: {
-                status: [JourneyStatus.archived]
+                status: [JourneyStatus.archived],
+                useLastActiveTeamId: true
               }
             },
             result: {
@@ -105,7 +112,9 @@ describe('ArchivedJourneyList', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <ArchivedJourneyList sortOrder={SortOrder.TITLE} />
+            <Suspense>
+              <ArchivedJourneyList sortOrder={SortOrder.TITLE} />
+            </Suspense>
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -118,21 +127,6 @@ describe('ArchivedJourneyList', () => {
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
       'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the dateEnglish'
-    )
-  })
-
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ArchivedJourneyList />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(3)
     )
   })
 
@@ -150,18 +144,22 @@ describe('ArchivedJourneyList', () => {
       result
     }
 
-    it('should display the unarchive all dialog', () => {
+    it('should display the unarchive all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedJourneyList event="restoreAllArchived" />
+              <Suspense>
+                <ArchivedJourneyList event="restoreAllArchived" />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
-      expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should unarchive all journeys', async () => {
@@ -171,10 +169,12 @@ describe('ArchivedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedJourneyList
-                event="restoreAllArchived"
-                user={{ id: 'user-id1' } as unknown as User}
-              />
+              <Suspense>
+                <ArchivedJourneyList
+                  event="restoreAllArchived"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -197,10 +197,12 @@ describe('ArchivedJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ArchivedJourneyList
-                  event="restoreAllArchived"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
+                <Suspense>
+                  <ArchivedJourneyList
+                    event="restoreAllArchived"
+                    user={{ id: 'user-id1' } as unknown as User}
+                  />
+                </Suspense>
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
@@ -228,18 +230,22 @@ describe('ArchivedJourneyList', () => {
       result
     }
 
-    it('should display the trash all dialog', () => {
+    it('should display the trash all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedJourneyList event="trashAllArchived" />
+              <Suspense>
+                <ArchivedJourneyList event="trashAllArchived" />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
-      expect(getByText('Trash Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Trash Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should trash all journeys', async () => {
@@ -249,10 +255,12 @@ describe('ArchivedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedJourneyList
-                event="trashAllArchived"
-                user={{ id: 'user-id1' } as unknown as User}
-              />
+              <Suspense>
+                <ArchivedJourneyList
+                  event="trashAllArchived"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </Suspense>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -275,10 +283,12 @@ describe('ArchivedJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ArchivedJourneyList
-                  event="trashAllArchived"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
+                <Suspense>
+                  <ArchivedJourneyList
+                    event="trashAllArchived"
+                    user={{ id: 'user-id1' } as unknown as User}
+                  />
+                </Suspense>
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>

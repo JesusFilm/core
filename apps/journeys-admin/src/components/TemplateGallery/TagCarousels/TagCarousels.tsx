@@ -1,7 +1,5 @@
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import compact from 'lodash/compact'
-import difference from 'lodash/difference'
 import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
@@ -13,12 +11,12 @@ import { FeltNeedsButton } from './FeltNeedsButton'
 
 interface TagCarouselsProps {
   selectedTagIds: string[]
-  onChange: (selectedTagIds: string[], availableTagIds: string[]) => void
+  onChange: (selectedTagId: string) => void
 }
 
 export function TagCarousels({
   selectedTagIds,
-  onChange
+  onChange: handleChange
 }: TagCarouselsProps): ReactElement {
   const { parentTags, childTags, loading } = useTagsQuery()
   const { breakpoints } = useTheme()
@@ -44,10 +42,6 @@ export function TagCarousels({
       ? childTags.filter((tag) => tag.parentId === feltNeedsTagId)
       : []
   }, [childTags, feltNeedsTagId])
-  const feltNeedsTagIds = useMemo(
-    () => feltNeedsTags.map(({ id }) => id),
-    [feltNeedsTags]
-  )
 
   const collectionTagId = useMemo(() => {
     return parentTags.find((tag) => tag.name[0].value === 'Collections')?.id
@@ -58,26 +52,12 @@ export function TagCarousels({
       ? childTags.filter((tag) => tag.parentId === collectionTagId)
       : []
   }, [childTags, collectionTagId])
-  const collectionTagIds = useMemo(
-    () => collectionTags.map(({ id }) => id),
-    [collectionTags]
-  )
-
-  const handleChange = (selectedTagId: string): void => {
-    const carouselsTagIds = [...feltNeedsTagIds, ...collectionTagIds] ?? []
-
-    // Existing selected tag ids from these carousels only
-    const carouselSelectedTagIds = compact(
-      selectedTagIds.map((tagId) => carouselsTagIds.find((id) => id === tagId))
-    )
-    // Remove newly selected tag id from existing tag ids
-    const existingTagIds = difference(carouselSelectedTagIds, [selectedTagId])
-
-    onChange([...existingTagIds, selectedTagId], carouselsTagIds)
-  }
 
   return (
-    <Stack gap={7} sx={{ mb: { xs: 10, md: 16 } }}>
+    <Stack
+      gap={7}
+      sx={{ mb: { xs: 10, md: 16 }, height: { xs: 219, md: 234 } }}
+    >
       <TemplateGalleryCarousel
         items={feltNeedsTags}
         renderItem={(itemProps) => (
@@ -85,8 +65,12 @@ export function TagCarousels({
         )}
         breakpoints={swiperBreakpoints}
         loading={loading}
+        loadingSpacing={{
+          xs: 5,
+          md: 5
+        }}
       />
-      <Stack direction="row" gap={10}>
+      <Stack direction="row" gap={10} sx={{ ml: -2 }}>
         {loading
           ? [0, 1].map((item, index) => {
               return (

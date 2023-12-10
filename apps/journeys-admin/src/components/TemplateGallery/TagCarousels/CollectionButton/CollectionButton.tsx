@@ -9,8 +9,9 @@ import { ReactElement, useCallback } from 'react'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
-import jesusFilmImage from '../assets/jesusFilm.png'
-import nuaImage from '../assets/nua.png'
+
+import jesusFilmImage from './assets/jesusFilm.jpg'
+import nuaImage from './assets/nua.jpg'
 
 type ChildTag = Tag & { parentId: string }
 
@@ -21,7 +22,7 @@ interface CollectionButtonProps {
 
 const StyledCollectionButton = styled(ButtonBase)(({ theme }) => ({
   borderRadius: '8px',
-  transition: theme.transitions.create('all'),
+  transition: theme.transitions.create('background-color'),
   '& .backgroundImageHover': {
     transition: theme.transitions.create('transform')
   },
@@ -60,6 +61,13 @@ export function CollectionButton({
       onClick={() => {
         if (tag != null) onClick(tag.id)
       }}
+      sx={{
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: (theme) => theme.palette.primary.main,
+          outlineOffset: '2px'
+        }
+      }}
     >
       <Stack
         gap={3}
@@ -89,6 +97,7 @@ export function CollectionButton({
                 src={image.src}
                 layout="fill"
                 sx={{ borderRadius: 8 }}
+                sizes="128px"
               />
             ) : (
               <InsertPhotoRoundedIcon className="backgroundImageHover" />

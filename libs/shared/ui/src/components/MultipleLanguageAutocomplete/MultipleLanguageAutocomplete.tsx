@@ -6,7 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useMemo, useState } from 'react'
+import { FormEvent, ReactElement, useMemo, useState } from 'react'
 
 export interface Language {
   id: string
@@ -30,15 +30,17 @@ interface MultipleLanguageAutocompleteProps {
   languages?: Language[]
   loading: boolean
   helperText?: string
+  onBlur?: (e?: FormEvent<HTMLFormElement> | undefined) => void
 }
 
 export function MultipleLanguageAutocomplete({
   onChange: handleChange,
   values,
   languages,
-  loading
+  loading,
+  onBlur
 }: MultipleLanguageAutocompleteProps): ReactElement {
-  const [openPopper, setOpenPopper] = useState(false)
+  const [openPopper, setOpenPopper] = useState(true)
 
   const options = useMemo(() => {
     return (
@@ -90,7 +92,9 @@ export function MultipleLanguageAutocomplete({
       open={openPopper}
       onOpen={() => setOpenPopper(true)}
       onClose={() => setOpenPopper(false)}
+      onBlur={() => onBlur?.()}
       options={sortedOptions}
+      limitTags={3}
       loading={loading}
       filterOptions={filteredOptions}
       isOptionEqualToValue={(option, values) => option.id === values.id}
@@ -100,6 +104,7 @@ export function MultipleLanguageAutocomplete({
       renderInput={(params) => (
         <TextField
           {...params}
+          inputRef={(input) => input?.focus()}
           hiddenLabel
           placeholder="Search Language"
           variant="filled"

@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
-import { OnboardingPanelContent } from '../../OnboardingPanelContent'
+import { CreateJourneyButton } from '../../OnboardingPanel/CreateJourneyButton'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
@@ -124,7 +124,7 @@ describe('TeamSelect', () => {
       <MockedProvider mocks={[]}>
         <TeamProvider>
           <TeamSelect />
-          <OnboardingPanelContent />
+          <CreateJourneyButton />
           <AddJourneyButton />
         </TeamProvider>
       </MockedProvider>

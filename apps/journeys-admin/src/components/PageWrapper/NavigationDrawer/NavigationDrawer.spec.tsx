@@ -1,278 +1,174 @@
-import { MockedProvider } from '@apollo/client/testing'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
+import { Suspense } from 'react'
 
-import { Role } from '../../../../__generated__/globalTypes'
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../__generated__/GetAdminJourneys'
+import { GetMe } from '../../../../__generated__/GetMe'
+import { GetUserRole } from '../../../../__generated__/GetUserRole'
+import {
+  JourneyStatus,
+  Role,
+  UserJourneyRole
+} from '../../../../__generated__/globalTypes'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
-import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
+
+import { GET_ME } from './UserNavigation'
 
 import { NavigationDrawer } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: jest.fn()
-}))
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn()
-}))
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
 describe('NavigationDrawer', () => {
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-
-  const onClose = jest.fn()
-  const signOut = jest.fn()
-
-  it('should render the default menu items', () => {
-    const { getByText, getAllByRole, getByTestId } = render(
-      <MockedProvider>
-        <NavigationDrawer open onClose={onClose} />
-      </MockedProvider>
-    )
-    expect(getAllByRole('button')[0]).toContainElement(
-      getByTestId('ChevronLeftIcon')
-    )
-    expect(getByText('Discover')).toBeInTheDocument()
-  })
-
-  it('should render all the menu items', async () => {
-    const { getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ME
-            },
-            result: {
-              data: {
-                me: {
-                  id: 'userId',
-                  firstName: 'Amin',
-                  lastName: 'One',
-                  imageUrl: 'https://bit.ly/3Gth4Yf',
-                  email: 'amin@email.com'
-                }
-              }
-            }
-          },
-          {
-            request: {
-              query: GET_USER_ROLE
-            },
-            result: {
-              data: {
-                getUserRole: {
-                  id: 'userId',
-                  roles: [Role.publisher]
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          user={
-            {
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut
-            } as unknown as User
-          }
-        />
-      </MockedProvider>
-    )
-    expect(getByText('Templates')).toBeInTheDocument()
-    await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
-  })
-
-  it('should select templates button', () => {
-    mockUseRouter.mockReturnValue({
-      pathname: '/templates'
-    } as unknown as NextRouter)
-
+  it('should show toggle and call onClose with false when open', async () => {
+    const handleClose = jest.fn()
     const { getByTestId } = render(
-      <MockedProvider>
-        <NavigationDrawer open onClose={onClose} />
-      </MockedProvider>
+      <NavigationDrawer open onClose={handleClose} />
+    )
+    fireEvent.click(getByTestId('NavigationListItemToggle'))
+    expect(handleClose).toHaveBeenCalledWith(false)
+  })
+
+  it('should show toggle and call onClose with false when not open', async () => {
+    const handleClose = jest.fn()
+    const { getByTestId } = render(<NavigationDrawer onClose={handleClose} />)
+    fireEvent.click(getByTestId('NavigationListItemToggle'))
+    expect(handleClose).toHaveBeenCalledWith(true)
+  })
+
+  it('should show selected discover link when selected page empty', async () => {
+    const { getByTestId } = render(<NavigationDrawer open selectedPage="" />)
+    expect(getByTestId('NavigationListItemDiscover')).toHaveClass(
+      'Mui-selected'
+    )
+    expect(getByTestId('NavigationListItemDiscover')).toHaveAttribute(
+      'href',
+      '/'
+    )
+  })
+
+  it('should show selected discover link when selected page journeys', async () => {
+    const { getByTestId } = render(
+      <NavigationDrawer open selectedPage="journeys" />
+    )
+    expect(getByTestId('NavigationListItemDiscover')).toHaveClass(
+      'Mui-selected'
+    )
+    expect(getByTestId('NavigationListItemDiscover')).toHaveAttribute(
+      'href',
+      '/'
+    )
+  })
+
+  it('should show selected templates link when selected page templates', async () => {
+    const { getByTestId } = render(
+      <NavigationDrawer open onClose={jest.fn()} selectedPage="templates" />
+    )
+    expect(getByTestId('NavigationListItemTemplates')).toHaveClass(
+      'Mui-selected'
     )
     expect(getByTestId('NavigationListItemTemplates')).toHaveAttribute(
-      'aria-selected',
-      'true'
+      'href',
+      '/templates'
     )
   })
 
-  it('should hide the reports button', () => {
-    const { queryByText } = render(
-      <MockedProvider mocks={[]}>
-        <NavigationDrawer open onClose={onClose} />
-      </MockedProvider>
-    )
-    expect(queryByText('Analytics')).not.toBeInTheDocument()
-  })
+  describe('UserNavigation', () => {
+    const user = {
+      id: 'userId',
+      displayName: 'Amin One',
+      photoURL: 'https://bit.ly/3Gth4Yf',
+      email: 'amin@email.com'
+    } as unknown as User
 
-  it('should select publisher button', async () => {
-    mockUseRouter.mockReturnValue({
-      pathname: '/publisher/[journeyId]'
-    } as unknown as NextRouter)
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ME
-            },
-            result: {
-              data: {
-                me: {
-                  id: 'userId',
-                  firstName: 'Amin',
-                  lastName: 'One',
-                  imageUrl: 'https://bit.ly/3Gth4Yf',
-                  email: 'amin@email.com'
-                }
-              }
-            }
-          },
-          {
-            request: {
-              query: GET_USER_ROLE
-            },
-            result: {
-              data: {
-                getUserRole: {
-                  id: 'userId',
-                  roles: [Role.publisher]
-                }
-              }
-            }
+    const getMeMock: MockedResponse<GetMe> = {
+      request: {
+        query: GET_ME
+      },
+      result: {
+        data: {
+          me: {
+            id: 'userId',
+            firstName: 'Amin',
+            lastName: 'One',
+            imageUrl: 'https://bit.ly/3Gth4Yf',
+            email: 'amin@email.com',
+            superAdmin: true,
+            __typename: 'User'
           }
-        ]}
-      >
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          user={
+        }
+      }
+    }
+
+    const getUserRoleMock: MockedResponse<GetUserRole> = {
+      request: {
+        query: GET_USER_ROLE
+      },
+      result: {
+        data: {
+          getUserRole: {
+            id: 'userId',
+            roles: [Role.publisher],
+            __typename: 'UserRole'
+          }
+        }
+      }
+    }
+
+    const getAdminJourneysMock: MockedResponse<
+      GetAdminJourneys,
+      GetAdminJourneysVariables
+    > = {
+      request: {
+        query: GET_ADMIN_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.draft, JourneyStatus.published],
+          useLastActiveTeamId: true
+        }
+      },
+      result: {
+        data: {
+          journeys: [
             {
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut
-            } as unknown as User
-          }
-        />
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getByTestId('NavigationListItemPublisher')).toHaveAttribute(
-        'aria-selected',
-        'true'
+              id: 'journeyId',
+              title: 'Journey Title',
+              status: JourneyStatus.draft,
+              __typename: 'Journey',
+              userJourneys: [
+                {
+                  id: 'userJourneyId',
+                  role: UserJourneyRole.owner,
+                  user: {
+                    id: 'userId',
+                    openedAt: null
+                  }
+                }
+              ]
+            } as unknown as Journey
+          ]
+        }
+      }
+    }
+
+    it('should set tooltip to new journey', async () => {
+      const { getByTestId, getByRole } = render(
+        <MockedProvider
+          mocks={[getMeMock, getUserRoleMock, getAdminJourneysMock]}
+        >
+          <Suspense>
+            <NavigationDrawer user={user} />
+          </Suspense>
+        </MockedProvider>
       )
-    )
-  })
-
-  it('should show profile menu onClick', async () => {
-    const { getByTestId, getByRole, getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ME
-            },
-            result: {
-              data: {
-                me: {
-                  id: 'userId',
-                  firstName: 'Amin',
-                  lastName: 'One',
-                  imageUrl: 'https://bit.ly/3Gth4Yf',
-                  email: 'amin@email.com'
-                }
-              }
-            }
-          },
-          {
-            request: {
-              query: GET_USER_ROLE
-            },
-            result: {
-              data: {
-                getUserRole: {
-                  id: 'userId',
-                  roles: [Role.publisher]
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          user={
-            {
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut
-            } as unknown as User
-          }
-        />
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
-    )
-    expect(getByTestId('NavigationListItemProfile')).toHaveAttribute(
-      'aria-selected',
-      'false'
-    )
-    fireEvent.click(getByRole('img', { name: 'Amin One' }))
-    await waitFor(() => expect(getByText('Amin One')).toBeInTheDocument())
-    fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
-    await waitFor(() => expect(signOut).toHaveBeenCalled())
-  })
-
-  it('should close the navigation drawer on chevron left click', () => {
-    const { getAllByRole, getByTestId } = render(
-      <MockedProvider>
-        <NavigationDrawer open onClose={onClose} />
-      </MockedProvider>
-    )
-    const button = getAllByRole('button')[0]
-    expect(button).toContainElement(getByTestId('ChevronLeftIcon'))
-    fireEvent.click(button)
-    expect(onClose).toHaveBeenCalled()
-  })
-
-  it('should select the journeys drawer', () => {
-    mockUseRouter.mockReturnValue({
-      pathname: '/'
-    } as unknown as NextRouter)
-
-    const { getByTestId } = render(
-      <MockedProvider>
-        <NavigationDrawer open onClose={onClose} />
-      </MockedProvider>
-    )
-    expect(getByTestId('JourneysIcon').parentElement).toHaveStyle(
-      'color: #FFFFFF'
-    )
+      fireEvent.focusIn(getByTestId('NavigationListItemDiscover'))
+      await waitFor(() =>
+        expect(
+          getByRole('tooltip', { name: 'New Journey' })
+        ).toBeInTheDocument()
+      )
+    })
   })
 })

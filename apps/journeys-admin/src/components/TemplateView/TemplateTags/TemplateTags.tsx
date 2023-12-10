@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement, ReactNode, useMemo } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -29,7 +30,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
         sortedTags.length > 0 && (
           <SwiperWrapper>
             {sortedTags.map(({ id, name, parentId }, index) => (
-              <SwiperSlide key={id} style={{ width: 'fit-content', zIndex: 2 }}>
+              <SwiperSlide key={id} style={{ width: 'fit-content' }}>
                 <TagItem
                   key={id}
                   name={name[0].value}
@@ -49,13 +50,19 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
           </SwiperWrapper>
         )
       ) : (
-        <SwiperWrapper>
+        <Stack direction="row">
           {[0, 1, 2].map((item, index, array) => (
-            <SwiperSlide key={item} style={{ width: '128px', zIndex: 2 }}>
+            <Stack
+              key={item}
+              sx={{
+                width: 'max-content',
+                mr: { xs: 2, sm: '37px' }
+              }}
+            >
               <TagItem loading showDivider={index < array.length - 1} />
-            </SwiperSlide>
+            </Stack>
           ))}
-        </SwiperWrapper>
+        </Stack>
       )}
     </>
   )
@@ -86,8 +93,7 @@ function SwiperWrapper({ children }: SwiperWrapperProps): ReactElement {
         }}
         autoHeight
         style={{
-          overflow: 'visible',
-          zIndex: 2
+          overflow: 'visible'
         }}
       >
         {children}

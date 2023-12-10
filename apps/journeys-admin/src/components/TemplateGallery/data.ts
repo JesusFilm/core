@@ -179,6 +179,72 @@ export const getJourneysMock: MockedResponse<
   }
 }
 
+export const getJourneysMockWithAcceptanceTag: MockedResponse<
+  GetJourneys,
+  GetJourneysVariables
+> = {
+  request: {
+    query: GET_JOURNEYS,
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true,
+        tagIds: ['acceptanceTagId'],
+        languageIds: ['529']
+      }
+    }
+  },
+  result: {
+    data: {
+      journeys
+    }
+  }
+}
+
+export const getJourneysMockWithoutTagsEnglish: MockedResponse<
+  GetJourneys,
+  GetJourneysVariables
+> = {
+  request: {
+    query: GET_JOURNEYS,
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true,
+        tagIds: undefined,
+        languageIds: ['529']
+      }
+    }
+  },
+  result: {
+    data: {
+      journeys
+    }
+  }
+}
+
+export const getJourneysMockWithoutTagsFrench: MockedResponse<
+  GetJourneys,
+  GetJourneysVariables
+> = {
+  request: {
+    query: GET_JOURNEYS,
+    variables: {
+      where: {
+        template: true,
+        orderByRecent: true,
+        tagIds: undefined,
+        languageIds: ['496']
+      }
+    }
+  },
+  result: {
+    data: {
+      journeys
+    }
+  }
+}
+
 export const getJourneysWithoutLanguageIdsMock: MockedResponse<
   GetJourneys,
   GetJourneysVariables

@@ -30,8 +30,9 @@ export function TemplateSections({
   const { breakpoints } = useTheme()
   const [contents, setContents] = useState<Contents>({})
   const [collection, setCollection] = useState<Journey[]>([])
+  const [showNoResults, setShowNoResults] = useState<boolean>(false)
 
-  const { loading } = useJourneysQuery({
+  const { loading: apolloLoading } = useJourneysQuery({
     variables: {
       where: {
         template: true,
@@ -67,6 +68,7 @@ export function TemplateSections({
         })
       })
       setContents(contents)
+      setShowNoResults(true)
     }
   })
 
@@ -89,26 +91,32 @@ export function TemplateSections({
     },
     [breakpoints.values.xl]: {
       slidesPerGroup: 6,
-      spaceBetween: 32
+      spaceBetween: 44
     },
     [breakpoints.values.xxl]: {
       slidesPerGroup: 7,
-      spaceBetween: 32
+      spaceBetween: 44
     }
   }
 
   return (
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
-      {(loading || (collection != null && collection.length > 0)) && (
+      {(apolloLoading || (collection != null && collection.length > 0)) && (
         <TemplateGalleryCarousel
           heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
           items={collection}
           renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
           breakpoints={swiperBreakpoints}
-          loading={loading}
+          loading={apolloLoading}
+          slidesOffsetBefore={-8}
+          loadingSpacing={{
+            xs: 1,
+            md: 8,
+            xl: 11
+          }}
         />
       )}
-      {!loading && collection != null && collection.length === 0 && (
+      {showNoResults && collection != null && collection.length === 0 && (
         <Paper
           elevation={0}
           variant="outlined"
@@ -138,6 +146,7 @@ export function TemplateSections({
               items={journeys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
+              slidesOffsetBefore={-8}
             />
           )
       )}

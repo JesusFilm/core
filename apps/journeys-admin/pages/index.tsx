@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
@@ -11,24 +10,18 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../__generated__/globalTypes'
 import { JourneyList } from '../src/components/JourneyList'
-import { PageWrapper } from '../src/components/NewPageWrapper'
-import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
+import { OnboardingPanel } from '../src/components/OnboardingPanel'
+import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
-
-export const ACCEPT_ALL_INVITES = gql`
-  mutation AcceptAllInvites {
-    userTeamInviteAcceptAll {
-      id
-    }
-    userInviteAcceptAll {
-      id
-    }
-  }
-`
+import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -51,7 +44,7 @@ function IndexPage(): ReactElement {
             <TeamMenu />
           </Stack>
         }
-        sidePanelChildren={<OnboardingPanelContent />}
+        sidePanelChildren={<OnboardingPanel />}
         sidePanelTitle={t('Create a New Journey')}
       >
         <JourneyList user={user} />
@@ -62,7 +55,7 @@ function IndexPage(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl }) => {
+})(async ({ user, locale, resolvedUrl, query }) => {
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
@@ -74,12 +67,40 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  await apolloClient.mutate<AcceptAllInvites>({
-    mutation: ACCEPT_ALL_INVITES
+  let variables: GetAdminJourneysVariables = {}
+
+  switch (query.tab ?? 'active') {
+    case 'active':
+      variables = {
+        // from src/components/JourneyList/ActiveJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.draft, JourneyStatus.published],
+        useLastActiveTeamId: true
+      }
+      break
+    case 'archived':
+      variables = {
+        // from src/components/JourneyList/ArchivedJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.archived],
+        useLastActiveTeamId: true
+      }
+      break
+    case 'trashed':
+      variables = {
+        // from src/components/JourneyList/TrashedJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.trashed],
+        useLastActiveTeamId: true
+      }
+      break
+  }
+
+  await apolloClient.query<GetAdminJourneys, GetAdminJourneysVariables>({
+    query: GET_ADMIN_JOURNEYS,
+    variables
   })
 
   return {
     props: {
+      initialApolloState: apolloClient.cache.extract(),
       ...translations
     }
   }
