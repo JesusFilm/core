@@ -80,7 +80,7 @@ extend type Mutation {
   connectYoutubeChannel(input: ConnectYoutubeChannelInput!): Channel!
   nexusCreate(input: NexusCreateInput!): Nexus!
   nexusUpdate(id: ID!, input: NexusUpdateInput!): Nexus!
-  nexusDelete(id: ID!): Nexus!
+  nexusDelete(id: ID!): Boolean!
   resourceCreate(input: ResourceCreateInput!): Resource!
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
