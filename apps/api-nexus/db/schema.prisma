@@ -34,13 +34,16 @@ model UserNexus {
 }
 
 model Channel {
-    id                       String                    @id @default(uuid())
-    nexusId                  String
-    name                     String
-    platform                 String
-    connected                Boolean                   @default(false)
-    nexus                    Nexus                     @relation(fields: [nexusId], references: [id])
-    channelYoutubeCredential ChannelYoutubeCredential?
+    id        String          @id @default(uuid())
+    nexusId   String
+    name      String
+    platform  String
+    connected Boolean         @default(false)
+    nexus     Nexus           @relation(fields: [nexusId], references: [id])
+    youtube   ChannelYoutube?
+    status    NexusStatus     @default(published)
+    createdAt DateTime        @default(now())
+    deletedAt DateTime?
 }
 
 model Resource {
@@ -52,12 +55,13 @@ model Resource {
     nexus   Nexus   @relation(fields: [nexusId], references: [id])
 }
 
-model ChannelYoutubeCredential {
+model ChannelYoutube {
     id           String  @id @default(uuid())
     channelId    String  @unique
     channel      Channel @relation(fields: [channelId], references: [id])
+    title        String
+    description  String
     youtubeId    String
     imageUrl     String
-    redirectUrl  String
     refreshToken String
 }
