@@ -27,8 +27,6 @@ import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
-import 'swiper/css'
-import 'swiper/css/pagination'
 import { NavigationButton } from './NavigationButton'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`

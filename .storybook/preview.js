@@ -1,6 +1,9 @@
 const { initialize: mswInitialize, mswLoader } = require('msw-storybook-addon')
 const { MockedProvider } = require('@apollo/client/testing')
 require('swiper/css')
+require('swiper/css/a11y')
+require('swiper/css/mousewheel')
+require('swiper/css/navigation')
 require('swiper/css/pagination')
 
 const customViewports = {

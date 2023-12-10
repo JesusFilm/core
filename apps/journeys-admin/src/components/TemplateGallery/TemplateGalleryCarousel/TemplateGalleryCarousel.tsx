@@ -17,8 +17,6 @@ import { NavigationOptions } from 'swiper/types/modules/navigation'
 
 import { NavButton } from './NavButton'
 
-import 'swiper/css'
-
 const StyledSwiperContainer = styled(Swiper)(() => ({
   overflow: 'visible !important',
   marginTop: '16px',

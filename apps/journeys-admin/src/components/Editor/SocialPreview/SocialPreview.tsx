@@ -12,8 +12,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
-import 'swiper/css'
-import 'swiper/css/pagination'
 
 export function SocialPreview(): ReactElement {
   const { journey } = useJourney()

@@ -33,8 +33,6 @@ import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 
-import 'swiper/css'
-
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
 const TASKBAR_WIDTH = 72
