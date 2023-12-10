@@ -47,12 +47,14 @@ model Channel {
 }
 
 model Resource {
-    id      String  @id @default(uuid())
-    nexusId String
-    name    String
-    refLink String?
-    videoId String?
-    nexus   Nexus   @relation(fields: [nexusId], references: [id])
+    id          String               @id @default(uuid())
+    nexusId     String
+    name        String
+    nexus       Nexus                @relation(fields: [nexusId], references: [id])
+    googleDrive GoogleDriveResource?
+    status      NexusStatus          @default(published)
+    createdAt   DateTime             @default(now())
+    deletedAt   DateTime?
 }
 
 model ChannelYoutube {
@@ -64,4 +66,14 @@ model ChannelYoutube {
     youtubeId    String
     imageUrl     String
     refreshToken String
+}
+
+model GoogleDriveResource {
+    id           String   @id @default(uuid())
+    resourceId   String   @unique
+    title        String
+    driveId      String
+    mimeType     String
+    refreshToken String
+    resource     Resource @relation(fields: [resourceId], references: [id])
 }

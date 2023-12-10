@@ -1,9 +1,25 @@
 type Resource @key(fields: "id") {
   id: ID!
   nexusId: String!
+  nexus: Nexus!
   name: String!
-  refLink: String
-  videoId: String
+  googleDrive: GoogleDriveResource
+  createdAt: DateTime!
+  status: ResourceStatus!
+}
+
+enum ResourceStatus {
+  deleted
+  published
+}
+
+type GoogleDriveResource @key(fields: "id") {
+  id: ID!
+  resourceId: String!
+  resource: Resource!
+  title: String!
+  driveId: String!
+  refreshToken: String!
 }
 
 input ResourceCreateInput {
@@ -15,8 +31,12 @@ input ResourceCreateInput {
 
 input ResourceUpdateInput {
   name: String
-  refLink: String
-  videoId: String
+}
+
+input ResourceFromGoogleDriveInput {
+  fileId: String!
+  authCode: String!
+  nexusId: String!
 }
 
 input ResourceFilter {
@@ -34,5 +54,6 @@ extend type Query {
 extend type Mutation {
   resourceCreate(input: ResourceCreateInput!): Resource!
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
-  resourceDelete(id: ID!): Resource!
+  resourceDelete(id: ID!): Boolean!
+  resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): Resource!
 }
