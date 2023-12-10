@@ -85,6 +85,10 @@ describe('FormBlock', () => {
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   describe('formBlockCreate', () => {
     beforeEach(() => {
       prismaService.$transaction.mockImplementation(
@@ -168,47 +172,6 @@ describe('FormBlock', () => {
     })
   })
 
-  describe('form', () => {
-    it('returns formium form', async () => {
-      const mockFormiumClient = {
-        getFormBySlug: jest.fn()
-      } as unknown as FormiumClient
-      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
-
-      await resolver.form({
-        ...block
-      })
-
-      expect(mockFormiumClient.getFormBySlug).toHaveBeenCalledWith(
-        block.formSlug
-      )
-    })
-
-    it('returns null if client fails to fetch form', async () => {
-      const mockFormiumClient = {
-        getFormBySlug: jest.fn().mockRejectedValueOnce(new Error('error'))
-      } as unknown as FormiumClient
-      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
-
-      expect(
-        await resolver.form({
-          ...block
-        })
-      ).toBeNull()
-    })
-
-    it('returns null if there are missing credentials', async () => {
-      expect(
-        await resolver.form({
-          ...block,
-          projectId: null,
-          formSlug: null,
-          apiToken: null
-        })
-      ).toBeNull()
-    })
-  })
-
   describe('projects', () => {
     it('returns projects', async () => {
       const mockFormiumClient = {
@@ -287,6 +250,47 @@ describe('FormBlock', () => {
           apiToken: null
         })
       ).toEqual([])
+    })
+  })
+
+  describe('form', () => {
+    it('returns formium form', async () => {
+      const mockFormiumClient = {
+        getFormBySlug: jest.fn()
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      await resolver.form({
+        ...block
+      })
+
+      expect(mockFormiumClient.getFormBySlug).toHaveBeenCalledWith(
+        block.formSlug
+      )
+    })
+
+    it('returns null if client fails to fetch form', async () => {
+      const mockFormiumClient = {
+        getFormBySlug: jest.fn().mockRejectedValueOnce(new Error('error'))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      expect(
+        await resolver.form({
+          ...block
+        })
+      ).toBeNull()
+    })
+
+    it('returns null if there are missing credentials', async () => {
+      expect(
+        await resolver.form({
+          ...block,
+          projectId: null,
+          formSlug: null,
+          apiToken: null
+        })
+      ).toBeNull()
     })
   })
 })
