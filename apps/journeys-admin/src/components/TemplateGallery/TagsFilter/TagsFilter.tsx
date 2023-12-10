@@ -39,7 +39,6 @@ export function TagsFilter({
     tagNames.map((tagName) => {
       return parentTags.find(({ name }) =>
         name.some(({ value }) => value === tagName)
-        
       )?.id
     })
   )
