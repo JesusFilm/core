@@ -4,16 +4,23 @@ type Channel @key(fields: "id") {
   name: String!
   platform: String
   connected: Boolean
-  channelYoutubeCredential: ChannelYoutubeCredential
+  youtube: ChannelYoutube
+  status: ChannelStatus!
 }
 
-type ChannelYoutubeCredential {
+enum ChannelStatus {
+  deleted
+  published
+}
+
+type ChannelYoutube {
   id: ID!
   channelId: String
   channel: Channel
+  title: String
+  description: String
   youtubeId: String
   imageUrl: String
-  redirectUrl: String
   refreshToken: String
 }
 
