@@ -12,6 +12,8 @@ import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { ReactElement, useCallback } from 'react'
 
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+
 import { GetTags_tags as Tag } from '../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 import { ParentTagIcon } from '../../ParentTagIcon'
@@ -37,6 +39,7 @@ export function TagsFilter({
     tagNames.map((tagName) => {
       return parentTags.find(({ name }) =>
         name.some(({ value }) => value === tagName)
+        
       )?.id
     })
   )
@@ -95,6 +98,7 @@ export function TagsFilter({
       fullWidth
       value={filteredSelectedTags}
       onChange={handleChange}
+      popupIcon={<ChevronDownIcon />}
       options={filteredChildTags}
       groupBy={(option) => option.parentId ?? ''}
       getOptionLabel={(option) =>
