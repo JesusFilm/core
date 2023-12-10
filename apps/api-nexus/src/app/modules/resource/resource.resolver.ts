@@ -3,25 +3,36 @@ import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Prisma, Resource } from '.prisma/api-nexus-client'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import {
   ResourceCreateInput,
   ResourceFilter,
+  ResourceFromGoogleDriveInput,
   ResourceUpdateInput
 } from '../../__generated__/graphql'
+import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Resource')
 export class ResourceResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly googleDriveService: GoogleDriveService
+  ) {}
 
   @Query()
-  async resources(@Args('where') where?: ResourceFilter): Promise<Resource[]> {
+  async resources(
+    @CurrentUserId() userId: string,
+    @Args('where') where?: ResourceFilter
+  ): Promise<Resource[]> {
     const filter: Prisma.ResourceWhereInput = {}
     if (where?.ids != null) filter.id = { in: where?.ids }
 
     const resources = await this.prismaService.resource.findMany({
-      where: filter,
+      where: {
+        AND: [filter, { nexus: { userNexuses: { every: { userId } } } }]
+      },
       take: where?.limit ?? undefined
     })
 
@@ -29,136 +40,118 @@ export class ResourceResolver {
   }
 
   @Query()
-  async resource(@Args('id') id: string): Promise<Resource | null> {
+  async resource(
+    @CurrentUserId() userId: string,
+    @Args('id') id: string
+  ): Promise<Resource | null> {
     const filter: Prisma.ResourceWhereUniqueInput = { id }
     const resource = await this.prismaService.resource.findUnique({
-      where: filter
+      where: {
+        id,
+        AND: [filter, { nexus: { userNexuses: { every: { userId } } } }]
+      }
     })
-    if (resource == null)
-      throw new GraphQLError('resource not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
     return resource
   }
 
   @Mutation()
   async resourceCreate(
+    @CurrentUserId() userId: string,
     @Args('input') input: ResourceCreateInput
   ): Promise<Resource | undefined> {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      return await this.prismaService.$transaction(async (tx) => {
-        const resource = await tx.resource.create({
-          data: {
-            id: uuidv4(),
-            ...input
-          }
-        })
-        return resource
-      })
-    } catch (err) {
-      throw err
-    }
-  }
-
-  @Mutation()
-  async resourceUpdate(
-    @Args('id') id: string,
-    @Args('input') input: ResourceUpdateInput
-  ): Promise<Resource> {
-    const resource = await this.prismaService.resource.findUnique({
-      where: { id }
+    const nexus = await this.prismaService.nexus.findUnique({
+      where: { id: input.nexusId, userNexuses: { every: { userId } } }
     })
-    if (resource == null)
-      throw new GraphQLError('resource not found', {
+    if (nexus == null)
+      throw new GraphQLError('nexus not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-    // eslint-disable-next-line no-useless-catch
-    try {
-      return await this.prismaService.$transaction(async (tx) => {
-        const updatedResource = await tx.resource.update({
-          where: { id },
-          data: {
-            name: input.name ?? undefined,
-            refLink: input.refLink ?? undefined,
-            videoId: input.videoId ?? undefined
-          }
-        })
-        return updatedResource
-      })
-    } catch (err) {
-      throw err
-    }
-  }
-
-  @Mutation()
-  async resourceDelete(@Args('id') id: string): Promise<Resource> {
-    const resource = await this.prismaService.resource.findUnique({
-      where: { id }
-    })
-
-    if (resource == null)
-      throw new GraphQLError('resource not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-
-    // eslint-disable-next-line no-useless-catch
-    try {
-      return await this.prismaService.resource.delete({
-        where: { id }
-      })
-    } catch (err) {
-      throw err
-    }
-  }
-
-  @Mutation()
-  async addResourcefromGoogleDrive(
-    @Args('input')
-    input: {
-      accessToken: string
-      fileId: string
-      nexusId: string
-    }
-  ): Promise<Resource | null> {
-    const getFileResponse = await getResourceFromGoogleDrive(
-      input.accessToken,
-      input.fileId
-    )
 
     const resource = await this.prismaService.resource.create({
-      data: {
-        id: uuidv4(),
-        nexusId: input.nexusId,
-        name: getFileResponse.name,
-        videoId: getFileResponse.id
-      }
+      data: { ...input, nexusId: nexus.id, id: uuidv4() }
     })
 
     return resource
   }
-}
 
-async function getResourceFromGoogleDrive(
-  accessToken: string,
-  fileId: string
-): Promise<{
-  id: string
-  name: string
-}> {
-  try {
-    const response = await fetch(
-      `https://www.googleapis.com/drive/v3/files/${fileId}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
+  @Mutation()
+  async resourceUpdate(
+    @CurrentUserId() userId: string,
+    @Args('id') id: string,
+    @Args('input') input: ResourceUpdateInput
+  ): Promise<boolean> {
+    await this.prismaService.resource.update({
+      where: {
+        id,
+        nexus: { userNexuses: { every: { userId } } }
+      },
+      data: {
+        name: input.name ?? undefined
       }
-    )
-    return await response.json()
-  } catch (error) {
-    console.error('Error getting resource from Google Drive:', error.message)
-    throw error
+    })
+    return true
+  }
+
+  @Mutation()
+  async resourceDelete(
+    @CurrentUserId() userId: string,
+    @Args('id') id: string
+  ): Promise<Resource> {
+    const resource = await this.prismaService.resource.update({
+      where: {
+        id,
+        nexus: { userNexuses: { every: { userId } } }
+      },
+      data: {
+        status: 'deleted'
+      }
+    })
+    return resource
+  }
+
+  @Mutation()
+  async resourceFromGoogleDrive(
+    @CurrentUserId() userId: string,
+    @Args('input') input: ResourceFromGoogleDriveInput
+  ): Promise<Resource | null> {
+    const nexus = await this.prismaService.nexus.findUnique({
+      where: { id: input.nexusId, userNexuses: { every: { userId } } }
+    })
+    if (nexus == null)
+      throw new GraphQLError('nexus not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    const driveFile = await this.googleDriveService.getFile({
+      fileId: input.fileId ?? '',
+      accessToken: input.authCode ?? ''
+    })
+    if (driveFile == null)
+      throw new GraphQLError('file not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+
+    const resource = await this.prismaService.resource.create({
+      data: {
+        id: uuidv4(),
+        name: driveFile.name,
+        nexusId: nexus.id,
+        status: 'published',
+        createdAt: new Date()
+      }
+    })
+    await this.prismaService.googleDriveResource.create({
+      data: {
+        id: uuidv4(),
+        resourceId: resource.id,
+        driveId: driveFile.id,
+        title: driveFile.name,
+        mimeType: driveFile.mimeType,
+        refreshToken: input.authCode ?? ''
+      }
+    })
+    return await this.prismaService.resource.findFirst({
+      where: { id: resource.id },
+      include: { googleDrive: true }
+    })
   }
 }
