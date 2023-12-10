@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Nexus, Prisma } from '.prisma/api-nexus-client'
@@ -17,28 +16,34 @@ export class NexusResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  async nexuses(@Args('where') where?: NexusFilter): Promise<Nexus[]> {
+  async nexuses(
+    @CurrentUserId() userId: string,
+    @Args('where') where?: NexusFilter
+  ): Promise<Nexus[]> {
     const filter: Prisma.NexusWhereInput = {}
     if (where?.ids != null) filter.id = { in: where?.ids }
 
     return await this.prismaService.nexus.findMany({
-      where: filter,
+      where: {
+        AND: [
+          filter,
+          { userNexuses: { every: { userId } } },
+          { status: 'published' }
+        ]
+      },
       take: where?.limit ?? undefined,
       orderBy: where?.orderByRecent === true ? { createdAt: 'desc' } : undefined
     })
   }
 
   @Query()
-  async nexus(@Args('id') id: string): Promise<Nexus | null> {
-    const filter: Prisma.NexusWhereUniqueInput = { id }
-    const nexus = await this.prismaService.nexus.findUnique({
-      where: filter
+  async nexus(
+    @CurrentUserId() userId: string,
+    @Args('id') id: string
+  ): Promise<Nexus | null> {
+    return await this.prismaService.nexus.findFirst({
+      where: { id, userNexuses: { every: { userId } }, status: 'published' }
     })
-    if (nexus == null)
-      throw new GraphQLError('nexus not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    return nexus
   }
 
   @Mutation()
@@ -46,79 +51,39 @@ export class NexusResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: NexusCreateInput
   ): Promise<Nexus | undefined> {
-    const id = uuidv4()
-    // eslint-disable-next-line no-useless-catch
-    try {
-      return await this.prismaService.$transaction(async (tx) => {
-        const nexus = await tx.nexus.create({
-          data: {
-            id,
-            ...input
-          }
-        })
-
-        await tx.userNexus.create({
-          data: {
-            id: uuidv4(),
-            userId,
-            nexusId: nexus.id,
-            role: 'owner'
-          }
-        })
-        return nexus
-      })
-    } catch (err) {
-      throw err
-    }
+    const nexus = await this.prismaService.nexus.create({
+      data: { id: uuidv4(), ...input }
+    })
+    await this.prismaService.userNexus.create({
+      data: { id: uuidv4(), userId, nexusId: nexus.id, role: 'owner' }
+    })
+    return nexus
   }
 
   @Mutation()
   async nexusUpdate(
+    @CurrentUserId() userId: string,
     @Args('id') id: string,
     @Args('input') input: NexusUpdateInput
   ): Promise<Nexus> {
-    const nexus = await this.prismaService.nexus.findUnique({
-      where: { id }
+    return await this.prismaService.nexus.update({
+      where: { id, userNexuses: { every: { userId } } },
+      data: {
+        name: input.name ?? undefined,
+        description: input.description ?? undefined
+      }
     })
-    if (nexus == null)
-      throw new GraphQLError('nexus not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    // eslint-disable-next-line no-useless-catch
-    try {
-      return await this.prismaService.$transaction(async (tx) => {
-        const updatedNexus = await tx.nexus.update({
-          where: { id },
-          data: {
-            name: input.name ?? undefined,
-            description: input.description ?? undefined
-          }
-        })
-        return updatedNexus
-      })
-    } catch (err) {
-      throw err
-    }
   }
 
   @Mutation()
-  async nexusDelete(@Args('id') id: string): Promise<Nexus> {
-    const nexus = await this.prismaService.nexus.findUnique({
-      where: { id }
+  async nexusDelete(
+    @CurrentUserId() userId: string,
+    @Args('id') id: string
+  ): Promise<boolean> {
+    await this.prismaService.nexus.update({
+      where: { id, userNexuses: { every: { userId } } },
+      data: { status: 'deleted' }
     })
-
-    if (nexus == null)
-      throw new GraphQLError('nexus not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-
-    // eslint-disable-next-line no-useless-catch
-    try {
-      return await this.prismaService.nexus.delete({
-        where: { id }
-      })
-    } catch (err) {
-      throw err
-    }
+    return true
   }
 }
