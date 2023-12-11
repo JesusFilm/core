@@ -43,7 +43,7 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({}))
 
 export function Canvas(): ReactElement {
   const router = useRouter()
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const [swiper, setSwiper] = useState<SwiperClass>()
   const [spaceBetween, setSpaceBetween] = useState(16)
   const { sidePanel } = usePageWrapperStyles()
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
