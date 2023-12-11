@@ -16,9 +16,9 @@ export async function validateFormCredentials({
 }: ValidateFormCredentialsProps): Promise<FormBlockUpdateInput> {
   const combinedApiToken = input.apiToken ?? block.apiToken
   const combinedProjectId = input.projectId ?? block.projectId
-  const inputApiToken = 'apiToken' in input
-  const inputProjectId = 'projectId' in input
-  const inputFormSlug = 'formSlug' in input
+  const inputApiTokenPresent = 'apiToken' in input
+  const inputProjectIdPresent = 'projectId' in input
+  const inputFormSlugPresent = 'formSlug' in input
 
   // checks if there is apiToken before allowing projectId or formSlug update
   if (
@@ -38,7 +38,7 @@ export async function validateFormCredentials({
   }
 
   // apiToken
-  if (inputApiToken && !inputProjectId && !inputFormSlug) {
+  if (inputApiTokenPresent && !inputProjectIdPresent && !inputFormSlugPresent) {
     if (input.apiToken != null) {
       await validateApiToken(input.apiToken)
       // updates apiToken clears projectId and formSlug
@@ -50,7 +50,11 @@ export async function validateFormCredentials({
   }
 
   // projectId
-  if (combinedApiToken != null && inputProjectId && !inputFormSlug) {
+  if (
+    combinedApiToken != null &&
+    inputProjectIdPresent &&
+    !inputFormSlugPresent
+  ) {
     if (input.projectId != null) {
       await validateApiTokenProjectId(combinedApiToken, input.projectId)
       // updates projectId clears formSlug
@@ -67,7 +71,11 @@ export async function validateFormCredentials({
   }
 
   // formSlug
-  if (combinedApiToken != null && combinedProjectId != null && inputFormSlug) {
+  if (
+    combinedApiToken != null &&
+    combinedProjectId != null &&
+    inputFormSlugPresent
+  ) {
     if (input.formSlug != null) {
       await validateApiTokenProjectIdFormSlug(
         combinedApiToken,
