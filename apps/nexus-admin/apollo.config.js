@@ -1,6 +1,6 @@
 module.exports = {
   client: {
-    includes: ['./pages/**', './src/**', '../../libs/journeys/ui/**'],
+    includes: ['./pages/**', './src/**'],
     excludes: ['./**/*.test.tsx'],
     service: {
       name: 'api-nexus',

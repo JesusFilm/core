@@ -13,7 +13,9 @@ import {
 import { GridCellParams } from '@mui/x-data-grid'
 import { useGoogleLogin } from '@react-oauth/google'
 import { FC, useState } from 'react'
-import { Channel, GET_CHANNELS } from '../../../pages/channels'
+import { Channels_channels } from '../../../__generated__/Channels'
+import { ConnectChannel } from '../../../__generated__/ConnectChannel'
+import { GET_CHANNELS } from '../../../pages/channels'
 import { Table } from '../Table'
 
 const CHANNEL_CONNECT = gql`
@@ -27,7 +29,7 @@ const CHANNEL_CONNECT = gql`
 `
 
 interface ChannelsTableProps {
-  data: Channel[] | []
+  data: Channels_channels[] | []
   onEdit: (channelId: string) => void
   onDelete: (channelId: string) => void
 }
@@ -39,7 +41,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
 }) => {
   const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
   const [channelId, setChannelId] = useState<string>('')
-  const [channelConnect] = useMutation(CHANNEL_CONNECT, {
+  const [channelConnect] = useMutation<ConnectChannel>(CHANNEL_CONNECT, {
     refetchQueries: [GET_CHANNELS]
   })
 

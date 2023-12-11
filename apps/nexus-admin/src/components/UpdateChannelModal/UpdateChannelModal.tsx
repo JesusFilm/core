@@ -11,25 +11,20 @@ import {
 import { useFormik } from 'formik'
 import { FC, useEffect } from 'react'
 import * as yup from 'yup'
+import { Channel_channel } from '../../../__generated__/Channel'
 import { Modal } from '../Modal'
 
 interface UpdateChannelModalProps {
   open: boolean
   onClose: () => void
-  data: Partial<Channel> | null
-  onUpdate: (channelData: Partial<Channel>) => void
+  data: Partial<Channel_channel> | null
+  onUpdate: (channelData: Partial<Channel_channel>) => void
 }
 
 const channelValidationSchema = yup.object({
   name: yup.string().required('Name is required'),
   platform: yup.string().required('Platform is required')
 })
-
-type Channel = {
-  id: string
-  name: string
-  platform: string
-}
 
 export const UpdateChannelModal: FC<UpdateChannelModalProps> = ({
   open,

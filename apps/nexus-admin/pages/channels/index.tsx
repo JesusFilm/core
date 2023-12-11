@@ -1,7 +1,12 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Stack } from '@mui/material'
-import { AuthAction, withUser } from 'next-firebase-auth'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
+import { Channel, Channel_channel } from '../../__generated__/Channel'
+import { ChannelCreate } from '../../__generated__/ChannelCreate'
+import { ChannelDelete } from '../../__generated__/ChannelDelete'
+import { ChannelUpdate } from '../../__generated__/ChannelUpdate'
+import { Channels, Channels_channels } from '../../__generated__/Channels'
 import { ChannelsTable } from '../../src/components/ChannelsTable'
 import { CreateChannelModal } from '../../src/components/CreateChannelModal'
 import { DeleteModal } from '../../src/components/DeleteModal'
@@ -9,7 +14,7 @@ import { MainLayout } from '../../src/components/MainLayout'
 import { UpdateChannelModal } from '../../src/components/UpdateChannelModal'
 
 export const GET_CHANNELS = gql`
-  query {
+  query Channels {
     channels {
       id
       name
@@ -17,6 +22,8 @@ export const GET_CHANNELS = gql`
       connected
       status
       youtube {
+        title
+        youtubeId
         channelId
         imageUrl
       }
@@ -48,7 +55,6 @@ const CHANNEL_UPDATE = gql`
   mutation ChannelUpdate($channelId: ID!, $input: ChannelUpdateInput!) {
     channelUpdate(id: $channelId, input: $input) {
       id
-      nexusId
       name
       platform
     }
@@ -65,12 +71,6 @@ const CHANNEL_DELETE = gql`
   }
 `
 
-export type Channel = {
-  id: string
-  name: string
-  platform: string
-}
-
 const ChannelsPage = () => {
   const [openCreateChannelModal, setOpenCreateChannelModal] =
     useState<boolean>(false)
@@ -78,13 +78,14 @@ const ChannelsPage = () => {
     useState<boolean>(false)
   const [deleteChannelModal, setDeleteChannelModal] = useState<boolean>(false)
   const [channelId, setChannelId] = useState<string>('')
-  const [channels, setChannels] = useState<Channel[] | []>([])
+  const [channels, setChannels] = useState<Channels_channels[]>([])
   const nexusId =
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
-  const [channel, setChannel] = useState<Channel | null>(null)
+  const [channel, setChannel] = useState<Channel_channel | null>(null)
 
-  const { data } = useQuery(GET_CHANNELS)
-  const { data: channelData } = useQuery(GET_CHANNEL, {
+  const { data } = useQuery<Channels>(GET_CHANNELS)
+
+  const { data: channelData } = useQuery<Channel>(GET_CHANNEL, {
     skip: !channelId,
     variables: {
       channelID: channelId,
@@ -92,13 +93,13 @@ const ChannelsPage = () => {
     }
   })
 
-  const [channelCreate] = useMutation(CHANNEL_CREATE)
-  const [channelUpdate] = useMutation(CHANNEL_UPDATE)
-  const [channelDelete] = useMutation(CHANNEL_DELETE)
+  const [channelCreate] = useMutation<ChannelCreate>(CHANNEL_CREATE)
+  const [channelUpdate] = useMutation<ChannelUpdate>(CHANNEL_UPDATE)
+  const [channelDelete] = useMutation<ChannelDelete>(CHANNEL_DELETE)
 
   useEffect(() => {
     if (data) {
-      setChannels(data?.channels)
+      setChannels(data?.channels as Channels_channels[])
     }
   }, [data])
 
@@ -187,6 +188,18 @@ const ChannelsPage = () => {
     </MainLayout>
   )
 }
+
+export const getServerSideProps = withUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
+})(async ({ user }) => {
+  const token = await user?.getIdToken()
+
+  return {
+    props: {
+      token
+    }
+  }
+})
 
 export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
