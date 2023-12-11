@@ -89,6 +89,7 @@ export class ResourceFilter {
     ids?: Nullable<string[]>;
     name?: Nullable<string>;
     nexusId?: Nullable<string>;
+    status?: Nullable<ResourceStatus>;
     limit?: Nullable<number>;
 }
 
@@ -189,7 +190,7 @@ export abstract class IMutation {
 
     abstract resourceUpdate(id: string, input: ResourceUpdateInput): Resource | Promise<Resource>;
 
-    abstract resourceDelete(id: string): boolean | Promise<boolean>;
+    abstract resourceDelete(id: string): Resource | Promise<Resource>;
 
     abstract resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
 }
