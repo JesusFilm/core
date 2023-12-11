@@ -42,6 +42,7 @@ input ChannelFilter {
   nexusId: String
   limit: Int
   connected: Boolean
+  status: ChannelStatus
 }
 
 input ConnectYoutubeChannelInput {
