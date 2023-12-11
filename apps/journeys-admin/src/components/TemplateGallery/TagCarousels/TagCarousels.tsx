@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement, useMemo } from 'react'
-import { SwiperOptions } from 'swiper'
+import { SwiperOptions } from 'swiper/types'
 
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 import { TemplateGalleryCarousel } from '../TemplateGalleryCarousel'
