@@ -3,12 +3,12 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
@@ -16,6 +16,16 @@ import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
+import { LoadingJourneyList } from '../LoadingJourneyList'
+
+const Dialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "core/shared/ui-dynamic/Dialog" */
+      '@core/shared/ui-dynamic/Dialog'
+    ).then((mod) => mod.Dialog),
+  { ssr: false }
+)
 
 export const RESTORE_TRASHED_JOURNEYS = gql`
   mutation RestoreTrashedJourneys($ids: [ID!]!) {
@@ -65,8 +75,12 @@ export function TrashedJourneyList({
       }
     }
   })
-  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState<
+    boolean | undefined
+  >()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<
+    boolean | undefined
+  >()
 
   async function handleRestoreSubmit(): Promise<void> {
     try {
@@ -143,49 +157,47 @@ export function TrashedJourneyList({
 
   return (
     <>
-      <Box>
-        {sortedJourneys != null ? (
-          <>
-            {sortedJourneys.map((journey) => (
-              <JourneyProvider
+      {sortedJourneys == null ? (
+        <LoadingJourneyList hideHelperText />
+      ) : (
+        <Box>
+          {sortedJourneys.map((journey) => (
+            <JourneyProvider
+              key={journey.id}
+              value={{
+                journey: journey as unknown as JourneyFields,
+                variant: 'admin'
+              }}
+            >
+              <JourneyCard
                 key={journey.id}
-                value={{
-                  journey: journey as unknown as JourneyFields,
-                  variant: 'admin'
+                journey={journey}
+                refetch={refetch}
+              />
+            </JourneyProvider>
+          ))}
+          {sortedJourneys.length === 0 && (
+            <>
+              <Card
+                variant="outlined"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  py: 20,
+                  borderBottomLeftRadius: { xs: 0, sm: 12 },
+                  borderBottomRightRadius: { xs: 0, sm: 12 },
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0
                 }}
               >
-                <JourneyCard
-                  key={journey.id}
-                  journey={journey}
-                  refetch={refetch}
-                />
-              </JourneyProvider>
-            ))}
-            {sortedJourneys.length === 0 && (
-              <>
-                <Card
-                  variant="outlined"
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    py: 20,
-                    borderBottomLeftRadius: { xs: 0, sm: 12 },
-                    borderBottomRightRadius: { xs: 0, sm: 12 },
-                    borderTopLeftRadius: 0,
-                    borderTopRightRadius: 0
-                  }}
-                >
-                  <Typography variant="subtitle1" align="center">
-                    {t('Your trashed journeys will appear here.')}
-                  </Typography>
-                </Card>
-              </>
-            )}
-          </>
-        ) : (
-          [0, 1, 2].map((index) => <JourneyCard key={`journeyCard${index}`} />)
-        )}
-      </Box>
+                <Typography variant="subtitle1" align="center">
+                  {t('Your trashed journeys will appear here.')}
+                </Typography>
+              </Card>
+            </>
+          )}
+        </Box>
+      )}
       <Stack alignItems="center">
         <Typography
           variant="caption"
@@ -196,44 +208,48 @@ export function TrashedJourneyList({
           {t('Trashed journeys are moved here for up to 40 days.')}
         </Typography>
       </Stack>
-      <Dialog
-        open={restoreDialogOpen}
-        onClose={handleClose}
-        dialogTitle={{
-          title: t('Restore Journeys'),
-          closeButton: true
-        }}
-        dialogAction={{
-          onSubmit: handleRestoreSubmit,
-          submitLabel: t('Restore'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t(
-            'Are you sure you would like to restore all trashed journeys immediately?'
-          )}
-        </Typography>
-      </Dialog>
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleClose}
-        dialogTitle={{
-          title: t('Delete Journeys Forever'),
-          closeButton: true
-        }}
-        dialogAction={{
-          onSubmit: handleDeleteSubmit,
-          submitLabel: t('Delete Forever'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t(
-            'Are you sure you would like to permanently delete all trashed journeys immediately?'
-          )}
-        </Typography>
-      </Dialog>
+      {restoreDialogOpen != null && (
+        <Dialog
+          open={restoreDialogOpen}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Restore Journeys'),
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: handleRestoreSubmit,
+            submitLabel: t('Restore'),
+            closeLabel: t('Cancel')
+          }}
+        >
+          <Typography>
+            {t(
+              'Are you sure you would like to restore all trashed journeys immediately?'
+            )}
+          </Typography>
+        </Dialog>
+      )}
+      {deleteDialogOpen != null && (
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Delete Journeys Forever'),
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: handleDeleteSubmit,
+            submitLabel: t('Delete Forever'),
+            closeLabel: t('Cancel')
+          }}
+        >
+          <Typography>
+            {t(
+              'Are you sure you would like to permanently delete all trashed journeys immediately?'
+            )}
+          </Typography>
+        </Dialog>
+      )}
     </>
   )
 }
