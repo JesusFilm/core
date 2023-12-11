@@ -10,7 +10,7 @@ import {
   Stack,
   Typography
 } from '@mui/material'
-import { AuthAction, withUser } from 'next-firebase-auth'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Nexuses, Nexuses_nexuses } from '../__generated__/Nexuses'
@@ -99,6 +99,18 @@ export function Index() {
     </Stack>
   )
 }
+
+export const getServerSideProps = withUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
+})(async ({ user }) => {
+  const token = await user?.getIdToken()
+
+  return {
+    props: {
+      token
+    }
+  }
+})
 
 export default withUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
