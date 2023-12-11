@@ -46,7 +46,7 @@ interface ChannelsResponse {
 export class GoogleYoutubeService {
   rootUrl: string
   constructor() {
-    this.rootUrl = 'https://www.googleapis.com/youtube/v3'
+    this.rootUrl = 'https://www.googleapis.com/youtube/v3/channels'
   }
 
   async getChannels(req: ChannelsRequest): Promise<ChannelsResponse> {
@@ -59,7 +59,7 @@ export class GoogleYoutubeService {
       params.append(key, value.toString())
     })
 
-    const response = await fetch(`${this.rootUrl}/${params.toString()}`, {
+    const response = await fetch(`${this.rootUrl}?${params.toString()}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${req.accessToken}`
