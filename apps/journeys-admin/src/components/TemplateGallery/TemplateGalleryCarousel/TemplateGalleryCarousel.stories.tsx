@@ -69,9 +69,6 @@ export const Default = {
     await waitFor(async () => {
       await userEvent.hover(screen.getByRole('group', { name: '1 / 12' }))
     })
-  },
-  args: {
-    cardSpacing: 5
   }
 }
 
@@ -86,8 +83,7 @@ export const Loading = {
 export const Heading = {
   ...Default,
   args: {
-    heading: 'Heading',
-    cardSpacing: 5
+    heading: 'Heading'
   }
 }
 
