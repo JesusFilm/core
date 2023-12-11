@@ -1,10 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render,  waitFor } from '@testing-library/react'
 
 import { Service } from '../../../../__generated__/globalTypes'
 import { GET_TAGS } from '../../../libs/useTagsQuery/useTagsQuery'
 
 import { TagsFilter } from '.'
+
 
 describe('TagsFilter', () => {
   const topics = [
@@ -410,4 +411,21 @@ describe('TagsFilter', () => {
     expect(getByTestId('Calendar4Icon')).toBeInTheDocument()
     expect(getByTestId('Grid1Icon')).toBeInTheDocument()
   })
+
+  it('should change all dropdown arrows into chevron arrows', async () => {
+    const handleChange = jest.fn()
+    const { getByTestId } = render(
+      <MockedProvider mocks={[allParentTagsMock]}>
+        <TagsFilter
+          label="Topics, felt needs, holidays, collections"
+          tagNames={['Topics', 'Felt Needs', 'Holidays', 'Collections']}
+          onChange={handleChange}
+          selectedTagIds={[]}
+        />
+      </MockedProvider>
+    )
+    expect(getByTestId('ChevronDownIcon')).toBeInTheDocument()
+  })
+  
 })
+
