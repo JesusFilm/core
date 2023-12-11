@@ -9,7 +9,7 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { formiumClient } from '@core/shared/ui/formiumClient'
+import { onboardingFormiumClient } from '@core/shared/ui/onboardingFormiumClient'
 
 import { OnboardingForm } from '../src/components/OnboardingForm'
 import { OnboardingPageWrapper } from '../src/components/OnboardingPageWrapper'
@@ -49,7 +49,7 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  const form = await formiumClient.getFormBySlug(
+  const form = await onboardingFormiumClient.getFormBySlug(
     process.env.NEXT_PUBLIC_FORMIUM_PROJECT_SLUG ?? ''
   )
 
