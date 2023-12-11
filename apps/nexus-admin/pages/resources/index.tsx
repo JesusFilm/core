@@ -9,11 +9,15 @@ import { ResourcesTable } from '../../src/components/ResourcesTable'
 import { UpdateResourceModal } from '../../src/components/UpdateResourceModal'
 
 export const GET_RESOURCES = gql`
-  query {
+  query Resources {
     resources {
       id
       name
-      videoId
+      googleDrive {
+        title
+        driveId
+      }
+      status
     }
   }
 `
@@ -23,19 +27,25 @@ const GET_RESOURCE = gql`
     resource(id: $resourceId) {
       id
       name
-      videoId
+      googleDrive {
+        title
+        driveId
+      }
+      status
     }
   }
 `
 
 const RESOURCE_LOAD = gql`
-  mutation AddResourceFromGoogleDrive(
-    $input: AddResourceFromGoogleDriveInput!
-  ) {
-    addResourcefromGoogleDrive(input: $input) {
+  mutation ResourceFromGoogleDrive($input: ResourceFromGoogleDriveInput!) {
+    resourceFromGoogleDrive(input: $input) {
       id
       name
-      videoId
+      googleDrive {
+        title
+        driveId
+      }
+      status
     }
   }
 `
@@ -45,18 +55,18 @@ const RESOURCE_UPDATE = gql`
     resourceUpdate(id: $resourceId, input: $input) {
       id
       name
-      videoId
+      googleDrive {
+        title
+        driveId
+      }
+      status
     }
   }
 `
 
 const RESOURCE_DELETE = gql`
   mutation ResourceDelete($resourceId: ID!) {
-    resourceDelete(id: $resourceId) {
-      id
-      name
-      videoId
-    }
+    resourceDelete(id: $resourceId)
   }
 `
 

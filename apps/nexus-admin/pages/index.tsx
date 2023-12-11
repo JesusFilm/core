@@ -13,11 +13,12 @@ import {
 import { AuthAction, withUser } from 'next-firebase-auth'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Nexuses, Nexuses_nexuses } from '../__generated__/Nexuses'
 import { CreateNexusModal } from '../src/components/CreateNexusModal'
 import { Loader } from '../src/components/Loader'
 
 export const GET_NEXUSES = gql`
-  query {
+  query Nexuses {
     nexuses {
       id
       name
@@ -26,19 +27,13 @@ export const GET_NEXUSES = gql`
   }
 `
 
-type NexusApp = {
-  id: string
-  name: string
-  description: string
-}
-
 export function Index() {
-  const [nexusApps, setNexusApps] = useState<NexusApp[] | []>([])
+  const [nexusApps, setNexusApps] = useState<Nexuses_nexuses[]>([])
   const [openCreateNexusModal, setOpenCreateNexusModal] =
     useState<boolean>(false)
   const router = useRouter()
 
-  const { data, loading } = useQuery(GET_NEXUSES)
+  const { data, loading } = useQuery<Nexuses>(GET_NEXUSES)
 
   useEffect(() => {
     if (data) {

@@ -11,13 +11,13 @@ import {
 import { useFormik } from 'formik'
 import { FC } from 'react'
 import * as yup from 'yup'
-import { Channel } from '../../../pages/channels'
+import { Channel_channel } from '../../../__generated__/Channel'
 import { Modal } from '../Modal'
 
 interface CreateChannelModalProps {
   open: boolean
   onClose: () => void
-  onCreate: (channelData: Partial<Channel>) => void
+  onCreate: (channelData: Partial<Channel_channel>) => void
 }
 
 const channelValidationSchema = yup.object({
@@ -49,7 +49,7 @@ export const CreateChannelModal: FC<CreateChannelModalProps> = ({
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
           <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={formik.submitForm}>Create Channel</Button>
+          <Button onClick={formik.submitForm}>Create</Button>
         </Stack>
       }
     >
