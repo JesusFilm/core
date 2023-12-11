@@ -143,7 +143,9 @@ export function FeltNeedsButton({
           className="hoverStyles"
           src={image}
           alt={tagLabel ?? 'FeltNeedsImage'}
-          sizes={`(${theme.breakpoints.down('md')}) 150px, 222px`}
+          sizes={`(max-width: ${
+            theme.breakpoints.values.md - 0.5
+          }px) 150px, 222px`}
           fill
         />
         <Typography
