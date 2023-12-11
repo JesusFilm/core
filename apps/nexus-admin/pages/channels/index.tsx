@@ -15,9 +15,10 @@ export const GET_CHANNELS = gql`
       name
       platform
       connected
-      channelYoutubeCredential {
+      status
+      youtube {
+        channelId
         imageUrl
-        youtubeId
       }
     }
   }
