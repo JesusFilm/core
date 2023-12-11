@@ -1,16 +1,20 @@
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
-import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useUser, withUser } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { ONBOARDING_IDS } from '../../src/components/OnboardingPanel/OnboardingList/OnboardingList'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
-import { useJourneyQuery } from '../../src/libs/useJourneyQuery/useJourneyQuery'
+import {
+  GET_JOURNEY,
+  useJourneyQuery
+} from '../../src/libs/useJourneyQuery/useJourneyQuery'
 
 function TemplateDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -19,18 +23,16 @@ function TemplateDetails(): ReactElement {
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string
   })
-  const template = data?.journey
-  useInvalidJourneyRedirect(data)
 
   return (
     <>
       <NextSeo
-        title={template?.title ?? t('Journey Template')}
-        description={template?.description ?? undefined}
+        title={data?.journey?.title ?? t('Journey Template')}
+        description={data?.journey?.description ?? undefined}
       />
       <JourneyProvider
         value={{
-          journey: template,
+          journey: data?.journey,
           variant: 'admin'
         }}
       >
@@ -48,22 +50,48 @@ function TemplateDetails(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR()(
-  async ({ user, locale, resolvedUrl }) => {
-    const { redirect, translations } = await initAndAuthApp({
-      user,
-      locale,
-      resolvedUrl
+export const getStaticProps: GetStaticProps = async ({ locale, params }) => {
+  const { apolloClient, translations } = await initAndAuthApp({
+    locale
+  })
+
+  try {
+    await apolloClient.query({
+      query: GET_JOURNEY,
+      variables: {
+        id: params?.journeyId
+      }
     })
-
-    if (redirect != null) return { redirect }
-
-    return {
-      props: {
-        ...translations
+  } catch (error) {
+    if (error.message === 'journey not found') {
+      return {
+        redirect: {
+          destination: '/templates',
+          permanent: false
+        }
       }
     }
+    throw error
   }
-)
+
+  return {
+    props: {
+      ...translations,
+      initialApolloState: apolloClient.cache.extract(),
+      revalidate: 60
+    }
+  }
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: ONBOARDING_IDS.map((id) => ({
+      params: {
+        journeyId: id
+      }
+    })),
+    fallback: 'blocking'
+  }
+}
 
 export default withUser()(TemplateDetails)
