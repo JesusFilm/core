@@ -26,6 +26,8 @@ const StyledSwiperContainer = styled(Swiper)(() => ({
   }
 }))
 
+const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
+
 interface TemplateGalleryCarouselProps<T> {
   items: Array<T & { id: string }>
   renderItem: (itemProps: { item?: T }) => ReactNode
@@ -94,22 +96,23 @@ export function TemplateGalleryCarousel<T>({
         <StyledSwiperContainer
           modules={[Navigation, Mousewheel, A11y]}
           freeMode
+          loop={false}
           speed={850}
           slidesPerView="auto"
           spaceBetween={20}
           watchOverflow
           allowTouchMove
           observer
-          slidesOffsetBefore={slidesOffsetBefore ?? 0}
           observeParents
           resizeObserver
           mousewheel={{ forceToAxis: true }}
           breakpoints={breakpoints}
           onSwiper={(swiper) => setSwiper(swiper)}
+          sx={{ ml: slidesOffsetBefore != null ? slidesOffsetBefore / 4 : 0 }}
         >
           {items.map((item, index) => {
             return (
-              <SwiperSlide
+              <StyledSwiperSlide
                 key={item.id}
                 data-testid={`journey-${item.id}`}
                 onFocus={() => {
@@ -118,9 +121,10 @@ export function TemplateGalleryCarousel<T>({
                   }
                   swiper?.slideTo(index)
                 }}
+                sx={{ mr: loadingSpacing }}
               >
                 {renderItem({ item })}
-              </SwiperSlide>
+              </StyledSwiperSlide>
             )
           })}
         </StyledSwiperContainer>
