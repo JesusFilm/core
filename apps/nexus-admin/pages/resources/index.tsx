@@ -117,6 +117,7 @@ const ResourcesPage = () => {
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
       developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
       viewId: 'DOCS_VIDEOS',
+      multiselect: true,
       showUploadView: true,
       showUploadFolders: true,
       supportDrives: true,
@@ -126,20 +127,24 @@ const ResourcesPage = () => {
         }
 
         if (data.action === 'picked') {
-          loadResourceFromGoogleDrive(data.docs?.[0]?.id)
+          const fileIds: string[] = []
+
+          data.docs.forEach((doc) => fileIds.push(doc.id))
+
+          loadResourceFromGoogleDrive(fileIds)
         }
       }
     })
   }
 
-  const loadResourceFromGoogleDrive = (fileId: string) => {
+  const loadResourceFromGoogleDrive = (fileIds: string[]) => {
     const accessToken = authResponse?.access_token
 
     resourceLoad({
       variables: {
         input: {
           accessToken,
-          fileId,
+          fileIds,
           nexusId
         }
       }

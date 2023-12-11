@@ -24,7 +24,7 @@ export interface ResourceFromGoogleDrive_resourceFromGoogleDrive {
 }
 
 export interface ResourceFromGoogleDrive {
-  resourceFromGoogleDrive: ResourceFromGoogleDrive_resourceFromGoogleDrive;
+  resourceFromGoogleDrive: ResourceFromGoogleDrive_resourceFromGoogleDrive[] | null;
 }
 
 export interface ResourceFromGoogleDriveVariables {
