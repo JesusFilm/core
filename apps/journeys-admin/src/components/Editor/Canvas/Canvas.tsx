@@ -7,8 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import SwiperCore from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
@@ -35,8 +34,6 @@ import { CardWrapper } from './CardWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
-
-import 'swiper/swiper.min.css'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
@@ -119,7 +116,7 @@ export function Canvas(): ReactElement {
     width: 362
   }
 
-  function handleSlideChange(swiper: SwiperCore): void {
+  function handleSlideChange(swiper: SwiperClass): void {
     const step = steps?.[swiper.activeIndex]
     if (step == null || step.id === selectedStep?.id) return
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Journey })

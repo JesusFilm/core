@@ -58,6 +58,7 @@ export function JourneyCardText({
           display: 'block',
           color: 'secondary.main'
         }}
+        suppressHydrationWarning
       >
         {intlFormat(parseISO(journey.createdAt), {
           day: 'numeric',

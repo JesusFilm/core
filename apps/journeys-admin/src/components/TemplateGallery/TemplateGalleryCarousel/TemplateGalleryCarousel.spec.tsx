@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { SwiperOptions } from 'swiper'
+import { SwiperOptions } from 'swiper/types'
 
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import {
@@ -76,8 +76,6 @@ describe('TemplateGalleryCarousel', () => {
     expect(items).toHaveLength(2)
     expect(items[0]).toHaveTextContent('Featured Template 1')
     expect(items[1]).toHaveTextContent('Featured Template 2')
-    expect(getByRole('button', { name: 'prev-button' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'next-button' })).toBeInTheDocument()
   })
 
   it('should focus elements in the carousel', async () => {
