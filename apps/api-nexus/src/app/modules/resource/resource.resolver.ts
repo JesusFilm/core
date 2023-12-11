@@ -79,8 +79,8 @@ export class ResourceResolver {
     @CurrentUserId() userId: string,
     @Args('id') id: string,
     @Args('input') input: ResourceUpdateInput
-  ): Promise<boolean> {
-    await this.prismaService.resource.update({
+  ): Promise<Resource> {
+    return await this.prismaService.resource.update({
       where: {
         id,
         nexus: { userNexuses: { every: { userId } } }
@@ -89,7 +89,6 @@ export class ResourceResolver {
         name: input.name ?? undefined
       }
     })
-    return true
   }
 
   @Mutation()

@@ -61,6 +61,6 @@ extend type Query {
 extend type Mutation {
   resourceCreate(input: ResourceCreateInput!): Resource!
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
-  resourceDelete(id: ID!): Boolean!
+  resourceDelete(id: ID!): Resource!
   resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
 }
