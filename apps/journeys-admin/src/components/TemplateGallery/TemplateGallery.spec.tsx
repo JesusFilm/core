@@ -160,11 +160,13 @@ describe('TemplateGallery', () => {
 
     await waitFor(() => {
       expect(
-        getByRole('button', { name: 'Acceptance Acceptance' })
+        getByRole('button', { name: 'Acceptance Acceptance Acceptance' })
       ).toBeInTheDocument()
     })
 
-    fireEvent.click(getByRole('button', { name: 'Acceptance Acceptance' }))
+    fireEvent.click(
+      getByRole('button', { name: 'Acceptance Acceptance Acceptance' })
+    )
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith({
         push,

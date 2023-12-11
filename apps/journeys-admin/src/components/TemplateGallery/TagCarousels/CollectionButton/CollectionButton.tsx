@@ -1,3 +1,4 @@
+import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import ButtonBase from '@mui/material/ButtonBase'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -32,12 +33,11 @@ const StyledCollectionButton = styled(ButtonBase)(({ theme }) => ({
   }
 }))
 
-function tagImage(tagLabel?: string): StaticImageData {
+function tagImage(tagLabel?: string): StaticImageData | undefined {
   switch (tagLabel) {
     case 'NUA':
       return nuaImage
     case 'Jesus Film':
-    default:
       return jesusFilmImage
   }
 }
@@ -72,27 +72,39 @@ export function CollectionButton({
           p: 2
         }}
       >
-        <Stack
-          justifyContent="center"
-          alignItems="center"
-          sx={{
-            position: 'relative',
-            backgroundColor: 'grey',
-            height: '64px',
-            width: '64px',
-            color: 'white',
-            borderRadius: 8,
-            overflow: 'hidden'
-          }}
-        >
-          <NextImage
-            priority
-            className="backgroundImageHover"
-            src={image.src}
-            layout="fill"
-            alt={tagLabel ?? 'CollectionImage'}
+        {tag != null ? (
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            sx={{
+              position: 'relative',
+              backgroundColor: 'grey',
+              height: '64px',
+              width: '64px',
+              color: 'white',
+              borderRadius: 8,
+              overflow: 'hidden'
+            }}
+          >
+            {image != null ? (
+              <NextImage
+                priority
+                className="backgroundImageHover"
+                src={image.src}
+                layout="fill"
+                alt={tagLabel ?? 'CollectionImage'}
+              />
+            ) : (
+              <InsertPhotoRoundedIcon className="backgroundImageHover" />
+            )}
+          </Stack>
+        ) : (
+          <Skeleton
+            data-testid="collections-button-loading"
+            variant="rounded"
+            sx={{ height: '64px', width: '64px', borderRadius: 8 }}
           />
-        </Stack>
+        )}
         <Typography
           variant="subtitle2"
           sx={{ display: { xs: 'none', md: 'block' } }}

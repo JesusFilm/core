@@ -19,10 +19,12 @@ import significanceImage from './assets/significance.jpg'
 
 type ChildTag = Tag & { parentId: string }
 
-function tagImage(tagLabel?: string): {
-  tagImg: StaticImageData
-  backgroundStyle: string
-} {
+function tagImage(tagLabel?: string):
+  | {
+      tagImg: StaticImageData
+      backgroundStyle: string
+    }
+  | undefined {
   switch (tagLabel) {
     case 'Depression':
       return {
@@ -73,7 +75,6 @@ function tagImage(tagLabel?: string): {
           'linear-gradient(0deg, rgba(255, 171, 0, 0.8) 0%,rgba(255, 171, 0, 0) 60%, rgba(255, 171, 0, 0) 100%)'
       }
     case 'Acceptance':
-    default:
       return {
         tagImg: acceptanceImage,
         backgroundStyle:
@@ -95,82 +96,97 @@ export function FeltNeedsButton({
   const tagImageData = tagImage(tagLabel)
   const image = tagImageData?.tagImg
 
-  return (
-    <ButtonBase
-      key={`${tagLabel ?? 'felt-needs'}-button}`}
+  return tag != null ? (
+    image != null ? (
+      <ButtonBase
+        key={`${tagLabel ?? 'felt-needs'}-button}`}
+        sx={{
+          backgroundColor: 'grey',
+          padding: '32px 28px',
+          color: 'white',
+          borderRadius: '8px',
+          width: { xs: '150px', md: '222px' },
+          height: { xs: '56px', md: '110px' },
+          overflow: 'hidden',
+          '&:focus': {
+            outline: '2px solid',
+            outlineColor: (theme) => theme.palette.primary.main,
+            outlineOffset: '2px'
+          },
+          '&:hover': {
+            '& .hoverStyles': {
+              transform: 'scale(1.05)'
+            }
+          },
+          '& .hoverStyles': {
+            transition: (theme) => theme.transitions.create('transform')
+          }
+        }}
+        onClick={() => tag?.id != null && onClick(tag.id)}
+      >
+        <Box
+          data-testid="gradientLayer"
+          sx={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 2,
+            background: tagImageData?.backgroundStyle
+          }}
+        />
+        <NextImage
+          priority
+          className="hoverStyles"
+          src={image}
+          layout="fill"
+          alt={tagLabel ?? 'FeltNeedsImage'}
+        />
+        <Typography
+          className="hoverStyles"
+          variant="h3"
+          sx={{
+            zIndex: 3,
+            display: { xs: 'none', md: 'flex' },
+            position: 'absolute',
+            opacity: '70%',
+            left: 12,
+            bottom: 8,
+            mixBlendMode: 'plus-lighter'
+          }}
+        >
+          {tagLabel ?? <Skeleton width={80} />}
+        </Typography>
+        <Typography
+          className="hoverStyles"
+          variant="subtitle2"
+          sx={{
+            zIndex: 1,
+            display: { md: 'none' },
+            position: 'absolute',
+            opacity: '70%',
+            left: 8,
+            bottom: 4,
+            mixBlendMode: 'plus-lighter'
+          }}
+        >
+          {tagLabel ?? <Skeleton width={80} />}
+        </Typography>
+      </ButtonBase>
+    ) : (
+      // Hack to return something since must return element with renderProps
+      <></>
+    )
+  ) : (
+    <Skeleton
+      data-testid="felt-needs-button-loading"
+      variant="rounded"
       sx={{
-        backgroundColor: 'grey',
-        padding: '32px 28px',
-        color: 'white',
-        borderRadius: '8px',
         width: { xs: '150px', md: '222px' },
         height: { xs: '56px', md: '110px' },
-        overflow: 'hidden',
-        '&:focus': {
-          outline: '2px solid',
-          outlineColor: (theme) => theme.palette.primary.main,
-          outlineOffset: '2px'
-        },
-        '&:hover': {
-          '& .hoverStyles': {
-            transform: 'scale(1.05)'
-          }
-        },
-        '& .hoverStyles': {
-          transition: (theme) => theme.transitions.create('transform')
-        }
+        borderRadius: 2
       }}
-      onClick={() => tag?.id != null && onClick(tag.id)}
-    >
-      <Box
-        data-testid="gradientLayer"
-        sx={{
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 2,
-          background: tagImageData?.backgroundStyle
-        }}
-      />
-      <NextImage
-        priority
-        className="hoverStyles"
-        src={image}
-        layout="fill"
-        alt={tagLabel ?? 'FeltNeedsImage'}
-      />
-      <Typography
-        className="hoverStyles"
-        variant="h3"
-        sx={{
-          zIndex: 3,
-          display: { xs: 'none', md: 'flex' },
-          position: 'absolute',
-          opacity: '70%',
-          left: 12,
-          bottom: 8,
-          mixBlendMode: 'plus-lighter'
-        }}
-      >
-        {tagLabel ?? <Skeleton width={80} />}
-      </Typography>
-      <Typography
-        className="hoverStyles"
-        variant="subtitle2"
-        sx={{
-          zIndex: 1,
-          display: { md: 'none' },
-          position: 'absolute',
-          opacity: '70%',
-          left: 8,
-          bottom: 4,
-          mixBlendMode: 'plus-lighter'
-        }}
-      >
-        {tagLabel ?? <Skeleton width={80} />}
-      </Typography>
-    </ButtonBase>
+    />
   )
 }
