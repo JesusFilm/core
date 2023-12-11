@@ -10,7 +10,7 @@ import {
   useRef,
   useState
 } from 'react'
-import { A11y, Mousewheel, Navigation } from 'swiper/modules'
+import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 import { NavigationOptions } from 'swiper/types/modules/navigation'
@@ -94,7 +94,7 @@ export function TemplateGalleryCarousel<T>({
         </Stack>
       ) : (
         <StyledSwiperContainer
-          modules={[Navigation, Mousewheel, A11y]}
+          modules={[Navigation, Mousewheel, A11y, FreeMode]}
           freeMode
           loop={false}
           speed={850}

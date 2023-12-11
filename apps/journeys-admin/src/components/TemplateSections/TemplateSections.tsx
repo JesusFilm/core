@@ -146,6 +146,11 @@ export function TemplateSections({
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-8}
+              loadingSpacing={{
+                xs: 1,
+                md: 8,
+                xl: 11
+              }}
             />
           )
       )}
