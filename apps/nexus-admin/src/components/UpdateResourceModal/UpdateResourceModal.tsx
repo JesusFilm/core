@@ -2,19 +2,18 @@ import { Button, Stack, TextField } from '@mui/material'
 import { useFormik } from 'formik'
 import { FC, useEffect } from 'react'
 import * as yup from 'yup'
-import { Resource } from '../../../pages/resources'
+import { Resource_resource } from '../../../__generated__/Resource'
 import { Modal } from '../Modal'
 
 interface UpdateResourceModalProps {
   open: boolean
   onClose: () => void
-  data: Partial<Resource> | null
-  onUpdate: (resourceData: Partial<Resource>) => void
+  data: Partial<Resource_resource> | null
+  onUpdate: (resourceData: Partial<Resource_resource>) => void
 }
 
 const resourceValidationSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  videoId: yup.string().required('Video ID is required')
+  name: yup.string().required('Name is required')
 })
 
 export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({
@@ -25,8 +24,7 @@ export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({
 }) => {
   const formik = useFormik({
     initialValues: {
-      name: data?.name ?? '',
-      videoId: data?.videoId ?? ''
+      name: data?.name ?? ''
     },
     validationSchema: resourceValidationSchema,
     onSubmit: (values) => {
@@ -37,8 +35,7 @@ export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({
   useEffect(() => {
     if (data) {
       formik.setValues({
-        name: data?.name ?? '',
-        videoId: data?.videoId ?? ''
+        name: data?.name ?? ''
       })
     }
   }, [data])
@@ -66,17 +63,6 @@ export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({
           onBlur={formik.handleBlur}
           error={formik.touched.name && Boolean(formik.errors.name)}
           helperText={formik.touched.name && formik.errors.name}
-        />
-        <TextField
-          label="Video ID"
-          variant="filled"
-          id="videoId"
-          name="videoId"
-          value={formik.values.videoId}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.videoId && Boolean(formik.errors.videoId)}
-          helperText={formik.touched.videoId && formik.errors.videoId}
         />
       </Stack>
     </Modal>

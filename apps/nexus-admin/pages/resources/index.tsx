@@ -1,8 +1,13 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Stack } from '@mui/material'
-import { AuthAction, withUser } from 'next-firebase-auth'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
+import { Resource, Resource_resource } from '../../__generated__/Resource'
+import { ResourceDelete } from '../../__generated__/ResourceDelete'
+import { ResourceFromGoogleDrive } from '../../__generated__/ResourceFromGoogleDrive'
+import { ResourceUpdate } from '../../__generated__/ResourceUpdate'
+import { Resources, Resources_resources } from '../../__generated__/Resources'
 import { DeleteModal } from '../../src/components/DeleteModal'
 import { MainLayout } from '../../src/components/MainLayout'
 import { ResourcesTable } from '../../src/components/ResourcesTable'
@@ -70,17 +75,11 @@ const RESOURCE_DELETE = gql`
   }
 `
 
-export type Resource = {
-  id: string
-  name: string
-  videoId: string
-}
-
 const ResourcesPage = () => {
   const [deleteResourceModal, setDeleteResourceModal] = useState<boolean>(false)
   const [resourceId, setResourceId] = useState<string>('')
-  const [resources, setResources] = useState<Resource[] | []>([])
-  const [resource, setResource] = useState<Resource | null>(null)
+  const [resources, setResources] = useState<Resources_resources[]>([])
+  const [resource, setResource] = useState<Resource_resource | null>(null)
   const [openUpdateResourceModal, setOpenUpdateResourceModal] =
     useState<boolean>(false)
 
@@ -88,8 +87,8 @@ const ResourcesPage = () => {
   const nexusId =
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
 
-  const { data } = useQuery(GET_RESOURCES)
-  const { data: resourceData } = useQuery(GET_RESOURCE, {
+  const { data } = useQuery<Resources>(GET_RESOURCES)
+  const { data: resourceData } = useQuery<Resource>(GET_RESOURCE, {
     skip: !resourceId,
     variables: {
       resourceId,
@@ -99,7 +98,7 @@ const ResourcesPage = () => {
 
   useEffect(() => {
     if (data) {
-      setResources(data?.resources)
+      setResources(data?.resources as Resources_resources[])
     }
   }, [data])
 
@@ -109,9 +108,9 @@ const ResourcesPage = () => {
     }
   }, [resourceData])
 
-  const [resourceLoad] = useMutation(RESOURCE_LOAD)
-  const [resourceUpdate] = useMutation(RESOURCE_UPDATE)
-  const [resourceDelete] = useMutation(RESOURCE_DELETE)
+  const [resourceLoad] = useMutation<ResourceFromGoogleDrive>(RESOURCE_LOAD)
+  const [resourceUpdate] = useMutation<ResourceUpdate>(RESOURCE_UPDATE)
+  const [resourceDelete] = useMutation<ResourceDelete>(RESOURCE_DELETE)
 
   const openGooglePicker = () => {
     openPicker({
@@ -207,6 +206,18 @@ const ResourcesPage = () => {
     </MainLayout>
   )
 }
+
+export const getServerSideProps = withUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
+})(async ({ user }) => {
+  const token = await user?.getIdToken()
+
+  return {
+    props: {
+      token
+    }
+  }
+})
 
 export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
