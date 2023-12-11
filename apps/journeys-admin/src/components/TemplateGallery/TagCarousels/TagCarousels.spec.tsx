@@ -9,7 +9,7 @@ describe('TagCarousels', () => {
   it('should render TagCarousels', async () => {
     const { getByTestId, getAllByTestId, getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels selectedTagIds={[]} onChange={jest.fn()} />
+        <TagCarousels onChange={jest.fn()} />
       </MockedProvider>
     )
 
@@ -40,7 +40,7 @@ describe('TagCarousels', () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels selectedTagIds={[]} onChange={onChange} />
+        <TagCarousels onChange={onChange} />
       </MockedProvider>
     )
 
@@ -65,7 +65,7 @@ describe('TagCarousels', () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels selectedTagIds={[]} onChange={onChange} />
+        <TagCarousels onChange={onChange} />
       </MockedProvider>
     )
 

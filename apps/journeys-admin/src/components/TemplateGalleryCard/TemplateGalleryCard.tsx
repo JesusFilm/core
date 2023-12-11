@@ -106,6 +106,7 @@ export function TemplateGalleryCard({
       >
         <Box
           component="a"
+          tabIndex={-1}
           data-testid="templateGalleryCard"
           sx={{
             height: 'inherit',
