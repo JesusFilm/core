@@ -1,11 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render,  waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { Service } from '../../../../__generated__/globalTypes'
 import { GET_TAGS } from '../../../libs/useTagsQuery/useTagsQuery'
 
 import { TagsFilter } from '.'
-
 
 describe('TagsFilter', () => {
   const topics = [
@@ -426,6 +425,4 @@ describe('TagsFilter', () => {
     )
     expect(getByTestId('ChevronDownIcon')).toBeInTheDocument()
   })
-  
 })
-
