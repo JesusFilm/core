@@ -11,7 +11,7 @@ import {
   useRef,
   useState
 } from 'react'
-import { A11y, Mousewheel, Navigation } from 'swiper/modules'
+import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 import { NavigationOptions } from 'swiper/types/modules/navigation'
@@ -35,7 +35,7 @@ interface TemplateGalleryCarouselProps<T> {
   heading?: string
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
-  loadingSpacing?: ComponentProps<typeof Stack>['spacing']
+  cardSpacing?: ComponentProps<typeof Stack>['spacing']
   slidesOffsetBefore?: number
   priority?: boolean
 }
@@ -46,7 +46,7 @@ export function TemplateGalleryCarousel<T>({
   heading,
   breakpoints,
   loading = false,
-  loadingSpacing,
+  cardSpacing,
   slidesOffsetBefore,
   priority
 }: TemplateGalleryCarouselProps<T>): ReactElement {
@@ -79,7 +79,7 @@ export function TemplateGalleryCarousel<T>({
       {loading ? (
         <Stack
           direction="row"
-          spacing={loadingSpacing}
+          spacing={cardSpacing}
           sx={{
             mt: 4,
             minWidth: 'max-content',
@@ -95,9 +95,8 @@ export function TemplateGalleryCarousel<T>({
         </Stack>
       ) : (
         <StyledSwiperContainer
-          modules={[Navigation, Mousewheel, A11y]}
+          modules={[Navigation, Mousewheel, A11y, FreeMode]}
           freeMode
-          loop={false}
           speed={850}
           slidesPerView="auto"
           spaceBetween={20}
@@ -122,7 +121,7 @@ export function TemplateGalleryCarousel<T>({
                   }
                   swiper?.slideTo(index)
                 }}
-                sx={{ mr: loadingSpacing }}
+                sx={{ mr: cardSpacing }}
               >
                 {renderItem({ item, priority })}
               </StyledSwiperSlide>
