@@ -10,7 +10,7 @@ interface EmotionCacheProps {
 // It allows developers to easily override MUI styles with other styling solutions, like CSS modules.
 export function createEmotionCache({
   rtl,
-  prepend = true
+  prepend = false
 }: EmotionCacheProps): EmotionCache {
   return createCache({
     key: 'css',

@@ -131,7 +131,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                   {t('Privacy Policy')}
                 </Link>
               </NextLink>
-              <Typography variant="body2">
+              <Typography variant="body2" suppressHydrationWarning>
                 {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
               </Typography>
             </Stack>
