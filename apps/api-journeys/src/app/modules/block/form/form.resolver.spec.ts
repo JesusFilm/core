@@ -14,6 +14,7 @@ import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
 
 import { FormBlockResolver } from './form.resolver'
+import { validateFormCredentials } from './validateFormCredentials'
 
 jest.mock('@formium/client', () => ({
   __esModule: true,
@@ -22,6 +23,13 @@ jest.mock('@formium/client', () => ({
 const mockCreateClient = createClient as jest.MockedFunction<
   typeof createClient
 >
+
+jest.mock('./validateFormCredentials', () => ({
+  __esModule: true,
+  validateFormCredentials: jest.fn()
+}))
+const mockValidateFormCredentials =
+  validateFormCredentials as jest.MockedFunction<typeof validateFormCredentials>
 
 describe('FormBlock', () => {
   let resolver: FormBlockResolver,
@@ -38,9 +46,9 @@ describe('FormBlock', () => {
     typename: 'FormBlock',
     parentBlockId: 'parentBlockId',
     parentOrder: 0,
+    apiToken: 'apiToken',
     projectId: 'projectId',
-    formSlug: 'formSlug',
-    apiToken: 'apiToken'
+    formSlug: 'formSlug'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -52,9 +60,9 @@ describe('FormBlock', () => {
     parentBlockId: 'parentBlockId'
   }
   const blockUpdateInput: FormBlockUpdateInput = {
+    apiToken: 'apiToken',
     projectId: 'projectId',
-    formSlug: 'formSlug',
-    apiToken: 'apiToken'
+    formSlug: 'formSlug'
   }
   const blockService = {
     provide: BlockService,
@@ -145,12 +153,9 @@ describe('FormBlock', () => {
     })
 
     it('updates a FormBlock', async () => {
-      const mockFormiumClient = {
-        getMyProjects: jest.fn(() => ({
-          data: [{ id: 'projectId', name: 'projectName' }]
-        }))
-      } as unknown as FormiumClient
-      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+      mockValidateFormCredentials.mockReturnValueOnce(
+        Promise.resolve(blockUpdateInput)
+      )
 
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)

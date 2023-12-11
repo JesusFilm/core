@@ -97,10 +97,8 @@ export class FormBlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
 
-    // const validatedInput = await validateFormCredentials({ input, block })
-
-    // return await this.blockService.update(id, validatedInput)
-    return await this.blockService.update(id, input)
+    const validatedInput = await validateFormCredentials({ input, block })
+    return await this.blockService.update(id, validatedInput)
   }
 
   @ResolveField('projects')
