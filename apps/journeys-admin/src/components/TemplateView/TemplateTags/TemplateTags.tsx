@@ -60,7 +60,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
             <Stack
               key={item}
               sx={{
-                width: 'max-content',
+                width: 'unset !important',
                 mr: { xs: 2, sm: '37px' }
               }}
             >
