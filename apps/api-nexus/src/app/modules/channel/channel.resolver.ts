@@ -118,7 +118,8 @@ export class ChannelResolver {
         nexus: { userNexuses: { every: { userId } } }
       },
       data: {
-        name: 'dd'
+        status: 'deleted',
+        connected: false
       }
     })
     return channel
@@ -147,7 +148,7 @@ export class ChannelResolver {
     if (channel == null) {
       throw new GraphQLError('Channel not found.')
     }
-    await this.prismaService.channelYoutube.create({
+    const youtubeChannel = await this.prismaService.channelYoutube.create({
       data: {
         channelId: channel?.id,
         title: youtubeChannels.items[0].snippet.title,
@@ -157,10 +158,14 @@ export class ChannelResolver {
         refreshToken: authResponse.refresh_token
       }
     })
-    const _channel = await this.prismaService.channel.findUnique({
+
+    const _channel = await this.prismaService.channel.update({
       where: {
-        id: input.channelId,
+        id: youtubeChannel.channelId,
         nexus: { userNexuses: { every: { userId } } }
+      },
+      data: {
+        connected: true
       },
       include: {
         youtube: true
