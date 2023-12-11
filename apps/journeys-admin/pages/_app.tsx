@@ -1,4 +1,4 @@
-import { ApolloProvider } from '@apollo/client'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
@@ -20,6 +20,11 @@ import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
+import 'swiper/css'
+import 'swiper/css/a11y'
+import 'swiper/css/mousewheel'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 import '../public/swiper-pagination-override.css'
 
 initAuth()
@@ -27,6 +32,7 @@ const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
+  initialApolloState?: NormalizedCacheObject
 }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
@@ -44,8 +50,10 @@ function JourneysAdminApp({
       ? JSON.parse(pageProps.userSerialized)
       : null
 
-  const token = user?._token ?? ''
-  const apolloClient = useApollo(token)
+  const apolloClient = useApollo({
+    initialState: pageProps.initialApolloState,
+    token: user?._token
+  })
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_GTM_ID != null)

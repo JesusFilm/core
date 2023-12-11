@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
-import SwiperCore, { Pagination } from 'swiper'
+import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -12,10 +12,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
-import 'swiper/swiper.min.css'
-import 'swiper/components/pagination/pagination.min.css'
-
-SwiperCore.use([Pagination])
 
 export function SocialPreview(): ReactElement {
   const { journey } = useJourney()
@@ -52,6 +48,7 @@ export function SocialPreview(): ReactElement {
       ) : (
         <Box data-testid="SocialPreview">
           <Swiper
+            modules={[Pagination]}
             id="social-swiper"
             slidesPerView={1}
             centeredSlides

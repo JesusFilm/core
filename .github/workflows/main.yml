@@ -249,7 +249,7 @@ jobs:
         run: nx affected --target=build-storybook shared-storybook --webpack-stats-json
       - name: Check for frontend changes
         id: check_files
-        uses: andstor/file-existence-action@v1
+        uses: andstor/file-existence-action@v2
         with:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow

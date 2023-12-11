@@ -1,12 +1,11 @@
-import 'swiper/swiper.min.css'
-
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
-import SwiperCore, { Mousewheel, SwiperOptions } from 'swiper'
+import { Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { SwiperOptions } from 'swiper/types'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -30,8 +29,6 @@ interface TemplateCardPreviewProps {
 interface TemplateCardPreviewItemProps {
   step: TreeBlock<StepBlock>
 }
-
-SwiperCore.use([Mousewheel])
 
 function TemplateCardPreviewItem({
   step
@@ -118,6 +115,7 @@ export function TemplateCardPreview({
 
   return steps != null ? (
     <Swiper
+      modules={[Mousewheel]}
       mousewheel={{
         forceToAxis: true
       }}

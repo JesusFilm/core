@@ -75,7 +75,7 @@ test.describe('firefox only', () => {
       fullPage: true
     })
 
-    await page.getByRole('button', { name: 'Play' }).click()
+    await page.getByRole('button', { name: 'Play' }).first().click()
 
     // wait for 60 seconds to see if the video is complete. Until there are some events in the code to figure this out
     // eslint-disable-next-line
