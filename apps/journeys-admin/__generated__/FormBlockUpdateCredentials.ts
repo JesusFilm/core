@@ -21,6 +21,5 @@ export interface FormBlockUpdateCredentials {
 
 export interface FormBlockUpdateCredentialsVariables {
   id: string;
-  journeyId: string;
   input: FormBlockUpdateInput;
 }

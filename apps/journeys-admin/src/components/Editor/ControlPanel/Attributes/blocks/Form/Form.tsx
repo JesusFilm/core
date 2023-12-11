@@ -48,7 +48,7 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
         id={`${id}-form-credentials`}
         icon={<StarsIcon />}
         name="Credentials"
-        value={form != null ? 'Complete' : 'Incomplete'}
+        value={form != null && 'name' in form ? 'Complete' : 'Incomplete'}
         description="Formium Credentials"
         onClick={() => {
           dispatch({
