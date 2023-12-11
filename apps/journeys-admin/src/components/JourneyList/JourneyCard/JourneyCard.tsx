@@ -67,7 +67,7 @@ export function JourneyCard({
           legacyBehavior
           prefetch={false}
         >
-          <CardActionArea>
+          <CardActionArea sx={{ borderRadius: 0 }}>
             <CardContent sx={{ px: 6, py: 4 }}>
               <JourneyCardText journey={journey} variant={variant} />
             </CardContent>

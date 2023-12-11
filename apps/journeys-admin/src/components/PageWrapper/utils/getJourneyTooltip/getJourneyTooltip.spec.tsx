@@ -5,11 +5,11 @@ import {
 } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 
+import { JourneyTooltip } from './getJourneyTooltip'
+
 import { getJourneyTooltip } from '.'
 
 describe('getJourneyTooltip', () => {
-  const t = (str: string): string => str
-
   it('should prioritize returning text for new user requesting access for owners', () => {
     const journeys = [
       {
@@ -47,8 +47,8 @@ describe('getJourneyTooltip', () => {
         ]
       } as unknown as Journey
     ]
-    const result = getJourneyTooltip(t, journeys, 'user1.id')
-    expect(result).toBe('New editing request')
+    const result = getJourneyTooltip(journeys, 'user1.id')
+    expect(result).toBe(JourneyTooltip.newEditingRequest)
   })
 
   it('should return text for any new journeys for the current user', () => {
@@ -67,8 +67,8 @@ describe('getJourneyTooltip', () => {
         ]
       } as unknown as Journey
     ]
-    const result = getJourneyTooltip(t, journeys, 'user1.id')
-    expect(result).toBe('New journey')
+    const result = getJourneyTooltip(journeys, 'user1.id')
+    expect(result).toBe(JourneyTooltip.newJourney)
   })
 
   it('should return undefined', () => {
@@ -87,7 +87,7 @@ describe('getJourneyTooltip', () => {
         ]
       } as unknown as Journey
     ]
-    const result = getJourneyTooltip(t, journeys, 'user1.id')
+    const result = getJourneyTooltip(journeys, 'user1.id')
     expect(result).toBeUndefined()
   })
 })
