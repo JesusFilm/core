@@ -78,7 +78,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
       />
       <style jsx global>{`
         body {
-          background: transparent;
+          background: transparent !important;
         }
       `}</style>
       <JourneyProvider value={{ journey, variant: 'embed' }}>
