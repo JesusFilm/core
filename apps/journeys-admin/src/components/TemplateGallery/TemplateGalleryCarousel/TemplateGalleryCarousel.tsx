@@ -34,7 +34,7 @@ interface TemplateGalleryCarouselProps<T> {
   heading?: string
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
-  loadingSpacing?: ComponentProps<typeof Stack>['spacing']
+  cardSpacing?: ComponentProps<typeof Stack>['spacing']
   slidesOffsetBefore?: number
 }
 
@@ -44,7 +44,7 @@ export function TemplateGalleryCarousel<T>({
   heading,
   breakpoints,
   loading = false,
-  loadingSpacing,
+  cardSpacing,
   slidesOffsetBefore
 }: TemplateGalleryCarouselProps<T>): ReactElement {
   const [swiper, setSwiper] = useState<SwiperClass>()
@@ -78,7 +78,7 @@ export function TemplateGalleryCarousel<T>({
       {loading ? (
         <Stack
           direction="row"
-          spacing={loadingSpacing}
+          spacing={cardSpacing}
           sx={{
             mt: 4,
             minWidth: 'max-content',
@@ -121,7 +121,7 @@ export function TemplateGalleryCarousel<T>({
                   }
                   swiper?.slideTo(index)
                 }}
-                sx={{ mr: loadingSpacing }}
+                sx={{ mr: cardSpacing }}
               >
                 {renderItem({ item })}
               </StyledSwiperSlide>
