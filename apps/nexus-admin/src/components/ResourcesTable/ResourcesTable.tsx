@@ -11,12 +11,14 @@ interface ResourcesTableProps {
   data: Resources_resources[] | []
   onEdit: (channelId: string) => void
   onDelete: (channelId: string) => void
+  loading: boolean
 }
 
 export const ResourcesTable: FC<ResourcesTableProps> = ({
   data,
   onEdit,
-  onDelete
+  onDelete,
+  loading
 }) => {
   const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
   const [resourceId, setResourceId] = useState<string>('')
@@ -53,6 +55,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
         rows={data}
         title="Resources"
         subtitle="Additional description if required"
+        loading={loading}
       />
       <Popover
         open={Boolean(morePopup)}

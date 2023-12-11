@@ -32,12 +32,14 @@ interface ChannelsTableProps {
   data: Channels_channels[] | []
   onEdit: (channelId: string) => void
   onDelete: (channelId: string) => void
+  loading: boolean
 }
 
 export const ChannelsTable: FC<ChannelsTableProps> = ({
   data,
   onEdit,
-  onDelete
+  onDelete,
+  loading
 }) => {
   const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
   const [channelId, setChannelId] = useState<string>('')
@@ -131,6 +133,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
         rows={data}
         title="Channels Created"
         subtitle="Additional description if required"
+        loading={loading}
       />
       <Popover
         open={Boolean(morePopup)}
