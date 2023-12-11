@@ -102,6 +102,7 @@ export function TemplateSections({
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {(loading || (collection != null && collection.length > 0)) && (
         <TemplateGalleryCarousel
+          priority
           heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
           items={collection}
           renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}

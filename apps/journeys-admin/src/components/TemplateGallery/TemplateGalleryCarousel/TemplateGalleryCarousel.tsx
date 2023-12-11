@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import kebabCase from 'lodash/kebabCase'
 import {
   ComponentProps,
   ReactElement,
@@ -30,12 +31,13 @@ const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 
 interface TemplateGalleryCarouselProps<T> {
   items: Array<T & { id: string }>
-  renderItem: (itemProps: { item?: T }) => ReactNode
+  renderItem: (itemProps: { item?: T; priority?: boolean }) => ReactNode
   heading?: string
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
   loadingSpacing?: ComponentProps<typeof Stack>['spacing']
   slidesOffsetBefore?: number
+  priority?: boolean
 }
 
 export function TemplateGalleryCarousel<T>({
@@ -45,7 +47,8 @@ export function TemplateGalleryCarousel<T>({
   breakpoints,
   loading = false,
   loadingSpacing,
-  slidesOffsetBefore
+  slidesOffsetBefore,
+  priority
 }: TemplateGalleryCarouselProps<T>): ReactElement {
   const [swiper, setSwiper] = useState<SwiperClass>()
   const [hovered, setHovered] = useState(false)
@@ -68,9 +71,7 @@ export function TemplateGalleryCarousel<T>({
   return (
     <Box
       sx={{ position: 'relative' }}
-      data-testid={`${
-        heading?.replace(' ', '') ?? ''
-      }-template-gallery-carousel`}
+      data-testid={`${kebabCase(heading)}-template-gallery-carousel`}
       onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -123,7 +124,7 @@ export function TemplateGalleryCarousel<T>({
                 }}
                 sx={{ mr: loadingSpacing }}
               >
-                {renderItem({ item })}
+                {renderItem({ item, priority })}
               </StyledSwiperSlide>
             )
           })}

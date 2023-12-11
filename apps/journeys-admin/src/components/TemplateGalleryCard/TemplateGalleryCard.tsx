@@ -13,10 +13,6 @@ import { ReactElement } from 'react'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 
-export interface TemplateGalleryCardProps {
-  item?: Journey
-}
-
 interface HoverLayerProps {
   className?: string
 }
@@ -42,8 +38,14 @@ export function HoverLayer({ className }: HoverLayerProps): ReactElement {
   )
 }
 
+interface TemplateGalleryCardProps {
+  item?: Journey
+  priority?: boolean
+}
+
 export function TemplateGalleryCard({
-  item: journey
+  item: journey,
+  priority
 }: TemplateGalleryCardProps): ReactElement {
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
@@ -125,8 +127,8 @@ export function TemplateGalleryCard({
                 <>
                   <HoverLayer className="hoverImageEffects" />
                   <Image
-                    rel="preload"
-                    priority
+                    rel={priority === true ? 'preload' : undefined}
+                    priority={priority}
                     className="MuiImageBackground-root"
                     src={journey?.primaryImageBlock?.src}
                     alt={journey?.primaryImageBlock.alt}
