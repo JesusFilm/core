@@ -5,6 +5,8 @@ import {
   defaultComponents
 } from '@formium/react'
 import { Form } from '@formium/types'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { FormikValues } from 'formik'
 import { ReactElement } from 'react'
 
@@ -66,7 +68,7 @@ export function FormiumForm({
     onSubmit?.()
   }
 
-  return form != null ? (
+  return form != null && 'name' in form ? (
     <FormiumProvider {...props}>
       <Formium
         data={form}
@@ -75,6 +77,17 @@ export function FormiumForm({
       />
     </FormiumProvider>
   ) : (
-    <></>
+    <Box
+      sx={{
+        minHeight: '300px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
+      <Typography variant="h6" color="error">
+        Error Loading Form
+      </Typography>
+    </Box>
   )
 }
