@@ -60,7 +60,8 @@ export class EmailActionResolver {
           'ButtonBlock',
           'VideoBlock',
           'VideoTriggerBlock',
-          'TextResponseBlock'
+          'TextResponseBlock',
+          'FormBlock'
         ],
         block.typename
       )
