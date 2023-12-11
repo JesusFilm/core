@@ -1,13 +1,9 @@
-import 'swiper/swiper.min.css'
-import 'swiper/components/scrollbar/scrollbar.min.css'
-
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { ReactElement, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import SwiperCore, { A11y, Mousewheel, Scrollbar } from 'swiper'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -22,8 +18,6 @@ import {
 
 import { TemplateCardPreview } from './TemplateCardPreview/TemplateCardPreview'
 import { TemplateVideoPreview } from './TemplateVideoPreview'
-
-SwiperCore.use([Mousewheel, Scrollbar, A11y])
 
 export function TemplatePreviewTabs(): ReactElement {
   const [tabValue, setTabValue] = useState(0)
