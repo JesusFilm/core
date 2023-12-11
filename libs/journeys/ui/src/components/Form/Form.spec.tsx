@@ -16,7 +16,7 @@ describe('Form', () => {
   it('should render form', () => {
     const block = {
       id: 'formBlock.id',
-      form: {} as unknown as FormiumFormType
+      form: { id: 'form.id', name: 'form name' } as unknown as FormiumFormType
     } as unknown as TreeBlock<FormFields>
 
     const { getByTestId } = render(<Form {...block} />)

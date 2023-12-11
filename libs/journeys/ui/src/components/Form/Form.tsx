@@ -23,7 +23,7 @@ export function Form({
     handleAction(router, action)
   }
 
-  return form != null ? (
+  return form != null && 'name' in form ? (
     <div
       data-testid={`FormBlock-${id}`}
       onClick={(event) => {
