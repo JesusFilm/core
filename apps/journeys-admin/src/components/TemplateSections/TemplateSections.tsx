@@ -144,7 +144,7 @@ export function TemplateSections({
               heading={category}
               items={journeys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-              // breakpoints={swiperBreakpoints}
+              breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-8}
             />
           )
