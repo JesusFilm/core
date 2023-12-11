@@ -99,15 +99,18 @@ export function TemplateGalleryCard({
       }}
     >
       <NextLink
-        href={journey != null ? `/templates/${journey.id}` : ''}
+        href={`/templates/${journey?.id ?? ''}`}
         passHref
         legacyBehavior
         prefetch={false}
       >
         <Box
+          component="a"
           data-testid="templateGalleryCard"
           sx={{
-            height: 'inherit'
+            height: 'inherit',
+            color: 'inherit',
+            textDecoration: 'none'
           }}
         >
           {journey != null ? (

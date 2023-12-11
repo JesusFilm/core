@@ -10,12 +10,10 @@ import { CollectionButton } from './CollectionButton'
 import { FeltNeedsButton } from './FeltNeedsButton'
 
 interface TagCarouselsProps {
-  selectedTagIds: string[]
   onChange: (selectedTagId: string) => void
 }
 
 export function TagCarousels({
-  selectedTagIds,
   onChange: handleChange
 }: TagCarouselsProps): ReactElement {
   const { parentTags, childTags, loading } = useTagsQuery()
