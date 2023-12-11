@@ -7,8 +7,13 @@
 // GraphQL mutation operation: ResourceDelete
 // ====================================================
 
+export interface ResourceDelete_resourceDelete {
+  __typename: "Resource";
+  id: string;
+}
+
 export interface ResourceDelete {
-  resourceDelete: boolean;
+  resourceDelete: ResourceDelete_resourceDelete;
 }
 
 export interface ResourceDeleteVariables {
