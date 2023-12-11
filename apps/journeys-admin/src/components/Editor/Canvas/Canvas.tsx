@@ -4,6 +4,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import dynamic from 'next/dynamic'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import SwiperCore from 'swiper'
@@ -24,9 +25,6 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { FramePortal } from '../../FramePortal'
 import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
-import { CardTemplateDrawer } from '../CardTemplateDrawer'
-import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
-import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 import { Properties } from '../Properties'
 
 import { CardWrapper } from './CardWrapper'
@@ -41,6 +39,30 @@ const MIN_SPACE_BETWEEN = 16
 const TASKBAR_WIDTH = 72
 
 const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({}))
+
+const CardTemplateDrawer = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CardTemplateDrawer" */ '../CardTemplateDrawer'
+    ).then((mod) => mod.CardTemplateDrawer),
+  { ssr: false }
+)
+
+const NextCard = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "NextCard" */ '../ControlPanel/Attributes/blocks/Step/NextCard'
+    ).then((mod) => mod.NextCard),
+  { ssr: false }
+)
+
+const HostSidePanel = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "HostSidePanel" */ '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
+    ).then((mod) => mod.HostSidePanel),
+  { ssr: false }
+)
 
 export function Canvas(): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
