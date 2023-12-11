@@ -3,6 +3,7 @@ import { Button, Stack } from '@mui/material'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
+import { PickerCallback } from 'react-google-drive-picker/dist/typeDefs'
 import { Resource, Resource_resource } from '../../__generated__/Resource'
 import { ResourceDelete } from '../../__generated__/ResourceDelete'
 import { ResourceFromGoogleDrive } from '../../__generated__/ResourceFromGoogleDrive'
@@ -71,7 +72,9 @@ const RESOURCE_UPDATE = gql`
 
 const RESOURCE_DELETE = gql`
   mutation ResourceDelete($resourceId: ID!) {
-    resourceDelete(id: $resourceId)
+    resourceDelete(id: $resourceId) {
+      id
+    }
   }
 `
 
@@ -84,10 +87,10 @@ const ResourcesPage = () => {
     useState<boolean>(false)
 
   const [openPicker, authResponse] = useDrivePicker()
-  const nexusId =
-    typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
+  const isSSRMode = typeof window !== 'undefined'
+  const nexusId = isSSRMode ? localStorage.getItem('nexusId') : ''
 
-  const { data } = useQuery<Resources>(GET_RESOURCES)
+  const { data, loading } = useQuery<Resources>(GET_RESOURCES)
   const { data: resourceData } = useQuery<Resource>(GET_RESOURCE, {
     skip: !resourceId,
     variables: {
@@ -113,41 +116,65 @@ const ResourcesPage = () => {
   const [resourceDelete] = useMutation<ResourceDelete>(RESOURCE_DELETE)
 
   const openGooglePicker = () => {
-    openPicker({
-      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
-      developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
-      viewId: 'DOCS_VIDEOS',
-      multiselect: true,
-      showUploadView: true,
-      showUploadFolders: true,
-      supportDrives: true,
-      callbackFunction: (data) => {
-        if (data.action === 'cancel') {
-          console.log('User clicked cancel/close button')
-        }
+    gapi.load('client:auth2', () => {
+      gapi.client
+        .init({
+          apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY
+        })
+        .then(() => {
+          let tokenInfo = gapi.auth.getToken()
 
-        if (data.action === 'picked') {
-          const fileIds: string[] = []
+          const pickerConfig: any = {
+            clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+            developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+            viewId: 'DOCS_VIDEOS',
+            token: tokenInfo ? tokenInfo.access_token : null,
+            showUploadView: true,
+            showUploadFolders: true,
+            supportDrives: true,
+            multiselect: true,
+            callbackFunction: (data: PickerCallback) => {
+              const elements = Array.from(
+                document.getElementsByClassName(
+                  'picker-dialog'
+                ) as HTMLCollectionOf<HTMLElement>
+              )
 
-          data.docs.forEach((doc) => fileIds.push(doc.id))
+              for (let i = 0; i < elements.length; i++) {
+                elements[i].style.zIndex = '2000'
+              }
 
-          loadResourceFromGoogleDrive(fileIds)
-        }
-      }
+              if (data.action === 'picked') {
+                if (!tokenInfo) {
+                  tokenInfo = gapi.auth.getToken()
+                }
+
+                const fileIds: string[] = []
+
+                data.docs.forEach((doc) => fileIds.push(doc.id))
+
+                loadResourceFromGoogleDrive(fileIds, tokenInfo.access_token)
+              }
+            }
+          }
+          openPicker(pickerConfig)
+        })
     })
   }
 
-  const loadResourceFromGoogleDrive = (fileIds: string[]) => {
-    const accessToken = authResponse?.access_token
-
+  const loadResourceFromGoogleDrive = (
+    fileIds: string[],
+    accessToken: string
+  ) => {
     resourceLoad({
       variables: {
         input: {
-          accessToken,
+          authCode: accessToken,
           fileIds,
           nexusId
         }
-      }
+      },
+      refetchQueries: [GET_RESOURCES]
     })
   }
 
@@ -165,6 +192,7 @@ const ResourcesPage = () => {
           </Button>
         </Stack>
         <ResourcesTable
+          loading={loading}
           data={resources}
           onEdit={(resourceId) => {
             setResourceId(resourceId)
@@ -204,7 +232,8 @@ const ResourcesPage = () => {
             },
             onCompleted: () => {
               setDeleteResourceModal(false)
-            }
+            },
+            refetchQueries: [GET_RESOURCES]
           })
         }}
       />
