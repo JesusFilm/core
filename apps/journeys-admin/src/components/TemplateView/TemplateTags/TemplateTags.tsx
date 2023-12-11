@@ -34,7 +34,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
             {sortedTags.map(({ id, name, parentId }, index) => (
               <StyledSwiperSlide
                 key={id}
-                sx={{ width: 'fit-content', mr: { xs: 2, sm: '37px' } }}
+                sx={{ width: 'unset !important', mr: { xs: 2, sm: '37px' } }}
               >
                 <TagItem
                   key={id}
@@ -60,7 +60,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
             <Stack
               key={item}
               sx={{
-                width: 'unset !important',
+                width: 'max-content',
                 mr: { xs: 2, sm: '37px' }
               }}
             >
