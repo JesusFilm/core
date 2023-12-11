@@ -54,12 +54,16 @@ export function VideoLibrary({
     }
   }, [selectedBlock, open])
 
-  const TabParams = {0:'video-library', 1:'video-youtube', 2:'video-upload'}
+  const TabParams = {
+    0: 'video-library',
+    1: 'video-youtube',
+    2: 'video-upload'
+  }
 
-  function setRoute(param:string): void{
-    router.query.param = param 
+  function setRoute(param: string): void {
+    router.query.param = param
     void router.push(router)
-    router.events.on('routeChangeComplete', ()=> {
+    router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })
   }

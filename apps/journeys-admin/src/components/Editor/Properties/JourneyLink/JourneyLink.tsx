@@ -24,7 +24,7 @@ export function JourneyLink(): ReactElement {
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const router = useRouter()
- 
+
   return (
     <>
       {smUp && (
@@ -54,13 +54,13 @@ export function JourneyLink(): ReactElement {
       />
       <Stack direction="row" spacing={6} sx={{ pt: 2 }}>
         <Button
-          onClick={() => { 
-            setShowSlugDialog(true);
-            router.query.param = 'edit-url';
-            void router.push(router);
+          onClick={() => {
+            setShowSlugDialog(true)
+            router.query.param = 'edit-url'
+            void router.push(router)
             router.events.on('routeChangeComplete', () => {
-              setBeaconPageViewed('edit-url');
-            });
+              setBeaconPageViewed('edit-url')
+            })
           }}
           size="small"
           startIcon={<Edit2Icon />}
@@ -70,12 +70,12 @@ export function JourneyLink(): ReactElement {
         </Button>
         <Button
           onClick={() => {
-            setShowEmbedDialog(true);
-            router.query.param = 'embed-journey';
-            void router.push(router);
+            setShowEmbedDialog(true)
+            router.query.param = 'embed-journey'
+            void router.push(router)
             router.events.on('routeChangeComplete', () => {
-              setBeaconPageViewed('embed-journey');
-            });
+              setBeaconPageViewed('embed-journey')
+            })
           }}
           size="small"
           startIcon={<Code1Icon />}
