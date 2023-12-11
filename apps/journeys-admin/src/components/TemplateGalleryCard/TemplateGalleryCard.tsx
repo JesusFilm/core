@@ -136,7 +136,9 @@ export function TemplateGalleryCard({
                     src={journey?.primaryImageBlock?.src}
                     alt={journey?.primaryImageBlock.alt}
                     fill
-                    sizes={`(max-width: ${theme.breakpoints.values.md}px) 240px, 280px`}
+                    sizes={`(${theme.breakpoints.down(
+                      'md'
+                    )}) 130px, (${theme.breakpoints.down('xl')}) 180px, 240px`}
                     style={{
                       objectFit: 'cover'
                     }}

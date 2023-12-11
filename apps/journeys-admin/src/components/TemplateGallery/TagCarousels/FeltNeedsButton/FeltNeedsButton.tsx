@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Skeleton from '@mui/material/Skeleton'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import NextImage, { StaticImageData } from 'next/image'
 import { ReactElement } from 'react'
@@ -92,6 +93,7 @@ export function FeltNeedsButton({
   item: tag,
   onClick
 }: FeltNeedsButtonProps): ReactElement {
+  const theme = useTheme()
   const tagLabel = tag?.name[0]?.value
   const tagImageData = tagImage(tagLabel)
   const image = tagImageData?.tagImg
@@ -110,7 +112,7 @@ export function FeltNeedsButton({
           overflow: 'hidden',
           '&:focus': {
             outline: '2px solid',
-            outlineColor: (theme) => theme.palette.primary.main,
+            outlineColor: theme.palette.primary.main,
             outlineOffset: '2px'
           },
           '&:hover': {
@@ -119,7 +121,7 @@ export function FeltNeedsButton({
             }
           },
           '& .hoverStyles': {
-            transition: (theme) => theme.transitions.create('transform')
+            transition: theme.transitions.create('transform')
           }
         }}
         onClick={() => tag?.id != null && onClick(tag.id)}
@@ -140,8 +142,9 @@ export function FeltNeedsButton({
           priority
           className="hoverStyles"
           src={image}
-          layout="fill"
           alt={tagLabel ?? 'FeltNeedsImage'}
+          sizes={`(${theme.breakpoints.down('md')}) 150px, 222px`}
+          fill
         />
         <Typography
           className="hoverStyles"

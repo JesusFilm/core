@@ -59,7 +59,7 @@ export function CollectionButton({
       sx={{
         '&:focus-visible': {
           outline: '2px solid',
-          outlineColor: (theme) => theme.palette.primary.main,
+          outlineColor: theme.palette.primary.main,
           outlineOffset: '2px'
         }
       }}
@@ -91,8 +91,9 @@ export function CollectionButton({
                 priority
                 className="backgroundImageHover"
                 src={image.src}
-                layout="fill"
                 alt={tagLabel ?? 'CollectionImage'}
+                width={64}
+                height={64}
               />
             ) : (
               <InsertPhotoRoundedIcon className="backgroundImageHover" />
