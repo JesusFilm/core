@@ -41,7 +41,7 @@ export interface NexusCreateInput {
 }
 
 export interface ResourceFromGoogleDriveInput {
-  fileId: string;
+  fileIds: string[];
   authCode: string;
   nexusId: string;
 }
