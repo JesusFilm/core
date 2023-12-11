@@ -128,7 +128,7 @@ describe('FormiumForm', () => {
     expect(getByTestId('ArrowRightIcon')).toBeInTheDocument()
   })
 
-  it('should invlaid form message', () => {
+  it('should show invalid form message', () => {
     const { getByText } = render(
       <FormiumForm form={null} userId="user.id" email="user.email" />
     )
