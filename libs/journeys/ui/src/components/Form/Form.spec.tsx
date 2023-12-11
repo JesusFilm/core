@@ -12,6 +12,15 @@ jest.mock('next-firebase-auth', () => ({
   useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('Form', () => {
   it('should render form', () => {
     const block = {

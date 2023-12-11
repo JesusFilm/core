@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { FormiumForm } from '@core/shared/ui/FormiumForm'
 
@@ -16,6 +17,7 @@ export function Form({
   form,
   action
 }: TreeBlock<FormFields>): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const router = useRouter()
   const user = useUser()
 
@@ -23,7 +25,7 @@ export function Form({
     handleAction(router, action)
   }
 
-  return form != null && 'name' in form ? (
+  return form != null ? (
     <div
       data-testid={`FormBlock-${id}`}
       onClick={(event) => {
@@ -51,7 +53,7 @@ export function Form({
         alignItems: 'center'
       }}
     >
-      <Typography color="black">Form</Typography>
+      <Typography color="black">{t('Form')}</Typography>
     </Box>
   )
 }
