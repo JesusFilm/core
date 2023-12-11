@@ -76,7 +76,7 @@ export const Loading = {
   ...Template,
   args: {
     loading: true,
-    loadingSpacing: 5
+    cardSpacing: 5
   }
 }
 
@@ -90,6 +90,7 @@ export const Heading = {
 export const Breakpoints = {
   ...Default,
   args: {
+    cardSpacing: 5,
     breakpoints: {
       '0': {
         slidesPerGroup: 1,
