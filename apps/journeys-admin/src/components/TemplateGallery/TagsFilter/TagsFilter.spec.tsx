@@ -411,7 +411,7 @@ describe('TagsFilter', () => {
     expect(getByTestId('Grid1Icon')).toBeInTheDocument()
   })
 
-  it('should change all dropdown arrows into chevron arrows', async () => {
+  it('should show proper icons', async () => {
     const handleChange = jest.fn()
     const { getByTestId } = render(
       <MockedProvider mocks={[allParentTagsMock]}>
