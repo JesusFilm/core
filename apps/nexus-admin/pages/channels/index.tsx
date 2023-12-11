@@ -83,7 +83,7 @@ const ChannelsPage = () => {
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
   const [channel, setChannel] = useState<Channel_channel | null>(null)
 
-  const { data } = useQuery<Channels>(GET_CHANNELS)
+  const { data, loading } = useQuery<Channels>(GET_CHANNELS)
 
   const { data: channelData } = useQuery<Channel>(GET_CHANNEL, {
     skip: !channelId,
@@ -126,6 +126,7 @@ const ChannelsPage = () => {
           </Button>
         </Stack>
         <ChannelsTable
+          loading={loading}
           data={channels}
           onEdit={(channelId) => {
             setChannelId(channelId)

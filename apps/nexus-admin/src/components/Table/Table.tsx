@@ -8,16 +8,25 @@ interface TableProps {
   rows: any[]
   title: string
   subtitle: string
+  loading: boolean
 }
 
-export const Table: FC<TableProps> = ({ columns, rows, title, subtitle }) => {
+export const Table: FC<TableProps> = ({
+  columns,
+  rows,
+  title,
+  subtitle,
+  loading
+}) => {
   return (
     <Paper>
       <DataGrid
+        autoHeight
         disableColumnMenu
         disableRowSelectionOnClick
         rows={rows}
         columns={columns}
+        loading={loading}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 }
