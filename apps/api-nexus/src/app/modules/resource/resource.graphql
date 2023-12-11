@@ -44,6 +44,7 @@ input ResourceFilter {
   ids: [ID!]
   name: String
   nexusId: String
+  status: ResourceStatus
   limit: Int
 }
 
