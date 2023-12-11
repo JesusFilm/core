@@ -63,7 +63,7 @@ export const ThemeDecorator = ({
   rtl = false,
   locale = ''
 }: ThemeDecoratorProps): ReactElement => {
-  const storybookEmotionCache = createEmotionCache({ rtl, prepend: false })
+  const storybookEmotionCache = createEmotionCache({ rtl })
 
   switch (mode) {
     case 'all':
