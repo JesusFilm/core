@@ -14,6 +14,7 @@ import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
 
 import { FormBlockResolver } from './form.resolver'
+import { validateFormCredentials } from './validateFormCredentials'
 
 jest.mock('@formium/client', () => ({
   __esModule: true,
@@ -22,6 +23,13 @@ jest.mock('@formium/client', () => ({
 const mockCreateClient = createClient as jest.MockedFunction<
   typeof createClient
 >
+
+jest.mock('./validateFormCredentials', () => ({
+  __esModule: true,
+  validateFormCredentials: jest.fn()
+}))
+const mockValidateFormCredentials =
+  validateFormCredentials as jest.MockedFunction<typeof validateFormCredentials>
 
 describe('FormBlock', () => {
   let resolver: FormBlockResolver,
@@ -38,9 +46,9 @@ describe('FormBlock', () => {
     typename: 'FormBlock',
     parentBlockId: 'parentBlockId',
     parentOrder: 0,
+    apiToken: 'apiToken',
     projectId: 'projectId',
-    formSlug: 'formSlug',
-    apiToken: 'apiToken'
+    formSlug: 'formSlug'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -52,9 +60,9 @@ describe('FormBlock', () => {
     parentBlockId: 'parentBlockId'
   }
   const blockUpdateInput: FormBlockUpdateInput = {
+    apiToken: 'apiToken',
     projectId: 'projectId',
-    formSlug: 'formSlug',
-    apiToken: 'apiToken'
+    formSlug: 'formSlug'
   }
   const blockService = {
     provide: BlockService,
@@ -83,6 +91,10 @@ describe('FormBlock', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
   })
 
   describe('formBlockCreate', () => {
@@ -141,64 +153,27 @@ describe('FormBlock', () => {
     })
 
     it('updates a FormBlock', async () => {
+      mockValidateFormCredentials.mockReturnValueOnce(
+        Promise.resolve(blockUpdateInput)
+      )
+
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
 
-    it('throws error if not found', async () => {
+    it('throws error if block not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
 
-    it('throws error if not authorized', async () => {
+    it('throws error if user not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
         resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('user is not allowed to update block')
-    })
-  })
-
-  describe('form', () => {
-    it('returns formium form', async () => {
-      const mockFormiumClient = {
-        getFormBySlug: jest.fn()
-      } as unknown as FormiumClient
-      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
-
-      await resolver.form({
-        ...block
-      })
-
-      expect(mockFormiumClient.getFormBySlug).toHaveBeenCalledWith(
-        block.formSlug
-      )
-    })
-
-    it('returns null if client fails to fetch form', async () => {
-      const mockFormiumClient = {
-        getFormBySlug: jest.fn().mockRejectedValueOnce(new Error('error'))
-      } as unknown as FormiumClient
-      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
-
-      expect(
-        await resolver.form({
-          ...block
-        })
-      ).toBeNull()
-    })
-
-    it('returns null if there are missing credentials', async () => {
-      expect(
-        await resolver.form({
-          ...block,
-          projectId: null,
-          formSlug: null,
-          apiToken: null
-        })
-      ).toBeNull()
     })
   })
 
@@ -255,7 +230,7 @@ describe('FormBlock', () => {
         await resolver.forms({
           ...block
         })
-      ).toEqual([{ id: 'form-slug', name: 'form name' }])
+      ).toEqual([{ slug: 'form-slug', name: 'form name' }])
       expect(mockFormiumClient.findForms).toHaveBeenCalled()
     })
 
@@ -280,6 +255,47 @@ describe('FormBlock', () => {
           apiToken: null
         })
       ).toEqual([])
+    })
+  })
+
+  describe('form', () => {
+    it('returns formium form', async () => {
+      const mockFormiumClient = {
+        getFormBySlug: jest.fn()
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      await resolver.form({
+        ...block
+      })
+
+      expect(mockFormiumClient.getFormBySlug).toHaveBeenCalledWith(
+        block.formSlug
+      )
+    })
+
+    it('returns null if client fails to fetch form', async () => {
+      const mockFormiumClient = {
+        getFormBySlug: jest.fn().mockRejectedValueOnce(new Error('error'))
+      } as unknown as FormiumClient
+      mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+
+      expect(
+        await resolver.form({
+          ...block
+        })
+      ).toBeNull()
+    })
+
+    it('returns null if there are missing credentials', async () => {
+      expect(
+        await resolver.form({
+          ...block,
+          projectId: null,
+          formSlug: null,
+          apiToken: null
+        })
+      ).toBeNull()
     })
   })
 })

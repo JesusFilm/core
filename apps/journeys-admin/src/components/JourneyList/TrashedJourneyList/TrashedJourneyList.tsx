@@ -12,10 +12,11 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
-import { useAdminJourneysSuspenseQuery } from '../../../libs/useAdminJourneysSuspenseQuery'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
+import { LoadingJourneyList } from '../LoadingJourneyList'
 
 const Dialog = dynamic(
   async () =>
@@ -50,7 +51,7 @@ export function TrashedJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useAdminJourneysSuspenseQuery({
+  const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.trashed],
     useLastActiveTeamId: true
   })
@@ -144,46 +145,59 @@ export function TrashedJourneyList({
   const daysAgo = new Date()
   daysAgo.setDate(new Date().getDate() - 40)
 
-  const sortedJourneys = sortJourneys(
-    data.journeys.filter((journey) => new Date(journey.trashedAt) > daysAgo),
-    sortOrder
-  )
+  const sortedJourneys =
+    data?.journeys != null
+      ? sortJourneys(
+          data.journeys.filter(
+            (journey) => new Date(journey.trashedAt) > daysAgo
+          ),
+          sortOrder
+        )
+      : undefined
 
   return (
     <>
-      <Box>
-        {sortedJourneys.map((journey) => (
-          <JourneyProvider
-            key={journey.id}
-            value={{
-              journey: journey as unknown as JourneyFields,
-              variant: 'admin'
-            }}
-          >
-            <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
-          </JourneyProvider>
-        ))}
-        {sortedJourneys.length === 0 && (
-          <>
-            <Card
-              variant="outlined"
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                py: 20,
-                borderBottomLeftRadius: { xs: 0, sm: 12 },
-                borderBottomRightRadius: { xs: 0, sm: 12 },
-                borderTopLeftRadius: 0,
-                borderTopRightRadius: 0
+      {sortedJourneys == null ? (
+        <LoadingJourneyList hideHelperText />
+      ) : (
+        <Box>
+          {sortedJourneys.map((journey) => (
+            <JourneyProvider
+              key={journey.id}
+              value={{
+                journey: journey as unknown as JourneyFields,
+                variant: 'admin'
               }}
             >
-              <Typography variant="subtitle1" align="center">
-                {t('Your trashed journeys will appear here.')}
-              </Typography>
-            </Card>
-          </>
-        )}
-      </Box>
+              <JourneyCard
+                key={journey.id}
+                journey={journey}
+                refetch={refetch}
+              />
+            </JourneyProvider>
+          ))}
+          {sortedJourneys.length === 0 && (
+            <>
+              <Card
+                variant="outlined"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  py: 20,
+                  borderBottomLeftRadius: { xs: 0, sm: 12 },
+                  borderBottomRightRadius: { xs: 0, sm: 12 },
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0
+                }}
+              >
+                <Typography variant="subtitle1" align="center">
+                  {t('Your trashed journeys will appear here.')}
+                </Typography>
+              </Card>
+            </>
+          )}
+        </Box>
+      )}
       <Stack alignItems="center">
         <Typography
           variant="caption"
