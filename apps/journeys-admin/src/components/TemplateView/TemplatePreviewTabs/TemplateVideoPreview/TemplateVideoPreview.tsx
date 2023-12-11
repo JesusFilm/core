@@ -148,7 +148,7 @@ export function TemplateVideoPreview({
           <StyledSwiperSlide
             data-testid="TemplateVideosSwiperSlide"
             key={block.id}
-            sx={{ width: 'fit-content', zIndex: 2, mr: { xs: 3, sm: 7 } }}
+            sx={{ width: 'unset !important', zIndex: 2, mr: { xs: 3, sm: 7 } }}
           >
             <TemplateVideoPreviewItem block={block} />
           </StyledSwiperSlide>

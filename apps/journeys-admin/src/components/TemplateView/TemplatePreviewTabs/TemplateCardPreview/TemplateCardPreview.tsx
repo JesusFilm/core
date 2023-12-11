@@ -140,9 +140,9 @@ export function TemplateCardPreview({
             data-testid="TemplateCardsSwiperSlide"
             key={step.id}
             sx={{
-              width: 'fit-content',
               zIndex: 2,
-              mr: { xs: 3, sm: 7 }
+              mr: { xs: 3, sm: 7 },
+              width: 'unset !important'
             }}
           >
             <TemplateCardPreviewItem step={step} />

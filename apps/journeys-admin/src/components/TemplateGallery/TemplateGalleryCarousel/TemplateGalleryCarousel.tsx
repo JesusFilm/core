@@ -96,7 +96,6 @@ export function TemplateGalleryCarousel<T>({
         <StyledSwiperContainer
           modules={[Navigation, Mousewheel, A11y, FreeMode]}
           freeMode
-          loop={false}
           speed={850}
           slidesPerView="auto"
           spaceBetween={20}
