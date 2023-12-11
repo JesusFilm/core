@@ -404,9 +404,9 @@ type FormBlock implements Block
   parentOrder: Int
   action: Action
   form: Json
-  projects: [FormiumProject!]
+  projects: [FormiumProject!]!
   projectId: String
-  forms: [FormiumForm!]
+  forms: [FormiumForm!]!
   formSlug: String
 }
 
@@ -430,7 +430,7 @@ type FormiumForm
   @join__type(graph: JOURNEYS)
 {
   """The formSlug of the form"""
-  id: String!
+  slug: String!
 
   """The name of the form"""
   name: String!
