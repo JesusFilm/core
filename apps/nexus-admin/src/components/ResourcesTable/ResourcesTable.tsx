@@ -4,11 +4,11 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { IconButton, Popover, Stack, Typography } from '@mui/material'
 import { GridCellParams } from '@mui/x-data-grid'
 import { FC, useState } from 'react'
-import { Resource } from '../../../pages/resources'
+import { Resources_resources } from '../../../__generated__/Resources'
 import { Table } from '../Table'
 
 interface ResourcesTableProps {
-  data: Resource[] | []
+  data: Resources_resources[] | []
   onEdit: (channelId: string) => void
   onDelete: (channelId: string) => void
 }
