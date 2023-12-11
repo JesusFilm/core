@@ -30,6 +30,8 @@ export class ChannelResolver {
   ): Promise<Channel[]> {
     const filter: Prisma.ChannelWhereInput = {}
     if (where?.ids != null) filter.id = { in: where?.ids }
+    filter.status = where?.status ?? 'published'
+
     const channels = await this.prismaService.channel.findMany({
       where: {
         AND: [filter, { nexus: { userNexuses: { every: { userId } } } }]

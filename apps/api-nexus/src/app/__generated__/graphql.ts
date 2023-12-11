@@ -41,6 +41,7 @@ export class ChannelFilter {
     nexusId?: Nullable<string>;
     limit?: Nullable<number>;
     connected?: Nullable<boolean>;
+    status?: Nullable<ChannelStatus>;
 }
 
 export class ConnectYoutubeChannelInput {
