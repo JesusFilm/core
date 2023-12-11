@@ -113,7 +113,7 @@ export class ResourceResolver {
   async resourceFromGoogleDrive(
     @CurrentUserId() userId: string,
     @Args('input') input: ResourceFromGoogleDriveInput
-  ): Promise<Resource | null> {
+  ): Promise<Resource[]> {
     const nexus = await this.prismaService.nexus.findUnique({
       where: { id: input.nexusId, userNexuses: { every: { userId } } }
     })
@@ -121,36 +121,38 @@ export class ResourceResolver {
       throw new GraphQLError('nexus not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-    const driveFile = await this.googleDriveService.getFile({
-      fileId: input.fileId ?? '',
-      accessToken: input.authCode ?? ''
-    })
-    if (driveFile == null)
-      throw new GraphQLError('file not found', {
-        extensions: { code: 'NOT_FOUND' }
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    await input.fileIds.forEach(async (fileId) => {
+      const driveFile = await this.googleDriveService.getFile({
+        fileId,
+        accessToken: input.authCode ?? ''
       })
-
-    const resource = await this.prismaService.resource.create({
-      data: {
-        id: uuidv4(),
-        name: driveFile.name,
-        nexusId: nexus.id,
-        status: 'published',
-        createdAt: new Date()
-      }
+      if (driveFile == null)
+        throw new GraphQLError('file not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      const resource = await this.prismaService.resource.create({
+        data: {
+          id: uuidv4(),
+          name: driveFile.name,
+          nexusId: nexus.id,
+          status: 'published',
+          createdAt: new Date()
+        }
+      })
+      await this.prismaService.googleDriveResource.create({
+        data: {
+          id: uuidv4(),
+          resourceId: resource.id,
+          driveId: driveFile.id,
+          title: driveFile.name,
+          mimeType: driveFile.mimeType,
+          refreshToken: input.authCode ?? ''
+        }
+      })
     })
-    await this.prismaService.googleDriveResource.create({
-      data: {
-        id: uuidv4(),
-        resourceId: resource.id,
-        driveId: driveFile.id,
-        title: driveFile.name,
-        mimeType: driveFile.mimeType,
-        refreshToken: input.authCode ?? ''
-      }
-    })
-    return await this.prismaService.resource.findFirst({
-      where: { id: resource.id },
+    return await this.prismaService.resource.findMany({
+      where: { googleDrive: { driveId: { in: input.fileIds } } },
       include: { googleDrive: true }
     })
   }
