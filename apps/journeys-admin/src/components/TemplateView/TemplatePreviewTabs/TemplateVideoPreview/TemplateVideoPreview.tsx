@@ -4,8 +4,9 @@ import { useTheme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
-import SwiperCore, { Mousewheel, SwiperOptions } from 'swiper'
+import { Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { SwiperOptions } from 'swiper/types'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -15,8 +16,6 @@ import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 interface TemplateVideoPreviewProps {
   videoBlocks: Array<TreeBlock<VideoBlock>>
 }
-
-SwiperCore.use([Mousewheel])
 
 const DynamicTemplateVideoPlayer = dynamic<{
   id?: string | null
@@ -126,6 +125,7 @@ export function TemplateVideoPreview({
 
   return (
     <Swiper
+      modules={[Mousewheel]}
       mousewheel={{
         forceToAxis: true
       }}
