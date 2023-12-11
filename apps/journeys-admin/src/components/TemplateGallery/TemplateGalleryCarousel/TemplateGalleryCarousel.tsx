@@ -10,15 +10,12 @@ import {
   useRef,
   useState
 } from 'react'
-import SwiperCore, { A11y, Mousewheel, Navigation, SwiperOptions } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { NavigationOptions } from 'swiper/types/components/navigation'
+import { A11y, Mousewheel, Navigation } from 'swiper/modules'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
+import { SwiperOptions } from 'swiper/types'
+import { NavigationOptions } from 'swiper/types/modules/navigation'
 
 import { NavButton } from './NavButton'
-
-import 'swiper/swiper.min.css'
-
-SwiperCore.use([Navigation, Mousewheel, A11y])
 
 const StyledSwiperContainer = styled(Swiper)(() => ({
   overflow: 'visible !important',
@@ -48,7 +45,7 @@ export function TemplateGalleryCarousel<T>({
   loadingSpacing,
   slidesOffsetBefore
 }: TemplateGalleryCarouselProps<T>): ReactElement {
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const [swiper, setSwiper] = useState<SwiperClass>()
   const [hovered, setHovered] = useState(false)
 
   const nextRef = useRef<HTMLButtonElement>(null)
@@ -95,6 +92,7 @@ export function TemplateGalleryCarousel<T>({
         </Stack>
       ) : (
         <StyledSwiperContainer
+          modules={[Navigation, Mousewheel, A11y]}
           freeMode
           speed={850}
           slidesPerView="auto"
