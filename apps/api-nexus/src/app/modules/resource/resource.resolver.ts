@@ -29,6 +29,7 @@ export class ResourceResolver {
     const filter: Prisma.ResourceWhereInput = {}
     if (where?.ids != null) filter.id = { in: where?.ids }
     filter.status = where?.status ?? 'published'
+    filter.nexusId = where?.nexusId ?? undefined
 
     const resources = await this.prismaService.resource.findMany({
       where: {
