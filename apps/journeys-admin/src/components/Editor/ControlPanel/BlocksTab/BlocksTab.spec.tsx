@@ -17,6 +17,7 @@ describe('BlocksTab', () => {
     expect(getByText('Subscribe')).toBeInTheDocument()
     expect(getByText('Button')).toBeInTheDocument()
     expect(getByText('Feedback')).toBeInTheDocument()
+    expect(getByText('Form')).toBeInTheDocument()
   })
 
   it('contains correct bottom text', () => {
