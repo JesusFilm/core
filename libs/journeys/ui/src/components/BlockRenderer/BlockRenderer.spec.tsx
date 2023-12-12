@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { Form } from '@formium/types'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
@@ -23,6 +24,11 @@ jest.mock('react-i18next', () => ({
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
+}))
+
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
@@ -200,6 +206,67 @@ describe('BlockRenderer', () => {
     ).toBe('card-wrapper')
     expect(getByTestId('card-wrapper')).toContainElement(
       getByText('How did we get here?')
+    )
+  })
+
+  it('should render Form', async () => {
+    const form = {
+      name: 'single-page-test'
+    } as unknown as Form
+    const block: TreeBlock = {
+      __typename: 'FormBlock',
+      id: 'form.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      form,
+      action: null,
+      children: []
+    }
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <BlockRenderer block={block} />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('FormBlock-form.id')).toBeInTheDocument()
+    )
+  })
+
+  it('should render Form with general wrapper and specific wrapper', () => {
+    const form = {
+      name: 'single-page-test'
+    } as unknown as Form
+    const block: TreeBlock = {
+      __typename: 'FormBlock',
+      id: 'form.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      form,
+      action: null,
+      children: []
+    }
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <BlockRenderer
+          block={block}
+          wrappers={{
+            Wrapper: ({ children }) => (
+              <div data-testid="general-wrapper">{children}</div>
+            ),
+            FormWrapper: ({ children }) => (
+              <div data-testid="form-wrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('general-wrapper').children[0].getAttribute('data-testid')
+    ).toBe('form-wrapper')
+    expect(getByTestId('form-wrapper')).toContainElement(
+      getByTestId('FormBlock-form.id')
     )
   })
 
