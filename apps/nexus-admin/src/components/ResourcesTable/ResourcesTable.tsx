@@ -28,7 +28,10 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
     {
       field: 'videoId',
       headerName: 'Video ID',
-      flex: 1
+      flex: 1,
+      renderCell: ({ row }: GridCellParams) => {
+        return <>{row.googleDrive?.driveId}</>
+      }
     },
     {
       field: 'action',
