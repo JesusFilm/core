@@ -2,13 +2,20 @@ import Box from '@mui/material/Box'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../__generated__/globalTypes'
-import { VideoDetails } from '../../VideoDetails'
+
+const VideoDetails = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "VideoDetails" */ '../../VideoDetails'
+    ).then((mod) => mod.VideoDetails)
+)
 
 export interface VideoListItemProps {
   id: string
@@ -29,7 +36,7 @@ export function VideoListItem({
   duration: time,
   onSelect: handleSelect
 }: VideoListItemProps): ReactElement {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<boolean | undefined>()
 
   const handleOpen = (): void => {
     setOpen(true)
@@ -98,13 +105,15 @@ export function VideoListItem({
           </Box>
         )}
       </ListItemButton>
-      <VideoDetails
-        id={id}
-        open={open}
-        source={source}
-        onClose={handleClose}
-        onSelect={handleSelect}
-      />
+      {open != null && (
+        <VideoDetails
+          id={id}
+          open={open}
+          source={source}
+          onClose={handleClose}
+          onSelect={handleSelect}
+        />
+      )}
     </>
   )
 }

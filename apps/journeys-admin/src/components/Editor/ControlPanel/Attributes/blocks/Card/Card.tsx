@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
+import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -19,10 +20,22 @@ import {
 } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../../Attribute'
 
-import { BackgroundColor } from './BackgroundColor'
-import { BackgroundMedia } from './BackgroundMedia'
 import { CardLayout } from './CardLayout'
 import { CardStyling } from './CardStyling'
+
+const BackgroundColor = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "BackgroundColor" */ './BackgroundColor'
+    ).then((mod) => mod.BackgroundColor)
+)
+
+const BackgroundMedia = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "BackgroundMedia" */ './BackgroundMedia'
+    ).then((mod) => mod.BackgroundMedia)
+)
 
 export function Card({
   id,
