@@ -1,7 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import FormData from 'form-data'
 import { GraphQLError } from 'graphql'
-import fetch, { Response } from 'node-fetch'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Channel, Prisma } from '.prisma/api-nexus-client'
@@ -10,8 +8,6 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId/CurrentUserId
 import {
   ChannelCreateInput,
   ChannelFilter,
-  ChannelUpdateInput,
-  ConnectYoutubeChannelInput
   ChannelUpdateInput,
   ConnectYoutubeChannelInput
 } from '../../__generated__/graphql'
