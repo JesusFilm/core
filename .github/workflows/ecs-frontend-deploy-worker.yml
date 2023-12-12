@@ -51,6 +51,7 @@ jobs:
       ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
+      DOPPLER_CONFIG: ${{ inputs.env == 'prod' && 'prd' || 'stg' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
