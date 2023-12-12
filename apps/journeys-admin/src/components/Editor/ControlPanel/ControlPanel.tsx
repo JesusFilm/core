@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
+import dynamic from 'next/dynamic'
 import { ReactElement, SyntheticEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -24,9 +25,24 @@ import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Properties } from '../Properties'
 
-import { Attributes } from './Attributes'
-import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
+
+const Attributes = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes" */
+      './Attributes'
+    ).then((mod) => mod.Attributes),
+  { ssr: false }
+)
+const BlocksTab = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/BlocksTab" */
+      './BlocksTab'
+    ).then((mod) => mod.BlocksTab),
+  { ssr: false }
+)
 
 export function ControlPanel(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -247,12 +263,22 @@ export function ControlPanel(): ReactElement {
             isDraggable
           />
         </TabPanel>
-        <TabPanel name="control-panel" value={activeTab} index={1}>
+        <TabPanel
+          name="control-panel"
+          value={activeTab}
+          index={1}
+          unmountOnExit
+        >
           {selected !== 'none' && selectedStep !== undefined && (
             <Attributes selected={selected} step={selectedStep} />
           )}
         </TabPanel>
-        <TabPanel name="control-panel" value={activeTab} index={2}>
+        <TabPanel
+          name="control-panel"
+          value={activeTab}
+          index={2}
+          unmountOnExit
+        >
           <BlocksTab />
         </TabPanel>
       </Stack>
