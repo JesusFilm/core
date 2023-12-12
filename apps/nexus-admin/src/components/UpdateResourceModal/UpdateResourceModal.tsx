@@ -29,6 +29,7 @@ export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({
     validationSchema: resourceValidationSchema,
     onSubmit: (values) => {
       onUpdate(values)
+      formik.resetForm()
     }
   })
 
@@ -40,14 +41,19 @@ export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({
     }
   }, [data])
 
+  const closeModal = () => {
+    onClose()
+    formik.resetForm()
+  }
+
   return (
     <Modal
       title="Update Resource"
       open={open}
-      handleClose={onClose}
+      handleClose={closeModal}
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={closeModal}>Cancel</Button>
           <Button onClick={formik.submitForm}>Update</Button>
         </Stack>
       }
