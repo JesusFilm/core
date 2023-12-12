@@ -18,7 +18,6 @@ interface FormSlugSelectProps {
   loading: boolean
 }
 
-// TODO: field updates with selection
 export function FormSlugSelect({
   id,
   currentFormSlug,
@@ -68,7 +67,7 @@ export function FormSlugSelect({
           None
         </MenuItem>
         {forms?.map((form) => (
-          <MenuItem key={`form-projectId-${form.slug}`} value={form.slug}>
+          <MenuItem key={`form-formSlug-${form.slug}`} value={form.slug}>
             {form.name}
           </MenuItem>
         ))}

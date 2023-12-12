@@ -18,7 +18,6 @@ interface ProjectIdSelectProps {
   loading: boolean
 }
 
-// TODO: field updates with selection
 export function ProjectIdSelect({
   id,
   currentProjectId,

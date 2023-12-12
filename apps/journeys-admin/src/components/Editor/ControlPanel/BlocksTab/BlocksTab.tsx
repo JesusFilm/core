@@ -31,6 +31,7 @@ export function BlocksTab(): ReactElement {
         <NewTextResponseButton />
         <NewSignUpButton />
         <NewButtonButton />
+        {/* TODO: comment this out before merging to PROD until its put behind a flag */}
         <NewFormButton />
       </Stack>
       <Box
