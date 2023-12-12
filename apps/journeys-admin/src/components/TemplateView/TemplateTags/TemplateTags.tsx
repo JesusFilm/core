@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import { ReactElement, ReactNode, useMemo } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
@@ -17,6 +17,8 @@ interface TemplateTagsProps {
   tags?: Tag[]
 }
 
+const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
+
 export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
   const { parentTags } = useTagsQuery()
   const sortedTags = useMemo(
@@ -30,7 +32,10 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
         sortedTags.length > 0 && (
           <SwiperWrapper>
             {sortedTags.map(({ id, name, parentId }, index) => (
-              <SwiperSlide key={id} style={{ width: 'fit-content' }}>
+              <StyledSwiperSlide
+                key={id}
+                sx={{ width: 'unset !important', mr: { xs: 2, sm: '37px' } }}
+              >
                 <TagItem
                   key={id}
                   name={name[0].value}
@@ -45,7 +50,7 @@ export function TemplateTags({ tags }: TemplateTagsProps): ReactElement {
                   }
                   showDivider={index < sortedTags.length - 1}
                 />
-              </SwiperSlide>
+              </StyledSwiperSlide>
             ))}
           </SwiperWrapper>
         )

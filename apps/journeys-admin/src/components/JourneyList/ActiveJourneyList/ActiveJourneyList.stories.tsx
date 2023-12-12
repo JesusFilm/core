@@ -1,6 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
-import { Suspense } from 'react'
 
 import {
   GetAdminJourneys,
@@ -53,11 +52,7 @@ const getAdminJourneysMock: MockedResponse<
 }
 
 const Template: StoryObj<typeof ActiveJourneyList> = {
-  render: ({ ...args }) => (
-    <Suspense>
-      <ActiveJourneyList {...args} />
-    </Suspense>
-  ),
+  render: ({ ...args }) => <ActiveJourneyList {...args} />,
   parameters: {
     apolloClient: {
       cache: cache(),

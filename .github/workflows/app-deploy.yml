@@ -172,7 +172,7 @@ jobs:
   deploy-production:
     name: Deploy Production
     # main branch and not a pull request
-    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && fromJson(needs.affected.outputs.matrix) != 'journeys-admin' }}
     needs: affected
     strategy:
       fail-fast: false

@@ -58,6 +58,9 @@ export const cache = (): InMemoryCache =>
       },
       Video: {
         keyFields: ['id', 'variant', ['id']]
+      },
+      Translation: {
+        keyFields: ['value']
       }
     }
   })

@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
-import { Suspense } from 'react'
 
 import {
   GetAdminJourneys,
@@ -68,9 +67,7 @@ describe('ArchivedJourneyList', () => {
       <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <Suspense>
-              <ArchivedJourneyList />
-            </Suspense>
+            <ArchivedJourneyList />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -112,9 +109,7 @@ describe('ArchivedJourneyList', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <Suspense>
-              <ArchivedJourneyList sortOrder={SortOrder.TITLE} />
-            </Suspense>
+            <ArchivedJourneyList sortOrder={SortOrder.TITLE} />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -149,9 +144,7 @@ describe('ArchivedJourneyList', () => {
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <ArchivedJourneyList event="restoreAllArchived" />
-              </Suspense>
+              <ArchivedJourneyList event="restoreAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -169,12 +162,10 @@ describe('ArchivedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <ArchivedJourneyList
-                  event="restoreAllArchived"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </Suspense>
+              <ArchivedJourneyList
+                event="restoreAllArchived"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -197,12 +188,10 @@ describe('ArchivedJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <Suspense>
-                  <ArchivedJourneyList
-                    event="restoreAllArchived"
-                    user={{ id: 'user-id1' } as unknown as User}
-                  />
-                </Suspense>
+                <ArchivedJourneyList
+                  event="restoreAllArchived"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
@@ -235,9 +224,7 @@ describe('ArchivedJourneyList', () => {
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <ArchivedJourneyList event="trashAllArchived" />
-              </Suspense>
+              <ArchivedJourneyList event="trashAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -255,12 +242,10 @@ describe('ArchivedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <ArchivedJourneyList
-                  event="trashAllArchived"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </Suspense>
+              <ArchivedJourneyList
+                event="trashAllArchived"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -283,12 +268,10 @@ describe('ArchivedJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <Suspense>
-                  <ArchivedJourneyList
-                    event="trashAllArchived"
-                    user={{ id: 'user-id1' } as unknown as User}
-                  />
-                </Suspense>
+                <ArchivedJourneyList
+                  event="trashAllArchived"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>

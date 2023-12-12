@@ -13,10 +13,6 @@ import { ReactElement } from 'react'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 
-export interface TemplateGalleryCardProps {
-  item?: Journey
-}
-
 interface HoverLayerProps {
   className?: string
 }
@@ -42,8 +38,14 @@ export function HoverLayer({ className }: HoverLayerProps): ReactElement {
   )
 }
 
+interface TemplateGalleryCardProps {
+  item?: Journey
+  priority?: boolean
+}
+
 export function TemplateGalleryCard({
-  item: journey
+  item: journey,
+  priority
 }: TemplateGalleryCardProps): ReactElement {
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
@@ -97,15 +99,19 @@ export function TemplateGalleryCard({
       }}
     >
       <NextLink
-        href={journey != null ? `/templates/${journey.id}` : ''}
+        href={`/templates/${journey?.id ?? ''}`}
         passHref
         legacyBehavior
         prefetch={false}
       >
         <Box
+          component="a"
+          tabIndex={-1}
           data-testid="templateGalleryCard"
           sx={{
-            height: 'inherit'
+            height: 'inherit',
+            color: 'inherit',
+            textDecoration: 'none'
           }}
         >
           {journey != null ? (
@@ -125,12 +131,17 @@ export function TemplateGalleryCard({
                 <>
                   <HoverLayer className="hoverImageEffects" />
                   <Image
-                    priority
+                    rel={priority === true ? 'preload' : undefined}
+                    priority={priority}
                     className="MuiImageBackground-root"
                     src={journey?.primaryImageBlock?.src}
                     alt={journey?.primaryImageBlock.alt}
                     fill
-                    sizes={`(max-width: ${theme.breakpoints.values.md}px) 240px, 280px`}
+                    sizes={`(max-width: ${
+                      theme.breakpoints.values.md - 0.5
+                    }px) 130px, (max-width: ${
+                      theme.breakpoints.values.xl - 0.5
+                    }px) 180px, 280px`}
                     style={{
                       objectFit: 'cover'
                     }}
