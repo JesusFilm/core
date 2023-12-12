@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -25,6 +26,7 @@ export const FORM_BLOCK_CREATE = gql`
 
 export function NewFormButton(): ReactElement {
   const [formBlockCreate] = useMutation<FormBlockCreate>(FORM_BLOCK_CREATE)
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -88,7 +90,7 @@ export function NewFormButton(): ReactElement {
   return (
     <Button
       icon={<StarsIcon />}
-      value="Form"
+      value={t('Form')}
       onClick={handleClick}
       testId="NewFormiumFormIcon"
     />

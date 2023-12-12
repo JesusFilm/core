@@ -4,6 +4,7 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -26,6 +27,7 @@ export function FormSlugSelect({
 }: FormSlugSelectProps): ReactElement {
   const [formBlockUpdateCredentials] =
     useMutation<FormBlockUpdateCredentials>(FORM_BLOCK_UPDATE)
+  const { t } = useTranslation('apps-journeys-admin')
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     if (id == null || event?.target.value === currentFormSlug) return
@@ -55,7 +57,7 @@ export function FormSlugSelect({
   return (
     <FormControl variant="filled" disabled={loading}>
       <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
-        Form Slug
+        {t('Form Slug')}
       </InputLabel>
 
       <Select
@@ -64,7 +66,7 @@ export function FormSlugSelect({
         IconComponent={ChevronDownIcon}
       >
         <MenuItem key="form-formSlug-none" value="none">
-          None
+          {t('None')}
         </MenuItem>
         {forms?.map((form) => (
           <MenuItem key={`form-formSlug-${form.slug}`} value={form.slug}>

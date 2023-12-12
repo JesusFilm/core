@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { FormBlockUpdateCredentials } from '../../../../../../../../../__generated__/FormBlockUpdateCredentials'
 import { TextFieldForm } from '../../../../../../../TextFieldForm'
@@ -34,6 +35,7 @@ export function ApiTokenTextField({
   const [formBlockUpdateCredentials] =
     useMutation<FormBlockUpdateCredentials>(FORM_BLOCK_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const placeHolderToken =
     'thisIsAFakeApiTokenTheReaOneIsNeverShowAgainInTheFrontEnd'
@@ -62,7 +64,7 @@ export function ApiTokenTextField({
           }
         }
       })
-      enqueueSnackbar('API Token updated', {
+      enqueueSnackbar(t('API Token updated'), {
         variant: 'success',
         preventDuplicate: true
       })

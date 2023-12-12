@@ -3,6 +3,7 @@ import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -41,6 +42,7 @@ export function Credentials(): ReactElement {
   const { data, loading } = useQuery(GET_FORM_BLOCK, {
     variables: { id: selectedBlock?.id }
   })
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Stack spacing={6} sx={{ px: 6, py: 4 }}>
@@ -72,7 +74,7 @@ export function Credentials(): ReactElement {
           legacyBehavior
         >
           <Link underline="none" variant="body2" target="_blank" rel="noopener">
-            Click here for formium docs on finding your credentials
+            {t('Click here for formium docs on finding your credentials')}
           </Link>
         </NextLink>
       </Stack>

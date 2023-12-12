@@ -1,4 +1,5 @@
 import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -14,6 +15,8 @@ import { Credentials } from './Credentials'
 export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
   const { dispatch } = useEditor()
   const selectedAction = actions.find((act) => act.value === action?.__typename)
+  const {t} = useTranslation('apps-journeys-admin')
+
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
@@ -31,13 +34,13 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
       <Attribute
         id={`${id}-form-action`}
         icon={<LinkIcon />}
-        name="Action"
+        name={t("Action")}
         value={selectedAction?.label ?? 'None'}
-        description="Action"
+        description={t("Action")}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Action',
+            title: t('Action'),
             mobileOpen: true,
             children: <Action />
           })
@@ -47,13 +50,13 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
       <Attribute
         id={`${id}-form-credentials`}
         icon={<StarsIcon />}
-        name="Credentials"
-        value={form != null && 'name' in form ? 'Complete' : 'Incomplete'}
-        description="Formium Credentials"
+        name={t("Credentials")}
+        value={form != null && 'name' in form ? t('Complete') : t('Incomplete')}
+        description={t("Formium Credentials")}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Credentials',
+            title: t('Credentials'),
             mobileOpen: true,
             children: <Credentials />
           })
