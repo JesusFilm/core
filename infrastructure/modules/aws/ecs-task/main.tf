@@ -258,7 +258,12 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
   }
   condition {
     host_header {
-      values = ["${var.service_config.name}.${data.aws_route53_zone.zone.name}"]
+      values = [
+        coalesce(
+          var.service_config.alb_listener.dns_name,
+          format("%s.%s", var.service_config.name, data.aws_route53_zone.zone.name)
+        )
+      ]
     }
   }
 }

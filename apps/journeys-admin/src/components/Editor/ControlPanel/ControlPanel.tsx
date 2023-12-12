@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, SyntheticEvent } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,13 +23,20 @@ import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
 import { ActionDetails } from '../ActionDetails'
-import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Properties } from '../Properties'
 
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
+
+const CardTemplateDrawer = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CardTemplateDrawer" */ '../CardTemplateDrawer'
+    ).then((module) => module.CardTemplateDrawer),
+  { ssr: false }
+)
 
 export function ControlPanel(): ReactElement {
   const router = useRouter()
