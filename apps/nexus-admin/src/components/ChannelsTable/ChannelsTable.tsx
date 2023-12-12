@@ -71,12 +71,12 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
       headerName: 'Thumbnail',
       flex: 1,
       renderCell: ({ row }: GridCellParams) => {
-        return row.channelYoutubeCredential?.imageUrl ? (
-          <Avatar src={row.channelYoutubeCredential?.imageUrl} alt={row.name} />
+        return row.youtube?.imageUrl ? (
+          <Avatar src={row.youtube?.imageUrl} alt={row.name} />
         ) : null
       }
     },
-    { field: 'name', headerName: 'Channel name', flex: 1 },
+    { field: 'name', headerName: 'Alias name', flex: 1 },
     {
       field: 'platform',
       headerName: 'Platform',
@@ -87,7 +87,15 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
       headerName: 'Youtube ID',
       flex: 2,
       renderCell: ({ row }: GridCellParams) => {
-        return <>{row.channelYoutubeCredential?.youtubeId}</>
+        return <>{row.youtube?.youtubeId}</>
+      }
+    },
+    {
+      field: 'youtubeName',
+      headerName: 'Youtube name',
+      flex: 2,
+      renderCell: ({ row }: GridCellParams) => {
+        return <>{row.youtube?.title}</>
       }
     },
     {
