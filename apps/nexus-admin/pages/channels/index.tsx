@@ -14,8 +14,8 @@ import { MainLayout } from '../../src/components/MainLayout'
 import { UpdateChannelModal } from '../../src/components/UpdateChannelModal'
 
 export const GET_CHANNELS = gql`
-  query Channels {
-    channels {
+  query Channels($where: ChannelFilter) {
+    channels(where: $where) {
       id
       name
       platform

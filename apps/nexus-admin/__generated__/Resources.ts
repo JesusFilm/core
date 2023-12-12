@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ResourceStatus } from "./globalTypes";
+import { ResourceFilter, ResourceStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: Resources
@@ -25,4 +25,8 @@ export interface Resources_resources {
 
 export interface Resources {
   resources: Resources_resources[] | null;
+}
+
+export interface ResourcesVariables {
+  where?: ResourceFilter | null;
 }

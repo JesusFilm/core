@@ -23,6 +23,15 @@ export interface ChannelCreateInput {
   platform: string;
 }
 
+export interface ChannelFilter {
+  ids?: string[] | null;
+  name?: string | null;
+  nexusId?: string | null;
+  limit?: number | null;
+  connected?: boolean | null;
+  status?: ChannelStatus | null;
+}
+
 export interface ChannelUpdateInput {
   name?: string | null;
   nexusId?: string | null;
@@ -38,6 +47,14 @@ export interface ConnectYoutubeChannelInput {
 export interface NexusCreateInput {
   name: string;
   description?: string | null;
+}
+
+export interface ResourceFilter {
+  ids?: string[] | null;
+  name?: string | null;
+  nexusId?: string | null;
+  status?: ResourceStatus | null;
+  limit?: number | null;
 }
 
 export interface ResourceFromGoogleDriveInput {
