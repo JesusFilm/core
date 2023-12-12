@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -38,9 +38,13 @@ export const GET_FORM_BLOCK = gql`
 export function Credentials(): ReactElement {
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as TreeBlock<FormBlock> | undefined
-  const { data, loading } = useQuery(GET_FORM_BLOCK, {
+  const { data, refetch, loading } = useQuery(GET_FORM_BLOCK, {
     variables: { id: selectedBlock?.id }
   })
+
+  useEffect(() => {
+    void refetch()
+  }, [state, refetch])
 
   return (
     <Stack spacing={6} sx={{ px: 6, py: 4 }}>
