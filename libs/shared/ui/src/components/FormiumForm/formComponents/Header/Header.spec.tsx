@@ -1,8 +1,9 @@
 import { render } from '@testing-library/react'
+import { ComponentProps } from 'react'
 
 import { FormiumProvider } from '../../FormiumProvider'
 
-import { Header, HeaderProps } from './Header'
+import { Header } from './Header'
 
 jest.mock('next/head', () => {
   return {
@@ -18,7 +19,7 @@ describe('Header', () => {
     page: {
       title: 'Header Title'
     }
-  } as unknown as HeaderProps
+  } as unknown as ComponentProps<typeof Header>
 
   it('renders header', () => {
     const { getByText } = render(
