@@ -15,8 +15,8 @@ import { ResourcesTable } from '../../src/components/ResourcesTable'
 import { UpdateResourceModal } from '../../src/components/UpdateResourceModal'
 
 export const GET_RESOURCES = gql`
-  query Resources {
-    resources {
+  query Resources($where: ResourceFilter) {
+    resources(where: $where) {
       id
       name
       googleDrive {
