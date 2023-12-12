@@ -3,6 +3,17 @@ import { useTheme } from '@mui/material/styles'
 import Script from 'next/script'
 import { ReactElement } from 'react'
 
+declare global {
+  interface Window {
+    Beacon?: ((fn: 'init', id: string) => void) &
+      ((
+        fn: 'config',
+        config: { mode: 'askFirst'; enableFabAnimation: boolean }
+      ) => void) &
+      ((fn: 'open') => void)
+  }
+}
+
 export function HelpScoutBeacon(): ReactElement {
   const { breakpoints, zIndex } = useTheme()
   return (
