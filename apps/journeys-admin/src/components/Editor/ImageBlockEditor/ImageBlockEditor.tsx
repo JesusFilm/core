@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
@@ -13,9 +14,28 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
-import { AIGallery } from './AIGallery'
-import { CustomImage } from './CustomImage'
-import { UnsplashAuthor, UnsplashGallery } from './UnsplashGallery'
+import { UnsplashAuthor } from './UnsplashGallery'
+
+const UnsplashGallery = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "UnsplashGallery" */ './UnsplashGallery'
+    ).then((mod) => mod.UnsplashGallery)
+)
+
+const CustomImage = dynamic(
+  async () =>
+    await import(/* webpackChunkName: "CustomImage" */ './CustomImage').then(
+      (mod) => mod.CustomImage
+    )
+)
+
+const AIGallery = dynamic(
+  async () =>
+    await import(/* webpackChunkName: "AIGallery" */ './AIGallery').then(
+      (mod) => mod.AIGallery
+    )
+)
 
 interface ImageBlockEditorProps {
   onChange: (imageBlock: ImageBlock) => Promise<void>
@@ -138,7 +158,7 @@ export function ImageBlockEditor({
         index={0}
         sx={{ flexGrow: 1, overflow: 'scroll' }}
       >
-        <UnsplashGallery onChange={handleUnsplashChange} />
+        {tabValue === 0 && <UnsplashGallery onChange={handleUnsplashChange} />}
       </TabPanel>
       <TabPanel
         name="custom"
@@ -146,13 +166,15 @@ export function ImageBlockEditor({
         index={1}
         sx={{ flexGrow: 1, overflow: 'scroll' }}
       >
-        <CustomImage
-          onChange={handleSrcChange}
-          setUploading={(upload) => setUploading(upload)}
-          selectedBlock={selectedBlock}
-          loading={uploading != null ? uploading : loading}
-          error={error}
-        />
+        {tabValue === 1 && (
+          <CustomImage
+            onChange={handleSrcChange}
+            setUploading={(upload) => setUploading(upload)}
+            selectedBlock={selectedBlock}
+            loading={uploading != null ? uploading : loading}
+            error={error}
+          />
+        )}
       </TabPanel>
       <TabPanel
         name="generative"
@@ -160,11 +182,13 @@ export function ImageBlockEditor({
         index={2}
         sx={{ flexGrow: 1, overflow: 'scroll' }}
       >
-        <AIGallery
-          onChange={handleSrcChange}
-          setUploading={setUploading}
-          loading={uploading != null ? uploading : loading}
-        />
+        {tabValue === 2 && (
+          <AIGallery
+            onChange={handleSrcChange}
+            setUploading={setUploading}
+            loading={uploading != null ? uploading : loading}
+          />
+        )}
       </TabPanel>
     </>
   )

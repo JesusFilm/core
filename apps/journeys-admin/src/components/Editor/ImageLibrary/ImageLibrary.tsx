@@ -34,6 +34,7 @@ function Drawer({
     <MuiDrawer
       anchor={smUp ? 'right' : 'bottom'}
       variant="temporary"
+      SlideProps={{ appear: true }}
       open={open}
       elevation={smUp ? 1 : 0}
       hideBackdrop

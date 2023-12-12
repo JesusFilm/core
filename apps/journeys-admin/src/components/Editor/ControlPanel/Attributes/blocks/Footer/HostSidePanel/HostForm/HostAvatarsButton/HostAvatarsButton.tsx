@@ -1,6 +1,7 @@
 import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -9,7 +10,13 @@ import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/GetJourney'
 import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation'
-import { ImageLibrary } from '../../../../../../../ImageLibrary'
+
+const ImageLibrary = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "ImageLibrary" */ '../../../../../../../ImageLibrary'
+    ).then((mod) => mod.ImageLibrary)
+)
 
 interface HostAvatarsButtonProps {
   disabled?: boolean
@@ -18,7 +25,7 @@ interface HostAvatarsButtonProps {
 export function HostAvatarsButton({
   disabled = false
 }: HostAvatarsButtonProps): ReactElement {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<boolean | undefined>()
   const { journey } = useJourney()
   const [host, setHost] = useState(journey?.host ?? undefined)
   const { updateHost } = useHostUpdateMutation()
@@ -121,27 +128,29 @@ export function HostAvatarsButton({
           {(host?.src1 == null || host?.src2 == null) && <Plus2Icon />}
         </Avatar>
       </AvatarGroup>
-      <ImageLibrary
-        open={open}
-        onClose={handleClose}
-        onChange={handleChange}
-        onDelete={handleDelete}
-        selectedBlock={
-          host != null
-            ? {
-                id: `avatar${avatarNumber}`,
-                __typename: 'ImageBlock',
-                src: host[`src${avatarNumber}`],
-                alt: `host avatar ${avatarNumber}`,
-                width: 52,
-                height: 52,
-                blurhash: '',
-                parentBlockId: null,
-                parentOrder: 0
-              }
-            : null
-        }
-      />
+      {open != null && (
+        <ImageLibrary
+          open={open}
+          onClose={handleClose}
+          onChange={handleChange}
+          onDelete={handleDelete}
+          selectedBlock={
+            host != null
+              ? {
+                  id: `avatar${avatarNumber}`,
+                  __typename: 'ImageBlock',
+                  src: host[`src${avatarNumber}`],
+                  alt: `host avatar ${avatarNumber}`,
+                  width: 52,
+                  height: 52,
+                  blurhash: '',
+                  parentBlockId: null,
+                  parentOrder: 0
+                }
+              : null
+          }
+        />
+      )}
     </Stack>
   )
 }

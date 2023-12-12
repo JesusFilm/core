@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import dynamic from 'next/dynamic'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -13,8 +14,14 @@ import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
 
-import { BackgroundMediaImage } from './Image/BackgroundMediaImage'
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
+
+const BackgroundMediaImage = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "BackgroundMediaImage" */ './Image/BackgroundMediaImage'
+    ).then((mod) => mod.BackgroundMediaImage)
+)
 
 export function BackgroundMedia(): ReactElement {
   const {
