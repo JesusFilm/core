@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
-import { Suspense } from 'react'
 
 import {
   GetAdminJourneys,
@@ -67,9 +66,7 @@ describe('ActiveJourneyList', () => {
       <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <Suspense>
-              <ActiveJourneyList />
-            </Suspense>
+            <ActiveJourneyList />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -88,9 +85,7 @@ describe('ActiveJourneyList', () => {
         <MockedProvider mocks={[activeJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <ActiveJourneyList event="archiveAllActive" />
-              </Suspense>
+              <ActiveJourneyList event="archiveAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -121,12 +116,10 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <ActiveJourneyList
-                  event="archiveAllActive"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </Suspense>
+              <ActiveJourneyList
+                event="archiveAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -148,12 +141,10 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <ActiveJourneyList
-                  event="archiveAllActive"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </Suspense>
+              <ActiveJourneyList
+                event="archiveAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -185,12 +176,10 @@ describe('ActiveJourneyList', () => {
         <MockedProvider mocks={[activeJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <ActiveJourneyList
-                  event="trashAllActive"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </Suspense>
+              <ActiveJourneyList
+                event="trashAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -207,12 +196,10 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <Suspense>
-                <ActiveJourneyList
-                  event="trashAllActive"
-                  user={{ id: 'user-id1' } as unknown as User}
-                />
-              </Suspense>
+              <ActiveJourneyList
+                event="trashAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -235,12 +222,10 @@ describe('ActiveJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <Suspense>
-                  <ActiveJourneyList
-                    event="trashAllActive"
-                    user={{ id: 'user-id1' } as unknown as User}
-                  />
-                </Suspense>
+                <ActiveJourneyList
+                  event="trashAllActive"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>

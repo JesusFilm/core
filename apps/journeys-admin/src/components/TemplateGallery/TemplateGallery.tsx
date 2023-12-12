@@ -123,10 +123,7 @@ export function TemplateGallery(): ReactElement {
             </Grid>
           </Grid>
         </Grid>
-        <TagCarousels
-          selectedTagIds={selectedTagIds}
-          onChange={handleTagIdChange}
-        />
+        <TagCarousels onChange={handleTagIdChange} />
         <TemplateSections
           tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
           languageIds={

@@ -60,6 +60,7 @@ export function TemplatePreviewTabs(): ReactElement {
         sx={{ borderBottom: 1, borderColor: 'divider', mb: { xs: 3, sm: 7 } }}
       >
         <Tab
+          suppressHydrationWarning
           label={
             steps != null ? (
               t('{{count}} Cards', { count: steps.length })
@@ -71,6 +72,7 @@ export function TemplatePreviewTabs(): ReactElement {
           sx={{ flexGrow: { xs: 1, sm: 0 }, minWidth: { sm: 200 } }}
         />
         <Tab
+          suppressHydrationWarning
           disabled={videos?.length === 0 || videos == null}
           label={
             videos != null ? (
