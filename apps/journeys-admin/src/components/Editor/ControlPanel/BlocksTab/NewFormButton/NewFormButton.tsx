@@ -10,7 +10,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { FORM_FIELDS } from '@core/journeys/ui/Form/formFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import StarsIcon from '@core/shared/ui/icons/Stars'
+import File5Icon from '@core/shared/ui/icons/File5'
 
 import { FormBlockCreate } from '../../../../../../__generated__/FormBlockCreate'
 import { Button } from '../../Button'
@@ -89,7 +89,7 @@ export function NewFormButton(): ReactElement {
 
   return (
     <Button
-      icon={<StarsIcon />}
+      icon={<File5Icon />}
       value={t('Form')}
       onClick={handleClick}
       testId="NewFormiumFormIcon"
