@@ -90,7 +90,15 @@ const ResourcesPage = () => {
   const isSSRMode = typeof window !== 'undefined'
   const nexusId = isSSRMode ? localStorage.getItem('nexusId') : ''
 
-  const { data, loading } = useQuery<Resources>(GET_RESOURCES)
+  const { data, loading } = useQuery<Resources>(GET_RESOURCES, {
+    variables: {
+      where: {
+        status: 'published',
+        nexusId
+      }
+    }
+  })
+
   const { data: resourceData } = useQuery<Resource>(GET_RESOURCE, {
     skip: !resourceId,
     variables: {
