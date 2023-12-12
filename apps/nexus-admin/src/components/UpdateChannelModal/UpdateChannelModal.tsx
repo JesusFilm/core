@@ -60,7 +60,7 @@ export const UpdateChannelModal: FC<UpdateChannelModalProps> = ({
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
           <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={formik.submitForm}>Update Channel</Button>
+          <Button onClick={formik.submitForm}>Update</Button>
         </Stack>
       }
     >
