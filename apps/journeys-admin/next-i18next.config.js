@@ -1,5 +1,6 @@
+const isBrowser = typeof window !== 'undefined'
 let localePath
-if (typeof window !== 'undefined') {
+if (isBrowser) {
   // browser
   localePath = './public/locales'
 } else if (process.env.VERCEL == null || process.env.CI != null) {

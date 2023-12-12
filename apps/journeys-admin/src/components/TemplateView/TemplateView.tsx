@@ -136,6 +136,11 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
               items={relatedJourneys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
+              cardSpacing={{
+                xs: 1,
+                md: 8,
+                xl: 11
+              }}
             />
           )}
           <TemplateFooter signedIn={authUser?.id != null} />

@@ -20,6 +20,7 @@ export const cache = (): InMemoryCache =>
       Block: [
         'ButtonBlock',
         'CardBlock',
+        'FormBlock',
         'GridContainerBlock',
         'GridItemBlock',
         'IconBlock',
@@ -57,6 +58,9 @@ export const cache = (): InMemoryCache =>
       },
       Video: {
         keyFields: ['id', 'variant', ['id']]
+      },
+      Translation: {
+        keyFields: ['value']
       }
     }
   })
