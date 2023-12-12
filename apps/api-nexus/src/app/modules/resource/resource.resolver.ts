@@ -3,6 +3,8 @@ import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Prisma, Resource } from '.prisma/api-nexus-client'
+import { User } from '@core/nest/common/firebaseClient'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import {
@@ -11,6 +13,7 @@ import {
   ResourceFromGoogleDriveInput,
   ResourceUpdateInput
 } from '../../__generated__/graphql'
+import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
 import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -18,7 +21,8 @@ import { PrismaService } from '../../lib/prisma.service'
 export class ResourceResolver {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly googleDriveService: GoogleDriveService
+    private readonly googleDriveService: GoogleDriveService,
+    private readonly cloudFlareService: CloudFlareService
   ) {}
 
   @Query()
@@ -34,6 +38,7 @@ export class ResourceResolver {
       where: {
         AND: [filter, { nexus: { userNexuses: { every: { userId } } } }]
       },
+      include: { googleDrive: true },
       take: where?.limit ?? undefined
     })
 
@@ -112,6 +117,7 @@ export class ResourceResolver {
   @Mutation()
   async resourceFromGoogleDrive(
     @CurrentUserId() userId: string,
+    @CurrentUser() user: User,
     @Args('input') input: ResourceFromGoogleDriveInput
   ): Promise<Resource[]> {
     const nexus = await this.prismaService.nexus.findUnique({
@@ -140,6 +146,17 @@ export class ResourceResolver {
           createdAt: new Date()
         }
       })
+      const fileUrl = this.googleDriveService.getFileUrl(fileId)
+      await this.googleDriveService.setFilePermission({
+        fileId,
+        accessToken: input.authCode ?? ''
+      })
+      const res = await this.cloudFlareService.uploadToCloudflareByUrl(
+        fileUrl,
+        driveFile.name,
+        userId
+      )
+      console.log('CLOUD FLARE', res)
       await this.prismaService.googleDriveResource.create({
         data: {
           id: uuidv4(),
