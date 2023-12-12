@@ -132,7 +132,6 @@ export function NavigationDrawer({
             <ChevronRightIcon />
           </ListItemIcon>
         </ListItemButton>
-
         <NextLink href="/" passHref legacyBehavior prefetch={false}>
           <Tooltip title={tooltip} placement="right" arrow>
             <ListItemButton
