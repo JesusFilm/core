@@ -83,7 +83,14 @@ const ChannelsPage = () => {
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
   const [channel, setChannel] = useState<Channel_channel | null>(null)
 
-  const { data, loading } = useQuery<Channels>(GET_CHANNELS)
+  const { data, loading } = useQuery<Channels>(GET_CHANNELS, {
+    variables: {
+      where: {
+        status: 'published',
+        nexusId
+      }
+    }
+  })
 
   const { data: channelData } = useQuery<Channel>(GET_CHANNEL, {
     skip: !channelId,
