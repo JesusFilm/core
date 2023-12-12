@@ -20,9 +20,6 @@ import {
 } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../../Attribute'
 
-import { CardLayout } from './CardLayout'
-import { CardStyling } from './CardStyling'
-
 const BackgroundColor = dynamic(
   async () =>
     await import(
@@ -35,6 +32,20 @@ const BackgroundMedia = dynamic(
     await import(
       /* webpackChunkName: "BackgroundMedia" */ './BackgroundMedia'
     ).then((mod) => mod.BackgroundMedia)
+)
+
+const CardLayout = dynamic(
+  async () =>
+    await import(/* webpackChunkName: "CardLayout" */ './CardLayout').then(
+      (mod) => mod.CardLayout
+    )
+)
+
+const CardStyling = dynamic(
+  async () =>
+    await import(/* webpackChunkName: "CardStyling" */ './CardStyling').then(
+      (mod) => mod.CardStyling
+    )
 )
 
 export function Card({
