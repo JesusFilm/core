@@ -21,7 +21,6 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
 import { ActionDetails } from '../ActionDetails'
-import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Properties } from '../Properties'
 
@@ -41,6 +40,13 @@ const BlocksTab = dynamic(
       /* webpackChunkName: "Editor/ControlPanel/BlocksTab" */
       './BlocksTab'
     ).then((mod) => mod.BlocksTab),
+  { ssr: false }
+)
+const CardTemplateDrawer = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CardTemplateDrawer" */ '../CardTemplateDrawer'
+    ).then((module) => module.CardTemplateDrawer),
   { ssr: false }
 )
 
