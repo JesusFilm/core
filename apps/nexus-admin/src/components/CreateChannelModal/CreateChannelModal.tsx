@@ -38,17 +38,23 @@ export const CreateChannelModal: FC<CreateChannelModalProps> = ({
     validationSchema: channelValidationSchema,
     onSubmit: (values) => {
       onCreate(values)
+      formik.resetForm()
     }
   })
+
+  const closeModal = () => {
+    onClose()
+    formik.resetForm()
+  }
 
   return (
     <Modal
       title="Create New Channel"
       open={open}
-      handleClose={onClose}
+      handleClose={closeModal}
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={closeModal}>Cancel</Button>
           <Button onClick={formik.submitForm}>Create</Button>
         </Stack>
       }
