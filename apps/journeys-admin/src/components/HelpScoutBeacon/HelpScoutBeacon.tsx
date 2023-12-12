@@ -1,6 +1,6 @@
 import { useTheme } from '@mui/material/styles'
 import Script from 'next/script'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 interface EventObject {
   type: string
@@ -22,12 +22,33 @@ declare global {
       ) => void) &
       ((fn: 'open') => void) &
       ((fn: 'event', eventObject: EventObject) => void) &
+      ((fn: 'search', value: string) => void) &
+      ((fn: 'on', eventType: string, callback: () => void) => void) &
       ((fn: 'session-data', sessionObject: SessionObject) => void)
   }
 }
 
 export function HelpScoutBeacon(): ReactElement {
   const { breakpoints, zIndex } = useTheme()
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (window.Beacon != null) {
+        clearInterval(intervalId)
+        window.Beacon('on', 'open', () => {
+          console.log('I have been clicked')
+          const urlParam = new URLSearchParams(window.location.search)
+          const param = urlParam.get('param')
+          console.log(param)
+
+          if (urlParam.has('param') && param === 'social') {
+            window.Beacon?.('search', 'social')
+          }
+        })
+      }
+    }, 1000)
+  }, [])
+
   return (
     <>
       <Script
