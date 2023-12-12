@@ -1,7 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -15,7 +13,6 @@ export function TemplateFooter({
   signedIn
 }: TemplateFooterProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
     <Stack
@@ -24,7 +21,22 @@ export function TemplateFooter({
       sx={{ py: 9 }}
       data-testid="TemplateFooter"
     >
-      <Typography variant={smUp ? 'subtitle1' : 'subtitle2'} align="center">
+      <Typography
+        variant="subtitle1"
+        align="center"
+        sx={{
+          display: { xs: 'none', sm: 'block' }
+        }}
+      >
+        {t('Use this template to make it your journey')}
+      </Typography>
+      <Typography
+        variant="subtitle2"
+        align="center"
+        sx={{
+          display: { xs: 'block', sm: 'none' }
+        }}
+      >
         {t('Use this template to make it your journey')}
       </Typography>
       <CreateJourneyButton signedIn={signedIn} />

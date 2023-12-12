@@ -12,7 +12,7 @@ import { checkConditionalRedirect } from '../checkConditionalRedirect'
 interface InitAndAuthAppProps {
   user?: User
   locale: string | undefined
-  resolvedUrl: string
+  resolvedUrl?: string
 }
 
 interface InitAndAuth {
@@ -57,10 +57,12 @@ export async function initAndAuthApp({
     apolloClient.mutate<AcceptAllInvites>({
       mutation: ACCEPT_ALL_INVITES
     }),
-    checkConditionalRedirect({
-      apolloClient,
-      resolvedUrl
-    })
+    resolvedUrl != null
+      ? checkConditionalRedirect({
+          apolloClient,
+          resolvedUrl
+        })
+      : undefined
   ])
 
   return { apolloClient, redirect, translations }

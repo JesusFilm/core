@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import NoSsr from '@mui/material/NoSsr'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -89,7 +90,18 @@ function LocalButton({
               sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
             />
           ) : (
-            (children as unknown as ReactNode)
+            <NoSsr
+              fallback={
+                <Skeleton
+                  sx={{
+                    width: { xs: 145, md: 274 },
+                    height: { xs: 30, md: 36 }
+                  }}
+                />
+              }
+            >
+              {children as unknown as ReactNode}
+            </NoSsr>
           )}
         </Typography>
         <Typography
@@ -106,7 +118,18 @@ function LocalButton({
               sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
             />
           ) : (
-            (children as unknown as ReactNode)
+            <NoSsr
+              fallback={
+                <Skeleton
+                  sx={{
+                    width: { xs: 145, md: 274 },
+                    height: { xs: 30, md: 36 }
+                  }}
+                />
+              }
+            >
+              {children as unknown as ReactNode}
+            </NoSsr>
           )}
         </Typography>
         {loading !== true && (

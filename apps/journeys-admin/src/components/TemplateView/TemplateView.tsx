@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SwiperOptions } from 'swiper'
+import { SwiperOptions } from 'swiper/types'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
@@ -136,6 +136,11 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
               items={relatedJourneys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
+              cardSpacing={{
+                xs: 1,
+                md: 8,
+                xl: 11
+              }}
             />
           )}
           <TemplateFooter signedIn={authUser?.id != null} />
