@@ -1,0 +1,64 @@
+{
+  "name": "api-journeys-worker",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api-journeys-worker/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/api-journeys-worker",
+        "main": "apps/api-journeys-worker/src/main.ts",
+        "tsConfig": "apps/api-journeys-worker/tsconfig.app.json",
+        "assets": ["apps/api-journeys-worker/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/api-journeys-worker/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "api-journeys-worker:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "api-journeys-worker:build:development"
+        },
+        "production": {
+          "buildTarget": "api-journeys-worker:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api-journeys-worker/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/api-journeys-worker/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}
