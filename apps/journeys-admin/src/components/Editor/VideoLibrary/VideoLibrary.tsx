@@ -8,6 +8,7 @@ import Tabs from '@mui/material/Tabs'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import dynamic from 'next/dynamic'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -20,10 +21,30 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 
-import { VideoDetails } from './VideoDetails'
-import { VideoFromCloudflare } from './VideoFromCloudflare'
 import { VideoFromLocal } from './VideoFromLocal'
-import { VideoFromYouTube } from './VideoFromYouTube'
+
+const VideoDetails = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoLibrary/VideoDetails/VideoDetails" */ './VideoDetails'
+    ).then((mod) => mod.VideoDetails),
+  { ssr: false }
+)
+const VideoFromCloudflare = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCloudflare/VideoFromCloudflare" */ './VideoFromCloudflare'
+    ).then((mod) => mod.VideoFromCloudflare),
+  { ssr: false }
+)
+
+const VideoFromYouTube = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromYouTube/VideoFromYouTube" */ './VideoFromYouTube'
+    ).then((mod) => mod.VideoFromYouTube),
+  { ssr: false }
+)
 
 export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
@@ -72,6 +93,7 @@ export function VideoLibrary({
   return (
     <>
       <Drawer
+        SlideProps={{ appear: true }}
         anchor={smUp ? 'right' : 'bottom'}
         variant="temporary"
         open={open}
@@ -155,6 +177,7 @@ export function VideoLibrary({
           value={activeTab}
           index={1}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
+          unmountUntilVisible
         >
           <VideoFromYouTube onSelect={onSelect} />
         </TabPanel>
@@ -163,6 +186,7 @@ export function VideoLibrary({
           value={activeTab}
           index={2}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
+          unmountUntilVisible
         >
           <VideoFromCloudflare onSelect={onSelect} />
         </TabPanel>
