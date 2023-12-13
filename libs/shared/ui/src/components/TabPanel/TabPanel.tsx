@@ -6,7 +6,7 @@ interface TabPanelProps extends BoxProps {
   children?: ReactNode
   value: number
   index: number
-  unmountUntilVisible?: boolean
+  unmountUntilVisible?: true
 }
 export function TabPanel({
   name,
