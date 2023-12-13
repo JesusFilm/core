@@ -46,8 +46,8 @@ const formiumComponents: FormiumComponents = {
 // Formium Component
 interface FormiumFormProps extends FormiumProviderContext {
   form: Form | null
-  userId: string | null
-  email: string | null
+  userId?: string | null
+  email?: string | null
   onSubmit?: () => void
 }
 
