@@ -3,8 +3,6 @@ import { useTheme } from '@mui/material/styles'
 import Script from 'next/script'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
-
 interface EventObject {
   type: string
   url: string
@@ -37,24 +35,28 @@ declare global {
   }
 }
 
-export function HelpScoutBeacon(): ReactElement {
+interface HelpScoutBeaconProps {
+  userInfo: FormObject
+}
+
+export function HelpScoutBeacon({
+  userInfo
+}: HelpScoutBeaconProps): ReactElement {
   const { breakpoints, zIndex } = useTheme()
   const [hasLoaded, setHasLoaded] = useState(false)
 
-  const { loadUser, data } = useCurrentUserLazyQuery()
+  console.log(userInfo)
 
   useEffect(() => {
     if (hasLoaded && window.Beacon != null) {
-      void loadUser()
       window.Beacon('on', 'open', () => {
-        if (data.id !== '')
-          window.Beacon?.('prefill', {
-            name: `${data.firstName as string} ${data.lastName as string}`,
-            email: data.email
-          })
+        window.Beacon?.('prefill', {
+          name: userInfo.name,
+          email: userInfo.email
+        })
       })
     }
-  }, [hasLoaded, loadUser, data])
+  }, [hasLoaded, userInfo])
 
   return (
     <>

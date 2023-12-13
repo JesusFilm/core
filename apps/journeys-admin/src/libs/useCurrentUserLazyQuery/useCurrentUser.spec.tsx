@@ -20,8 +20,6 @@ describe('useCurrentUserLazyQuery', () => {
                 data: {
                   me: {
                     id: 'user.id',
-                    firstName: 'test',
-                    lastName: 'user',
                     email: 'test@email.com'
                   }
                 }
@@ -39,8 +37,6 @@ describe('useCurrentUserLazyQuery', () => {
     await waitFor(() =>
       expect(result.current.data).toEqual({
         id: 'user.id',
-        firstName: 'test',
-        lastName: 'user',
         email: 'test@email.com'
       })
     )
@@ -74,8 +70,6 @@ describe('useCurrentUserLazyQuery', () => {
     expect(result.current.data).toEqual({
       __typename: 'User',
       id: '',
-      firstName: '',
-      lastName: '',
       email: ''
     })
   })

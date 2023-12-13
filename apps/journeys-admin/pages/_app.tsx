@@ -128,7 +128,9 @@ function JourneysAdminApp({
                 horizontal: 'right'
               }}
             >
-              <HelpScoutBeacon />
+              <HelpScoutBeacon
+                userInfo={{ name: user.displayName, email: user.email }}
+              />
               <Component {...pageProps} />
             </SnackbarProvider>
           </TeamProvider>
