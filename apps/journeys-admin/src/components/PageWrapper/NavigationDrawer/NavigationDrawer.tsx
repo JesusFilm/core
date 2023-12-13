@@ -133,7 +133,7 @@ export function NavigationDrawer({
             <ChevronRightIcon />
           </ListItemIcon>
         </ListItemButton>
-        <NextLink href="/" passHref legacyBehavior prefetch={false}>
+        <NextLink href="/" passHref legacyBehavior>
           <Tooltip title={tooltip} placement="right" arrow>
             <ListItemButton
               selected={selectedPage === 'journeys' || selectedPage === ''}
@@ -153,7 +153,7 @@ export function NavigationDrawer({
             </ListItemButton>
           </Tooltip>
         </NextLink>
-        <NextLink href="/templates" passHref legacyBehavior prefetch={false}>
+        <NextLink href="/templates" passHref legacyBehavior>
           <ListItemButton
             selected={selectedPage === 'templates'}
             data-testid="NavigationListItemTemplates"
