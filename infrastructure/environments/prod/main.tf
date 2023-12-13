@@ -161,3 +161,18 @@ module "datadog_aurora" {
       db_instance_name = module.api-languages.database.aws_rds_cluster.id
   }]
 }
+
+module "journeys-admin" {
+  source = "../../../apps/journeys-admin/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/api/health"
+      health_check_port = "3000"
+    })
+    alb_listener = merge(local.public_ecs_config.alb_listener, {
+      dns_name        = "admin.nextstep.is"
+      certificate_arn = data.aws_acm_certificate.acm_nextstep_is.arn
+    })
+  })
+  doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
+}

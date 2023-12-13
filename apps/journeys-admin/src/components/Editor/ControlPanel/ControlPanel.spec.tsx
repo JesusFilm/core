@@ -1149,9 +1149,11 @@ describe('ControlPanel', () => {
     expect(getByText('selectedBlock: step2.id')).toBeInTheDocument()
     expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
     expect(getByText('drawerTitle: Card Templates')).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'Card Video Template' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Card Video Template' })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should not allow blocks to be added when a Video Block is present', async () => {
