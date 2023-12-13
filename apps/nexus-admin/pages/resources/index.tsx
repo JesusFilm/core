@@ -3,7 +3,10 @@ import { Button, Stack } from '@mui/material'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
-import { PickerCallback } from 'react-google-drive-picker/dist/typeDefs'
+import {
+  PickerCallback,
+  PickerConfiguration
+} from 'react-google-drive-picker/dist/typeDefs'
 import { Resource, Resource_resource } from '../../__generated__/Resource'
 import { ResourceDelete } from '../../__generated__/ResourceDelete'
 import { ResourceFromGoogleDrive } from '../../__generated__/ResourceFromGoogleDrive'
@@ -86,7 +89,7 @@ const ResourcesPage = () => {
   const [openUpdateResourceModal, setOpenUpdateResourceModal] =
     useState<boolean>(false)
 
-  const [openPicker, authResponse] = useDrivePicker()
+  const [openPicker] = useDrivePicker()
   const isSSRMode = typeof window !== 'undefined'
   const nexusId = isSSRMode ? localStorage.getItem('nexusId') : ''
 
@@ -123,7 +126,9 @@ const ResourcesPage = () => {
   const [resourceUpdate] = useMutation<ResourceUpdate>(RESOURCE_UPDATE)
   const [resourceDelete] = useMutation<ResourceDelete>(RESOURCE_DELETE)
 
-  const openGooglePicker = () => {
+  const openGooglePicker = async () => {
+    const gapi = await import('gapi-script').then((module) => module.gapi)
+
     gapi.load('client:auth2', () => {
       gapi.client
         .init({
@@ -132,11 +137,11 @@ const ResourcesPage = () => {
         .then(() => {
           let tokenInfo = gapi.auth.getToken()
 
-          const pickerConfig: any = {
-            clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-            developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+          const pickerConfig: PickerConfiguration = {
+            clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
+            developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
             viewId: 'DOCS_VIDEOS',
-            token: tokenInfo ? tokenInfo.access_token : null,
+            token: tokenInfo ? tokenInfo.access_token : '',
             showUploadView: true,
             showUploadFolders: true,
             supportDrives: true,
