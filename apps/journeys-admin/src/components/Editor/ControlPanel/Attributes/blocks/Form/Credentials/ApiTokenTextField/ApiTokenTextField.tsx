@@ -49,19 +49,6 @@ export function ApiTokenTextField({
           input: {
             apiToken: apiToken === '' ? null : apiToken
           }
-        },
-        update(cache, { data }) {
-          if (data?.formBlockUpdate != null) {
-            cache.modify({
-              id: cache.identify({
-                __typename: 'FormBlock',
-                id
-              }),
-              fields: {
-                action: () => data.formBlockUpdate
-              }
-            })
-          }
         }
       })
       enqueueSnackbar(t('API Token updated'), {

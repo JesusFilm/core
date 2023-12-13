@@ -14,7 +14,7 @@ import { FORM_BLOCK_UPDATE } from '../ApiTokenTextField/ApiTokenTextField'
 
 interface ProjectIdSelectProps {
   id?: string
-  currentProjectId?: string
+  currentProjectId?: string | null
   projects?: FormiumProject[]
   loading: boolean
 }
@@ -36,19 +36,6 @@ export function ProjectIdSelect({
         id,
         input: {
           projectId: event?.target.value === 'none' ? null : event?.target.value
-        }
-      },
-      update(cache, { data }) {
-        if (data?.formBlockUpdate != null) {
-          cache.modify({
-            id: cache.identify({
-              __typename: 'FormBlock',
-              id
-            }),
-            fields: {
-              action: () => data.formBlockUpdate
-            }
-          })
         }
       }
     })
