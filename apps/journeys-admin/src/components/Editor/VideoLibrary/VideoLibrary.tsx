@@ -23,29 +23,29 @@ import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 
 const VideoDetails = dynamic(
   async () =>
-    await import(/* webpackChunkName: "VideoDetails" */ './VideoDetails').then(
-      (mod) => mod.VideoDetails
-    )
+    await import(
+      /* webpackChunkName: "Editor/VideoLibrary/VideoDetails/VideoDetails.tsx" */ './VideoDetails'
+    ).then((mod) => mod.VideoDetails)
 )
 
 const VideoFromCloudflare = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "VideoFromCloudflare" */ './VideoFromCloudflare'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCloudflare/VideoFromCloudflare.tsx" */ './VideoFromCloudflare'
     ).then((mod) => mod.VideoFromCloudflare)
 )
 
 const VideoFromLocal = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "VideoFromLocal" */ './VideoFromLocal'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromLocal/VideoFromLocal.tsx" */ './VideoFromLocal'
     ).then((mod) => mod.VideoFromLocal)
 )
 
 const VideoFromYouTube = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "VideoFromYouTube" */ './VideoFromYouTube'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromYouTube/VideoFromYouTube.tsx" */ './VideoFromYouTube'
     ).then((mod) => mod.VideoFromYouTube)
 )
 

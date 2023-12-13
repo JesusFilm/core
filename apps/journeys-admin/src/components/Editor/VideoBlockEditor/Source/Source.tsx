@@ -15,35 +15,35 @@ import {
 const VideoLibrary = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "VideoLibrary" */ '../../VideoLibrary'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoLibrary.tsx" */ '../../VideoLibrary'
     ).then((mod) => mod.VideoLibrary)
 )
 
 const SourceFromYouTube = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "SourceFromYouTube" */ './SourceFromYouTube'
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromYouTube/SourceFromYouTube.tsx" */ './SourceFromYouTube'
     ).then((mod) => mod.SourceFromYouTube)
 )
 
 const SourceEmpty = dynamic(
   async () =>
-    await import(/* webpackChunkName: "SourceEmpty" */ './SourceEmpty').then(
-      (mod) => mod.SourceEmpty
-    )
+    await import(
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceEmpty/SourceEmpty.tsx" */ './SourceEmpty'
+    ).then((mod) => mod.SourceEmpty)
 )
 
 const SourceFromCloudflare = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "SourceFromCloudflare" */ './SourceFromCloudflare'
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromCloudflare/SourceFromCloudflare.tsx" */ './SourceFromCloudflare'
     ).then((mod) => mod.SourceFromCloudflare)
 )
 
 const SourceFromLocal = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "SourceFromLocal" */ './SourceFromLocal'
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal.tsx" */ './SourceFromLocal'
     ).then((mod) => mod.SourceFromLocal)
 )
 
