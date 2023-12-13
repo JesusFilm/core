@@ -26,7 +26,7 @@ import { CardStyling } from './CardStyling'
 const BackgroundColor = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundColor/BackgroundColor.tsx" */ './BackgroundColor'
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundColor/BackgroundColor" */ './BackgroundColor'
     ).then((mod) => mod.BackgroundColor),
   { ssr: false }
 )
@@ -34,7 +34,7 @@ const BackgroundColor = dynamic(
 const BackgroundMedia = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/BackgroundMedia.tsx" */ './BackgroundMedia'
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/BackgroundMedia" */ './BackgroundMedia'
     ).then((mod) => mod.BackgroundMedia),
   { ssr: false }
 )

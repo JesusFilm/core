@@ -26,14 +26,14 @@ import { VideoFromLocal } from './VideoFromLocal'
 const VideoDetails = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoDetails/VideoDetails.tsx" */ './VideoDetails'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoDetails/VideoDetails" */ './VideoDetails'
     ).then((mod) => mod.VideoDetails),
   { ssr: false }
 )
 const VideoFromCloudflare = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCloudflare/VideoFromCloudflare.tsx" */ './VideoFromCloudflare'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCloudflare/VideoFromCloudflare" */ './VideoFromCloudflare'
     ).then((mod) => mod.VideoFromCloudflare),
   { ssr: false }
 )
@@ -41,7 +41,7 @@ const VideoFromCloudflare = dynamic(
 const VideoFromYouTube = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoFromYouTube/VideoFromYouTube.tsx" */ './VideoFromYouTube'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromYouTube/VideoFromYouTube" */ './VideoFromYouTube'
     ).then((mod) => mod.VideoFromYouTube),
   { ssr: false }
 )

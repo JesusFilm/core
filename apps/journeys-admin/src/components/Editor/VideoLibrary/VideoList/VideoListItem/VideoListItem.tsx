@@ -13,7 +13,7 @@ import {
 const VideoDetails = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoDetails/VideoDetails.tsx" */ '../../VideoDetails'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoDetails/VideoDetails" */ '../../VideoDetails'
     ).then((mod) => mod.VideoDetails),
   { ssr: false }
 )
