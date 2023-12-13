@@ -20,7 +20,7 @@ import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEYS } from '../../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { useUserRoleQuery } from '../../src/libs/useUserRoleQuery'
 
-function TemplateIndex(): ReactElement {
+function PublisherIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
@@ -100,4 +100,4 @@ export const getServerSideProps = withUserTokenSSR({
 
 export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateIndex)
+})(PublisherIndexPage)

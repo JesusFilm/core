@@ -1,0 +1,146 @@
+name: ECS FrontEnd Deployment
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      env:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+    secrets:
+      AWS_DEFAULT_REGION:
+        required: true
+      JFP_AWS_ACCESS_KEY_ID:
+        required: true
+      JFP_AWS_SECRET_ACCESS_KEY:
+        required: true
+      DOPPLER_API_GATEWAY_TOKEN:
+        required: true
+      DOPPLER_API_JOURNEYS_TOKEN:
+        required: true
+      DOPPLER_API_LANGUAGES_TOKEN:
+        required: true
+      DOPPLER_API_TAGS_TOKEN:
+        required: true
+      DOPPLER_API_USERS_TOKEN:
+        required: true
+      DOPPLER_API_VIDEOS_TOKEN:
+        required: true
+      DOPPLER_API_MEDIA_TOKEN:
+        required: true
+      DOPPLER_JOURNEYS_TOKEN:
+        required: true
+      DOPPLER_JOURNEYS_ADMIN_TOKEN:
+        required: true
+      DOPPLER_WATCH_TOKEN:
+        required: true
+      DOPPLER_WATCH_ADMIN_TOKEN:
+        required: true
+
+jobs:
+  build-and-deploy:
+    environment: Production
+    env:
+      ENV_SUFFIX: ${{ inputs.branch }}
+      ECS_CLUSTER: jfp-ecs-cluster-${{ inputs.env }}
+      ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
+      ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
+      IMAGE_TAG: ${{ github.sha }}
+      DOPPLER_CONFIG: ${{ inputs.env == 'prod' && 'prd' || 'stg' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: nrwl/nx-set-shas@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+
+      - name: NPM Install
+        run: npm install --silent
+
+      - name: nx Install
+        run: npm install -g nx --silent
+
+      - name: Install Doppler
+        run: |
+          sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+          curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
+          echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
+          sudo apt-get update && sudo apt-get -y install doppler
+
+      - name: Get affected apps
+        run: |
+          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apps/${{ inputs.name }})" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+        id: affected-apps
+
+      - name: Build ${{ inputs.name }}
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        uses: mansagroup/nrwl-nx-action@v3
+        env:
+          DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
+          DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
+          DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}
+          DOPPLER_API_TAGS_TOKEN: ${{ secrets.DOPPLER_API_TAGS_TOKEN }}
+          DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
+          DOPPLER_API_VIDEOS_TOKEN: ${{ secrets.DOPPLER_API_VIDEOS_TOKEN }}
+          DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
+          DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
+          DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
+          DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+          DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
+        with:
+          targets: fetch-secrets, extract-translations, build
+          projects: ${{ inputs.name }}
+          args: --c=production
+
+      # ECS Deployment
+      - name: Configure ECS AWS credentials
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Login to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        id: login-ecr-ecs
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push the image to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        id: build-image-ecs
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
+        run: |
+          # Build a docker container and push it to ECR 
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
+          echo "Pushing image to ECR..."
+          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Restart task definition
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        run: |
+          aws ecs update-service --force-new-deployment --service $ECS_SERVICE --cluster $ECS_CLUSTER

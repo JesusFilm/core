@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement, useMemo } from 'react'
-import { SwiperOptions } from 'swiper'
+import { SwiperOptions } from 'swiper/types'
 
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 import { TemplateGalleryCarousel } from '../TemplateGalleryCarousel'
@@ -10,12 +10,10 @@ import { CollectionButton } from './CollectionButton'
 import { FeltNeedsButton } from './FeltNeedsButton'
 
 interface TagCarouselsProps {
-  selectedTagIds: string[]
   onChange: (selectedTagId: string) => void
 }
 
 export function TagCarousels({
-  selectedTagIds,
   onChange: handleChange
 }: TagCarouselsProps): ReactElement {
   const { parentTags, childTags, loading } = useTagsQuery()
@@ -65,7 +63,7 @@ export function TagCarousels({
         )}
         breakpoints={swiperBreakpoints}
         loading={loading}
-        loadingSpacing={{
+        cardSpacing={{
           xs: 5,
           md: 5
         }}

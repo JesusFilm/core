@@ -7,8 +7,8 @@ import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
-import SwiperCore, { Pagination } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination } from 'swiper/modules'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -27,11 +27,7 @@ import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
-import 'swiper/swiper.min.css'
-import 'swiper/components/pagination/pagination.min.css'
 import { NavigationButton } from './NavigationButton'
-
-SwiperCore.use([Pagination])
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -77,7 +73,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     blockHistory,
     showHeaderFooter
   } = useBlocks()
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const [swiper, setSwiper] = useState<SwiperClass>()
   const theme = useTheme()
   const viewportHeight = use100vh()
   const router = useRouter()
@@ -200,6 +196,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
           <StyledSwiperContainer
+            modules={[Pagination]}
             dir={!rtl ? 'ltr' : 'rtl'}
             pagination={{ dynamicBullets: true }}
             slidesPerView="auto"
