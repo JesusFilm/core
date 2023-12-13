@@ -29,6 +29,9 @@ interface ApiTokenTextFieldProps {
   id?: string
 }
 
+export const placeHolderToken =
+  'thisIsAFakeApiTokenTheReaOneIsNeverShowAgainInTheFrontEnd'
+
 export function ApiTokenTextField({
   id
 }: ApiTokenTextFieldProps): ReactElement {
@@ -36,9 +39,6 @@ export function ApiTokenTextField({
     useMutation<FormBlockUpdateCredentials>(FORM_BLOCK_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-
-  const placeHolderToken =
-    'thisIsAFakeApiTokenTheReaOneIsNeverShowAgainInTheFrontEnd'
 
   async function handleSubmitApiToken(apiToken: string): Promise<void> {
     if (id == null || apiToken === placeHolderToken) return
@@ -79,7 +79,7 @@ export function ApiTokenTextField({
   return (
     <TextFieldForm
       id="apiToken"
-      label="Api Token"
+      label={t('Api Token')}
       type="password"
       initialValue={placeHolderToken}
       onSubmit={handleSubmitApiToken}
