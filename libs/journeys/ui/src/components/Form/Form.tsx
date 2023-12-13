@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
+// import { useUser } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -19,7 +19,8 @@ export function Form({
 }: TreeBlock<FormFields>): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const router = useRouter()
-  const user = useUser()
+
+  // const user = useUser()
 
   function handleSubmit(): void {
     handleAction(router, action)
@@ -34,8 +35,8 @@ export function Form({
     >
       <FormiumForm
         form={form}
-        userId={user.id}
-        email={user.email}
+        // userId={user.id}
+        // email={user.email}
         submitText="Submit"
         onSubmit={handleSubmit}
       />
