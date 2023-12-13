@@ -102,7 +102,6 @@ export function TemplateGalleryCard({
         href={`/templates/${journey?.id ?? ''}`}
         passHref
         legacyBehavior
-        prefetch={false}
       >
         <Box
           component="a"
