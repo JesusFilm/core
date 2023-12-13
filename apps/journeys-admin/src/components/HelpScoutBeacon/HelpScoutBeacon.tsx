@@ -1,3 +1,4 @@
+import Fab from '@mui/material/Fab'
 import { useTheme } from '@mui/material/styles'
 import Script from 'next/script'
 import { ReactElement } from 'react'
@@ -6,6 +7,11 @@ interface EventObject {
   type: string
   url: string
   title: string
+}
+
+interface FormObject {
+  name: string
+  email: string
 }
 
 interface SessionObject {
@@ -24,7 +30,8 @@ declare global {
       ((fn: 'event', eventObject: EventObject) => void) &
       ((fn: 'search', value: string) => void) &
       ((fn: 'on', eventType: string, callback: () => void) => void) &
-      ((fn: 'session-data', sessionObject: SessionObject) => void)
+      ((fn: 'session-data', sessionObject: SessionObject) => void) &
+      ((fn: 'prefill', formObject: FormObject) => void)
   }
 }
 
