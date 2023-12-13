@@ -19,21 +19,33 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
-import { CardPreview, OnSelectProps } from '../../CardPreview'
+import { OnSelectProps } from '../../CardPreview'
 import { ActionDetails } from '../ActionDetails'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Properties } from '../Properties'
 
-import { Attributes } from './Attributes'
-import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
+import { Attributes } from './Attributes'
+
+const BlocksTab = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/BlocksTab/BlocksTab.tsx" */ './BlocksTab'
+    ).then((module) => module.BlocksTab)
+)
 
 const CardTemplateDrawer = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "CardTemplateDrawer" */ '../CardTemplateDrawer'
-    ).then((module) => module.CardTemplateDrawer),
-  { ssr: false }
+    ).then((module) => module.CardTemplateDrawer)
+)
+
+const CardPreview = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CardPreview" */ '../../CardPreview'
+    ).then((module) => module.CardPreview)
 )
 
 export function ControlPanel(): ReactElement {
@@ -246,14 +258,16 @@ export function ControlPanel(): ReactElement {
         sx={{ backgroundColor: 'background.default', height: '100%' }}
       >
         <TabPanel name="control-panel" value={activeTab} index={0}>
-          <CardPreview
-            selected={selectedStep}
-            onSelect={handleSelectStepPreview}
-            steps={steps}
-            showAddButton
-            showNavigationCards
-            isDraggable
-          />
+          {activeTab === 0 && (
+            <CardPreview
+              selected={selectedStep}
+              onSelect={handleSelectStepPreview}
+              steps={steps}
+              showAddButton
+              showNavigationCards
+              isDraggable
+            />
+          )}
         </TabPanel>
         <TabPanel name="control-panel" value={activeTab} index={1}>
           {selected !== 'none' && selectedStep !== undefined && (
@@ -261,7 +275,7 @@ export function ControlPanel(): ReactElement {
           )}
         </TabPanel>
         <TabPanel name="control-panel" value={activeTab} index={2}>
-          <BlocksTab />
+          {activeTab === 2 && <BlocksTab />}
         </TabPanel>
       </Stack>
     </Stack>

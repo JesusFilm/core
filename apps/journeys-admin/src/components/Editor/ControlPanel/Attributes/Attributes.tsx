@@ -2,24 +2,82 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import MuiTypography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import {
-  Button,
-  Card,
-  Image,
-  RadioOption,
-  SignUp,
-  Step,
-  TextResponse,
-  Typography,
-  Video
-} from './blocks'
-import { Footer } from './blocks/Footer'
 import { MoveBlockButtons } from './MoveBlockButtons'
+
+const Footer = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer" */ './blocks/Footer'
+    ).then((mod) => mod.Footer)
+)
+
+const Card = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card" */ './blocks/Card'
+    ).then((mod) => mod.Card)
+)
+
+const Step = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Step" */ './blocks/Step'
+    ).then((mod) => mod.Step)
+)
+
+const Typography = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Typography" */ './blocks/Typography'
+    ).then((mod) => mod.Typography)
+)
+
+const Video = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Video" */ './blocks/Video'
+    ).then((mod) => mod.Video)
+)
+
+const Image = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Image" */ './blocks/Image'
+    ).then((mod) => mod.Image)
+)
+const Button = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Button" */ './blocks/Button'
+    ).then((mod) => mod.Button)
+)
+
+const TextResponse = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/TextResponse" */ './blocks/TextResponse'
+    ).then((mod) => mod.TextResponse)
+)
+
+const RadioOption = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/RadioOption" */ './blocks/RadioOption'
+    ).then((mod) => mod.RadioOption)
+)
+
+const SignUp = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/SignUp" */ './blocks/SignUp'
+    ).then((mod) => mod.SignUp)
+)
 
 function AttributesContent({ selected, step }: AttributesProps): ReactElement {
   if (typeof selected === 'string') {
