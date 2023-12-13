@@ -55,7 +55,8 @@ export function OnboardingForm({
         form={form}
         userId={user.id}
         email={user.email}
-        hiddenPageTitle
+        hideHeader
+        headerAsPageTitle
         submitText={t('Next')}
         submitIcon={<ArrowRightIcon />}
         onSubmit={handleSubmit}

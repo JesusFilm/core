@@ -1,13 +1,14 @@
+import { createClient } from '@formium/client'
 import {
   FormiumForm as Formium,
   FormiumComponents,
   defaultComponents
 } from '@formium/react'
 import { Form } from '@formium/types'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { FormikValues } from 'formik'
 import { ReactElement } from 'react'
-
-import { formiumClient } from '../../libs/formiumClient'
 
 import { Checkbox } from './formComponents/Checkbox'
 import { FormControl } from './formComponents/FormControl'
@@ -44,7 +45,7 @@ const formiumComponents: FormiumComponents = {
 
 // Formium Component
 interface FormiumFormProps extends FormiumProviderContext {
-  form: Form
+  form: Form | null
   userId: string | null
   email: string | null
   onSubmit?: () => void
@@ -58,7 +59,8 @@ export function FormiumForm({
   ...props
 }: FormiumFormProps): ReactElement {
   async function handleSubmit(values: FormikValues): Promise<void> {
-    await formiumClient.submitForm(form.slug, {
+    if (form == null) return
+    await createClient(form.projectId).submitForm(form.slug, {
       ...values,
       hiddenUserId: userId,
       hiddenUserEmail: email
@@ -66,7 +68,7 @@ export function FormiumForm({
     onSubmit?.()
   }
 
-  return (
+  return form != null && 'name' in form ? (
     <FormiumProvider {...props}>
       <Formium
         data={form}
@@ -74,5 +76,18 @@ export function FormiumForm({
         onSubmit={handleSubmit}
       />
     </FormiumProvider>
+  ) : (
+    <Box
+      sx={{
+        minHeight: '300px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
+      <Typography variant="h6" color="error">
+        Error Loading Form
+      </Typography>
+    </Box>
   )
 }
