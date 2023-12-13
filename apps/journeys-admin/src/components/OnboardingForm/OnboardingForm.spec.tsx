@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { FormiumClient, createClient } from '@formium/client'
 import {
   Form,
   FormElementType,
@@ -15,12 +16,13 @@ import {
   OnboardingForm
 } from './OnboardingForm'
 
-jest.mock('@core/shared/ui/formiumClient', () => ({
+jest.mock('@formium/client', () => ({
   __esModule: true,
-  formiumClient: {
-    submitForm: jest.fn()
-  }
+  createClient: jest.fn()
 }))
+const mockCreateClient = createClient as jest.MockedFunction<
+  typeof createClient
+>
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -48,6 +50,13 @@ jest.mock('react-i18next', () => ({
 
 describe('OnboardingForm', () => {
   const push = jest.fn()
+
+  beforeEach(() => {
+    const mockFormiumClient = {
+      submitForm: jest.fn()
+    } as unknown as FormiumClient
+    mockCreateClient.mockReturnValueOnce(mockFormiumClient)
+  })
 
   afterEach(() => {
     jest.resetAllMocks()

@@ -124,7 +124,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
         journeyId: id
       }
     })),
-    fallback: 'blocking'
+    fallback: true
   }
 }
 

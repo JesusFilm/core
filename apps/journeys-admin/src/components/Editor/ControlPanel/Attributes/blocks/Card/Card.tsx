@@ -20,6 +20,9 @@ import {
 } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../../Attribute'
 
+import { CardLayout } from './CardLayout'
+import { CardStyling } from './CardStyling'
+
 const BackgroundColor = dynamic(
   async () =>
     await import(

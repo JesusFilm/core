@@ -15,36 +15,41 @@ import {
 const VideoLibrary = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoLibrary.tsx" */ '../../VideoLibrary'
-    ).then((mod) => mod.VideoLibrary)
+      /* webpackChunkName: "Editor/VideoLibrary/VideoLibrary" */ '../../VideoLibrary'
+    ).then((mod) => mod.VideoLibrary),
+  { ssr: false }
 )
 
 const SourceFromYouTube = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromYouTube/SourceFromYouTube.tsx" */ './SourceFromYouTube'
-    ).then((mod) => mod.SourceFromYouTube)
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromYouTube/SourceFromYouTube" */ './SourceFromYouTube'
+    ).then((mod) => mod.SourceFromYouTube),
+  { ssr: false }
 )
 
 const SourceEmpty = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceEmpty/SourceEmpty.tsx" */ './SourceEmpty'
-    ).then((mod) => mod.SourceEmpty)
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceEmpty/SourceEmpty" */ './SourceEmpty'
+    ).then((mod) => mod.SourceEmpty),
+  { ssr: false }
 )
 
 const SourceFromCloudflare = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromCloudflare/SourceFromCloudflare.tsx" */ './SourceFromCloudflare'
-    ).then((mod) => mod.SourceFromCloudflare)
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromCloudflare/SourceFromCloudflare" */ './SourceFromCloudflare'
+    ).then((mod) => mod.SourceFromCloudflare),
+  { ssr: false }
 )
 
 const SourceFromLocal = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal.tsx" */ './SourceFromLocal'
-    ).then((mod) => mod.SourceFromLocal)
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal" */ './SourceFromLocal'
+    ).then((mod) => mod.SourceFromLocal),
+  { ssr: false }
 )
 
 interface SourceProps {

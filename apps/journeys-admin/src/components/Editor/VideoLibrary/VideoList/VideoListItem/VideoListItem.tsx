@@ -13,8 +13,9 @@ import {
 const VideoDetails = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoDetails/VideoDetails.tsx" */ '../../VideoDetails'
-    ).then((mod) => mod.VideoDetails)
+      /* webpackChunkName: "Editor/VideoLibrary/VideoDetails/VideoDetails" */ '../../VideoDetails'
+    ).then((mod) => mod.VideoDetails),
+  { ssr: false }
 )
 
 export interface VideoListItemProps {
