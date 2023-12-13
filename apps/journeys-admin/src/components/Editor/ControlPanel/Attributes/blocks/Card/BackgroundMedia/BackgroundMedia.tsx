@@ -19,8 +19,9 @@ import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
 const BackgroundMediaImage = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "BackgroundMediaImage" */ './Image/BackgroundMediaImage'
-    ).then((mod) => mod.BackgroundMediaImage)
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/Image/BackgroundMediaImage" */ './Image/BackgroundMediaImage'
+    ).then((mod) => mod.BackgroundMediaImage),
+  { ssr: false }
 )
 
 export function BackgroundMedia(): ReactElement {

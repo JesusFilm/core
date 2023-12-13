@@ -13,16 +13,16 @@ import { Attribute } from '../../Attribute'
 const HostSidePanel = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "HostSidePanel" */ './HostSidePanel'
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/HostSidePanel/HostSidePanel" */ './HostSidePanel'
     ).then((mod) => mod.HostSidePanel),
   { ssr: false }
 )
 
 const Chat = dynamic(
   async () =>
-    await import(/* webpackChunkName: "Chat" */ './Chat').then(
-      (mod) => mod.Chat
-    ),
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Chat/Chat" */ './Chat'
+    ).then((mod) => mod.Chat),
   { ssr: false }
 )
 

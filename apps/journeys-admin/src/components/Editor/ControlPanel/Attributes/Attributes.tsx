@@ -14,69 +14,79 @@ const Footer = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer" */ './blocks/Footer'
-    ).then((mod) => mod.Footer)
+    ).then((mod) => mod.Footer),
+  { ssr: false }
 )
 
 const Card = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card" */ './blocks/Card'
-    ).then((mod) => mod.Card)
+    ).then((mod) => mod.Card),
+  { ssr: false }
 )
 
 const Step = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Step" */ './blocks/Step'
-    ).then((mod) => mod.Step)
+    ).then((mod) => mod.Step),
+  { ssr: false }
 )
 
 const Typography = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Typography" */ './blocks/Typography'
-    ).then((mod) => mod.Typography)
+    ).then((mod) => mod.Typography),
+  { ssr: false }
 )
 
 const Video = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Video" */ './blocks/Video'
-    ).then((mod) => mod.Video)
+    ).then((mod) => mod.Video),
+  { ssr: false }
 )
 
 const Image = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Image" */ './blocks/Image'
-    ).then((mod) => mod.Image)
+    ).then((mod) => mod.Image),
+  { ssr: false }
 )
 const Button = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Button" */ './blocks/Button'
-    ).then((mod) => mod.Button)
+    ).then((mod) => mod.Button),
+  { ssr: false }
 )
 
 const TextResponse = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/TextResponse" */ './blocks/TextResponse'
-    ).then((mod) => mod.TextResponse)
+    ).then((mod) => mod.TextResponse),
+  { ssr: false }
 )
 
 const RadioOption = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/RadioOption" */ './blocks/RadioOption'
-    ).then((mod) => mod.RadioOption)
+    ).then((mod) => mod.RadioOption),
+  { ssr: false }
 )
 
 const SignUp = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/SignUp" */ './blocks/SignUp'
-    ).then((mod) => mod.SignUp)
+    ).then((mod) => mod.SignUp),
+  { ssr: false }
 )
 
 function AttributesContent({ selected, step }: AttributesProps): ReactElement {

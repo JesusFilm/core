@@ -8,9 +8,10 @@ import { ImageBlockHeader } from '../ImageBlockHeader'
 
 const ImageLibrary = dynamic(
   async () =>
-    await import(/* webpackChunkName: "ImageLibrary" */ '../ImageLibrary').then(
-      (mod) => mod.ImageLibrary
-    )
+    await import(
+      /* webpackChunkName: "Editor/ImageLibrary/ImageLibrary" */ '../ImageLibrary'
+    ).then((mod) => mod.ImageLibrary),
+  { ssr: false }
 )
 
 interface ImageSourceProps {

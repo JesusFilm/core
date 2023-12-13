@@ -11,8 +11,9 @@ import { Attribute } from '../../Attribute'
 const ImageOptions = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "ImageOptions" */ './Options/ImageOptions'
-    ).then((mod) => mod.ImageOptions)
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Image/Options/ImageOptions" */ './Options/ImageOptions'
+    ).then((mod) => mod.ImageOptions),
+  { ssr: false }
 )
 
 export function Image(block: TreeBlock<ImageBlock>): ReactElement {

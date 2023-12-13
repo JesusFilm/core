@@ -19,22 +19,25 @@ import { UnsplashAuthor } from './UnsplashGallery'
 const UnsplashGallery = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "UnsplashGallery" */ './UnsplashGallery'
-    ).then((mod) => mod.UnsplashGallery)
+      /* webpackChunkName: "Editor/ImageBlockEditor/UnsplashGallery/UnsplashGallery" */ './UnsplashGallery'
+    ).then((mod) => mod.UnsplashGallery),
+  { ssr: false }
 )
 
 const CustomImage = dynamic(
   async () =>
-    await import(/* webpackChunkName: "CustomImage" */ './CustomImage').then(
-      (mod) => mod.CustomImage
-    )
+    await import(
+      /* webpackChunkName: "Editor/ImageBlockEditor/CustomImage/CustomImage" */ './CustomImage'
+    ).then((mod) => mod.CustomImage),
+  { ssr: false }
 )
 
 const AIGallery = dynamic(
   async () =>
-    await import(/* webpackChunkName: "AIGallery" */ './AIGallery').then(
-      (mod) => mod.AIGallery
-    )
+    await import(
+      /* webpackChunkName: "Editor/ImageBlockEditor/AIGallery/AIGallery" */ './AIGallery'
+    ).then((mod) => mod.AIGallery),
+  { ssr: false }
 )
 
 interface ImageBlockEditorProps {

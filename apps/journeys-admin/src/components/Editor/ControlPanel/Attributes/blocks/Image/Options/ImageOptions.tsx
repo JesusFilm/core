@@ -13,8 +13,9 @@ import { ImageBlockUpdate } from '../../../../../../../../__generated__/ImageBlo
 const ImageBlockEditor = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "ImageBlockEditor" */ '../../../../../ImageBlockEditor'
-    ).then((mod) => mod.ImageBlockEditor)
+      /* webpackChunkName: "Editor/ImageBlockEditor/ImageBlockEditor" */ '../../../../../ImageBlockEditor'
+    ).then((mod) => mod.ImageBlockEditor),
+  { ssr: false }
 )
 
 export const IMAGE_BLOCK_UPDATE = gql`

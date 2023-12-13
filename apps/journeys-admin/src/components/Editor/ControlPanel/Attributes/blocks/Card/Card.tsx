@@ -20,35 +20,36 @@ import {
 } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../../Attribute'
 
-import { CardLayout } from './CardLayout'
-import { CardStyling } from './CardStyling'
-
 const BackgroundColor = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundColor/BackgroundColor.tsx" */ './BackgroundColor'
-    ).then((mod) => mod.BackgroundColor)
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundColor/BackgroundColor" */ './BackgroundColor'
+    ).then((mod) => mod.BackgroundColor),
+  { ssr: false }
 )
 
 const BackgroundMedia = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/BackgroundMedia.tsx" */ './BackgroundMedia'
-    ).then((mod) => mod.BackgroundMedia)
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/BackgroundMedia" */ './BackgroundMedia'
+    ).then((mod) => mod.BackgroundMedia),
+  { ssr: false }
 )
 
 const CardLayout = dynamic(
   async () =>
-    await import(/* webpackChunkName: "CardLayout" */ './CardLayout').then(
-      (mod) => mod.CardLayout
-    )
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/CardLayout/CardLayout" */ './CardLayout'
+    ).then((mod) => mod.CardLayout),
+  { ssr: false }
 )
 
 const CardStyling = dynamic(
   async () =>
-    await import(/* webpackChunkName: "CardStyling" */ './CardStyling').then(
-      (mod) => mod.CardStyling
-    )
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/CardStyling/CardStyling" */ './CardStyling'
+    ).then((mod) => mod.CardStyling),
+  { ssr: false }
 )
 
 export function Card({

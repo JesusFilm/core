@@ -14,7 +14,7 @@ import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
 const VideoBlockEditorSettingsPosterLibrary = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "VideoBlockEditorSettingsPosterLibrary" */ './Library'
+      /* webpackChunkName: "Editor/VideoBlockEditor/Settings/Poster/Library/VideoBlockEditorSettingsPosterLibrary" */ './Library'
     ).then((mod) => mod.VideoBlockEditorSettingsPosterLibrary)
 )
 

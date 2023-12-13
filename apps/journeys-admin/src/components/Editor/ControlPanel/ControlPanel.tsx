@@ -30,15 +30,16 @@ import { Fab } from './Fab'
 const BlocksTab = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/BlocksTab/BlocksTab.tsx" */ './BlocksTab'
+      /* webpackChunkName: "Editor/ControlPanel/BlocksTab/BlocksTab" */ './BlocksTab'
     ).then((module) => module.BlocksTab)
 )
 
 const CardTemplateDrawer = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "CardTemplateDrawer" */ '../CardTemplateDrawer'
-    ).then((module) => module.CardTemplateDrawer)
+      /* webpackChunkName: "Editor/CardTemplateDrawer/CardTemplateDrawer" */ '../CardTemplateDrawer'
+    ).then((module) => module.CardTemplateDrawer),
+  { ssr: false }
 )
 
 const CardPreview = dynamic(
