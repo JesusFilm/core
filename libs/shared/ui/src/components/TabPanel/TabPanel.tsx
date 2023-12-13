@@ -1,21 +1,27 @@
 import Box, { BoxProps } from '@mui/material/Box'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useEffect, useState } from 'react'
 
 interface TabPanelProps extends BoxProps {
   name: string
   children?: ReactNode
   value: number
   index: number
-  unmountOnExit?: boolean
+  unmountUntilVisible?: true
 }
 export function TabPanel({
   name,
   children,
   value,
   index,
-  unmountOnExit,
+  unmountUntilVisible,
   ...other
 }: TabPanelProps): ReactElement {
+  const [unmount, setUnmount] = useState(unmountUntilVisible != null)
+
+  useEffect(() => {
+    if (value === index) setUnmount(false)
+  }, [index, unmountUntilVisible, value])
+
   const hidden = value !== index
   return (
     <Box
@@ -25,7 +31,7 @@ export function TabPanel({
       aria-labelledby={`${name}-tab-${index}`}
       {...other}
     >
-      {(unmountOnExit !== true || !hidden) && children}
+      {!unmount && children}
     </Box>
   )
 }
