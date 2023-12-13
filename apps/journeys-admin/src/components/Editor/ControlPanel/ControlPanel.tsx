@@ -45,7 +45,8 @@ const BlocksTab = dynamic(
 const CardTemplateDrawer = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "CardTemplateDrawer" */ '../CardTemplateDrawer'
+      /* webpackChunkName: "Editor/CardTemplateDrawer" */
+      '../CardTemplateDrawer'
     ).then((module) => module.CardTemplateDrawer),
   { ssr: false }
 )

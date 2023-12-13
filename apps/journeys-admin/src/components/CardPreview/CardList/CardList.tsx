@@ -266,11 +266,7 @@ const CardItem = ({
             justifyContent: 'center'
           }}
         >
-          <DragIcon
-            sx={{
-              opacity: snapshot.isDragging === true ? 1 : 0.5
-            }}
-          />
+          <DragIcon sx={{ opacity: snapshot.isDragging ? 1 : 0.5 }} />
         </Box>
       )}
       <Box
