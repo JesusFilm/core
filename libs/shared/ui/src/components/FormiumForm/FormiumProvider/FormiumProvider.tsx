@@ -1,7 +1,8 @@
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
 export interface FormiumProviderContext {
-  hiddenPageTitle?: boolean
+  hideHeader?: boolean
+  headerAsPageTitle?: boolean
   submitText?: string
   submitIcon?: ReactNode
 }
