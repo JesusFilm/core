@@ -66,6 +66,10 @@ export function VideoLibrary({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
+  const [mount, setMount] = useState({
+    youTubeVideo: false,
+    cloudFlareVideo: false
+  })
 
   useEffect(() => {
     // opens video details if videoId is not null
@@ -80,6 +84,14 @@ export function VideoLibrary({
     newValue: number
   ): void => {
     setActiveTab(newValue)
+    switch (newValue) {
+      case 2:
+        setMount((prev) => ({ ...prev, cloudFlareVideo: true }))
+        break
+      case 1:
+        setMount((prev) => ({ ...prev, youTubeVideo: true }))
+        break
+    }
   }
 
   const onSelect = (block: VideoBlockUpdateInput): void => {
@@ -173,7 +185,7 @@ export function VideoLibrary({
           index={0}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
         >
-          {activeTab === 0 && <VideoFromLocal onSelect={onSelect} />}
+          <VideoFromLocal onSelect={onSelect} />
         </TabPanel>
         <TabPanel
           name="video-from-youtube"
@@ -181,7 +193,7 @@ export function VideoLibrary({
           index={1}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
         >
-          {activeTab === 1 && <VideoFromYouTube onSelect={onSelect} />}
+          {mount.youTubeVideo && <VideoFromYouTube onSelect={onSelect} />}
         </TabPanel>
         <TabPanel
           name="video-from-cloudflare"
@@ -189,7 +201,7 @@ export function VideoLibrary({
           index={2}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
         >
-          {activeTab === 2 && <VideoFromCloudflare onSelect={onSelect} />}
+          {mount.cloudFlareVideo && <VideoFromCloudflare onSelect={onSelect} />}
         </TabPanel>
       </Drawer>
       {selectedBlock?.videoId != null && (
