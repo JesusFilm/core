@@ -1,7 +1,9 @@
 import Fab from '@mui/material/Fab'
 import { useTheme } from '@mui/material/styles'
 import Script from 'next/script'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+
+import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 
 interface EventObject {
   type: string
@@ -37,12 +39,34 @@ declare global {
 
 export function HelpScoutBeacon(): ReactElement {
   const { breakpoints, zIndex } = useTheme()
+  const [hasLoaded, setHasLoaded] = useState(false)
+
+  const { loadUser, data } = useCurrentUserLazyQuery()
+
+  useEffect(() => {
+    if (hasLoaded && window.Beacon != null) {
+      void loadUser()
+      window.Beacon('on', 'open', () => {
+        if (data.id !== '')
+          window.Beacon?.('prefill', {
+            name: `${data.firstName as string} ${data.lastName as string}`,
+            email: data.email
+          })
+      })
+    }
+  }, [hasLoaded, loadUser, data])
+
   return (
     <>
       <Script id="beacon" className="beacon" strategy="lazyOnload">
         {`!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`}
       </Script>
-      <Script id="init" className="init" strategy="lazyOnload">
+      <Script
+        id="init"
+        className="init"
+        strategy="lazyOnload"
+        onReady={() => setHasLoaded(true)}
+      >
         {`window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')`}
       </Script>
       <Fab
