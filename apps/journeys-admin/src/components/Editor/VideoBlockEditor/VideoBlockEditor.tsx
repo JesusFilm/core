@@ -16,7 +16,8 @@ const VideoBlockEditorSettings = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/VideoBlockEditor/Settings/VideoBlockEditorSettings.tsx" */ './Settings/VideoBlockEditorSettings'
-    ).then((mod) => mod.VideoBlockEditorSettings)
+    ).then((mod) => mod.VideoBlockEditorSettings),
+  { ssr: false }
 )
 
 interface VideoBlockEditorProps {

@@ -21,32 +21,30 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 
+import { VideoFromLocal } from './VideoFromLocal'
+
 const VideoDetails = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/VideoLibrary/VideoDetails/VideoDetails.tsx" */ './VideoDetails'
-    ).then((mod) => mod.VideoDetails)
+    ).then((mod) => mod.VideoDetails),
+  { ssr: false }
 )
 
 const VideoFromCloudflare = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/VideoLibrary/VideoFromCloudflare/VideoFromCloudflare.tsx" */ './VideoFromCloudflare'
-    ).then((mod) => mod.VideoFromCloudflare)
-)
-
-const VideoFromLocal = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoFromLocal/VideoFromLocal.tsx" */ './VideoFromLocal'
-    ).then((mod) => mod.VideoFromLocal)
+    ).then((mod) => mod.VideoFromCloudflare),
+  { ssr: false }
 )
 
 const VideoFromYouTube = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/VideoLibrary/VideoFromYouTube/VideoFromYouTube.tsx" */ './VideoFromYouTube'
-    ).then((mod) => mod.VideoFromYouTube)
+    ).then((mod) => mod.VideoFromYouTube),
+  { ssr: false }
 )
 
 export const DRAWER_WIDTH = 328
@@ -192,16 +190,18 @@ export function VideoLibrary({
           value={activeTab}
           index={1}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
+          unmountOnExit={mount.youTubeVideo}
         >
-          {mount.youTubeVideo && <VideoFromYouTube onSelect={onSelect} />}
+          <VideoFromYouTube onSelect={onSelect} />
         </TabPanel>
         <TabPanel
           name="video-from-cloudflare"
           value={activeTab}
           index={2}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
+          unmountOnExit={mount.cloudFlareVideo}
         >
-          {mount.cloudFlareVideo && <VideoFromCloudflare onSelect={onSelect} />}
+          <VideoFromCloudflare onSelect={onSelect} />
         </TabPanel>
       </Drawer>
       {selectedBlock?.videoId != null && (

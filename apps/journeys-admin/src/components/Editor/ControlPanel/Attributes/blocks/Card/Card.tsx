@@ -27,14 +27,16 @@ const BackgroundColor = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundColor/BackgroundColor.tsx" */ './BackgroundColor'
-    ).then((mod) => mod.BackgroundColor)
+    ).then((mod) => mod.BackgroundColor),
+  { ssr: false }
 )
 
 const BackgroundMedia = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/BackgroundMedia.tsx" */ './BackgroundMedia'
-    ).then((mod) => mod.BackgroundMedia)
+    ).then((mod) => mod.BackgroundMedia),
+  { ssr: false }
 )
 
 export function Card({
