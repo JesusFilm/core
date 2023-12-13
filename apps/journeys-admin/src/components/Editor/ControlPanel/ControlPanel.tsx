@@ -274,7 +274,7 @@ export function ControlPanel(): ReactElement {
           name="control-panel"
           value={activeTab}
           index={1}
-          unmountOnExit
+          unmountUntilVisible
         >
           {selected !== 'none' && selectedStep !== undefined && (
             <Attributes selected={selected} step={selectedStep} />
@@ -284,7 +284,7 @@ export function ControlPanel(): ReactElement {
           name="control-panel"
           value={activeTab}
           index={2}
-          unmountOnExit
+          unmountUntilVisible
         >
           <BlocksTab />
         </TabPanel>
