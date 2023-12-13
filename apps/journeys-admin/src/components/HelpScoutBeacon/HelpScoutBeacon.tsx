@@ -1,5 +1,6 @@
 import Fab from '@mui/material/Fab'
 import { useTheme } from '@mui/material/styles'
+import Script from 'next/script'
 import { ReactElement } from 'react'
 
 declare global {
@@ -15,34 +16,15 @@ declare global {
 
 export function HelpScoutBeacon(): ReactElement {
   const { breakpoints, zIndex } = useTheme()
-  function loadBeacon(): void {
-    if (typeof window.Beacon === 'undefined') {
-      const script = document.createElement('script')
-      script.id = 'beacon'
-      script.text = `!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`
-      document.head.appendChild(script)
-    }
-    if (window.Beacon != null) {
-      window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')
-      window.Beacon('config', {
-        mode: 'askFirst',
-        enableFabAnimation: false
-      })
-    }
-  }
-
-  function handleClick(): void {
-    if (window.Beacon != null) {
-      window.Beacon('open')
-    }
-  }
-
   return (
     <>
+      <Script id="beacon" className="beacon" strategy="lazyOnload">
+        {`!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`}
+      </Script>
+      <Script id="init" className="init" strategy="lazyOnload">
+        {`window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')`}
+      </Script>
       <Fab
-        onTouchStart={loadBeacon}
-        onMouseOver={loadBeacon}
-        onClick={handleClick}
         aria-label="help"
         sx={{
           position: 'fixed',
