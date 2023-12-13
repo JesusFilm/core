@@ -24,8 +24,8 @@ import { ActionDetails } from '../ActionDetails'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Properties } from '../Properties'
 
-import { Fab } from './Fab'
 import { Attributes } from './Attributes'
+import { Fab } from './Fab'
 
 const BlocksTab = dynamic(
   async () =>
