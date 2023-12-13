@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -35,11 +35,20 @@ export function Editor({
     selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
-  // const { setValue } = useSocialPreview()
-  // useEffect(() => {
-  //   setValue?.({ imageSrc: journey?.primaryImageBlock?.src })
-  //   console.log(journey?.primaryImageBlock?.src)
-  // }, [journey, setValue])
+
+  useEffect(() => {
+    if (window.Beacon != null) {
+      window.Beacon('on', 'email-sent', () => {
+        window.Beacon?.('session-data', {
+          app: 'Next Steps',
+          journeyPreview: `${
+            process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'your.nextstep.is'
+          }/${journey?.slug as string}`,
+          team: journey?.team?.title ?? ''
+        })
+      })
+    }
+  }, [journey])
 
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
