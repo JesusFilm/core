@@ -15,7 +15,7 @@ import { Source } from './Source'
 const VideoBlockEditorSettings = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "VideoBlockEditorSettings" */ './Settings'
+      /* webpackChunkName: "Editor/VideoBlockEditor/Settings/VideoBlockEditorSettings.tsx" */ './Settings/VideoBlockEditorSettings'
     ).then((mod) => mod.VideoBlockEditorSettings)
 )
 
