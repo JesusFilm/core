@@ -28,7 +28,6 @@ import {
   VideoProgressEventResolver,
   VideoStartEventResolver
 } from './video/video.resolver'
-import { TextResponseService } from './textResponse/textResponse.service'
 
 @Module({
   imports: [],
@@ -47,7 +46,6 @@ import { TextResponseService } from './textResponse/textResponse.service'
     StepNextEventResolver,
     StepPreviousEventResolver,
     TextResponseSubmissionEventResolver,
-    TextResponseService,
     VideoStartEventResolver,
     VideoPlayEventResolver,
     VideoPauseEventResolver,

@@ -73,6 +73,7 @@ export class UserInviteResolver {
         throw new GraphQLError('user is not allowed to create userInvite', {
           extensions: { code: 'FORBIDDEN' }
         })
+
       return userInvite
     })
   }

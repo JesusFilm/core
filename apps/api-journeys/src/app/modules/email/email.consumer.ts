@@ -4,7 +4,7 @@ import { Job } from 'bullmq'
 @Processor('api-journeys-email')
 export class EmailConsumer {
   @Process()
-  async textResponse(job: Job) {
+  async textResponse(job: Job): Promise<void> {
     console.log(job.data)
   }
 }

@@ -12,6 +12,7 @@ import { LoggerModule } from 'nestjs-pino'
 
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
+import { EmailConsumer } from './modules/email/email.consumer'
 import { EventModule } from './modules/event/event.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
@@ -49,7 +50,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
         port: 6379
       }
     }),
-    BullModule.registerQueue({ name: 'api-journeys-email' }),
+
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths:
@@ -86,6 +87,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
       }
     }),
     DatadogTraceModule.forRoot()
-  ]
+  ],
+  providers: [EmailConsumer]
 })
 export class AppModule {}

@@ -5,7 +5,7 @@ import { Queue } from 'bullmq'
 import { Host, Journey } from '.prisma/api-journeys-client'
 
 @Injectable()
-export class TextResponseService {
+export class UserInviteService {
   constructor(
     @InjectQueue('api-journeys-email') private readonly emailQueue: Queue
   ) {}
