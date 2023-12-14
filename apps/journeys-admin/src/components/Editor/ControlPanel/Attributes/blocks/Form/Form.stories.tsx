@@ -38,16 +38,14 @@ export const Default = {
   }
 }
 
-const form = {
-  id: 'form.id',
-  name: 'form name'
-} as unknown as FormType
-
 export const Filled = {
   ...Template,
   args: {
     id: 'id',
-    form,
+    form: {
+      id: 'form.id',
+      name: 'form name'
+    } as unknown as FormType,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'button1.id',

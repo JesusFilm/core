@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -45,16 +44,14 @@ describe('FormSlugSelect', () => {
   it('render the default value', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
-            <FormSlugSelect
-              id={selectedBlock.id}
-              currentFormSlug={formBlock.formSlug}
-              forms={formBlock.forms}
-              loading={false}
-            />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <FormSlugSelect
+            id={selectedBlock.id}
+            currentFormSlug={formBlock.formSlug}
+            forms={formBlock.forms}
+            loading={false}
+          />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -88,16 +85,14 @@ describe('FormSlugSelect', () => {
           }
         ]}
       >
-        <SnackbarProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
-            <FormSlugSelect
-              id={selectedBlock.id}
-              currentFormSlug={formBlock.formSlug}
-              forms={formBlock.forms}
-              loading={false}
-            />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <FormSlugSelect
+            id={selectedBlock.id}
+            currentFormSlug={formBlock.formSlug}
+            forms={formBlock.forms}
+            loading={false}
+          />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -133,16 +128,14 @@ describe('FormSlugSelect', () => {
           }
         ]}
       >
-        <SnackbarProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
-            <FormSlugSelect
-              id={selectedBlock.id}
-              currentFormSlug={formBlock.formSlug}
-              forms={formBlock.forms}
-              loading={false}
-            />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <FormSlugSelect
+            id={selectedBlock.id}
+            currentFormSlug={formBlock.formSlug}
+            forms={formBlock.forms}
+            loading={false}
+          />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -154,16 +147,14 @@ describe('FormSlugSelect', () => {
   it('should be disabled when loading', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
-            <FormSlugSelect
-              id={selectedBlock.id}
-              currentFormSlug={formBlock.formSlug}
-              forms={formBlock.forms}
-              loading
-            />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <FormSlugSelect
+            id={selectedBlock.id}
+            currentFormSlug={formBlock.formSlug}
+            forms={formBlock.forms}
+            loading
+          />
+        </EditorProvider>
       </MockedProvider>
     )
 

@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -43,16 +42,14 @@ describe('ProjectIdSelect', () => {
   it('render the default value', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
-            <ProjectIdSelect
-              id={selectedBlock.id}
-              currentProjectId={formBlock.projectId}
-              projects={formBlock.projects}
-              loading={false}
-            />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <ProjectIdSelect
+            id={selectedBlock.id}
+            currentProjectId={formBlock.projectId}
+            projects={formBlock.projects}
+            loading={false}
+          />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -86,16 +83,14 @@ describe('ProjectIdSelect', () => {
           }
         ]}
       >
-        <SnackbarProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
-            <ProjectIdSelect
-              id={selectedBlock.id}
-              currentProjectId={formBlock.projectId}
-              projects={formBlock.projects}
-              loading={false}
-            />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <ProjectIdSelect
+            id={selectedBlock.id}
+            currentProjectId={formBlock.projectId}
+            projects={formBlock.projects}
+            loading={false}
+          />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -131,16 +126,14 @@ describe('ProjectIdSelect', () => {
           }
         ]}
       >
-        <SnackbarProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
-            <ProjectIdSelect
-              id={selectedBlock.id}
-              currentProjectId={formBlock.projectId}
-              projects={formBlock.projects}
-              loading={false}
-            />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <ProjectIdSelect
+            id={selectedBlock.id}
+            currentProjectId={formBlock.projectId}
+            projects={formBlock.projects}
+            loading={false}
+          />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -152,16 +145,14 @@ describe('ProjectIdSelect', () => {
   it('should be disabled when loading', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
-            <ProjectIdSelect
-              id={selectedBlock.id}
-              currentProjectId={formBlock.projectId}
-              projects={formBlock.projects}
-              loading
-            />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <ProjectIdSelect
+            id={selectedBlock.id}
+            currentProjectId={formBlock.projectId}
+            projects={formBlock.projects}
+            loading
+          />
+        </EditorProvider>
       </MockedProvider>
     )
 

@@ -65,10 +65,6 @@ describe('Form', () => {
   })
 
   it('should show filled values', () => {
-    const form = {
-      id: 'formiumForm.id',
-      name: 'form name'
-    } as unknown as FormiumFormType
     const action: FormAction = {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'formBlock.id',
@@ -78,7 +74,10 @@ describe('Form', () => {
 
     const filledBlock = {
       ...block,
-      form,
+      form: {
+        id: 'formiumForm.id',
+        name: 'form name'
+      } as unknown as FormiumFormType,
       action
     }
 
