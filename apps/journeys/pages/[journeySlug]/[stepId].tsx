@@ -14,6 +14,7 @@ import {
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import i18nConfig from '../../next-i18next.config'
+import { VideoWrapperPaused as VideoWrapper } from '../../src/components/EmbeddedPreview/VIdeoWrapperPaused/VideoWrapperPaused'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { GET_JOURNEY } from '../[journeySlug]'
 
@@ -48,7 +49,12 @@ export default function JourneyStep({
             height: '100vh'
           }}
         >
-          <BlockRenderer block={currentStep} />
+          <BlockRenderer
+            block={currentStep}
+            wrappers={{
+              VideoWrapper
+            }}
+          />
         </Stack>
       </ThemeProvider>
     </>
