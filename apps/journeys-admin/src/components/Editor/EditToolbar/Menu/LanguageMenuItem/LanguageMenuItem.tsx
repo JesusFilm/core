@@ -1,8 +1,10 @@
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
+import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { MenuItem } from '../../../../MenuItem'
 
 const LanguageDialog = dynamic(
@@ -20,11 +22,21 @@ interface LanguageMenuItemProps {
 export function LanguageMenuItem({
   onClose
 }: LanguageMenuItemProps): ReactElement {
+  const router = useRouter()
   const [showLanguageDialog, setShowLanguageDialog] = useState<
     boolean | undefined
   >()
 
+  function setRoute(param: string): void {
+    router.query.param = param
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
+    })
+  }
+
   const handleUpdateLanguage = (): void => {
+    setRoute('languages')
     setShowLanguageDialog(true)
   }
 

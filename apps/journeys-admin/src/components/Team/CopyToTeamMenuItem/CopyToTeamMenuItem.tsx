@@ -1,9 +1,11 @@
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
+import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../MenuItem'
 import { CopyToTeamDialog } from '../CopyToTeamDialog'
@@ -17,6 +19,7 @@ export function CopyToTeamMenuItem({
   id,
   handleCloseMenu
 }: DuplicateJourneyMenuItemProps): ReactElement {
+  const router = useRouter()
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
@@ -42,12 +45,21 @@ export function CopyToTeamMenuItem({
     }
   }
 
+  function setRoute(param: string): void {
+    router.query.param = param
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
+    })
+  }
+
   return (
     <>
       <MenuItem
         label={t('Copy to ...')}
         icon={<CopyToIcon color="secondary" />}
         onClick={() => {
+          setRoute('copy-journey')
           setDuplicateTeamDialogOpen(true)
         }}
         testId="Copy"
