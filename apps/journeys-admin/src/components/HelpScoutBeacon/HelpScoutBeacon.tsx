@@ -1,7 +1,8 @@
 import Fab from '@mui/material/Fab'
 import { useTheme } from '@mui/material/styles'
+import { useRouter } from 'next/router'
 import Script from 'next/script'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 interface EventObject {
   type: string
@@ -22,6 +23,7 @@ declare global {
         config: { mode: 'askFirst'; enableFabAnimation: boolean }
       ) => void) &
       ((fn: 'open') => void) &
+      ((fn: 'close') => void) &
       ((fn: 'event', eventObject: EventObject) => void) &
       ((fn: 'search', value: string) => void) &
       ((fn: 'on', eventType: string, callback: () => void) => void) &
@@ -37,6 +39,8 @@ export function HelpScoutBeacon({
   userInfo
 }: HelpScoutBeaconProps): ReactElement {
   const { breakpoints, zIndex } = useTheme()
+  const router = useRouter()
+  const previousUrlRef = useRef(router.asPath)
   const [hasLoaded, setHasLoaded] = useState(false)
 
   useEffect(() => {
@@ -48,7 +52,18 @@ export function HelpScoutBeacon({
         })
       })
     }
-  }, [hasLoaded, userInfo])
+    // close the beacon when the url changes if it's still open
+    const handleRouteChange = (url): void => {
+      if (url !== previousUrlRef.current) {
+        window.Beacon?.('close')
+        previousUrlRef.current = url
+      }
+    }
+    router.events.on('routeChangeComplete', handleRouteChange)
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [hasLoaded, router, userInfo])
 
   return (
     <>
