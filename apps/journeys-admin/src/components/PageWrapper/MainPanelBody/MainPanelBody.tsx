@@ -14,7 +14,7 @@ export function MainPanelBody({
   mainBodyPadding = true,
   bottomPanelChildren
 }: MainPanelBodyProps): ReactElement {
-  const { navbar, bottomPanel } = usePageWrapperStyles()
+  const { bottomPanel } = usePageWrapperStyles()
 
   const padding = mainBodyPadding
     ? {
@@ -60,7 +60,6 @@ export function MainPanelBody({
             position: 'fixed',
             bottom: 0,
             left: 0,
-            // left: { xs: 0, md: navbar.width },
             backgroundColor: 'background.paper',
             borderTop: '1px solid',
             borderColor: 'divider',

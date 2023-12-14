@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, queryByTestId, render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 
 import { PageWrapper } from '.'
 
