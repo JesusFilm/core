@@ -237,8 +237,8 @@ describe('ControlPanel', () => {
 
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
     await waitFor(() => {
+      expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
       expect(push).toHaveBeenCalledWith({
         push,
         events: {
