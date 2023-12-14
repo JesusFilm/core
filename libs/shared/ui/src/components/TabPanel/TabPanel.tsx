@@ -6,7 +6,7 @@ interface TabPanelProps extends BoxProps {
   children?: ReactNode
   value: number
   index: number
-  unmountUntilVisible?: true
+  unmountUntilVisible?: boolean
 }
 export function TabPanel({
   name,
@@ -16,7 +16,7 @@ export function TabPanel({
   unmountUntilVisible,
   ...other
 }: TabPanelProps): ReactElement {
-  const [unmount, setUnmount] = useState(unmountUntilVisible != null)
+  const [unmount, setUnmount] = useState(unmountUntilVisible)
 
   useEffect(() => {
     if (value === index) setUnmount(false)
@@ -31,7 +31,7 @@ export function TabPanel({
       aria-labelledby={`${name}-tab-${index}`}
       {...other}
     >
-      {!unmount && children}
+      {unmount !== true && children}
     </Box>
   )
 }
