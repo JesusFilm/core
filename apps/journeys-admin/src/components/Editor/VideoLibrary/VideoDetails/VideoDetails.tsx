@@ -114,6 +114,7 @@ export function VideoDetails({
   return (
     <>
       <Drawer
+        SlideProps={{ appear: true }}
         anchor={smUp ? 'right' : 'bottom'}
         variant="temporary"
         open={open}

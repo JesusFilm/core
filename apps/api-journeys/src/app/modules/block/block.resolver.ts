@@ -1,6 +1,6 @@
 import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
 import { Block } from '.prisma/api-journeys-client'
@@ -111,5 +111,36 @@ export class BlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
     return await this.blockService.removeBlockAndChildren(block)
+  }
+
+  @Query()
+  @UseGuards(AppCaslGuard)
+  async block(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
+  ): Promise<Block> {
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+
+    if (block == null) {
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+    if (!ability.can(Action.Read, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to read block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return block
   }
 }

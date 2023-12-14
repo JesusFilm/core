@@ -10,12 +10,18 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../__generated__/globalTypes'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -49,11 +55,11 @@ function IndexPage(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl }) => {
+})(async ({ user, locale, resolvedUrl, query }) => {
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -61,8 +67,40 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
+  let variables: GetAdminJourneysVariables = {}
+
+  switch (query.tab ?? 'active') {
+    case 'active':
+      variables = {
+        // from src/components/JourneyList/ActiveJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.draft, JourneyStatus.published],
+        useLastActiveTeamId: true
+      }
+      break
+    case 'archived':
+      variables = {
+        // from src/components/JourneyList/ArchivedJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.archived],
+        useLastActiveTeamId: true
+      }
+      break
+    case 'trashed':
+      variables = {
+        // from src/components/JourneyList/TrashedJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.trashed],
+        useLastActiveTeamId: true
+      }
+      break
+  }
+
+  await apolloClient.query<GetAdminJourneys, GetAdminJourneysVariables>({
+    query: GET_ADMIN_JOURNEYS,
+    variables
+  })
+
   return {
     props: {
+      initialApolloState: apolloClient.cache.extract(),
       ...translations
     }
   }

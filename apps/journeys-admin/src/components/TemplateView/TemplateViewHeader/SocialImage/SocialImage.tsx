@@ -45,6 +45,7 @@ export function SocialImage({
           blurDataURL={journey?.primaryImageBlock.blurhash}
           layout="fill"
           objectFit="cover"
+          priority
         />
       ) : journey != null ? (
         <GridEmptyIcon fontSize="large" />

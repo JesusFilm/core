@@ -4,9 +4,9 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import map from 'lodash/map'
 import take from 'lodash/take'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SwiperOptions } from 'swiper'
+import { SwiperOptions } from 'swiper/types'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
@@ -28,11 +28,8 @@ export function TemplateSections({
 }: TemplateSectionsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { breakpoints } = useTheme()
-  const [contents, setContents] = useState<Contents>({})
-  const [collection, setCollection] = useState<Journey[]>([])
-  const [loading, setLoading] = useState(true)
 
-  useJourneysQuery({
+  const { data, loading } = useJourneysQuery({
     variables: {
       where: {
         template: true,
@@ -43,8 +40,12 @@ export function TemplateSections({
             ? languageIds
             : undefined
       }
-    },
-    onCompleted(data) {
+    }
+  })
+  const { collection, contents } = useMemo(() => {
+    const contents: Contents = {}
+    let collection: Journey[] = []
+    if (data != null) {
       const featuredAndNew = [
         ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
         ...take(
@@ -55,8 +56,7 @@ export function TemplateSections({
       const mostRelevant = data.journeys.filter(({ tags }) =>
         tagIds?.every((tagId) => tags.find((tag) => tag.id === tagId))
       )
-      setCollection(tagIds == null ? featuredAndNew : mostRelevant)
-      const contents = {}
+      collection = tagIds == null ? featuredAndNew : mostRelevant
       data.journeys.forEach((journey) => {
         journey.tags.forEach((tag) => {
           if (contents[tag.id] == null)
@@ -67,10 +67,9 @@ export function TemplateSections({
           contents[tag.id].journeys.push(journey)
         })
       })
-      setContents(contents)
-      setLoading(false)
     }
-  })
+    return { collection, contents }
+  }, [data, tagIds])
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -103,13 +102,14 @@ export function TemplateSections({
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {(loading || (collection != null && collection.length > 0)) && (
         <TemplateGalleryCarousel
+          priority
           heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
           items={collection}
           renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
           breakpoints={swiperBreakpoints}
           loading={loading}
           slidesOffsetBefore={-8}
-          loadingSpacing={{
+          cardSpacing={{
             xs: 1,
             md: 8,
             xl: 11
@@ -147,7 +147,7 @@ export function TemplateSections({
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-8}
-              loadingSpacing={{
+              cardSpacing={{
                 xs: 1,
                 md: 8,
                 xl: 11

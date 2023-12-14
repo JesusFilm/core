@@ -67,7 +67,7 @@ export function Card({
     treeBlocks,
     getNextBlock
   } = useBlocks()
-  const { journey } = useJourney()
+  const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
     blockHistory.length - 1
@@ -202,6 +202,7 @@ export function Card({
     })
   }
   const handleNavigation = (e: MouseEvent): void => {
+    if (variant === 'admin') return
     const view = e.view as unknown as Window
     if (rtl) {
       const divide = view.innerWidth * 0.66

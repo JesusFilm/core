@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { SwiperOptions } from 'swiper'
+import { SwiperOptions } from 'swiper/types'
 
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import {
@@ -39,8 +39,18 @@ describe('TemplateGalleryCarousel', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.dark,
     tags: [],
+    primaryImageBlock: {
+      id: 'image1.id',
+      __typename: 'ImageBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+      alt: 'random image from unsplash',
+      width: 1920,
+      height: 1080,
+      blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+    },
     trashedAt: null,
-    primaryImageBlock: null,
     publishedAt: '2023-08-14T04:24:24.392Z',
     createdAt: '2023-08-14T04:24:24.392Z',
     featuredAt: '2023-08-14T04:24:24.392Z'
@@ -66,22 +76,22 @@ describe('TemplateGalleryCarousel', () => {
         renderItem={(itemProps) => (
           <Typography variant="h6">
             {itemProps.item != null ? itemProps.item.title : 'placeholder'}
+            {itemProps.priority === true ? 'priority' : undefined}
           </Typography>
         )}
         breakpoints={swiperBreakpoints}
+        priority
       />
     )
     expect(getByRole('heading', { name: 'Easter' })).toBeInTheDocument()
     const items = getAllByRole('heading', { level: 6 })
     expect(items).toHaveLength(2)
-    expect(items[0]).toHaveTextContent('Featured Template 1')
-    expect(items[1]).toHaveTextContent('Featured Template 2')
-    expect(getByRole('button', { name: 'prev-button' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'next-button' })).toBeInTheDocument()
+    expect(items[0]).toHaveTextContent('Featured Template 1priority')
+    expect(items[1]).toHaveTextContent('Featured Template 2priority')
   })
 
   it('should focus elements in the carousel', async () => {
-    const { getAllByRole } = render(
+    const { getAllByLabelText } = render(
       <TemplateGalleryCarousel
         heading="Easter"
         items={[journey, { ...journey, id: '2', title: 'Featured Template 2' }]}
@@ -91,10 +101,16 @@ describe('TemplateGalleryCarousel', () => {
     )
 
     await waitFor(async () => await userEvent.tab())
-    expect(getAllByRole('button')[0]).toHaveStyle('outline: 2px solid')
+    expect(getAllByLabelText('templateGalleryCard')[0]).toHaveStyle(
+      'outline: 2px solid'
+    )
     await waitFor(async () => await userEvent.tab())
-    expect(getAllByRole('button')[1]).toHaveStyle('outline: 2px solid')
-    expect(getAllByRole('button')[0]).toHaveStyle('outline: 0')
+    expect(getAllByLabelText('templateGalleryCard')[1]).toHaveStyle(
+      'outline: 2px solid'
+    )
+    expect(getAllByLabelText('templateGalleryCard')[0]).not.toHaveStyle(
+      'outline: 2px solid'
+    )
   })
 
   it('should render TemplateGalleryCarousel with placeholder items', () => {

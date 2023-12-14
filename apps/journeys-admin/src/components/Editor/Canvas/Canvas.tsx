@@ -4,10 +4,10 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import dynamic from 'next/dynamic'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import SwiperCore from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
@@ -24,9 +24,6 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { FramePortal } from '../../FramePortal'
 import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
-import { CardTemplateDrawer } from '../CardTemplateDrawer'
-import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
-import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 import { Properties } from '../Properties'
 
 import { CardWrapper } from './CardWrapper'
@@ -34,16 +31,38 @@ import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 
-import 'swiper/swiper.min.css'
-
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
 const TASKBAR_WIDTH = 72
 
 const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({}))
 
+const CardTemplateDrawer = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CardTemplateDrawer" */ '../CardTemplateDrawer'
+    ).then((mod) => mod.CardTemplateDrawer),
+  { ssr: false }
+)
+
+const NextCard = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "NextCard" */ '../ControlPanel/Attributes/blocks/Step/NextCard'
+    ).then((mod) => mod.NextCard),
+  { ssr: false }
+)
+
+const HostSidePanel = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "HostSidePanel" */ '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
+    ).then((mod) => mod.HostSidePanel),
+  { ssr: false }
+)
+
 export function Canvas(): ReactElement {
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const [swiper, setSwiper] = useState<SwiperClass>()
   const [spaceBetween, setSpaceBetween] = useState(16)
   const { sidePanel } = usePageWrapperStyles()
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
@@ -116,7 +135,7 @@ export function Canvas(): ReactElement {
     width: 362
   }
 
-  function handleSlideChange(swiper: SwiperCore): void {
+  function handleSlideChange(swiper: SwiperClass): void {
     const step = steps?.[swiper.activeIndex]
     if (step == null || step.id === selectedStep?.id) return
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Journey })

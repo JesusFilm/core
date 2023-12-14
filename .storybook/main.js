@@ -19,6 +19,10 @@ const storiesForProject = {
     '../libs/shared/ui/src/**/*.stories.mdx',
     '../libs/shared/ui/src/**/*.stories.@(js|jsx|ts|tsx)'
   ],
+  'shared-ui-dynamic': [
+    '../libs/shared/ui-dynamic/src/**/*.stories.mdx',
+    '../libs/shared/ui-dynamic/src/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
   watch: [
     '../apps/watch/src/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/watch/src/components/**/*.stories.mdx',
@@ -32,7 +36,8 @@ const stories = [
   ...storiesForProject['journeys-admin'],
   ...storiesForProject['journeys-ui'],
   ...storiesForProject['watch'],
-  ...storiesForProject['shared-ui']
+  ...storiesForProject['shared-ui'],
+  ...storiesForProject['shared-ui-dynamic']
 ]
 
 module.exports = {

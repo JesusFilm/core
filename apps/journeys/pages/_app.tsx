@@ -20,6 +20,9 @@ import i18nConfig from '../next-i18next.config'
 import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
 
+import 'swiper/css'
+import 'swiper/css/pagination'
+
 type JourneysAppProps = NextJsAppProps<{ journey?: Journey }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache

@@ -197,17 +197,25 @@ module "datadog_aurora" {
   }]
 }
 
-module "mq" {
-  source                = "../../../apps/mq/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_media_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
-}
-
 module "redis" {
   source     = "../../modules/aws/elasticache"
   cluster_id = "redis-stage"
   subnet_ids = [module.stage.vpc.private_subnets[*].id]
+}
+
+module "journeys-admin" {
+  source = "../../../apps/journeys-admin/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/api/health"
+      health_check_port = "3000"
+    })
+    alb_listener = merge(local.public_ecs_config.alb_listener, {
+      dns_name        = "admin-stage.nextstep.is"
+      certificate_arn = data.aws_acm_certificate.acm_nextstep_is.arn
+    })
+  })
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
+
 }

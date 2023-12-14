@@ -56,7 +56,8 @@ export class NavigateToBlockActionResolver {
           'ButtonBlock',
           'VideoBlock',
           'VideoTriggerBlock',
-          'TextResponseBlock'
+          'TextResponseBlock',
+          'FormBlock'
         ],
         block.typename
       )

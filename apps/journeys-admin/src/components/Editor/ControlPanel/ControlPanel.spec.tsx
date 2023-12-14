@@ -204,12 +204,14 @@ describe('ControlPanel', () => {
     expect(getByRole('tabpanel', { name: 'Journey' })).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Properties' }))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
-    expect(getByText('Unlocked Card')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Unlocked Card')).toBeInTheDocument())
     fireEvent.click(getByTestId('CardItem-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
+    )
   })
 
   it('should render component properties if a component is selected', async () => {
@@ -1101,9 +1103,11 @@ describe('ControlPanel', () => {
     expect(getByText('selectedBlock: step2.id')).toBeInTheDocument()
     expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
     expect(getByText('drawerTitle: Card Templates')).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'Card Video Template' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Card Video Template' })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should not allow blocks to be added when a Video Block is present', async () => {
