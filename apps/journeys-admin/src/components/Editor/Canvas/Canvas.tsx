@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -17,6 +18,7 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
+import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../FramePortal'
 
 import { CardWrapper } from './CardWrapper'
@@ -41,6 +43,7 @@ const HostSidePanel = dynamic(
 )
 
 export function Canvas(): ReactElement {
+  const router = useRouter()
   const {
     state: { selectedStep, selectedBlock, selectedComponent },
     dispatch
@@ -100,6 +103,12 @@ export function Canvas(): ReactElement {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       id: 'hosted-by'
+    })
+
+    router.query.param = 'step-footer'
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed('Step Footer')
     })
   }
 

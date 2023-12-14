@@ -105,8 +105,12 @@ describe('TemplateGallery', () => {
 
   it('should render templates filtered via language ids', async () => {
     const push = jest.fn()
+    const on = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
+      events: {
+        on
+      },
       query: { languageIds: [] }
     } as unknown as NextRouter)
 
@@ -131,8 +135,12 @@ describe('TemplateGallery', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith({
         push,
+        events: {
+          on
+        },
         query: {
-          languageIds: ['496']
+          languageIds: ['496'],
+          param: 'template-language'
         }
       })
     })
