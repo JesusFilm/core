@@ -56,7 +56,7 @@ export function FormSlugSelect({
           {t('None')}
         </MenuItem>
         {forms?.map((form) => (
-          <MenuItem key={`form-formSlug-${form.slug}`} value={form.slug}>
+          <MenuItem key={form.slug} value={form.slug}>
             {form.name}
           </MenuItem>
         ))}

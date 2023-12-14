@@ -30,7 +30,7 @@ interface ApiTokenTextFieldProps {
 }
 
 export const placeHolderToken =
-  'thisIsAFakeApiTokenTheReaOneIsNeverShowAgainInTheFrontEnd'
+  'thisIsAFakeApiTokenTheReaOneIsNeverShowAgainInTheFrontEnd!!!'
 
 export function ApiTokenTextField({
   id

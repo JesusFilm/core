@@ -56,7 +56,7 @@ export function ProjectIdSelect({
           {t('None')}
         </MenuItem>
         {projects?.map((project) => (
-          <MenuItem key={`form-projectId-${project.id}`} value={project.id}>
+          <MenuItem key={project.id} value={project.id}>
             {project.name}
           </MenuItem>
         ))}
