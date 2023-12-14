@@ -14,12 +14,6 @@ interface FormObject {
   email: string
 }
 
-interface SessionObject {
-  app: string
-  journeyPreview: string
-  team: string
-}
-
 declare global {
   interface Window {
     Beacon?: ((fn: 'init', id: string) => void) &
@@ -31,8 +25,7 @@ declare global {
       ((fn: 'event', eventObject: EventObject) => void) &
       ((fn: 'search', value: string) => void) &
       ((fn: 'on', eventType: string, callback: () => void) => void) &
-      ((fn: 'prefill', formObject: FormObject) => void) &
-      ((fn: 'session-data', sessionObject: SessionObject) => void)
+      ((fn: 'prefill', formObject: FormObject) => void)
   }
 }
 
