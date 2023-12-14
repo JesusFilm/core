@@ -58,6 +58,8 @@ export function PageWrapper({
   const viewportHeight = use100vh()
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
   const router = useRouter()
+  const hideSidePanel = router?.pathname?.split('/')[1] === 'journeys'
+  const navbarWidth = hideSidePanel ? '0px' : navbar.width
 
   return (
     <PageProvider initialState={initialState}>
@@ -71,19 +73,19 @@ export function PageWrapper({
         data-testid="JourneysAdminPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          <NavigationDrawer
+          {!hideSidePanel && <NavigationDrawer
             open={open}
             onClose={setOpen}
             user={user}
             selectedPage={router?.pathname?.split('/')[1]}
-          />
+          />}
 
           <Stack
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
               backgroundColor: 'background.default',
-              width: { xs: '100vw', md: `calc(100vw - ${navbar.width})` },
+              width: { xs: '100vw', md: `calc(100vw - ${navbarWidth})` },
               pt: { xs: toolbar.height, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
@@ -101,7 +103,7 @@ export function PageWrapper({
                   xs: 'inherit',
                   md:
                     sidePanelChildren != null || customSidePanel != null
-                      ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
+                      ? `calc(100vw - ${navbarWidth} - ${sidePanel.width})`
                       : 'inherit'
                 }
               }}
