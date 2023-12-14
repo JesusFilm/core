@@ -19,34 +19,36 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
-import { OnSelectProps } from '../../CardPreview'
+import { CardPreview, OnSelectProps } from '../../CardPreview'
 import { ActionDetails } from '../ActionDetails'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Properties } from '../Properties'
 
-import { Attributes } from './Attributes'
 import { Fab } from './Fab'
 
+const Attributes = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes" */
+      './Attributes'
+    ).then((mod) => mod.Attributes),
+  { ssr: false }
+)
 const BlocksTab = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/BlocksTab/BlocksTab" */ './BlocksTab'
-    ).then((module) => module.BlocksTab)
+      /* webpackChunkName: "Editor/ControlPanel/BlocksTab" */
+      './BlocksTab'
+    ).then((mod) => mod.BlocksTab),
+  { ssr: false }
 )
-
 const CardTemplateDrawer = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/CardTemplateDrawer/CardTemplateDrawer" */ '../CardTemplateDrawer'
+      /* webpackChunkName: "Editor/CardTemplateDrawer" */
+      '../CardTemplateDrawer'
     ).then((module) => module.CardTemplateDrawer),
   { ssr: false }
-)
-
-const CardPreview = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "CardPreview" */ '../../CardPreview'
-    ).then((module) => module.CardPreview)
 )
 
 export function ControlPanel(): ReactElement {
@@ -259,24 +261,32 @@ export function ControlPanel(): ReactElement {
         sx={{ backgroundColor: 'background.default', height: '100%' }}
       >
         <TabPanel name="control-panel" value={activeTab} index={0}>
-          {activeTab === 0 && (
-            <CardPreview
-              selected={selectedStep}
-              onSelect={handleSelectStepPreview}
-              steps={steps}
-              showAddButton
-              showNavigationCards
-              isDraggable
-            />
-          )}
+          <CardPreview
+            selected={selectedStep}
+            onSelect={handleSelectStepPreview}
+            steps={steps}
+            showAddButton
+            showNavigationCards
+            isDraggable
+          />
         </TabPanel>
-        <TabPanel name="control-panel" value={activeTab} index={1}>
+        <TabPanel
+          name="control-panel"
+          value={activeTab}
+          index={1}
+          unmountUntilVisible
+        >
           {selected !== 'none' && selectedStep !== undefined && (
             <Attributes selected={selected} step={selectedStep} />
           )}
         </TabPanel>
-        <TabPanel name="control-panel" value={activeTab} index={2}>
-          {activeTab === 2 && <BlocksTab />}
+        <TabPanel
+          name="control-panel"
+          value={activeTab}
+          index={2}
+          unmountUntilVisible
+        >
+          <BlocksTab />
         </TabPanel>
       </Stack>
     </Stack>

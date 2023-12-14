@@ -2,8 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { ReactElement, useMemo, useState } from 'react'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -23,6 +23,24 @@ import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 
 import { CardList } from './CardList'
 import { OnSelectProps } from './OnSelectProps'
+
+const DragDropContext = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "react-beautiful-dnd" */
+      'react-beautiful-dnd'
+    ).then((mod) => mod.DragDropContext),
+  { ssr: false }
+)
+
+const Droppable = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "react-beautiful-dnd" */
+      'react-beautiful-dnd'
+    ).then((mod) => mod.Droppable),
+  { ssr: false }
+)
 
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void
