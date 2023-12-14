@@ -6,6 +6,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import NoSsr from '@mui/material/NoSsr'
 import Tooltip from '@mui/material/Tooltip'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -132,7 +133,7 @@ export function NavigationDrawer({
             <ChevronRightIcon />
           </ListItemIcon>
         </ListItemButton>
-        <NextLink href="/" passHref legacyBehavior prefetch={false}>
+        <NextLink href="/" passHref legacyBehavior>
           <Tooltip title={tooltip} placement="right" arrow>
             <ListItemButton
               selected={selectedPage === 'journeys' || selectedPage === ''}
@@ -152,7 +153,7 @@ export function NavigationDrawer({
             </ListItemButton>
           </Tooltip>
         </NextLink>
-        <NextLink href="/templates" passHref legacyBehavior prefetch={false}>
+        <NextLink href="/templates" passHref legacyBehavior>
           <ListItemButton
             selected={selectedPage === 'templates'}
             data-testid="NavigationListItemTemplates"
@@ -164,13 +165,15 @@ export function NavigationDrawer({
           </ListItemButton>
         </NextLink>
         {user?.id != null && (
-          <Suspense>
-            <UserNavigation
-              user={user}
-              selectedPage={selectedPage}
-              setTooltip={setTooltip}
-            />
-          </Suspense>
+          <NoSsr>
+            <Suspense>
+              <UserNavigation
+                user={user}
+                selectedPage={selectedPage}
+                setTooltip={setTooltip}
+              />
+            </Suspense>
+          </NoSsr>
         )}
         <ListItem component="div" sx={{ flexGrow: '1 !important' }} />
         <ListItem component="div" sx={{ mb: 1.5 }}>

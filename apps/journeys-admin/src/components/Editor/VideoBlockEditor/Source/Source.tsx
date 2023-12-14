@@ -1,6 +1,7 @@
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -10,12 +11,46 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
-import { VideoLibrary } from '../../VideoLibrary'
 
-import { SourceEmpty } from './SourceEmpty'
-import { SourceFromCloudflare } from './SourceFromCloudflare'
-import { SourceFromLocal } from './SourceFromLocal'
-import { SourceFromYouTube } from './SourceFromYouTube'
+const VideoLibrary = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoLibrary/VideoLibrary" */ '../../VideoLibrary'
+    ).then((mod) => mod.VideoLibrary),
+  { ssr: false }
+)
+
+const SourceFromYouTube = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromYouTube/SourceFromYouTube" */ './SourceFromYouTube'
+    ).then((mod) => mod.SourceFromYouTube),
+  { ssr: false }
+)
+
+const SourceEmpty = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceEmpty/SourceEmpty" */ './SourceEmpty'
+    ).then((mod) => mod.SourceEmpty),
+  { ssr: false }
+)
+
+const SourceFromCloudflare = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromCloudflare/SourceFromCloudflare" */ './SourceFromCloudflare'
+    ).then((mod) => mod.SourceFromCloudflare),
+  { ssr: false }
+)
+
+const SourceFromLocal = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal" */ './SourceFromLocal'
+    ).then((mod) => mod.SourceFromLocal),
+  { ssr: false }
+)
 
 interface SourceProps {
   selectedBlock: TreeBlock<VideoBlock> | null
@@ -23,7 +58,7 @@ interface SourceProps {
 }
 
 export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<boolean | undefined>()
 
   let SourceContent
 
@@ -49,18 +84,24 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
   return (
     <>
       <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <CardActionArea onClick={() => setOpen(true)}>
+        <CardActionArea
+          onClick={() => {
+            setOpen(true)
+          }}
+        >
           <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
             <SourceContent selectedBlock={selectedBlock} />
           </Stack>
         </CardActionArea>
       </Card>
-      <VideoLibrary
-        open={open}
-        onClose={() => setOpen(false)}
-        selectedBlock={selectedBlock}
-        onSelect={onChange}
-      />
+      {open != null && (
+        <VideoLibrary
+          open={open}
+          onClose={() => setOpen(false)}
+          selectedBlock={selectedBlock}
+          onSelect={onChange}
+        />
+      )}
     </>
   )
 }

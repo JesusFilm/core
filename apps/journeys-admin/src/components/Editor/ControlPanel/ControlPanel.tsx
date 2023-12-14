@@ -26,14 +26,29 @@ import { ActionDetails } from '../ActionDetails'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Properties } from '../Properties'
 
-import { Attributes } from './Attributes'
-import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
 
+const Attributes = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes" */
+      './Attributes'
+    ).then((mod) => mod.Attributes),
+  { ssr: false }
+)
+const BlocksTab = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/BlocksTab" */
+      './BlocksTab'
+    ).then((mod) => mod.BlocksTab),
+  { ssr: false }
+)
 const CardTemplateDrawer = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "CardTemplateDrawer" */ '../CardTemplateDrawer'
+      /* webpackChunkName: "Editor/CardTemplateDrawer" */
+      '../CardTemplateDrawer'
     ).then((module) => module.CardTemplateDrawer),
   { ssr: false }
 )
@@ -271,12 +286,22 @@ export function ControlPanel(): ReactElement {
             isDraggable
           />
         </TabPanel>
-        <TabPanel name="control-panel" value={activeTab} index={1}>
+        <TabPanel
+          name="control-panel"
+          value={activeTab}
+          index={1}
+          unmountUntilVisible
+        >
           {selected !== 'none' && selectedStep !== undefined && (
             <Attributes selected={selected} step={selectedStep} />
           )}
         </TabPanel>
-        <TabPanel name="control-panel" value={activeTab} index={2}>
+        <TabPanel
+          name="control-panel"
+          value={activeTab}
+          index={2}
+          unmountUntilVisible
+        >
           <BlocksTab />
         </TabPanel>
       </Stack>

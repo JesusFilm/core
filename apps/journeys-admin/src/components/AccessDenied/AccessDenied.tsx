@@ -110,7 +110,7 @@ export function AccessDenied({
           </List>
           <Stack direction="row" justifyContent="space-between" sx={{ mt: 7 }}>
             <Box display={{ xs: 'none', sm: 'flex' }}>
-              <NextLink href="/" passHref legacyBehavior prefetch={false}>
+              <NextLink href="/" passHref legacyBehavior>
                 <Button
                   sx={{ color: 'primary.main' }}
                   startIcon={<ChevronLeftIcon />}
@@ -121,7 +121,7 @@ export function AccessDenied({
               </NextLink>
             </Box>
             <Box display={{ xs: 'flex', sm: 'none' }}>
-              <NextLink href="/" passHref legacyBehavior prefetch={false}>
+              <NextLink href="/" passHref legacyBehavior>
                 <Button
                   sx={{ color: 'primary.main' }}
                   startIcon={<ChevronLeftIcon />}

@@ -160,7 +160,7 @@ export function StatusTabPanel({
         name="active-status-panel"
         value={activeTab}
         index={journeyStatusTabs[0].tabIndex}
-        unmountOnExit
+        unmountUntilVisible
       >
         {activeList}
       </TabPanel>
@@ -168,7 +168,7 @@ export function StatusTabPanel({
         name="archived-status-panel"
         value={activeTab}
         index={journeyStatusTabs[1].tabIndex}
-        unmountOnExit
+        unmountUntilVisible
       >
         {archivedList}
       </TabPanel>
@@ -176,7 +176,7 @@ export function StatusTabPanel({
         name="trashed-status-panel"
         value={activeTab}
         index={journeyStatusTabs[2].tabIndex}
-        unmountOnExit
+        unmountUntilVisible
       >
         {trashedList}
       </TabPanel>

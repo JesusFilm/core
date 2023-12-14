@@ -222,7 +222,7 @@ describe('ControlPanel', () => {
     expect(getByRole('tabpanel', { name: 'Journey' })).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Properties' }))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
-    expect(getByText('Unlocked Card')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Unlocked Card')).toBeInTheDocument())
     fireEvent.click(getByTestId('CardItem-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
     await waitFor(() => {
