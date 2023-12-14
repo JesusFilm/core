@@ -19,6 +19,7 @@ interface PageWrapperProps {
   showAppHeader?: boolean
   title?: string
   showMainHeader?: boolean
+  hideNavbar?: boolean
   backHref?: string
   backHrefHistory?: boolean
   mainHeaderChildren?: ReactNode
@@ -41,6 +42,7 @@ export function PageWrapper({
   showAppHeader = true,
   title,
   showMainHeader = true,
+  hideNavbar = false,
   backHref,
   backHrefHistory,
   mainHeaderChildren,
@@ -58,8 +60,7 @@ export function PageWrapper({
   const viewportHeight = use100vh()
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
   const router = useRouter()
-  const hideSidePanel = router?.pathname?.split('/')[1] === 'journeys'
-  const navbarWidth = hideSidePanel ? '0px' : navbar.width
+  const navbarWidth = hideNavbar ? '0px' : navbar.width
 
   return (
     <PageProvider initialState={initialState}>
@@ -73,11 +74,12 @@ export function PageWrapper({
         data-testid="JourneysAdminPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          {!hideSidePanel && <NavigationDrawer
+          {!hideNavbar && <NavigationDrawer
             open={open}
             onClose={setOpen}
             user={user}
             selectedPage={router?.pathname?.split('/')[1]}
+            data-testid="NavigationDrawer"
           />}
 
           <Stack

@@ -179,6 +179,7 @@ function JourneyVisitorsPage(): ReactElement {
       <NextSeo title={t('Visitors')} />
       <PageWrapper
         title={t('Visitors')}
+        hideNavbar
         user={user}
         backHref={`/journeys/${journeyId}/reports`}
         mainHeaderChildren={

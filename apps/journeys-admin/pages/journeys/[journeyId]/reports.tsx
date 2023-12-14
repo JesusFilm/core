@@ -31,6 +31,7 @@ function JourneyReportsPage(): ReactElement {
       <NextSeo title={t('Journey Analytics')} />
       <PageWrapper
         title={t('Journey Analytics')}
+        hideNavbar
         user={user}
         backHref={`/journeys/${journeyId}`}
       >

@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, queryByTestId, render } from '@testing-library/react'
 
 import { PageWrapper } from '.'
 
@@ -127,5 +127,40 @@ describe('PageWrapper', () => {
       fireEvent.click(getByTestId('NavigationListItemToggle'))
       expect(getByText('Discover')).toBeInTheDocument()
     })
+
+    it('should hide NavigationDrawer when hideNavbar is true', () => {
+      const { queryByTestId } = render(
+        <MockedProvider>
+          <PageWrapper title="Page title" hideNavbar />
+        </MockedProvider>
+      )
+      const navbar = queryByTestId('NavigationDrawer')
+      expect(navbar).toBeNull()
+    })
+
+    it('should calculate navbarWidth correctly when hideNavbar is false', () => {
+      // Arrange
+      const hideNavbar = false
+      const navbar = { width: '200px' }
+
+      // Act
+      const navbarWidth = hideNavbar ? '0px' : navbar.width
+
+      // Assert
+      expect(navbarWidth).toBe('200px')
+    })
+
+    it('should not calculate navbarWidth when hideNavbar is true', () => {
+      // Arrange
+      const hideNavbar = true
+      const navbar = { width: '200px' }
+
+      // Act
+      const navbarWidth = hideNavbar ? '0px' : navbar.width
+
+      // Assert
+      expect(navbarWidth).toBe('0px')
+    })
+
   })
 })

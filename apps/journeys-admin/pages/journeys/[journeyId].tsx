@@ -77,6 +77,7 @@ function JourneyEditPage(): ReactElement {
           bottomPanelChildren={<ControlPanel />}
           customSidePanel={<Drawer />}
           user={user}
+          hideNavbar
         >
           <JourneyEdit />
         </PageWrapper>
