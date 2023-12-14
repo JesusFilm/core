@@ -88,6 +88,9 @@ describe('Source', () => {
         <Source selectedBlock={null} onChange={onChange} />
       </MockedProvider>
     )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Select Video' })).toBeInTheDocument()
+    )
     fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
@@ -138,11 +141,13 @@ describe('Source', () => {
         />
       </MockedProvider>
     )
-    expect(
-      getByRole('button', {
-        name: 'What is the Bible? What is the Bible? YouTube'
-      })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', {
+          name: 'What is the Bible? What is the Bible? YouTube'
+        })
+      ).toBeInTheDocument()
+    )
     expect(
       getByRole('img', {
         name: 'What is the Bible?'
@@ -183,11 +188,13 @@ describe('Source', () => {
         />
       </MockedProvider>
     )
-    expect(
-      getByRole('button', {
-        name: 'What is the Bible? What is the Bible? Custom Video'
-      })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', {
+          name: 'What is the Bible? What is the Bible? Custom Video'
+        })
+      ).toBeInTheDocument()
+    )
     expect(
       getByRole('img', {
         name: 'What is the Bible?'
@@ -197,7 +204,7 @@ describe('Source', () => {
     )
   })
 
-  it('shows video details on source button click', () => {
+  it('shows video details on source button click', async () => {
     const onChange = jest.fn()
     const { getByRole, getByText } = render(
       <MockedProvider>
@@ -230,12 +237,19 @@ describe('Source', () => {
         />
       </MockedProvider>
     )
+    await waitFor(() =>
+      expect(
+        getByRole('button', {
+          name: 'What is the Bible? What is the Bible? YouTube'
+        })
+      ).toBeInTheDocument()
+    )
     fireEvent.click(
       getByRole('button', {
         name: 'What is the Bible? What is the Bible? YouTube'
       })
     )
-    expect(getByText('Video Details')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Video Details')).toBeInTheDocument())
     expect(getByText('What is the Bible?')).toBeInTheDocument()
   })
 })
