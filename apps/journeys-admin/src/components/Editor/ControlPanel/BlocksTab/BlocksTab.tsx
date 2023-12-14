@@ -3,6 +3,8 @@ import Stack from '@mui/material/Stack'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { NewButtonButton } from './NewButtonButton'
 import { NewFormButton } from './NewFormButton'
 import { NewImageButton } from './NewImageButton'
@@ -13,6 +15,7 @@ import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
 
 export function BlocksTab(): ReactElement {
+  const { formiumForm } = useFlags()
   return (
     <>
       <Stack
@@ -31,8 +34,7 @@ export function BlocksTab(): ReactElement {
         <NewTextResponseButton />
         <NewSignUpButton />
         <NewButtonButton />
-        {/* TODO: comment this out before merging to PROD until its put behind a flag */}
-        <NewFormButton />
+        {formiumForm && <NewFormButton />}
       </Stack>
       <Box
         sx={{
