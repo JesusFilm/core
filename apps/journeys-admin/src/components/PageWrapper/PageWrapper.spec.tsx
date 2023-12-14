@@ -161,6 +161,5 @@ describe('PageWrapper', () => {
       // Assert
       expect(navbarWidth).toBe('0px')
     })
-
   })
 })

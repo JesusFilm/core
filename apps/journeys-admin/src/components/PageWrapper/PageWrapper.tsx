@@ -74,13 +74,15 @@ export function PageWrapper({
         data-testid="JourneysAdminPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          {!hideNavbar && <NavigationDrawer
-            open={open}
-            onClose={setOpen}
-            user={user}
-            selectedPage={router?.pathname?.split('/')[1]}
-            data-testid="NavigationDrawer"
-          />}
+          {!hideNavbar && (
+            <NavigationDrawer
+              open={open}
+              onClose={setOpen}
+              user={user}
+              selectedPage={router?.pathname?.split('/')[1]}
+              data-testid="NavigationDrawer"
+            />
+          )}
 
           <Stack
             flexGrow={1}
