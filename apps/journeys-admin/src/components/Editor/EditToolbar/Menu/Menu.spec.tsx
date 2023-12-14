@@ -302,7 +302,7 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
   })
 
-  it('should open templates dialog', () => {
+  it('should open templates dialog', async () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'stepId',
@@ -339,12 +339,14 @@ describe('EditToolbar Menu', () => {
     ).not.toBeInTheDocument()
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Template Settings' }))
-    expect(
-      getByRole('dialog', { name: 'Template Settings' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('dialog', { name: 'Template Settings' })
+      ).toBeInTheDocument()
+    )
   })
 
-  it('should handle edit journey title', () => {
+  it('should handle edit journey title', async () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
@@ -367,12 +369,12 @@ describe('EditToolbar Menu', () => {
     const menu = getByRole('button')
     fireEvent.click(menu)
     fireEvent.click(getByRole('menuitem', { name: 'Title' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
+    await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument())
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
-  it('should handle edit journey description', () => {
+  it('should handle edit journey description', async () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
@@ -395,7 +397,7 @@ describe('EditToolbar Menu', () => {
     const menu = getByRole('button')
     fireEvent.click(menu)
     fireEvent.click(getByRole('menuitem', { name: 'Description' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
+    await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument())
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     expect(menu).not.toHaveAttribute('aria-expanded')
   })

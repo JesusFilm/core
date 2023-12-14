@@ -204,12 +204,14 @@ describe('ControlPanel', () => {
     expect(getByRole('tabpanel', { name: 'Journey' })).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Properties' }))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
-    expect(getByText('Unlocked Card')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Unlocked Card')).toBeInTheDocument())
     fireEvent.click(getByTestId('CardItem-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
+    )
   })
 
   it('should render component properties if a component is selected', async () => {
