@@ -115,7 +115,7 @@ describe('Editor', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('step-container'))
+    fireEvent.click(getByTestId('EditorCanvas'))
     await waitFor(() => expect(getByText('Next Card')).toBeInTheDocument())
     expect(getByText('Unlocked Card')).toBeInTheDocument()
   })
