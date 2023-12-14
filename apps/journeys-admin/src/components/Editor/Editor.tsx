@@ -35,6 +35,11 @@ export function Editor({
     selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
+  // const { setValue } = useSocialPreview()
+  // useEffect(() => {
+  //   setValue?.({ imageSrc: journey?.primaryImageBlock?.src })
+  //   console.log(journey?.primaryImageBlock?.src)
+  // }, [journey, setValue])
 
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
