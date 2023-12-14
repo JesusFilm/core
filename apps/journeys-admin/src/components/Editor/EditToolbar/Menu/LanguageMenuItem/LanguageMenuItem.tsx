@@ -7,13 +7,10 @@ import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { MenuItem } from '../../../../MenuItem'
 
-const DynamicLanguageDialog = dynamic<{
-  open: boolean
-  onClose: () => void
-}>(
+const LanguageDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "MenuLanguageDialog" */
+      /* webpackChunkName: "Editor/EditToolbar/Menu/LanguageDialog" */
       './LanguageDialog'
     ).then((mod) => mod.LanguageDialog)
 )
@@ -26,7 +23,9 @@ export function LanguageMenuItem({
   onClose
 }: LanguageMenuItemProps): ReactElement {
   const router = useRouter()
-  const [showLanguageDialog, setShowLanguageDialog] = useState(false)
+  const [showLanguageDialog, setShowLanguageDialog] = useState<
+    boolean | undefined
+  >()
 
   function setRoute(param: string): void {
     router.query.param = param
@@ -54,11 +53,8 @@ export function LanguageMenuItem({
         onClick={handleUpdateLanguage}
         testId="Language"
       />
-      {showLanguageDialog && (
-        <DynamicLanguageDialog
-          open={showLanguageDialog}
-          onClose={handleClose}
-        />
+      {showLanguageDialog != null && (
+        <LanguageDialog open={showLanguageDialog} onClose={handleClose} />
       )}
     </>
   )
