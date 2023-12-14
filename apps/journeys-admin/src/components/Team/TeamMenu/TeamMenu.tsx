@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -10,6 +11,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 import Plus1Icon from '@core/shared/ui/icons/Plus1'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
+import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { MenuItem } from '../../MenuItem'
 import { TeamAvatars } from '../TeamAvatars'
 import { useTeam } from '../TeamProvider'
@@ -40,6 +42,7 @@ const DynamicTeamManageDialog = dynamic(
 )
 
 export function TeamMenu(): ReactElement {
+  const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const [teamCreateOpen, setTeamCreateOpen] = useState<boolean | undefined>()
@@ -52,6 +55,14 @@ export function TeamMenu(): ReactElement {
 
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
+  }
+
+  function setRoute(param: string): void {
+    router.query.param = param
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
+    })
   }
 
   return (
@@ -79,7 +90,10 @@ export function TeamMenu(): ReactElement {
       {activeTeam != null && (
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           <TeamAvatars
-            onClick={() => setTeamManageOpen(true)}
+            onClick={() => {
+              setRoute('teams')
+              setTeamManageOpen(true)
+            }}
             userTeams={activeTeam.userTeams}
             size="large"
           />
@@ -112,6 +126,7 @@ export function TeamMenu(): ReactElement {
           label={t('Members')}
           icon={<UsersProfiles2Icon />}
           onClick={() => {
+            setRoute('teams')
             setTeamManageOpen(true)
             setAnchorEl(null)
           }}
@@ -122,6 +137,7 @@ export function TeamMenu(): ReactElement {
           label={t('Rename')}
           icon={<Edit2Icon />}
           onClick={() => {
+            setRoute('rename-team')
             setTeamUpdateOpen(true)
             setAnchorEl(null)
           }}
@@ -131,6 +147,7 @@ export function TeamMenu(): ReactElement {
           label={t('New Team')}
           icon={<Plus1Icon />}
           onClick={() => {
+            setRoute('create-team')
             setTeamCreateOpen(true)
             setAnchorEl(null)
           }}

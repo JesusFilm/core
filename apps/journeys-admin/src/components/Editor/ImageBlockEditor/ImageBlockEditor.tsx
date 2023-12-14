@@ -3,6 +3,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
@@ -12,6 +13,7 @@ import StarsIcon from '@core/shared/ui/icons/Stars'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
 import { UnsplashAuthor } from './UnsplashGallery'
@@ -57,15 +59,28 @@ export function ImageBlockEditor({
   showAdd,
   error
 }: ImageBlockEditorProps): ReactElement {
+  const router = useRouter()
   const [tabValue, setTabValue] = useState(0)
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
   const [uploading, setUploading] = useState<boolean>()
+
+  const TabParams = { 0: 'unsplash-image', 1: 'custom-image', 2: 'ai-image' }
+
+  function setRoute(param: string): void {
+    router.query.param = param
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
+    })
+  }
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
     setTabValue(newValue)
+    const route = TabParams[newValue]
+    if (route != null) setRoute(route)
   }
 
   const srcSchema = object().shape({

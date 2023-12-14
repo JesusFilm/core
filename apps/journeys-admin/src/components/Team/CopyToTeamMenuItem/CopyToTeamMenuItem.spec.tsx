@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -22,10 +23,27 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('DuplicateJourneys', () => {
   const handleCloseMenu = jest.fn()
+  const push = jest.fn()
+  const on = jest.fn()
 
   it('should duplicate a journey on menu card click', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const result = jest.fn(() => {
       return {
         data: {
@@ -97,5 +115,15 @@ describe('DuplicateJourneys', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(handleCloseMenu).toHaveBeenCalled()
     expect(getByText('Journey Copied')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'copy-journey' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 })
