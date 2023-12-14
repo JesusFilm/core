@@ -9,7 +9,8 @@ import { ApiTokenTextField } from '.'
 const ApiTokenTextFieldDemo: Meta<typeof ApiTokenTextField> = {
   ...simpleComponentConfig,
   component: ApiTokenTextField,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Form/ApiTokenTextField'
+  title:
+    'Journeys-Admin/Editor/ControlPanel/Attributes/Form/Credentials/ApiTokenTextField'
 }
 
 const Template: StoryObj<ComponentProps<typeof ApiTokenTextField>> = {

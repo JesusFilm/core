@@ -9,7 +9,8 @@ import { ProjectIdSelect } from '.'
 const ProjectIdSelectDemo: Meta<typeof ProjectIdSelect> = {
   ...simpleComponentConfig,
   component: ProjectIdSelect,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Form/ProjectIdSelect'
+  title:
+    'Journeys-Admin/Editor/ControlPanel/Attributes/Form/Credentials/ProjectIdSelect'
 }
 
 const Template: StoryObj<ComponentProps<typeof ProjectIdSelect>> = {

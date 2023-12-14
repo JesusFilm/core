@@ -9,7 +9,8 @@ import { FormSlugSelect } from '.'
 const FormSlugSelectDemo: Meta<typeof FormSlugSelect> = {
   ...simpleComponentConfig,
   component: FormSlugSelect,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Form/FormSlugSelect'
+  title:
+    'Journeys-Admin/Editor/ControlPanel/Attributes/Form/Credentials/FormSlugSelect'
 }
 
 const Template: StoryObj<ComponentProps<typeof FormSlugSelect>> = {

@@ -37,12 +37,12 @@ export const GET_FORM_BLOCK = gql`
 `
 
 export function Credentials(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as TreeBlock<FormBlock> | undefined
   const { data, loading } = useQuery(GET_FORM_BLOCK, {
     variables: { id: selectedBlock?.id }
   })
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Stack spacing={6} sx={{ px: 6, py: 4 }}>
@@ -74,7 +74,7 @@ export function Credentials(): ReactElement {
           legacyBehavior
         >
           <Link underline="none" variant="body2" target="_blank" rel="noopener">
-            {t('Click here for formium docs on finding your credentials')}
+            {t('Click here for formium docs on finding your api token')}
           </Link>
         </NextLink>
       </Stack>
