@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
-import { DragDropContext } from 'react-beautiful-dnd'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { DragDropContext, DroppableProvided } from 'react-beautiful-dnd'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -126,7 +126,7 @@ describe('CardList', () => {
       style: {}
     },
     innerRef: jest.fn()
-  }
+  } as unknown as DroppableProvided
 
   const steps: Array<TreeBlock<StepBlock>> = [
     {
@@ -233,10 +233,10 @@ describe('CardList', () => {
     expect(queryByRole('DragHandleRoundedIcon')).not.toBeInTheDocument()
   })
 
-  it('should prompt users that a card is draggable', () => {
+  it('should prompt users that a card is draggable', async () => {
     const { getAllByTestId } = render(
       <MockedProvider>
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -246,6 +246,9 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
+    await waitFor(() => {
+      expect(getAllByTestId('DragIcon')[0]).toBeInTheDocument()
+    })
     const dragHandle = getAllByTestId('DragIcon')
     expect(dragHandle[0]).toHaveClass('MuiSvgIcon-root')
   })
@@ -253,7 +256,7 @@ describe('CardList', () => {
   it('contains goals card', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -287,7 +290,7 @@ describe('CardList', () => {
             variant: 'admin'
           }}
         >
-          <DragDropContext>
+          <DragDropContext onDragEnd={jest.fn()}>
             <CardList
               steps={steps}
               selected={selected}
@@ -306,7 +309,7 @@ describe('CardList', () => {
   it('contains social preview card', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -340,7 +343,7 @@ describe('CardList', () => {
             variant: 'admin'
           }}
         >
-          <DragDropContext>
+          <DragDropContext onDragEnd={jest.fn()}>
             <CardList
               steps={steps}
               selected={selected}
@@ -383,7 +386,7 @@ describe('CardList', () => {
               }
             }}
           >
-            <DragDropContext>
+            <DragDropContext onDragEnd={jest.fn()}>
               <CardList
                 steps={steps}
                 selected={selected}
@@ -438,7 +441,7 @@ describe('CardList', () => {
           }
         ]}
       >
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -473,7 +476,7 @@ describe('CardList', () => {
             variant: 'admin'
           }}
         >
-          <DragDropContext>
+          <DragDropContext onDragEnd={jest.fn()}>
             <CardList
               steps={steps}
               selected={selected}

@@ -22,15 +22,6 @@ import { ThemeProvider } from '../../ThemeProvider'
 
 import { Canvas } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('Canvas', () => {
   const step0: TreeBlock<StepBlock> = {
     id: 'step0.id',
