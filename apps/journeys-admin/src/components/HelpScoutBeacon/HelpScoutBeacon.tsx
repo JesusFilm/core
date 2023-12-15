@@ -43,7 +43,7 @@ export function HelpScoutBeacon(): ReactElement {
       window.Beacon('toggle')
     }
   }
-  
+
   useEffect(() => {
     if (hasLoaded && window.Beacon != null) {
       // close the beacon when the url changes if it's still open
@@ -65,7 +65,12 @@ export function HelpScoutBeacon(): ReactElement {
       <Script id="beacon" className="beacon" strategy="lazyOnload">
         {`!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`}
       </Script>
-      <Script id="init" className="init" strategy="lazyOnload" onReady={() => setHasLoaded(true)}>
+      <Script
+        id="init"
+        className="init"
+        strategy="lazyOnload"
+        onReady={() => setHasLoaded(true)}
+      >
         {`
         window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8');
         window.Beacon('config', {
