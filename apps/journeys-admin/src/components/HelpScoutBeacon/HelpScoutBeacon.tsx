@@ -40,9 +40,9 @@ export function HelpScoutBeacon(): ReactElement {
   const handleClick = (): void => {
     if (window.Beacon != null) {
       window.Beacon('toggle')
+    } else {
+      void router.push('https://support.nextstep.is/')
     }
-    // Route to help url
-
   }
 
   useEffect(() => {
@@ -84,6 +84,7 @@ export function HelpScoutBeacon(): ReactElement {
         `}
       </Script>
       <IconButton
+        aria-label="Help"
         onClick={handleClick}
         sx={{
           position: 'fixed',
