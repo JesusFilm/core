@@ -15,6 +15,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey_blocks_FormBlock as FormBlock,
   GetJourney_journey_blocks_SignUpBlock as SignUpBlock,
   GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
@@ -76,10 +77,11 @@ export function Action(): ReactElement {
 
   // Add addtional types here to use this component for that block
   const selectedBlock = state.selectedBlock as
-    | TreeBlock<SignUpBlock>
     | TreeBlock<ButtonBlock>
-    | TreeBlock<VideoBlock>
+    | TreeBlock<FormBlock>
+    | TreeBlock<SignUpBlock>
     | TreeBlock<TextResponseBlock>
+    | TreeBlock<VideoBlock>
     | undefined
 
   const [navigateActionUpdate] = useMutation<NavigateActionUpdate>(

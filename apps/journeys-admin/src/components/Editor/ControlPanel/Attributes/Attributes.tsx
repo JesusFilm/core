@@ -113,6 +113,9 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
       case 'CardBlock':
         return <Card {...selected} />
 
+      case 'FormBlock':
+        return withMoveButtons(<Form {...selected} />)
+
       case 'StepBlock': {
         const block = selected.children.find(
           (block) =>
