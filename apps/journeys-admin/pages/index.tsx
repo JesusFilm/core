@@ -1,4 +1,3 @@
-import  IconButton  from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
@@ -10,8 +9,6 @@ import {
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 
 import {
   GetAdminJourneys,
@@ -30,11 +27,7 @@ function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
-  const handleBeacon = (): void => {
-    if (window.Beacon != null){
-      window.Beacon('open')
-    }
-  }
+
   return (
     <>
       <NextSeo title={t('Journeys')} />
@@ -46,18 +39,8 @@ function IndexPage(): ReactElement {
             flexGrow={1}
             justifyContent="space-between"
             alignItems="center"
-          >         
+          >
             <TeamSelect onboarding={router.query.onboarding === 'true'} />
-            <IconButton onClick={handleBeacon}
-              sx={{
-                color: 'text.primary',
-                '&:hover': {
-                  backgroundColor: 'transparent'
-                }
-              }}
-            >
-              <HelpCircleContained/>
-            </IconButton>
             <TeamMenu />
           </Stack>
         }
