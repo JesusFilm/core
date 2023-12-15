@@ -49,7 +49,7 @@ export function HelpScoutBeacon({
 
   const handleClick = (): void => {
     if (window.Beacon != null) {
-      window.Beacon('on', 'open', () => { 
+      window.Beacon('on', 'open', () => {
         setBeaconOpen(true)
       })
       window.Beacon('on', 'close', () => {
@@ -105,7 +105,7 @@ export function HelpScoutBeacon({
         });
         `}
       </Script>
-      
+
       <IconButton
         size="large"
         edge="start"
@@ -125,7 +125,11 @@ export function HelpScoutBeacon({
           }
         }}
       >
-        {beaconOpen ? <XCircleContained sx={{ color: 'background.paper' }} /> : <HelpCircleContained sx={{ color: 'background.paper' }} />}
+        {beaconOpen ? (
+          <XCircleContained sx={{ color: 'background.paper' }} />
+        ) : (
+          <HelpCircleContained sx={{ color: 'background.paper' }} />
+        )}
       </IconButton>
       <style>{`
         #beacon-container {
