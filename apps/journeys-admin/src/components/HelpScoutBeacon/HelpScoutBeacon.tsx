@@ -148,6 +148,7 @@ export function HelpScoutBeacon(): ReactElement {
           }
           .hsds-beacon .c-BeaconCloseButton {
             top: -27px !important; /* Adjust as needed */
+            right: 19px !important; /* Adjust as needed */
           }
         }
       `}</style>
