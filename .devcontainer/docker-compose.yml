@@ -50,7 +50,7 @@ services:
         '--maxmemory',
         '500mb',
         '--maxmemory-policy',
-        'allkeys-lru'
+        'noeviction'
       ]
     volumes:
       - redis-data:/data

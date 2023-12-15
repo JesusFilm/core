@@ -2,7 +2,7 @@ locals {
   port = 4001
   environment_variables = [
     "FIREBASE_API_KEY",
-    "PG_DATABASE_URL",
+    "PG_DATABASE_URL_JOURNEYS",
     "POWER_BI_CLIENT_ID",
     "POWER_BI_CLIENT_SECRET",
     "POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID",
@@ -13,7 +13,9 @@ locals {
     "POWER_BI_WORKSPACE_ID",
     "GOOGLE_APPLICATION_JSON",
     "CLOUDFLARE_ACCOUNT_ID",
-    "CLOUDFLARE_STREAM_TOKEN"
+    "CLOUDFLARE_STREAM_TOKEN",
+    "JOURNEYS_ADMIN_URL",
+    "REDIS_URL"
   ]
   service_config = {
     name           = "api-journeys"

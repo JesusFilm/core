@@ -12,7 +12,7 @@ import { LoggerModule } from 'nestjs-pino'
 
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
-import { EmailConsumer } from './modules/email/email.consumer'
+import { EmailModule } from './modules/email/email.module'
 import { EventModule } from './modules/event/event.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
@@ -31,6 +31,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
   imports: [
     ActionModule,
     BlockModule,
+    EmailModule,
     EventModule,
     HostModule,
     JourneyModule,
@@ -46,11 +47,10 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     VisitorModule,
     BullModule.forRoot({
       connection: {
-        host: 'redis',
+        host: process.env.REDIS_URL ?? 'redis',
         port: 6379
       }
     }),
-
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths:
@@ -88,6 +88,6 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     }),
     DatadogTraceModule.forRoot()
   ],
-  providers: [EmailConsumer]
+  providers: []
 })
 export class AppModule {}

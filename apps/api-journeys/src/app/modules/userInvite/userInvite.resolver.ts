@@ -18,9 +18,14 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { UserInviteService } from './userInvite.service'
+
 @Resolver('UserInvite')
 export class UserInviteResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly userInviteService: UserInviteService
+  ) {}
 
   @Query()
   @UseGuards(AppCaslGuard)
@@ -73,7 +78,7 @@ export class UserInviteResolver {
         throw new GraphQLError('user is not allowed to create userInvite', {
           extensions: { code: 'FORBIDDEN' }
         })
-
+      await this.userInviteService.sendEmail(userInvite.journey, input.email)
       return userInvite
     })
   }
