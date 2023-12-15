@@ -45,7 +45,7 @@ export function HelpScoutBeacon({
   const { breakpoints, zIndex } = useTheme()
   const router = useRouter()
   const previousUrlRef = useRef(router.asPath)
-  const matches = useMediaQuery(breakpoints.up('md'));
+  const matches = useMediaQuery(breakpoints.up('md'))
   const [hasLoaded, setHasLoaded] = useState(false)
   const [beaconOpen, setBeaconOpen] = useState(false)
 
@@ -121,14 +121,10 @@ export function HelpScoutBeacon({
           right: { xs: 10, md: 10 },
           width: 24,
           height: 24,
-          color: matches ? 'secondary.dark' : 'background.paper',
+          color: matches ? 'secondary.dark' : 'background.paper'
         }}
       >
-        {beaconOpen ? (
-          <XCircleContained  />
-        ) : (
-          <HelpCircleContained />
-        )}
+        {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
       </IconButton>
       <style>{`
         #beacon-container {
