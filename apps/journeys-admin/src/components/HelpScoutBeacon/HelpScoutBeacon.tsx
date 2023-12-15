@@ -26,8 +26,7 @@ declare global {
       ((fn: 'open') => void) &
       ((fn: 'close') => void) &
       ((fn: 'event', eventObject: EventObject) => void) &
-      ((fn: 'session-data', sessionObject: SessionObject) => void) &
-      ((fn: 'toggle') => void)
+      ((fn: 'toggle') => void) &
       ((fn: 'search', value: string) => void) &
       ((fn: 'on', eventType: string, callback: () => void) => void) &
       ((fn: 'prefill', formObject: FormObject) => void)
