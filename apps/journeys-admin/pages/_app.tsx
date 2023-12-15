@@ -79,7 +79,7 @@ function JourneysAdminApp({
             defaultTitle={t('Admin | Next Steps')}
           />
           <HelpScoutBeacon
-            userInfo={{ name: user.displayName, email: user.email }}
+            userInfo={{ name: user?.displayName, email: user?.email }}
           />
           <Head>
             <meta
