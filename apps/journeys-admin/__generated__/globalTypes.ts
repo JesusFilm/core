@@ -298,6 +298,18 @@ export interface EmailActionInput {
   email: string;
 }
 
+export interface FormBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+}
+
+export interface FormBlockUpdateInput {
+  projectId?: string | null;
+  apiToken?: string | null;
+  formSlug?: string | null;
+}
+
 export interface HostCreateInput {
   title: string;
   location?: string | null;

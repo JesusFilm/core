@@ -10,6 +10,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   Button,
   Card,
+  Form,
   Image,
   RadioOption,
   SignUp,
@@ -44,6 +45,9 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
     switch (selected.__typename) {
       case 'CardBlock':
         return <Card {...selected} />
+
+      case 'FormBlock':
+        return withMoveButtons(<Form {...selected} />)
 
       case 'StepBlock': {
         const block = selected.children.find(
