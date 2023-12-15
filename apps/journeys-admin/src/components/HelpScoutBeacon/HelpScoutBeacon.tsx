@@ -5,6 +5,7 @@ import Script from 'next/script'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
+import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
 interface EventObject {
   type: string
@@ -44,9 +45,16 @@ export function HelpScoutBeacon({
   const router = useRouter()
   const previousUrlRef = useRef(router.asPath)
   const [hasLoaded, setHasLoaded] = useState(false)
+  const [beaconOpen, setBeaconOpen] = useState(false)
 
   const handleClick = (): void => {
     if (window.Beacon != null) {
+      window.Beacon('on', 'open', () => { 
+        setBeaconOpen(true)
+      })
+      window.Beacon('on', 'close', () => {
+        setBeaconOpen(false)
+      })
       window.Beacon('toggle')
     } else {
       void router.push('https://support.nextstep.is/')
@@ -97,6 +105,7 @@ export function HelpScoutBeacon({
         });
         `}
       </Script>
+      
       <IconButton
         size="large"
         edge="start"
@@ -116,23 +125,29 @@ export function HelpScoutBeacon({
           }
         }}
       >
-        <HelpCircleContained sx={{ color: 'background.paper' }} />
+        {beaconOpen ? <XCircleContained sx={{ color: 'background.paper' }} /> : <HelpCircleContained sx={{ color: 'background.paper' }} />}
       </IconButton>
       <style>{`
         #beacon-container {
           z-index: 999999999;
           position: sticky;
         }
-        .hsds-beacon .BeaconFabButtonFrame.is-configDisplayLeft,
+        .hsds-beacon .BeaconFabButtonFrame.is-configDisplayRight,
         .hsds-beacon .BeaconFabButtonFrame--left {
           left: 6px !important;
           bottom: 10px !important;
           transform: scale(0.9) !important;
         }
 
-        .hsds-beacon .BeaconContainer.is-configDisplayLeft {
-          left: 6px;
-          bottom: 80px;
+        .hsds-beacon .BeaconContainer.is-configDisplayRight {
+          top: 47px;
+          right: 0px;
+          width: 327px;
+          max-height: none;
+          height: calc(100vh - 47px);
+        }
+        .hsds-beacon .c-BeaconCloseButton {
+          display: none !important;
         }
 
         ${breakpoints.down('md')} {
@@ -145,25 +160,11 @@ export function HelpScoutBeacon({
             top: 40px;
             width: 100%;
           }
-          .hsds-beacon .c-BeaconCloseButton {
-            z-index: 9999999990999;
-            top: -27px !important; /* Adjust as needed */
-            right: 37px !important; /* Adjust as needed */
-          }
         }
 
         ${breakpoints.up('md')} {
-          .hsds-beacon .BeaconFabButtonFrame.is-configDisplayRight,
-          .hsds-beacon .BeaconFabButtonFrame--right {
-            bottom: 70px !important;
-          }
-          .hsds-beacon .BeaconContainer.is-configDisplayRight {
-            top: 40px;
-          }
-          .hsds-beacon .c-BeaconCloseButton {
-            top: -27px !important; /* Adjust as needed */
-            right: 19px !important; /* Adjust as needed */
-          }
+
+
         }
       `}</style>
     </>
