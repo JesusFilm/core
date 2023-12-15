@@ -79,13 +79,6 @@ export const PreYear = {
   }
 }
 
-export const Loading = {
-  ...Template,
-  args: {
-    journey: undefined
-  }
-}
-
 export const New = {
   ...Template,
   args: {

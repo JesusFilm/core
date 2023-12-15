@@ -73,7 +73,7 @@ export function MediaListItem({
   }
 
   return (
-    <NextLink href={href ?? ''} passHref legacyBehavior>
+    <NextLink href={href ?? ''} passHref legacyBehavior prefetch={false}>
       <ListItemButton
         disabled={loading}
         sx={{
@@ -119,65 +119,37 @@ export function MediaListItem({
             )}
           </Box>
           <Stack flexGrow={1} sx={{ overflow: 'hidden' }}>
-            {loading === true ? (
-              <Skeleton
-                variant="text"
-                width={100}
-                sx={{ mb: 1, height: theme.typography.overline.lineHeight }}
-              />
-            ) : (
-              overline != null && (
-                <Typography
-                  variant="overline"
-                  color="secondary.light"
-                  className="overflow-text"
-                  sx={{ ...fadeOverflowText('overline'), mt: 2 }}
-                >
-                  {overline}
-                </Typography>
-              )
+            {(overline != null || loading === true) && (
+              <Typography
+                variant="overline"
+                color="secondary.light"
+                className="overflow-text"
+                sx={{ ...fadeOverflowText('overline'), mt: 2 }}
+              >
+                {loading === true ? <Skeleton width={82} /> : overline}
+              </Typography>
             )}
 
             <ListItemText
               primary={
-                loading === true ? (
-                  <Skeleton
-                    variant="rectangular"
-                    width={150}
-                    sx={{
-                      mt: 0.5,
-                      borderRadius: 1,
-                      fontSize: theme.typography.subtitle1.fontSize
-                    }}
-                  />
-                ) : (
-                  <Typography
-                    variant="subtitle1"
-                    className="overflow-text"
-                    sx={{ ...fadeOverflowText('subtitle1') }}
-                  >
-                    {title}
-                  </Typography>
-                )
+                <Typography
+                  variant="subtitle1"
+                  className="overflow-text"
+                  sx={{ ...fadeOverflowText('subtitle1') }}
+                >
+                  {loading === true ? <Skeleton width={156} /> : title}
+                </Typography>
               }
               secondary={
-                loading === true ? (
-                  <Skeleton
-                    variant="text"
-                    width={125}
-                    sx={{ mt: 1, fontSize: theme.typography.body2.lineHeight }}
-                  />
-                ) : (
-                  description != null && (
-                    <Typography
-                      variant="body2"
-                      color="secondary.light"
-                      className="overflow-text"
-                      sx={{ ...fadeOverflowText('body2') }}
-                    >
-                      {description}
-                    </Typography>
-                  )
+                (description != null || loading === true) && (
+                  <Typography
+                    variant="body2"
+                    color="secondary.light"
+                    className="overflow-text"
+                    sx={{ ...fadeOverflowText('body2') }}
+                  >
+                    {loading === true ? <Skeleton width={128} /> : description}
+                  </Typography>
                 )
               }
               sx={{ mt: 0 }}

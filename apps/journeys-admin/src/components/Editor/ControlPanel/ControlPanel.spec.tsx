@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -48,6 +49,13 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('ControlPanel', () => {
   const step1: TreeBlock = {
@@ -176,6 +184,16 @@ describe('ControlPanel', () => {
   }
 
   it('should render tabs and tab panels', async () => {
+    const push = jest.fn()
+    const on = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      push,
+      events: {
+        on
+      },
+      query: { param: null }
+    } as unknown as NextRouter)
+
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
         <JourneyProvider
@@ -204,12 +222,42 @@ describe('ControlPanel', () => {
     expect(getByRole('tabpanel', { name: 'Journey' })).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Properties' }))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
-    expect(getByText('Unlocked Card')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Unlocked Card')).toBeInTheDocument())
     fireEvent.click(getByTestId('CardItem-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        push,
+        events: {
+          on
+        },
+        query: { param: 'properties-tab' }
+      })
+    })
+
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
+      expect(push).toHaveBeenCalledWith({
+        push,
+        events: {
+          on
+        },
+        query: { param: 'blocks-tab' }
+      })
+    })
+
+    fireEvent.click(getByRole('tab', { name: 'Journey' }))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        push,
+        events: {
+          on
+        },
+        query: { param: 'journeys-tab' }
+      })
+    })
   })
 
   it('should render component properties if a component is selected', async () => {
@@ -1101,9 +1149,11 @@ describe('ControlPanel', () => {
     expect(getByText('selectedBlock: step2.id')).toBeInTheDocument()
     expect(getByText('drawerMobileOpen: false')).toBeInTheDocument()
     expect(getByText('drawerTitle: Card Templates')).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'Card Video Template' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Card Video Template' })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should not allow blocks to be added when a Video Block is present', async () => {

@@ -13,20 +13,6 @@ import { journey } from '../../Editor/ActionDetails/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('TemplateViewHeader', () => {
   it('should render the social image', () => {
     const primaryImageBlock: PrimaryImageBlock = {
@@ -148,7 +134,7 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should display the title and description', () => {
-    const { getByText } = render(
+    const { getAllByText, getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -162,7 +148,7 @@ describe('TemplateViewHeader', () => {
       </MockedProvider>
     )
 
-    expect(getByText('my journey')).toBeInTheDocument()
+    expect(getAllByText('my journey')[0]).toBeInTheDocument()
     expect(getByText('my cool journey')).toBeInTheDocument()
   })
 
@@ -297,7 +283,7 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should show skeletons while loading', async () => {
-    const { getByTestId } = render(
+    const { getAllByTestId } = render(
       <MockedProvider>
         <JourneyProvider value={{}}>
           <TemplateViewHeader
@@ -309,7 +295,7 @@ describe('TemplateViewHeader', () => {
     )
 
     await waitFor(() =>
-      expect(getByTestId('TemplateViewTitleSkeleton')).toBeInTheDocument()
+      expect(getAllByTestId('TemplateViewTitleSkeleton')[0]).toBeInTheDocument()
     )
   })
 })

@@ -1,10 +1,14 @@
+import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { cache } from '../../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { getDiscoveryJourneysMock } from '../../DiscoveryJourneys/data'
 import {
   defaultJourney,
   descriptiveJourney,
@@ -24,74 +28,64 @@ const ActiveJourneyListStory: Meta<typeof ActiveJourneyList> = {
   }
 }
 
-const Template: StoryObj<typeof ActiveJourneyList> = {
-  render: ({ ...args }) => <ActiveJourneyList {...args} />
-}
-
-export const Default = {
-  ...Template,
-  parameters: {
-    apolloClient: {
-      cache: cache(),
-      mocks: [
-        {
-          request: {
-            query: GET_ADMIN_JOURNEYS,
-            variables: {
-              status: [JourneyStatus.draft, JourneyStatus.published]
-            }
-          },
-          result: {
-            data: {
-              journeys: [
-                defaultJourney,
-                oldJourney,
-                descriptiveJourney,
-                publishedJourney
-              ]
-            }
-          }
-        },
-        getDiscoveryJourneysMock
+const getAdminJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      useLastActiveTeamId: true
+    }
+  },
+  result: {
+    data: {
+      journeys: [
+        defaultJourney,
+        oldJourney,
+        descriptiveJourney,
+        publishedJourney
       ]
     }
   }
+}
+
+const Template: StoryObj<typeof ActiveJourneyList> = {
+  render: ({ ...args }) => <ActiveJourneyList {...args} />,
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [getAdminJourneysMock]
+    },
+    docs: {
+      source: {
+        type: 'code'
+      }
+    }
+  }
+}
+
+export const Default = {
+  ...Template
 }
 
 export const NoJourneys = {
   ...Template,
   parameters: {
+    ...Template.parameters,
     apolloClient: {
       cache: cache(),
       mocks: [
         {
-          request: {
-            query: GET_ADMIN_JOURNEYS,
-            variables: {
-              status: [JourneyStatus.draft, JourneyStatus.published]
-            }
-          },
+          ...getAdminJourneysMock,
           result: {
             data: {
               journeys: []
             }
           }
-        },
-        getDiscoveryJourneysMock
+        }
       ]
-    }
-  }
-}
-
-export const Loading = {
-  ...Template,
-  args: {
-    mocks: []
-  },
-  parameters: {
-    apolloClient: {
-      cache: cache(),
-      mocks: [getDiscoveryJourneysMock]
     }
   }
 }
@@ -99,28 +93,14 @@ export const Loading = {
 export const ArchiveAll = {
   ...Template,
   args: {
-    event: 'archiveAllActive',
-    mocks: []
-  },
-  parameters: {
-    apolloClient: {
-      cache: cache(),
-      mocks: [getDiscoveryJourneysMock]
-    }
+    event: 'archiveAllActive'
   }
 }
 
 export const TrashAll = {
   ...Template,
   args: {
-    event: 'trashAllActive',
-    mocks: []
-  },
-  parameters: {
-    apolloClient: {
-      cache: cache(),
-      mocks: [getDiscoveryJourneysMock]
-    }
+    event: 'trashAllActive'
   }
 }
 

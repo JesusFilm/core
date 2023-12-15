@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import MuiDrawer from '@mui/material/Drawer'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -271,6 +271,9 @@ export const PosterModal = {
     }
   },
   play: async () => {
+    await waitFor(async () => {
+      screen.getAllByTestId('posterCreateButton')
+    })
     const settingsTab = await screen.getAllByTestId('posterCreateButton')[0]
     await userEvent.click(settingsTab)
   }

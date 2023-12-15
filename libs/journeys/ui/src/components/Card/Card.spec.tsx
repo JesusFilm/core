@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
 import {
@@ -111,7 +112,11 @@ describe('CardBlock', () => {
   }
 
   it('should render card with theme background color', async () => {
-    const { getByTestId, getByText } = render(<Card {...block} />)
+    const { getByTestId, getByText } = render(
+      <MockedProvider>
+        <Card {...block} />
+      </MockedProvider>
+    )
 
     expect(blurImage).not.toHaveBeenCalled()
     expect(getByTestId('JourneysCard-card')).toHaveStyle(
@@ -124,12 +129,14 @@ describe('CardBlock', () => {
 
   it('should render card with override background color', () => {
     const { getByTestId } = render(
-      <Card
-        {...block}
-        themeMode={ThemeMode.dark}
-        themeName={ThemeName.base}
-        backgroundColor="#F1A025"
-      />
+      <MockedProvider>
+        <Card
+          {...block}
+          themeMode={ThemeMode.dark}
+          themeName={ThemeName.base}
+          backgroundColor="#F1A025"
+        />
+      </MockedProvider>
     )
 
     expect(blurImage).not.toHaveBeenCalled()
@@ -140,7 +147,9 @@ describe('CardBlock', () => {
 
   it('should render expanded cover if no coverBlockId', () => {
     const { queryByText, getByTestId } = render(
-      <Card {...block} coverBlockId={null} />
+      <MockedProvider>
+        <Card {...block} coverBlockId={null} />
+      </MockedProvider>
     )
 
     expect(blurImage).not.toHaveBeenCalled()
@@ -150,7 +159,9 @@ describe('CardBlock', () => {
 
   it('should render expanded cover if invalid coverBlockId', () => {
     const { queryByText, getByTestId } = render(
-      <Card {...block} coverBlockId="fakeId" />
+      <MockedProvider>
+        <Card {...block} coverBlockId="fakeId" />
+      </MockedProvider>
     )
 
     expect(blurImage).not.toHaveBeenCalled()
@@ -160,11 +171,13 @@ describe('CardBlock', () => {
 
   it('should render expanded cover with blur image background', async () => {
     const { queryByText, getByTestId } = render(
-      <Card
-        {...{ ...block, children: [...block.children, imageBlock] }}
-        fullscreen
-        coverBlockId="imageBlockId"
-      />
+      <MockedProvider>
+        <Card
+          {...{ ...block, children: [...block.children, imageBlock] }}
+          fullscreen
+          coverBlockId="imageBlockId"
+        />
+      </MockedProvider>
     )
 
     expect(blurImage).toHaveBeenCalledWith(imageBlock.blurhash, '#fff')
@@ -177,10 +190,12 @@ describe('CardBlock', () => {
 
   it('should render contained cover with image cover', () => {
     const { queryByTestId, queryAllByText } = render(
-      <Card
-        {...{ ...block, children: [...block.children, imageBlock] }}
-        coverBlockId="imageBlockId"
-      />
+      <MockedProvider>
+        <Card
+          {...{ ...block, children: [...block.children, imageBlock] }}
+          coverBlockId="imageBlockId"
+        />
+      </MockedProvider>
     )
     const standaloneImageBlock = queryByTestId(`JourneysImage-${imageBlock.id}`)
 
@@ -195,10 +210,12 @@ describe('CardBlock', () => {
 
   it('should render contained cover with video cover', () => {
     const { queryByTestId, queryAllByText } = render(
-      <Card
-        {...{ ...block, children: [...block.children, videoBlock] }}
-        coverBlockId="videoBlockId"
-      />
+      <MockedProvider>
+        <Card
+          {...{ ...block, children: [...block.children, videoBlock] }}
+          coverBlockId="videoBlockId"
+        />
+      </MockedProvider>
     )
     const standaloneVideoBlock = queryByTestId(`JourneysVideo-${videoBlock.id}`)
 

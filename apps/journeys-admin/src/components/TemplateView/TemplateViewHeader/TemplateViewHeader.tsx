@@ -1,9 +1,7 @@
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { intlFormat, parseISO } from 'date-fns'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
@@ -28,7 +26,6 @@ export function TemplateViewHeader({
 }: TemplateViewHeaderProps): ReactElement {
   const { journey } = useJourney()
   const hasCreatorDescription = journey?.creatorDescription != null
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
     <Stack data-testid="JourneysAdminTemplateViewHeader">
@@ -92,15 +89,38 @@ export function TemplateViewHeader({
               )}
             </Typography>
           </Box>
-          <Typography variant={smUp ? 'h1' : 'h6'} sx={{ pb: 4 }}>
+          <Typography
+            variant="h1"
+            sx={{ pb: 4, display: { xs: 'none', sm: 'block' } }}
+          >
             {journey?.title != null ? (
               journey?.title
             ) : (
               <Skeleton
                 data-testid="TemplateViewTitleSkeleton"
                 sx={{
-                  width: { xs: '100%', sm: '50%' },
-                  maxWidth: { xs: 200, sm: 400 }
+                  transform: 'scale(1, 0.8)',
+                  width: '50%',
+                  height: 38,
+                  maxWidth: 400
+                }}
+              />
+            )}
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{ pb: 4, display: { xs: 'block', sm: 'none' } }}
+          >
+            {journey?.title != null ? (
+              journey?.title
+            ) : (
+              <Skeleton
+                data-testid="TemplateViewTitleSkeleton"
+                sx={{
+                  transform: 'scale(1, 0.8)',
+                  width: '100%',
+                  height: 26,
+                  maxWidth: 200
                 }}
               />
             )}

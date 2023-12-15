@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -9,8 +10,15 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 
-import { VideoBlockEditorSettings } from './Settings'
 import { Source } from './Source'
+
+const VideoBlockEditorSettings = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoBlockEditor/Settings/VideoBlockEditorSettings" */ './Settings/VideoBlockEditorSettings'
+    ).then((mod) => mod.VideoBlockEditorSettings),
+  { ssr: false }
+)
 
 interface VideoBlockEditorProps {
   selectedBlock: TreeBlock<VideoBlock> | null

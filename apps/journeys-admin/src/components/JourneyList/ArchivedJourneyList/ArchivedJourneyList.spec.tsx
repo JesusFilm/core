@@ -1,8 +1,12 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
@@ -21,20 +25,15 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
-const archivedJourneysMock = {
+const archivedJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.archived]
+      status: [JourneyStatus.archived],
+      useLastActiveTeamId: true
     }
   },
   result: {
@@ -44,11 +43,15 @@ const archivedJourneysMock = {
   }
 }
 
-const noJourneysMock = {
+const noJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.archived]
+      status: [JourneyStatus.archived],
+      useLastActiveTeamId: true
     }
   },
   result: {
@@ -92,7 +95,8 @@ describe('ArchivedJourneyList', () => {
             request: {
               query: GET_ADMIN_JOURNEYS,
               variables: {
-                status: [JourneyStatus.archived]
+                status: [JourneyStatus.archived],
+                useLastActiveTeamId: true
               }
             },
             result: {
@@ -121,21 +125,6 @@ describe('ArchivedJourneyList', () => {
     )
   })
 
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ArchivedJourneyList />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(3)
-    )
-  })
-
   describe('Unarchive All', () => {
     const result = jest.fn(() => ({
       data: [{ id: defaultJourney.id, status: 'published' }]
@@ -150,7 +139,7 @@ describe('ArchivedJourneyList', () => {
       result
     }
 
-    it('should display the unarchive all dialog', () => {
+    it('should display the unarchive all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
@@ -161,7 +150,9 @@ describe('ArchivedJourneyList', () => {
         </MockedProvider>
       )
 
-      expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should unarchive all journeys', async () => {
@@ -228,7 +219,7 @@ describe('ArchivedJourneyList', () => {
       result
     }
 
-    it('should display the trash all dialog', () => {
+    it('should display the trash all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
@@ -239,7 +230,9 @@ describe('ArchivedJourneyList', () => {
         </MockedProvider>
       )
 
-      expect(getByText('Trash Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Trash Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should trash all journeys', async () => {

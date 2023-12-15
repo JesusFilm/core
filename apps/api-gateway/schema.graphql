@@ -394,6 +394,58 @@ interface Event
   value: String
 }
 
+type FormBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  action: Action
+  form: Json
+  projects: [FormiumProject!]!
+  projectId: String
+  forms: [FormiumForm!]!
+  formSlug: String
+}
+
+input FormBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
+input FormBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  projectId: String
+  apiToken: String
+  formSlug: String
+}
+
+type FormiumForm
+  @join__type(graph: JOURNEYS)
+{
+  """The formSlug of the form"""
+  slug: String!
+
+  """The name of the form"""
+  name: String!
+}
+
+type FormiumProject
+  @join__type(graph: JOURNEYS)
+{
+  """The projectId of the project"""
+  id: String!
+
+  """The name of the project"""
+  name: String!
+}
+
 enum GridAlignItems
   @join__type(graph: JOURNEYS)
 {
@@ -927,6 +979,9 @@ enum JourneyVisitorSort
   activity @join__enumValue(graph: JOURNEYS)
 }
 
+scalar Json
+  @join__type(graph: JOURNEYS)
+
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
@@ -1069,6 +1124,8 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): CardBlock! @join__field(graph: JOURNEYS)
+  formBlockCreate(input: FormBlockCreateInput!): FormBlock! @join__field(graph: JOURNEYS)
+  formBlockUpdate(id: ID!, input: FormBlockUpdateInput!): FormBlock @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
   iconBlockUpdate(
     id: ID!
@@ -1332,6 +1389,7 @@ type Query
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
+  block(id: ID!): Block! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
   """
@@ -1340,7 +1398,14 @@ type Query
   where the user is not a member of a team but is an editor or owner of the
   journey
   """
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+
+    """Use Last Active Team Id from JourneyProfile (if null will error)"""
+    useLastActiveTeamId: Boolean
+  ): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
@@ -1732,10 +1797,10 @@ input StepViewEventCreateInput
   """
   id: ID
 
-  """Id of the StepBlock"""
+  """Id of the current StepBlock"""
   blockId: ID!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   value: String
 }
 
