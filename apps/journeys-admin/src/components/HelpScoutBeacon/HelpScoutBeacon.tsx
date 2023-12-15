@@ -5,6 +5,8 @@ import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
+import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
+
 interface EventObject {
   type: string
   url: string
@@ -15,9 +17,6 @@ interface SessionObject {
   journeyPreview: string
   team: string
 }
-
-import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
-
 declare global {
   interface Window {
     Beacon?: ((fn: 'init', id: string) => void) &
@@ -73,7 +72,7 @@ export function HelpScoutBeacon(): ReactElement {
           display: {
             style: 'manual',
             position: 'right',
-            zIndex: 999999999,
+            zIndex: ${zIndex.modal + 2},
           },
         });
         `}
@@ -83,7 +82,7 @@ export function HelpScoutBeacon(): ReactElement {
         sx={{
           position: 'fixed',
           top: { xs: 10, md: 10 },
-          zIndex: (theme) => theme.zIndex.modal + 2,
+          zIndex: zIndex.modal + 2,
           right: 10,
           width: 24,
           height: 24,
