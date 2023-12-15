@@ -84,9 +84,9 @@ export function HelpScoutBeacon(): ReactElement {
         `}
       </Script>
       <IconButton
-                    size="large"
-                    edge="start"
-                    color="inherit"
+        size="large"
+        edge="start"
+        color="inherit"
         aria-label="Help"
         onClick={handleClick}
         sx={{
