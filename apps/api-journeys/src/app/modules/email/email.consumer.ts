@@ -1,4 +1,4 @@
-import { Process, Processor } from '@nestjs/bull'
+import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { Job } from 'bullmq'
 
 export interface EmailJob {
@@ -7,9 +7,8 @@ export interface EmailJob {
   body: string
 }
 @Processor('api-journeys-email')
-export class EmailConsumer {
-  @Process('email')
-  async email(job: Job<EmailJob>): Promise<void> {
-    console.log(job)
+export class EmailConsumer extends WorkerHost {
+  async process(job: Job<EmailJob>): Promise<void> {
+    console.log(job.data)
   }
 }

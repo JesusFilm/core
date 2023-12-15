@@ -7,6 +7,6 @@ import { EmailConsumer } from './email.consumer'
 @Module({
   imports: [BullModule.registerQueue({ name: 'api-journeys-email' })],
   providers: [EmailConsumer],
-  exports: [EmailConsumer]
+  exports: []
 })
 export class EmailModule {}
