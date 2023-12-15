@@ -1,5 +1,6 @@
 import IconButton from '@mui/material/IconButton'
 import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { ReactElement, useEffect, useRef, useState } from 'react'
@@ -44,6 +45,7 @@ export function HelpScoutBeacon({
   const { breakpoints, zIndex } = useTheme()
   const router = useRouter()
   const previousUrlRef = useRef(router.asPath)
+  const matches = useMediaQuery(breakpoints.up('md'));
   const [hasLoaded, setHasLoaded] = useState(false)
   const [beaconOpen, setBeaconOpen] = useState(false)
 
@@ -119,16 +121,13 @@ export function HelpScoutBeacon({
           right: { xs: 10, md: 10 },
           width: 24,
           height: 24,
-          backgroundColor: 'rgb(53, 53, 62)',
-          '&:hover': {
-            backgroundColor: 'rgb(45, 45, 54)'
-          }
+          color: matches ? 'secondary.dark' : 'background.paper',
         }}
       >
         {beaconOpen ? (
-          <XCircleContained sx={{ color: 'background.paper' }} />
+          <XCircleContained  />
         ) : (
-          <HelpCircleContained sx={{ color: 'background.paper' }} />
+          <HelpCircleContained />
         )}
       </IconButton>
       <style>{`
@@ -165,12 +164,7 @@ export function HelpScoutBeacon({
             width: 100%;
           }
         }
-
-        ${breakpoints.up('md')} {
-
-
-        }
-      `}</style>
+        `}</style>
     </>
   )
 }
