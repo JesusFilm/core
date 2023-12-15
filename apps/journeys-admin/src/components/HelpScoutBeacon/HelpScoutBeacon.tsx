@@ -117,7 +117,7 @@ export function HelpScoutBeacon({
         sx={{
           position: 'fixed',
           top: { xs: 11.5, md: 11.5 },
-          zIndex: zIndex.modal + 2,
+          zIndex: zIndex.modal + 3,
           right: { xs: 10, md: 10 },
           width: 24,
           height: 24,
@@ -132,7 +132,7 @@ export function HelpScoutBeacon({
       </IconButton>
       <style>{`
         #beacon-container {
-          z-index: 999999999;
+          z-index: ${zIndex.modal + 2} !important;
           position: sticky;
         }
         .hsds-beacon .BeaconFabButtonFrame.is-configDisplayRight,
@@ -162,6 +162,21 @@ export function HelpScoutBeacon({
             right: 0px;
             top: 40px;
             width: 100%;
+          }
+          .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
+            // position: fixed !important;
+            top: 10px !important;
+            padding: 0px !important;
+          }
+        }
+
+        ${breakpoints.up('md')} {
+          .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
+            position: fixed !important;
+            top: 30px !important;
+
+            right: 25px !important;
+            // width: 325px !important;
           }
         }
         `}</style>
