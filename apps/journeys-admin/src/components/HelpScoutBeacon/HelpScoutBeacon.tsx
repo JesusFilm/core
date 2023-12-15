@@ -12,9 +12,9 @@ interface EventObject {
   title: string
 }
 
-interface SessionObject {
-  journeyPreview: string
-  team: string
+interface FormObject {
+  name: string
+  email: string
 }
 declare global {
   interface Window {
@@ -28,10 +28,19 @@ declare global {
       ((fn: 'event', eventObject: EventObject) => void) &
       ((fn: 'session-data', sessionObject: SessionObject) => void) &
       ((fn: 'toggle') => void)
+      ((fn: 'search', value: string) => void) &
+      ((fn: 'on', eventType: string, callback: () => void) => void) &
+      ((fn: 'prefill', formObject: FormObject) => void)
   }
 }
 
-export function HelpScoutBeacon(): ReactElement {
+interface HelpScoutBeaconProps {
+  userInfo: FormObject
+}
+
+export function HelpScoutBeacon({
+  userInfo
+}: HelpScoutBeaconProps): ReactElement {
   const { breakpoints, zIndex } = useTheme()
   const router = useRouter()
   const previousUrlRef = useRef(router.asPath)
@@ -47,19 +56,25 @@ export function HelpScoutBeacon(): ReactElement {
 
   useEffect(() => {
     if (hasLoaded && window.Beacon != null) {
-      // close the beacon when the url changes if it's still open
-      const handleRouteChange = (url): void => {
-        if (url !== previousUrlRef.current) {
-          window.Beacon?.('close')
-          previousUrlRef.current = url
-        }
-      }
-      router.events.on('routeChangeComplete', handleRouteChange)
-      return () => {
-        router.events.off('routeChangeComplete', handleRouteChange)
+      window.Beacon('on', 'open', () => {
+        window.Beacon?.('prefill', {
+          name: userInfo.name,
+          email: userInfo.email
+        })
+      })
+    }
+    // close the beacon when the url changes if it's still open
+    const handleRouteChange = (url): void => {
+      if (url !== previousUrlRef.current) {
+        window.Beacon?.('close')
+        previousUrlRef.current = url
       }
     }
-  }, [hasLoaded, router])
+    router.events.on('routeChangeComplete', handleRouteChange)
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [hasLoaded, router, userInfo])
 
   return (
     <>
