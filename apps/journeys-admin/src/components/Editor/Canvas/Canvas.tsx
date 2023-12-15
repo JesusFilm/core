@@ -22,6 +22,7 @@ import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../FramePortal'
 
 import { CardWrapper } from './CardWrapper'
+import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
@@ -167,7 +168,8 @@ export function Canvas(): ReactElement {
                     TextResponseWrapper: InlineEditWrapper,
                     SignUpWrapper: InlineEditWrapper,
                     VideoWrapper,
-                    CardWrapper
+                    CardWrapper,
+                    FormWrapper
                   }}
                 />
                 <StepFooter

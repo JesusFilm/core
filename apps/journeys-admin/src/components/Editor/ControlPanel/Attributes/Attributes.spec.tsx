@@ -270,4 +270,28 @@ describe('Attributes', () => {
       getByRole('button', { name: 'Chat Widget None' })
     ).toBeInTheDocument()
   })
+
+  it('should render FormBlock properties with move buttons', () => {
+    const block: TreeBlock = {
+      __typename: 'FormBlock',
+      id: 'formBlock.id',
+      parentBlockId: card.id,
+      parentOrder: 0,
+      form: null,
+      action: null,
+      children: []
+    }
+
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <Attributes selected={block} step={{ ...card, children: [block] }} />
+      </MockedProvider>
+    )
+
+    expect(getByTestId('move-block-buttons')).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Credentials Incomplete' })
+    ).toBeInTheDocument()
+  })
 })

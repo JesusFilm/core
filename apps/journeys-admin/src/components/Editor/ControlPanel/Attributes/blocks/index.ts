@@ -1,4 +1,5 @@
 export { Card } from './Card'
+export { Form } from './Form'
 export { Step } from './Step'
 export { Typography } from './Typography'
 export { Button } from './Button'
