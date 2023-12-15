@@ -84,13 +84,16 @@ export function HelpScoutBeacon(): ReactElement {
         `}
       </Script>
       <IconButton
+                    size="large"
+                    edge="start"
+                    color="inherit"
         aria-label="Help"
         onClick={handleClick}
         sx={{
           position: 'fixed',
-          top: { xs: 10, md: 10 },
+          top: { xs: 11.5, md: 11.5 },
           zIndex: zIndex.modal + 2,
-          right: 10,
+          right: { xs: 10, md: 10 },
           width: 24,
           height: 24,
           backgroundColor: 'rgb(53, 53, 62)',
@@ -128,6 +131,11 @@ export function HelpScoutBeacon(): ReactElement {
             top: 40px;
             width: 100%;
           }
+          .hsds-beacon .c-BeaconCloseButton {
+            z-index: 9999999990999;
+            top: -27px !important; /* Adjust as needed */
+            right: 37px !important; /* Adjust as needed */
+          }
         }
 
         ${breakpoints.up('md')} {
@@ -137,6 +145,9 @@ export function HelpScoutBeacon(): ReactElement {
           }
           .hsds-beacon .BeaconContainer.is-configDisplayRight {
             top: 40px;
+          }
+          .hsds-beacon .c-BeaconCloseButton {
+            top: -27px !important; /* Adjust as needed */
           }
         }
       `}</style>
