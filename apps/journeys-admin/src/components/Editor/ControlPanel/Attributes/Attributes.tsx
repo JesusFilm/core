@@ -89,6 +89,14 @@ const SignUp = dynamic(
   { ssr: false }
 )
 
+const Form = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Form" */ './blocks/Form'
+    ).then((mod) => mod.Form),
+  { ssr: false }
+)
+
 function AttributesContent({ selected, step }: AttributesProps): ReactElement {
   if (typeof selected === 'string') {
     switch (selected) {
