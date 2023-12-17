@@ -1,0 +1,79 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = env("PRISMA_LOCATION")
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("PG_DATABASE_URL")
+}
+
+model Nexus {
+    id          String      @id @default(uuid())
+    name        String
+    description String?
+    createdAt   DateTime    @default(now())
+    deletedAt   DateTime?
+    status      NexusStatus @default(published)
+    userNexuses UserNexus[]
+    channels    Channel[]
+    resources   Resource[]
+}
+
+enum NexusStatus {
+    deleted
+    published
+}
+
+model UserNexus {
+    id      String @id @default(uuid())
+    userId  String
+    nexusId String
+    nexus   Nexus  @relation(fields: [nexusId], references: [id])
+    role    String
+}
+
+model Channel {
+    id        String          @id @default(uuid())
+    nexusId   String
+    name      String
+    platform  String
+    connected Boolean         @default(false)
+    nexus     Nexus           @relation(fields: [nexusId], references: [id])
+    youtube   ChannelYoutube?
+    status    NexusStatus     @default(published)
+    createdAt DateTime        @default(now())
+    deletedAt DateTime?
+}
+
+model Resource {
+    id          String               @id @default(uuid())
+    nexusId     String
+    name        String
+    nexus       Nexus                @relation(fields: [nexusId], references: [id])
+    googleDrive GoogleDriveResource?
+    status      NexusStatus          @default(published)
+    createdAt   DateTime             @default(now())
+    deletedAt   DateTime?
+}
+
+model ChannelYoutube {
+    id           String  @id @default(uuid())
+    channelId    String  @unique
+    channel      Channel @relation(fields: [channelId], references: [id])
+    title        String
+    description  String
+    youtubeId    String
+    imageUrl     String
+    refreshToken String
+}
+
+model GoogleDriveResource {
+    id           String   @id @default(uuid())
+    resourceId   String   @unique
+    title        String
+    driveId      String
+    mimeType     String
+    refreshToken String
+    resource     Resource @relation(fields: [resourceId], references: [id])
+}
