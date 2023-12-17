@@ -1,0 +1,64 @@
+type Channel @key(fields: "id") {
+  id: ID!
+  nexusId: String!
+  name: String!
+  platform: String
+  connected: Boolean
+  youtube: ChannelYoutube
+  status: ChannelStatus!
+}
+
+enum ChannelStatus {
+  deleted
+  published
+}
+
+type ChannelYoutube {
+  id: ID!
+  channelId: String
+  channel: Channel
+  title: String
+  description: String
+  youtubeId: String
+  imageUrl: String
+  refreshToken: String
+}
+
+input ChannelCreateInput {
+  nexusId: String!
+  name: String!
+  platform: String!
+}
+
+input ChannelUpdateInput {
+  name: String
+  nexusId: String
+  platform: String
+}
+
+input ChannelFilter {
+  ids: [ID!]
+  name: String
+  nexusId: String
+  limit: Int
+  connected: Boolean
+  status: ChannelStatus
+}
+
+input ConnectYoutubeChannelInput {
+  channelId: String!
+  authCode: String!
+  redirectUri: String!
+}
+
+extend type Query {
+  channels(where: ChannelFilter): [Channel!]
+  channel(id: ID!): Channel!
+}
+
+extend type Mutation {
+  channelCreate(input: ChannelCreateInput!): Channel!
+  channelUpdate(id: ID!, input: ChannelUpdateInput!): Channel!
+  channelDelete(id: ID!): Channel!
+  connectYoutubeChannel(input: ConnectYoutubeChannelInput!): Channel!
+}
