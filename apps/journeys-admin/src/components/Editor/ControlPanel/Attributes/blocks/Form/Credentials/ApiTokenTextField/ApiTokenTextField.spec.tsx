@@ -174,7 +174,7 @@ describe('ApiTokenTextField', () => {
     )
   })
 
-  it('should alloow the user to lock and unlock the textfield', () => {
+  it('should allow the user to lock and unlock the textfield', () => {
     const { getByLabelText } = render(
       <MockedProvider>
         <SnackbarProvider>
