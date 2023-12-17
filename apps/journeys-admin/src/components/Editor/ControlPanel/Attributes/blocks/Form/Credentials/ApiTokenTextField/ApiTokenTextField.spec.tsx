@@ -173,4 +173,22 @@ describe('ApiTokenTextField', () => {
       expect(getByText('invalid api token')).toBeInTheDocument()
     )
   })
+
+  it('should alloow the user to lock and unlock the textfield', () => {
+    const { getByLabelText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <ApiTokenTextField id={selectedBlock.id} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getByLabelText('Api Token')).toBeDisabled()
+    fireEvent.click(getByLabelText('toggle field lock'))
+    expect(getByLabelText('Api Token')).not.toBeDisabled()
+    fireEvent.click(getByLabelText('toggle field lock'))
+    expect(getByLabelText('Api Token')).toBeDisabled()
+  })
 })
