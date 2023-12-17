@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
@@ -12,10 +13,19 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-const onChange = jest.fn()
-const onDelete = jest.fn()
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('ImageSource', () => {
+  const onChange = jest.fn()
+  const onDelete = jest.fn()
+  const push = jest.fn()
+  const on = jest.fn()
+
   let originalEnv
 
   beforeEach(() => {
@@ -24,6 +34,13 @@ describe('ImageSource', () => {
       ...originalEnv,
       NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
     }
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
   })
 
   afterEach(() => {
@@ -46,6 +63,15 @@ describe('ImageSource', () => {
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Select Image' }))
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith({
+          query: { param: 'unsplash-image' },
+          push,
+          events: {
+            on
+          }
+        })
+      })
       fireEvent.click(getByRole('tab', { name: 'Custom' }))
       fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
       const textBox = await getByRole('textbox')

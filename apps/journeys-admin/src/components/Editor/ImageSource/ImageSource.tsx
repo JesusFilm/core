@@ -1,9 +1,11 @@
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
 const ImageLibrary = dynamic(
@@ -29,12 +31,23 @@ export function ImageSource({
   loading,
   error
 }: ImageSourceProps): ReactElement {
+  const router = useRouter()
   const [open, setOpen] = useState<boolean | undefined>()
 
   const handleImageDelete = async (): Promise<void> => {
     if (onDelete != null) {
       await onDelete()
     }
+  }
+
+  function handleClick(): void {
+    setOpen(true)
+
+    router.query.param = 'unsplash-image'
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed('unsplash-image')
+    })
   }
 
   return (
@@ -49,7 +62,7 @@ export function ImageSource({
       >
         <CardActionArea
           data-testid="card click area"
-          onClick={() => setOpen(true)}
+          onClick={handleClick}
           sx={{
             height: '100%',
             flexDirection: 'row',
