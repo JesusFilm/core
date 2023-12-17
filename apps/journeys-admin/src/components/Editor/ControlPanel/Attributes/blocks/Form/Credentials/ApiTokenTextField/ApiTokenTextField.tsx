@@ -45,7 +45,16 @@ export function ApiTokenTextField({
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [lockTextField, setLockTextField] = useState(true)
+  const [apiTokenExists, setApiTokenExists] = useState(false)
   const apiTokenTextFieldId = 'apiTokenTextFieldId'
+
+  useEffect(() => {
+    const checkApiTokenExists = async (): Promise<void> => {
+      setApiTokenExists(false)
+      setLockTextField(false)
+    }
+    checkApiTokenExists().catch(console.error)
+  }, [])
 
   useEffect(() => {
     if (!lockTextField) {
@@ -90,7 +99,7 @@ export function ApiTokenTextField({
       label={t('Api Token')}
       disabled={lockTextField}
       type="password"
-      initialValue={placeHolderToken}
+      initialValue={apiTokenExists ? placeHolderToken : ''}
       onSubmit={handleSubmitApiToken}
       startIcon={
         <InputAdornment position="start">
