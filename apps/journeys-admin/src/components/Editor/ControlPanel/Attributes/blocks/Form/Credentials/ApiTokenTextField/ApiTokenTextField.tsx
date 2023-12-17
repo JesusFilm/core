@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+<<<<<<< HEAD
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import { useSnackbar } from 'notistack'
@@ -8,6 +9,12 @@ import { useTranslation } from 'react-i18next'
 import Lock1Icon from '@core/shared/ui/icons/Lock1'
 import LockOpen1Icon from '@core/shared/ui/icons/LockOpen1'
 
+=======
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+>>>>>>> origin
 import { FormBlockUpdateCredentials } from '../../../../../../../../../__generated__/FormBlockUpdateCredentials'
 import { TextFieldForm } from '../../../../../../../TextFieldForm'
 
