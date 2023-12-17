@@ -34,6 +34,8 @@ interface ApiTokenTextFieldProps {
   id?: string
 }
 
+export const apiTokenExists = true
+
 export const placeHolderToken =
   'thisIsAFakeApiTokenTheReaOneIsNeverShowAgainInTheFrontEnd!!!'
 
@@ -44,17 +46,8 @@ export function ApiTokenTextField({
     useMutation<FormBlockUpdateCredentials>(FORM_BLOCK_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const [lockTextField, setLockTextField] = useState(true)
-  const [apiTokenExists, setApiTokenExists] = useState(false)
+  const [lockTextField, setLockTextField] = useState(apiTokenExists)
   const apiTokenTextFieldId = 'apiTokenTextFieldId'
-
-  useEffect(() => {
-    const checkApiTokenExists = async (): Promise<void> => {
-      setApiTokenExists(false)
-      setLockTextField(false)
-    }
-    checkApiTokenExists().catch(console.error)
-  }, [])
 
   useEffect(() => {
     if (!lockTextField) {
