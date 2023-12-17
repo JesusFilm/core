@@ -1,0 +1,201 @@
+directive @key(fields: _FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
+
+directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
+
+directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
+
+directive @external(reason: String) on OBJECT | FIELD_DEFINITION
+
+directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+
+directive @extends on OBJECT | INTERFACE
+
+scalar DateTime
+
+type Channel
+  @key(fields: "id")
+{
+  id: ID!
+  nexusId: String!
+  name: String!
+  platform: String
+  connected: Boolean
+  youtube: ChannelYoutube
+  status: ChannelStatus!
+}
+
+enum ChannelStatus {
+  deleted
+  published
+}
+
+type ChannelYoutube {
+  id: ID!
+  channelId: String
+  channel: Channel
+  title: String
+  description: String
+  youtubeId: String
+  imageUrl: String
+  refreshToken: String
+}
+
+input ChannelCreateInput {
+  nexusId: String!
+  name: String!
+  platform: String!
+}
+
+input ChannelUpdateInput {
+  name: String
+  nexusId: String
+  platform: String
+}
+
+input ChannelFilter {
+  ids: [ID!]
+  name: String
+  nexusId: String
+  limit: Int
+  connected: Boolean
+  status: ChannelStatus
+}
+
+input ConnectYoutubeChannelInput {
+  channelId: String!
+  authCode: String!
+  redirectUri: String!
+}
+
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  channels(where: ChannelFilter): [Channel!]
+  channel(id: ID!): Channel!
+  nexuses(where: NexusFilter): [Nexus!]!
+  nexus(id: ID!): Nexus!
+  resources(where: ResourceFilter): [Resource!]
+  resource(id: ID!): Resource!
+}
+
+extend type Mutation {
+  channelCreate(input: ChannelCreateInput!): Channel!
+  channelUpdate(id: ID!, input: ChannelUpdateInput!): Channel!
+  channelDelete(id: ID!): Channel!
+  connectYoutubeChannel(input: ConnectYoutubeChannelInput!): Channel!
+  nexusCreate(input: NexusCreateInput!): Nexus!
+  nexusUpdate(id: ID!, input: NexusUpdateInput!): Nexus!
+  nexusDelete(id: ID!): Boolean!
+  resourceCreate(input: ResourceCreateInput!): Resource!
+  resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
+  resourceDelete(id: ID!): Resource!
+  resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
+}
+
+type Nexus
+  @key(fields: "id")
+{
+  id: ID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+  deletedAt: DateTime
+  status: NexusStatus!
+}
+
+enum NexusStatus {
+  deleted
+  published
+}
+
+input NexusCreateInput {
+  name: String!
+  description: String
+}
+
+input NexusUpdateInput {
+  name: String
+  description: String
+}
+
+input NexusFilter {
+  ids: [ID!]
+  name: String
+  description: String
+  createdAt: DateTime
+  limit: Int
+  orderByRecent: Boolean
+}
+
+type Resource
+  @key(fields: "id")
+{
+  id: ID!
+  nexusId: String!
+  nexus: Nexus!
+  name: String!
+  googleDrive: GoogleDriveResource
+  createdAt: DateTime!
+  status: ResourceStatus!
+}
+
+enum ResourceStatus {
+  deleted
+  published
+}
+
+type GoogleDriveResource
+  @key(fields: "id")
+{
+  id: ID!
+  resourceId: String!
+  resource: Resource!
+  title: String!
+  driveId: String!
+  mimeType: String!
+  refreshToken: String!
+}
+
+input ResourceCreateInput {
+  nexusId: String!
+  name: String!
+  refLink: String
+  videoId: String
+}
+
+input ResourceUpdateInput {
+  name: String
+}
+
+input ResourceFromGoogleDriveInput {
+  fileIds: [String!]!
+  authCode: String!
+  nexusId: String!
+}
+
+input ResourceFilter {
+  ids: [ID!]
+  name: String
+  nexusId: String
+  status: ResourceStatus
+  limit: Int
+}
+
+input AddResourceFromGoogleDriveInput {
+  accessToken: String!
+  fileId: String!
+  nexusId: String!
+}
+
+scalar _FieldSet
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}
+
+union _Entity = Channel | GoogleDriveResource | Nexus | Resource
