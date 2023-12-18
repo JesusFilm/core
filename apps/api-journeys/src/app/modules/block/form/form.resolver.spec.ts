@@ -298,4 +298,24 @@ describe('FormBlock', () => {
       ).toBeNull()
     })
   })
+
+  describe('apiTokenExists', () => {
+    it('returns true if there is an api token saved for this client', async () => {
+      expect(
+        await resolver.apiTokenExists({
+          ...block,
+          apiToken: 'saved api token'
+        })
+      ).toBe(true)
+    })
+
+    it('returns false if there is no api token saved for this client', async () => {
+      expect(
+        await resolver.apiTokenExists({
+          ...block,
+          apiToken: null
+        })
+      ).toBe(false)
+    })
+  })
 })
