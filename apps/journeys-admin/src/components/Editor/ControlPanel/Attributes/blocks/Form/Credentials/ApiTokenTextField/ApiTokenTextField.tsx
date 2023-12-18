@@ -32,15 +32,19 @@ export const FORM_BLOCK_UPDATE = gql`
 
 interface ApiTokenTextFieldProps {
   id?: string
+  apiTokenExists: boolean
+  loading: boolean
+  handleApiTokenUpdated: () => Promise<void>
 }
-
-export const apiTokenExists = true
 
 export const placeHolderToken =
   'thisIsAFakeApiTokenTheReaOneIsNeverShowAgainInTheFrontEnd!!!'
 
 export function ApiTokenTextField({
-  id
+  id,
+  apiTokenExists,
+  loading,
+  handleApiTokenUpdated
 }: ApiTokenTextFieldProps): ReactElement {
   const [formBlockUpdateCredentials] =
     useMutation<FormBlockUpdateCredentials>(FORM_BLOCK_UPDATE)
@@ -78,6 +82,7 @@ export function ApiTokenTextField({
         variant: 'success',
         preventDuplicate: true
       })
+      await handleApiTokenUpdated()
     } catch (e) {
       enqueueSnackbar(e.message, {
         variant: 'error',
@@ -90,7 +95,7 @@ export function ApiTokenTextField({
     <TextFieldForm
       id={apiTokenTextFieldId}
       label={t('Api Token')}
-      disabled={lockTextField}
+      disabled={lockTextField || loading}
       type="password"
       initialValue={apiTokenExists ? placeHolderToken : ''}
       onSubmit={handleSubmitApiToken}

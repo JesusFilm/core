@@ -31,6 +31,7 @@ export const GET_FORM_BLOCK = gql`
           slug
           name
         }
+        apiTokenExists
       }
     }
   }
@@ -40,13 +41,22 @@ export function Credentials(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as TreeBlock<FormBlock> | undefined
-  const { data, loading } = useQuery(GET_FORM_BLOCK, {
+  const { data, loading, refetch } = useQuery(GET_FORM_BLOCK, {
     variables: { id: selectedBlock?.id }
   })
 
+  const handleApiTokenUpdated = async (): Promise<void> => {
+    await refetch()
+  }
+
   return (
     <Stack spacing={6} sx={{ px: 6, py: 4 }}>
-      <ApiTokenTextField id={selectedBlock?.id} />
+      <ApiTokenTextField
+        id={selectedBlock?.id}
+        apiTokenExists={data?.block?.apiTokenExists}
+        loading={loading}
+        handleApiTokenUpdated={handleApiTokenUpdated}
+      />
       <ProjectIdSelect
         id={selectedBlock?.id}
         currentProjectId={data?.block?.projectId}
