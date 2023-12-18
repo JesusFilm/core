@@ -32,9 +32,7 @@ export function EditToolbar(): ReactElement {
     >
       {journey != null && (
         <>
-          {mdUp && journey != null && (
-            <Analytics journey={journey} variant="button" />
-          )}
+          {mdUp && <Analytics journey={journey} variant="button" />}
           <Chip
             icon={<EyeOpenIcon />}
             label="Preview"
