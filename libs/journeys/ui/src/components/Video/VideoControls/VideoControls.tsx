@@ -426,7 +426,7 @@ export function VideoControls({
                   color="secondary.main"
                   noWrap
                   overflow="unset"
-                  sx={{ p: 2, ml:4}}
+                  sx={{ p: 2, ml: 4 }}
                 >
                   {displayTime} / {duration}
                 </Typography>
