@@ -53,18 +53,15 @@ export function ApiTokenTextField({
   const apiTokenTextFieldId = 'apiTokenTextFieldId'
 
   useEffect(() => {
-    if (!lockTextField) {
+    if (loading === false) {
+      setLockTextField(apiTokenExists)
+    }
+    if (!apiTokenExists) {
       const input = document.getElementById(
         apiTokenTextFieldId
       ) as HTMLInputElement
       input?.focus()
       input?.select()
-    }
-  }, [lockTextField])
-
-  useEffect(() => {
-    if (loading === false) {
-      setLockTextField(apiTokenExists)
     }
   }, [loading, apiTokenExists])
 
