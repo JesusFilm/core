@@ -188,7 +188,9 @@ export function Menu(): ReactElement {
         {(journey?.template !== true || isPublisher != null) && (
           <LanguageMenuItem onClose={handleCloseMenu} />
         )}
-        {journey != null && <ReportMenuItem journey={journey} />}
+        {journey != null && (
+          <ReportMenuItem journey={journey} variant="list-item" />
+        )}
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateMenuItem />
         )}

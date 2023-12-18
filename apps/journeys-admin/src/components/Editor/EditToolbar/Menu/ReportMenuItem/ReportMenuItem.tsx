@@ -1,3 +1,5 @@
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
@@ -7,10 +9,14 @@ import { JourneyFields as Journey } from '../../../../../../__generated__/Journe
 import { MenuItem } from '../../../../MenuItem/MenuItem'
 
 interface ReportMenuItemProps {
+  variant: 'button' | 'list-item'
   journey: Journey
 }
 
-export function ReportMenuItem({ journey }: ReportMenuItemProps): ReactElement {
+export function ReportMenuItem({
+  journey,
+  variant
+}: ReportMenuItemProps): ReactElement {
   return (
     <NextLink
       href={`/journeys/${journey.id}/reports`}
@@ -18,7 +24,15 @@ export function ReportMenuItem({ journey }: ReportMenuItemProps): ReactElement {
       legacyBehavior
       prefetch={false}
     >
-      <MenuItem label="Analytics" icon={<BarChartSquare3Icon />} />
+      {variant === 'button' ? (
+        <Tooltip title="Analytics" arrow>
+          <IconButton>
+            <BarChartSquare3Icon />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <MenuItem label="Analytics" icon={<BarChartSquare3Icon />} />
+      )}
     </NextLink>
   )
 }
