@@ -53,16 +53,17 @@ export function ApiTokenTextField({
   const apiTokenTextFieldId = 'apiTokenTextFieldId'
 
   useEffect(() => {
-    if (loading === false) {
-      setLockTextField(apiTokenExists)
-    }
-    if (!apiTokenExists) {
+    if (!lockTextField) {
       const input = document.getElementById(
         apiTokenTextFieldId
       ) as HTMLInputElement
       input?.focus()
       input?.select()
     }
+  }, [lockTextField])
+
+  useEffect(() => {
+    if (loading !== true && !apiTokenExists) setLockTextField(false)
   }, [loading, apiTokenExists])
 
   const handleToggleLock = (): void => {
@@ -80,6 +81,7 @@ export function ApiTokenTextField({
           }
         }
       })
+      if (apiToken !== '') setLockTextField(true)
       enqueueSnackbar(t('API Token updated'), {
         variant: 'success',
         preventDuplicate: true
@@ -98,7 +100,7 @@ export function ApiTokenTextField({
       label={t('Api Token')}
       disabled={lockTextField}
       type="password"
-      initialValue={apiTokenExists ? placeHolderToken : ''}
+      initialValue={loading === true || !apiTokenExists ? '' : placeHolderToken}
       onSubmit={handleSubmitApiToken}
       startIcon={
         <InputAdornment position="start">
