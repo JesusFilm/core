@@ -2,6 +2,7 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -11,6 +12,7 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
+import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
 
 const VideoLibrary = dynamic(
   async () =>
@@ -58,6 +60,7 @@ interface SourceProps {
 }
 
 export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
+  const router = useRouter()
   const [open, setOpen] = useState<boolean | undefined>()
 
   let SourceContent
@@ -81,14 +84,20 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
       break
   }
 
+  function handleClick(): void {
+    setOpen(true)
+
+    router.query.param = 'video-library'
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed('video-library')
+    })
+  }
+
   return (
     <>
       <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <CardActionArea
-          onClick={() => {
-            setOpen(true)
-          }}
-        >
+        <CardActionArea onClick={handleClick}>
           <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
             <SourceContent selectedBlock={selectedBlock} />
           </Stack>

@@ -78,7 +78,9 @@ function JourneysAdminApp({
             titleTemplate={t('%s | Next Steps')}
             defaultTitle={t('Admin | Next Steps')}
           />
-          <HelpScoutBeacon />
+          <HelpScoutBeacon
+            userInfo={{ name: user?.displayName, email: user?.email }}
+          />
           <Head>
             <meta
               name="viewport"
