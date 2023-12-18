@@ -14,9 +14,9 @@ import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
 import { DuplicateBlock } from '../../DuplicateBlock'
 
+import { Analytics } from './Analytics'
 import { DeleteBlock } from './DeleteBlock'
 import { Menu } from './Menu'
-import { Analytics } from './Menu/Analytics'
 
 export function EditToolbar(): ReactElement {
   const { journey } = useJourney()

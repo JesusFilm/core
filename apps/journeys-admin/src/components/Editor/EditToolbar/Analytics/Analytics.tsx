@@ -5,8 +5,8 @@ import { ReactElement } from 'react'
 
 import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
 
-import { JourneyFields as Journey } from '../../../../../../__generated__/JourneyFields'
-import { MenuItem } from '../../../../MenuItem/MenuItem'
+import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+import { MenuItem } from '../../../MenuItem/MenuItem'
 
 interface AnalyticsProps {
   variant: 'button' | 'list-item'
