@@ -2,20 +2,32 @@ import { Processor, WorkerHost } from '@nestjs/bullmq'
 import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
+import { PrismaService } from '../../lib/prisma.service'
+
 AWS.config.update({ region: 'us-east-2' })
 
 export interface EmailJob {
-  email: string
+  userId: string
   subject: string
   body: string
 }
-@Processor('api-journeys-email')
+@Processor('api-users-email')
 export class EmailConsumer extends WorkerHost {
+  constructor(private readonly prismaService: PrismaService) {
+    super()
+  }
+
   async process(job: Job<EmailJob>): Promise<void> {
-    await new SES()
+    const user = await this.prismaService.user.findUnique({
+      where: { id: job.data.userId }
+    })
+    if (user == null) {
+      throw new Error('User not found')
+    }
+    await await new SES()
       .sendEmail({
         Source: 'support@nextstep.is',
-        Destination: { ToAddresses: [job.data.email] },
+        Destination: { ToAddresses: [user.email] },
         Message: {
           Subject: {
             Charset: 'UTF-8',

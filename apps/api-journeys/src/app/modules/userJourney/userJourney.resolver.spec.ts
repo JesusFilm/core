@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { Queue } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { Journey, UserJourney } from '.prisma/api-journeys-client'
@@ -40,6 +41,12 @@ describe('UserJourneyResolver', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: Queue,
+          useValue: {
+            add: jest.fn()
+          }
         }
       ]
     }).compile()

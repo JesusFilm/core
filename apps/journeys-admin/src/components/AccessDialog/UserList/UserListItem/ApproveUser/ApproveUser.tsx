@@ -19,8 +19,8 @@ interface ApproveUserProps {
 }
 
 export const USER_JOURNEY_APPROVE = gql`
-  mutation UserJourneyApprove($id: ID!) {
-    userJourneyApprove(id: $id) {
+  mutation UserJourneyApprove($id: ID!, $email: String!) {
+    userJourneyApprove(id: $id, email: $email) {
       id
       role
     }
@@ -36,7 +36,7 @@ export function ApproveUser({
   const { t } = useTranslation('apps-journeys-admin')
   const [userJourneyApprove] = useMutation<UserJourneyApprove>(
     USER_JOURNEY_APPROVE,
-    { variables: { id } }
+    { variables: { id, email } }
   )
 
   const [userInviteRemove] = useMutation<UserInviteRemove>(USER_INVITE_REMOVE)

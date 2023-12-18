@@ -7,3 +7,9 @@ variable "cluster_id" {
   description = "The ID of the ElastiCache cluster"
   type        = string
 }
+
+variable "env" {
+  description = "The environment name"
+  type        = string
+  default     = "prod"
+}

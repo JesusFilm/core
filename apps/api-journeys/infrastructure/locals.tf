@@ -15,7 +15,9 @@ locals {
     "CLOUDFLARE_ACCOUNT_ID",
     "CLOUDFLARE_STREAM_TOKEN",
     "JOURNEYS_ADMIN_URL",
-    "REDIS_URL"
+    "REDIS_URL",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY"
   ]
   service_config = {
     name           = "api-journeys"

@@ -200,7 +200,8 @@ module "datadog_aurora" {
 module "redis" {
   source     = "../../modules/aws/elasticache"
   cluster_id = "redis-stage"
-  subnet_ids = [module.stage.vpc.private_subnets[*].id]
+  subnet_ids = module.stage.vpc.internal_subnets
+  env        = "stage"
 }
 
 module "journeys-admin" {

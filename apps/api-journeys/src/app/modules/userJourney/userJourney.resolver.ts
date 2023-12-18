@@ -23,9 +23,14 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { UserJourneyService } from './userJourney.service'
+
 @Resolver('UserJourney')
 export class UserJourneyResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly userJourneyService: UserJourneyService
+  ) {}
 
   @Query()
   @UseGuards(AppCaslGuard)
@@ -93,10 +98,15 @@ export class UserJourneyResolver {
       throw new GraphQLError('user is not allowed to update userJourney', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.prismaService.userJourney.update({
+    const retVal = await this.prismaService.userJourney.update({
       where: { id },
       data: { role: UserJourneyRole.editor }
     })
+    await this.userJourneyService.sendEmail(
+      userJourney.journey,
+      userJourney.userId
+    )
+    return retVal
   }
 
   @Mutation()
