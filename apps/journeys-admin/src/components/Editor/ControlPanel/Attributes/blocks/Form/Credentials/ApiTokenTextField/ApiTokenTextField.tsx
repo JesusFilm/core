@@ -33,7 +33,7 @@ export const FORM_BLOCK_UPDATE = gql`
 
 interface ApiTokenTextFieldProps {
   id?: string
-  apiTokenExists: boolean
+  apiTokenExists?: boolean
   loading?: boolean
 }
 
@@ -42,7 +42,7 @@ export const placeHolderToken =
 
 export function ApiTokenTextField({
   id,
-  apiTokenExists,
+  apiTokenExists = false,
   loading
 }: ApiTokenTextFieldProps): ReactElement {
   const [formBlockUpdateCredentials] =
