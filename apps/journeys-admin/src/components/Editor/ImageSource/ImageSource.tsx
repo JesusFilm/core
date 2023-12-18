@@ -1,12 +1,20 @@
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { ImageBlockHeader } from '../ImageBlockHeader'
-import { ImageLibrary } from '../ImageLibrary'
+
+const ImageLibrary = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ImageLibrary/ImageLibrary" */ '../ImageLibrary'
+    ).then((mod) => mod.ImageLibrary),
+  { ssr: false }
+)
 
 interface ImageSourceProps {
   selectedBlock: ImageBlock | null
@@ -24,7 +32,7 @@ export function ImageSource({
   error
 }: ImageSourceProps): ReactElement {
   const router = useRouter()
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<boolean | undefined>()
 
   const handleImageDelete = async (): Promise<void> => {
     if (onDelete != null) {
@@ -65,15 +73,17 @@ export function ImageSource({
           <ImageBlockHeader selectedBlock={selectedBlock} showAdd />
         </CardActionArea>
       </Card>
-      <ImageLibrary
-        open={open}
-        onClose={() => setOpen(false)}
-        onChange={onChange}
-        onDelete={handleImageDelete}
-        selectedBlock={selectedBlock}
-        loading={loading}
-        error={error}
-      />
+      {open != null && (
+        <ImageLibrary
+          open={open}
+          onClose={() => setOpen(false)}
+          onChange={onChange}
+          onDelete={handleImageDelete}
+          selectedBlock={selectedBlock}
+          loading={loading}
+          error={error}
+        />
+      )}
     </>
   )
 }

@@ -1,9 +1,12 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import {
   ActiveFab,
   ActiveJourneyEditContent,
   ActiveTab,
+  EditorProvider,
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
@@ -15,21 +18,10 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
-import { Chat } from './Chat'
 import { Footer } from './Footer'
 import { HostSidePanel } from './HostSidePanel'
-
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -38,6 +30,12 @@ jest.mock('react-i18next', () => ({
       t: (str: string) => str
     }
   }
+}))
+const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
 }))
 
 describe('Footer', () => {
@@ -50,10 +48,7 @@ describe('Footer', () => {
   }
 
   beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch: jest.fn()
-    })
+    jest.resetAllMocks()
   })
 
   it('should display Footer attributes', () => {
@@ -160,20 +155,17 @@ describe('Footer', () => {
   })
 
   it('should open property drawer for chat widget', () => {
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-
-    const { getByText } = render(<Footer />)
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={state}>
+            <Footer />
+            <TestEditorState renderChildren />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
     fireEvent.click(getByText('Chat Widget'))
-
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Chat Widget',
-      mobileOpen: true,
-      children: <Chat />
-    })
+    expect(getByText('drawerTitle: Chat Widget')).toBeInTheDocument()
   })
 })

@@ -296,9 +296,11 @@ describe('ControlPanel', () => {
       'aria-selected',
       'true'
     )
-    expect(
-      getByRole('button', { name: 'Chat Widget None' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Chat Widget None' })
+      ).toBeInTheDocument()
+    )
   })
 
   //  "Exceeded timeout of 10000 ms for a test" on CI

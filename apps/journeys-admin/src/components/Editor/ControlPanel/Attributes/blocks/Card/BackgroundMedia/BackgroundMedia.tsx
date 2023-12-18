@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useState } from 'react'
 
@@ -15,8 +16,15 @@ import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../..
 import { setBeaconPageViewed } from '../../../../../../../libs/setBeaconPageViewed'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
 
-import { BackgroundMediaImage } from './Image/BackgroundMediaImage'
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
+
+const BackgroundMediaImage = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/Image/BackgroundMediaImage" */ './Image/BackgroundMediaImage'
+    ).then((mod) => mod.BackgroundMediaImage),
+  { ssr: false }
+)
 
 export function BackgroundMedia(): ReactElement {
   const router = useRouter()
