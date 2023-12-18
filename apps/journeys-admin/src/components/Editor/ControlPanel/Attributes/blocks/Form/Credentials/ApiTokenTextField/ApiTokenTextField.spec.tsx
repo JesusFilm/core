@@ -31,7 +31,11 @@ describe('ApiTokenTextField', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} />
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              apiTokenExists
+              loading={false}
+            />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -73,7 +77,11 @@ describe('ApiTokenTextField', () => {
       >
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} />
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              apiTokenExists
+              loading={false}
+            />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -122,7 +130,11 @@ describe('ApiTokenTextField', () => {
       >
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} />
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              apiTokenExists
+              loading={false}
+            />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -159,7 +171,11 @@ describe('ApiTokenTextField', () => {
       >
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} />
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              apiTokenExists
+              loading={false}
+            />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -179,7 +195,11 @@ describe('ApiTokenTextField', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} apiTokenExists />
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              apiTokenExists
+              loading={false}
+            />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -197,7 +217,7 @@ describe('ApiTokenTextField', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} loading />
+            <ApiTokenTextField id={selectedBlock.id} apiTokenExists loading />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -212,7 +232,11 @@ describe('ApiTokenTextField', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} loading={false} />
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              loading={false}
+              apiTokenExists={false}
+            />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>

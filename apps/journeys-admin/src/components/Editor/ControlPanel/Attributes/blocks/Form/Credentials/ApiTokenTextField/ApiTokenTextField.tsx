@@ -33,8 +33,8 @@ export const FORM_BLOCK_UPDATE = gql`
 
 interface ApiTokenTextFieldProps {
   id?: string
-  apiTokenExists?: boolean
-  loading?: boolean
+  apiTokenExists: boolean
+  loading: boolean
 }
 
 export const placeHolderToken =
@@ -63,7 +63,7 @@ export function ApiTokenTextField({
   }, [lockTextField])
 
   useEffect(() => {
-    if (loading !== true && !apiTokenExists) setLockTextField(false)
+    if (!loading && !apiTokenExists) setLockTextField(false)
   }, [loading, apiTokenExists])
 
   const handleToggleLock = (): void => {
@@ -100,7 +100,7 @@ export function ApiTokenTextField({
       label={t('Api Token')}
       disabled={lockTextField}
       type="password"
-      initialValue={loading === true || !apiTokenExists ? '' : placeHolderToken}
+      initialValue={loading || !apiTokenExists ? '' : placeHolderToken}
       onSubmit={handleSubmitApiToken}
       startIcon={
         <InputAdornment position="start">
