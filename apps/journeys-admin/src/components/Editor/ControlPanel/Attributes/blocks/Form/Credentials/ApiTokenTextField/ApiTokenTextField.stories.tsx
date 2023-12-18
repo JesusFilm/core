@@ -24,7 +24,25 @@ const Template: StoryObj<ComponentProps<typeof ApiTokenTextField>> = {
 export const Default = {
   ...Template,
   args: {
-    id: 'id'
+    id: 'id',
+    loading: false
+  }
+}
+
+export const Filled = {
+  ...Template,
+  args: {
+    id: 'id',
+    apiTokenExists: true,
+    loading: false
+  }
+}
+
+export const Loading = {
+  ...Template,
+  args: {
+    id: 'id',
+    loading: true
   }
 }
 
