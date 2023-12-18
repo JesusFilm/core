@@ -7,9 +7,9 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { TeamProvider } from '../../../../Team/TeamProvider'
 import { defaultJourney } from '../../../data'
 
-import { ReportMenuItem } from './ReportMenuItem'
+import { Analytics } from './Analytics'
 
-describe('ReportMenuItem', () => {
+describe('Analytics', () => {
   it('should link to journey reports page', async () => {
     const { getByRole } = render(
       <SnackbarProvider>
@@ -21,7 +21,7 @@ describe('ReportMenuItem', () => {
                 variant: 'admin'
               }}
             >
-              <ReportMenuItem journey={defaultJourney} variant="list-item" />
+              <Analytics journey={defaultJourney} variant="list-item" />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>

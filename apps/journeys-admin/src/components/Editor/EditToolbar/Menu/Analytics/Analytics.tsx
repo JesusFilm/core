@@ -8,15 +8,12 @@ import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
 import { JourneyFields as Journey } from '../../../../../../__generated__/JourneyFields'
 import { MenuItem } from '../../../../MenuItem/MenuItem'
 
-interface ReportMenuItemProps {
+interface AnalyticsProps {
   variant: 'button' | 'list-item'
   journey: Journey
 }
 
-export function ReportMenuItem({
-  journey,
-  variant
-}: ReportMenuItemProps): ReactElement {
+export function Analytics({ journey, variant }: AnalyticsProps): ReactElement {
   return (
     <NextLink
       href={`/journeys/${journey.id}/reports`}

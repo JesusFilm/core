@@ -23,10 +23,10 @@ import { DuplicateBlock } from '../../../DuplicateBlock'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
 
+import { Analytics } from './Analytics'
 import { CopyMenuItem } from './CopyMenuItem'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
 import { LanguageMenuItem } from './LanguageMenuItem'
-import { ReportMenuItem } from './ReportMenuItem'
 
 const DescriptionDialog = dynamic(
   async () =>
@@ -188,9 +188,7 @@ export function Menu(): ReactElement {
         {(journey?.template !== true || isPublisher != null) && (
           <LanguageMenuItem onClose={handleCloseMenu} />
         )}
-        {journey != null && (
-          <ReportMenuItem journey={journey} variant="list-item" />
-        )}
+        {journey != null && <Analytics journey={journey} variant="list-item" />}
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateMenuItem />
         )}

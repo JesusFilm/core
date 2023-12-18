@@ -14,7 +14,7 @@ import { DuplicateBlock } from '../../DuplicateBlock'
 
 import { DeleteBlock } from './DeleteBlock'
 import { Menu } from './Menu'
-import { ReportMenuItem } from './Menu/ReportMenuItem'
+import { Analytics } from './Menu/Analytics'
 
 export function EditToolbar(): ReactElement {
   const { journey } = useJourney()
@@ -29,9 +29,7 @@ export function EditToolbar(): ReactElement {
     >
       {journey != null && (
         <>
-          {journey != null && (
-            <ReportMenuItem journey={journey} variant="button" />
-          )}
+          {journey != null && <Analytics journey={journey} variant="button" />}
           <Chip
             icon={<EyeOpenIcon />}
             label="Preview"
