@@ -349,7 +349,7 @@ export function VideoControls({
                   playing ? 'center-pause-button' : 'center-play-button'
                 }
                 sx={{
-                  fontSize: 50,
+                  fontSize: 80,
                   display: { xs: 'flex', lg: 'none' },
                   p: { xs: 2, sm: 0, md: 2 }
                 }}
@@ -426,7 +426,7 @@ export function VideoControls({
                   color="secondary.main"
                   noWrap
                   overflow="unset"
-                  sx={{ p: 2 }}
+                  sx={{ p: 2, ml:4}}
                 >
                   {displayTime} / {duration}
                 </Typography>
@@ -515,7 +515,7 @@ export function VideoControls({
               sx={{
                 width: 'initial',
                 height: 5,
-                mx: 2.5,
+                mx: 5,
                 py: 2,
                 display: { xs: 'flex', lg: 'none' },
                 '& .MuiSlider-thumb': {
