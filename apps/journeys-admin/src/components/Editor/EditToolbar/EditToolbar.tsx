@@ -12,10 +12,9 @@ import {
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
-import { DuplicateBlock } from './DuplicateBlock'
-
 import { Analytics } from './Analytics'
 import { DeleteBlock } from './DeleteBlock'
+import { DuplicateBlock } from './DuplicateBlock'
 import { Menu } from './Menu'
 
 export function EditToolbar(): ReactElement {
