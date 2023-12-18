@@ -149,7 +149,7 @@ export class FormBlockResolver {
   }
 
   @ResolveField('apiTokenExists')
-  async apiTokenExists(@Parent() { apiToken }: Block): Promise<boolean> {
+  apiTokenExists(@Parent() { apiToken }: Block): boolean {
     return apiToken != null
   }
 }
