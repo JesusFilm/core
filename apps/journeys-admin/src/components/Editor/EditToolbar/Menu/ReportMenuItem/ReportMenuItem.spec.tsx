@@ -21,7 +21,7 @@ describe('ReportMenuItem', () => {
                 variant: 'admin'
               }}
             >
-              <ReportMenuItem journey={defaultJourney} />
+              <ReportMenuItem journey={defaultJourney} variant="list-item" />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
