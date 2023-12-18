@@ -63,6 +63,10 @@ export function ApiTokenTextField({
     }
   }, [lockTextField])
 
+  useEffect(() => {
+    setLockTextField(apiTokenExists)
+  }, [apiTokenExists])
+
   const handleToggleLock = (): void => {
     setLockTextField((lock) => !lock)
   }
