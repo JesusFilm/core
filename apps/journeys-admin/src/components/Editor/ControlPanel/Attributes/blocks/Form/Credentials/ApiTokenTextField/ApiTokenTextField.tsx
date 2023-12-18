@@ -26,6 +26,7 @@ export const FORM_BLOCK_UPDATE = gql`
       }
       projectId
       formSlug
+      apiTokenExists
     }
   }
 `
@@ -33,8 +34,7 @@ export const FORM_BLOCK_UPDATE = gql`
 interface ApiTokenTextFieldProps {
   id?: string
   apiTokenExists: boolean
-  loading: boolean
-  handleApiTokenUpdated: () => Promise<void>
+  loading?: boolean
 }
 
 export const placeHolderToken =
@@ -43,14 +43,13 @@ export const placeHolderToken =
 export function ApiTokenTextField({
   id,
   apiTokenExists,
-  loading,
-  handleApiTokenUpdated
+  loading
 }: ApiTokenTextFieldProps): ReactElement {
   const [formBlockUpdateCredentials] =
     useMutation<FormBlockUpdateCredentials>(FORM_BLOCK_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const [lockTextField, setLockTextField] = useState(apiTokenExists)
+  const [lockTextField, setLockTextField] = useState(true)
   const apiTokenTextFieldId = 'apiTokenTextFieldId'
 
   useEffect(() => {
@@ -64,8 +63,10 @@ export function ApiTokenTextField({
   }, [lockTextField])
 
   useEffect(() => {
-    setLockTextField(apiTokenExists)
-  }, [apiTokenExists])
+    if (loading === false) {
+      setLockTextField(apiTokenExists)
+    }
+  }, [loading, apiTokenExists])
 
   const handleToggleLock = (): void => {
     setLockTextField((lock) => !lock)
@@ -86,7 +87,6 @@ export function ApiTokenTextField({
         variant: 'success',
         preventDuplicate: true
       })
-      await handleApiTokenUpdated()
     } catch (e) {
       enqueueSnackbar(e.message, {
         variant: 'error',
@@ -99,7 +99,7 @@ export function ApiTokenTextField({
     <TextFieldForm
       id={apiTokenTextFieldId}
       label={t('Api Token')}
-      disabled={lockTextField || loading}
+      disabled={lockTextField}
       type="password"
       initialValue={apiTokenExists ? placeHolderToken : ''}
       onSubmit={handleSubmitApiToken}

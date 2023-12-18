@@ -41,6 +41,7 @@ export interface FormBlockUpdateCredentials_formBlockUpdate {
   forms: FormBlockUpdateCredentials_formBlockUpdate_forms[];
   projectId: string | null;
   formSlug: string | null;
+  apiTokenExists: boolean | null;
 }
 
 export interface FormBlockUpdateCredentials {
