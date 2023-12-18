@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { ReactElement, SyntheticEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -19,24 +20,41 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
+import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
 import { ActionDetails } from '../ActionDetails'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Properties } from '../Properties'
 
-import { Attributes } from './Attributes'
-import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
 
+const Attributes = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes" */
+      './Attributes'
+    ).then((mod) => mod.Attributes),
+  { ssr: false }
+)
+const BlocksTab = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/BlocksTab" */
+      './BlocksTab'
+    ).then((mod) => mod.BlocksTab),
+  { ssr: false }
+)
 const CardTemplateDrawer = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "CardTemplateDrawer" */ '../CardTemplateDrawer'
+      /* webpackChunkName: "Editor/CardTemplateDrawer" */
+      '../CardTemplateDrawer'
     ).then((module) => module.CardTemplateDrawer),
   { ssr: false }
 )
 
 export function ControlPanel(): ReactElement {
+  const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: {
@@ -52,6 +70,14 @@ export function ControlPanel(): ReactElement {
 
   const selected = selectedComponent ?? selectedBlock ?? 'none'
 
+  function setRoute(param: string): void {
+    router.query.param = param
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
+    })
+  }
+
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
@@ -59,6 +85,7 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: newValue })
 
     if (newValue === ActiveTab.Journey) {
+      setRoute('journeys-tab')
       switch (journeyEditContentComponent) {
         case ActiveJourneyEditContent.SocialPreview:
           dispatch({
@@ -98,6 +125,8 @@ export function ControlPanel(): ReactElement {
           break
       }
     }
+    if (newValue === ActiveTab.Properties) setRoute('properties-tab')
+    if (newValue === ActiveTab.Blocks) setRoute('blocks-tab')
   }
 
   const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
@@ -125,11 +154,13 @@ export function ControlPanel(): ReactElement {
         })
       }
     } else if (view === ActiveJourneyEditContent.Action) {
+      setRoute('goals')
       dispatch({
         type: 'SetJourneyEditContentAction',
         component: ActiveJourneyEditContent.Action
       })
     } else if (view === ActiveJourneyEditContent.SocialPreview) {
+      setRoute('social')
       dispatch({
         type: 'SetJourneyEditContentAction',
         component: ActiveJourneyEditContent.SocialPreview
@@ -255,12 +286,22 @@ export function ControlPanel(): ReactElement {
             isDraggable
           />
         </TabPanel>
-        <TabPanel name="control-panel" value={activeTab} index={1}>
+        <TabPanel
+          name="control-panel"
+          value={activeTab}
+          index={1}
+          unmountUntilVisible
+        >
           {selected !== 'none' && selectedStep !== undefined && (
             <Attributes selected={selected} step={selectedStep} />
           )}
         </TabPanel>
-        <TabPanel name="control-panel" value={activeTab} index={2}>
+        <TabPanel
+          name="control-panel"
+          value={activeTab}
+          index={2}
+          unmountUntilVisible
+        >
           <BlocksTab />
         </TabPanel>
       </Stack>

@@ -110,7 +110,7 @@ export function UserNavigation({
     <>
       <Divider sx={{ mb: 0.5, mx: 6, borderColor: 'secondary.main' }} />
       {userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true && (
-        <NextLink href="/publisher" passHref legacyBehavior prefetch={false}>
+        <NextLink href="/publisher" passHref legacyBehavior>
           <ListItemButton
             selected={selectedPage === 'publisher'}
             data-testid="NavigationListItemPublisher"

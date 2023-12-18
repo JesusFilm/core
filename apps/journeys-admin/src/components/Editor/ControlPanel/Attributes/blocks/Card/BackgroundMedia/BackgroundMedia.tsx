@@ -3,6 +3,8 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -11,12 +13,21 @@ import Image3Icon from '@core/shared/ui/icons/Image3'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
+import { setBeaconPageViewed } from '../../../../../../../libs/setBeaconPageViewed'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
 
-import { BackgroundMediaImage } from './Image/BackgroundMediaImage'
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
 
+const BackgroundMediaImage = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/Image/BackgroundMediaImage" */ './Image/BackgroundMediaImage'
+    ).then((mod) => mod.BackgroundMediaImage),
+  { ssr: false }
+)
+
 export function BackgroundMedia(): ReactElement {
+  const router = useRouter()
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -41,7 +52,20 @@ export function BackgroundMedia(): ReactElement {
     event: MouseEvent<HTMLElement>,
     selected: string
   ): void => {
-    if (selected != null) setBlockType(selected)
+    if (selected != null) {
+      setBlockType(selected)
+
+      const param =
+        selected === 'VideoBlock' ? 'background-video' : 'background-image'
+
+      router.query.param = param
+      void router.push(router)
+      router.events.on('routeChangeComplete', () => {
+        setBeaconPageViewed(
+          selected === 'VideoBlock' ? 'Background Video' : 'Background Image'
+        )
+      })
+    }
   }
 
   const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({

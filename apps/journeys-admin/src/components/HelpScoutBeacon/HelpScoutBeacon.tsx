@@ -1,7 +1,19 @@
 import Fab from '@mui/material/Fab'
 import { useTheme } from '@mui/material/styles'
+import { useRouter } from 'next/router'
 import Script from 'next/script'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
+
+interface EventObject {
+  type: string
+  url: string
+  title: string
+}
+
+interface FormObject {
+  name: string
+  email: string
+}
 
 declare global {
   interface Window {
@@ -10,18 +22,60 @@ declare global {
         fn: 'config',
         config: { mode: 'askFirst'; enableFabAnimation: boolean }
       ) => void) &
-      ((fn: 'open') => void)
+      ((fn: 'open') => void) &
+      ((fn: 'close') => void) &
+      ((fn: 'event', eventObject: EventObject) => void) &
+      ((fn: 'search', value: string) => void) &
+      ((fn: 'on', eventType: string, callback: () => void) => void) &
+      ((fn: 'prefill', formObject: FormObject) => void)
   }
 }
 
-export function HelpScoutBeacon(): ReactElement {
+interface HelpScoutBeaconProps {
+  userInfo: FormObject
+}
+
+export function HelpScoutBeacon({
+  userInfo
+}: HelpScoutBeaconProps): ReactElement {
   const { breakpoints, zIndex } = useTheme()
+  const router = useRouter()
+  const previousUrlRef = useRef(router.asPath)
+  const [hasLoaded, setHasLoaded] = useState(false)
+
+  useEffect(() => {
+    if (hasLoaded && window.Beacon != null) {
+      window.Beacon('on', 'open', () => {
+        window.Beacon?.('prefill', {
+          name: userInfo.name,
+          email: userInfo.email
+        })
+      })
+    }
+    // close the beacon when the url changes if it's still open
+    const handleRouteChange = (url): void => {
+      if (url !== previousUrlRef.current) {
+        window.Beacon?.('close')
+        previousUrlRef.current = url
+      }
+    }
+    router.events.on('routeChangeComplete', handleRouteChange)
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [hasLoaded, router, userInfo])
+
   return (
     <>
       <Script id="beacon" className="beacon" strategy="lazyOnload">
         {`!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`}
       </Script>
-      <Script id="init" className="init" strategy="lazyOnload">
+      <Script
+        id="init"
+        className="init"
+        strategy="lazyOnload"
+        onReady={() => setHasLoaded(true)}
+      >
         {`window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')`}
       </Script>
       <Fab

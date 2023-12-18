@@ -1,5 +1,6 @@
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/system/createTheme'
+import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
 import {
@@ -8,9 +9,24 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 
 import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
-import { ActionsTable } from '../ActionsTable'
 import { Canvas } from '../Canvas'
-import { SocialPreview } from '../SocialPreview/SocialPreview'
+
+const ActionsTable = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ActionsTable" */
+      '../ActionsTable'
+    ).then((mod) => mod.ActionsTable),
+  { ssr: false }
+)
+const SocialPreview = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/SocialPreview" */
+      '../SocialPreview'
+    ).then((mod) => mod.SocialPreview),
+  { ssr: false }
+)
 
 function bgColor(
   theme: Theme,
