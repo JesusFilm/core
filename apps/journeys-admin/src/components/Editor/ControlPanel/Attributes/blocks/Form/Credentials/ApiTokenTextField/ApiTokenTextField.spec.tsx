@@ -204,6 +204,7 @@ describe('ApiTokenTextField', () => {
     )
 
     expect(getByLabelText('Api Token')).toBeDisabled()
+    expect(getByLabelText('Api Token')).toHaveValue('')
   })
 
   it('should be unlocked if token does not exist', () => {
@@ -211,12 +212,13 @@ describe('ApiTokenTextField', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} />
+            <ApiTokenTextField id={selectedBlock.id} loading={false} />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    expect(getByLabelText('Api Token')).toBeDisabled()
+    expect(getByLabelText('Api Token')).not.toBeDisabled()
+    expect(getByLabelText('Api Token')).toHaveValue('')
   })
 })
