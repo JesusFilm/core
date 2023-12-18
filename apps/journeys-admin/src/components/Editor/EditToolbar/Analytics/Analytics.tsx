@@ -23,7 +23,7 @@ export function Analytics({ journey, variant }: AnalyticsProps): ReactElement {
     >
       {variant === 'button' ? (
         <Tooltip title="Analytics" arrow>
-          <IconButton>
+          <IconButton aria-label="Analytics">
             <BarChartSquare3Icon />
           </IconButton>
         </Tooltip>
