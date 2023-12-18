@@ -42,7 +42,7 @@ export const placeHolderToken =
 
 export function ApiTokenTextField({
   id,
-  apiTokenExists = false,
+  apiTokenExists,
   loading
 }: ApiTokenTextFieldProps): ReactElement {
   const [formBlockUpdateCredentials] =
