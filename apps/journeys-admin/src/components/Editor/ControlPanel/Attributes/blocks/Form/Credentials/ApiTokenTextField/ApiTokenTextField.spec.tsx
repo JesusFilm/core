@@ -179,7 +179,7 @@ describe('ApiTokenTextField', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} />
+            <ApiTokenTextField id={selectedBlock.id} apiTokenExists />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -189,6 +189,34 @@ describe('ApiTokenTextField', () => {
     fireEvent.click(getByLabelText('toggle field lock'))
     expect(getByLabelText('Api Token')).not.toBeDisabled()
     fireEvent.click(getByLabelText('toggle field lock'))
+    expect(getByLabelText('Api Token')).toBeDisabled()
+  })
+
+  it('should be locked while loading', () => {
+    const { getByLabelText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <ApiTokenTextField id={selectedBlock.id} loading />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getByLabelText('Api Token')).toBeDisabled()
+  })
+
+  it('should be unlocked if token does not exist', () => {
+    const { getByLabelText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <ApiTokenTextField id={selectedBlock.id} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
     expect(getByLabelText('Api Token')).toBeDisabled()
   })
 })
