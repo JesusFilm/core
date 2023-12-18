@@ -36,7 +36,8 @@ describe('ProjectIdSelect', () => {
     ],
     formSlug: null,
     forms: [],
-    form: null
+    form: null,
+    apiTokenExists: null
   }
 
   it('render the default value', () => {

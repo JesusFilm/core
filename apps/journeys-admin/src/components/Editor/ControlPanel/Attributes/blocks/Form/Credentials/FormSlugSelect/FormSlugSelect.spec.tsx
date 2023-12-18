@@ -38,7 +38,8 @@ describe('FormSlugSelect', () => {
     projects: [
       { __typename: 'FormiumProject', id: 'projectId', name: 'projectName' }
     ],
-    form: null
+    form: null,
+    apiTokenExists: null
   }
 
   it('render the default value', () => {
