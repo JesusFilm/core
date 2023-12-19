@@ -7,11 +7,6 @@ import { FormFields } from './__generated__/FormFields'
 
 import { Form } from '.'
 
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
-}))
-
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {

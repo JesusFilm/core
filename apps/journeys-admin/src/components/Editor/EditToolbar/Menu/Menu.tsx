@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -17,6 +18,7 @@ import SettingsIcon from '@core/shared/ui/icons/Settings'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
+import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
 import { DuplicateBlock } from '../../../DuplicateBlock'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
@@ -65,6 +67,7 @@ export function Menu(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
+  const router = useRouter()
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetRole>(GET_ROLE)
@@ -78,6 +81,14 @@ export function Menu(): ReactElement {
   >()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
+  function setRoute(param: string): void {
+    router.query.param = param
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
+    })
+  }
+
   function handleShowMenu(event: React.MouseEvent<HTMLButtonElement>): void {
     setAnchorEl(event.currentTarget)
   }
@@ -85,6 +96,7 @@ export function Menu(): ReactElement {
     setAnchorEl(null)
   }
   function handleOpenTitleDialog(): void {
+    setRoute('title')
     setTitleDialogOpen(true)
     setAnchorEl(null)
   }
@@ -93,6 +105,7 @@ export function Menu(): ReactElement {
     setAnchorEl(null)
   }
   function handleOpenDescriptionDialog(): void {
+    setRoute('description')
     setDescriptionDialogOpen(true)
     setAnchorEl(null)
   }

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import {
   VideoBlockSource,
@@ -15,6 +16,13 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const getVideosMock = {
   request: {
@@ -80,9 +88,21 @@ const getVideoMock = {
 }
 
 describe('Source', () => {
+  const push = jest.fn()
+  const on = jest.fn()
+
   it('calls onChange when video selected', async () => {
     const onChange = jest.fn()
     const result = jest.fn().mockReturnValue(getVideoMock.result)
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getVideosMock, { ...getVideoMock, result }]}>
         <Source selectedBlock={null} onChange={onChange} />
@@ -106,6 +126,15 @@ describe('Source', () => {
         endAt: 144
       })
     )
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'video-library' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 
   it('shows YouTube video', async () => {
@@ -206,6 +235,14 @@ describe('Source', () => {
 
   it('shows video details on source button click', async () => {
     const onChange = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByRole, getByText } = render(
       <MockedProvider>
         <Source
