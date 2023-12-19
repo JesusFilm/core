@@ -22,7 +22,16 @@ export function Analytics({ journey, variant }: AnalyticsProps): ReactElement {
       prefetch={false}
     >
       {variant === 'button' ? (
-        <Tooltip title="Analytics" arrow>
+        <Tooltip
+          title="Analytics"
+          arrow
+          sx={{
+            display: {
+              xs: 'none',
+              md: 'flex'
+            }
+          }}
+        >
           <IconButton aria-label="Analytics">
             <BarChartSquare3Icon />
           </IconButton>

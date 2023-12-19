@@ -1,8 +1,6 @@
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
 import {
@@ -20,7 +18,6 @@ import { Menu } from './Menu'
 export function EditToolbar(): ReactElement {
   const { journey } = useJourney()
   const { state } = useEditor()
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   return (
     <Stack
@@ -31,7 +28,7 @@ export function EditToolbar(): ReactElement {
     >
       {journey != null && (
         <>
-          {mdUp && <Analytics journey={journey} variant="button" />}
+          <Analytics journey={journey} variant="button" />
           <Chip
             icon={<EyeOpenIcon />}
             label="Preview"
