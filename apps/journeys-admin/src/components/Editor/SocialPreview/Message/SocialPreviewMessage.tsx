@@ -82,8 +82,8 @@ export function MessageBubble({
 export function SocialPreviewMessage({
   journey
 }: SocialPreviewMessageProps): ReactElement {
-  const { seoTitle, seoDescription } = useSocialPreview()
-  const primaryImageBlock = journey?.primaryImageBlock
+  const { seoTitle, seoDescription, primaryImageBlock } = useSocialPreview()
+
   return (
     <Box
       width={256}

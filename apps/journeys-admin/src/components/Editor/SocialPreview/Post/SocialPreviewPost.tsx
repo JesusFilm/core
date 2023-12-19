@@ -25,8 +25,8 @@ interface SocialPreviewPostProps {
 export function SocialPreviewPost({
   journey
 }: SocialPreviewPostProps): ReactElement {
-  const { seoTitle, seoDescription } = useSocialPreview()
-  const primaryImageBlock = journey?.primaryImageBlock
+  const { seoTitle, seoDescription, primaryImageBlock } = useSocialPreview()
+
   return (
     <Box
       width={256}

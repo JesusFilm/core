@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -23,6 +23,7 @@ import {
 } from '../../../../__generated__/JourneyImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { ImageLibrary } from '../ImageLibrary'
+import { useSocialPreview } from '../SocialProvider'
 
 import { Large } from './Large'
 import { Small } from './Small'
@@ -106,12 +107,16 @@ export function ImageEdit({
     JourneyImageBlockAssociationUpdate,
     JourneyImageBlockAssociationUpdateVariables
   >(JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE)
+  const { setPrimaryImageBlock } = useSocialPreview()
   const { journey } = useJourney()
   const [open, setOpen] = useState(false)
   const targetImageBlock =
     target === 'primary'
       ? journey?.primaryImageBlock
       : journey?.creatorImageBlock
+  useEffect(() => {
+    setPrimaryImageBlock(targetImageBlock)
+  }, [setPrimaryImageBlock, targetImageBlock])
 
   function handleOpen(): void {
     setOpen(true)
@@ -150,6 +155,7 @@ export function ImageEdit({
         }
       })
     }
+    // setPrimaryImageBlock(imageBlock)
   }
 
   async function updateImageBlock(imageBlock: ImageBlock): Promise<void> {
@@ -168,6 +174,7 @@ export function ImageEdit({
         }
       }
     })
+    // setPrimaryImageBlock(imageBlock)
   }
 
   async function handleDelete(): Promise<void> {
@@ -202,6 +209,7 @@ export function ImageEdit({
         }
       })
     }
+    // setPrimaryImageBlock(null)
   }
 
   async function handleChange(imageBlock: ImageBlock): Promise<void> {
