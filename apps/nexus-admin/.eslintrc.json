@@ -1,37 +1,47 @@
 {
   "extends": [
     "plugin:@nx/react-typescript",
+    "../../.eslintrc.json",
     "next",
-    "next/core-web-vitals",
-    "../../.eslintrc.json"
+    "next/core-web-vitals"
   ],
-  "ignorePatterns": ["!**/*", ".next/**/*"],
+  "ignorePatterns": ["!**/*"],
   "overrides": [
-    {
-      "files": ["*.*"],
-      "rules": {
-        "@next/next/no-html-link-for-pages": "off"
-      }
-    },
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
-        "@next/next/no-html-link-for-pages": ["error", "apps/nexus-admin/pages"]
+        "@next/next/no-html-link-for-pages": [
+          "error",
+          "apps/nexus-admin/pages/"
+        ]
       }
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {}
+      "parserOptions": {
+        "project": ["apps/nexus-admin/tsconfig.*?.json"]
+      },
+      "rules": {
+        "no-void": ["error", { "allowAsStatement": true }],
+        "@typescript-eslint/no-misused-promises": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
     },
     {
-      "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
-      "env": {
-        "jest": true
+      "files": ["*.tsx", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["next-env.d.ts"],
+      "rules": {
+        "@typescript-eslint/triple-slash-reference": "off"
       }
     }
-  ]
+  ],
+  "env": {
+    "jest": true
+  }
 }

@@ -106,10 +106,10 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/nexus-admin/**/*.{ts,tsx,js,jsx}"]
-      }
+      },
+      "outputs": ["{options.outputFile}"]
     },
     "type-check": {
       "executor": "nx:run-commands",
