@@ -37,27 +37,25 @@ export default function JourneyStep({
   )
 
   return (
-    <>
-      <ThemeProvider
-        themeName={journey.themeName}
-        themeMode={journey.themeMode}
-        rtl={rtl}
-        locale={locale}
+    <ThemeProvider
+      themeName={journey.themeName}
+      themeMode={journey.themeMode}
+      rtl={rtl}
+      locale={locale}
+    >
+      <Stack
+        sx={{
+          height: '100vh'
+        }}
       >
-        <Stack
-          sx={{
-            height: '100vh'
+        <BlockRenderer
+          block={currentStep}
+          wrappers={{
+            VideoWrapper
           }}
-        >
-          <BlockRenderer
-            block={currentStep}
-            wrappers={{
-              VideoWrapper
-            }}
-          />
-        </Stack>
-      </ThemeProvider>
-    </>
+        />
+      </Stack>
+    </ThemeProvider>
   )
 }
 
