@@ -12,14 +12,11 @@ import {
 
 const prisma = new PrismaClient()
 
-// Locally: Get userId for 'playwrightUser@example.com' and replace empty string
-// Staging/Prod: Will use env variable
-const USER_ID_LOCAL = 'eSOfygik80gVvom4j1SAGqj6b3v2'
 const TEAM_ID = 'playwright-team'
 const JOURNEY_SLUG = 'playwright-testing-journey'
 
 export async function playwrightUserAccess(): Promise<void> {
-  const userId = process.env.userId ?? USER_ID_LOCAL
+  const userId = process.env.PLAYWRIGHT_USER_ID ?? ''
 
   const journeyProfileId = uuidv4()
   const userTeamId = uuidv4()
