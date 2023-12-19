@@ -139,6 +139,7 @@ jobs:
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
           DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
+          DOPPLER_CONFIG: stg
         with:
           targets: fetch-secrets,build
   test:
