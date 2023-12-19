@@ -23,7 +23,6 @@ import {
   JourneyImageBlockUpdateVariables
 } from '../../../../__generated__/JourneyImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../libs/blockDeleteUpdate/blockDeleteUpdate'
-import { ImageLibrary } from '../ImageLibrary'
 import { useSocialPreview } from '../SocialProvider'
 
 import { Large } from './Large'
