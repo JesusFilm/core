@@ -218,5 +218,4 @@ module "journeys-admin" {
   })
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
-
 }

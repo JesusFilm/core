@@ -10,5 +10,4 @@ languages-serve: nx serve api-languages
 languages-watcher: nx watcher api-languages
 videos-serve: nx serve api-videos
 videos-watcher: nx watcher api-videos
-mq-serve: nx serve mq
 gateway: nx serve api-gateway

@@ -87,7 +87,6 @@ import { VisitorModule } from './modules/visitor/visitor.module'
       }
     }),
     DatadogTraceModule.forRoot()
-  ],
-  providers: []
+  ]
 })
 export class AppModule {}
