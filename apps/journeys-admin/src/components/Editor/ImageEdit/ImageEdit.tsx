@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import dynamic from 'next/dynamic'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
