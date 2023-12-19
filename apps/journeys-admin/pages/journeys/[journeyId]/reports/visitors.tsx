@@ -180,6 +180,7 @@ function JourneyVisitorsPage(): ReactElement {
       <PageWrapper
         title={t('Visitors')}
         hideNavbar
+        showAppHeader={false}
         user={user}
         backHref={`/journeys/${journeyId}/reports`}
         mainHeaderChildren={

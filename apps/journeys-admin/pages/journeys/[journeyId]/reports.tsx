@@ -32,6 +32,7 @@ function JourneyReportsPage(): ReactElement {
       <PageWrapper
         title={t('Journey Analytics')}
         hideNavbar
+        showAppHeader={false}
         user={user}
         backHref={`/journeys/${journeyId}`}
       >

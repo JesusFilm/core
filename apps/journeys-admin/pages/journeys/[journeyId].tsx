@@ -78,6 +78,7 @@ function JourneyEditPage(): ReactElement {
           customSidePanel={<Drawer />}
           user={user}
           hideNavbar
+          showAppHeader={false}
         >
           <JourneyEdit />
         </PageWrapper>

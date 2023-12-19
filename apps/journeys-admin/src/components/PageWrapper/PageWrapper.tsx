@@ -90,7 +90,7 @@ export function PageWrapper({
             sx={{
               backgroundColor: 'background.default',
               width: { xs: '100vw', md: `calc(100vw - ${navbarWidth})` },
-              pt: { xs: toolbar.height, md: 0 },
+              pt: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0
@@ -113,13 +113,22 @@ export function PageWrapper({
               }}
             >
               {showMainHeader && (
-                <MainPanelHeader
-                  title={title}
-                  backHref={backHref}
-                  backHrefHistory={backHrefHistory}
+                <Stack
+                  sx={{
+                    left: 'auto',
+                    right: 'auto',
+                    width: 'inherit',
+                    height: toolbar.height
+                  }}
                 >
-                  {mainHeaderChildren}
-                </MainPanelHeader>
+                  <MainPanelHeader
+                    title={title}
+                    backHref={backHref}
+                    backHrefHistory={backHrefHistory}
+                  >
+                    {mainHeaderChildren}
+                  </MainPanelHeader>
+                </Stack>
               )}
               <MainPanelBody
                 mainBodyPadding={mainBodyPadding}
