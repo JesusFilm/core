@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { Form } from '@formium/client'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
@@ -51,16 +52,18 @@ export function OnboardingForm({
         <Typography variant="h4">{t('A Few Questions')}</Typography>
         <Typography variant="body1">{t('Help us serve you better')}</Typography>
       </Stack>
-      <FormiumForm
-        form={form}
-        userId={user.id}
-        email={user.email}
-        hideHeader
-        headerAsPageTitle
-        submitText={t('Next')}
-        submitIcon={<ArrowRightIcon />}
-        onSubmit={handleSubmit}
-      />
+      <Box sx={{ width: '397px' }}>
+        <FormiumForm
+          form={form}
+          userId={user.id}
+          email={user.email}
+          hideHeader
+          headerAsPageTitle
+          submitText={t('Next')}
+          submitIcon={<ArrowRightIcon />}
+          onSubmit={handleSubmit}
+        />
+      </Box>
     </Stack>
   )
 }
