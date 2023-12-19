@@ -11,7 +11,7 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
 import { listUnsplashCollectionMock } from '../ImageBlockEditor/UnsplashGallery/data'
-import { SocialProvider } from '../SocialProvider'
+import { SocialProvider, useSocialPreview } from '../SocialProvider'
 
 import {
   ImageEdit,
@@ -25,6 +25,8 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+jest.mock('../SocialProvider')
 
 describe('ImageEdit', () => {
   let originalEnv
@@ -328,6 +330,17 @@ describe('ImageEdit', () => {
       }
     }))
 
+    // const mockedUseSocialPreview = useSocialPreview as jest.MockedFunction<
+    //   typeof useSocialPreview
+    // >
+
+    // const setPrimaryImageBlockMock = jest.fn()
+    // mockedUseSocialPreview.mockReturnValue({
+    //   setSeoTitle: () => null,
+    //   setSeoDescription: () => null,
+    //   setPrimaryImageBlock: setPrimaryImageBlockMock
+    // })
+
     const { getByRole, getByTestId } = render(
       <MockedProvider
         cache={cache}
@@ -378,6 +391,7 @@ describe('ImageEdit', () => {
     fireEvent.click(getByTestId('imageBlockHeaderDelete'))
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
+    // await waitFor(() => expect(setPrimaryImageBlockMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
   })
 
