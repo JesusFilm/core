@@ -39,7 +39,7 @@ export function Form({
         width: '100%',
         backgroundColor: 'white',
         border: '1px solid grey',
-        borderRadius: 5,
+        borderRadius: 2,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'

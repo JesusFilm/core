@@ -40,7 +40,7 @@ export function UserTeamList({
 
   return (
     <>
-      {loading || data?.userTeams == null ? (
+      {loading || data?.userTeams == null || data?.userTeams?.length === 0 ? (
         <Box>
           <List>
             {[0, 1, 2].map((i) => (
