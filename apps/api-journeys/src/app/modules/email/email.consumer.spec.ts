@@ -10,14 +10,14 @@ describe('EmailConsumer', () => {
   })
 
   it.skip('should process the email job', async () => {
-    const job: Job<EmailJob, any, string> = {
+    const job: Job<EmailJob, unknown, string> = {
       name: 'emailJob',
       data: {
         email: 'test@example.com',
         subject: 'Test Subject',
         body: 'Test Body'
       }
-    } as unknown as Job<EmailJob, any, string>
+    } as unknown as Job<EmailJob, unknown, string>
 
     // Mock the SES sendEmail method
     const sendEmailMock = jest.fn().mockReturnValue({ promise: jest.fn() })
