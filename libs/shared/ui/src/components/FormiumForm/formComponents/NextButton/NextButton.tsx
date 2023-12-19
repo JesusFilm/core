@@ -16,9 +16,7 @@ export function NextButton({
       disabled={disabled}
       onClick={onClick}
       fullWidth
-      color="secondary"
-      endIcon={type === 'submit' && <ArrowRightIcon />}
-      sx={{ py: 3.25, borderRadius: '12px' }}
+      endIcon={<ArrowRightIcon />}
     >
       {children}
     </Button>
