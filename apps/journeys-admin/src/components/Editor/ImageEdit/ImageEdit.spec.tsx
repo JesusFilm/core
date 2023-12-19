@@ -26,7 +26,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-jest.mock('../SocialProvider')
+// jest.mock('../SocialProvider')
 
 describe('ImageEdit', () => {
   let originalEnv
