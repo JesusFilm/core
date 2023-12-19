@@ -13,9 +13,12 @@ interface Context {
   setSeoTitle: (value?: string | null) => void
   seoDescription?: string | null
   setSeoDescription: (value?: string | null) => void
+  primaryImageBlock?: Partial<ImageBlock> | null
+  setPrimaryImageBlock: (value?: ImageBlock | null) => void
 }
 
 const SocialPreviewContext = createContext<Context>({
+  setPrimaryImageBlock: () => null,
   setSeoDescription: () => null,
   setSeoTitle: () => null
 })
@@ -43,13 +46,18 @@ export function SocialProvider({
   const [seoDescription, setSeoDescription] = useState<
     string | null | undefined
   >(initialValues?.seoDescription)
+  const [primaryImageBlock, setPrimaryImageBlock] = useState<
+    Partial<ImageBlock> | null | undefined
+  >(initialValues?.primaryImageBlock)
   return (
     <SocialPreviewContext.Provider
       value={{
         seoTitle,
         setSeoTitle,
         seoDescription,
-        setSeoDescription
+        setSeoDescription,
+        primaryImageBlock,
+        setPrimaryImageBlock
       }}
     >
       {children}
