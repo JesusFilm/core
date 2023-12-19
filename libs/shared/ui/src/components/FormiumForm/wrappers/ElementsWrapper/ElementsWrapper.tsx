@@ -16,7 +16,6 @@ export function ElementsWrapper({
       data-testid="ElementsWrapper"
       sx={{
         width: '100%',
-        // width: { sm: '397px' },
         borderRadius: '6px',
         mb: '18px'
       }}
