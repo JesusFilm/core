@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -11,6 +11,9 @@ import {
 } from '../TeamProvider'
 
 import { CopyToTeamDialog } from './CopyToTeamDialog'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
+
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 
 describe('DuplicateJourneys', () => {
   const handleCloseMenuMock = jest.fn()
@@ -70,6 +73,24 @@ describe('DuplicateJourneys', () => {
   })
 
   it('should call submit action on dialog submit', async () => {
+    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId'
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyProfileUpdate: {
+            __typename: 'JourneyProfile',
+            id: 'teamId'
+          }
+        }
+      }))
+    }
     const result = jest.fn(() => ({
       data: {
         teams: [
@@ -89,6 +110,7 @@ describe('DuplicateJourneys', () => {
     const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
+          updateLastActiveTeamIdMock,
           {
             request: {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -125,6 +147,9 @@ describe('DuplicateJourneys', () => {
     })
     fireEvent.click(muiSelectOptions)
     await waitFor(() => fireEvent.click(getByText('Copy')))
+    await waitFor(() =>
+      expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
+    )
     await waitFor(() => expect(handleSubmitActionMock).toHaveBeenCalled())
   })
 

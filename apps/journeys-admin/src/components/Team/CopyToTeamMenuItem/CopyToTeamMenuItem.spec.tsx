@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -13,6 +13,8 @@ import {
 } from '../TeamProvider'
 
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -44,6 +46,25 @@ describe('DuplicateJourneys', () => {
       }
     } as unknown as NextRouter)
 
+    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId'
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyProfileUpdate: {
+            __typename: 'JourneyProfile',
+            id: 'teamId'
+          }
+        }
+      }))
+    }
+
     const result = jest.fn(() => {
       return {
         data: {
@@ -67,6 +88,7 @@ describe('DuplicateJourneys', () => {
     const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
+          updateLastActiveTeamIdMock,
           {
             request: {
               query: JOURNEY_DUPLICATE,
@@ -112,6 +134,9 @@ describe('DuplicateJourneys', () => {
     })
     fireEvent.click(muiSelectOptions)
     await waitFor(() => fireEvent.click(getByText('Copy')))
+    await waitFor(() =>
+      expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
+    )
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(handleCloseMenu).toHaveBeenCalled()
     expect(getByText('Journey Copied')).toBeInTheDocument()
