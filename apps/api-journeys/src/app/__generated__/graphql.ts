@@ -884,6 +884,7 @@ export class FormBlock implements Block {
     projectId?: Nullable<string>;
     forms: FormiumForm[];
     formSlug?: Nullable<string>;
+    apiTokenExists: boolean;
 }
 
 export class GridContainerBlock implements Block {

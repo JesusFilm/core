@@ -542,6 +542,7 @@ type FormBlock implements Block {
   projectId: String
   forms: [FormiumForm!]!
   formSlug: String
+  apiTokenExists: Boolean!
 }
 
 input FormBlockCreateInput {
