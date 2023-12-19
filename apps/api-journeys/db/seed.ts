@@ -4,6 +4,7 @@
 import { discoveryAdminCenter } from './seeds/discoveryAdminCenter'
 import { discoveryAdminLeft } from './seeds/discoveryAdminLeft'
 import { discoveryAdminRight } from './seeds/discoveryAdminRight'
+import { distinctVisitor } from './seeds/distinctVisitor'
 import { jfpTeam } from './seeds/jfpTeam'
 import { nua1 } from './seeds/nua1'
 import { nua2 } from './seeds/nua2'
@@ -14,17 +15,18 @@ import { onboardingTemplates } from './seeds/onboardingTemplates'
 
 async function main(): Promise<void> {
   // this should be removed when the UI can support team management
-  await jfpTeam()
+  // await jfpTeam()
 
-  await nua9()
-  await nua8()
-  await nua2()
-  await nua1()
-  await onboarding()
-  await onboardingTemplates()
-  await discoveryAdminLeft()
-  await discoveryAdminCenter()
-  await discoveryAdminRight()
+  // await nua9()
+  // await nua8()
+  // await nua2()
+  // await nua1()
+  // await onboarding()
+  // await onboardingTemplates()
+  // await discoveryAdminLeft()
+  // await discoveryAdminCenter()
+  // await discoveryAdminRight()
+  await distinctVisitor()
 }
 main().catch((e) => {
   console.error(e)
