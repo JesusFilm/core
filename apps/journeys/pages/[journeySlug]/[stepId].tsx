@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import type { GetServerSideProps } from 'next'
+import type { GetServerSidePropsResult } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
@@ -61,7 +61,9 @@ export default function JourneyStep({
   )
 }
 
-export const getServerSideProps = (async (context) => {
+export const getServerSideProps = async (
+  context
+): Promise<GetServerSidePropsResult<JourneyStepPageProps>> => {
   const apolloClient = createApolloClient()
   try {
     const { data } = await apolloClient.query<GetJourney>({
@@ -87,16 +89,15 @@ export const getServerSideProps = (async (context) => {
   } catch (e) {
     if (e.message === 'journey not found') {
       return {
-        props: {
-          ...(await serverSideTranslations(
-            context.locale ?? 'en',
-            ['apps-journeys', 'libs-journeys-ui'],
-            i18nConfig
-          ))
-        },
+        ...(await serverSideTranslations(
+          context.locale ?? 'en',
+          ['apps-journeys', 'libs-journeys-ui'],
+          i18nConfig
+        )),
+
         notFound: true
       }
     }
     throw e
   }
-}) satisfies GetServerSideProps<JourneyStepPageProps>
+}
