@@ -58,7 +58,7 @@ describe('ApiTokenTextField', () => {
       }
     }))
 
-    const { getByLabelText, getByText } = render(
+    const { getByLabelText, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -95,6 +95,7 @@ describe('ApiTokenTextField', () => {
     fireEvent.blur(getByLabelText('Api Token'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByText('API Token updated')).toBeInTheDocument()
+    expect(getByTestId('Lock1Icon')).toBeInTheDocument()
   })
 
   it('should not update the api token if the token is the same', async () => {

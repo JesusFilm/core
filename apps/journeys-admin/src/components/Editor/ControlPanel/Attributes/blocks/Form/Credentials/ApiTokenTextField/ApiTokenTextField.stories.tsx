@@ -25,6 +25,7 @@ export const Default = {
   ...Template,
   args: {
     id: 'id',
+    apiTokenExists: false,
     loading: false
   }
 }
