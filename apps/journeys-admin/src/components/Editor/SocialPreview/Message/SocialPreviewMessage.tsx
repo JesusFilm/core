@@ -120,7 +120,8 @@ export function SocialPreviewMessage({
                           borderRadius: '4px',
                           maxWidth: '100%',
                           height: 'auto',
-                          objectFit: 'cover'
+                          objectFit: 'cover',
+                          overflow: 'hidden'
                         }}
                       />
                     )
