@@ -27,7 +27,7 @@ export class EmailConsumer extends WorkerHost {
     if (user == null) {
       throw new Error('User not found')
     }
-    console.log('message queue job:', Job.name)
+    console.log('message queue job:', job.name)
     // await await new SES()
     //   .sendEmail({
     //     Source: 'support@nextstep.is',

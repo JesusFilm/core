@@ -14,7 +14,7 @@ export interface EmailJob {
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
   async process(job: Job<EmailJob>): Promise<void> {
-    console.log('message queue job:', Job.name)
+    console.log('message queue job:', job.name)
     // await new SES()
     //   .sendEmail({
     //     Source: 'support@nextstep.is',
