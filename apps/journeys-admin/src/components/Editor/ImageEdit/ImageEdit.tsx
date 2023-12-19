@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import dynamic from 'next/dynamic'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
@@ -27,6 +28,14 @@ import { useSocialPreview } from '../SocialProvider'
 
 import { Large } from './Large'
 import { Small } from './Small'
+
+const ImageLibrary = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ImageLibrary/ImageLibrary" */ '../ImageLibrary'
+    ).then((mod) => mod.ImageLibrary),
+  { ssr: false }
+)
 
 export const JOURNEY_IMAGE_BLOCK_DELETE = gql`
   mutation JourneyImageBlockDelete($id: ID!, $journeyId: ID!) {
@@ -109,7 +118,7 @@ export function ImageEdit({
   >(JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE)
   const { setPrimaryImageBlock } = useSocialPreview()
   const { journey } = useJourney()
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<boolean | undefined>()
   const targetImageBlock =
     target === 'primary'
       ? journey?.primaryImageBlock
@@ -239,16 +248,18 @@ export function ImageEdit({
           onClick={handleOpen}
         />
       )}
-      <ImageLibrary
-        variant={variant}
-        selectedBlock={targetImageBlock ?? null}
-        open={open}
-        onClose={handleClose}
-        onChange={handleChange}
-        onDelete={handleDelete}
-        loading={createLoading || updateLoading}
-        error={createError != null ?? updateError != null}
-      />
+      {open != null && (
+        <ImageLibrary
+          variant={variant}
+          selectedBlock={targetImageBlock ?? null}
+          open={open}
+          onClose={handleClose}
+          onChange={handleChange}
+          onDelete={handleDelete}
+          loading={createLoading || updateLoading}
+          error={createError != null ?? updateError != null}
+        />
+      )}
     </>
   )
 }
