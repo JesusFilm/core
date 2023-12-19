@@ -20,12 +20,11 @@ export async function playwrightUserAccess(): Promise<void> {
 
   const journeyProfileId = uuidv4()
   const userTeamId = uuidv4()
-  const journeyId = uuidv4()
 
   console.log('giving playwright user access started')
 
   const journeyData = {
-    id: journeyId,
+    id: '9161c4ef-204d-4be9-8fdf-5bf514c13b9d',
     title: 'Playwright Journey',
     seoTitle: 'Playwright',
     languageId: '529',
@@ -83,7 +82,7 @@ export async function playwrightUserAccess(): Promise<void> {
       }
 
       await tx.journey.upsert({
-        where: { id: journeyId },
+        where: { id: '9161c4ef-204d-4be9-8fdf-5bf514c13b9d' },
         update: journeyData,
         create: journeyData
       })
@@ -93,7 +92,7 @@ export async function playwrightUserAccess(): Promise<void> {
         update: teamData,
         create: {
           ...teamData,
-          journeys: { connect: { id: journeyId } }
+          journeys: { connect: { id: '9161c4ef-204d-4be9-8fdf-5bf514c13b9d' } }
         }
       })
 
