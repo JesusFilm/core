@@ -23,7 +23,6 @@ import {
 } from '../../../../__generated__/JourneyImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { ImageLibrary } from '../ImageLibrary'
-import { useSocialPreview } from '../SocialProvider'
 
 import { Large } from './Large'
 import { Small } from './Small'
@@ -107,7 +106,6 @@ export function ImageEdit({
     JourneyImageBlockAssociationUpdate,
     JourneyImageBlockAssociationUpdateVariables
   >(JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE)
-  const { setPrimaryImageBlock } = useSocialPreview()
   const { journey } = useJourney()
   const [open, setOpen] = useState(false)
   const targetImageBlock =
@@ -152,7 +150,6 @@ export function ImageEdit({
         }
       })
     }
-    setPrimaryImageBlock(imageBlock)
   }
 
   async function updateImageBlock(imageBlock: ImageBlock): Promise<void> {
@@ -171,7 +168,6 @@ export function ImageEdit({
         }
       }
     })
-    setPrimaryImageBlock(imageBlock)
   }
 
   async function handleDelete(): Promise<void> {
@@ -206,7 +202,6 @@ export function ImageEdit({
         }
       })
     }
-    setPrimaryImageBlock(null)
   }
 
   async function handleChange(imageBlock: ImageBlock): Promise<void> {
