@@ -107,7 +107,6 @@ export function ApiTokenTextField({
           <IconButton
             aria-label="toggle field lock"
             onClick={handleToggleLock}
-            onMouseDown={(e) => e.preventDefault()}
             edge="start"
           >
             {lockTextField ? <Lock1Icon /> : <LockOpen1Icon />}
