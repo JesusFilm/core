@@ -29,10 +29,10 @@ describe('UserJourneyService', () => {
   describe('sendEmail', () => {
     it('should send an email with the correct subject and body', async () => {
       // Arrange
-      const journey: Journey = {
+      const journey = {
         id: 'journeyId',
         title: 'Journey Title'
-      }
+      } as unknown as Journey
       const userId = 'userId'
       const expectedSubject = `Access to edit journey: ${journey.title}`
       const expectedBody = `<html><body>You have been granted access to edit the journey: ${

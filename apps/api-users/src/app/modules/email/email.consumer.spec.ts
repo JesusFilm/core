@@ -43,7 +43,7 @@ describe('EmailConsumer', () => {
 
     const user = {
       email: 'test@example.com'
-    } as User
+    } as unknown as User
 
     jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(user)
     // Mock the SES sendEmail method
@@ -85,7 +85,7 @@ describe('EmailConsumer', () => {
         body: 'Test Body'
       },
       name: 'email-job'
-    } as unknown as Job<EmailJob, any, string>
+    } as unknown as Job<EmailJob, unknown, string>
 
     jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null)
 
