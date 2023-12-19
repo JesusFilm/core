@@ -14,7 +14,7 @@ import {
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import i18nConfig from '../../next-i18next.config'
-import { VideoWrapperPaused as VideoWrapper } from '../../src/components/EmbeddedPreview/VIdeoWrapperPaused/VideoWrapperPaused'
+import { VideoWrapperPaused as VideoWrapper } from '../../src/components/EmbeddedPreview/VideoWrapperPaused/VideoWrapperPaused'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { GET_JOURNEY } from '../[journeySlug]'
 
