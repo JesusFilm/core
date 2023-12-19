@@ -5,17 +5,63 @@
   "projectType": "application",
   "targets": {
     "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "cp -r libs/locales apps/nexus-admin/public",
+          "nx _build nexus-admin"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "cp -r libs/locales apps/nexus-admin/public",
+            "CI=true nx _build nexus-admin --prod"
+          ]
+        }
+      }
+    },
+    "_build": {
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/nexus-admin"
       },
       "configurations": {
-        "development": {
-          "outputPath": "apps/nexus-admin"
-        },
         "production": {}
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "npx vercel build",
+          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
+          "npx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/nexus-admin/.vercel-url)/_next/static/"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "npx vercel build --prod",
+            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
+            "npx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://admin.nextstep.is/_next/static/"
+          ]
+        }
+      }
+    },
+    "vercel-alias": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx vercel alias set $(cat apps/nexus-admin/.vercel-url) nexus-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo \"https://nexus-admin-$PR_NUMBER-jesusfilm.vercel.app\" > apps/nexus-admin/.vercel-url"
+        ],
+        "parallel": false
       }
     },
     "serve": {
@@ -23,15 +69,17 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "nexus-admin:build",
-        "dev": true
+        "dev": true,
+        "hostname": "0.0.0.0",
+        "port": 4500
       },
       "configurations": {
         "development": {
-          "buildTarget": "nexus-admin:build:development",
+          "buildTarget": "nexus-admin:_build:development",
           "dev": true
         },
         "production": {
-          "buildTarget": "nexus-admin:build:production",
+          "buildTarget": "nexus-admin:_build:production",
           "dev": false
         }
       }
@@ -63,7 +111,12 @@
         "lintFilePatterns": ["apps/nexus-admin/**/*.{ts,tsx,js,jsx}"]
       }
     },
-
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/nexus-admin/tsconfig.json"
+      }
+    },
     "codegen": {
       "executor": "nx:run-commands",
       "options": {
@@ -78,6 +131,42 @@
             "command": "npx apollo client:codegen --config apps/nexus-admin/apollo.config.js --target typescript --outputFlat apps/nexus-admin/__generated__"
           }
         ]
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_NEXUS_ADMIN_TOKEN doppler secrets download --no-file --format=env --project  nexus-admin > apps/nexus-admin/.env"
+          }
+        ]
+      }
+    },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config apps/nexus-admin/i18next-parser.config.js"
+          }
+        ]
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/nexus-admin/cobertura-coverage.xml -F apps.nexus-admin"
+      }
+    },
+    "bundle-analyzer": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "ANALYZE=true nx build nexus-admin --configuration=production",
+          "http-server -p 8888 dist/apps/nexus-admin/.next/analyze"
+        ],
+        "parallel": false
       }
     }
   },

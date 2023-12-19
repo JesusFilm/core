@@ -1,1 +1,0 @@
-export { initAuth } from './initAuth'

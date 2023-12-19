@@ -1,10 +1,4 @@
-import { defineConfig } from '@playwright/test'
-import { nxE2EPreset } from '@nx/playwright/preset'
-
-import { workspaceRoot } from '@nx/devkit'
-
-// For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env['BASE_URL'] || 'http://127.0.0.1:4200'
+import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Read environment variables from file.
@@ -16,18 +10,73 @@ const baseURL = process.env['BASE_URL'] || 'http://127.0.0.1:4200'
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  ...nxE2EPreset(__filename, { testDir: './src' }),
+  testDir: './src/e2e',
+  /* Run tests in files in parallel */
+  fullyParallel: true,
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  forbidOnly: !!process.env.CI,
+  /* Retry on CI only c*/
+  retries: process.env.CI ? 3 : 0,
+  /* Opt out of parallel tests on CI. */
+  workers: process.env.CI ? 3 : undefined,
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL,
+    /* Use URL that has been set part of app-deploy.yml */
+    baseURL: process.env.DEPLOYMENT_URL ?? 'http://localhost:4500',
+
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry'
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure'
+    //video: 'retain-on-failure'
+    // video: 'on',
   },
+
+  /* Configure projects for major browsers */
+  projects: [
+    /* Test against branded browsers. */
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    // },
+    // {
+    //   name: 'chrome-desktop',
+    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' }
+    // },
+
+    // // /* Test against mobile viewports. */
+    // // // By default it's using chromium channel, changed it to chrome so it can play the video
+    // {
+    //   name: 'chrome-mobile',
+    //   use: { ...devices['Pixel 5'], channel: 'chrome' }
+    // }
+    // {
+    //   name: 'iPhone 12',
+    //   use: { ...devices['iPhone 12'] },
+    // },
+
+    /* Others. */
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] }
+    }
+
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
+    // Video is not playing on chromium, so we use chrome instead
+    // {
+    //   name: 'chromium',
+    //   use: { ...devices['Desktop Chrome'] },
+    // },
+  ]
+
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'npx nx serve nexus-admin',
-    url: 'http://127.0.0.1:4200',
-    reuseExistingServer: !process.env.CI,
-    cwd: workspaceRoot
-  }
+  // webServer: {
+  //   command: 'npm run start',
+  //   url: 'http://127.0.0.1:3000',
+  //   reuseExistingServer: !process.env.CI,
+  // },
 })
