@@ -1,10 +1,10 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
 import { Processor, WorkerHost } from '@nestjs/bullmq'
-// import AWS, { SES } from 'aws-sdk'
+import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
-// AWS.config.update({ region: 'us-east-2' })
+AWS.config.update({ region: 'us-east-2' })
 
 export interface EmailJob {
   email: string

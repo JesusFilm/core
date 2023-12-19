@@ -1,12 +1,12 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
 import { Processor, WorkerHost } from '@nestjs/bullmq'
-// import AWS, { SES } from 'aws-sdk'
+import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-// AWS.config.update({ region: 'us-east-2' })
+AWS.config.update({ region: 'us-east-2' })
 
 export interface EmailJob {
   userId: string
@@ -28,23 +28,23 @@ export class EmailConsumer extends WorkerHost {
       throw new Error('User not found')
     }
     console.log('message queue job:', job.name)
-    // await await new SES()
-    //   .sendEmail({
-    //     Source: 'support@nextstep.is',
-    //     Destination: { ToAddresses: [user.email] },
-    //     Message: {
-    //       Subject: {
-    //         Charset: 'UTF-8',
-    //         Data: job.data.subject
-    //       },
-    //       Body: {
-    //         Html: {
-    //           Charset: 'UTF-8',
-    //           Data: job.data.body
-    //         }
-    //       }
-    //     }
-    //   })
-    //   .promise()
+    await await new SES()
+      .sendEmail({
+        Source: 'support@nextstep.is',
+        Destination: { ToAddresses: [user.email] },
+        Message: {
+          Subject: {
+            Charset: 'UTF-8',
+            Data: job.data.subject
+          },
+          Body: {
+            Html: {
+              Charset: 'UTF-8',
+              Data: job.data.body
+            }
+          }
+        }
+      })
+      .promise()
   }
 }

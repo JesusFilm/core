@@ -64,7 +64,7 @@
     "@prisma/client": "^5.2.0",
     "@storybook/core-server": "7.5.1",
     "adal-node": "^0.2.3",
-    "aws-sdk": "^2.1519.0",
+    "aws-sdk": "^2.1521.0",
     "axios": "^1.0.0",
     "blurhash": "^2.0.5",
     "bullmq": "^4.14.4",
