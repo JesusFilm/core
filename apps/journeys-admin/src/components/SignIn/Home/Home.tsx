@@ -17,8 +17,9 @@ import type { ActivePage } from '../SignIn'
 
 interface HomeProps {
   setActivePage: (activePage: ActivePage) => void
+  setEmail: (email: string) => void
 }
-export function Home({ setActivePage }: HomeProps): ReactElement {
+export function Home({ setActivePage, setEmail }: HomeProps): ReactElement {
   const { t } = useTranslation()
   const validationSchema = object().shape({
     email: string()
@@ -27,13 +28,13 @@ export function Home({ setActivePage }: HomeProps): ReactElement {
       .email(t('Please enter a valid email address'))
       .required(t('Required'))
   })
-
   async function handleEmailSignIn(
     values: InferType<typeof validationSchema>,
     actions: FormikHelpers<InferType<typeof validationSchema>>
   ): Promise<void> {
     const auth = getAuth()
     const result = await fetchSignInMethodsForEmail(auth, values.email)
+    console.log(result)
     if (result.length === 0) {
       setActivePage('register')
     } else {
@@ -51,8 +52,8 @@ export function Home({ setActivePage }: HomeProps): ReactElement {
           break
       }
     }
+    setEmail(values.email)
   }
-
   return (
     <>
       <Box>
@@ -100,7 +101,7 @@ export function Home({ setActivePage }: HomeProps): ReactElement {
                 variant="contained"
                 size="large"
                 fullWidth
-                sx={{ backgroundColor: 'secondary.dark' }}
+                color="secondary"
                 startIcon={<MailOutlineIcon />}
                 type="submit"
                 disabled={!isValid || isSubmitting}

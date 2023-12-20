@@ -36,6 +36,8 @@ export function TermsAndConditions(): ReactElement {
   )
   const router = useRouter()
 
+  console.log(router.query.redirect)
+
   const handleJourneyProfileCreate = async (): Promise<void> => {
     await journeyProfileCreate()
     await router.push({

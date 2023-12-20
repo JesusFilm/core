@@ -11,7 +11,12 @@ import { useTranslation } from 'react-i18next'
 
 import logo from '../../../public/logo.svg'
 
+import { FacebookPage } from './FacebookPage'
+import { GooglePage } from './GooglePage'
+import { HelpPage } from './HelpPage'
 import { Home } from './Home'
+import { PasswordPage } from './PasswordPage'
+import { RegisterPage } from './RegisterPage'
 
 export type ActivePage =
   | 'home'
@@ -19,32 +24,49 @@ export type ActivePage =
   | 'register'
   | 'google.com'
   | 'facebook.com'
+  | 'help'
 
 export function SignIn(): ReactElement {
   const { t } = useTranslation()
   const [activePage, setActivePage] = useState<ActivePage>('home')
+  const [userEmail, setUserEmail] = useState<string>('')
 
+  const setEmail = (email): void => {
+    setUserEmail(email)
+  }
   let children
   switch (activePage) {
     case 'home':
-      children = <Home setActivePage={setActivePage} />
+      children = <Home setActivePage={setActivePage} setEmail={setEmail} />
       break
     case 'password':
-      children = <></>
+      children = (
+        <PasswordPage setActivePage={setActivePage} userEmail={userEmail} />
+      )
       break
     case 'register':
-      children = <></>
+      children = (
+        <RegisterPage setActivePage={setActivePage} userEmail={userEmail} />
+      )
       break
     case 'google.com':
-      children = <></>
+      children = (
+        <GooglePage setActivePage={setActivePage} userEmail={userEmail} />
+      )
       break
     case 'facebook.com':
-      children = <></>
+      children = (
+        <FacebookPage setActivePage={setActivePage} userEmail={userEmail} />
+      )
+      break
+    case 'help':
+      children = (
+        <HelpPage setActivePage={setActivePage} userEmail={userEmail} />
+      )
       break
     default:
       break
   }
-
   return (
     <Box
       sx={{
