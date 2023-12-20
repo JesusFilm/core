@@ -69,5 +69,6 @@ terraform.tfstate.backup
 **/test-results/
 **/playwright-report/
 **/playwright/.cache/
+**/apps/journeys-admin-e2e/user.json
 
 .nx/cache
