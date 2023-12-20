@@ -35,6 +35,25 @@ services:
       POSTGRES_DB: postgres
     ports:
       - 5432:5432
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+    command:
+      [
+        'redis-server',
+        '--appendonly',
+        'no',
+        '--maxmemory',
+        '500mb',
+        '--maxmemory-policy',
+        'noeviction'
+      ]
+    volumes:
+      - redis-data:/data
 volumes:
   core-node-doppler:
   postgres-data:
