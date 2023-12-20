@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { ImageOptions } from './ImageOptions'
@@ -13,7 +13,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('ImageOptions', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
-  it('opens the image library', () => {
+  it('opens the image library', async () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -21,6 +21,8 @@ describe('ImageOptions', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
+    )
   })
 })

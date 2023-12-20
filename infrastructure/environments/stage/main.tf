@@ -197,6 +197,13 @@ module "datadog_aurora" {
   }]
 }
 
+module "redis" {
+  source     = "../../modules/aws/elasticache"
+  cluster_id = "redis-stage"
+  subnet_ids = module.stage.vpc.internal_subnets
+  env        = "stage"
+}
+
 module "journeys-admin" {
   source = "../../../apps/journeys-admin/infrastructure"
   ecs_config = merge(local.public_ecs_config, {
