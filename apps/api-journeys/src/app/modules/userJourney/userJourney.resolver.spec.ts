@@ -10,6 +10,7 @@ import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserJourneyResolver } from './userJourney.resolver'
+import { UserJourneyService } from './userJourney.service'
 
 describe('UserJourneyResolver', () => {
   let resolver: UserJourneyResolver,
@@ -33,11 +34,19 @@ describe('UserJourneyResolver', () => {
     }
   } as unknown as UserJourney
 
+  const userJourneyService = {
+    provide: UserJourneyService,
+    useFactory: () => ({
+      sendEmail: jest.fn().mockResolvedValue(null)
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         UserJourneyResolver,
+        userJourneyService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
