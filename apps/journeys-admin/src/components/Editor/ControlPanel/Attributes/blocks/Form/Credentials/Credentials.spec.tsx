@@ -75,7 +75,8 @@ describe('Credentials', () => {
               name: 'formName'
             }
           ]
-        }
+        },
+        apiTokenExists: true
       }
     }))
 
