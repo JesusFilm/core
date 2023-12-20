@@ -133,4 +133,117 @@ describe('HeaderAndLanguageFilter', () => {
       })
     })
   })
+
+  it('should allow users to remove languages', async () => {
+    const onChange = jest.fn()
+    const push = jest.fn()
+    const on = jest.fn()
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    const { getByRole, getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LANGUAGES,
+              variables: {
+                languageId: '529',
+                where: {
+                  ids: [
+                    '529',
+                    '4415',
+                    '1106',
+                    '4451',
+                    '496',
+                    '20526',
+                    '584',
+                    '21028',
+                    '20615',
+                    '3934'
+                  ]
+                }
+              }
+            },
+            result: {
+              data: {
+                languages: [
+                  {
+                    __typename: 'Language',
+                    id: '529',
+                    name: [
+                      {
+                        value: 'English',
+                        primary: true,
+                        __typename: 'Translation'
+                      }
+                    ]
+                  },
+                  {
+                    id: '496',
+                    __typename: 'Language',
+                    name: [
+                      {
+                        value: 'Français',
+                        primary: true,
+                        __typename: 'Translation'
+                      },
+                      {
+                        value: 'French',
+                        primary: false,
+                        __typename: 'Translation'
+                      }
+                    ]
+                  },
+                  {
+                    id: '1106',
+                    __typename: 'Language',
+                    name: [
+                      {
+                        value: 'Deutsch',
+                        primary: true,
+                        __typename: 'Translation'
+                      },
+                      {
+                        value: 'German, Standard',
+                        primary: false,
+                        __typename: 'Translation'
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]}
+      >
+        <HeaderAndLanguageFilter
+          selectedLanguageIds={['529', '496']}
+          onChange={onChange}
+        />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      fireEvent.click(getAllByRole('heading', { name: 'English, French' })[0])
+    })
+
+    fireEvent.click(getByRole('button', { name: 'French Français' }))
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(['529'])
+    })
+
+    fireEvent.click(getByRole('button', { name: 'English' }))
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith([])
+    })
+  })
 })
