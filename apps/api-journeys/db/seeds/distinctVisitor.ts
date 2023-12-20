@@ -21,6 +21,9 @@ export async function distinctVisitor(): Promise<void> {
 
     const newInitial = duplicates[0]
     console.log('initial value:', newInitial)
+    const initialJourneyVisitors = await prisma.journeyVisitor.findMany({
+      where: { visitorId: visitor.id }
+    })
     for (let j = 1; j < duplicates.length; j++) {
       const nextVisitor = duplicates[j]
 
@@ -80,6 +83,25 @@ export async function distinctVisitor(): Promise<void> {
       if (newInitial.updatedAt < nextVisitor.updatedAt)
         newInitial.updatedAt = nextVisitor.updatedAt
 
+      const journeyVisitors = await prisma.journeyVisitor.findMany({
+        where: { visitorId: nextVisitor.id }
+      })
+
+      for (let k = 0; k < journeyVisitors.length; k++) {
+        const journeyVisitor = journeyVisitors[k]
+        const existingJV = initialJourneyVisitors.find(
+          ({ journeyId, visitorId }) =>
+            journeyId === journeyVisitor.journeyId &&
+            visitorId === journeyVisitor.visitorId
+        )
+        if (existingJV == null) {
+          await prisma.journeyVisitor.update({
+            where: { id: journeyVisitor.id },
+            data: { visitorId: newInitial.id }
+          })
+        }
+      }
+      console.log('journeyVisitors:', journeyVisitors.length)
       handledIds.push(nextVisitor.id)
     }
     handledIds.push(newInitial.id)
