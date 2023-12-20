@@ -283,7 +283,7 @@ describe('ImageEdit', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    await waitFor(() => fireEvent.click(getByRole('tab', { name: 'Custom' })))
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = getByRole('textbox')
     fireEvent.change(textBox, {
@@ -388,7 +388,7 @@ describe('ImageEdit', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByTestId('imageBlockHeaderDelete'))
+    await waitFor(() => fireEvent.click(getByTestId('imageBlockHeaderDelete')))
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     // await waitFor(() => expect(setPrimaryImageBlockMock).toHaveBeenCalled())
@@ -543,7 +543,7 @@ describe('ImageEdit', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    await waitFor(() => fireEvent.click(getByRole('tab', { name: 'Custom' })))
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = getByRole('textbox')
     fireEvent.change(textBox, {
