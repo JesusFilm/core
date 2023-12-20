@@ -38,6 +38,27 @@ describe('Edit Toolbar', () => {
     ).toContainElement(getByTestId('MoreIcon'))
   })
 
+  it('should render analytics button', () => {
+    const { getByLabelText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                slug: 'untitled-journey',
+                tags: []
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditToolbar />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByLabelText('Analytics')).toBeInTheDocument()
+  })
+
   it('should render Preview Button', () => {
     const { getAllByRole, getAllByTestId } = render(
       <SnackbarProvider>
