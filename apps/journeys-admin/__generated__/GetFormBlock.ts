@@ -43,6 +43,7 @@ export interface GetFormBlock_block_FormBlock {
   projectId: string | null;
   formSlug: string | null;
   forms: GetFormBlock_block_FormBlock_forms[];
+  apiTokenExists: boolean;
 }
 
 export type GetFormBlock_block = GetFormBlock_block_ImageBlock | GetFormBlock_block_FormBlock;
