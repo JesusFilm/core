@@ -31,7 +31,11 @@ describe('ApiTokenTextField', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} />
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              apiTokenExists
+              loading={false}
+            />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -54,7 +58,7 @@ describe('ApiTokenTextField', () => {
       }
     }))
 
-    const { getByLabelText, getByText } = render(
+    const { getByLabelText, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -73,7 +77,11 @@ describe('ApiTokenTextField', () => {
       >
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} />
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              apiTokenExists
+              loading={false}
+            />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -87,6 +95,7 @@ describe('ApiTokenTextField', () => {
     fireEvent.blur(getByLabelText('Api Token'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByText('API Token updated')).toBeInTheDocument()
+    expect(getByTestId('Lock1Icon')).toBeInTheDocument()
   })
 
   it('should not update the api token if the token is the same', async () => {
@@ -122,7 +131,11 @@ describe('ApiTokenTextField', () => {
       >
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} />
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              apiTokenExists
+              loading={false}
+            />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -159,7 +172,11 @@ describe('ApiTokenTextField', () => {
       >
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <ApiTokenTextField id={selectedBlock.id} />
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              apiTokenExists
+              loading={false}
+            />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -172,5 +189,61 @@ describe('ApiTokenTextField', () => {
     await waitFor(() =>
       expect(getByText('invalid api token')).toBeInTheDocument()
     )
+  })
+
+  it('should allow the user to lock and unlock the textfield', () => {
+    const { getByLabelText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              apiTokenExists
+              loading={false}
+            />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getByLabelText('Api Token')).toBeDisabled()
+    fireEvent.click(getByLabelText('toggle field lock'))
+    expect(getByLabelText('Api Token')).not.toBeDisabled()
+    fireEvent.click(getByLabelText('toggle field lock'))
+    expect(getByLabelText('Api Token')).toBeDisabled()
+  })
+
+  it('should be locked while loading', () => {
+    const { getByLabelText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <ApiTokenTextField id={selectedBlock.id} apiTokenExists loading />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getByLabelText('Api Token')).toBeDisabled()
+    expect(getByLabelText('Api Token')).toHaveValue('')
+  })
+
+  it('should be unlocked if token does not exist', () => {
+    const { getByLabelText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <ApiTokenTextField
+              id={selectedBlock.id}
+              loading={false}
+              apiTokenExists={false}
+            />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getByLabelText('Api Token')).not.toBeDisabled()
+    expect(getByLabelText('Api Token')).toHaveValue('')
   })
 })
