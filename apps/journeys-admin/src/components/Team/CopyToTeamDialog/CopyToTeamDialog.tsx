@@ -51,6 +51,7 @@ export function CopyToTeamDialog({
     values: FormikValues,
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
+    // always want team to update first, then handle journey duplication
     await updateLastActiveTeamId({
       variables: {
         input: {
@@ -60,6 +61,7 @@ export function CopyToTeamDialog({
     })
     // submit action goes before setActiveTeam for proper loading states to be shown
     await submitAction(values.teamSelect)
+    // update the UI to reflect correct team change
     setActiveTeam(teams.find((team) => team.id === values.teamSelect) ?? null)
     resetForm()
   }
