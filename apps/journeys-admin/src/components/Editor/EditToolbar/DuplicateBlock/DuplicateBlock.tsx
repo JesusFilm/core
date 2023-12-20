@@ -10,12 +10,12 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
-import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
+import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
 import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
-} from '../../../__generated__/BlockFields'
-import { MenuItem } from '../MenuItem'
+} from '../../../../../__generated__/BlockFields'
+import { MenuItem } from '../../../MenuItem'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
