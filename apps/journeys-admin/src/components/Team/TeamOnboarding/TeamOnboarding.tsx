@@ -29,7 +29,7 @@ export function TeamOnboarding(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const router = useRouter()
-  const { activeTeam } = useTeam()
+  const { query, activeTeam, setActiveTeam } = useTeam()
   const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
     UPDATE_LAST_ACTIVE_TEAM_ID
   )
@@ -111,8 +111,10 @@ export function TeamOnboarding(): ReactElement {
                     lastActiveTeamId: data.teamCreate.id
                   }
                 }
-              })
+              }),
+              query.refetch()
             ])
+            setActiveTeam(data.teamCreate)
           }}
         >
           {({
