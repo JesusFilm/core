@@ -26,8 +26,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-// jest.mock('../SocialProvider')
-
 describe('ImageEdit', () => {
   let originalEnv
 
@@ -330,17 +328,6 @@ describe('ImageEdit', () => {
       }
     }))
 
-    // const mockedUseSocialPreview = useSocialPreview as jest.MockedFunction<
-    //   typeof useSocialPreview
-    // >
-
-    // const setPrimaryImageBlockMock = jest.fn()
-    // mockedUseSocialPreview.mockReturnValue({
-    //   setSeoTitle: () => null,
-    //   setSeoDescription: () => null,
-    //   setPrimaryImageBlock: setPrimaryImageBlockMock
-    // })
-
     const { getByRole, getByTestId } = render(
       <MockedProvider
         cache={cache}
@@ -391,7 +378,6 @@ describe('ImageEdit', () => {
     await waitFor(() => fireEvent.click(getByTestId('imageBlockHeaderDelete')))
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
-    // await waitFor(() => expect(setPrimaryImageBlockMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
   })
 
