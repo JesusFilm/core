@@ -93,9 +93,17 @@ export function ImageBlockEditor({
     width = 0,
     height = 0
   ): Promise<void> => {
+    console.log('handle src change')
+    console.log(src)
+    console.log(src === selectedBlock?.src)
+    const valid = await srcSchema.isValid({
+      src
+    })
+    console.log(valid)
     if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
       return
 
+    console.log('didnt return')
     const block = {
       ...selectedBlock,
       src,
