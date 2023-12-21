@@ -118,7 +118,7 @@ export function HelpScoutBeacon({
           position: 'fixed',
           top: { xs: 11.5, md: 11.5 },
           zIndex: zIndex.modal + 3,
-          right: { xs: 10, md: 10 },
+          right: { xs: 10, md: 15},
           width: 24,
           height: 24,
           color: matches ? 'secondary.dark' : 'background.paper'
@@ -140,7 +140,7 @@ export function HelpScoutBeacon({
 
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
           top: 47px;
-          right: 30px;
+          right: 0px;
           width: 327px;
           max-height: none;
           height: calc(100vh - 47px);
