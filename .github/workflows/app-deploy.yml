@@ -162,6 +162,7 @@ jobs:
           name: ${{ matrix.app }}-playwright-report
           path: |
             playwright-report/
+            test-results/
           retention-days: 30
   deploy-status:
     runs-on: ubuntu-latest
