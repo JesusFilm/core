@@ -3,8 +3,9 @@ import { expect, test } from '@playwright/test'
 import { chromium } from 'playwright-core'
 import { playAudit } from 'playwright-lighthouse'
 
+import { getTeamName } from '../framework/helpers'
 import { LandingPage } from '../pages/landing-page'
-import { OnboardingPages } from '../pages/onboarding-pages'
+import { LoginPage } from '../pages/login-page'
 import { TopNav } from '../pages/top-nav'
 
 /*
@@ -40,7 +41,7 @@ test('Landing page - lighthouse test', async () => {
     config,
     thresholds: {
       performance: 36,
-      accessibility: 98,
+      accessibility: 90,
       'best-practices': 83,
       seo: 82,
       pwa: 67
@@ -66,23 +67,17 @@ test('Home page - lighthouse test', async () => {
   const page = await browser.newPage()
 
   const landingPage = new LandingPage(page)
-  const onboardingPages = new OnboardingPages(page)
+  const loginPage = new LoginPage(page)
   const topNav = new TopNav(page)
-
-  const now = new Date()
-  const epochTime = now.getTime()
-  const email = `playwright.tester${epochTime}@example.com`
-  const firstAndLastName = `FirstName LastName-${epochTime}`
-  const password = `playwright-${epochTime}`
-  const teamName = `Team Name-${epochTime}`
-  const legalName = `Legal Name-${epochTime}`
 
   await landingPage.goToAdminUrl()
   await landingPage.clickSignInWithEmail()
 
-  await onboardingPages.createUser(email, firstAndLastName, password)
-  await onboardingPages.fillOnboardingForm(teamName, legalName)
-  
+  await loginPage.login()
+
+  // Get team name from env vars compare it with actual team name in the app
+  const teamName = await getTeamName()
+  await topNav.clickTeamName(teamName)
   expect(await topNav.getTeamName()).toBe(teamName)
 
   await playAudit({

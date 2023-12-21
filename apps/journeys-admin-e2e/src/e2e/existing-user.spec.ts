@@ -19,9 +19,10 @@ test('Existing user can login and logout successfully', async ({ page }) => {
 
   await leftNav.clickProfile()
   const email = await getEmail()
+  expect(await leftNav.getEmail()).toBe(email)
   const firstAndLastName = await getUser()
-  expect(await leftNav.getName()).toBe(email)
-  expect(await leftNav.getEmail()).toBe(firstAndLastName)
+  expect(await leftNav.getName()).toBe(firstAndLastName)
+  
 
   const isLandingPageVisible = await landingPage.isLandingPage()
   expect(isLandingPageVisible).toBe(true)
