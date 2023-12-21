@@ -23,6 +23,7 @@ export function CopyToTeamMenuItem({
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
 
