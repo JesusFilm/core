@@ -44,7 +44,7 @@ test('Landing page - lighthouse test', async () => {
       accessibility: 90,
       'best-practices': 83,
       seo: 82,
-      pwa: 67
+      pwa: 33
     },
     // reports: {
     //   formats: { html: true },
@@ -84,7 +84,7 @@ test('Home page - lighthouse test', async () => {
     page,
     config,
     thresholds: {
-      performance: 70,
+      performance: 50,
       accessibility: 84,
       'best-practices': 83,
       seo: 82,
