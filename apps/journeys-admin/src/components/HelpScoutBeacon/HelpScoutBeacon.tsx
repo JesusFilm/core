@@ -140,7 +140,7 @@ export function HelpScoutBeacon({
 
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
           top: 47px;
-          right: 0px;
+          right: 30px;
           width: 327px;
           max-height: none;
           height: calc(100vh - 47px);
