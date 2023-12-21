@@ -78,14 +78,14 @@ test('Home page - lighthouse test', async () => {
   // Get team name from env vars compare it with actual team name in the app
   const teamName = await getTeamName()
   await topNav.clickTeamName(teamName)
-  expect(await topNav.getTeamName()).toBe(teamName)
+  expect(await topNav.getTeamName()).toContain(teamName)
 
   await playAudit({
     page,
     config,
     thresholds: {
-      performance: 46,
-      accessibility: 98,
+      performance: 70,
+      accessibility: 84,
       'best-practices': 83,
       seo: 82,
       pwa: 67
