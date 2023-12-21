@@ -68,6 +68,14 @@ resource "doppler_secret" "rds_password" {
 }
 
 resource "doppler_secret" "rds_url" {
+  name    = "PG_DATABASE_URL"
+  config  = var.env == "prod" ? "prd" : "stg"
+  project = var.doppler_project
+  value   = "postgresql://${aws_rds_cluster.default.master_username}:${urlencode(random_password.password.result)}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
+}
+
+
+resource "doppler_secret" "new_rds_url" {
   name    = var.PG_DATABASE_URL_ENV_VAR
   config  = var.env == "prod" ? "prd" : "stg"
   project = var.doppler_project
