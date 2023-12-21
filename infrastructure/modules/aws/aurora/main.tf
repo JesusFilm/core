@@ -41,6 +41,16 @@ resource "aws_rds_cluster_instance" "default" {
 }
 
 resource "aws_ssm_parameter" "parameter" {
+  name      = "/ecs/${var.name}/${var.env}/PG_DATABASE_URL"
+  type      = "SecureString"
+  value     = "postgresql://${aws_rds_cluster.default.master_username}:${urlencode(random_password.password.result)}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
+  overwrite = true
+  tags = {
+    name = "PG_DATABASE_URL"
+  }
+}
+
+resource "aws_ssm_parameter" "new_parameter" {
   name      = "/ecs/${var.name}/${var.env}/${var.PG_DATABASE_URL_ENV_VAR}"
   type      = "SecureString"
   value     = "postgresql://${aws_rds_cluster.default.master_username}:${urlencode(random_password.password.result)}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
