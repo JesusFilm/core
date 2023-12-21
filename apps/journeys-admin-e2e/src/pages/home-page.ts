@@ -8,6 +8,6 @@ export class HomePage {
   }
 
   async seeAllTemplates(): Promise<void> {
-    await this.page.getByRole('link', { name: 'See all', exact: true }).click();
+    await this.page.getByRole('link', { name: 'See all', exact: true }).click()
   }
 }

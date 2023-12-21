@@ -27,7 +27,6 @@ export class OnboardingPages {
     firstAndLastName: string,
     password: string
   ): Promise<void> {
-
     await this.fillEmail(email)
     await this.page.getByRole('button', { name: 'Next' }).click()
     await this.page.getByLabel('First & last name').click()

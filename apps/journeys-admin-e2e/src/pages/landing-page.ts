@@ -11,18 +11,25 @@ export class LandingPage {
   }
 
   async goToAdminUrl(): Promise<void> {
-    await this.page.goto('/');
+    await this.page.goto('https://journeys-admin-2162-jesusfilm.vercel.app/')
   }
 
   async clickSignInWithEmail(): Promise<void> {
-    await this.page.locator('button[data-provider-id="password"]').click();
+    await this.page.locator('button[data-provider-id="password"]').click()
   }
 
   async signInWithEmailVisible(): Promise<void> {
-    await expect(this.page.locator('button[data-provider-id="password"] span.firebaseui-idp-text-long')).toHaveText('Sign in with email');
+    await expect(
+      this.page.locator(
+        'button[data-provider-id="password"] span.firebaseui-idp-text-long'
+      )
+    ).toHaveText('Sign in with email')
   }
 
   async isLandingPage(): Promise<boolean> {
-    return await isVisible(this.page, 'button[data-provider-id="password"] span.firebaseui-idp-text-long');
+    return await isVisible(
+      this.page,
+      'button[data-provider-id="password"] span.firebaseui-idp-text-long'
+    )
   }
 }
