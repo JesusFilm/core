@@ -152,6 +152,10 @@ jobs:
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
+          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:

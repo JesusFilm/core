@@ -1,6 +1,8 @@
 import { expect } from '@playwright/test'
 import { Page } from 'playwright-core'
 
+import { getEmail, getPassword } from '../framework/helpers'
+
 export class LoginPage {
   readonly page: Page
 
@@ -25,9 +27,11 @@ export class LoginPage {
     await this.page.locator('button[type="submit"]').click()
   }
 
-  async login(email: string, password: string): Promise<void> {
+  async login(): Promise<void> {
+    const email = await getEmail()
     await this.fillExistingEmail(email)
     await this.clickNextButton()
+    const password = await getPassword()
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
   }

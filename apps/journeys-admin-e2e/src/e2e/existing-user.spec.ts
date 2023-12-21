@@ -1,0 +1,28 @@
+import { expect, test } from '@playwright/test'
+
+import { getEmail, getUser } from '../framework/helpers'
+import { LandingPage } from '../pages/landing-page'
+import { LeftNav } from '../pages/left-nav'
+import { LoginPage } from '../pages/login-page'
+
+
+// Already created user should be able to login successfully
+test('Existing user can login and logout successfully', async ({ page }) => {
+  const landingPage = new LandingPage(page)
+  const leftNav = new LeftNav(page)
+  const loginPage = new LoginPage(page)
+
+  await landingPage.goToAdminUrl()
+  await landingPage.clickSignInWithEmail()
+
+  await loginPage.login()
+
+  await leftNav.clickProfile()
+  const email = await getEmail()
+  const firstAndLastName = await getUser()
+  expect(await leftNav.getName()).toBe(email)
+  expect(await leftNav.getEmail()).toBe(firstAndLastName)
+
+  const isLandingPageVisible = await landingPage.isLandingPage()
+  expect(isLandingPageVisible).toBe(true)
+})
