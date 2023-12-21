@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
@@ -10,7 +11,9 @@ import { object, string } from 'yup'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { useTeam } from '../TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 interface CopyToTeamDialogProps {
   title: string
@@ -40,16 +43,24 @@ export function CopyToTeamDialog({
     teamSelect: string().required(t('Please select a valid team'))
   })
 
+  const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
+    UPDATE_LAST_ACTIVE_TEAM_ID
+  )
+
   async function handleSubmit(
     values: FormikValues,
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
-    // submitAction runs first so loading state can be shown
+    await updateLastActiveTeamId({
+      variables: {
+        input: {
+          lastActiveTeamId: values.teamSelect
+        }
+      }
+    })
+    // submit action goes before setActiveTeam for proper loading states to be shown
     await submitAction(values.teamSelect)
-    await setActiveTeam(
-      teams.find((team) => team.id === values.teamSelect) ?? null
-    )
-
+    setActiveTeam(teams.find((team) => team.id === values.teamSelect) ?? null)
     resetForm()
   }
 
