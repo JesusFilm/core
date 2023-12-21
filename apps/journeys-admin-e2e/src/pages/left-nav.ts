@@ -3,8 +3,6 @@ import exp from 'constants'
 import { expect } from '@playwright/test'
 import { Page } from 'playwright-core'
 
-import { isCorrectText, isVisible } from '../framework/actions'
-
 export class LeftNav {
   readonly page: Page
 
