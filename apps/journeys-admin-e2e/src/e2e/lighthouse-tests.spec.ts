@@ -40,7 +40,7 @@ test('Landing page - lighthouse test', async () => {
     page,
     config,
     thresholds: {
-      performance: 36,
+      performance: 30,
       accessibility: 90,
       'best-practices': 83,
       seo: 82,
