@@ -39,68 +39,72 @@ async function upsertTag(
 }
 
 async function main(): Promise<void> {
+  await prisma.tag.deleteMany({})
+
   await upsertTag('Felt Needs', [
-    'Loneliness',
+    'Acceptance',
     'Fear/Anxiety',
     'Depression',
+    'Forgiveness',
+    'Hope',
+    'Loneliness',
     'Love',
-    'Acceptance',
     'Security',
     'Significance',
-    'Hope',
-    'Forgiveness'
+    'Fear/Power',
+    'Honor/Shame',
+    'Guilt/Righteousness'
   ])
   await upsertTag('Topics', [
-    'Health',
-    'Relationships',
-    'Finances',
-    'Work & Success',
     'Addiction',
     'Anger',
-    'Prayer',
     'Apologetics',
-    "Jesus' Life",
+    'Finances',
+    'Gospel presentations',
+    'Health',
     'Holy Spirit',
-    'Gospel presentations'
+    "Jesus' Life",
+    'Relationships',
+    'Prayer',
+    'Work & Success'
   ])
   await upsertTag('Holidays', [
     'Christmas',
     'Easter',
     'Ramadan',
-    'New Years',
-    'Festivals',
-    'World Youth Day',
-    'Sport Events',
     'Halloween',
+    'Festivals',
+    'Sport Events',
+    'World Youth Day',
     "Valentine's Day",
     "Mother's & Women's Day",
     "Father's Day"
   ])
   await upsertTag('Audience', [
-    'Christian',
     'Catholic',
     'Orthodox',
+    'Muslim',
+    'Hindu',
+    'Buddhist',
+    'Atheist',
+    'Agnostic',
+    'Seeker',
+    'New Believer',
+    'Mature Believer',
     'Men',
     'Women',
     'Children',
-    'Seeker',
-    'New Believer',
     'Youth',
-    'Mature Believer',
-    'Honor/Shame',
-    'Fear/Power',
-    'Guilt/Righteousness'
+    'Adults'
   ])
   await upsertTag('Genre', [
-    'Drama',
-    'Historical',
-    'Comedy',
-    'Suspense',
-    'Explainer',
     'Animation',
+    'Explainer',
     'Inspirational',
+    'Series',
     'Testimonies',
-    'Series'
+    'Classic',
+    'Modern'
   ])
   await upsertTag(
     'Collections',
