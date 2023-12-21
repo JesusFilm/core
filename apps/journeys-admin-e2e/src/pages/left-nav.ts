@@ -9,8 +9,14 @@ export class LeftNav {
   }
 
   async clickProfile(): Promise<void> {
-    // Click on Profile
-    await this.page.getByTestId('NavigationListItemProfile').click()
+    try {
+      const profileListItem = await this.page.waitForSelector('[data-testid="NavigationListItemProfile"]', { timeout: 60000 });
+      
+      // Click on Profile
+      await profileListItem.click();
+    } catch (error) {
+      throw new Error("Profile list item is not visible after waiting for a minute");
+    }
   }
 
   async testUserDetails(
