@@ -2,7 +2,7 @@ FROM node:18-alpine
 
 EXPOSE 4004
 
-ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-videos-client
+ENV PRISMA_LOCATION_VIDEOS=/app/node_modules/.prisma/api-videos-client
 
 RUN apk upgrade --update-cache --available && \
     apk add openssl1.1-compat && \
