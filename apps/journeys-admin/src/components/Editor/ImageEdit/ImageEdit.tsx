@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import dynamic from 'next/dynamic'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -122,9 +122,7 @@ export function ImageEdit({
     target === 'primary'
       ? journey?.primaryImageBlock
       : journey?.creatorImageBlock
-  useEffect(() => {
-    setPrimaryImageBlock(targetImageBlock)
-  }, [setPrimaryImageBlock, targetImageBlock])
+  setPrimaryImageBlock(targetImageBlock)
 
   function handleOpen(): void {
     setOpen(true)
