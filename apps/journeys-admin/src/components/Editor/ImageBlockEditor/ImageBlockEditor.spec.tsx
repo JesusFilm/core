@@ -75,7 +75,9 @@ describe('ImageBlockEditor', () => {
 
     expect(getByText('Add image by URL')).toBeInTheDocument()
     await fireEvent.click(getByRole('tab', { name: 'AI' }))
-    expect(getByRole('button', { name: 'Prompt' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Prompt' })).toBeInTheDocument()
+    )
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith({
         query: { param: 'ai-image' },

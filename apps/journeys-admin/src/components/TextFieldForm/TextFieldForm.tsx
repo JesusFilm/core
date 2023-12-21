@@ -13,6 +13,7 @@ type FieldProps = Pick<
   | 'inputProps'
   | 'sx'
   | 'type'
+  | 'onFocus'
 >
 
 interface TextFieldFormProps extends FieldProps {
