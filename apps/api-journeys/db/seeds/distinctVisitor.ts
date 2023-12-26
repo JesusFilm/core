@@ -1,4 +1,7 @@
+import omit from 'lodash/omit'
+
 import { PrismaClient } from '.prisma/api-journeys-client'
+
 const prisma = new PrismaClient()
 
 const handledIds: string[] = []
@@ -83,6 +86,11 @@ export async function distinctVisitor(): Promise<void> {
       if (newInitial.updatedAt < nextVisitor.updatedAt)
         newInitial.updatedAt = nextVisitor.updatedAt
 
+      await prisma.visitor.update({
+        where: { id: newInitial.id },
+        data: omit(newInitial, ['id', 'userAgent'])
+      })
+
       const journeyVisitors = await prisma.journeyVisitor.findMany({
         where: { visitorId: nextVisitor.id }
       })
@@ -99,8 +107,48 @@ export async function distinctVisitor(): Promise<void> {
             where: { id: journeyVisitor.id },
             data: { visitorId: newInitial.id }
           })
+        } else {
+          if (existingJV.createdAt > journeyVisitor.createdAt)
+            existingJV.createdAt = journeyVisitor.createdAt
+          if (existingJV.duration < journeyVisitor.duration)
+            existingJV.duration = journeyVisitor.duration
+          if (journeyVisitor.lastChatStartedAt != null) {
+            existingJV.lastChatStartedAt = journeyVisitor.lastChatStartedAt
+            existingJV.lastChatPlatform = journeyVisitor.lastChatPlatform
+          }
+          if (journeyVisitor.lastStepViewedAt != null)
+            existingJV.lastStepViewedAt = journeyVisitor.lastStepViewedAt
+          if (existingJV.lastLinkAction != null)
+            existingJV.lastLinkAction = journeyVisitor.lastLinkAction
+          if (existingJV.lastTextResponse != null)
+            existingJV.lastTextResponse = journeyVisitor.lastTextResponse
+          if (existingJV.lastRadioQuestion != null)
+            existingJV.lastRadioQuestion = journeyVisitor.lastRadioQuestion
+          if (existingJV.lastRadioOptionSubmission != null)
+            existingJV.lastRadioOptionSubmission =
+              journeyVisitor.lastRadioOptionSubmission
+          if (existingJV.activityCount < journeyVisitor.activityCount)
+            existingJV.activityCount = journeyVisitor.activityCount
+          if (existingJV.updatedAt < journeyVisitor.updatedAt)
+            existingJV.updatedAt = journeyVisitor.updatedAt
+
+          await prisma.journeyVisitor.update({
+            where: { id: existingJV.id },
+            data: omit(existingJV, ['id'])
+          })
+
+          await prisma.event.updateMany({
+            where: { journeyVisitor: { id: journeyVisitor.id } },
+            data: {
+              visitorId: newInitial.id,
+              journeyVisitorVisitorId: newInitial.id
+            }
+          })
         }
+        await prisma.journeyVisitor.delete({ where: { id: journeyVisitor.id } })
       }
+
+      await prisma.visitor.delete({ where: { id: nextVisitor.id } })
       console.log('journeyVisitors:', journeyVisitors.length)
       handledIds.push(nextVisitor.id)
     }
