@@ -5,14 +5,23 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
 import noop from 'lodash/noop'
+import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
 import { GetAdminJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import { AccessDialog } from '../AccessDialog'
 import { Avatar } from '../Avatar'
 
-import { ManageAccessAvatar } from './ManageAccessAvatar/ManageAccessAvatar'
+import { ManageAccessAvatar } from './ManageAccessAvatar'
+
+const AccessDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "AccessDialog" */
+      '../AccessDialog'
+    ).then((mod) => mod.AccessDialog),
+  { ssr: false }
+)
 
 export interface AccessAvatarsProps {
   journeyId?: string
@@ -39,7 +48,7 @@ export function AccessAvatars({
   smMax = 5,
   showManageButton = false
 }: AccessAvatarsProps): ReactElement {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<boolean | undefined>()
   const min = withRenderLogic({ size, max: xsMax, setOpen, showManageButton })
   const max = withRenderLogic({ size, max: smMax, setOpen, showManageButton })
 
@@ -53,7 +62,7 @@ export function AccessAvatars({
         {max(userJourneys)}
       </Box>
 
-      {journeyId != null && (
+      {journeyId != null && open != null && (
         <AccessDialog
           journeyId={journeyId}
           open={open}

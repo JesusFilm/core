@@ -4,9 +4,8 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useCallback } from 'react'
-
-import { NextImage } from '@core/shared/ui/NextImage'
+import NextImage, { StaticImageData } from 'next/image'
+import { ReactElement } from 'react'
 
 import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
 
@@ -34,37 +33,33 @@ const StyledCollectionButton = styled(ButtonBase)(({ theme }) => ({
   }
 }))
 
+function tagImage(tagLabel?: string): StaticImageData | undefined {
+  switch (tagLabel) {
+    case 'NUA':
+      return nuaImage
+    case 'Jesus Film':
+      return jesusFilmImage
+  }
+}
+
 export function CollectionButton({
   item: tag,
   onClick
 }: CollectionButtonProps): ReactElement {
   const theme = useTheme()
 
-  const tagImage = useCallback((tagLabel: string) => {
-    switch (tagLabel) {
-      case 'Jesus Film':
-        return jesusFilmImage
-      case 'NUA':
-        return nuaImage
-      default:
-        return undefined
-    }
-  }, [])
-
-  const tagLabel = tag?.name[0]?.value ?? ''
+  const tagLabel = tag?.name[0]?.value
   const image = tagImage(tagLabel)
 
   return (
     <StyledCollectionButton
       disableRipple
       disableTouchRipple
-      onClick={() => {
-        if (tag != null) onClick(tag.id)
-      }}
+      onClick={() => tag != null && onClick(tag.id)}
       sx={{
         '&:focus-visible': {
           outline: '2px solid',
-          outlineColor: (theme) => theme.palette.primary.main,
+          outlineColor: theme.palette.primary.main,
           outlineOffset: '2px'
         }
       }}
@@ -93,10 +88,12 @@ export function CollectionButton({
           >
             {image != null ? (
               <NextImage
+                priority
                 className="backgroundImageHover"
                 src={image.src}
-                layout="fill"
-                sx={{ borderRadius: 8 }}
+                alt={tagLabel ?? 'CollectionImage'}
+                width={64}
+                height={64}
               />
             ) : (
               <InsertPhotoRoundedIcon className="backgroundImageHover" />
@@ -113,13 +110,13 @@ export function CollectionButton({
           variant="subtitle2"
           sx={{ display: { xs: 'none', md: 'block' } }}
         >
-          {tag != null ? tagLabel : <Skeleton width={80} />}
+          {tagLabel ?? <Skeleton width={80} />}
         </Typography>
         <Typography
           variant="subtitle3"
           sx={{ display: { xs: 'block', md: 'none' } }}
         >
-          {tag != null ? tagLabel : <Skeleton width={80} />}
+          {tagLabel ?? <Skeleton width={80} />}
         </Typography>
       </Stack>
     </StyledCollectionButton>

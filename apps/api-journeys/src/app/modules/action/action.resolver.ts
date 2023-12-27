@@ -63,7 +63,8 @@ export class ActionResolver {
           'RadioOptionBlock',
           'ButtonBlock',
           'VideoBlock',
-          'VideoTriggerBlock'
+          'VideoTriggerBlock',
+          'FormBlock'
         ],
         block.typename
       )

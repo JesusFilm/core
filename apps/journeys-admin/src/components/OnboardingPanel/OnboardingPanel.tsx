@@ -32,7 +32,7 @@ export function OnboardingPanel(): ReactElement {
       <SidePanelContainer border={false}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="subtitle1">{t('Use Template')}</Typography>
-          <NextLink href="/templates" passHref legacyBehavior prefetch={false}>
+          <NextLink href="/templates" passHref legacyBehavior>
             <Link
               underline="none"
               variant="subtitle2"
@@ -48,7 +48,7 @@ export function OnboardingPanel(): ReactElement {
         <DynamicOnboardingList />
       </Suspense>
       <SidePanelContainer border={false}>
-        <NextLink href="/templates" passHref legacyBehavior prefetch={false}>
+        <NextLink href="/templates" passHref legacyBehavior>
           <Button
             variant="outlined"
             startIcon={<Grid1Icon />}

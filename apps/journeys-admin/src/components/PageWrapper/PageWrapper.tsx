@@ -75,7 +75,7 @@ export function PageWrapper({
             open={open}
             onClose={setOpen}
             user={user}
-            router={router}
+            selectedPage={router?.pathname?.split('/')[1]}
           />
 
           <Stack

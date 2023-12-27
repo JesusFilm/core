@@ -88,6 +88,7 @@ jobs:
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
           JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
+          NEXUS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.NEXUS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: preview
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
@@ -172,7 +173,7 @@ jobs:
   deploy-production:
     name: Deploy Production
     # main branch and not a pull request
-    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && fromJson(needs.affected.outputs.matrix) != 'journeys-admin' }}
     needs: affected
     strategy:
       fail-fast: false
@@ -216,6 +217,7 @@ jobs:
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
           JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
+          NEXUS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.NEXUS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: production
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -27,6 +28,13 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -220,5 +228,57 @@ describe('BackgroundMedia', () => {
     expect(
       getByTestId('bgvideo-image-tab').attributes.getNamedItem('aria-pressed')
     ).toBeTruthy()
+  })
+
+  it('updates the url parameters', async () => {
+    const push = jest.fn()
+    const on = jest.fn()
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <EditorProvider initialState={{ selectedBlock: undefined }}>
+              <SnackbarProvider>
+                <BackgroundMedia />
+              </SnackbarProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('bgvideo-video-tab').attributes.getNamedItem('aria-pressed')
+    ).toBeTruthy()
+
+    fireEvent.click(getByTestId('bgvideo-image-tab'))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'background-image' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
+
+    fireEvent.click(getByTestId('bgvideo-video-tab'))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'background-video' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 })

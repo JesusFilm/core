@@ -3,6 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -10,7 +11,12 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
 
-import { VideoBlockEditorSettingsPosterLibrary } from './Library'
+const VideoBlockEditorSettingsPosterLibrary = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoBlockEditor/Settings/Poster/Library/VideoBlockEditorSettingsPosterLibrary" */ './Library'
+    ).then((mod) => mod.VideoBlockEditorSettingsPosterLibrary)
+)
 
 interface BackgroundMediaCoverImageProps {
   selectedBlock: ImageBlock | null
@@ -24,7 +30,7 @@ export function VideoBlockEditorSettingsPoster({
   disabled = false
 }: BackgroundMediaCoverImageProps): ReactElement {
   const theme = useTheme()
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<boolean | undefined>()
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
 
@@ -82,14 +88,16 @@ export function VideoBlockEditorSettingsPoster({
                 }}
               />
             </IconButton>
-            <VideoBlockEditorSettingsPosterLibrary
-              selectedBlock={selectedBlock}
-              parentBlockId={parentBlockId}
-              onClose={handleClose}
-              open={open}
-              onLoading={handleLoading}
-              onLoad={handleLoad}
-            />
+            {open != null && (
+              <VideoBlockEditorSettingsPosterLibrary
+                selectedBlock={selectedBlock}
+                parentBlockId={parentBlockId}
+                onClose={handleClose}
+                open={open}
+                onLoading={handleLoading}
+                onLoad={handleLoad}
+              />
+            )}
           </Stack>
         </Stack>
       </Box>

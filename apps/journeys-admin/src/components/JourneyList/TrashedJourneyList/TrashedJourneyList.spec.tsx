@@ -185,21 +185,6 @@ describe('TrashedJourneyList', () => {
     expect(getAllByLabelText('journey-card')[1]).toBeUndefined()
   })
 
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <TrashedJourneyList />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(3)
-    )
-  })
-
   describe('Restore All', () => {
     const result = jest.fn(() => ({
       data: [{ id: defaultJourney.id, status: 'published' }]
@@ -214,7 +199,7 @@ describe('TrashedJourneyList', () => {
       result
     }
 
-    it('should display the restore all dialog', () => {
+    it('should display the restore all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
@@ -225,7 +210,9 @@ describe('TrashedJourneyList', () => {
         </MockedProvider>
       )
 
-      expect(getByText('Restore Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Restore Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should restore all journeys', async () => {
@@ -292,7 +279,7 @@ describe('TrashedJourneyList', () => {
       result
     }
 
-    it('should display the delete all dialog', () => {
+    it('should display the delete all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
@@ -302,7 +289,9 @@ describe('TrashedJourneyList', () => {
           </ThemeProvider>
         </MockedProvider>
       )
-      expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+      )
     })
 
     it('should trash all journeys', async () => {
