@@ -24,9 +24,7 @@ export async function distinctVisitor(): Promise<void> {
 
     const newInitial = duplicates[0]
     console.log('initial value:', newInitial)
-    const initialJourneyVisitors = await prisma.journeyVisitor.findMany({
-      where: { visitorId: visitor.id }
-    })
+
     for (let j = 1; j < duplicates.length; j++) {
       const nextVisitor = duplicates[j]
 
