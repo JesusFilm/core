@@ -97,11 +97,15 @@ export async function distinctVisitor(): Promise<void> {
 
       for (let k = 0; k < journeyVisitors.length; k++) {
         const journeyVisitor = journeyVisitors[k]
-        const existingJV = initialJourneyVisitors.find(
-          ({ journeyId, visitorId }) =>
-            journeyId === journeyVisitor.journeyId &&
-            visitorId === journeyVisitor.visitorId
-        )
+        const existingJV = await prisma.journeyVisitor.findUnique({
+          where: {
+            journeyId_visitorId: {
+              journeyId: journeyVisitor.journeyId,
+              visitorId: newInitial.id
+            }
+          }
+        })
+
         if (existingJV == null) {
           await prisma.journeyVisitor.update({
             where: { id: journeyVisitor.id },
@@ -147,7 +151,10 @@ export async function distinctVisitor(): Promise<void> {
         }
         await prisma.journeyVisitor.delete({ where: { id: journeyVisitor.id } })
       }
-
+      await prisma.event.updateMany({
+        where: { visitorId: nextVisitor.id },
+        data: { visitorId: newInitial.id }
+      })
       await prisma.visitor.delete({ where: { id: nextVisitor.id } })
       console.log('journeyVisitors:', journeyVisitors.length)
       handledIds.push(nextVisitor.id)
