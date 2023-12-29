@@ -3,8 +3,8 @@ module.exports = {
     includes: ['./pages/**', './src/**', '../../libs/journeys/ui/**'],
     excludes: ['./**/*.test.tsx'],
     service: {
-      name: 'api-gateway',
-      localSchemaFile: 'apps/api-gateway/schema.graphql'
+      name: 'api-nexus',
+      localSchemaFile: 'apps/api-nexus/schema.graphql'
     }
   }
 }
