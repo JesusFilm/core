@@ -90,7 +90,8 @@ describe('TemplateGalleryCard', () => {
         }}
       />
     )
-    expect(getByText('Aug, 2023 ● Kalagan (TK)')).toBeInTheDocument()
+    const year = new Date().getFullYear()
+    expect(getByText(`Aug, ${year} ● Kalagan (TK)`)).toBeInTheDocument()
   })
 
   it('should link to template details', () => {
