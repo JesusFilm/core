@@ -19,14 +19,14 @@ import SettingsIcon from '@core/shared/ui/icons/Settings'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
-import { DuplicateBlock } from '../../../DuplicateBlock'
 import { MenuItem } from '../../../MenuItem'
+import { Analytics } from '../Analytics'
 import { DeleteBlock } from '../DeleteBlock'
+import { DuplicateBlock } from '../DuplicateBlock'
 
 import { CopyMenuItem } from './CopyMenuItem'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
 import { LanguageMenuItem } from './LanguageMenuItem'
-import { ReportMenuItem } from './ReportMenuItem'
 
 const DescriptionDialog = dynamic(
   async () =>
@@ -188,7 +188,7 @@ export function Menu(): ReactElement {
         {(journey?.template !== true || isPublisher != null) && (
           <LanguageMenuItem onClose={handleCloseMenu} />
         )}
-        {journey != null && <ReportMenuItem journey={journey} />}
+        {journey != null && <Analytics journey={journey} variant="list-item" />}
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateMenuItem />
         )}

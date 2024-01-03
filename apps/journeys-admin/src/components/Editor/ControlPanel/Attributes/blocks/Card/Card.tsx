@@ -22,9 +22,6 @@ import {
 import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 import { Attribute } from '../../Attribute'
 
-import { CardLayout } from './CardLayout'
-import { CardStyling } from './CardStyling'
-
 const BackgroundColor = dynamic(
   async () =>
     await import(
@@ -38,6 +35,22 @@ const BackgroundMedia = dynamic(
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/BackgroundMedia" */ './BackgroundMedia'
     ).then((mod) => mod.BackgroundMedia),
+  { ssr: false }
+)
+
+const CardLayout = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/CardLayout/CardLayout" */ './CardLayout'
+    ).then((mod) => mod.CardLayout),
+  { ssr: false }
+)
+
+const CardStyling = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/CardStyling/CardStyling" */ './CardStyling'
+    ).then((mod) => mod.CardStyling),
   { ssr: false }
 )
 

@@ -31,6 +31,7 @@ export const GET_FORM_BLOCK = gql`
           slug
           name
         }
+        apiTokenExists
       }
     }
   }
@@ -46,7 +47,11 @@ export function Credentials(): ReactElement {
 
   return (
     <Stack spacing={6} sx={{ px: 6, py: 4 }}>
-      <ApiTokenTextField id={selectedBlock?.id} />
+      <ApiTokenTextField
+        id={selectedBlock?.id}
+        apiTokenExists={data?.block?.apiTokenExists}
+        loading={loading}
+      />
       <ProjectIdSelect
         id={selectedBlock?.id}
         currentProjectId={data?.block?.projectId}

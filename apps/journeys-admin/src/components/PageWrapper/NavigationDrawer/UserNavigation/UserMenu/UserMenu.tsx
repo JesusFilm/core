@@ -15,6 +15,7 @@ import Logout2Icon from '@core/shared/ui/icons/Logout2'
 
 import { GetMe_me as ApiUser } from '../../../../../../__generated__/GetMe'
 import { MenuItem } from '../../../../MenuItem'
+import { useTeam } from '../../../../Team/TeamProvider'
 
 export interface UserMenuProps {
   apiUser: ApiUser
@@ -34,6 +35,7 @@ export function UserMenu({
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const client = useApolloClient()
+  const { setActiveTeam } = useTeam()
 
   return (
     <Menu
@@ -85,6 +87,7 @@ export function UserMenu({
             variant: 'success',
             preventDuplicate: true
           })
+          setActiveTeam(null)
         }}
       />
     </Menu>
