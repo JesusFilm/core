@@ -130,6 +130,7 @@
     "vercel": "^32.1.0",
     "video.js": "^8.6.1",
     "videojs-youtube": "^3.0.1",
+    "xlsx": "^0.18.5",
     "yup": "^1.0.0"
   },
   "devDependencies": {

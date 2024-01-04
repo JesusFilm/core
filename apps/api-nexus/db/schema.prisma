@@ -46,17 +46,6 @@ model Channel {
     deletedAt DateTime?
 }
 
-model Resource {
-    id          String               @id @default(uuid())
-    nexusId     String
-    name        String
-    nexus       Nexus                @relation(fields: [nexusId], references: [id])
-    googleDrive GoogleDriveResource?
-    status      NexusStatus          @default(published)
-    createdAt   DateTime             @default(now())
-    deletedAt   DateTime?
-}
-
 model ChannelYoutube {
     id           String  @id @default(uuid())
     channelId    String  @unique
@@ -68,6 +57,35 @@ model ChannelYoutube {
     refreshToken String
 }
 
+model Resource {
+    id               String               @id @default(uuid())
+    nexusId          String
+    name             String
+    nexus            Nexus                @relation(fields: [nexusId], references: [id])
+    googleDrive      GoogleDriveResource?
+    status           ResourceStatus       @default(published)
+    createdAt        DateTime             @default(now())
+    updatedAt        DateTime             @updatedAt
+    deletedAt        DateTime?
+    templateResource TemplateResource?
+    sourceType       SourceType
+}
+
+enum ResourceStatus {
+    deleted
+    published
+    processing
+    error
+    uploaded
+}
+
+enum SourceType {
+    googleDrive
+    template
+    archlight
+    other
+}
+
 model GoogleDriveResource {
     id           String   @id @default(uuid())
     resourceId   String   @unique
@@ -76,4 +94,63 @@ model GoogleDriveResource {
     mimeType     String
     refreshToken String
     resource     Resource @relation(fields: [resourceId], references: [id])
+}
+
+model TemplateResource {
+    id                String        @id @default(uuid())
+    resourceId        String        @unique
+    filename          String
+    channel           String?
+    titles            Title[]
+    descriptions      Description[]
+    keywords          Keyword[]
+    spokenLanguage    String
+    captionFile       String?
+    captionLanguage   String?
+    category          String?
+    privacyStatus     PrivacyStatus
+    notifySubscribers Boolean       @default(true)
+    customThumbnail   String?
+    playlistId        String?
+    isMadeForKids     Boolean       @default(false)
+    resource          Resource      @relation(fields: [resourceId], references: [id])
+}
+
+model Title {
+    id                 String           @id @default(uuid())
+    templateResourceId String
+    languageEntries    LanguageEntry[]
+    templateResource   TemplateResource @relation(fields: [templateResourceId], references: [id])
+}
+
+model Description {
+    id                 String           @id @default(uuid())
+    templateResourceId String
+    languageEntries    LanguageEntry[]
+    templateResource   TemplateResource @relation(fields: [templateResourceId], references: [id])
+}
+
+model Keyword {
+    id                 String           @id @default(uuid())
+    templateResourceId String
+    languageEntries    LanguageEntry[]
+    templateResource   TemplateResource @relation(fields: [templateResourceId], references: [id])
+}
+
+model LanguageEntry {
+    id            String       @id @default(uuid())
+    text          String
+    languageCode  String
+    Title         Title?       @relation(fields: [titleId], references: [id])
+    titleId       String?
+    Description   Description? @relation(fields: [descriptionId], references: [id])
+    descriptionId String?
+    Keyword       Keyword?     @relation(fields: [keywordId], references: [id])
+    keywordId     String?
+}
+
+enum PrivacyStatus {
+    public
+    unlisted
+    private
 }

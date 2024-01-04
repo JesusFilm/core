@@ -38,11 +38,15 @@ export class NexusResolver {
 
   @Query()
   async nexus(
-    @CurrentUserId() userId: string,
+    // @CurrentUserId() userId: string,
     @Args('id') id: string
   ): Promise<Nexus | null> {
     return await this.prismaService.nexus.findFirst({
-      where: { id, userNexuses: { every: { userId } }, status: 'published' }
+      where: { id, userNexuses: { 
+        // every: { userId } 
+      }, 
+        status: 'published' 
+      }
     })
   }
 

@@ -1389,6 +1389,7 @@ type Mutation
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource! @join__field(graph: NEXUS)
   resourceDelete(id: ID!): Resource! @join__field(graph: NEXUS)
   resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!] @join__field(graph: NEXUS)
+  resourceFromTemplate(input: ResourceFromSpreadsheetInput!): [Resource!] @join__field(graph: NEXUS)
   userImpersonate(email: String!): String @join__field(graph: USERS)
 }
 
@@ -1711,6 +1712,7 @@ type Resource
   googleDrive: GoogleDriveResource
   createdAt: DateTime!
   status: ResourceStatus!
+  templateResource: TemplateResource
 }
 
 input ResourceCreateInput
@@ -1737,6 +1739,13 @@ input ResourceFromGoogleDriveInput
 {
   fileIds: [String!]!
   authCode: String!
+  nexusId: String!
+}
+
+input ResourceFromSpreadsheetInput
+  @join__type(graph: NEXUS)
+{
+  file: Upload!
   nexusId: String!
 }
 
@@ -2043,6 +2052,18 @@ input TeamUpdateInput
   publicTitle: String
 }
 
+type TemplateResource
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  resourceId: String!
+  resource: Resource!
+  fileName: String!
+  title: String!
+  description: String!
+  keywords: String!
+}
+
 type TextResponseBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -2340,6 +2361,9 @@ type UnsplashUserLinks
   following: String!
   followers: String!
 }
+
+scalar Upload
+  @join__type(graph: NEXUS)
 
 type User
   @join__type(graph: JOURNEYS, key: "id")

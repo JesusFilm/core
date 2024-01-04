@@ -100,6 +100,11 @@ export class AddResourceFromGoogleDriveInput {
     nexusId: string;
 }
 
+export class ResourceFromSpreadsheetInput {
+    file: Upload;
+    nexusId: string;
+}
+
 export class Channel {
     __typename?: 'Channel';
     id: string;
@@ -158,6 +163,7 @@ export class Resource {
     googleDrive?: Nullable<GoogleDriveResource>;
     createdAt: DateTime;
     status: ResourceStatus;
+    templateResource?: Nullable<TemplateResource>;
 }
 
 export class GoogleDriveResource {
@@ -169,6 +175,17 @@ export class GoogleDriveResource {
     driveId: string;
     mimeType: string;
     refreshToken: string;
+}
+
+export class TemplateResource {
+    __typename?: 'TemplateResource';
+    id: string;
+    resourceId: string;
+    resource: Resource;
+    fileName: string;
+    title: string;
+    description: string;
+    keywords: string;
 }
 
 export class Translation {
@@ -200,6 +217,8 @@ export abstract class IMutation {
     abstract resourceDelete(id: string): Resource | Promise<Resource>;
 
     abstract resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+
+    abstract resourceFromTemplate(input: ResourceFromSpreadsheetInput): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
 }
 
 export class Language {
@@ -207,4 +226,5 @@ export class Language {
 }
 
 export type DateTime = String;
+export type Upload = any;
 type Nullable<T> = T | null;
