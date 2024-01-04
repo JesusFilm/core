@@ -10,7 +10,7 @@ import {
   RESTORE_TRASHED_JOURNEYS
 } from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultTemplate, oldTemplate } from '../data'
+import { defaultTemplate, fakeDate, oldTemplate } from '../data'
 
 import { TrashedTemplateList } from '.'
 
@@ -48,9 +48,10 @@ const noJourneysMock = {
 }
 
 describe('TrashedTemplateList', () => {
+  // fake timers not working correctly with
   beforeAll(() => {
     jest.useFakeTimers()
-    jest.setSystemTime(new Date('2021-12-11'))
+    jest.setSystemTime(new Date(fakeDate))
   })
 
   it('should render templates in descending createdAt date by default', async () => {
@@ -111,7 +112,7 @@ describe('TrashedTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        `a lower case titleJanuary 1, 2023English`
+        `a lower case titleJanuary 1English`
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(

@@ -10,7 +10,7 @@ import {
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, oldJourney } from '../journeyListData'
+import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
 import { SortOrder } from '../JourneySort'
 
 import {
@@ -75,7 +75,7 @@ const noJourneysMock: MockedResponse<
 describe('TrashedJourneyList', () => {
   beforeAll(() => {
     jest.useFakeTimers()
-    jest.setSystemTime(new Date('2021-12-11'))
+    jest.setSystemTime(new Date(fakeDate))
   })
 
   it('should render journeys in descending createdAt date by default', async () => {
