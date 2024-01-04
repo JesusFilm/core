@@ -72,7 +72,7 @@ export const defaultJourney: Journey = {
       }
     ]
   },
-  createdAt: formatISO(startOfYear(new Date())),
+  createdAt: formatISO(startOfYear(new Date('2023-01-01T03:24:00'))),
   publishedAt: null,
   status: JourneyStatus.draft,
   seoTitle: null,

@@ -136,10 +136,9 @@ describe('TrashedJourneyList', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    const year = new Date().getFullYear()
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        `a lower case titleJanuary 1, ${year}English`
+        `a lower case titleJanuary 1, 2023English`
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
