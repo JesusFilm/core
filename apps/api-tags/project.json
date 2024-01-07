@@ -52,7 +52,7 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-tags"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-tags --transpileOnly"
       }
     },
     "lint": {
