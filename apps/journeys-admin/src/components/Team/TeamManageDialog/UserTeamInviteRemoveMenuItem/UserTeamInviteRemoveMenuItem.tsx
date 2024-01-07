@@ -18,12 +18,14 @@ interface UserTeamInviteRemoveMenuItemProps {
   id: string
   onClick?: () => void
   disabled?: boolean
+  handleTeamDataChange: () => Promise<void>
 }
 
 export function UserTeamInviteRemoveMenuItem({
   id,
   onClick,
-  disabled
+  disabled,
+  handleTeamDataChange
 }: UserTeamInviteRemoveMenuItemProps): ReactElement {
   const [userInviteRemove, { loading }] = useMutation<UserTeamInviteRemove>(
     USER_TEAM_INVITE_REMOVE,
@@ -43,6 +45,7 @@ export function UserTeamInviteRemoveMenuItem({
   )
   async function handleClick(): Promise<void> {
     await userInviteRemove()
+    await handleTeamDataChange()
     onClick?.()
   }
 

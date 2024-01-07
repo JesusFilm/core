@@ -11,11 +11,13 @@ import { UserTeamInviteListItem } from './UserTeamInviteListItem'
 interface UserTeamInvitesListProps {
   data: GetUserTeamsAndInvites | undefined
   currentUserTeam: UserTeam | undefined
+  handleTeamDataChange: () => Promise<void>
 }
 
 export function UserTeamInviteList({
   data,
-  currentUserTeam
+  currentUserTeam,
+  handleTeamDataChange
 }: UserTeamInvitesListProps): ReactElement {
   return (
     <>
@@ -25,6 +27,7 @@ export function UserTeamInviteList({
             key={userTeamInvite.id}
             user={userTeamInvite}
             disabled={currentUserTeam?.role !== UserTeamRole.manager}
+            handleTeamDataChange={handleTeamDataChange}
           />
         )
       })}

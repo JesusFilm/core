@@ -16,11 +16,13 @@ import { UserTeamInviteRemoveMenuItem } from '../../UserTeamInviteRemoveMenuItem
 interface UserTeamInviteListItemProps {
   user: UserTeamInvite
   disabled?: boolean
+  handleTeamDataChange: () => Promise<void>
 }
 
 export function UserTeamInviteListItem({
   user,
-  disabled
+  disabled,
+  handleTeamDataChange
 }: UserTeamInviteListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -99,6 +101,7 @@ export function UserTeamInviteListItem({
             id={id}
             onClick={handleClose}
             disabled={disabled}
+            handleTeamDataChange={handleTeamDataChange}
           />
         </Stack>
       </Menu>
