@@ -36,11 +36,13 @@ export const USER_TEAM_INVITE_CREATE = gql`
 interface UserTeamInviteFormProps {
   emails: string[]
   role: UserTeamRole | undefined
+  handleTeamDataChange: () => Promise<void>
 }
 
 export function UserTeamInviteForm({
   emails,
-  role
+  role,
+  handleTeamDataChange
 }: UserTeamInviteFormProps): ReactElement {
   const [userTeamInviteCreate] = useMutation<UserTeamInviteCreate>(
     USER_TEAM_INVITE_CREATE
@@ -86,6 +88,7 @@ export function UserTeamInviteForm({
         }
       })
       resetForm()
+      await handleTeamDataChange()
     }
   }
 

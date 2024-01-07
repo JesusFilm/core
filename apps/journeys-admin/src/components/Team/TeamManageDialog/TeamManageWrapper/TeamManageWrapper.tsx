@@ -27,7 +27,7 @@ export function TeamManageWrapper({
   const { activeTeam } = useTeam()
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
   const {
-    query: [getUserTeamsAndInvites, { data, loading }],
+    query: [getUserTeamsAndInvites, { data, loading, refetch }],
     emails
   } = useUserTeamsAndInvitesLazyQuery()
 
@@ -52,6 +52,10 @@ export function TeamManageWrapper({
     })
   }, [data, currentUser])
 
+  const handleTeamDataChange = async (): Promise<void> => {
+    await refetch()
+  }
+
   return (
     <>
       {children({
@@ -67,7 +71,11 @@ export function TeamManageWrapper({
           <UserTeamInviteList data={data} currentUserTeam={currentUserTeam} />
         ),
         userTeamInviteForm: (
-          <UserTeamInviteForm emails={emails} role={currentUserTeam?.role} />
+          <UserTeamInviteForm
+            emails={emails}
+            role={currentUserTeam?.role}
+            handleTeamDataChange={handleTeamDataChange}
+          />
         )
       })}
     </>
