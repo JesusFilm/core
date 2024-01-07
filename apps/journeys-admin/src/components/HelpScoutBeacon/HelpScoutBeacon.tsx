@@ -118,7 +118,7 @@ export function HelpScoutBeacon({
           position: 'fixed',
           top: { xs: 11.5, md: 11.5 },
           zIndex: zIndex.modal + 3,
-          right: { xs: 10, md: 10 },
+          right: { xs: 40, md: 40 },
           width: 24,
           height: 24,
           color: matches ? 'secondary.dark' : 'background.paper'
