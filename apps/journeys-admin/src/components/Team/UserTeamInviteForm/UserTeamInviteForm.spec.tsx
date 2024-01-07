@@ -120,10 +120,15 @@ describe('UserTeamInviteForm', () => {
   }
 
   it('should validate when fields are empty', async () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByRole, getAllByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
+          <UserTeamInviteForm
+            emails={[]}
+            role={UserTeamRole.manager}
+            handleTeamDataChange={mockHandleTeamDataChange}
+          />
         </TeamProvider>
       </MockedProvider>
     )
@@ -145,10 +150,15 @@ describe('UserTeamInviteForm', () => {
   })
 
   it('should validate when email is invalid', async () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByRole, getByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
+          <UserTeamInviteForm
+            emails={[]}
+            role={UserTeamRole.manager}
+            handleTeamDataChange={mockHandleTeamDataChange}
+          />
         </TeamProvider>
       </MockedProvider>
     )
@@ -166,10 +176,15 @@ describe('UserTeamInviteForm', () => {
   })
 
   it('should not allow a team member to invite others', async () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByRole, getByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm emails={[]} role={UserTeamRole.member} />
+          <UserTeamInviteForm
+            emails={[]}
+            role={UserTeamRole.member}
+            handleTeamDataChange={mockHandleTeamDataChange}
+          />
         </TeamProvider>
       </MockedProvider>
     )
@@ -185,12 +200,14 @@ describe('UserTeamInviteForm', () => {
   })
 
   it('should validate if email already exists', async () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
         <TeamProvider>
           <UserTeamInviteForm
             emails={['siyangguccigang@example.com', 'edmondshen@example.com']}
             role={UserTeamRole.manager}
+            handleTeamDataChange={mockHandleTeamDataChange}
           />
         </TeamProvider>
       </MockedProvider>
@@ -213,12 +230,14 @@ describe('UserTeamInviteForm', () => {
   })
 
   it('should validate when user inputs uppercase strings for email if email already exists', async () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
         <TeamProvider>
           <UserTeamInviteForm
             emails={['siyangguccigang@example.com', 'edmondshen@example.com']}
             role={UserTeamRole.manager}
+            handleTeamDataChange={mockHandleTeamDataChange}
           />
         </TeamProvider>
       </MockedProvider>

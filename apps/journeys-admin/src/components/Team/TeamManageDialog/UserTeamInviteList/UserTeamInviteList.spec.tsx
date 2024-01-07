@@ -89,8 +89,13 @@ describe('UserTeamInviteList', () => {
   }
 
   it('shows the emails of everyone invited to team', () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByText, getAllByText, getAllByRole } = render(
-      <UserTeamInviteList data={mockData} currentUserTeam={mockCurrentUser} />
+      <UserTeamInviteList
+        data={mockData}
+        currentUserTeam={mockCurrentUser}
+        handleTeamDataChange={mockHandleTeamDataChange}
+      />
     )
 
     const button = getAllByRole('button')[0]
@@ -103,8 +108,13 @@ describe('UserTeamInviteList', () => {
   })
 
   it('disabled pending button if user does not have correct permissions', () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getAllByRole } = render(
-      <UserTeamInviteList data={mockData} currentUserTeam={mockCurrentUser2} />
+      <UserTeamInviteList
+        data={mockData}
+        currentUserTeam={mockCurrentUser2}
+        handleTeamDataChange={mockHandleTeamDataChange}
+      />
     )
 
     const button = getAllByRole('button')[0]

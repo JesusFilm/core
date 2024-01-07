@@ -14,8 +14,13 @@ describe('UserTeamInviteListItem', () => {
   }
 
   it('should show email of the invitation', () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByText } = render(
-      <UserTeamInviteListItem user={userTeamInvite} disabled={false} />
+      <UserTeamInviteListItem
+        user={userTeamInvite}
+        disabled={false}
+        handleTeamDataChange={mockHandleTeamDataChange}
+      />
     )
 
     expect(getByText('milesmorales@example.com')).toBeInTheDocument()
@@ -23,9 +28,14 @@ describe('UserTeamInviteListItem', () => {
   })
 
   it('disables button if disabled condition is true', async () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
-        <UserTeamInviteListItem user={userTeamInvite} disabled />
+        <UserTeamInviteListItem
+          user={userTeamInvite}
+          disabled
+          handleTeamDataChange={mockHandleTeamDataChange}
+        />
       </MockedProvider>
     )
 
@@ -34,9 +44,14 @@ describe('UserTeamInviteListItem', () => {
   })
 
   it('opens remove item menu', async () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <UserTeamInviteListItem user={userTeamInvite} disabled={false} />
+        <UserTeamInviteListItem
+          user={userTeamInvite}
+          disabled={false}
+          handleTeamDataChange={mockHandleTeamDataChange}
+        />
       </MockedProvider>
     )
 

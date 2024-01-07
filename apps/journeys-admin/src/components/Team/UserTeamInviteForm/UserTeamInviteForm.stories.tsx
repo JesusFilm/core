@@ -26,7 +26,11 @@ const Template: StoryObj<typeof UserTeamInviteForm> = {
             Add team member by Email
           </Typography>
         </Stack>
-        <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
+        <UserTeamInviteForm
+          emails={[]}
+          role={UserTeamRole.manager}
+          handleTeamDataChange={async () => undefined}
+        />
       </Stack>
     </MockedProvider>
   )

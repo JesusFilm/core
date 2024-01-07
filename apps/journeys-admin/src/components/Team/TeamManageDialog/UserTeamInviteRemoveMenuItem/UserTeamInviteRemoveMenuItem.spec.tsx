@@ -40,11 +40,13 @@ describe('UserTeamInviteRemoveMenuItem', () => {
 
   it('should remove a team invite', async () => {
     const handleClick = jest.fn()
+    const mockHandleTeamDataChange = jest.fn()
     const { getByText } = render(
       <MockedProvider mocks={mocks} cache={cache}>
         <UserTeamInviteRemoveMenuItem
           id="userTeamInviteId"
           onClick={handleClick}
+          handleTeamDataChange={mockHandleTeamDataChange}
         />
       </MockedProvider>
     )
@@ -52,6 +54,7 @@ describe('UserTeamInviteRemoveMenuItem', () => {
     await waitFor(() => {
       expect(inviteResult).toHaveBeenCalled()
     })
+    expect(mockHandleTeamDataChange).toHaveBeenCalled()
     expect(cache.extract()['UserTeamInvite:userTeamInviteId']).toBeUndefined()
   })
 })
