@@ -11,7 +11,7 @@ export class LandingPage {
   }
 
   async goToAdminUrl(): Promise<void> {
-    await this.page.goto('https://journeys-admin-2162-jesusfilm.vercel.app/')
+    await this.page.goto('/')
   }
 
   async clickSignInWithEmail(): Promise<void> {
