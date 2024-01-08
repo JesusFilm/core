@@ -24,6 +24,7 @@ interface UserTeamListItemProps {
   user: UserTeam
   disabled?: boolean
   variant?: 'readonly' | 'default'
+  handleTeamDataChange: () => Promise<void>
 }
 
 export const USER_TEAM_UPDATE = gql`
@@ -40,7 +41,8 @@ export const USER_TEAM_UPDATE = gql`
 export function UserTeamListItem({
   user: listItem,
   disabled,
-  variant = 'default'
+  variant = 'default',
+  handleTeamDataChange
 }: UserTeamListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -182,6 +184,7 @@ export function UserTeamListItem({
             id={id}
             onClick={handleClose}
             disabled={disabled}
+            handleTeamDataChange={handleTeamDataChange}
           />
         </Stack>
       </Menu>

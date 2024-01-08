@@ -21,13 +21,15 @@ interface UserTeamListProps {
   currentUserTeam: UserTeam | undefined
   loading: boolean
   variant?: 'readonly' | 'default'
+  handleTeamDataChange: () => Promise<void>
 }
 
 export function UserTeamList({
   data,
   currentUserTeam,
   loading,
-  variant = 'default'
+  variant = 'default',
+  handleTeamDataChange
 }: UserTeamListProps): ReactElement {
   const sortedUserTeams: UserTeam[] = useMemo(() => {
     if (variant === 'readonly') return data?.userTeams ?? []
@@ -78,6 +80,7 @@ export function UserTeamList({
                       variant === 'readonly'
                     }
                     variant={variant}
+                    handleTeamDataChange={handleTeamDataChange}
                   />
                 )
               })}

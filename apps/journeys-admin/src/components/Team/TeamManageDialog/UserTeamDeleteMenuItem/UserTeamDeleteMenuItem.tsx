@@ -18,12 +18,14 @@ interface UserTeamDeleteMenuItemProps {
   id: string
   onClick?: () => void
   disabled?: boolean
+  handleTeamDataChange: () => Promise<void>
 }
 
 export function UserTeamDeleteMenuItem({
   id,
   onClick,
-  disabled
+  disabled,
+  handleTeamDataChange
 }: UserTeamDeleteMenuItemProps): ReactElement {
   const [userTeamDelete, { loading }] = useMutation<UserTeamDelete>(
     USER_TEAM_DELETE,
@@ -44,6 +46,7 @@ export function UserTeamDeleteMenuItem({
 
   async function handleClick(): Promise<void> {
     await userTeamDelete()
+    await handleTeamDataChange()
     onClick?.()
   }
 

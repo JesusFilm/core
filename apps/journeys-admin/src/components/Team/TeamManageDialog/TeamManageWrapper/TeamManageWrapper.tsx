@@ -65,6 +65,7 @@ export function TeamManageWrapper({
             data={data}
             currentUserTeam={currentUserTeam}
             loading={loading}
+            handleTeamDataChange={handleTeamDataChange}
           />
         ),
         userTeamInviteList: (
