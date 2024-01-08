@@ -26,8 +26,7 @@ export function DuplicateJourneyMenuItem({
   const router = useRouter()
   const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
   const { t } = useTranslation('apps-journeys-admin')
-  const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
-    useState<boolean>(false)
+  const [open, setOpen] = useState<boolean>(false)
   const { enqueueSnackbar } = useSnackbar()
   const { activeTeam } = useTeam()
 
@@ -87,16 +86,16 @@ export function DuplicateJourneyMenuItem({
             ? async () => await handleDuplicateJourney()
             : () => {
                 setRoute('duplicate-journey')
-                setDuplicateTeamDialogOpen(true)
+                setOpen(true)
               }
         }
         testId="Duplicate"
       />
       <CopyToTeamDialog
         title={t('Copy to Another Team')}
-        open={duplicateTeamDialogOpen}
+        open={open}
         onClose={() => {
-          setDuplicateTeamDialogOpen(false)
+          setOpen(false)
         }}
         submitAction={handleDuplicateJourney}
       />
