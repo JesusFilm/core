@@ -7,6 +7,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { FirebaseError } from 'firebase/app'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { Form, Formik, FormikHelpers } from 'formik'
 import { useRouter } from 'next/router'
@@ -42,16 +43,24 @@ export function PasswordPage({
       .required(t('Required')),
     password: string().required(t('Enter your password'))
   })
-  async function handleLogin(
-    params,
-    actions: FormikHelpers<void>
-  ): Promise<void> {
-    console.log(params)
-    await signInWithEmailAndPassword(auth, params.email, params.password)
-    await router.push({
-      pathname: '/users/terms-and-conditions',
-      query: { redirect: router.query.redirect }
-    })
+  const handleLogin = async (values, { setFieldError }): Promise<void> => {
+    console.log(values)
+    try {
+      await signInWithEmailAndPassword(auth, values.email, values.password)
+
+      await router.push({
+        pathname: '/users/terms-and-conditions',
+        query: { redirect: router.query.redirect }
+      })
+    } catch (error) {
+      if (error.code === 'auth/wrong-password') {
+        setFieldError('password', 'Wrong Password')
+      } else if (error.code === 'auth/too-many-requests') {
+        setFieldError('password', 'Too many requests')
+      } else {
+        console.error('An error occurred:', error.message)
+      }
+    }
     console.log('CALLED')
   }
   return (
@@ -89,7 +98,7 @@ export function PasswordPage({
               <TextField
                 name="password"
                 hiddenLabel
-                placeholder={t('Choose password')}
+                placeholder={t('Enter Password')}
                 variant="standard"
                 value={values.password}
                 onChange={handleChange}
