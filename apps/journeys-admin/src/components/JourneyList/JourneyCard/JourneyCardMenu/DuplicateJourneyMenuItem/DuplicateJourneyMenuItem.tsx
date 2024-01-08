@@ -86,7 +86,7 @@ export function DuplicateJourneyMenuItem({
           activeTeam != null
             ? async () => await handleDuplicateJourney()
             : () => {
-                setRoute('copy-journey')
+                setRoute('duplicate-journey')
                 setDuplicateTeamDialogOpen(true)
               }
         }

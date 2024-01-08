@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -14,6 +15,15 @@ import {
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../../../Team/TeamSelect/TeamSelect'
 
 import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({
+    query: { tab: 'active' }
+  }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('DuplicateJourneys', () => {
   const handleCloseMenu = jest.fn()
@@ -88,6 +98,15 @@ describe('DuplicateJourneys', () => {
   })
 
   it('should open copy to team dialog when on shared with me', async () => {
+    const push = jest.fn()
+    const events = { on: jest.fn() }
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events
+    } as unknown as NextRouter)
+
     const result = jest.fn(() => {
       return {
         data: {
@@ -169,6 +188,11 @@ describe('DuplicateJourneys', () => {
     await waitFor(() => expect(result2).toHaveBeenCalled())
     await fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
     await waitFor(() => expect(result).not.toHaveBeenCalled())
+    expect(push).toHaveBeenCalledWith({
+      query: { param: 'duplicate-journey' },
+      push,
+      events
+    })
     expect(getByText('Copy to Another Team')).toBeInTheDocument()
     const muiSelect = getByTestId('team-duplicate-select')
     const muiSelectDropDownButton = await within(muiSelect).getByRole('button')
