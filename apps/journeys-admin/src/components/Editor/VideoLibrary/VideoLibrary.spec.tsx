@@ -218,10 +218,12 @@ describe('VideoLibrary', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(getByText("Andreas' Story")).toBeInTheDocument())
-    fireEvent.click(
-      getByRole('button', {
-        name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
-      })
+    await waitFor(() =>
+      fireEvent.click(
+        getByRole('button', {
+          name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
+        })
+      )
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({
@@ -235,7 +237,7 @@ describe('VideoLibrary', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('should render video details if videoId is not null', () => {
+  it('should render video details if videoId is not null', async () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
 
@@ -272,7 +274,7 @@ describe('VideoLibrary', () => {
         />
       </MockedProvider>
     )
-    expect(getByText('Video Details')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Video Details')).toBeInTheDocument())
   })
 
   it('should render YouTube', async () => {
@@ -290,7 +292,9 @@ describe('VideoLibrary', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('tab', { name: 'YouTube' }))
-    expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
+    )
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith({
         query: { param: 'video-youtube' },
