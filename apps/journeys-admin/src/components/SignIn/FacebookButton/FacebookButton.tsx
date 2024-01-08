@@ -4,7 +4,8 @@ import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { FacebookIcon } from './FacebookIcon'
+import { FacebookIcon } from '../../../../../../libs/shared/ui/src/components/icons/FacebookIcon'
+import React from 'react'
 
 export function FacebookButton(): ReactElement {
   const { t } = useTranslation()
