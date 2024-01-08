@@ -117,6 +117,10 @@ export function AccessDialog({
     }
   }, [open, refetch, refetchInvites, loadUser])
 
+  const handleTeamDataChange = async (): Promise<void> => {
+    await refetch()
+  }
+
   return (
     <Dialog
       open={open ?? false}
@@ -143,6 +147,7 @@ export function AccessDialog({
           currentUserTeam={data?.journey?.team as unknown as UserTeam}
           loading={loading}
           variant="readonly"
+          handleTeamDataChange={handleTeamDataChange}
         />
         <UserList
           title={t('Requested Access')}
