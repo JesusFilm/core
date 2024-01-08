@@ -161,7 +161,7 @@
     "@storybook/addon-essentials": "7.6.6",
     "@storybook/addon-interactions": "7.6.6",
     "@storybook/jest": "0.2.3",
-    "@storybook/nextjs": "^7.5.3",
+    "@storybook/nextjs": "^7.6.6",
     "@storybook/react": "7.6.6",
     "@storybook/testing-library": "0.2.2",
     "@svgr/webpack": "^8.1.0",
