@@ -173,6 +173,7 @@ const withRenderLogic = ({
           <AvatarGroup
             max={max}
             sx={{
+              ml: loading ? 0 : 2,
               zIndex: 1,
               '& .MuiAvatar-root': {
                 width: diameter,
