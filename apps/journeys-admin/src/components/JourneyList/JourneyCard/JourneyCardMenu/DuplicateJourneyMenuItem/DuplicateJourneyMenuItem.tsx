@@ -69,7 +69,7 @@ export function DuplicateJourneyMenuItem({
   return (
     <>
       <MenuItem
-        label="Duplicate"
+        label={t('Duplicate')}
         icon={
           loading ? (
             <CircularProgress
@@ -89,7 +89,7 @@ export function DuplicateJourneyMenuItem({
                 setOpen(true)
               }
         }
-        testId="Duplicate"
+        data-testid="Duplicate"
       />
       <CopyToTeamDialog
         title={t('Copy to Another Team')}
