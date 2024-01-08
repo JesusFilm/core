@@ -1,7 +1,5 @@
-import user from '../../user.json'
-
 export async function getEmail(): Promise<string> {
-  const email = process.env.PLAYWRIGHT_EMAIL?.toString() ?? user.email
+  const email = process.env.PLAYWRIGHT_EMAIL?.toString()
 
   if (!email || email === '') {
     throw new Error('Email was not provided via environment variable')
@@ -10,7 +8,7 @@ export async function getEmail(): Promise<string> {
 }
 
 export async function getPassword(): Promise<string> {
-  const password = process.env.PLAYWRIGHT_PASSWORD?.toString() ?? user.password
+  const password = process.env.PLAYWRIGHT_PASSWORD?.toString()
 
   if (!password || password === '') {
     throw new Error('Password was not provided via environment variable')
@@ -19,7 +17,7 @@ export async function getPassword(): Promise<string> {
 }
 
 export async function getUser(): Promise<string> {
-  const firstAndLastName = process.env.PLAYWRIGHT_USER?.toString() ?? user.first_last_name
+  const firstAndLastName = process.env.PLAYWRIGHT_USER?.toString()
 
   if (!firstAndLastName || firstAndLastName === '') {
     throw new Error(
@@ -30,7 +28,7 @@ export async function getUser(): Promise<string> {
 }
 
 export async function getTeamName(): Promise<string> {
-  const teamName = process.env.PLAYWRIGHT_TEAM_NAME?.toString() ?? user.team_name
+  const teamName = process.env.PLAYWRIGHT_TEAM_NAME?.toString()
 
   if (!teamName || teamName === '') {
     throw new Error('Team name was not provided via environment variable')
