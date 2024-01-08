@@ -1,19 +1,23 @@
 import '@core/nest/common/tracer'
-import { Logger as PinoLogger } from 'nestjs-pino'
 
 import { Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { json } from 'body-parser'
 import cors from 'cors'
+import { graphqlUploadExpress } from 'graphql-upload-minimal'
+import { Logger as PinoLogger } from 'nestjs-pino'
 
 import { AppModule } from './app/app.module'
 import { PrismaService } from './app/lib/prisma.service'
+
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true})
   app.get(PrismaService)
   await app.enableShutdownHooks()
   app.useLogger(app.get(PinoLogger))
+
+  app.use(graphqlUploadExpress());
   await app.use(
     cors<cors.CorsRequest>({ origin: true }),
     json({ limit: '50mb' })

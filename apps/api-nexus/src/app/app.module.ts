@@ -4,10 +4,9 @@ import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
+import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { LoggerModule } from 'nestjs-pino'
-
-import { Module } from '@nestjs/common'
 
 import { ChannelsModule } from './modules/channel/channel.module'
 import { NexusModule } from './modules/nexus/nexus.module'

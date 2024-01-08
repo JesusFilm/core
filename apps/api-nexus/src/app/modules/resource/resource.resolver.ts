@@ -3,6 +3,7 @@ import { Readable } from 'stream';
 
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
+import { Upload } from 'graphql-upload-minimal';
 import { v4 as uuidv4 } from 'uuid';
 import XLSX from 'xlsx';
 
@@ -15,7 +16,6 @@ import {
   ResourceCreateInput,
   ResourceFilter,
   ResourceFromGoogleDriveInput,
-  ResourceFromSpreadsheetInput,
   ResourceUpdateInput,
 } from '../../__generated__/graphql';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
@@ -44,7 +44,7 @@ export class ResourceResolver {
       where: {
         AND: [filter, { nexus: { userNexuses: { every: { userId } } } }],
       },
-      include: { googleDrive: true },
+      include: { googleDrive: true, templateResource: true },
       take: where?.limit ?? undefined,
     });
 
@@ -80,7 +80,7 @@ export class ResourceResolver {
       });
 
     const resource = await this.prismaService.resource.create({
-      data: { ...input, nexusId: nexus.id, id: uuidv4(), sourceType: 'other', },
+      data: { ...input, nexusId: nexus.id, id: uuidv4(), sourceType: 'other' },
     });
 
     return resource;
@@ -185,18 +185,23 @@ export class ResourceResolver {
   async resourceFromTemplate(
     @CurrentUserId() userId: string,
     @CurrentUser() user: User,
-    @Args('input') input: ResourceFromSpreadsheetInput,
+    @Args('nexusId') nexusId: string,
+    @Args('file', { type: () => Upload }) file: any,
   ): Promise<Resource[]> {
-    const { file, nexusId } = await input;
     const nexus = await this.prismaService.nexus.findUnique({
-      where: { id: nexusId, userNexuses: { every: { userId } } },
+      where: {
+        id: nexusId,
+        userNexuses: { every: { userId } },
+      },
     });
     if (nexus == null)
       throw new GraphQLError('nexus not found', {
         extensions: { code: 'NOT_FOUND' },
       });
-    
-    const { createReadStream } = await file;
+
+    const fileData = await file.promise;
+    const { createReadStream } = fileData;
+
     const stream = createReadStream();
     const buffer = await this.streamToBuffer(stream);
 
@@ -204,8 +209,6 @@ export class ResourceResolver {
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     const rows: SpreadsheetRow[] = XLSX.utils.sheet_to_json(worksheet);
-
-    const newlyAddedResources: Resource[] = [];
 
     for (const row of rows) {
       const {
@@ -222,65 +225,72 @@ export class ResourceResolver {
         notify_subscribers,
         custom_thumbnail,
         playlist_id,
-        is_made_for_kids
+        is_made_for_kids,
       } = row;
 
-      const resource = await this.prismaService.resource.create({
-        data: {
-          id: uuidv4(),
-          name: filename,
-          nexusId: nexus.id,
-          status: 'published',
-          sourceType: 'template',
-          createdAt: new Date(),
-        },
-      });
+      if (filename !== undefined) {
+        const resource = await this.prismaService.resource.create({
+          data: {
+            id: uuidv4(),
+            name: filename,
+            nexusId: nexus.id,
+            status: 'published',
+            sourceType: 'template',
+            createdAt: new Date(),
+          },
+        });
 
-      newlyAddedResources.push(resource);
-
-      const templateResource = await this.prismaService.templateResource.create({
-        data: {
-          resourceId: resource.id,
-          filename,
-          channel,
-          spokenLanguage: spoken_language,
-          captionLanguage: caption_language,
-          captionFile: caption_file,
-          category,
-          privacyStatus: 'public',
-          notifySubscribers: notify_subscribers,
-          customThumbnail: custom_thumbnail,
-          playlistId: playlist_id,
-          isMadeForKids: is_made_for_kids,
-          titles: {
-            create: {
-              languageEntries: {
-                create: [{ text: title, languageCode: 'en' }],
+        await this.prismaService.templateResource.create({
+          data: {
+            resourceId: resource.id,
+            filename,
+            channel,
+            spokenLanguage: spoken_language,
+            captionLanguage: caption_language,
+            captionFile: caption_file,
+            category,
+            privacyStatus: 'public',
+            notifySubscribers: notify_subscribers,
+            customThumbnail: custom_thumbnail,
+            playlistId: playlist_id,
+            isMadeForKids: is_made_for_kids,
+            titles: {
+              create: {
+                languageEntries: {
+                  create: [{ text: title, languageCode: 'en' }],
+                },
               },
             },
-          },
-          descriptions: {
-            create: {
-              languageEntries: {
-                create: [{ text: description, languageCode: 'en' }],
+            descriptions: {
+              create: {
+                languageEntries: {
+                  create: [{ text: description, languageCode: 'en' }],
+                },
               },
             },
+            keywords: {
+              create: keywords.split(',').map((keyword) => ({
+                languageEntries: {
+                  create: [{ text: keyword.trim(), languageCode: 'en' }],
+                },
+              })),
+            },
           },
-          keywords: {
-            create: keywords.split(',').map(keyword => ({
-              languageEntries: {
-                create: [{ text: keyword.trim(), languageCode: 'en' }],
-              },
-            })),
-          },
-        },
-      });
+        });
+      }
     }
-    return newlyAddedResources;
+
+    return await this.prismaService.resource.findMany({
+      where: {
+        id: nexusId,
+        nexus: { userNexuses: { every: { userId } } },
+      },
+      include: { templateResource: true },
+    });
   }
 
   private async streamToBuffer(stream: Readable): Promise<Buffer> {
-    const chunks: Uint8Array[] = []; // Explicitly type the chunks array
+    const chunks: Uint8Array[] = [];
     return await new Promise<Buffer>((resolve, reject) => {
       stream.on('data', (chunk: Uint8Array) => chunks.push(chunk));
       stream.on('error', (err) => reject(err));
@@ -305,4 +315,3 @@ interface SpreadsheetRow {
   playlist_id: string;
   is_made_for_kids: boolean;
 }
-
