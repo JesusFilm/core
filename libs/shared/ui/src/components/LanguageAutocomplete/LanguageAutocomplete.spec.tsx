@@ -82,6 +82,23 @@ describe('LanguageAutocomplete', () => {
     })
   })
 
+  it('should accept helper text', async () => {
+    const { getByText } = render(
+      <LanguageAutocomplete
+        onChange={jest.fn()}
+        value={{
+          id: '1106',
+          localName: 'German, Standard',
+          nativeName: 'Deutsch'
+        }}
+        languages={languages}
+        loading={false}
+        helperText="Set the language of your journey"
+      />
+    )
+    expect(getByText('Set the language of your journey')).toBeInTheDocument()
+  })
+
   it('should set default value', async () => {
     const { getByRole } = render(
       <LanguageAutocomplete

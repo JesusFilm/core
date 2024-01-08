@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { waitFor } from '@testing-library/react'
-import { act, renderHook } from '@testing-library/react-hooks'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { formatISO, startOfYear } from 'date-fns'
 
 import {
@@ -10,10 +9,9 @@ import {
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
-import {
-  GET_ADMIN_JOURNEYS,
-  useAdminJourneysQuery
-} from './useAdminJourneysQuery'
+import { GET_ADMIN_JOURNEYS } from './useAdminJourneysQuery'
+
+import { useAdminJourneysQuery } from '.'
 
 describe('useAdminJourneysQuery', () => {
   it('should get journeys', async () => {

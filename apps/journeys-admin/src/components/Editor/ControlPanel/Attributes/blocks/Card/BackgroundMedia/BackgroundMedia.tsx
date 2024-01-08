@@ -1,22 +1,33 @@
-import ImageIcon from '@mui/icons-material/Image'
-import Videocam from '@mui/icons-material/Videocam'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Image3Icon from '@core/shared/ui/icons/Image3'
+import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
+import { setBeaconPageViewed } from '../../../../../../../libs/setBeaconPageViewed'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
 
-import { BackgroundMediaImage } from './Image/BackgroundMediaImage'
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
 
+const BackgroundMediaImage = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/Image/BackgroundMediaImage" */ './Image/BackgroundMediaImage'
+    ).then((mod) => mod.BackgroundMediaImage),
+  { ssr: false }
+)
+
 export function BackgroundMedia(): ReactElement {
+  const router = useRouter()
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -41,7 +52,20 @@ export function BackgroundMedia(): ReactElement {
     event: MouseEvent<HTMLElement>,
     selected: string
   ): void => {
-    if (selected != null) setBlockType(selected)
+    if (selected != null) {
+      setBlockType(selected)
+
+      const param =
+        selected === 'VideoBlock' ? 'background-video' : 'background-image'
+
+      router.query.param = param
+      void router.push(router)
+      router.events.on('routeChangeComplete', () => {
+        setBeaconPageViewed(
+          selected === 'VideoBlock' ? 'Background Video' : 'Background Image'
+        )
+      })
+    }
   }
 
   const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
@@ -61,7 +85,7 @@ export function BackgroundMedia(): ReactElement {
 
   return (
     <>
-      <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
+      <Box sx={{ width: '100%', textAlign: 'center', pt: 6 }}>
         <StyledToggleButtonGroup
           value={blockType}
           onChange={handleTypeChange}
@@ -74,7 +98,7 @@ export function BackgroundMedia(): ReactElement {
             data-testid="bgvideo-video-tab"
           >
             <Stack direction="row" spacing="8px">
-              <Videocam />
+              <VideoOnIcon />
               <span>Video</span>
             </Stack>
           </ToggleButton>
@@ -84,14 +108,14 @@ export function BackgroundMedia(): ReactElement {
             data-testid="bgvideo-image-tab"
           >
             <Stack direction="row" spacing="8px">
-              <ImageIcon />
+              <Image3Icon />
               <span>Image</span>
             </Stack>
           </ToggleButton>
         </StyledToggleButtonGroup>
       </Box>
       {blockType === 'ImageBlock' && (
-        <Box sx={{ pt: 4, pb: 3, px: 6 }}>
+        <Box sx={{ p: 6 }}>
           <BackgroundMediaImage cardBlock={cardBlock} />
         </Box>
       )}

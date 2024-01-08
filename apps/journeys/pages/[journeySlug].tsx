@@ -1,8 +1,9 @@
 import { gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -34,6 +35,18 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   }
   return (
     <>
+      <Head>
+        <link
+          rel="alternate"
+          type="application/json+oembed"
+          href={`https://${
+            process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
+          }/api/oembed?url=https%3A%2F%2F${
+            process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
+          }%2F${journey.slug}&format=json`}
+          title={journey.seoTitle ?? undefined}
+        />
+      </Head>
       <NextSeo
         nofollow
         noindex

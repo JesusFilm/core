@@ -22,6 +22,11 @@ import { TypographyFields } from '../../../../../__generated__/TypographyFields'
 
 import { SelectableWrapper } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
@@ -167,31 +172,35 @@ describe('SelectableWrapper', () => {
     )
 
     fireEvent.click(getByRole('img'))
-    expect(getByTestId(`selected-${imageBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+    expect(getByTestId(`SelectableWrapper-${imageBlock.id}`)).toHaveStyle({
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     fireEvent.click(getByText('typography content'))
-    expect(getByTestId(`selected-${typographyBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+    expect(getByTestId(`SelectableWrapper-${typographyBlock.id}`)).toHaveStyle({
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
 
     fireEvent.click(getByText('button label'))
-    expect(getByTestId(`selected-${buttonBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+    expect(getByTestId(`SelectableWrapper-${buttonBlock.id}`)).toHaveStyle({
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     fireEvent.click(getByText('sign up label'))
     await waitFor(() =>
-      expect(getByTestId(`selected-${signUpBlock.id}`)).toHaveStyle({
-        outline: '3px solid #C52D3A',
+      expect(getByTestId(`SelectableWrapper-${signUpBlock.id}`)).toHaveStyle({
+        outline: '2px solid #C52D3A',
         zIndex: '1'
       })
     )
-    fireEvent.click(getByTestId(`radioQuestion-${radioQuestionBlock.id}`))
-    expect(getByTestId(`selected-${radioQuestionBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+    fireEvent.click(
+      getByTestId(`JourneysRadioQuestion-${radioQuestionBlock.id}`)
+    )
+    expect(
+      getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
+    ).toHaveStyle({
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
 
@@ -218,8 +227,10 @@ describe('SelectableWrapper', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
-    expect(getByTestId(`selected-${radioQuestionBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+    expect(
+      getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
+    ).toHaveStyle({
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
   })
@@ -245,8 +256,8 @@ describe('SelectableWrapper', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
-    expect(getByTestId(`selected-RadioOption1`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+    expect(getByTestId(`SelectableWrapper-RadioOption1`)).toHaveStyle({
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     expect(push).not.toHaveBeenCalled()
@@ -273,8 +284,8 @@ describe('SelectableWrapper', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
-    expect(getByTestId(`selected-RadioOption1`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
+    expect(getByTestId(`SelectableWrapper-RadioOption1`)).toHaveStyle({
+      outline: '2px solid #C52D3A',
       zIndex: '1'
     })
     expect(push).not.toHaveBeenCalled()

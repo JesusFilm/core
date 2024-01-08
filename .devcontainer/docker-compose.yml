@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        VARIANT: 16
+        VARIANT: 18
         USER_UID: 1000
         USER_GID: 1000
     volumes:
@@ -35,6 +35,26 @@ services:
       POSTGRES_DB: postgres
     ports:
       - 5432:5432
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+    command:
+      [
+        'redis-server',
+        '--appendonly',
+        'no',
+        '--maxmemory',
+        '500mb',
+        '--maxmemory-policy',
+        'noeviction'
+      ]
+    volumes:
+      - redis-data:/data
 volumes:
   core-node-doppler:
   postgres-data:
+  redis-data:

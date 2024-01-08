@@ -14,6 +14,7 @@ interface ButtonProps {
   description?: string
   selected?: boolean
   onClick?: () => void
+  testId?: string
 }
 
 export function Button({
@@ -22,8 +23,8 @@ export function Button({
   value,
   description,
   selected,
-  extra,
-  onClick
+  onClick,
+  testId
 }: ButtonProps): ReactElement {
   const handleClick = (): void => {
     onClick?.()
@@ -31,10 +32,13 @@ export function Button({
 
   return (
     <Box
-      sx={{
-        // maxWidth: 150
-      }}
+      sx={
+        {
+          // maxWidth: 150
+        }
+      }
       onMouseDown={(e) => e.preventDefault()}
+      data-testid={`JourneysAdminButton${testId ?? ''}`}
     >
       <MuiCard
         variant="outlined"
@@ -42,8 +46,8 @@ export function Button({
           borderBottomRightRadius: 0,
           borderBottomLeftRadius: 0,
           borderBottom: 0,
-          borderRight:0,
-          borderLeft:0
+          borderRight: 0,
+          borderLeft: 0
         }}
       >
         <CardActionArea onClick={handleClick} sx={{ minHeight: 60 }}>

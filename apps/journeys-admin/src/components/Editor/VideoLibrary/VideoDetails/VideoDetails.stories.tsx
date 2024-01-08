@@ -1,7 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
-import { ComponentProps, useState } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps, ReactElement, useState } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+
+import {
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../__generated__/GetJourney'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
@@ -10,7 +16,7 @@ import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
 
 import { VideoDetails } from '.'
 
-const VideoDetailsStory = {
+const VideoDetailsStory: Meta<typeof VideoDetails> = {
   ...journeysAdminConfig,
   component: VideoDetails,
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoDetails',
@@ -63,9 +69,14 @@ const languages: Language[] = [
   }
 ]
 
-const Template: Story<
-  ComponentProps<typeof VideoDetails> & { videoDescription: string }
-> = ({ id, onSelect, activeVideo, videoDescription }) => {
+const VideoDetailsComponent = ({
+  id,
+  onSelect,
+  activeVideoBlock,
+  videoDescription
+}: ComponentProps<typeof VideoDetails> & {
+  videoDescription: string
+}): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -116,33 +127,81 @@ const Template: Story<
         onClose={() => setOpen(false)}
         onSelect={onSelect}
         source={VideoBlockSource.internal}
-        activeVideo={activeVideo}
+        activeVideoBlock={activeVideoBlock}
       />
     </MockedProvider>
   )
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  id: '2_Acts7302-0-0',
-  videoDescription:
-    'Jesus promises the Holy Spirit; then ascends into the clouds.'
+const Template: StoryObj<
+  ComponentProps<typeof VideoDetails> & { videoDescription: string }
+> = {
+  render: ({ ...args }) => <VideoDetailsComponent {...args} />
 }
 
-export const LongDescription = Template.bind({})
-LongDescription.args = {
-  ...Default.args,
-  videoDescription:
-    'Jesus promises the Holy Spirit; then ascends into the clouds. This description is set long on purpose to showcase the functinality of the "More" and "Less" buttons.'
+export const Default = {
+  ...Template,
+  args: {
+    id: '2_Acts7302-0-0',
+    videoDescription:
+      'Jesus promises the Holy Spirit; then ascends into the clouds.'
+  }
 }
 
-export const Selected = Template.bind({})
-Selected.args = {
-  ...Default.args,
-  activeVideo: true
+export const LongDescription = {
+  ...Template,
+  args: {
+    ...Default.args,
+    videoDescription:
+      'Jesus promises the Holy Spirit; then ascends into the clouds. This description is set long on purpose to showcase the functionality of the "More" and "Less" buttons.'
+  }
 }
 
-export const Loading: Story = ({ id, onSelect }) => {
+const imageBlock: TreeBlock<ImageBlock> = {
+  id: 'imageBlockId',
+  __typename: 'ImageBlock',
+  parentBlockId: 'videoBlockId',
+  parentOrder: 0,
+  src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+  alt: 'Default Image Icon',
+  width: 0,
+  height: 0,
+  blurhash: '',
+  children: []
+}
+const videoBlock: TreeBlock<VideoBlock> = {
+  id: 'videoBlockId',
+  __typename: 'VideoBlock',
+  parentBlockId: 'card1.id',
+  parentOrder: 0,
+  startAt: 0,
+  endAt: null,
+  muted: true,
+  autoplay: true,
+  fullsize: true,
+  action: null,
+  videoId: null,
+  videoVariantLanguageId: null,
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
+  video: null,
+  posterBlockId: 'imageBlockId',
+  objectFit: null,
+  children: [imageBlock]
+}
+
+export const Selected = {
+  ...Template,
+  args: {
+    ...Default.args,
+    activeVideoBlock: videoBlock
+  }
+}
+
+const LoadingComponent = ({ id, onSelect }): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -157,8 +216,14 @@ export const Loading: Story = ({ id, onSelect }) => {
     </ApolloLoadingProvider>
   )
 }
-Loading.args = {
-  id: '2_Acts7302-0-0'
+
+export const Loading: StoryObj<typeof VideoDetails> = {
+  render: ({ id, onSelect }) => (
+    <LoadingComponent id={id} onSelect={onSelect} />
+  ),
+  args: {
+    id: '2_Acts7302-0-0'
+  }
 }
 
-export default VideoDetailsStory as Meta
+export default VideoDetailsStory

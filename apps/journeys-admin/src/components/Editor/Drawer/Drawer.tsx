@@ -1,4 +1,3 @@
-import Close from '@mui/icons-material/Close'
 import AppBar from '@mui/material/AppBar'
 import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -11,11 +10,9 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import X2Icon from '@core/shared/ui/icons/X2'
 
-import { Attributes } from '../ControlPanel/Attributes'
-import { BlocksTab } from '../ControlPanel/BlocksTab'
-
-export const DRAWER_WIDTH = 328
+import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 
 interface DrawerContentProps {
   title?: string
@@ -46,7 +43,7 @@ function DrawerContent({
             sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
             edge="end"
           >
-            <Close />
+            <X2Icon />
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -56,6 +53,7 @@ function DrawerContent({
 }
 
 export function Drawer(): ReactElement {
+  const { sidePanel } = usePageWrapperStyles()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
     state: {
@@ -87,12 +85,12 @@ export function Drawer(): ReactElement {
     <Paper
       elevation={0}
       sx={{
-        display: { xs: 'none', sm: 'block' },
+        display: { xs: 'none', md: 'block' },
         position: 'absolute',
-        top: '40px',
-        right: '40px',
-        bottom: '0',
-        width: '328px',
+        top: 0,
+        right: 0,
+        height: '100%',
+        width: sidePanel.width,
         borderLeft: 1,
         borderColor: 'divider',
         borderRadius: 0,
@@ -100,6 +98,7 @@ export function Drawer(): ReactElement {
         overflowX: 'hidden',
         zIndex: 999
       }}
+      data-testid="EditorDrawer"
     >
       <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
         {selected !== 'none' &&
@@ -120,8 +119,9 @@ export function Drawer(): ReactElement {
         open={mobileOpen}
         onClose={handleDrawerToggle}
         sx={{
-          display: { xs: 'block', sm: 'none' }
+          display: { xs: 'block', md: 'none' }
         }}
+        data-testid="EditorDrawer"
       >
         <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
           {children}

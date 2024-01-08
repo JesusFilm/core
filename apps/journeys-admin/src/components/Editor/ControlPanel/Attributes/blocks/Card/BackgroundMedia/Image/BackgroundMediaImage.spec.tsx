@@ -38,6 +38,8 @@ const journey: Journey = {
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  strategySlug: null,
+  featuredAt: null,
   title: 'my journey',
   slug: 'my-journey',
   language: {
@@ -59,13 +61,16 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -196,7 +201,7 @@ describe('BackgroundMediaImage', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    await waitFor(() => fireEvent.click(getByRole('tab', { name: 'Custom' })))
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {
@@ -293,7 +298,7 @@ describe('BackgroundMediaImage', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    await waitFor(() => fireEvent.click(getByRole('tab', { name: 'Custom' })))
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {

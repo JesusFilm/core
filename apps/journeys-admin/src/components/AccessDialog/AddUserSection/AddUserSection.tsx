@@ -1,7 +1,3 @@
-import DraftsIcon from '@mui/icons-material/Drafts'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import LinkIcon from '@mui/icons-material/Link'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
@@ -10,6 +6,10 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import EmailIcon from '@core/shared/ui/icons/Email'
+import LinkIcon from '@core/shared/ui/icons/Link'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { MenuItem } from '../../MenuItem'
 
@@ -41,9 +41,9 @@ export function AddUserSection({
   }
 
   return (
-    <Stack flexGrow={1} sx={{ m: 4, mt: 2 }}>
+    <Stack flexGrow={1} sx={{ m: 4, mt: 2 }} data-testid="AddUserSection">
       <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
-        <GroupAddIcon />
+        <UsersProfiles2Icon />
         <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>
           {t('Add editor by')}
         </Typography>
@@ -51,9 +51,25 @@ export function AddUserSection({
           variant="outlined"
           size="small"
           startIcon={
-            selectedInviteMethod === 'Email' ? <DraftsIcon /> : <LinkIcon />
+            selectedInviteMethod === 'Email' ? (
+              <EmailIcon
+                sx={{
+                  height: '24px',
+                  width: '24px',
+                  color: 'secondary.light'
+                }}
+              />
+            ) : (
+              <LinkIcon
+                sx={{
+                  height: '24px',
+                  width: '24px',
+                  color: 'secondary.light'
+                }}
+              />
+            )
           }
-          endIcon={<KeyboardArrowDownIcon />}
+          endIcon={<ChevronDownIcon />}
           aria-controls={menuOpen ? 'menu' : undefined}
           sx={{
             borderRadius: '16px',
@@ -79,7 +95,7 @@ export function AddUserSection({
           onClose={handleClose}
         >
           <MenuItem
-            icon={<DraftsIcon fontSize="small" />}
+            icon={<EmailIcon fontSize="small" />}
             label="Email"
             onClick={() => handleMenuItemClick('Email')}
           />

@@ -4,7 +4,7 @@ import MuiToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-interface ToggleButtonGroupProps<T = unknown> {
+interface ToggleButtonGroupProps<T = string | number> {
   label?: string
   value: T
   options: Array<{
@@ -13,20 +13,25 @@ interface ToggleButtonGroupProps<T = unknown> {
     icon?: ReactElement
   }>
   onChange: (value: T) => void
+  testId?: string
 }
 
 export function ToggleButtonGroup({
   label,
   options,
   value,
-  onChange
+  onChange,
+  testId
 }: ToggleButtonGroupProps): ReactElement {
   function handleChange(_event, value): void {
     onChange(value)
   }
 
   return (
-    <Stack sx={{ px: 6, py: 4 }}>
+    <Stack
+      sx={{ px: 6, py: 4 }}
+      data-testid={`ToggleButtonGroup${testId ?? ''}`}
+    >
       {label != null ? (
         <Typography variant="subtitle2" gutterBottom>
           {label}
@@ -42,7 +47,7 @@ export function ToggleButtonGroup({
       >
         {options.map(({ value, label, icon }) => (
           <ToggleButton
-            key={value as string}
+            key={value}
             value={value}
             onMouseDown={(e) => e.preventDefault()}
             sx={{

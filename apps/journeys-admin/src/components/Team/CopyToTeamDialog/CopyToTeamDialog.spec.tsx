@@ -1,14 +1,16 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
@@ -21,15 +23,80 @@ describe('DuplicateJourneys', () => {
     handleSubmitActionMock.mockClear()
   })
 
+  it('should set initial team selection if only 1 team', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <CopyToTeamDialog
+                open
+                title="Copy To Journey"
+                onClose={handleCloseMenuMock}
+                submitAction={handleSubmitActionMock}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(
+      getByRole('button', { name: 'Select Team Team Name' })
+    ).toBeInTheDocument()
+  })
+
   it('should call submit action on dialog submit', async () => {
+    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId'
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyProfileUpdate: {
+            __typename: 'JourneyProfile',
+            id: 'teamId'
+          }
+        }
+      }))
+    }
     const result = jest.fn(() => ({
       data: {
         teams: [
           {
             id: 'teamId',
             title: 'Team Name',
-            __typename: 'Team',
-            userTeams: []
+            __typename: 'Team'
           }
         ],
         getJourneyProfile: {
@@ -42,6 +109,7 @@ describe('DuplicateJourneys', () => {
     const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
+          updateLastActiveTeamIdMock,
           {
             request: {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -78,6 +146,9 @@ describe('DuplicateJourneys', () => {
     })
     fireEvent.click(muiSelectOptions)
     await waitFor(() => fireEvent.click(getByText('Copy')))
+    await waitFor(() =>
+      expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
+    )
     await waitFor(() => expect(handleSubmitActionMock).toHaveBeenCalled())
   })
 

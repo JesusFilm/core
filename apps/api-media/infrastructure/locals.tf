@@ -6,7 +6,8 @@ locals {
     "CLOUDFLARE_ACCOUNT_ID",
     "CLOUDFLARE_STREAM_TOKEN",
     "GOOGLE_APPLICATION_JSON",
-    "UNSPLASH_ACCESS_KEY"
+    "UNSPLASH_ACCESS_KEY",
+    "SEGMIND_API_KEY"
   ]
   service_config = {
     name           = "api-media"

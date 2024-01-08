@@ -33,6 +33,8 @@ describe('StepFooter', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     title: 'my journey',
+    featuredAt: null,
+    strategySlug: null,
     slug: 'my-journey',
     language: {
       __typename: 'Language',
@@ -53,6 +55,8 @@ describe('StepFooter', () => {
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: 'My awesome journey',
@@ -67,7 +71,8 @@ describe('StepFooter', () => {
       src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
       src2: null
     },
-    team: null
+    team: null,
+    tags: []
   }
 
   it('should display host avatar, name and location', () => {
@@ -81,8 +86,8 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('host-avatars')).toBeInTheDocument()
-    expect(getByTestId('host-name-location')).toBeInTheDocument()
+    expect(getByTestId('StepFooterHostAvatars')).toBeInTheDocument()
+    expect(getByTestId('StepFooterHostTitleLocation')).toBeInTheDocument()
   })
 
   it('should show footer buttons', () => {
@@ -96,7 +101,7 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getAllByTestId('footer-buttons')).toHaveLength(2)
+    expect(getAllByTestId('StepFooterButtonList')).toHaveLength(2)
   })
 
   it('should display social media journey title by default', () => {
@@ -143,7 +148,9 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('stepFooter')).toHaveStyle('outline: 1px solid red')
+    expect(getByTestId('JourneysStepFooter')).toHaveStyle(
+      'outline: 1px solid red'
+    )
   })
 
   it('should call onFooterClick on click', () => {
@@ -163,7 +170,7 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('stepFooter'))
+    fireEvent.click(getByTestId('JourneysStepFooter'))
 
     expect(onFooterClick).toHaveBeenCalledTimes(1)
     expect(getByTestId('Plus2Icon')).toBeInTheDocument()

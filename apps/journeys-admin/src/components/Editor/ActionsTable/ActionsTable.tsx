@@ -1,6 +1,11 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
+import {
+  GoalType,
+  getLinkActionGoal
+} from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
@@ -20,6 +25,7 @@ export interface Actions {
 }
 
 export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
+  const { t } = useTranslation('journeys-admin')
   const { journey } = useJourney()
 
   function countUrls(journey: Journey | undefined): Actions[] {
@@ -47,47 +53,24 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
 
   const goalLabel = (url: string): string => {
     if (url === '') return ''
-    const urlObject = new URL(url)
-    const hostname = urlObject.hostname.replace('www.', '') // Remove 'www.' and top-level domain suffixes
-    switch (hostname) {
-      case 'm.me':
-      case 'messenger.com':
-      case 't.me':
-      case 'telegram.org':
-      case 'wa.me':
-      case 'whatsapp.com':
-      case 'vb.me':
-      case 'viber.me':
-      case 'snapchat.com':
-      case 'skype.com':
-      case 'line.me':
-      case 'vk.com':
-      case 'tiktok.com':
-      case 'instagram.com':
-        return 'Start a Conversation'
-      case 'bible.com':
-      case 'wordproject.org':
-      case 'biblegateway.com':
-      case 'worldbibles.org':
-      case 'biblestudytools.com':
-      case 'biblehub.com':
-      case 'biblia.com':
-      case 'blueletterbible.org':
-      case 'bible-ru.org':
-      case 'bibleonline.ru':
-      case 'bible.by':
-      case 'bible-facts.org':
-      case 'copticchurch.net':
-      case 'ebible.org':
-      case 'arabicbible.com':
-        return 'Link to Bible'
+    const goalType = getLinkActionGoal(url)
+    switch (goalType) {
+      case GoalType.Chat:
+        return t('Start a Conversation')
+      case GoalType.Bible:
+        return t('Link to Bible')
       default:
-        return 'Visit a Website'
+        return t('Visit a Website')
     }
   }
 
   return (
-    <Stack gap={2} justifyContent="center" py={6}>
+    <Stack
+      gap={2}
+      justifyContent="center"
+      py={6}
+      data-testid="EditorActionsTable"
+    >
       {journey != null &&
         (actions != null && actions.length > 0 ? (
           <ActionsList actions={actions} goalLabel={goalLabel} />

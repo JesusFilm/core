@@ -64,7 +64,7 @@ export function Hint(): ReactElement {
       : null
 
   return (
-    <Box sx={{ px: 6, py: 4 }}>
+    <Box sx={{ px: 6, py: 4 }} data-testid="Hint">
       {initialValues != null ? (
         <Formik initialValues={initialValues} onSubmit={noop}>
           {({ values, errors, handleChange, handleBlur }) => (
@@ -80,7 +80,7 @@ export function Hint(): ReactElement {
                 onChange={handleChange}
                 onBlur={(e) => {
                   handleBlur(e)
-                  errors.textResponseHint == null && handleSubmit(e)
+                  if (errors.textResponseHint == null) void handleSubmit(e)
                 }}
               />
             </Form>

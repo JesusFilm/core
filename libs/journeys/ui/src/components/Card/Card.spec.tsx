@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
 import {
@@ -111,10 +112,16 @@ describe('CardBlock', () => {
   }
 
   it('should render card with theme background color', async () => {
-    const { getByTestId, getByText } = render(<Card {...block} />)
+    const { getByTestId, getByText } = render(
+      <MockedProvider>
+        <Card {...block} />
+      </MockedProvider>
+    )
 
     expect(blurImage).not.toHaveBeenCalled()
-    expect(getByTestId('card')).toHaveStyle('background-color: #FFF')
+    expect(getByTestId('JourneysCard-card')).toHaveStyle(
+      'background-color: #FFF'
+    )
     await waitFor(() =>
       expect(getByText('How did we get here?')).toBeInTheDocument()
     )
@@ -122,66 +129,78 @@ describe('CardBlock', () => {
 
   it('should render card with override background color', () => {
     const { getByTestId } = render(
-      <Card
-        {...block}
-        themeMode={ThemeMode.dark}
-        themeName={ThemeName.base}
-        backgroundColor="#F1A025"
-      />
+      <MockedProvider>
+        <Card
+          {...block}
+          themeMode={ThemeMode.dark}
+          themeName={ThemeName.base}
+          backgroundColor="#F1A025"
+        />
+      </MockedProvider>
     )
 
     expect(blurImage).not.toHaveBeenCalled()
-    expect(getByTestId('card')).toHaveStyle('background-color: #F1A025')
+    expect(getByTestId('JourneysCard-card')).toHaveStyle(
+      'background-color: #F1A025'
+    )
   })
 
   it('should render expanded cover if no coverBlockId', () => {
     const { queryByText, getByTestId } = render(
-      <Card {...block} coverBlockId={null} />
+      <MockedProvider>
+        <Card {...block} coverBlockId={null} />
+      </MockedProvider>
     )
 
     expect(blurImage).not.toHaveBeenCalled()
-    expect(getByTestId('ExpandedCover')).toBeInTheDocument()
+    expect(getByTestId('CardExpandedCover')).toBeInTheDocument()
     expect(queryByText('How did we get here?')).toBeInTheDocument()
   })
 
   it('should render expanded cover if invalid coverBlockId', () => {
     const { queryByText, getByTestId } = render(
-      <Card {...block} coverBlockId="fakeId" />
+      <MockedProvider>
+        <Card {...block} coverBlockId="fakeId" />
+      </MockedProvider>
     )
 
     expect(blurImage).not.toHaveBeenCalled()
-    expect(getByTestId('ExpandedCover')).toBeInTheDocument()
+    expect(getByTestId('CardExpandedCover')).toBeInTheDocument()
     expect(queryByText('How did we get here?')).toBeInTheDocument()
   })
 
   it('should render expanded cover with blur image background', async () => {
     const { queryByText, getByTestId } = render(
-      <Card
-        {...{ ...block, children: [...block.children, imageBlock] }}
-        fullscreen
-        coverBlockId="imageBlockId"
-      />
+      <MockedProvider>
+        <Card
+          {...{ ...block, children: [...block.children, imageBlock] }}
+          fullscreen
+          coverBlockId="imageBlockId"
+        />
+      </MockedProvider>
     )
 
     expect(blurImage).toHaveBeenCalledWith(imageBlock.blurhash, '#fff')
-    expect(getByTestId('ExpandedCover')).toBeInTheDocument()
+    expect(getByTestId('CardExpandedCover')).toBeInTheDocument()
     await waitFor(() =>
-      expect(getByTestId('ExpandedImageCover')).toBeInTheDocument()
+      expect(getByTestId('CardExpandedImageCover')).toBeInTheDocument()
     )
     expect(queryByText('How did we get here?')).toBeInTheDocument()
   })
 
   it('should render contained cover with image cover', () => {
     const { queryByTestId, queryAllByText } = render(
-      <Card
-        {...{ ...block, children: [...block.children, imageBlock] }}
-        coverBlockId="imageBlockId"
-      />
+      <MockedProvider>
+        <Card
+          {...{ ...block, children: [...block.children, imageBlock] }}
+          coverBlockId="imageBlockId"
+        />
+      </MockedProvider>
     )
-    const standaloneImageBlock = queryByTestId(`image-${imageBlock.id}`)
+    const standaloneImageBlock = queryByTestId(`JourneysImage-${imageBlock.id}`)
 
     expect(blurImage).toHaveBeenCalledWith(imageBlock.blurhash, '#fff')
-    expect(queryByTestId('ContainedCover')).toBeInTheDocument()
+    expect(queryByTestId('CardContainedCover')).toBeInTheDocument()
     expect(queryByTestId('background-image')).toHaveAccessibleName(
       'random image from unsplash'
     )
@@ -191,14 +210,16 @@ describe('CardBlock', () => {
 
   it('should render contained cover with video cover', () => {
     const { queryByTestId, queryAllByText } = render(
-      <Card
-        {...{ ...block, children: [...block.children, videoBlock] }}
-        coverBlockId="videoBlockId"
-      />
+      <MockedProvider>
+        <Card
+          {...{ ...block, children: [...block.children, videoBlock] }}
+          coverBlockId="videoBlockId"
+        />
+      </MockedProvider>
     )
-    const standaloneVideoBlock = queryByTestId(`video-${videoBlock.id}`)
+    const standaloneVideoBlock = queryByTestId(`JourneysVideo-${videoBlock.id}`)
 
-    expect(queryByTestId('ContainedCover')).toBeInTheDocument()
+    expect(queryByTestId('CardContainedCover')).toBeInTheDocument()
     expect(queryByTestId('video-poster-image')).toHaveAccessibleName(
       'card video image'
     )

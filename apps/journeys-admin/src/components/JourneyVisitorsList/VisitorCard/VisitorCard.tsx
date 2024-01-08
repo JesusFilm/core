@@ -10,17 +10,22 @@ import { GetJourneyVisitors_visitors_edges_node as VisitorNode } from '../../../
 import { VisitorCardDetails } from './VisitorCardDetails'
 import { VisitorCardHeader } from './VisitorCardHeader'
 
-interface Props {
+interface VisitorCardProps {
   visitorNode?: VisitorNode
   loading: boolean
 }
 
-export function VisitorCard({ visitorNode, loading }: Props): ReactElement {
+export function VisitorCard({
+  visitorNode,
+  loading
+}: VisitorCardProps): ReactElement {
   const withLink = (block: ReactElement): ReactElement => {
     return (
       <NextLink
         href={`/reports/visitors/${visitorNode?.visitorId ?? ''}`}
         passHref
+        legacyBehavior
+        prefetch={false}
       >
         {block}
       </NextLink>
@@ -73,6 +78,7 @@ export function VisitorCard({ visitorNode, loading }: Props): ReactElement {
           borderTopRightRadius: { xs: 0, sm: 12 }
         }
       }}
+      data-testid="VisitorCard"
     >
       {!loading ? withLink(Content) : Content}
     </Card>

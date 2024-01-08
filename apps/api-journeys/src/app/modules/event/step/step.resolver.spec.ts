@@ -2,18 +2,23 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import {
   StepNextEventCreateInput,
+  StepPreviousEventCreateInput,
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
-import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
+import {
+  StepNextEventResolver,
+  StepPreviousEventResolver,
+  StepViewEventResolver
+} from './step.resolver'
 
 describe('Step', () => {
   let prismaService: PrismaService, eService: EventService
 
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
     jest.setSystemTime(new Date('2021-02-18'))
   })
 
@@ -152,6 +157,43 @@ describe('Step', () => {
           createdAt: new Date().toISOString(),
           journeyId: 'journey.id'
         })
+      })
+    })
+  })
+
+  describe('StepPreviousEventResolver', () => {
+    let resolver: StepPreviousEventResolver
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [StepPreviousEventResolver, eventService]
+      }).compile()
+      resolver = module.get<StepPreviousEventResolver>(
+        StepPreviousEventResolver
+      )
+    })
+
+    describe('stepPreviousEventCreate', () => {
+      const input: StepPreviousEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        previousStepId: 'step.id',
+        label: 'step name',
+        value: 'Prev step name'
+      }
+
+      it('should return step Prev event', async () => {
+        expect(await resolver.stepPreviousEventCreate('userId', input)).toEqual(
+          {
+            ...input,
+            typename: 'StepPreviousEvent',
+            visitor: {
+              connect: { id: 'visitor.id' }
+            },
+            createdAt: new Date().toISOString(),
+            journeyId: 'journey.id'
+          }
+        )
       })
     })
   })

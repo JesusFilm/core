@@ -5,8 +5,8 @@ import {
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
-import { useCurrentUser } from '../../../../libs/useCurrentUser'
-import { useUserTeamsAndInvitesQuery } from '../../../../libs/useUserTeamsAndInvitesQuery'
+import { useCurrentUserLazyQuery } from '../../../../libs/useCurrentUserLazyQuery'
+import { useUserTeamsAndInvitesLazyQuery } from '../../../../libs/useUserTeamsAndInvitesLazyQuery'
 import { useTeam } from '../../TeamProvider'
 import { UserTeamInviteForm } from '../../UserTeamInviteForm'
 import { UserTeamInviteList } from '../UserTeamInviteList'
@@ -25,19 +25,26 @@ export function TeamManageWrapper({
   children
 }: TeamManageWrapperProps): ReactElement {
   const { activeTeam } = useTeam()
-  const { loadUser, data: currentUser } = useCurrentUser()
-  const { data, loading, emails } = useUserTeamsAndInvitesQuery(
-    activeTeam != null
-      ? {
-          teamId: activeTeam.id,
-          where: { role: [UserTeamRole.manager, UserTeamRole.member] }
-        }
-      : undefined
-  )
+  const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
+  const {
+    query: [getUserTeamsAndInvites, { data, loading }],
+    emails
+  } = useUserTeamsAndInvitesLazyQuery()
 
   useEffect(() => {
     void loadUser()
   }, [loadUser])
+
+  useEffect(() => {
+    if (activeTeam != null) {
+      void getUserTeamsAndInvites({
+        variables: {
+          teamId: activeTeam.id,
+          where: { role: [UserTeamRole.manager, UserTeamRole.member] }
+        }
+      })
+    }
+  }, [activeTeam, getUserTeamsAndInvites])
 
   const currentUserTeam: UserTeam | undefined = useMemo(() => {
     return data?.userTeams?.find(({ user: { email } }) => {

@@ -1,4 +1,3 @@
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -10,7 +9,9 @@ import Stack from '@mui/material/Stack'
 import compact from 'lodash/compact'
 import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 
-import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithUserJourneys'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+
+import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 
@@ -116,7 +117,7 @@ export function UserListItem({
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
             disabled={disableAction}
-            endIcon={<ArrowDropDownIcon />}
+            endIcon={<ChevronDownIcon />}
             sx={{
               color: 'text.primary',
               typography: 'body2'
@@ -125,6 +126,7 @@ export function UserListItem({
             {isInvite ? 'Pending' : menuLabel}
           </Button>
         }
+        data-testid="UserListItem"
       >
         <ListItemAvatar>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>

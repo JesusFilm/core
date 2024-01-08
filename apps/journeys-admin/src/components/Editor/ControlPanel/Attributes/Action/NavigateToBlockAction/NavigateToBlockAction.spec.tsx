@@ -17,6 +17,11 @@ import {
   NavigateToBlockAction
 } from './NavigateToBlockAction'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('NavigateToBlockAction', () => {
   it('updates the action on card click', async () => {
     const selectedBlock = steps[1].children[0].children[3]
@@ -84,7 +89,7 @@ describe('NavigateToBlockAction', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step0.id'))
+    fireEvent.click(getByTestId('CardItem-step0.id'))
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({

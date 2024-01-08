@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -70,19 +71,23 @@ const image: ImageBlock = {
 describe('VideoBlockEditorSettingsPoster', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
-  it('shows edit poster image dialog', () => {
+  it('shows edit poster image dialog', async () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <VideoBlockEditorSettingsPoster
-            selectedBlock={image}
-            parentBlockId={video.id}
-          />
+          <SnackbarProvider>
+            <VideoBlockEditorSettingsPoster
+              selectedBlock={image}
+              parentBlockId={video.id}
+            />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('posterCreateButton'))
-    expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
+    )
   })
 
   it('disables edit poster image button', () => {

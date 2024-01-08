@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { expect } from '@storybook/jest'
-import { Meta, Story } from '@storybook/react'
-import { userEvent, waitFor, within } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -9,13 +9,13 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
 
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
-import { GET_CURRENT_USER } from '../../../../../../../libs/useCurrentUser'
+import { GET_CURRENT_USER } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { GET_ALL_TEAM_HOSTS, HostSidePanel } from './HostSidePanel'
 
-const Demo = {
+const Demo: Meta<typeof HostSidePanel> = {
   ...journeysAdminConfig,
   component: HostSidePanel,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostSidePanel'
@@ -135,94 +135,111 @@ const teamHostsMock = {
   }
 }
 
-const Template: Story<
+const Template: StoryObj<
   ComponentProps<typeof HostSidePanel> & { mocks: MockedResponse[] }
-> = ({ mocks, ...args }) => (
-  <MockedProvider mocks={mocks}>
-    <ThemeProvider>
-      <JourneyProvider value={{ ...args, variant: 'admin' }}>
-        <HostSidePanel />
-      </JourneyProvider>
-    </ThemeProvider>
-  </MockedProvider>
-)
+> = {
+  render: ({ mocks, ...args }) => (
+    <MockedProvider mocks={mocks}>
+      <ThemeProvider>
+        <JourneyProvider value={{ ...args, variant: 'admin' }}>
+          <HostSidePanel />
+        </JourneyProvider>
+      </ThemeProvider>
+    </MockedProvider>
+  )
+}
 
 // Default side panels based on host availability
-export const Default = Template.bind({})
-Default.args = {
-  mocks: [userMock, userTeamMock, teamHostsMock],
-  journey: { ...journey, host: null }
+export const Default = {
+  ...Template,
+  args: {
+    mocks: [userMock, userTeamMock, teamHostsMock],
+    journey: { ...journey, host: null }
+  }
 }
 
-export const Disabled = Template.bind({})
-Disabled.args = {
-  mocks: [],
-  journey: { ...journey, host: null }
+export const Disabled = {
+  ...Template,
+  args: {
+    mocks: [],
+    journey: { ...journey, host: null }
+  }
 }
 
-export const EditHost = Template.bind({})
-EditHost.args = {
-  ...Default.args,
-  journey
+export const EditHost = {
+  ...Template,
+  args: {
+    ...Default.args,
+    journey
+  }
 }
 
 // Popup side panels
-export const SelectHost = Template.bind({})
-SelectHost.args = {
-  ...Default.args,
-  journey: { ...journey, host: null }
-}
-SelectHost.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement)
-  await waitFor(() => {
-    expect(
-      canvas.getByRole('button', { name: 'Select a Host' })
-    ).not.toBeDisabled()
-  })
-  userEvent.click(canvas.getByRole('button', { name: 'Select a Host' }))
-  await waitFor(() => {
-    expect(canvas.getAllByText('Authors')).toHaveLength(2)
-  })
-}
-
-export const CreateHost = Template.bind({})
-CreateHost.args = {
-  ...Default.args,
-  journey: { ...journey, host: null }
-}
-CreateHost.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement)
-  await waitFor(() => {
-    expect(
-      canvas.getByRole('button', { name: 'Select a Host' })
-    ).not.toBeDisabled()
-  })
-  userEvent.click(canvas.getByRole('button', { name: 'Select a Host' }))
-  expect(canvas.getByRole('button', { name: 'Create New' })).toBeInTheDocument()
-  userEvent.click(canvas.getByRole('button', { name: 'Create New' }))
-  await waitFor(() => {
-    expect(canvas.getAllByText('Create Author')).toHaveLength(2)
-  })
+export const SelectHost = {
+  ...Template,
+  args: {
+    ...Default.args,
+    journey: { ...journey, host: null }
+  },
+  play: async () => {
+    await waitFor(async () => {
+      await expect(
+        screen.getByRole('button', { name: 'Select a Host' })
+      ).not.toBeDisabled()
+    })
+    await userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
+    await waitFor(async () => {
+      await expect(screen.getAllByText('Authors')).toHaveLength(2)
+    })
+  }
 }
 
-export const Info = Template.bind({})
-Info.args = {
-  ...Default.args,
-  journey: { ...journey, host: null }
-}
-Info.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement)
-  await waitFor(() => {
-    expect(
-      canvas.getByRole('button', { name: 'Select a Host' })
-    ).not.toBeDisabled()
-  })
-  userEvent.click(canvas.getByRole('button', { name: 'Select a Host' }))
-  expect(canvas.getAllByTestId('info')[0]).toBeInTheDocument()
-  userEvent.click(canvas.getAllByTestId('info')[0])
-  await waitFor(() => {
-    expect(canvas.getByText('Information')).toBeInTheDocument()
-  })
+export const CreateHost = {
+  ...Template,
+  args: {
+    ...Default.args,
+    journey: { ...journey, host: null }
+  },
+  play: async () => {
+    await waitFor(async () => {
+      await expect(
+        screen.getByRole('button', { name: 'Select a Host' })
+      ).not.toBeDisabled()
+    })
+    await userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
+    await waitFor(async () => {
+      await expect(
+        screen.getByRole('button', { name: 'Create New' })
+      ).toBeInTheDocument()
+    })
+    await userEvent.click(screen.getByRole('button', { name: 'Create New' }))
+    await waitFor(async () => {
+      await expect(screen.getAllByText('Create Author')).toHaveLength(2)
+    })
+  }
 }
 
-export default Demo as Meta
+export const Info = {
+  ...Template,
+  args: {
+    ...Default.args,
+    journey: { ...journey, host: null }
+  },
+  play: async () => {
+    await waitFor(async () => {
+      await expect(
+        screen.getByRole('button', { name: 'Select a Host' })
+      ).not.toBeDisabled()
+    })
+    await userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
+    await waitFor(async () => {
+      await expect(screen.getAllByTestId('info')[0]).toBeInTheDocument()
+    })
+    await userEvent.click(screen.getAllByTestId('info')[0])
+    await waitFor(async () => {
+      await expect(screen.getByText('Information')).toBeInTheDocument()
+    })
+  }
+}
+
+export default Demo

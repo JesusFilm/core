@@ -2,8 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { PageWrapper } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -12,103 +10,122 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('PageWrapper', () => {
-  describe('smUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
-
-    it('should show title', () => {
-      const { getByText } = render(
+  describe('MainPanel', () => {
+    it('should show main header title', () => {
+      const { getByRole } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Page title" />
-          </FlagsProvider>
+          <PageWrapper title="Page title" />
         </MockedProvider>
       )
-      expect(getByText('Page title')).toBeInTheDocument()
+      expect(getByRole('main')).toHaveTextContent('Page title')
     })
 
     it('should show back button', () => {
-      const { getAllByRole } = render(
-        <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Page title" backHref="/" />
-          </FlagsProvider>
-        </MockedProvider>
-      )
-      expect(getAllByRole('link')[0]).toHaveAttribute('href', '/')
-    })
-
-    it('should show custom menu', () => {
-      const { getByText } = render(
-        <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Page title" menu={<>Custom Content</>} />
-          </FlagsProvider>
-        </MockedProvider>
-      )
-      expect(getByText('Custom Content')).toBeInTheDocument()
-    })
-
-    it('should show children', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Page title">
-              <div data-testid="test">Hello</div>
-            </PageWrapper>
-          </FlagsProvider>
+          <PageWrapper title="Page title" backHref="/" />
         </MockedProvider>
       )
-      expect(getByTestId('test')).toHaveTextContent('Hello')
+      expect(getByTestId('ChevronLeftIcon').parentElement).toHaveAttribute(
+        'href',
+        '/'
+      )
     })
 
-    it('should show the drawer on the left', () => {
-      const { getAllByRole, getByTestId, getByText } = render(
+    it('should not show main panel header', () => {
+      const { queryByText } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Page title" />
-          </FlagsProvider>
+          <PageWrapper title="Page Title" showMainHeader={false} />
         </MockedProvider>
       )
-      expect(getAllByRole('button')[0]).toContainElement(
-        getByTestId('ChevronRightRoundedIcon')
+      expect(queryByText('Page Title')).not.toBeInTheDocument()
+    })
+
+    it('should show main header children', () => {
+      const { getByRole } = render(
+        <MockedProvider>
+          <PageWrapper
+            title="Page title"
+            mainHeaderChildren={<>Custom Content</>}
+          />
+        </MockedProvider>
       )
-      fireEvent.click(getAllByRole('button')[0])
-      expect(getByText('Discover')).toBeInTheDocument()
+      expect(getByRole('main')).toHaveTextContent('Custom Content')
+    })
+
+    it('should show main body children', () => {
+      const { getByTestId } = render(
+        <MockedProvider>
+          <PageWrapper title="Page title">
+            <div>Child</div>
+          </PageWrapper>
+        </MockedProvider>
+      )
+      expect(getByTestId('main-body')).toHaveTextContent('Child')
+    })
+
+    it('should show bottom panel children', () => {
+      const { getByTestId } = render(
+        <MockedProvider>
+          <PageWrapper
+            title="Page title"
+            bottomPanelChildren={<div>Bottom Panel</div>}
+          >
+            <div>Child</div>
+          </PageWrapper>
+        </MockedProvider>
+      )
+      expect(getByTestId('bottom-panel')).toHaveTextContent('Bottom Panel')
     })
   })
 
-  describe('smDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
-    )
-
-    it('should show the drawer on mobile view', () => {
-      const { getAllByRole, getByTestId, getByText } = render(
+  describe('SidePanel', () => {
+    it('should show the side panel', () => {
+      const { getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Active Journeys" />
-          </FlagsProvider>
+          <PageWrapper
+            title="Page title"
+            sidePanelTitle="Side Panel"
+            sidePanelChildren={<div>Drawer</div>}
+          />
         </MockedProvider>
       )
-      expect(getByText('Active Journeys')).toBeInTheDocument()
-      const button = getAllByRole('button')[0]
-      expect(button).toContainElement(getByTestId('MenuIcon'))
-      fireEvent.click(button)
-      expect(getByText('Discover')).toBeInTheDocument()
+      expect(getByTestId('side-header')).toHaveTextContent('Side Panel')
+      expect(getByTestId('side-body')).toHaveTextContent('Drawer')
     })
 
-    it('should not show the drawer on mobile view', () => {
-      const { queryByTestId, getByText } = render(
+    it('should show the custom side panel', () => {
+      const { getByText } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <PageWrapper title="Journey Edit" />
-          </FlagsProvider>
+          <PageWrapper
+            title="Page title"
+            customSidePanel={<div>Custom Drawer</div>}
+          />
         </MockedProvider>
       )
-      expect(getByText('Journey Edit')).toBeInTheDocument()
-      expect(queryByTestId('MenuIcon')).not.toBeInTheDocument()
+      expect(getByText('Custom Drawer')).toBeInTheDocument()
+    })
+  })
+
+  describe('Navigation', () => {
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
+
+    it('should show the side nav bar', () => {
+      ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+
+      const { getByTestId, getByText, queryByRole } = render(
+        <MockedProvider>
+          <PageWrapper title="Active Journeys" />
+        </MockedProvider>
+      )
+      expect(
+        queryByRole('button', { name: 'open-drawer' })
+      ).not.toBeInTheDocument()
+
+      fireEvent.click(getByTestId('NavigationListItemToggle'))
+      expect(getByText('Discover')).toBeInTheDocument()
     })
   })
 })

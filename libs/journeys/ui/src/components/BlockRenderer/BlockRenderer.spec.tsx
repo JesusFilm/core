@@ -1,19 +1,34 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { Form } from '@formium/types'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { TreeBlock, blockHistoryVar } from '../../libs/block'
+import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 
 import { BlockRenderer } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
+}))
+
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
@@ -36,7 +51,7 @@ describe('BlockRenderer', () => {
           input: {
             id: 'uuid',
             blockId: 'step',
-            value: 'Untitled'
+            value: 'Step {{number}}'
           }
         }
       },
@@ -191,6 +206,67 @@ describe('BlockRenderer', () => {
     ).toBe('card-wrapper')
     expect(getByTestId('card-wrapper')).toContainElement(
       getByText('How did we get here?')
+    )
+  })
+
+  it('should render Form', async () => {
+    const form = {
+      name: 'single-page-test'
+    } as unknown as Form
+    const block: TreeBlock = {
+      __typename: 'FormBlock',
+      id: 'form.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      form,
+      action: null,
+      children: []
+    }
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <BlockRenderer block={block} />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('FormBlock-form.id')).toBeInTheDocument()
+    )
+  })
+
+  it('should render Form with general wrapper and specific wrapper', () => {
+    const form = {
+      name: 'single-page-test'
+    } as unknown as Form
+    const block: TreeBlock = {
+      __typename: 'FormBlock',
+      id: 'form.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      form,
+      action: null,
+      children: []
+    }
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <BlockRenderer
+          block={block}
+          wrappers={{
+            Wrapper: ({ children }) => (
+              <div data-testid="general-wrapper">{children}</div>
+            ),
+            FormWrapper: ({ children }) => (
+              <div data-testid="form-wrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('general-wrapper').children[0].getAttribute('data-testid')
+    ).toBe('form-wrapper')
+    expect(getByTestId('form-wrapper')).toContainElement(
+      getByTestId('FormBlock-form.id')
     )
   })
 
@@ -457,6 +533,7 @@ describe('BlockRenderer', () => {
         }
       ]
     }
+    treeBlocksVar([block])
     blockHistoryVar([block])
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
@@ -493,6 +570,7 @@ describe('BlockRenderer', () => {
         }
       ]
     }
+    treeBlocksVar([block])
     blockHistoryVar([block])
     const { getByTestId, getByText } = render(
       <MockedProvider mocks={mocks}>
@@ -616,7 +694,9 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByTestId('video-main')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByTestId('JourneysVideo-main')).toBeInTheDocument()
+    )
   })
 
   it('should render Video with general wrapper and specific wrapper', () => {
@@ -678,7 +758,7 @@ describe('BlockRenderer', () => {
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
     ).toBe('video-wrapper')
     expect(getByTestId('video-wrapper')).toContainElement(
-      getByTestId('video-main')
+      getByTestId('JourneysVideo-main')
     )
   })
 })

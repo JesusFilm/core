@@ -8,10 +8,10 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { GetStaticProps } from 'next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { NextSeo } from 'next-seo'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -41,7 +41,17 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
       <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
         <Container maxWidth="xxl">
           <Stack spacing={8} py={8}>
-            <Image src={logo} alt="Next Steps" height={68} width={152} />
+            <Image
+              src={logo}
+              alt="Next Steps"
+              height={68}
+              width={152}
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+                alignSelf: 'center'
+              }}
+            />
             <Box>
               <Grid container spacing={{ xs: 2, sm: 4 }}>
                 {journeys.map(({ id, slug }, index) => (
@@ -70,7 +80,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                           />
                         </Fade>
                       </Box>
-                      <NextLink href={`/${slug}`} passHref>
+                      <NextLink href={`/${slug}`} passHref legacyBehavior>
                         <Box
                           component="a"
                           sx={{
@@ -94,13 +104,14 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
               <NextLink
                 href="https://www.cru.org/us/en/about/terms-of-use.html"
                 passHref
+                legacyBehavior
               >
                 <Link
-                  variant="body2"
                   underline="none"
+                  variant="body2"
+                  sx={{ p: 0 }}
                   target="_blank"
                   rel="noopener"
-                  sx={{ p: 0 }}
                 >
                   {t('Terms & Conditions')}
                 </Link>
@@ -108,18 +119,19 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
               <NextLink
                 href="https://www.cru.org/us/en/about/privacy.html"
                 passHref
+                legacyBehavior
               >
                 <Link
-                  variant="body2"
                   underline="none"
+                  variant="body2"
+                  sx={{ p: 0 }}
                   target="_blank"
                   rel="noopener"
-                  sx={{ p: 0 }}
                 >
                   {t('Privacy Policy')}
                 </Link>
               </NextLink>
-              <Typography variant="body2">
+              <Typography variant="body2" suppressHydrationWarning>
                 {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
               </Typography>
             </Stack>
@@ -137,7 +149,7 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
   const { data } = await apolloClient.query<GetJourneys>({
     query: gql`
       query GetJourneys {
-        journeys(where: { featured: true }) {
+        journeys(where: { featured: true, template: false }) {
           id
           title
           slug

@@ -3,7 +3,7 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { ReactElement, useEffect, useRef } from 'react'
 
 import {
@@ -17,7 +17,7 @@ import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
 
 interface JourneyCardProps {
-  journey?: Journey
+  journey: Journey
   duplicatedJourneyId?: string
   variant?: JourneyCardVariant
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
@@ -43,7 +43,7 @@ export function JourneyCard({
   return (
     <Card
       ref={
-        journey?.id === duplicatedJourneyId ? duplicatedJourneyRef : undefined
+        journey.id === duplicatedJourneyId ? duplicatedJourneyRef : undefined
       }
       aria-label="journey-card"
       variant="outlined"
@@ -58,36 +58,30 @@ export function JourneyCard({
           borderColor: 'divider'
         }
       }}
+      data-testid={`JourneyCard-${journey.id}`}
     >
       <>
-        <Link href={journey != null ? `/journeys/${journey.id}` : ''} passHref>
-          <CardActionArea>
-            <CardContent
-              sx={{
-                px: 6,
-                py: 4
-              }}
-            >
+        <NextLink
+          href={`/journeys/${journey.id}`}
+          passHref
+          legacyBehavior
+          prefetch={false}
+        >
+          <CardActionArea sx={{ borderRadius: 0 }}>
+            <CardContent sx={{ px: 6, py: 4 }}>
               <JourneyCardText journey={journey} variant={variant} />
             </CardContent>
           </CardActionArea>
-        </Link>
-        <CardActions
-          sx={{
-            px: 6,
-            pb: 4
-          }}
-        >
+        </NextLink>
+        <CardActions sx={{ px: 6, pb: 4 }}>
           <JourneyCardInfo journey={journey} variant={variant} />
-          {journey != null && (
-            <JourneyCardMenu
-              id={journey.id}
-              status={journey.status}
-              slug={journey.slug}
-              published={journey.publishedAt != null}
-              refetch={refetch}
-            />
-          )}
+          <JourneyCardMenu
+            id={journey.id}
+            status={journey.status}
+            slug={journey.slug}
+            published={journey.publishedAt != null}
+            refetch={refetch}
+          />
         </CardActions>
       </>
     </Card>

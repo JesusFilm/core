@@ -37,7 +37,7 @@ export function OverlayContent({
   const topBottomMarginsOnContent: SxProps = !hasFullscreenVideo
     ? {
         '& > *': {
-          '&:first-child': { mt: { xs: 8, lg: 12 } },
+          '&:first-child': { mt: { xs: 8, sm: 5, lg: 12 } },
           '&:last-child': { mb: { xs: 6, lg: 12 } }
         }
       }
@@ -57,13 +57,13 @@ export function OverlayContent({
           }
         }
       : {
-          pl: { xs: 6, lg: 10 },
-          pr: { xs: 6, lg: 10 }
+          pl: { xs: 6, sm: 10 },
+          pr: { xs: 6, sm: 10 }
         }
 
   return (
     <Box
-      data-testid="overlay-content"
+      data-testid="CardOverlayContent"
       sx={{
         ...enableVerticalScroll,
         ...topBottomEdgeFadeEffect,

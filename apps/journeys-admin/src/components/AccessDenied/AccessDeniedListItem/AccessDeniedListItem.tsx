@@ -1,5 +1,3 @@
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
-import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ListItem from '@mui/material/ListItem'
@@ -7,6 +5,9 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 interface AccessDeniedListItemProps {
   stepNumber: number
@@ -31,6 +32,7 @@ export function AccessDeniedListItem({
         bgcolor: stepActive ? 'background.paper' : '#F5F5F5',
         padding: 5
       }}
+      data-testid="AccessDeniedListItem"
     >
       <Typography
         sx={{
@@ -94,14 +96,14 @@ export function RequestAccess({
             }}
             flexShrink={0}
           >
-            <CheckCircleRoundedIcon fontSize="small" sx={{ mr: 2 }} />
+            <CheckContainedIcon fontSize="small" sx={{ mr: 2 }} />
             <Typography variant="subtitle2">{t('Request Sent')}</Typography>
           </Stack>
         ) : (
           <Button
             variant="contained"
             onClick={handleRequestAccess}
-            startIcon={<SupervisorAccountRoundedIcon />}
+            startIcon={<UsersProfiles2Icon />}
             sx={{ flexShrink: 0, borderRadius: '12px' }}
           >
             {t('Request Now')}

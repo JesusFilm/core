@@ -3,11 +3,12 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { SxProps, styled, useTheme } from '@mui/material/styles'
+import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
-import Div100vh from 'react-div-100vh'
+import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
-import SwiperCore, { Pagination } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination } from 'swiper/modules'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -26,11 +27,7 @@ import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
-import 'swiper/swiper.min.css'
-import 'swiper/components/pagination/pagination.min.css'
 import { NavigationButton } from './NavigationButton'
-
-SwiperCore.use([Pagination])
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -76,8 +73,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     blockHistory,
     showHeaderFooter
   } = useBlocks()
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const [swiper, setSwiper] = useState<SwiperClass>()
   const theme = useTheme()
+  const viewportHeight = use100vh()
+  const router = useRouter()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
@@ -111,7 +110,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             .then(
               (data: { city?: string; country?: string; region?: string }) => {
                 const countryCodes: string[] = []
-                if (data.city != null) countryCodes.push(data.city)
+                if (data.city != null) countryCodes.push(decodeURI(data.city))
                 if (data.region != null) countryCodes.push(data.region)
                 if (data.country != null) countryCodes.push(data.country)
 
@@ -123,7 +122,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                           countryCodes.length > 0
                             ? countryCodes.join(', ')
                             : undefined,
-                        referrer: document.referrer
+                        referrer:
+                          document.referrer !== ''
+                            ? document.referrer
+                            : undefined
                       }
                     }
                   })
@@ -176,16 +178,25 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   return (
-    <Div100vh style={{ overflow: 'hidden' }}>
+    <Box
+      sx={{
+        height: viewportHeight ?? '100vh',
+        minHeight: '-webkit-fill-available',
+        [theme.breakpoints.down('md')]: { overflowY: 'auto' },
+        overflow: 'hidden'
+      }}
+    >
       <Stack
         sx={{
           justifyContent: 'center',
           height: '100%',
           background: theme.palette.grey[900]
         }}
+        data-testid="Conductor"
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
           <StyledSwiperContainer
+            modules={[Pagination]}
             dir={!rtl ? 'ltr' : 'rtl'}
             pagination={{ dynamicBullets: true }}
             slidesPerView="auto"
@@ -211,50 +222,64 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   key={block.id}
                   onClick={() => setShowNavigation(true)}
                 >
-                  <ThemeProvider {...theme} locale={locale} rtl={rtl} nested>
-                    <Fade
-                      in={activeBlock?.id === block.id}
-                      mountOnEnter
-                      unmountOnExit
-                    >
-                      <Stack
-                        justifyContent="center"
-                        sx={{
-                          maxHeight: { xs: '100vh', lg: 'calc(100vh - 80px)' },
-                          height: {
-                            xs: 'inherit',
-                            lg: 'calc(54.25vw + 102px)'
-                          },
-                          px: { lg: 6 }
-                        }}
+                  {({ isActive }) =>
+                    isActive && (
+                      <ThemeProvider
+                        {...theme}
+                        locale={locale}
+                        rtl={rtl}
+                        nested
                       >
-                        {showHeaderFooter && (
-                          <StepHeader sx={{ ...mobileNotchStyling }} />
-                        )}
-                        <BlockRenderer block={block} />
-                        <StepFooter
-                          sx={{
-                            visibility: showHeaderFooter ? 'visible' : 'hidden',
-                            ...mobileNotchStyling
-                          }}
-                        />
-                      </Stack>
-                    </Fade>
-                  </ThemeProvider>
+                        <Fade
+                          in={activeBlock?.id === block.id}
+                          mountOnEnter
+                          unmountOnExit
+                        >
+                          <Stack
+                            justifyContent="center"
+                            sx={{
+                              maxHeight: {
+                                xs: '100vh',
+                                lg: 'calc(100vh - 80px)'
+                              },
+                              height: {
+                                xs: 'inherit',
+                                lg: 'calc(54.25vw + 102px)'
+                              },
+                              px: { lg: 6 }
+                            }}
+                          >
+                            {showHeaderFooter && router.query.noi == null && (
+                              <StepHeader sx={{ ...mobileNotchStyling }} />
+                            )}
+                            <BlockRenderer block={block} />
+                            <StepFooter
+                              sx={{
+                                visibility: showHeaderFooter
+                                  ? 'visible'
+                                  : 'hidden',
+                                ...mobileNotchStyling
+                              }}
+                            />
+                          </Stack>
+                        </Fade>
+                      </ThemeProvider>
+                    )
+                  }
                 </SwiperSlide>
               )
             })}
             <NavigationButton
-              variant={rtl ? 'next' : 'prev'}
+              variant={rtl ? 'next' : 'previous'}
               alignment="left"
             />
             <NavigationButton
-              variant={rtl ? 'prev' : 'next'}
+              variant={rtl ? 'previous' : 'next'}
               alignment="right"
             />
           </StyledSwiperContainer>
         </Box>
       </Stack>
-    </Div100vh>
+    </Box>
   )
 }

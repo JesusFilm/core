@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -11,10 +10,12 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey_blocks_FormBlock as FormBlock,
   GetJourney_journey_blocks_SignUpBlock as SignUpBlock,
   GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
@@ -61,10 +62,6 @@ export const actions = [
     label: 'Selected Card'
   },
   {
-    value: 'NavigateToJourneyAction',
-    label: 'Another Journey'
-  },
-  {
     value: 'LinkAction',
     label: 'URL/Website'
   },
@@ -80,10 +77,11 @@ export function Action(): ReactElement {
 
   // Add addtional types here to use this component for that block
   const selectedBlock = state.selectedBlock as
-    | TreeBlock<SignUpBlock>
     | TreeBlock<ButtonBlock>
-    | TreeBlock<VideoBlock>
+    | TreeBlock<FormBlock>
+    | TreeBlock<SignUpBlock>
     | TreeBlock<TextResponseBlock>
+    | TreeBlock<VideoBlock>
     | undefined
 
   const [navigateActionUpdate] = useMutation<NavigateActionUpdate>(
@@ -172,7 +170,7 @@ export function Action(): ReactElement {
 
   return (
     <>
-      <Stack sx={{ pt: 4, px: 6 }}>
+      <Stack sx={{ pt: 4, px: 6 }} data-testid="Action">
         <FormControl variant="filled">
           <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
             Navigate to:
@@ -181,7 +179,7 @@ export function Action(): ReactElement {
           <Select
             onChange={handleChange}
             value={action}
-            IconComponent={KeyboardArrowDownRoundedIcon}
+            IconComponent={ChevronDownIcon}
           >
             {actions.map((action) => {
               return (

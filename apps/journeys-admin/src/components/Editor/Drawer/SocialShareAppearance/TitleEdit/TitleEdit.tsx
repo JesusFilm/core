@@ -94,18 +94,19 @@ export function TitleEdit(): ReactElement {
                 error={touched.seoTitle === true && Boolean(errors.seoTitle)}
                 helperText={
                   errors.seoTitle != null
-                    ? errors.seoTitle
+                    ? (errors.seoTitle as string)
                     : 'Recommended length: 5 words'
                 }
                 onChange={handleChange}
                 onKeyUp={handleKeyUp}
                 onBlur={(e) => {
                   handleBlur(e)
-                  errors.seoTitle == null && handleSubmit(e)
+                  if (errors.seoTitle == null) void handleSubmit(e)
                 }}
                 sx={{
                   pb: 4
                 }}
+                data-testid="TitleEdit"
               />
             </Form>
           )}
@@ -120,6 +121,7 @@ export function TitleEdit(): ReactElement {
           sx={{
             pb: 4
           }}
+          data-testid="TitleEdit"
         />
       )}
     </>

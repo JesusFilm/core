@@ -12,18 +12,9 @@ import {
 
 import { TeamManageWrapper } from './TeamManageWrapper'
 
-jest.mock('react-i18next', () => ({
+jest.mock('../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
-jest.mock('../../../../libs/useCurrentUser', () => ({
-  __esModule: true,
-  useCurrentUser: jest.fn().mockReturnValue({
+  useCurrentUserLazyQuery: jest.fn().mockReturnValue({
     loadUser: jest.fn(),
     data: {
       __typename: 'User',
@@ -81,6 +72,7 @@ describe('TeamMembersList', () => {
           {
             id: 'teamId',
             title: 'Team Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }

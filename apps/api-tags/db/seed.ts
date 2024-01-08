@@ -1,14 +1,17 @@
-// version 5
+// version 6
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { PrismaClient } from '.prisma/api-tags-client'
+
+import { Service } from '../src/app/__generated__/graphql'
 
 const prisma = new PrismaClient()
 
 async function upsertTag(
   name: string,
   childrenNames: string[],
-  parentId?: string
+  parentId?: string,
+  service?: Service
 ): Promise<void> {
   const tag = await prisma.tag.upsert({
     where: {
@@ -18,18 +21,20 @@ async function upsertTag(
       name,
       // 529 is ID for English
       nameTranslations: [{ value: name, languageId: '529', primary: true }],
-      parentId
+      parentId,
+      service
     },
     update: {
       name,
       // 529 is ID for English
       nameTranslations: [{ value: name, languageId: '529', primary: true }],
-      parentId
+      parentId,
+      service
     }
   })
 
   await childrenNames.map(async (name) => {
-    await upsertTag(name, [], tag.id)
+    await upsertTag(name, [], tag.id, service)
   })
 }
 
@@ -49,15 +54,11 @@ async function main(): Promise<void> {
     'Health',
     'Relationships',
     'Finances',
-    'Work',
-    'Marriage',
+    'Work & Success',
     'Addiction',
     'Anger',
-    'Success',
     'Prayer',
     'Apologetics',
-    "Jesus' Teachings",
-    "Jesus' Love",
     "Jesus' Life",
     'Holy Spirit',
     'Gospel presentations'
@@ -66,17 +67,13 @@ async function main(): Promise<void> {
     'Christmas',
     'Easter',
     'Ramadan',
-    'Festival of Sacrifice',
-    'Night of Power',
     'New Years',
-    'Mid-Autumn Festival',
-    "Women's Day",
-    'World Cup',
+    'Festivals',
     'World Youth Day',
-    'Olympics',
+    'Sport Events',
     'Halloween',
     "Valentine's Day",
-    "Mother's Day",
+    "Mother's & Women's Day",
     "Father's Day"
   ])
   await upsertTag('Audience', [
@@ -88,6 +85,7 @@ async function main(): Promise<void> {
     'Children',
     'Seeker',
     'New Believer',
+    'Youth',
     'Mature Believer',
     'Honor/Shame',
     'Fear/Power',
@@ -101,8 +99,15 @@ async function main(): Promise<void> {
     'Explainer',
     'Animation',
     'Inspirational',
-    'Testimonies'
+    'Testimonies',
+    'Series'
   ])
+  await upsertTag(
+    'Collections',
+    ['Jesus Film', 'NUA'],
+    undefined,
+    Service.apiJourneys
+  )
 }
 main().catch((e) => {
   console.error(e)

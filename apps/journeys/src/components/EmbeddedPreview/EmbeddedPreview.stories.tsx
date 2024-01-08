@@ -1,12 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { expect } from '@storybook/jest'
+import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
-import { ComponentProps, ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import {
+  ChatPlatform,
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
 import { journeysConfig } from '../../libs/storybook'
 import {
   basic,
@@ -19,7 +26,7 @@ import {
 
 import { EmbeddedPreview } from './EmbeddedPreview'
 
-const Demo = {
+const Demo: Meta<typeof EmbeddedPreview> = {
   ...journeysConfig,
   component: EmbeddedPreview,
   title: 'Journeys/EmbeddedPreview',
@@ -29,72 +36,138 @@ const Demo = {
   }
 }
 
-const Template: Story<ComponentProps<typeof EmbeddedPreview>> = ({
-  ...args
-}): ReactElement => (
-  <MockedProvider>
-    <SnackbarProvider>
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journeyId',
-            themeMode: ThemeMode.light,
-            themeName: ThemeName.base,
-            seoTitle: 'my journey',
-            language: {
-              __typename: 'Language',
-              id: '529',
-              bcp47: 'en',
-              iso3: 'eng',
-              name: [
-                {
-                  __typename: 'Translation',
-                  value: 'English',
-                  primary: true
-                }
-              ]
-            }
-          } as unknown as Journey,
-          variant: 'embed'
-        }}
-      >
-        <EmbeddedPreview {...args} />
-      </JourneyProvider>
-    </SnackbarProvider>
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  blocks: basic
+const journey: Journey = {
+  __typename: 'Journey',
+  id: 'journeyId',
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
+  title: 'My Journey',
+  seoTitle: 'My Journey',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  slug: 'my journey',
+  description: 'my cool journey',
+  status: JourneyStatus.draft,
+  createdAt: '2021-11-19T12:34:56.647Z',
+  publishedAt: null,
+  primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
+  userJourneys: [],
+  featuredAt: null,
+  strategySlug: null,
+  seoDescription: null,
+  template: null,
+  chatButtons: [
+    {
+      __typename: 'ChatButton',
+      id: 'chatButtonId',
+      link: 'http://me.com',
+      platform: ChatPlatform.facebook
+    }
+  ],
+  host: {
+    __typename: 'Host',
+    id: 'hostId',
+    teamId: 'teamId',
+    title: 'Bob Jones and Michael Smith',
+    location: 'Auckland, NZ',
+    src1: 'https://tinyurl.com/3bxusmyb',
+    src2: 'https://tinyurl.com/mr4a78kb'
+  },
+  team: null,
+  blocks: basic,
+  tags: []
 }
 
-export const WithContent = Template.bind({})
-WithContent.args = {
-  blocks: imageBlocks
+const Template: StoryObj<typeof EmbeddedPreview> = {
+  render: ({ ...args }): ReactElement => (
+    <MockedProvider>
+      <SnackbarProvider>
+        <JourneyProvider
+          value={{
+            journey,
+            variant: 'embed'
+          }}
+        >
+          <EmbeddedPreview {...args} />
+        </JourneyProvider>
+      </SnackbarProvider>
+    </MockedProvider>
+  )
 }
 
-export const WithVideo = Template.bind({})
-WithVideo.args = {
-  blocks: videoBlocks
+export const Default = {
+  ...Template,
+  args: {
+    blocks: basic
+  }
 }
 
-export const WithVideoNoPoster = Template.bind({})
-WithVideoNoPoster.args = {
-  blocks: videoBlocksNoPoster
+export const Opened = {
+  ...Template,
+  args: {
+    blocks: imageBlocks
+  },
+  play: async () => {
+    await waitFor(
+      async () =>
+        await expect(
+          screen.getAllByTestId('JourneysCard-card0.id')[0]
+        ).toBeInTheDocument()
+    )
+    const card = screen.getAllByTestId('JourneysCard-card0.id')[0]
+    await userEvent.click(card)
+  }
 }
 
-export const WithVideoNoVideo = Template.bind({})
-WithVideoNoVideo.args = {
-  blocks: videoBlocksNoVideo
+export const WithContent = {
+  ...Template,
+  args: {
+    blocks: imageBlocks
+  }
 }
 
-export const WithVideoLoop = Template.bind({})
-WithVideoLoop.args = {
-  blocks: videoLoop
-}
-WithVideoLoop.parameters = {
-  chromatic: { disableSnapshot: true }
+export const WithVideo = {
+  ...Template,
+  args: {
+    blocks: videoBlocks
+  }
 }
 
-export default Demo as Meta
+export const WithVideoNoPoster = {
+  ...Template,
+  args: {
+    blocks: videoBlocksNoPoster
+  }
+}
+
+export const WithVideoNoVideo = {
+  ...Template,
+  args: {
+    blocks: videoBlocksNoVideo
+  }
+}
+
+export const WithVideoLoop = {
+  ...Template,
+  args: {
+    blocks: videoLoop
+  },
+  parameters: {
+    chromatic: { disableSnapshot: true }
+  }
+}
+
+export default Demo

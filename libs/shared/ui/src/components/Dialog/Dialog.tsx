@@ -1,26 +1,28 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
 import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import MuiDialogTitle from '@mui/material/DialogTitle'
 import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material/styles'
-import { ReactChild, ReactElement } from 'react'
+import { SxProps, styled } from '@mui/material/styles'
+import { ReactElement, ReactNode } from 'react'
 
 interface DialogProps {
-  open: boolean
-  onClose: () => void
+  open?: boolean
+  onClose?: () => void
   dialogTitle?: DialogTitle
   dialogAction?: DialogAction
   /** Prefer `dialogAction` when child elements are buttons */
-  dialogActionChildren?: ReactChild
+  dialogActionChildren?: ReactNode
   divider?: boolean
   fullscreen?: boolean
-  children?: ReactChild
+  children?: ReactNode
   container?: HTMLElement
   loading?: boolean
+  testId?: string
+  sx?: SxProps
 }
 
 interface DialogAction {
@@ -78,16 +80,20 @@ export function Dialog({
   fullscreen,
   children,
   container,
-  loading = false
+  loading = false,
+  testId,
+  sx
 }: DialogProps): ReactElement {
   return (
     <StyledDialog
-      open={open}
+      open={open === true}
       fullScreen={fullscreen}
       maxWidth="sm"
       fullWidth
       onClose={onClose}
       container={container}
+      data-testid={testId}
+      sx={sx}
     >
       {dialogTitle != null && (
         <MuiDialogTitle>
@@ -109,18 +115,14 @@ export function Dialog({
       </DialogContent>
       {dialogAction != null ? (
         <DialogActions data-testid="dialog-action">
-          {dialogAction.closeLabel != null && !loading && (
-            <Button onClick={onClose}>{dialogAction.closeLabel}</Button>
-          )}
-          {!loading ? (
-            <Button onClick={dialogAction?.onSubmit}>
-              {dialogAction.submitLabel ?? 'Save'}
-            </Button>
-          ) : (
-            <Button disabled>
-              <CircularProgress size={24} data-testid="dialog-loading-icon" />
+          {dialogAction.closeLabel != null && (
+            <Button onClick={onClose} disabled={loading}>
+              {dialogAction.closeLabel}
             </Button>
           )}
+          <LoadingButton onClick={dialogAction?.onSubmit} loading={loading}>
+            {dialogAction.submitLabel ?? 'Save'}
+          </LoadingButton>
         </DialogActions>
       ) : dialogActionChildren != null ? (
         <DialogActions data-testid="dialog-action">

@@ -293,6 +293,18 @@ export class CardBlockUpdateInput {
     themeName?: Nullable<ThemeName>;
 }
 
+export class FormBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+}
+
+export class FormBlockUpdateInput {
+    projectId?: Nullable<string>;
+    apiToken?: Nullable<string>;
+    formSlug?: Nullable<string>;
+}
+
 export class IconBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
@@ -505,6 +517,14 @@ export class StepNextEventCreateInput {
     value?: Nullable<string>;
 }
 
+export class StepPreviousEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    previousStepId: string;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
 export class TextResponseSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -595,6 +615,10 @@ export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
     ids?: Nullable<string[]>;
+    tagIds?: Nullable<string[]>;
+    languageIds?: Nullable<string[]>;
+    limit?: Nullable<number>;
+    orderByRecent?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
@@ -613,11 +637,15 @@ export class JourneyUpdateInput {
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
+    creatorDescription?: Nullable<string>;
+    creatorImageBlockId?: Nullable<string>;
     primaryImageBlockId?: Nullable<string>;
     slug?: Nullable<string>;
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     hostId?: Nullable<string>;
+    strategySlug?: Nullable<string>;
+    tagIds?: Nullable<string[]>;
 }
 
 export class JourneyTemplateInput {
@@ -640,10 +668,12 @@ export class JourneyVisitorFilter {
 
 export class TeamCreateInput {
     title: string;
+    publicTitle?: Nullable<string>;
 }
 
 export class TeamUpdateInput {
     title: string;
+    publicTitle?: Nullable<string>;
 }
 
 export class UserInviteCreateInput {
@@ -733,6 +763,7 @@ export class Journey {
     __typename?: 'Journey';
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
+    creatorImageBlock?: Nullable<ImageBlock>;
     chatButtons: ChatButton[];
     id: string;
     title: string;
@@ -740,6 +771,7 @@ export class Journey {
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
+    creatorDescription?: Nullable<string>;
     slug: string;
     archivedAt?: Nullable<DateTime>;
     deletedAt?: Nullable<DateTime>;
@@ -753,7 +785,51 @@ export class Journey {
     template?: Nullable<boolean>;
     host?: Nullable<Host>;
     team?: Nullable<Team>;
+    strategySlug?: Nullable<string>;
+    tags: Tag[];
     userJourneys?: Nullable<UserJourney[]>;
+}
+
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract block(id: string): Block | Promise<Block>;
+
+    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
+
+    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
+
+    abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
+
+    abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
+
+    abstract journeys(where?: Nullable<JourneysFilter>): Journey[] | Promise<Journey[]>;
+
+    abstract journey(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
+
+    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
+
+    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+
+    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
+
+    abstract teams(): Team[] | Promise<Team[]>;
+
+    abstract team(id: string): Team | Promise<Team>;
+
+    abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
+
+    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
+
+    abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
+
+    abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
+
+    abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
+
+    abstract visitorsConnection(teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
+
+    abstract visitor(id: string): Visitor | Promise<Visitor>;
 }
 
 export class ButtonBlock implements Block {
@@ -782,6 +858,33 @@ export class CardBlock implements Block {
     fullscreen: boolean;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
+}
+
+export class FormiumProject {
+    __typename?: 'FormiumProject';
+    id: string;
+    name: string;
+}
+
+export class FormiumForm {
+    __typename?: 'FormiumForm';
+    slug: string;
+    name: string;
+}
+
+export class FormBlock implements Block {
+    __typename?: 'FormBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    action?: Nullable<Action>;
+    form?: Nullable<Json>;
+    projects: FormiumProject[];
+    projectId?: Nullable<string>;
+    forms: FormiumForm[];
+    formSlug?: Nullable<string>;
+    apiTokenExists: boolean;
 }
 
 export class GridContainerBlock implements Block {
@@ -1005,6 +1108,15 @@ export class StepNextEvent implements Event {
     value?: Nullable<string>;
 }
 
+export class StepPreviousEvent implements Event {
+    __typename?: 'StepPreviousEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
 export class TextResponseSubmissionEvent implements Event {
     __typename?: 'TextResponseSubmissionEvent';
     id: string;
@@ -1102,46 +1214,6 @@ export class Host {
     src2?: Nullable<string>;
 }
 
-export abstract class IQuery {
-    __typename?: 'IQuery';
-
-    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
-
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>): Journey[] | Promise<Journey[]>;
-
-    abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
-
-    abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
-
-    abstract journeys(where?: Nullable<JourneysFilter>): Journey[] | Promise<Journey[]>;
-
-    abstract journey(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
-
-    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
-
-    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
-
-    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
-
-    abstract teams(): Team[] | Promise<Team[]>;
-
-    abstract team(id: string): Team | Promise<Team>;
-
-    abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
-
-    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
-
-    abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
-
-    abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
-
-    abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
-
-    abstract visitorsConnection(teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
-
-    abstract visitor(id: string): Visitor | Promise<Visitor>;
-}
-
 export class PowerBiEmbed {
     __typename?: 'PowerBiEmbed';
     reportId: string;
@@ -1168,6 +1240,7 @@ export class JourneyProfile {
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
     lastActiveTeamId?: Nullable<string>;
+    onboardingFormCompletedAt?: Nullable<DateTime>;
 }
 
 export class JourneyVisitor {
@@ -1206,6 +1279,7 @@ export class Team {
     __typename?: 'Team';
     id: string;
     title: string;
+    publicTitle?: Nullable<string>;
     createdAt: DateTime;
     updatedAt: DateTime;
     userTeams: UserTeam[];
@@ -1347,6 +1421,10 @@ export abstract class IMutation {
 
     abstract cardBlockUpdate(id: string, input: CardBlockUpdateInput, journeyId?: Nullable<string>): CardBlock | Promise<CardBlock>;
 
+    abstract formBlockCreate(input: FormBlockCreateInput): FormBlock | Promise<FormBlock>;
+
+    abstract formBlockUpdate(id: string, input: FormBlockUpdateInput): Nullable<FormBlock> | Promise<Nullable<FormBlock>>;
+
     abstract iconBlockCreate(input: IconBlockCreateInput): IconBlock | Promise<IconBlock>;
 
     abstract iconBlockUpdate(id: string, input: IconBlockUpdateInput, journeyId?: Nullable<string>): IconBlock | Promise<IconBlock>;
@@ -1403,6 +1481,8 @@ export abstract class IMutation {
 
     abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
+    abstract stepPreviousEventCreate(input: StepPreviousEventCreateInput): StepPreviousEvent | Promise<StepPreviousEvent>;
+
     abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 
     abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
@@ -1433,6 +1513,8 @@ export abstract class IMutation {
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
+    abstract journeyFeature(id: string, feature: boolean): Nullable<Journey> | Promise<Nullable<Journey>>;
+
     abstract journeysArchive(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
 
     abstract journeysDelete(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
@@ -1446,6 +1528,8 @@ export abstract class IMutation {
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract journeyProfileOnboardingFormComplete(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 
@@ -1493,9 +1577,14 @@ export class Language {
     id: string;
 }
 
+export class Tag {
+    id: string;
+}
+
 export class User {
     id: string;
 }
 
 export type DateTime = String;
+export type Json = any;
 type Nullable<T> = T | null;

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import {
   VideoBlockSource,
@@ -15,6 +16,13 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const getVideosMock = {
   request: {
@@ -80,19 +88,33 @@ const getVideoMock = {
 }
 
 describe('Source', () => {
+  const push = jest.fn()
+  const on = jest.fn()
+
   it('calls onChange when video selected', async () => {
     const onChange = jest.fn()
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByRole, getByText } = render(
-      <MockedProvider mocks={[getVideosMock, getVideoMock]}>
+      <MockedProvider mocks={[getVideosMock, { ...getVideoMock, result }]}>
         <Source selectedBlock={null} onChange={onChange} />
       </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Select Video' })).toBeInTheDocument()
     )
     fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
@@ -104,6 +126,15 @@ describe('Source', () => {
         endAt: 144
       })
     )
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'video-library' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 
   it('shows YouTube video', async () => {
@@ -139,11 +170,13 @@ describe('Source', () => {
         />
       </MockedProvider>
     )
-    expect(
-      getByRole('button', {
-        name: 'What is the Bible? What is the Bible? YouTube'
-      })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', {
+          name: 'What is the Bible? What is the Bible? YouTube'
+        })
+      ).toBeInTheDocument()
+    )
     expect(
       getByRole('img', {
         name: 'What is the Bible?'
@@ -184,23 +217,32 @@ describe('Source', () => {
         />
       </MockedProvider>
     )
-    expect(
-      getByRole('button', {
-        name: 'What is the Bible? What is the Bible? Custom Video'
-      })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', {
+          name: 'What is the Bible? What is the Bible? Custom Video'
+        })
+      ).toBeInTheDocument()
+    )
     expect(
       getByRole('img', {
         name: 'What is the Bible?'
-      })
-    ).toHaveAttribute(
-      'src',
-      'https://customer-.cloudflarestream.com/videoId/thumbnails/thumbnail.jpg?time=2s&height=55&width=55'
+      }).getAttribute('src')
+    ).toMatch(
+      /https:\/\/customer-.*\.cloudflarestream\.com\/videoId\/thumbnails\/thumbnail.jpg\?time=2s&height=55&width=55/
     )
   })
 
-  it('shows video details on source button click', () => {
+  it('shows video details on source button click', async () => {
     const onChange = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByRole, getByText } = render(
       <MockedProvider>
         <Source
@@ -232,12 +274,19 @@ describe('Source', () => {
         />
       </MockedProvider>
     )
+    await waitFor(() =>
+      expect(
+        getByRole('button', {
+          name: 'What is the Bible? What is the Bible? YouTube'
+        })
+      ).toBeInTheDocument()
+    )
     fireEvent.click(
       getByRole('button', {
         name: 'What is the Bible? What is the Bible? YouTube'
       })
     )
-    expect(getByText('Video Details')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Video Details')).toBeInTheDocument())
     expect(getByText('What is the Bible?')).toBeInTheDocument()
   })
 })

@@ -1,10 +1,14 @@
-import { Meta, Story } from '@storybook/react'
+import { MockedResponse } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
 
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { cache } from '../../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { getDiscoveryJourneysMock } from '../../DiscoveryJourneys/data'
 import {
   defaultJourney,
   descriptiveJourney,
@@ -14,7 +18,7 @@ import {
 
 import { ActiveJourneyList } from '.'
 
-const ActiveJourneyListStory = {
+const ActiveJourneyListStory: Meta<typeof ActiveJourneyList> = {
   ...journeysAdminConfig,
   component: ActiveJourneyList,
   title: 'Journeys-Admin/JourneyList/StatusTabPanel/ActiveJourneyList',
@@ -24,96 +28,80 @@ const ActiveJourneyListStory = {
   }
 }
 
-const Template: Story = ({ ...args }) => <ActiveJourneyList {...args.props} />
+const getAdminJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      useLastActiveTeamId: true
+    }
+  },
+  result: {
+    data: {
+      journeys: [
+        defaultJourney,
+        oldJourney,
+        descriptiveJourney,
+        publishedJourney
+      ]
+    }
+  }
+}
 
-export const Default = Template.bind({})
-Default.parameters = {
-  apolloClient: {
-    cache: cache(),
-    mocks: [
-      {
-        request: {
-          query: GET_ADMIN_JOURNEYS,
-          variables: {
-            status: [JourneyStatus.draft, JourneyStatus.published]
-          }
-        },
-        result: {
-          data: {
-            journeys: [
-              defaultJourney,
-              oldJourney,
-              descriptiveJourney,
-              publishedJourney
-            ]
+const Template: StoryObj<typeof ActiveJourneyList> = {
+  render: ({ ...args }) => <ActiveJourneyList {...args} />,
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [getAdminJourneysMock]
+    },
+    docs: {
+      source: {
+        type: 'code'
+      }
+    }
+  }
+}
+
+export const Default = {
+  ...Template
+}
+
+export const NoJourneys = {
+  ...Template,
+  parameters: {
+    ...Template.parameters,
+    apolloClient: {
+      cache: cache(),
+      mocks: [
+        {
+          ...getAdminJourneysMock,
+          result: {
+            data: {
+              journeys: []
+            }
           }
         }
-      },
-      getDiscoveryJourneysMock
-    ]
+      ]
+    }
   }
 }
 
-export const NoJourneys = Template.bind({})
-NoJourneys.parameters = {
-  apolloClient: {
-    cache: cache(),
-    mocks: [
-      {
-        request: {
-          query: GET_ADMIN_JOURNEYS,
-          variables: {
-            status: [JourneyStatus.draft, JourneyStatus.published]
-          }
-        },
-        result: {
-          data: {
-            journeys: []
-          }
-        }
-      },
-      getDiscoveryJourneysMock
-    ]
-  }
-}
-
-export const Loading = Template.bind({})
-Loading.args = {
-  mocks: []
-}
-Loading.parameters = {
-  apolloClient: {
-    cache: cache(),
-    mocks: [getDiscoveryJourneysMock]
-  }
-}
-
-export const ArchiveAll = Template.bind({})
-ArchiveAll.args = {
-  props: {
+export const ArchiveAll = {
+  ...Template,
+  args: {
     event: 'archiveAllActive'
-  },
-  mocks: []
-}
-ArchiveAll.parameters = {
-  apolloClient: {
-    cache: cache(),
-    mocks: [getDiscoveryJourneysMock]
   }
 }
 
-export const TrashAll = Template.bind({})
-TrashAll.args = {
-  props: {
+export const TrashAll = {
+  ...Template,
+  args: {
     event: 'trashAllActive'
-  },
-  mocks: []
-}
-TrashAll.parameters = {
-  apolloClient: {
-    cache: cache(),
-    mocks: [getDiscoveryJourneysMock]
   }
 }
 
-export default ActiveJourneyListStory as Meta
+export default ActiveJourneyListStory

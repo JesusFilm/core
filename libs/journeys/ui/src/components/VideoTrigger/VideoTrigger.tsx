@@ -27,13 +27,13 @@ export function VideoTrigger({
     if (player != null && !triggered) {
       const handleTimeUpdate = (): void => {
         if (
-          player.currentTime() >= triggerStart - 0.25 &&
-          !player.scrubbing()
+          (player.currentTime() ?? 0) >= triggerStart - 0.25 &&
+          !(player.scrubbing() ?? false)
         ) {
           setTriggered(true)
           player.pause()
 
-          if (player.isFullscreen()) {
+          if (player.isFullscreen() ?? false) {
             void player
               .exitFullscreen()
               .then(() => handleAction(router, triggerAction))

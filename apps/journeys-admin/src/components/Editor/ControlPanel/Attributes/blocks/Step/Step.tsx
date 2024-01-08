@@ -1,16 +1,23 @@
-import LockIcon from '@mui/icons-material/Lock'
-import LockOpenIcon from '@mui/icons-material/LockOpen'
+import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import Lock1Icon from '@core/shared/ui/icons/Lock1'
+import LockOpen1Icon from '@core/shared/ui/icons/LockOpen1'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
+import { Attribute } from '../../Attribute'
 
-import { NextCard } from './NextCard'
+const NextCard = dynamic(
+  async () =>
+    await import(/* webpackChunkName: "NextCard" */ './NextCard').then(
+      (module) => module.NextCard
+    ),
+  { ssr: false }
+)
 
 export function Step({
   id,
@@ -38,19 +45,20 @@ export function Step({
 
   return (
     <Attribute
-      id={`${id}-next-block`}
-      icon={locked ? <LockIcon /> : <LockOpenIcon />}
+      id={`next-step-${id}`}
+      icon={locked ? <Lock1Icon /> : <LockOpen1Icon />}
       name="Next Card"
       value={heading}
       description={locked ? 'Locked With Interaction' : 'Unlocked Card'}
       onClick={() => {
         dispatch({
           type: 'SetDrawerPropsAction',
-          title: 'Next Card Properties',
+          title: t('Next Card Properties'),
           mobileOpen: true,
           children: <NextCard />
         })
       }}
+      testId={`Step-${id}`}
     />
   )
 }

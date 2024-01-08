@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -23,11 +24,25 @@ import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { BackgroundMedia } from './BackgroundMedia'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 const journey: Journey = {
   __typename: 'Journey',
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  strategySlug: null,
+  featuredAt: null,
   title: 'my journey',
   slug: 'my-journey',
   language: {
@@ -49,13 +64,16 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 describe('BackgroundMedia', () => {
@@ -210,5 +228,57 @@ describe('BackgroundMedia', () => {
     expect(
       getByTestId('bgvideo-image-tab').attributes.getNamedItem('aria-pressed')
     ).toBeTruthy()
+  })
+
+  it('updates the url parameters', async () => {
+    const push = jest.fn()
+    const on = jest.fn()
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <EditorProvider initialState={{ selectedBlock: undefined }}>
+              <SnackbarProvider>
+                <BackgroundMedia />
+              </SnackbarProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('bgvideo-video-tab').attributes.getNamedItem('aria-pressed')
+    ).toBeTruthy()
+
+    fireEvent.click(getByTestId('bgvideo-image-tab'))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'background-image' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
+
+    fireEvent.click(getByTestId('bgvideo-video-tab'))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'background-video' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 })

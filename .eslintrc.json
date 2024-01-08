@@ -1,7 +1,7 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx", "import"],
+  "plugins": ["@nx", "import"],
   "settings": {
     "import/internal-regex": "^(@core|.prisma)"
   },
@@ -70,7 +70,7 @@
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
-        "@nrwl/nx/enforce-module-boundaries": [
+        "@nx/enforce-module-boundaries": [
           "error",
           {
             "enforceBuildableLibDependency": true,
@@ -88,7 +88,7 @@
     {
       "files": ["*.ts", "*.tsx"],
       "extends": [
-        "plugin:@nrwl/nx/typescript",
+        "plugin:@nx/typescript",
         "standard-with-typescript",
         "prettier"
       ],
@@ -96,7 +96,7 @@
     },
     {
       "files": ["*.js", "*.jsx"],
-      "extends": ["plugin:@nrwl/nx/javascript", "standard", "prettier"],
+      "extends": ["plugin:@nx/javascript", "standard", "prettier"],
       "rules": {}
     },
     {
@@ -129,6 +129,16 @@
         "jest/no-disabled-tests": "off",
         "jest/require-top-level-describe": "error"
       }
+    },
+    {
+      "files": [
+        "*.stories.ts",
+        "*.stories.tsx",
+        "*.stories.js",
+        "*.stories.jsx"
+      ],
+      "plugins": ["storybook"],
+      "extends": ["plugin:storybook/recommended"]
     }
   ]
 }

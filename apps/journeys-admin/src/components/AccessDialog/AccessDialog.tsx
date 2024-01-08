@@ -1,26 +1,44 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import {
-  GetJourneyWithUserJourneys,
-  GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
-} from '../../../__generated__/GetJourneyWithUserJourneys'
-import { GetUserInvites } from '../../../__generated__/GetUserInvites'
+  GetJourneyWithPermissions,
+  GetJourneyWithPermissions_journey_userJourneys as UserJourney
+} from '../../../__generated__/GetJourneyWithPermissions'
+import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import { useCurrentUser } from '../../libs/useCurrentUser'
+import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
+import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
+import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
 
-export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
-  query GetJourneyWithUserJourneys($id: ID!) {
+export const GET_JOURNEY_WITH_PERMISSIONS = gql`
+  query GetJourneyWithPermissions($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       id
+      team {
+        id
+        userTeams {
+          id
+          role
+          user {
+            email
+            firstName
+            id
+            imageUrl
+            lastName
+          }
+        }
+      }
       userJourneys {
         id
         role
@@ -36,18 +54,6 @@ export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   }
 `
 
-export const GET_USER_INVITES = gql`
-  query GetUserInvites($journeyId: ID!) {
-    userInvites(journeyId: $journeyId) {
-      id
-      journeyId
-      email
-      acceptedAt
-      removedAt
-    }
-  }
-`
-
 interface AccessDialogProps {
   journeyId: string
   open?: boolean
@@ -59,25 +65,24 @@ export function AccessDialog({
   open,
   onClose
 }: AccessDialogProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [, { loading, data, refetch }] =
-    useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
+    useLazyQuery<GetJourneyWithPermissions>(GET_JOURNEY_WITH_PERMISSIONS, {
       variables: { id: journeyId }
     })
 
   const [, { data: userInviteData, refetch: refetchInvites }] =
-    useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
-      variables: { journeyId }
-    })
+    useUserInvitesLazyQuery({ journeyId })
 
-  const { loadUser, data: authUser } = useCurrentUser()
+  const { loadUser, data: user } = useCurrentUserLazyQuery()
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const currentUser = useMemo(() => {
     return data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === authUser.email
+      (userJourney) => userJourney.user?.email === user.email
     )
-  }, [data?.journey?.userJourneys, authUser])
+  }, [data?.journey?.userJourneys, user])
 
   const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []
@@ -117,23 +122,36 @@ export function AccessDialog({
       open={open ?? false}
       onClose={onClose}
       dialogTitle={{
-        title: 'Manage Editors',
+        title: t('Manage Editors'),
         closeButton: true
       }}
       dialogActionChildren={
         <AddUserSection users={emails} journeyId={journeyId} />
       }
       fullscreen={!smUp}
+      testId="AccessDialog"
     >
       <Stack spacing={4}>
+        {data?.journey?.team?.userTeams != null &&
+          data?.journey?.team?.userTeams.length > 0 && (
+            <Stack direction="row" alignItems="center" sx={{ mb: -4 }}>
+              <Typography variant="subtitle1">{t('Team Members')}</Typography>
+            </Stack>
+          )}
+        <UserTeamList
+          data={data?.journey?.team ?? undefined}
+          currentUserTeam={data?.journey?.team as unknown as UserTeam}
+          loading={loading}
+          variant="readonly"
+        />
         <UserList
-          title="Requested Access"
+          title={t('Requested Access')}
           users={requests}
           currentUser={currentUser}
           journeyId={journeyId}
         />
         <UserList
-          title="Editors"
+          title={t('Editors')}
           loading={loading}
           users={users}
           invites={invites}

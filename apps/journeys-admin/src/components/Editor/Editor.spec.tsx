@@ -1,10 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
@@ -12,8 +10,11 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { PageWrapper } from '../PageWrapper'
 import { ThemeProvider } from '../ThemeProvider'
 
+import { ControlPanel } from './ControlPanel'
+import { Drawer } from './Drawer'
 import { JourneyEdit } from './JourneyEdit'
 
 import { Editor } from '.'
@@ -25,6 +26,8 @@ describe('Editor', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     title: 'my journey',
+    featuredAt: null,
+    strategySlug: null,
     slug: 'my-journey',
     language: {
       __typename: 'Language',
@@ -62,67 +65,82 @@ describe('Editor', () => {
       }
     ] as TreeBlock[],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: null,
     seoDescription: null,
     chatButtons: [],
     host: null,
-    team: null
+    team: null,
+    tags: []
   }
 
   it('should render the element', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider>
-            <ThemeProvider>
-              <Editor journey={journey}>
+          <ThemeProvider>
+            <Editor journey={journey}>
+              <PageWrapper
+                bottomPanelChildren={<ControlPanel />}
+                customSidePanel={<Drawer />}
+              >
                 <JourneyEdit />
-              </Editor>
-            </ThemeProvider>
-          </FlagsProvider>
+              </PageWrapper>
+            </Editor>
+          </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByText('Journey')).toBeInTheDocument()
-    expect(getByText('Access Control')).toBeInTheDocument()
+    expect(getByTestId('side-header')).toHaveTextContent('Properties')
   })
 
-  it('should display Next Card property', () => {
-    const { getByText } = render(
+  it('should display Next Card property', async () => {
+    const { getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider>
-            <ThemeProvider>
-              <Editor journey={journey} selectedStepId="step0.id">
+          <ThemeProvider>
+            <Editor journey={journey}>
+              <PageWrapper
+                bottomPanelChildren={<ControlPanel />}
+                customSidePanel={<Drawer />}
+              >
                 <JourneyEdit />
-              </Editor>
-            </ThemeProvider>
-          </FlagsProvider>
+              </PageWrapper>
+            </Editor>
+          </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByText('Next Card')).toBeInTheDocument()
+    fireEvent.click(getByTestId('EditorCanvas'))
+    await waitFor(() => expect(getByText('Next Card')).toBeInTheDocument())
     expect(getByText('Unlocked Card')).toBeInTheDocument()
   })
 
-  it('should display Social Preview', () => {
+  it('should display Social Preview', async () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
+        <SnackbarProvider>
           <ThemeProvider>
-            <Editor
-              journey={journey}
-              view={ActiveJourneyEditContent.SocialPreview}
-            >
-              <JourneyEdit />
+            <Editor journey={journey}>
+              <PageWrapper
+                bottomPanelChildren={<ControlPanel />}
+                customSidePanel={<Drawer />}
+              >
+                <JourneyEdit />
+              </PageWrapper>
             </Editor>
           </ThemeProvider>
-        </FlagsProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByTestId('social-preview-panel')).toBeInTheDocument()
+    fireEvent.click(getByTestId('NavigationCardSocial'))
+    await waitFor(() =>
+      expect(getByTestId('SocialPreview')).toBeInTheDocument()
+    )
     expect(getByTestId('journey-edit-content')).toHaveStyle({
       backgroundColor: 'none'
     })

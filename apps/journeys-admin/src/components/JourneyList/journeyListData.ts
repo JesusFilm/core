@@ -1,8 +1,8 @@
 import { formatISO, startOfYear } from 'date-fns'
 
 import {
-  GetAdminJourneys_journeys as Journey,
-  GetAdminJourneys_journeys_userJourneys as User
+  GetAdminJourneys_journeys_userJourneys as ApiUser,
+  GetAdminJourneys_journeys as Journey
 } from '../../../__generated__/GetAdminJourneys'
 import {
   JourneyStatus,
@@ -11,7 +11,9 @@ import {
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
-const userJourneys: User[] = [
+export const fakeDate = '2021-12-11'
+
+const userJourneys: ApiUser[] = [
   {
     __typename: 'UserJourney',
     id: 'user-journey-id',
@@ -72,7 +74,7 @@ export const defaultJourney: Journey = {
       }
     ]
   },
-  createdAt: formatISO(startOfYear(new Date())),
+  createdAt: formatISO(startOfYear(new Date(fakeDate))),
   publishedAt: null,
   status: JourneyStatus.draft,
   seoTitle: null,
@@ -99,7 +101,7 @@ export const publishedJourney: Journey = {
   id: 'published-journey-id',
   title: 'Published Journey Heading',
   description: 'a published journey',
-  publishedAt: formatISO(startOfYear(new Date())),
+  publishedAt: formatISO(startOfYear(new Date(fakeDate))),
   status: JourneyStatus.published
 }
 

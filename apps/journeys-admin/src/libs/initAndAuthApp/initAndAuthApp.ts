@@ -1,21 +1,24 @@
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Redirect } from 'next'
-import { AuthUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { v4 as uuidv4 } from 'uuid'
 
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 
+import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
-interface props {
-  AuthUser: AuthUser
+interface InitAndAuthAppProps {
+  user?: User
   locale: string | undefined
+  resolvedUrl?: string
 }
 
-interface initAndAuth {
+interface InitAndAuth {
   apolloClient: ApolloClient<NormalizedCacheObject>
   flags: {
     [key: string]: boolean | undefined
@@ -24,17 +27,35 @@ interface initAndAuth {
   translations: SSRConfig
 }
 
-export async function initAndAuthApp({
-  AuthUser,
-  locale
-}: props): Promise<initAndAuth> {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
+export const ACCEPT_ALL_INVITES = gql`
+  mutation AcceptAllInvites {
+    userTeamInviteAcceptAll {
+      id
+    }
+    userInviteAcceptAll {
+      id
+    }
   }
+`
 
-  // run independent tasks (getting LaunchDarkly client, user's ID token, and server-side translations) concurrently
+export async function initAndAuthApp({
+  user,
+  locale,
+  resolvedUrl
+}: InitAndAuthAppProps): Promise<InitAndAuth> {
+  const ldUser =
+    user?.id != null
+      ? {
+          key: user.id,
+          firstName: user.displayName ?? undefined,
+          email: user.email ?? undefined
+        }
+      : {
+          key: uuidv4(),
+          anonymous: true
+        }
+
+  // run independent tasks (getting user's ID token, and server-side translations) concurrently
   const [translations, launchDarklyClient, token] = await Promise.all([
     serverSideTranslations(
       locale ?? 'en',
@@ -42,15 +63,30 @@ export async function initAndAuthApp({
       i18nConfig
     ),
     getLaunchDarklyClient(ldUser),
-    AuthUser.getIdToken()
+    user?.id != null ? user.getIdToken() : null
   ])
 
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
 
-  const apolloClient = createApolloClient(token != null ? token : '')
-  const redirect = await checkConditionalRedirect(apolloClient, flags)
+  const apolloClient = createApolloClient(token ?? undefined)
+
+  if (token == null) {
+    return { apolloClient, flags, redirect: undefined, translations }
+  }
+
+  const [, redirect] = await Promise.all([
+    apolloClient.mutate<AcceptAllInvites>({
+      mutation: ACCEPT_ALL_INVITES
+    }),
+    resolvedUrl != null
+      ? checkConditionalRedirect({
+          apolloClient,
+          resolvedUrl
+        })
+      : undefined
+  ])
 
   return { apolloClient, flags, redirect, translations }
 }

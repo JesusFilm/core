@@ -75,6 +75,7 @@ describe('VisitorList', () => {
           {
             id: 'teamId',
             title: 'Team Title',
+            publicTitle: null,
             __typename: 'Team',
             userTeams: []
           }
@@ -236,9 +237,9 @@ describe('VisitorList', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    const headers = getAllByRole('columnheader')
 
-    expect(headers).toHaveLength(5)
+    await waitFor(() => expect(getAllByRole('columnheader')).toHaveLength(5))
+    const headers = getAllByRole('columnheader')
     expect(headers[0]).toHaveAttribute('aria-label', 'Last Active')
     expect(headers[1]).toHaveAttribute('aria-label', 'Chat Started')
     expect(headers[2]).toHaveAttribute('aria-label', 'Action')
@@ -256,7 +257,9 @@ describe('VisitorList', () => {
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(getByText('Poll question: selected option')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('Poll question: selected option')).toBeInTheDocument()
+    )
     expect(getByText('user response')).toBeInTheDocument()
   })
 })

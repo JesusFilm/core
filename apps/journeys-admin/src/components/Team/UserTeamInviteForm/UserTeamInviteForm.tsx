@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -11,7 +10,8 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ObjectSchema, object, string } from 'yup'
 
-import AlertCircle from '@core/shared/ui/icons/AlertCircle'
+import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
 import {
   UserTeamInviteCreateInput,
@@ -56,7 +56,9 @@ export function UserTeamInviteForm({
       await userTeamInviteCreate({
         variables: {
           teamId: activeTeam?.id,
-          input
+          input: {
+            email: input.email.trim().toLowerCase()
+          }
         },
         update(cache, { data }) {
           if (data?.userTeamInviteCreate != null) {
@@ -90,6 +92,7 @@ export function UserTeamInviteForm({
   const userTeamInviteCreateSchema: ObjectSchema<UserTeamInviteCreateInput> =
     object({
       email: string()
+        .trim()
         .lowercase()
         .email(t('Please enter a valid email address'))
         .required(t('Required'))
@@ -134,7 +137,7 @@ export function UserTeamInviteForm({
                       color="primary"
                       disabled={values.email === ''}
                     >
-                      <AddCircleOutlineIcon
+                      <AddSquare4Icon
                         sx={{
                           color:
                             values.email !== '' && errors.email == null
@@ -146,6 +149,7 @@ export function UserTeamInviteForm({
                   </InputAdornment>
                 )
               }}
+              data-testid="UserTeamInviteForm"
             />
           </Form>
           <Stack
@@ -156,7 +160,7 @@ export function UserTeamInviteForm({
             }}
           >
             <Box sx={{ pr: 3 }}>
-              <AlertCircle sx={{ color: 'secondary.light' }} />
+              <AlertCircleIcon sx={{ color: 'secondary.light' }} />
             </Box>
             <Typography sx={{ color: 'secondary.light' }} variant="body2">
               {t(

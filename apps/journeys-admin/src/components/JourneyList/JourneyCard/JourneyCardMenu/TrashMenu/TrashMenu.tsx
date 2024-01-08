@@ -1,6 +1,7 @@
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
-import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded'
 import { ReactElement } from 'react'
+
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+import FileShredIcon from '@core/shared/ui/icons/FileShred'
 
 import { MenuItem } from '../../../../MenuItem'
 
@@ -19,20 +20,22 @@ export function TrashMenu({
     <>
       <MenuItem
         label="Restore"
-        icon={<CheckCircleRoundedIcon color="secondary" />}
+        icon={<CheckContainedIcon color="secondary" />}
         onClick={() => {
           setOpenRestoreDialog()
           handleCloseMenu()
         }}
+        testId="Restore"
       />
 
       <MenuItem
         label="Delete Forever"
-        icon={<DeleteForeverRoundedIcon color="secondary" />}
+        icon={<FileShredIcon color="secondary" />}
         onClick={() => {
           setOpenDeleteDialog()
           handleCloseMenu()
         }}
+        testId="Delete"
       />
     </>
   )

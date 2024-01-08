@@ -5,8 +5,12 @@ import { ReactElement, ReactNode } from 'react'
 
 const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
   ({ theme, clicked }) => ({
-    minWidth: 56,
-    borderRadius: 20,
+    minWidth: 46,
+    minHeight: 30,
+    height: 30,
+    paddingLeft: 14,
+    paddingRight: 14,
+    borderRadius: 100,
     backgroundColor: theme.palette.grey[800],
     color: theme.palette.grey[100],
     [theme.breakpoints.down('lg')]: {
@@ -26,20 +30,22 @@ const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
           ? `${theme.palette.grey[200]}FF`
           : `${theme.palette.grey[800]}FF`
     },
-    ...(clicked && {
-      animation: 'bounce 0.5s',
-      '@keyframes bounce': {
-        '0%': { transform: 'translateY(0)' },
-        '40%': { transform: 'translateY(-10px)' },
-        '50%': { transform: 'translateY(0)' },
-        '60%': { transform: 'translateY(-5px)' },
-        '100%': { transform: 'translateY(0)' }
-      }
-    })
+    ...(clicked
+      ? {
+          animation: 'bounce 0.5s',
+          '@keyframes bounce': {
+            '0%': { transform: 'translateY(0)' },
+            '40%': { transform: 'translateY(-10px)' },
+            '50%': { transform: 'translateY(0)' },
+            '60%': { transform: 'translateY(-5px)' },
+            '100%': { transform: 'translateY(0)' }
+          }
+        }
+      : {})
   })
 )
 
-interface Props {
+interface StyledFooterButtonProps {
   onClick: () => void
   children: ReactNode
   clicked?: boolean
@@ -49,7 +55,7 @@ export function StyledFooterButton({
   onClick,
   children,
   clicked = false
-}: Props): ReactElement {
+}: StyledFooterButtonProps): ReactElement {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   return (

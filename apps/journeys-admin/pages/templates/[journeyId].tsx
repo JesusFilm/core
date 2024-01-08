@@ -1,87 +1,131 @@
-import { gql, useQuery } from '@apollo/client'
-import {
-  AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
-} from 'next-firebase-auth'
-import { NextSeo } from 'next-seo'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
+import { useUser, withUser } from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
-import { GetTemplate } from '../../__generated__/GetTemplate'
-import { JourneyView } from '../../src/components/JourneyView'
-import { Menu } from '../../src/components/JourneyView/Menu'
+import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
+import {
+  GetJourneys,
+  GetJourneysVariables
+} from '../../__generated__/GetJourneys'
+import { GetTags } from '../../__generated__/GetTags'
+import { ONBOARDING_IDS } from '../../src/components/OnboardingPanel/OnboardingList/OnboardingList'
 import { PageWrapper } from '../../src/components/PageWrapper'
+import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
+import {
+  GET_JOURNEY,
+  useJourneyQuery
+} from '../../src/libs/useJourneyQuery/useJourneyQuery'
+import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
+import { GET_TAGS } from '../../src/libs/useTagsQuery/useTagsQuery'
 
-export const GET_TEMPLATE = gql`
-  ${JOURNEY_FIELDS}
-  query GetTemplate($id: ID!) {
-    template: adminJourney(id: $id, idType: databaseId) {
-      ...JourneyFields
-    }
-  }
-`
-
-function TemplateDetails(): ReactElement {
+function TemplateDetailsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const AuthUser = useAuthUser()
-  const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
-    variables: { id: router.query.journeyId }
+  const user = useUser()
+  const { data } = useJourneyQuery({
+    id: router.query.journeyId as string
   })
-  useInvalidJourneyRedirect(data)
 
   return (
     <>
       <NextSeo
-        title={data?.template?.title ?? t('Journey Template')}
-        description={data?.template?.description ?? undefined}
+        title={data?.journey?.title ?? t('Journey Template')}
+        description={data?.journey?.description ?? undefined}
       />
       <JourneyProvider
         value={{
-          journey: data?.template ?? undefined,
+          journey: data?.journey,
           variant: 'admin'
         }}
       >
         <PageWrapper
           title={t('Journey Template')}
-          authUser={AuthUser}
-          showDrawer
+          user={user}
           backHref="/templates"
-          menu={<Menu />}
+          backHrefHistory
+          mainBodyPadding={false}
         >
-          <JourneyView journeyType="Template" />
+          <TemplateView authUser={user} />
         </PageWrapper>
       </JourneyProvider>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const { flags, redirect, translations } = await initAndAuthApp({
-    AuthUser,
+export const getStaticProps: GetStaticProps = async ({ locale, params }) => {
+  const { apolloClient, translations } = await initAndAuthApp({
     locale
   })
 
-  if (redirect != null) return { redirect }
+  if (params?.journeyId == null) {
+    return {
+      redirect: {
+        destination: '/templates',
+        permanent: false
+      }
+    }
+  }
+
+  try {
+    // TemplateDetailsPage
+    const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
+      query: GET_JOURNEY,
+      variables: {
+        id: params.journeyId.toString()
+      }
+    })
+    const tagIds = data.journey.tags.map((tag) => tag.id)
+    // src/components/TemplateView/TemplateView.tsx useJourneysQuery
+    await apolloClient.query<GetJourneys, GetJourneysVariables>({
+      query: GET_JOURNEYS,
+      variables: {
+        where: {
+          template: true,
+          orderByRecent: true,
+          tagIds
+        }
+      }
+    })
+    // src/components/TemplateView/TemplateTags/TemplateTags.tsx useTagsQuery
+    await apolloClient.query<GetTags>({
+      query: GET_TAGS
+    })
+  } catch (error) {
+    if (error.message === 'journey not found') {
+      return {
+        redirect: {
+          destination: '/templates',
+          permanent: false
+        }
+      }
+    }
+    throw error
+  }
 
   return {
     props: {
-      flags,
-      ...translations
-    }
+      ...translations,
+      initialApolloState: apolloClient.cache.extract()
+    },
+    revalidate: 60
   }
-})
+}
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateDetails)
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: ONBOARDING_IDS.map((id) => ({
+      params: {
+        journeyId: id
+      }
+    })),
+    fallback: true
+  }
+}
+
+export default withUser()(TemplateDetailsPage)

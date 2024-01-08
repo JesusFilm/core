@@ -1,0 +1,1 @@
+export { abbreviateLanguageName } from './abbreviateLanguageName'

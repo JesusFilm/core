@@ -14,11 +14,11 @@ import UserProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { Hosts_hosts as Host } from '../../../../../../../../__generated__/Hosts'
-import { useCurrentUser } from '../../../../../../../libs/useCurrentUser'
+import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { ContainedIconButton } from '../../../../../../ContainedIconButton'
-import { SidePanel } from '../../../../../../NewPageWrapper/SidePanel'
-import { SidePanelContainer } from '../../../../../../NewPageWrapper/SidePanelContainer'
+import { SidePanel } from '../../../../../../PageWrapper/SidePanel'
+import { SidePanelContainer } from '../../../../../../PageWrapper/SidePanelContainer'
 
 import { HostForm } from './HostForm'
 import { HostList } from './HostList'
@@ -41,7 +41,7 @@ export function HostSidePanel(): ReactElement {
 
   // Get all team members of journey team, check if user in team
   // TODO: Replace with CASL authorisation check
-  const { loadUser, data: authUser } = useCurrentUser()
+  const { loadUser, data: user } = useCurrentUserLazyQuery()
   useEffect(() => {
     void loadUser()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,9 +58,8 @@ export function HostSidePanel(): ReactElement {
   const userInTeam =
     data == null || data.userTeams.length === 0 || team == null
       ? false
-      : data.userTeams.find(
-          (userTeam) => userTeam.user.email === authUser.email
-        ) != null
+      : data.userTeams.find((userTeam) => userTeam.user.email === user.email) !=
+        null
 
   // Fetch all hosts made for a team
   const { data: teamHosts, refetch } = useQuery(GET_ALL_TEAM_HOSTS, {
@@ -96,7 +95,7 @@ export function HostSidePanel(): ReactElement {
   return (
     <>
       {/* DefaultHostPanel - no host */}
-      <SidePanel title={t('Hosted By')} open edit>
+      <SidePanel title={t('Hosted By')} open withAdminDrawer>
         {!openSelect && (selectedHost == null || !userInTeam) && (
           <>
             <SidePanelContainer border={!userInTeam}>
@@ -129,7 +128,7 @@ export function HostSidePanel(): ReactElement {
       <SidePanel
         title={t('Select a Host')}
         open={openSelect}
-        edit
+        withAdminDrawer
         onClose={() => setOpenSelect(false)}
       >
         {openSelect && !openCreateHost && !openInfo && (
@@ -170,7 +169,7 @@ export function HostSidePanel(): ReactElement {
       <SidePanel
         title={t('Information')}
         open={openInfo}
-        edit
+        withAdminDrawer
         onClose={() => setOpenInfo(false)}
       >
         {openInfo && (
@@ -197,9 +196,10 @@ export function HostSidePanel(): ReactElement {
 
       {/* Create / EditHostPanel */}
       {userInTeam && (openCreateHost || selectedHost != null) && (
-        <SidePanel title={t('Hosted By')} edit>
-          <HostForm onClear={handleClear} />
-        </SidePanel>
+        <HostForm
+          onClear={handleClear}
+          onClose={() => setOpenCreateHost(false)}
+        />
       )}
     </>
   )

@@ -6,7 +6,7 @@ import { JourneysReportType } from '../../../__generated__/globalTypes'
 
 import { NavigationButton } from './NavigationButton'
 
-interface Props {
+interface ReportsNavigationProps {
   reportType?: JourneysReportType
   journeyId?: string
   selected: 'journeys' | 'visitors'
@@ -16,10 +16,15 @@ export function ReportsNavigation({
   reportType,
   journeyId,
   selected
-}: Props): ReactElement {
+}: ReportsNavigationProps): ReactElement {
   const { t } = useTranslation('journeys-admin')
   return (
-    <Stack direction="row" spacing={4} sx={{ pb: 8 }}>
+    <Stack
+      direction="row"
+      spacing={4}
+      sx={{ pb: 8 }}
+      data-testid="JourneysAdminReportsNavigation"
+    >
       <NavigationButton
         selected={selected === 'journeys'}
         value={t('Journeys')}

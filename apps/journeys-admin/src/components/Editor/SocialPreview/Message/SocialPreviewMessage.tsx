@@ -88,6 +88,7 @@ export function SocialPreviewMessage({
       width={256}
       mx="auto"
       sx={{ transform: { md: 'scale(1)', lg: 'scale(1.33)' } }}
+      data-testid="SocialPreviewMessage"
     >
       <Stack direction="column" justifyContent="start">
         <Typography variant="caption" pb={4} textAlign="center">
@@ -111,11 +112,15 @@ export function SocialPreviewMessage({
                     primaryImageBlock?.src != null && (
                       <Image
                         src={primaryImageBlock.src}
-                        alt={primaryImageBlock.alt}
-                        objectFit="cover"
+                        alt={primaryImageBlock.alt ?? ''}
                         width="60"
                         height="60"
-                        style={{ borderRadius: '4px' }}
+                        style={{
+                          borderRadius: '4px',
+                          maxWidth: '100%',
+                          height: 'auto',
+                          objectFit: 'cover'
+                        }}
                       />
                     )
                   )}

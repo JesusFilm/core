@@ -1,29 +1,30 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
-import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation'
+import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
 
-jest.mock('../../../../../../../../../libs/useHostUpdate', () => ({
+jest.mock('../../../../../../../../../libs/useHostUpdateMutation', () => ({
   __esModule: true,
-  useHostUpdate: jest.fn()
+  useHostUpdateMutation: jest.fn()
 }))
 
-const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
-  typeof useHostUpdate
+const mockUseHostUpdateMutation = useHostUpdateMutation as jest.MockedFunction<
+  typeof useHostUpdateMutation
 >
 
 describe('HostAvatarsButton', () => {
   const updateHost = jest.fn()
 
   beforeEach(() => {
-    mockUseHostUpdate.mockReturnValue({
+    mockUseHostUpdateMutation.mockReturnValue({
       updateHost
     })
   })
@@ -53,25 +54,27 @@ describe('HostAvatarsButton', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: { ...journey, host: null },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatarsButton />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...journey, host: null },
+                variant: 'admin'
+              }}
+            >
+              <HostAvatarsButton />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
     expect(getByTestId('avatar1').firstChild).toHaveAttribute(
       'data-testid',
-      'UserProfileAddIcon'
+      'UserProfile2Icon'
     )
     expect(getByTestId('avatar2').firstChild).toHaveAttribute(
       'data-testid',
-      'UserProfileAddIcon'
+      'Plus2Icon'
     )
   })
 
@@ -79,17 +82,23 @@ describe('HostAvatarsButton', () => {
     const { getByAltText } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...journey,
-                host: { ...defaultHost, src1: 'avatar1Src', src2: 'avatar2Src' }
-              },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatarsButton />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...journey,
+                  host: {
+                    ...defaultHost,
+                    src1: 'avatar1Src',
+                    src2: 'avatar2Src'
+                  }
+                },
+                variant: 'admin'
+              }}
+            >
+              <HostAvatarsButton />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -102,38 +111,45 @@ describe('HostAvatarsButton', () => {
     const { getByTestId, queryByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostAvatarsButton disabled />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <HostAvatarsButton disabled />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(queryByTestId('imageSrcStack')).not.toBeInTheDocument()
+    expect(queryByTestId('ImageBlockHeader')).not.toBeInTheDocument()
   })
 
-  it('should open image edit library on avatar click', () => {
+  it('should open image edit library on avatar click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...journey,
-                host: { ...defaultHost, src1: 'avatar1Src' }
-              },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatarsButton />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...journey,
+                  host: { ...defaultHost, src1: 'avatar1Src' }
+                },
+                variant: 'admin'
+              }}
+            >
+              <HostAvatarsButton />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('imageSrcStack')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
+    )
+
     expect(getByRole('img')).toHaveAttribute('src', 'avatar1Src')
     fireEvent.click(getByRole('button', { name: 'close-image-library' }))
 
@@ -176,27 +192,29 @@ describe('HostAvatarsButton', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...journey,
-                host: {
-                  ...defaultHost,
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...journey,
+                  host: {
+                    ...defaultHost,
 
-                  src1: 'avatar1Src'
-                }
-              },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatarsButton />
-          </JourneyProvider>
+                    src1: 'avatar1Src'
+                  }
+                },
+                variant: 'admin'
+              }}
+            >
+              <HostAvatarsButton />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('imageSrcStack')).toBeInTheDocument()
+    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
     fireEvent.click(getByTestId('imageBlockHeaderDelete'))
 
     void waitFor(() => {
@@ -270,27 +288,29 @@ describe('HostAvatarsButton', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...journey,
-                host: {
-                  ...defaultHost,
-                  src1: 'avatar1Src',
-                  src2: 'avatar2Src'
-                }
-              },
-              variant: 'admin'
-            }}
-          >
-            <HostAvatarsButton />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...journey,
+                  host: {
+                    ...defaultHost,
+                    src1: 'avatar1Src',
+                    src2: 'avatar2Src'
+                  }
+                },
+                variant: 'admin'
+              }}
+            >
+              <HostAvatarsButton />
+            </JourneyProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('imageSrcStack')).toBeInTheDocument()
+    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
     fireEvent.click(getByTestId('imageBlockHeaderDelete'))
     void waitFor(() => {
       expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()

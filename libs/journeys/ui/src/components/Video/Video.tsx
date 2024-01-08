@@ -10,9 +10,11 @@ import {
   useRef,
   useState
 } from 'react'
+import { use100vh } from 'react-div-100vh'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import {
@@ -76,6 +78,7 @@ export function Video({
   const [player, setPlayer] = useState<Player>()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
+  const hundredVh = use100vh()
 
   const {
     state: { selectedBlock }
@@ -102,6 +105,7 @@ export function Video({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
+          ...defaultVideoJsOptions,
           controls: false,
           controlBar: false,
           bigPlayButton: false,
@@ -120,6 +124,10 @@ export function Video({
     }
   }, [startAt, endAt, muted, posterBlock, autoplay])
 
+  useEffect(() => {
+    if (videoRef.current != null) videoRef.current.pause()
+  }, [])
+
   const triggerTimes = useMemo(() => {
     return children
       .filter((block) => block.__typename === 'VideoTriggerBlock')
@@ -135,7 +143,7 @@ export function Video({
     const startTime = startAt ?? 0
 
     const handleStopLoading = (): void => {
-      if (player != null && player.currentTime() < startTime) {
+      if (player != null && (player.currentTime() ?? 0) < startTime) {
         player.currentTime(startTime)
       }
       setLoading(false)
@@ -199,7 +207,7 @@ export function Video({
       const handleDurationChange = (): void => {
         if (player != null) {
           const playerDuration =
-            player.duration() > 0 ? player.duration() : null
+            (player.duration() ?? 0) > 0 ? player.duration() : null
 
           if (playerDuration != null) {
             setVideoEndTime(Math.min(videoEndTime, playerDuration))
@@ -246,9 +254,12 @@ export function Video({
     }
   }
 
+  const isFillAndNotYoutube = (): boolean =>
+    videoFit === 'cover' && source !== VideoBlockSource.youTube
+
   return (
     <Box
-      data-testid={`video-${blockId}`}
+      data-testid={`JourneysVideo-${blockId}`}
       sx={{
         display: 'flex',
         width: '100%',
@@ -256,7 +267,8 @@ export function Video({
         minHeight: 'inherit',
         backgroundColor: VIDEO_BACKGROUND_COLOR,
         overflow: 'hidden',
-        m: '0px !important',
+        my: '0px !important',
+        mx: isFillAndNotYoutube() ? 'inherit' : '0px !important',
         position: 'absolute',
         top: 0,
         right: 0,
@@ -285,49 +297,72 @@ export function Video({
       {videoId != null ? (
         <>
           <StyledVideoGradient />
-          <StyledVideo
-            ref={videoRef}
-            className="video-js vjs-tech"
-            playsInline
-            sx={{
-              '&.video-js.vjs-youtube.vjs-fill': {
-                transform: 'scale(1.01)'
-              },
-              '> .vjs-tech': {
-                objectFit: videoFit,
-                transform:
-                  objectFit === VideoBlockObjectFit.zoomed
-                    ? 'scale(1.33)'
-                    : undefined
-              },
-              '> .vjs-poster': {
-                backgroundColor: VIDEO_BACKGROUND_COLOR,
-                backgroundSize: 'cover',
-                transform: 'scale(1.1)'
-              }
+          <Box
+            height={{
+              xs: isFillAndNotYoutube() ? hundredVh : '100%',
+              sm: '100%'
             }}
+            width={{
+              xs: isFillAndNotYoutube() ? '300%' : '100%',
+              sm: '100%'
+            }}
+            minHeight="-webkit-fill-available"
+            overflow="hidden"
+            marginX={{
+              xs: isFillAndNotYoutube() ? '-100%' : 0,
+              sm: 0
+            }}
+            position={isFillAndNotYoutube() ? 'absolute' : 'inherit'}
+            data-testid="video-container"
           >
-            {source === VideoBlockSource.cloudflare && videoId != null && (
-              <source
-                src={`https://customer-${
-                  process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-                }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
-                type="application/x-mpegURL"
-              />
-            )}
-            {source === VideoBlockSource.internal &&
-              video?.variant?.hls != null && (
-                <source src={video.variant.hls} type="application/x-mpegURL" />
+            <StyledVideo
+              ref={videoRef}
+              className="video-js vjs-tech"
+              playsInline
+              sx={{
+                '&.video-js.vjs-youtube.vjs-fill': {
+                  transform: 'scale(1.01)'
+                },
+                '> .vjs-tech': {
+                  objectFit: videoFit,
+                  transform:
+                    objectFit === VideoBlockObjectFit.zoomed
+                      ? 'scale(1.33)'
+                      : undefined
+                },
+                '> .vjs-poster': {
+                  backgroundColor: VIDEO_BACKGROUND_COLOR,
+                  backgroundSize: 'cover',
+                  transform: 'scale(1.1)'
+                }
+              }}
+            >
+              {source === VideoBlockSource.cloudflare && videoId != null && (
+                <source
+                  src={`https://customer-${
+                    process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
+                    ''
+                  }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
+                  type="application/x-mpegURL"
+                />
               )}
-            {source === VideoBlockSource.youTube && (
-              <source
-                src={`https://www.youtube.com/embed/${videoId}?start=${
-                  startAt ?? 0
-                }&end=${endAt ?? 0}`}
-                type="video/youtube"
-              />
-            )}
-          </StyledVideo>
+              {source === VideoBlockSource.internal &&
+                video?.variant?.hls != null && (
+                  <source
+                    src={video.variant.hls}
+                    type="application/x-mpegURL"
+                  />
+                )}
+              {source === VideoBlockSource.youTube && (
+                <source
+                  src={`https://www.youtube.com/embed/${videoId}?start=${
+                    startAt ?? 0
+                  }&end=${endAt ?? 0}`}
+                  type="video/youtube"
+                />
+              )}
+            </StyledVideo>
+          </Box>
           {player != null && (
             <ThemeProvider theme={{ ...theme, direction: 'ltr' }}>
               <VideoControls
@@ -363,7 +398,7 @@ export function Video({
               fontSize: 100,
               zIndex: 1,
               outline:
-                selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+                selectedBlock?.id === blockId ? '2px solid #C52D3A' : 'none',
               outlineOffset: '-3px'
             }}
             elevation={0}

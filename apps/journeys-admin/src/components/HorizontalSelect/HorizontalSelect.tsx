@@ -18,6 +18,7 @@ export interface HorizontalSelectProps {
   sx?: SxProps<Theme>
   footer?: ReactNode
   isDragging?: boolean
+  testId?: string
 }
 
 export function HorizontalSelect({
@@ -26,7 +27,8 @@ export function HorizontalSelect({
   onChange,
   sx,
   footer,
-  isDragging
+  isDragging,
+  testId
 }: HorizontalSelectProps): ReactElement {
   const selectedRef = useRef<HTMLElement>(null)
 
@@ -42,7 +44,7 @@ export function HorizontalSelect({
   return (
     <Stack
       direction="row"
-      data-testid="horizontal-select"
+      data-testid={testId}
       spacing={1}
       sx={{
         overflowY: 'hidden',
@@ -56,20 +58,23 @@ export function HorizontalSelect({
         (child) =>
           isValidElement(child) && (
             <Box
-              key={child.props.id}
-              ref={id === child.props.id ? selectedRef : undefined}
+              key={child.props.id ?? child.props.draggableId}
+              ref={id === child.props.draggableId ? selectedRef : undefined}
               sx={{
                 borderRadius: 2,
-                transition: '0.2s border-color ease-out',
+                transition: '0.1s outline ease-out',
                 position: 'relative',
                 outline: (theme) =>
-                  id === child.props.id && isDragging !== true
+                  id === (child.props.id ?? child.props.draggableId) &&
+                  isDragging !== true
                     ? `2px solid ${theme.palette.primary.main} `
                     : '2px solid transparent',
                 border: '3px solid transparent',
                 cursor: 'pointer'
               }}
-              onClick={() => onChange?.(child.props.id)}
+              onClick={() => {
+                onChange?.(child.props.id ?? child.props.draggableId)
+              }}
             >
               <Box
                 sx={{

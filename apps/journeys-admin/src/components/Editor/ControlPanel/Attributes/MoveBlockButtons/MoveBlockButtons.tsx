@@ -1,6 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
-import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
@@ -13,6 +11,8 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
 import { BlockOrderUpdate } from '../../../../../../__generated__/BlockOrderUpdate'
 
@@ -93,8 +93,8 @@ export function MoveBlockButtons({
     parentBlock != null ? parentBlock.children.length - 1 : 0
 
   return (
-    <Stack>
-      {/* <ButtonGroup
+    <Box data-testid="MoveBlockButtons">
+      <ButtonGroup
         data-testid="move-block-buttons"
         disableElevation
         variant="contained"
@@ -106,18 +106,18 @@ export function MoveBlockButtons({
           onClick={handleMove('up')}
           onMouseDown={(e) => e.preventDefault()}
         >
-        <KeyboardArrowUpRoundedIcon />
-      </IconButton>
-      <IconButton
+          <ChevronUpIcon />
+        </StyledMoveButton>
+        <StyledMoveButton
           aria-label="move-block-down"
           disabled={selectedBlock.parentOrder === lastBlockIndex}
           onClick={handleMove('down')}
           onMouseDown={(e) => e.preventDefault()}
         >
-        <KeyboardArrowDownRoundedIcon />
-      </IconButton>
-      {/* </ButtonGroup> */}
-      {/* <Box sx={{ height: 24 }}>
+          <ChevronDownIcon />
+        </StyledMoveButton>
+      </ButtonGroup>
+      <Box sx={{ height: 24 }}>
         <Typography
           variant="caption"
           color="text.secondary"

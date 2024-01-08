@@ -1,6 +1,6 @@
-import Box from '@mui/material/Box'
-import GlobalStyles from '@mui/material/GlobalStyles'
+import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/system/createTheme'
+import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
 import {
@@ -9,14 +9,25 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
-import { CardPreview, OnSelectProps } from '../../CardPreview'
-import { ActionsTable } from '../ActionsTable'
+import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 import { Canvas } from '../Canvas'
-import { ContextEditActions } from '../ContextEditActions'
-import { ControlPanel } from '../ControlPanel'
-import { DRAWER_WIDTH, Drawer } from '../Drawer'
-import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
-import { SocialPreview } from '../SocialPreview/SocialPreview'
+
+const ActionsTable = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ActionsTable" */
+      '../ActionsTable'
+    ).then((mod) => mod.ActionsTable),
+  { ssr: false }
+)
+const SocialPreview = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/SocialPreview" */
+      '../SocialPreview'
+    ).then((mod) => mod.SocialPreview),
+  { ssr: false }
+)
 
 function bgColor(
   theme: Theme,
@@ -49,6 +60,7 @@ export function JourneyEdit(): ReactElement {
   const selected = selectedComponent ?? selectedBlock ?? 'none'
 
   const [hasAction, setHasAction] = useState(false)
+  const { toolbar, bottomPanel } = usePageWrapperStyles()
 
   const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
     if (step != null) {
@@ -75,55 +87,27 @@ export function JourneyEdit(): ReactElement {
 
   // console.log({ journeyEditContentComponent })
   return (
-    <>
-      <GlobalStyles styles={{ body: { overflow: 'hidden' } }} />
-      <Box
-        sx={{
-          display: 'flex',
-          height: 'calc(100vh - 87px)',
-          flexDirection: 'column'
-          // marginRight: { sm: `${DRAWER_WIDTH}px` }
-        }}
-      >
-        {/* <CardPreview
-          selected={selectedStep}
-          onSelect={handleSelectStepPreview}
-          steps={steps}
-          showAddButton
-          showNavigationCards
-          isDraggable
-        /> */}
-        <Box
-          data-testid="journey-edit-content"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            flexGrow: 1,
-            overflow: 'auto',
-            borderBottom: (theme) => `1px solid ${theme.palette.divider}`
-            // backgroundColor: (theme) =>
-            //   bgColor(theme, journeyEditContentComponent, hasAction)
-          }}
-        >
-          <Box
-            sx={{
-              my: journeyEditContentComponent === 'action' ? 5 : 'auto'
-            }}
-          >
-            {
-              {
-                [ActiveJourneyEditContent.Canvas]: <Canvas />,
-                [ActiveJourneyEditContent.Action]: (
-                  <ActionsTable hasAction={(action) => setHasAction(action)} />
-                ),
-                [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
-              }[journeyEditContentComponent]
-            }
-          </Box>
-        </Box>
-        {/* <Drawer /> */}
-        <ControlPanel />
-      </Box>
-    </>
+    <Stack
+      data-testid="journey-edit-content"
+      flexGrow={1}
+      justifyContent="center"
+      sx={{
+        height: {
+          md: `calc(100vh - ${bottomPanel.height} - ${toolbar.height})`
+        },
+        backgroundColor: (theme) =>
+          bgColor(theme, journeyEditContentComponent, hasAction)
+      }}
+    >
+      {
+        {
+          [ActiveJourneyEditContent.Canvas]: <Canvas />,
+          [ActiveJourneyEditContent.Action]: (
+            <ActionsTable hasAction={(action) => setHasAction(action)} />
+          ),
+          [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
+        }[journeyEditContentComponent]
+      }
+    </Stack>
   )
 }

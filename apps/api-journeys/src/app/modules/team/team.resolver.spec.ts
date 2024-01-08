@@ -87,11 +87,15 @@ describe('TeamResolver', () => {
     it('creates team with userTeam', async () => {
       prismaService.team.create.mockResolvedValue(team)
       await expect(
-        resolver.teamCreate('userId', { name: 'team' })
+        resolver.teamCreate('userId', {
+          name: 'team',
+          publicName: 'public team name'
+        })
       ).resolves.toEqual(team)
       expect(prismaService.team.create).toHaveBeenCalledWith({
         data: {
           name: 'team',
+          publicName: 'public team name',
           userTeams: {
             create: {
               userId: 'userId',
@@ -108,12 +112,16 @@ describe('TeamResolver', () => {
       prismaService.team.findUnique.mockResolvedValue(teamWithUserTeam)
       prismaService.team.update.mockResolvedValue(teamWithUserTeam)
       await expect(
-        resolver.teamUpdate(ability, 'teamId', { name: 'team' })
+        resolver.teamUpdate(ability, 'teamId', {
+          name: 'team',
+          publicName: 'public team name'
+        })
       ).resolves.toEqual(teamWithUserTeam)
       expect(prismaService.team.update).toHaveBeenCalledWith({
         where: { id: 'teamId' },
         data: {
-          name: 'team'
+          name: 'team',
+          publicName: 'public team name'
         }
       })
     })
@@ -139,13 +147,33 @@ describe('TeamResolver', () => {
       userTeams: [
         {
           userId: 'userId',
-          role: UserTeamRole.manager
+          role: UserTeamRole.manager,
+          teamId: 'teamId',
+          team: {
+            id: 'teamId',
+            userTeams: [
+              {
+                id: 'userTeamId',
+                userId: 'userId',
+                role: UserTeamRole.manager
+              }
+            ]
+          }
         }
       ]
     } as unknown as Team & { userTeams: UserTeam[] }
 
+    const teamWithNoUserTeam = {
+      id: 'teamId'
+    } as unknown as Team
+
     it('returns userTeams of parent', async () => {
-      expect(await resolver.userTeams(team)).toEqual(team.userTeams)
+      const userTeams = jest.fn().mockResolvedValue(team.userTeams)
+      prismaService.team.findUnique.mockReturnValue({
+        ...team,
+        userTeams
+      } as unknown as Prisma.Prisma__TeamClient<Team>)
+      expect(await resolver.userTeams(team, ability)).toEqual(team.userTeams)
     })
 
     it('returns userTeams from database', async () => {
@@ -155,19 +183,23 @@ describe('TeamResolver', () => {
         userTeams
       } as unknown as Prisma.Prisma__TeamClient<Team>)
       await expect(
-        resolver.userTeams({ ...team, userTeams: undefined })
+        resolver.userTeams({ ...teamWithNoUserTeam }, ability)
       ).resolves.toEqual(team.userTeams)
     })
 
-    it('returns empty array when null', async () => {
+    it('returns empty userTeams array when null', async () => {
       const userTeams = jest.fn().mockResolvedValue(null)
       prismaService.team.findUnique.mockReturnValue({
         ...team,
         userTeams
       } as unknown as Prisma.Prisma__TeamClient<Team>)
       await expect(
-        resolver.userTeams({ ...team, userTeams: undefined })
+        resolver.userTeams({ ...teamWithNoUserTeam }, ability)
       ).resolves.toEqual([])
+    })
+
+    it('returns empty userTeams array when ability is undefined', async () => {
+      expect(await resolver.userTeams(team, undefined)).toEqual([])
     })
   })
 })

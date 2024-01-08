@@ -19,6 +19,10 @@ const storiesForProject = {
     '../libs/shared/ui/src/**/*.stories.mdx',
     '../libs/shared/ui/src/**/*.stories.@(js|jsx|ts|tsx)'
   ],
+  'shared-ui-dynamic': [
+    '../libs/shared/ui-dynamic/src/**/*.stories.mdx',
+    '../libs/shared/ui-dynamic/src/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
   watch: [
     '../apps/watch/src/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/watch/src/components/**/*.stories.mdx',
@@ -27,12 +31,13 @@ const storiesForProject = {
   // Add new UI projects here and in allStories
 }
 
-const allStories = [
+const stories = [
   ...storiesForProject['journeys'],
   ...storiesForProject['journeys-admin'],
   ...storiesForProject['journeys-ui'],
   ...storiesForProject['watch'],
-  ...storiesForProject['shared-ui']
+  ...storiesForProject['shared-ui'],
+  ...storiesForProject['shared-ui-dynamic']
 ]
 
 module.exports = {
@@ -40,24 +45,23 @@ module.exports = {
     './static',
     { from: '../apps/watch/public/fonts', to: '/watch/fonts' }
   ],
-  stories: allStories,
+  stories,
   addons: [
-    '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
     'storybook-addon-apollo-client'
   ],
+
   features: {
     interactionsDebugger: true
   },
-  core: {
-    builder: 'webpack5'
-  },
+
   resolve: {
     fallback: {
       util: require.resolve('util/')
     }
   },
+
   webpackFinal: async (config) => {
     const tsPaths = new TsconfigPathsPlugin({
       configFile: './tsconfig.base.json'
@@ -78,5 +82,14 @@ module.exports = {
     }
 
     return config
+  },
+
+  framework: {
+    name: '@storybook/nextjs',
+    options: {}
+  },
+
+  docs: {
+    autodocs: false
   }
 }

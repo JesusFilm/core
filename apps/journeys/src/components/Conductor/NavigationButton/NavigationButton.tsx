@@ -1,17 +1,29 @@
+import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
+import capitalize from 'lodash/capitalize'
 import last from 'lodash/last'
 import { ReactElement, useEffect } from 'react'
+import TagManager from 'react-gtm-module'
+import { useTranslation } from 'react-i18next'
+import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
+import {
+  STEP_NEXT_EVENT_CREATE,
+  STEP_PREVIOUS_EVENT_CREATE
+} from '@core/journeys/ui/Card/Card'
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 import { StepFields } from '../../../../__generated__/StepFields'
+import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
+import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousEventCreate'
 
 const LeftNavigationContainer = styled(Box)`
   /* @noflip */
@@ -23,7 +35,7 @@ const RightNavigationContainer = styled(Box)`
 `
 
 interface NavigationButtonProps {
-  variant: 'prev' | 'next'
+  variant: 'previous' | 'next'
   alignment: 'left' | 'right'
 }
 
@@ -31,14 +43,22 @@ export function NavigationButton({
   variant,
   alignment
 }: NavigationButtonProps): ReactElement {
+  const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
+    STEP_NEXT_EVENT_CREATE
+  )
+  const [stepPreviousEventCreate] = useMutation<StepPreviousEventCreate>(
+    STEP_PREVIOUS_EVENT_CREATE
+  )
+  const { t } = useTranslation('journeys')
   const { variant: journeyVariant } = useJourney()
   const {
     setShowNavigation,
+    getNextBlock,
     treeBlocks,
     blockHistory,
     showNavigation,
     nextActiveBlock,
-    prevActiveBlock
+    previousActiveBlock
   } = useBlocks()
   const activeBlock = blockHistory[
     blockHistory.length - 1
@@ -50,7 +70,7 @@ export function NavigationButton({
     activeBlock?.nextBlockId != null &&
     activeBlock?.nextBlockId !== activeBlock.id
   const canNavigate =
-    variant === 'prev'
+    variant === 'previous'
       ? !onFirstStep
       : !onLastStep || (onLastStep && navigateToAnotherBlock)
   const disabled = variant === 'next' && activeBlock?.locked
@@ -69,17 +89,105 @@ export function NavigationButton({
     }
   }, [showNavigation, setShowNavigation, activeBlock])
 
-  function handleNav(direction: 'next' | 'prev'): void {
+  // should always be called with nextActiveBlock()
+  // should match with other handleNextNavigationEventCreate functions
+  // places used:
+  // libs/journeys/ui/src/components/Card/Card.tsx
+  // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  function handleNextNavigationEventCreate(): void {
+    const id = uuidv4()
+    const stepName = getStepHeading(
+      activeBlock.id,
+      activeBlock.children,
+      treeBlocks,
+      t
+    )
+    const targetBlock = getNextBlock({ id: undefined, activeBlock })
+    const targetStepName =
+      targetBlock != null &&
+      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
+
+    void stepNextEventCreate({
+      variables: {
+        input: {
+          id,
+          blockId: activeBlock.id,
+          label: stepName,
+          value: targetStepName,
+          nextStepId: targetBlock?.id
+        }
+      }
+    })
+
+    TagManager.dataLayer({
+      dataLayer: {
+        event: 'step_next',
+        eventId: id,
+        blockId: activeBlock.id,
+        stepName,
+        targetStepId: targetBlock?.id,
+        targetStepName
+      }
+    })
+  }
+
+  // should always be called with previousActiveBlock()
+  // should match with other handlePreviousNavigationEventCreate functions
+  // places used:
+  // libs/journeys/ui/src/components/Card/Card.tsx
+  // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  function handlePreviousNavigationEventCreate(): void {
+    const id = uuidv4()
+    const stepName = getStepHeading(
+      activeBlock.id,
+      activeBlock.children,
+      treeBlocks,
+      t
+    )
+    const targetBlock = blockHistory[
+      blockHistory.length - 2
+    ] as TreeBlock<StepFields>
+    const targetStepName =
+      targetBlock != null &&
+      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
+
+    void stepPreviousEventCreate({
+      variables: {
+        input: {
+          id,
+          blockId: activeBlock.id,
+          label: stepName,
+          value: targetStepName,
+          previousStepId: targetBlock?.id
+        }
+      }
+    })
+
+    TagManager.dataLayer({
+      dataLayer: {
+        event: 'step_prev',
+        eventId: id,
+        blockId: activeBlock.id,
+        stepName,
+        targetStepId: targetBlock?.id,
+        targetStepName
+      }
+    })
+  }
+
+  function handleNav(direction: 'next' | 'previous'): void {
     if (direction === 'next') {
+      handleNextNavigationEventCreate()
       nextActiveBlock()
     } else {
-      prevActiveBlock()
+      handlePreviousNavigationEventCreate()
+      previousActiveBlock()
     }
   }
 
   // Issue using https://mui.com/material-ui/guides/right-to-left/#emotion-amp-styled-components for justifyContent
   const alignSx =
-    variant === 'prev'
+    variant === 'previous'
       ? {
           justifyContent: 'flex-start',
           ml:
@@ -100,7 +208,7 @@ export function NavigationButton({
 
   return (
     <NavigationContainer
-      data-testid={`${variant}NavContainer`}
+      data-testid={`ConductorNavigationContainer${capitalize(variant)}`}
       onMouseOver={() => setShowNavigation(true)}
       sx={{
         ...alignSx,
@@ -124,9 +232,7 @@ export function NavigationButton({
         timeout={{ appear: 300, exit: 1000 }}
       >
         <IconButton
-          data-testid={`conductor${variant
-            .charAt(0)
-            .toUpperCase()}${variant.slice(1)}Button`}
+          data-testid={`ConductorNavigationButton${capitalize(variant)}`}
           size="small"
           onClick={() => handleNav(variant)}
           disableRipple

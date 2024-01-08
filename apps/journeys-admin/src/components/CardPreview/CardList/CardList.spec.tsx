@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
-import { DragDropContext } from 'react-beautiful-dnd'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { DragDropContext, DroppableProvided } from 'react-beautiful-dnd'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -13,8 +13,8 @@ import {
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 import { SocialProvider } from '../../Editor/SocialProvider'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 
 import { CardList } from '.'
 
@@ -126,7 +126,7 @@ describe('CardList', () => {
       style: {}
     },
     innerRef: jest.fn()
-  }
+  } as unknown as DroppableProvided
 
   const steps: Array<TreeBlock<StepBlock>> = [
     {
@@ -233,10 +233,10 @@ describe('CardList', () => {
     expect(queryByRole('DragHandleRoundedIcon')).not.toBeInTheDocument()
   })
 
-  it('should prompt users that a card is draggable', () => {
+  it('should prompt users that a card is draggable', async () => {
     const { getAllByTestId } = render(
       <MockedProvider>
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -246,14 +246,17 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    const dragHandle = getAllByTestId('DragHandleRoundedIcon')
+    await waitFor(() => {
+      expect(getAllByTestId('DragIcon')[0]).toBeInTheDocument()
+    })
+    const dragHandle = getAllByTestId('DragIcon')
     expect(dragHandle[0]).toHaveClass('MuiSvgIcon-root')
   })
 
   it('contains goals card', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -264,7 +267,7 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    expect(getByTestId('goals-navigation-card')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardGoals')).toBeInTheDocument()
   })
 
   it('navigates on goals card click', async () => {
@@ -287,7 +290,7 @@ describe('CardList', () => {
             variant: 'admin'
           }}
         >
-          <DragDropContext>
+          <DragDropContext onDragEnd={jest.fn()}>
             <CardList
               steps={steps}
               selected={selected}
@@ -299,14 +302,14 @@ describe('CardList', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('goals-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardGoals'))
     expect(handleChange).toHaveBeenCalledWith('goals')
   })
 
   it('contains social preview card', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -317,7 +320,7 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardSocial')).toBeInTheDocument()
   })
 
   it('navigates on social preview card click', async () => {
@@ -340,7 +343,7 @@ describe('CardList', () => {
             variant: 'admin'
           }}
         >
-          <DragDropContext>
+          <DragDropContext onDragEnd={jest.fn()}>
             <CardList
               steps={steps}
               selected={selected}
@@ -352,7 +355,7 @@ describe('CardList', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    fireEvent.click(getByTestId('NavigationCardSocial'))
     expect(handleChange).toHaveBeenCalledWith('social')
   })
 
@@ -383,7 +386,7 @@ describe('CardList', () => {
               }
             }}
           >
-            <DragDropContext>
+            <DragDropContext onDragEnd={jest.fn()}>
               <CardList
                 steps={steps}
                 selected={selected}
@@ -415,8 +418,8 @@ describe('CardList', () => {
         </SocialProvider>
       </MockedProvider>
     )
-    expect(getByTestId('goals-navigation-card')).toBeInTheDocument()
-    expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardGoals')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardSocial')).toBeInTheDocument()
   })
 
   it('should render the goal and social navigation card if the user is a publisher', () => {
@@ -438,7 +441,7 @@ describe('CardList', () => {
           }
         ]}
       >
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -449,8 +452,8 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    expect(getByTestId('goals-navigation-card')).toBeInTheDocument()
-    expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardGoals')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardSocial')).toBeInTheDocument()
   })
 
   it('should not render the goal and social navigation card if journey is a template', () => {
@@ -473,7 +476,7 @@ describe('CardList', () => {
             variant: 'admin'
           }}
         >
-          <DragDropContext>
+          <DragDropContext onDragEnd={jest.fn()}>
             <CardList
               steps={steps}
               selected={selected}
@@ -485,9 +488,7 @@ describe('CardList', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(queryByTestId('goals-navigation-card')).not.toBeInTheDocument()
-    expect(
-      queryByTestId('social-preview-navigation-card')
-    ).not.toBeInTheDocument()
+    expect(queryByTestId('NavigationCardGoals')).not.toBeInTheDocument()
+    expect(queryByTestId('NavigationCardSocial')).not.toBeInTheDocument()
   })
 })

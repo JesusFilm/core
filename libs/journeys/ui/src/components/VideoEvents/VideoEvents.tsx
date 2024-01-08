@@ -106,7 +106,7 @@ export function VideoEvents({
   const stepId = activeBlock?.id
 
   const start = startAt ?? 0
-  const end = endAt ?? player.duration()
+  const end = endAt ?? player.duration() ?? 1
   const position25 = (end - start) / 4 + start
   const position50 = (end - start) / 2 + start
   const position75 = ((end - start) * 3) / 4 + start
@@ -124,7 +124,7 @@ export function VideoEvents({
   useEffect(() => {
     function playListener(): void {
       const id = uuidv4()
-      const currentTime = player.currentTime()
+      const currentTime = player.currentTime() ?? 0
       if (currentTime >= start) {
         void videoPlayEventCreate({
           variables: {
@@ -209,7 +209,7 @@ export function VideoEvents({
     function expandListener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
-      if (player.isFullscreen()) {
+      if (player.isFullscreen() ?? false) {
         void videoExpandEventCreate({
           variables: {
             input: {
@@ -250,8 +250,8 @@ export function VideoEvents({
   useEffect(() => {
     function collapseListener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
-      if (!player.isFullscreen()) {
+      const currentPosition = player.currentTime() ?? 0
+      if (!(player.isFullscreen() ?? false)) {
         void videoCollapseEventCreate({
           variables: {
             input: {
@@ -292,7 +292,7 @@ export function VideoEvents({
   useEffect(() => {
     function startListener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
+      const currentPosition = player.currentTime() ?? 0
       if (!calledStart && currentPosition >= start) {
         void videoStartEventCreate({
           variables: {
@@ -336,7 +336,7 @@ export function VideoEvents({
   useEffect(() => {
     function timeupdate25Listener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
+      const currentPosition = player.currentTime() ?? 0
       if (!called25 && currentPosition >= position25) {
         void videoProgressEventCreate25({
           variables: {
@@ -382,7 +382,7 @@ export function VideoEvents({
   useEffect(() => {
     function timeupdate50Listener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
+      const currentPosition = player.currentTime() ?? 0
       if (!called50 && currentPosition >= position50) {
         void videoProgressEventCreate50({
           variables: {
@@ -428,7 +428,7 @@ export function VideoEvents({
   useEffect(() => {
     function timeupdate75Listener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
+      const currentPosition = player.currentTime() ?? 0
       if (!called75 && currentPosition >= position75) {
         void videoProgressEventCreate75({
           variables: {
@@ -475,7 +475,7 @@ export function VideoEvents({
   useEffect(() => {
     function completeListener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
+      const currentPosition = player.currentTime() ?? 0
       if (!calledComplete && currentPosition >= end) {
         void videoCompleteEventCreate({
           variables: {

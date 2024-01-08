@@ -2,8 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { ReactElement, useMemo, useState } from 'react'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -14,11 +14,33 @@ import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
-import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import {
+  StepAndCardBlockCreate,
+  StepAndCardBlockCreateVariables
+} from '../../../__generated__/StepAndCardBlockCreate'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 
 import { CardList } from './CardList'
 import { OnSelectProps } from './OnSelectProps'
+
+const DragDropContext = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "react-beautiful-dnd" */
+      'react-beautiful-dnd'
+    ).then((mod) => mod.DragDropContext),
+  { ssr: false }
+)
+
+const Droppable = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "react-beautiful-dnd" */
+      'react-beautiful-dnd'
+    ).then((mod) => mod.Droppable),
+  { ssr: false }
+)
 
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void
@@ -27,18 +49,20 @@ export interface CardPreviewProps {
   showAddButton?: boolean
   isDraggable?: boolean
   showNavigationCards?: boolean
+  testId?: string
 }
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
   ${STEP_FIELDS}
   ${CARD_FIELDS}
-  mutation StepAndCardBlockCreate($journeyId: ID!, $stepId: ID!, $cardId: ID) {
-    stepBlockCreate(input: { id: $stepId, journeyId: $journeyId }) {
+  mutation StepAndCardBlockCreate(
+    $stepBlockCreateInput: StepBlockCreateInput!
+    $cardBlockCreateInput: CardBlockCreateInput!
+  ) {
+    stepBlockCreate(input: $stepBlockCreateInput) {
       ...StepFields
     }
-    cardBlockCreate(
-      input: { id: $cardId, journeyId: $journeyId, parentBlockId: $stepId }
-    ) {
+    cardBlockCreate(input: $cardBlockCreateInput) {
       ...CardFields
     }
   }
@@ -63,12 +87,14 @@ export function CardPreview({
   onSelect,
   showAddButton,
   isDraggable,
-  showNavigationCards
+  showNavigationCards,
+  testId
 }: CardPreviewProps): ReactElement {
   const [isDragging, setIsDragging] = useState(false)
-  const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
-    STEP_AND_CARD_BLOCK_CREATE
-  )
+  const [stepAndCardBlockCreate] = useMutation<
+    StepAndCardBlockCreate,
+    StepAndCardBlockCreateVariables
+  >(STEP_AND_CARD_BLOCK_CREATE)
   const [stepsOrderUpdate] = useMutation<StepsOrderUpdate>(STEPS_ORDER_UPDATE)
   const { journey } = useJourney()
 
@@ -94,9 +120,17 @@ export function CardPreview({
     const cardId = uuidv4()
     const { data } = await stepAndCardBlockCreate({
       variables: {
-        journeyId: journey.id,
-        stepId,
-        cardId
+        stepBlockCreateInput: {
+          id: stepId,
+          journeyId: journey.id
+        },
+        cardBlockCreateInput: {
+          id: cardId,
+          journeyId: journey.id,
+          parentBlockId: stepId,
+          themeMode: ThemeMode.dark,
+          themeName: ThemeName.base
+        }
       },
       update(cache, { data }) {
         if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
@@ -229,6 +263,7 @@ export function CardPreview({
             py: 5,
             px: 6
           }}
+          data-testId={`CardPreview${testId ?? ''}`}
         >
           <Box
             sx={{

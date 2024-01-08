@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -38,7 +39,9 @@ const journey: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   title: 'my journey',
+  strategySlug: null,
   slug: 'my-journey',
+  featuredAt: null,
   language: {
     __typename: 'Language',
     id: '529',
@@ -60,11 +63,14 @@ const journey: Journey = {
   primaryImageBlock: null,
   template: null,
   userJourneys: [],
+  creatorDescription: null,
+  creatorImageBlock: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -207,17 +213,21 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           ]}
         >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <VideoBlockEditorSettingsPosterLibrary
-              selectedBlock={null}
-              parentBlockId={video.id}
-              onClose={onClose}
-              open
-            />
+            <SnackbarProvider>
+              <VideoBlockEditorSettingsPosterLibrary
+                selectedBlock={null}
+                parentBlockId={video.id}
+                onClose={onClose}
+                open
+              />
+            </SnackbarProvider>
           </JourneyProvider>
         </MockedProvider>
       )
       fireEvent.click(getByRole('tab', { name: 'Custom' }))
-      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+      await waitFor(() =>
+        fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+      )
       const textBox = getByRole('textbox')
       fireEvent.change(textBox, {
         target: {
@@ -290,12 +300,14 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           ]}
         >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <VideoBlockEditorSettingsPosterLibrary
-              selectedBlock={existingImageBlock}
-              parentBlockId={video.id}
-              onClose={onClose}
-              open
-            />
+            <SnackbarProvider>
+              <VideoBlockEditorSettingsPosterLibrary
+                selectedBlock={existingImageBlock}
+                parentBlockId={video.id}
+                onClose={onClose}
+                open
+              />
+            </SnackbarProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -370,12 +382,14 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           ]}
         >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <VideoBlockEditorSettingsPosterLibrary
-              selectedBlock={image}
-              parentBlockId={video.id}
-              onClose={onClose}
-              open
-            />
+            <SnackbarProvider>
+              <VideoBlockEditorSettingsPosterLibrary
+                selectedBlock={image}
+                parentBlockId={video.id}
+                onClose={onClose}
+                open
+              />
+            </SnackbarProvider>
           </JourneyProvider>
         </MockedProvider>
       )

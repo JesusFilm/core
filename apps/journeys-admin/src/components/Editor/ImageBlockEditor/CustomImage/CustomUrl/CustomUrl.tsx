@@ -1,7 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import ExpandLess from '@mui/icons-material/ExpandLess'
-import ExpandMore from '@mui/icons-material/ExpandMore'
-import LinkIcon from '@mui/icons-material/Link'
 import Collapse from '@mui/material/Collapse'
 import Fade from '@mui/material/Fade'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -10,6 +7,10 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ClipboardEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
+import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { CreateCloudflareUploadByUrl } from '../../../../../../__generated__/CreateCloudflareUploadByUrl'
 import { TextFieldForm } from '../../../../TextFieldForm'
@@ -66,15 +67,16 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
             backgroundColor: 'transparent'
           }
         }}
+        data-testid="CustomURL"
       >
         <LinkIcon />
         <Typography variant="subtitle2" sx={{ pl: 2, pr: 1 }}>
           Add image by URL
         </Typography>
         {open ? (
-          <ExpandLess sx={{ ml: 'auto' }} />
+          <ChevronUpIcon sx={{ ml: 'auto' }} />
         ) : (
-          <ExpandMore sx={{ ml: 'auto' }} />
+          <ChevronDownIcon sx={{ ml: 'auto' }} />
         )}
       </Button>
       <Collapse in={open}>

@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -20,10 +20,16 @@ import { Drawer } from '../Drawer'
 
 import { SocialShareAppearance } from './SocialShareAppearance'
 
-const SocialShareAppearanceStory = {
+const SocialShareAppearanceStory: Meta<typeof SocialShareAppearance> = {
   ...journeysAdminConfig,
   component: SocialShareAppearance,
-  title: 'Journeys-Admin/Editor/Drawer/SocialShareAppearance'
+  title: 'Journeys-Admin/Editor/Drawer/SocialShareAppearance',
+  // do not remove these parameters for this story, see: https://github.com/storybookjs/storybook/issues/17025
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
 const journey: Journey = {
@@ -32,7 +38,9 @@ const journey: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   title: 'my journey',
+  strategySlug: null,
   slug: 'my-journey',
+  featuredAt: null,
   language: {
     __typename: 'Language',
     id: '529',
@@ -52,13 +60,16 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   userJourneys: [],
   template: null,
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: null,
+  tags: []
 }
 
 const image: ImageBlock = {
@@ -73,72 +84,80 @@ const image: ImageBlock = {
   blurhash: ''
 }
 
-const Template: Story = ({ ...args }) => {
-  return (
-    <MockedProvider>
-      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-        <EditorProvider
-          initialState={{
-            drawerTitle: 'Social Share Preview',
-            drawerChildren: <SocialShareAppearance />,
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
-}
-
-export const Default = Template.bind({})
-Default.args = { journey }
-
-export const Filled = Template.bind({})
-Filled.args = {
-  journey: {
-    ...journey,
-    blocks: [image],
-    primaryImageBlock: image,
-    seoTitle: 'Social title',
-    seoDescription: 'Social description',
-    status: 'published'
+const Template: StoryObj<typeof SocialShareAppearance> = {
+  render: ({ ...args }) => {
+    return (
+      <MockedProvider>
+        <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+          <EditorProvider
+            initialState={{
+              drawerTitle: 'Social Share Preview',
+              drawerChildren: <SocialShareAppearance />,
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
   }
 }
 
-export const Max = Template.bind({})
-Max.args = {
-  journey: {
-    ...journey,
-    blocks: [image],
-    primaryImageBlock: image,
-    seoTitle: 'Lorem ipsum dolor sit amet, consectetuer adipiscin',
-    seoDescription:
-      'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur rid'
+export const Default = { ...Template, args: { journey } }
+
+export const Filled = {
+  ...Template,
+  args: {
+    journey: {
+      ...journey,
+      blocks: [image],
+      primaryImageBlock: image,
+      seoTitle: 'Social title',
+      seoDescription: 'Social description',
+      status: 'published'
+    }
   }
 }
 
-export const Loading = Template.bind({})
-Loading.args = { journey: null }
-
-export const NoImageDialog = Template.bind({})
-NoImageDialog.args = { journey }
-NoImageDialog.play = () => {
-  userEvent.click(screen.getByRole('button', { name: 'Change' }))
-}
-
-export const ImageDialog = Template.bind({})
-ImageDialog.args = {
-  journey: {
-    ...journey,
-    blocks: [image],
-    primaryImageBlock: image,
-    seoTitle: 'Social title',
-    seoDescription: 'Social description'
+export const Max = {
+  ...Template,
+  args: {
+    journey: {
+      ...journey,
+      blocks: [image],
+      primaryImageBlock: image,
+      seoTitle: 'Lorem ipsum dolor sit amet, consectetuer adipiscin',
+      seoDescription:
+        'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur rid'
+    }
   }
 }
-ImageDialog.play = () => {
-  userEvent.click(screen.getByRole('button', { name: 'Change' }))
+
+export const Loading = { ...Template, args: { journey: null } }
+
+export const NoImageDialog = {
+  ...Template,
+  args: { journey },
+  play: async () => {
+    await userEvent.click(screen.getByRole('button', { name: 'Change' }))
+  }
 }
 
-export default SocialShareAppearanceStory as Meta
+export const ImageDialog = {
+  ...Template,
+  args: {
+    journey: {
+      ...journey,
+      blocks: [image],
+      primaryImageBlock: image,
+      seoTitle: 'Social title',
+      seoDescription: 'Social description'
+    }
+  },
+  play: async () => {
+    await userEvent.click(screen.getByRole('button', { name: 'Change' }))
+  }
+}
+
+export default SocialShareAppearanceStory

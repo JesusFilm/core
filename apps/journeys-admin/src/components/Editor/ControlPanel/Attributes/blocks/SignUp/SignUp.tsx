@@ -1,14 +1,14 @@
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
+import LinkIcon from '@core/shared/ui/icons/Link'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Action, actions } from '../../Action/Action'
+import { Attribute } from '../../Attribute'
 import { Icon, icons } from '../../Icon'
 
 export function SignUp({
@@ -38,7 +38,7 @@ export function SignUp({
     <>
       <Attribute
         id={`${id}-signup-action`}
-        icon={<LinkRoundedIcon />}
+        icon={<LinkIcon />}
         name="Action"
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
@@ -57,7 +57,7 @@ export function SignUp({
 
       <Attribute
         id={`${id}-signup-icon`}
-        icon={<InfoOutlinedIcon />}
+        icon={<InformationCircleContained />}
         name="Button Icon"
         value={
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??

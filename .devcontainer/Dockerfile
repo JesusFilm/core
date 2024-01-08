@@ -1,5 +1,5 @@
 # Update the VARIANT arg in docker-compose.yml to pick a Node version
-ARG VARIANT=16
+ARG VARIANT=18
 FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-${VARIANT}-bullseye
 
 # Update args in docker-compose.yaml to set the UID/GID of the "node" user.
@@ -17,8 +17,8 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends gnupg2 libpixman-1-dev libcairo2-dev libpango1.0-dev postgresql-client-13
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
-# ARG EXTRA_NODE_VERSION=10
-# RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
+ARG EXTRA_NODE_VERSION=18
+RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
 
 # [Optional] Uncomment if you want to install more global node modules
 RUN su node -c "npm install -g npm@latest"

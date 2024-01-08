@@ -1,6 +1,5 @@
 import CircleRoundedIcon from '@mui/icons-material/CircleRounded'
 import Badge from '@mui/material/Badge'
-import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
@@ -10,8 +9,8 @@ import { ReactElement } from 'react'
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
-interface Props {
-  journey?: Journey
+interface JourneyCardTextProps {
+  journey: Journey
   variant: JourneyCardVariant
 }
 
@@ -24,7 +23,10 @@ const StyledBadge = styled(Badge)(() => ({
   }
 }))
 
-export function JourneyCardText({ journey, variant }: Props): ReactElement {
+export function JourneyCardText({
+  journey,
+  variant
+}: JourneyCardTextProps): ReactElement {
   return (
     <>
       <StyledBadge
@@ -45,11 +47,7 @@ export function JourneyCardText({ journey, variant }: Props): ReactElement {
           gutterBottom
           sx={{ color: 'secondary.main' }}
         >
-          {journey != null ? (
-            journey.title
-          ) : (
-            <Skeleton variant="text" width={400} />
-          )}
+          {journey.title}
         </Typography>
       </StyledBadge>
 
@@ -60,19 +58,14 @@ export function JourneyCardText({ journey, variant }: Props): ReactElement {
           display: 'block',
           color: 'secondary.main'
         }}
+        suppressHydrationWarning
       >
-        {journey != null ? (
-          intlFormat(parseISO(journey.createdAt), {
-            day: 'numeric',
-            month: 'long',
-            year: isThisYear(parseISO(journey.createdAt))
-              ? undefined
-              : 'numeric'
-          })
-        ) : (
-          <Skeleton variant="text" width={120} />
-        )}
-        {journey?.description != null && ` - ${journey.description}`}
+        {intlFormat(parseISO(journey.createdAt), {
+          day: 'numeric',
+          month: 'long',
+          year: isThisYear(parseISO(journey.createdAt)) ? undefined : 'numeric'
+        })}
+        {journey.description != null && ` - ${journey.description}`}
       </Typography>
     </>
   )

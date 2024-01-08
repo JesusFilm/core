@@ -1,10 +1,11 @@
 {
-  "root": "apps/api-media",
+  "name": "api-media",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-media/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-media",
@@ -23,7 +24,9 @@
             "output": "./assets"
           }
         ],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node"
       },
       "configurations": {
         "production": {
@@ -40,53 +43,53 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api-media:build",
         "inspect": false
       }
     },
     "watcher": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
-        "command": "npx ts-node tools/scripts/generate-typings.ts api-media"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-media --transpileOnly"
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/api-media/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/api-media"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/api-media"],
       "options": {
-        "jestConfig": "apps/api-media/jest.config.js",
+        "jestConfig": "apps/api-media/jest.config.ts",
         "passWithNoTests": true
       }
     },
     "generate-graphql": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "rover subgraph introspect http://localhost:4005/graphql > apps/api-media/schema.graphql"
       }
     },
     "subgraph-check": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-media --schema apps/api-media/schema.graphql"
       }
     },
     "fetch-secrets": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > apps/api-media/.env"
       }
     },
     "prisma-generate": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "parallel": false,
         "commands": [
@@ -95,7 +98,7 @@
       }
     },
     "prisma-migrate": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "bash -c 'npx prisma migrate dev --schema apps/api-media/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
@@ -110,7 +113,7 @@
       }
     },
     "prisma-reset": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "npx prisma migrate reset --schema apps/api-media/db/schema.prisma --force"
@@ -118,7 +121,7 @@
       }
     },
     "prisma-studio": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "npx prisma studio --schema apps/api-media/db/schema.prisma"
@@ -126,7 +129,7 @@
       }
     },
     "prisma-validate": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "npx prisma validate --schema apps/api-media/db/schema.prisma"
@@ -134,13 +137,13 @@
       }
     },
     "type-check": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "npx tsc -b apps/api-media/tsconfig.json"
       }
     },
     "codecov": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-media/cobertura-coverage.xml -F apps.api-media"
       }

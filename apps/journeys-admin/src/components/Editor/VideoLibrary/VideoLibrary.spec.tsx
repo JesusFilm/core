@@ -1,8 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { NextRouter, useRouter } from 'next/router'
 
 import {
   VideoBlockSource,
@@ -18,7 +17,17 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('VideoLibrary', () => {
+  const push = jest.fn()
+  const on = jest.fn()
+
   describe('smUp', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
@@ -27,9 +36,7 @@ describe('VideoLibrary', () => {
     it('should render the Video Library on the right', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <VideoLibrary open />
-          </FlagsProvider>
+          <VideoLibrary open />
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
@@ -42,14 +49,10 @@ describe('VideoLibrary', () => {
       const onClose = jest.fn()
       const { getAllByRole, getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <VideoLibrary open onClose={onClose} />
-          </FlagsProvider>
+          <VideoLibrary open onClose={onClose} />
         </MockedProvider>
       )
-      expect(getAllByRole('button')[0]).toContainElement(
-        getByTestId('CloseIcon')
-      )
+      expect(getAllByRole('button')[0]).toContainElement(getByTestId('X2Icon'))
       fireEvent.click(getAllByRole('button')[0])
       expect(onClose).toHaveBeenCalled()
     })
@@ -63,9 +66,7 @@ describe('VideoLibrary', () => {
     it('should render the VideoLibrary from the bottom', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <VideoLibrary open />
-          </FlagsProvider>
+          <VideoLibrary open />
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
@@ -133,9 +134,7 @@ describe('VideoLibrary', () => {
             }
           ]}
         >
-          <FlagsProvider>
-            <VideoLibrary open />
-          </FlagsProvider>
+          <VideoLibrary open />
         </MockedProvider>
       )
       const textBox = getByRole('textbox')
@@ -151,9 +150,7 @@ describe('VideoLibrary', () => {
   it('should render the Video Library on the right', () => {
     const { getByText, getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <VideoLibrary open />
-        </FlagsProvider>
+        <VideoLibrary open />
       </MockedProvider>
     )
     expect(getByText('Video Library')).toBeInTheDocument()
@@ -217,16 +214,16 @@ describe('VideoLibrary', () => {
           }
         ]}
       >
-        <FlagsProvider>
-          <VideoLibrary open onSelect={onSelect} onClose={onClose} />
-        </FlagsProvider>
+        <VideoLibrary open onSelect={onSelect} onClose={onClose} />
       </MockedProvider>
     )
     await waitFor(() => expect(getByText("Andreas' Story")).toBeInTheDocument())
-    fireEvent.click(
-      getByRole('button', {
-        name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
-      })
+    await waitFor(() =>
+      fireEvent.click(
+        getByRole('button', {
+          name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
+        })
+      )
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({
@@ -240,80 +237,126 @@ describe('VideoLibrary', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('should render video details if videoId is not null', () => {
+  it('should render video details if videoId is not null', async () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
 
     const { getByText } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <VideoLibrary
-            open
-            selectedBlock={{
-              id: 'video1.id',
-              __typename: 'VideoBlock',
-              parentBlockId: 'card1.id',
-              description:
-                'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-              duration: 348,
-              endAt: 348,
-              fullsize: true,
-              image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-              muted: false,
-              autoplay: true,
-              startAt: 0,
-              title: 'What is the Bible?',
-              videoId: 'ak06MSETeo4',
-              videoVariantLanguageId: null,
-              parentOrder: 0,
-              action: null,
-              source: VideoBlockSource.youTube,
-              video: null,
-              objectFit: null,
-              posterBlockId: 'poster1.id',
-              children: []
-            }}
-            onSelect={onSelect}
-            onClose={onClose}
-          />
-        </FlagsProvider>
+        <VideoLibrary
+          open
+          selectedBlock={{
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            description:
+              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+            duration: 348,
+            endAt: 348,
+            fullsize: true,
+            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+            muted: false,
+            autoplay: true,
+            startAt: 0,
+            title: 'What is the Bible?',
+            videoId: 'ak06MSETeo4',
+            videoVariantLanguageId: null,
+            parentOrder: 0,
+            action: null,
+            source: VideoBlockSource.youTube,
+            video: null,
+            objectFit: null,
+            posterBlockId: 'poster1.id',
+            children: []
+          }}
+          onSelect={onSelect}
+          onClose={onClose}
+        />
       </MockedProvider>
     )
-    expect(getByText('Video Details')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Video Details')).toBeInTheDocument())
   })
 
-  it('should render YouTube', () => {
+  it('should render YouTube', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByText, getByRole } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <VideoLibrary open />
-        </FlagsProvider>
+        <VideoLibrary open />
       </MockedProvider>
     )
     fireEvent.click(getByRole('tab', { name: 'YouTube' }))
-    expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
+    )
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'video-youtube' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 
-  it('should hide Cloudflare', () => {
-    const { queryByRole } = render(
+  it('should update url params on library tab click', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ videoFromCloudflare: false }}>
-          <VideoLibrary open />
-        </FlagsProvider>
+        <VideoLibrary open />
       </MockedProvider>
     )
-    expect(queryByRole('tab', { name: 'Upload' })).not.toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Upload' }))
+    fireEvent.click(getByRole('tab', { name: 'Library' }))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'video-library' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 
-  it('should render Cloudflare', () => {
+  it('should render Cloudflare', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByText, getByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ videoFromCloudflare: true }}>
-          <VideoLibrary open />
-        </FlagsProvider>
+        <VideoLibrary open />
       </MockedProvider>
     )
     fireEvent.click(getByRole('tab', { name: 'Upload' }))
     expect(getByText('Drop a video here')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'video-upload' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 })

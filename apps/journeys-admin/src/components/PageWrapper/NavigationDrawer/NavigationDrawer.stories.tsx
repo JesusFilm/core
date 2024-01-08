@@ -1,105 +1,138 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { Meta, Story } from '@storybook/react'
-import noop from 'lodash/noop'
-import { AuthUser } from 'next-firebase-auth'
-import { useState } from 'react'
+import { MockedResponse } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+import { User } from 'next-firebase-auth'
+import { ComponentProps, ReactElement, useState } from 'react'
 
-import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../__generated__/GetAdminJourneys'
+import { GetMe } from '../../../../__generated__/GetMe'
+import { GetUserRole } from '../../../../__generated__/GetUserRole'
+import {
+  JourneyStatus,
+  Role,
+  UserJourneyRole
+} from '../../../../__generated__/globalTypes'
+import { cache } from '../../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
-import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
+
+import { GET_ME } from './UserNavigation'
 
 import { NavigationDrawer } from '.'
 
-const NavigationDrawerStory = {
+const NavigationDrawerStory: Meta<typeof NavigationDrawer> = {
   ...journeysAdminConfig,
   component: NavigationDrawer,
-  title: 'Journeys-Admin/PageWrapper/NavigationDrawer'
+  title: 'Journeys-Admin/PageWrapper/NavigationDrawer',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
-const Template: Story = ({ ...args }) => {
-  const [open, setOpen] = useState(true)
+const user = {
+  id: 'userId',
+  displayName: 'Amin One',
+  photoURL: 'https://bit.ly/3Gth4Yf',
+  email: 'amin@email.com'
+} as unknown as User
 
-  return (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: GET_ME
-          },
-          result: {
-            data: {
-              me: {
-                id: 'user.id',
-                firstName: 'Amin',
-                lastName: 'One',
-                imageUrl: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com'
-              }
-            }
-          }
-        },
-        {
-          request: {
-            query: GET_USER_ROLE
-          },
-          result: {
-            data: {
-              getUserRole: {
-                id: 'userId',
-                roles: [Role.publisher]
-              }
-            }
-          }
-        },
-        {
-          request: {
-            query: GET_ADMIN_JOURNEYS
-          },
-          result: args.result
-        }
-      ]}
-    >
-      <NavigationDrawer
-        open={open}
-        onClose={() => setOpen(!open)}
-        authUser={
-          {
-            id: 'user.id',
-            displayName: 'Amin One',
-            photoURL: 'https://bit.ly/3Gth4Yf',
-            email: 'amin@email.com',
-            signOut: noop
-          } as unknown as AuthUser
-        }
-      />
-    </MockedProvider>
-  )
+const getMeMock: MockedResponse<GetMe> = {
+  request: {
+    query: GET_ME
+  },
+  result: {
+    data: {
+      me: {
+        id: 'userId',
+        firstName: 'Amin',
+        lastName: 'One',
+        imageUrl: 'https://bit.ly/3Gth4Yf',
+        email: 'amin@email.com',
+        superAdmin: true,
+        __typename: 'User'
+      }
+    }
+  }
 }
 
-export const Default = Template.bind({})
+const getUserRoleMock: MockedResponse<GetUserRole> = {
+  request: {
+    query: GET_USER_ROLE
+  },
+  result: {
+    data: {
+      getUserRole: {
+        id: 'userId',
+        roles: [Role.publisher],
+        __typename: 'UserRole'
+      }
+    }
+  }
+}
 
-export const WithBadge = Template.bind({})
-WithBadge.args = {
+const getAdminJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      useLastActiveTeamId: true
+    }
+  },
   result: {
     data: {
       journeys: [
         {
-          id: 'journey.id',
+          id: 'journeyId',
+          title: 'Journey Title',
+          status: JourneyStatus.draft,
+          __typename: 'Journey',
           userJourneys: [
             {
-              id: 'journey.userJourney1.id',
-              role: UserJourneyRole.editor,
+              id: 'userJourneyId',
+              role: UserJourneyRole.owner,
               user: {
-                id: 'user.id'
+                id: 'userId',
+                openedAt: null
               }
             }
           ]
-        }
+        } as unknown as Journey
       ]
     }
   }
 }
 
-export default NavigationDrawerStory as Meta
+function NavigationDrawerComponent(
+  props: ComponentProps<typeof NavigationDrawer>
+): ReactElement {
+  const [open, setOpen] = useState(true)
+  return <NavigationDrawer open={open} onClose={setOpen} {...props} />
+}
+
+const Template: StoryObj<typeof NavigationDrawer> = {
+  render: ({ ...args }) => <NavigationDrawerComponent {...args} />
+}
+
+export const Default = { ...Template, args: { selectedPage: '' } }
+
+export const WithBadge = {
+  ...Template,
+  args: { selectedPage: '', user },
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [getMeMock, getUserRoleMock, getAdminJourneysMock]
+    }
+  }
+}
+
+export default NavigationDrawerStory

@@ -45,7 +45,12 @@ export function UnsplashList({
   }
 
   return (
-    <ImageList variant="masonry" gap={10} sx={{ overflowY: 'visible' }}>
+    <ImageList
+      variant="masonry"
+      gap={10}
+      sx={{ overflowY: 'visible' }}
+      data-testid="UnsplashList"
+    >
       {gallery?.map((item) => (
         <ImageListItem
           data-testid={`image-${item.id}`}
@@ -73,7 +78,9 @@ export function UnsplashList({
               width={item.width}
               height={item.height}
               style={{
-                borderRadius: 8
+                borderRadius: 8,
+                maxWidth: '100%',
+                height: 'auto'
               }}
             />
           </ButtonBase>

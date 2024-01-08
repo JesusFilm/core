@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 
-import { HorizontalSelect } from '../../../../../../../HorizontalSelect';
+import { HorizontalSelect } from '../../../../../../../HorizontalSelect'
 import { Swatch } from '../Swatch'
 
 interface PaletteColorPickerProps {
@@ -17,7 +17,11 @@ export function PaletteColorPicker({
   onChange
 }: PaletteColorPickerProps): ReactElement {
   return (
-    <HorizontalSelect onChange={onChange} id={selectedColor} sx={{width: '100%', overflowX:'scroll'}}>
+    <HorizontalSelect
+      onChange={onChange}
+      id={selectedColor}
+      testId="PaletteColorPicker"
+    >
       {colors.map((color) => {
         return (
           <Swatch

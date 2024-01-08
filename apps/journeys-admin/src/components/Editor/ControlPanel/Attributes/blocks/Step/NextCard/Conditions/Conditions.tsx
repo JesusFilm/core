@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -8,6 +7,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { StepBlockLockUpdate } from '../../../../../../../../../__generated__/StepBlockLockUpdate'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
@@ -59,7 +59,7 @@ export function Conditions(): ReactElement {
   }
 
   return (
-    <Box sx={{ p: 4, pl: 6 }}>
+    <Box sx={{ p: 4, pl: 6 }} data-testid="Conditions">
       <Typography
         variant="subtitle2"
         gutterBottom
@@ -74,7 +74,7 @@ export function Conditions(): ReactElement {
         handleChange={handleChange}
       >
         <Box display="flex" alignItems="center" color="text.secondary">
-          <InfoOutlinedIcon sx={{ mr: 4 }} />
+          <InformationCircleContainedIcon sx={{ mr: 4 }} />
           <Typography variant="caption">
             User can&apos;t skip interaction on the current card, like watching
             video or interacting with questions.

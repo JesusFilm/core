@@ -125,6 +125,63 @@ export interface JourneyFields_blocks_CardBlock {
   fullscreen: boolean;
 }
 
+export interface JourneyFields_blocks_FormBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+  language: JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction_journey_language;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface JourneyFields_blocks_FormBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type JourneyFields_blocks_FormBlock_action = JourneyFields_blocks_FormBlock_action_NavigateAction | JourneyFields_blocks_FormBlock_action_NavigateToBlockAction | JourneyFields_blocks_FormBlock_action_NavigateToJourneyAction | JourneyFields_blocks_FormBlock_action_LinkAction | JourneyFields_blocks_FormBlock_action_EmailAction;
+
+export interface JourneyFields_blocks_FormBlock {
+  __typename: "FormBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  form: any | null;
+  action: JourneyFields_blocks_FormBlock_action | null;
+}
+
 export interface JourneyFields_blocks_IconBlock {
   __typename: "IconBlock";
   id: string;
@@ -571,9 +628,25 @@ export interface JourneyFields_blocks_VideoTriggerBlock {
   triggerAction: JourneyFields_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type JourneyFields_blocks = JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
+export type JourneyFields_blocks = JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_FormBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
 
 export interface JourneyFields_primaryImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
+export interface JourneyFields_creatorImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -629,6 +702,26 @@ export interface JourneyFields_team {
   __typename: "Team";
   id: string;
   title: string;
+  publicTitle: string | null;
+}
+
+export interface JourneyFields_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface JourneyFields_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: JourneyFields_tags_name_language;
+  primary: boolean;
+}
+
+export interface JourneyFields_tags {
+  __typename: "Tag";
+  id: string;
+  parentId: string | null;
+  name: JourneyFields_tags_name[];
 }
 
 export interface JourneyFields {
@@ -640,16 +733,21 @@ export interface JourneyFields {
   status: JourneyStatus;
   language: JourneyFields_language;
   createdAt: any;
+  featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  strategySlug: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
   blocks: JourneyFields_blocks[] | null;
   primaryImageBlock: JourneyFields_primaryImageBlock | null;
+  creatorDescription: string | null;
+  creatorImageBlock: JourneyFields_creatorImageBlock | null;
   userJourneys: JourneyFields_userJourneys[] | null;
   chatButtons: JourneyFields_chatButtons[];
   host: JourneyFields_host | null;
   team: JourneyFields_team | null;
+  tags: JourneyFields_tags[];
 }

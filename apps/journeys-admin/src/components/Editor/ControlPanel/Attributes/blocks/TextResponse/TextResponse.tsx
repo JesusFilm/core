@@ -1,16 +1,16 @@
-import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import Divider from '@mui/material/Divider'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
+import LinkIcon from '@core/shared/ui/icons/Link'
+import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
-import { Attribute } from '../..'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Action, actions } from '../../Action/Action'
+import { Attribute } from '../../Attribute'
 import { Icon, icons } from '../../Icon'
 
 import { TextResponseFields } from './TextResponseFields'
@@ -31,7 +31,7 @@ export function TextResponse({
     <>
       <Attribute
         id={`${id}-text-field-options`}
-        icon={<Crop169RoundedIcon />}
+        icon={<TextInput1Icon />}
         name="Feedback"
         value={label}
         description="Feedback Properties"
@@ -49,7 +49,7 @@ export function TextResponse({
 
       <Attribute
         id={`${id}-text-field-action`}
-        icon={<LinkRoundedIcon />}
+        icon={<LinkIcon />}
         name="Action"
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
@@ -68,7 +68,7 @@ export function TextResponse({
 
       <Attribute
         id={`${id}-text-field-icon`}
-        icon={<InfoOutlinedIcon />}
+        icon={<InformationCircleContainedIcon />}
         name="Button Icon"
         value={
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??

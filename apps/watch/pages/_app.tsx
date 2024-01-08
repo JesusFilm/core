@@ -1,10 +1,10 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
-import { datadogRum } from '@datadog/browser-rum'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import { DefaultSeo } from 'next-seo'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
+import Script from 'next/script'
+import { DefaultSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 
@@ -12,9 +12,12 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import 'swiper/swiper.min.css'
-import '../public/fonts/fonts.css'
 import { useApolloClient } from '../src/libs/apolloClient'
+
+import 'swiper/css'
+import 'swiper/css/a11y'
+import 'swiper/css/navigation'
+import '../public/fonts/fonts.css'
 
 const clientSideEmotionCache = createEmotionCache({ prepend: false })
 
@@ -33,25 +36,6 @@ export default function WatchApp({
       process.env.NEXT_PUBLIC_GTM_ID !== ''
     )
       TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
-
-    if (
-      process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
-      process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
-      process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
-      process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== ''
-    )
-      datadogRum.init({
-        applicationId: process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID,
-        clientToken: process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN,
-        site: 'datadoghq.com',
-        service: 'watch',
-        env: process.env.NEXT_PUBLIC_VERCEL_ENV,
-        version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-        sampleRate: 50,
-        sessionReplaySampleRate: 10,
-        trackInteractions: true,
-        defaultPrivacyLevel: 'mask-user-input'
-      })
 
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
@@ -80,6 +64,40 @@ export default function WatchApp({
             content="minimum-scale=1, initial-scale=1, width=device-width"
           />
         </Head>
+        {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
+          process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
+          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
+          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
+            <Script id="datadog-rum">
+              {`
+             (function(h,o,u,n,d) {
+               h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
+               d=o.createElement(u);d.async=1;d.src=n
+               n=o.getElementsByTagName(u)[0];n.parentNode.insertBefore(d,n)
+             })(window,document,'script','https://www.datadoghq-browser-agent.com/us1/v5/datadog-rum.js','DD_RUM')
+             window.DD_RUM.onReady(function() {
+               window.DD_RUM.init({
+                applicationId: '${
+                  process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID ?? ''
+                }',
+                clientToken: '${
+                  process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN ?? ''
+                }',
+                site: 'datadoghq.com',
+                service: 'watch',
+                env: '${process.env.NEXT_PUBLIC_VERCEL_ENV ?? ''}',
+                version: '${
+                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+                }',
+                sampleRate: 50,
+                sessionReplaySampleRate: 10,
+                trackInteractions: true,
+                defaultPrivacyLevel: 'mask-user-input'
+               });
+             })
+           `}
+            </Script>
+          )}
         <ThemeProvider
           themeName={ThemeName.website}
           themeMode={ThemeMode.light}

@@ -97,18 +97,19 @@ export function DescriptionEdit(): ReactElement {
                 }
                 helperText={
                   errors.seoDescription != null
-                    ? errors.seoDescription
+                    ? (errors.seoDescription as string)
                     : 'Recommended length: up to 18 words'
                 }
                 onChange={handleChange}
                 onKeyUp={handleKeyUp}
                 onBlur={(e) => {
                   handleBlur(e)
-                  errors.seoDescription == null && handleSubmit(e)
+                  if (errors.seoDescription == null) void handleSubmit(e)
                 }}
                 sx={{
                   pb: 6
                 }}
+                data-testid="DescriptionEdit"
               />
             </Form>
           )}
@@ -123,6 +124,7 @@ export function DescriptionEdit(): ReactElement {
           sx={{
             pb: 6
           }}
+          data-testid="DescriptionEdit"
         />
       )}
     </>

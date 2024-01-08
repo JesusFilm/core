@@ -9,6 +9,7 @@ import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
+// eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
 import { StepFields } from './__generated__/StepFields'
@@ -63,9 +64,12 @@ export function Step({
 
   return (
     <>
-      {(variant === 'default' || variant === 'embed') && (
-        <NextSeo title={`${journey?.title ?? ''} (${heading})`} />
-      )}
+      {(variant === 'default' || variant === 'embed') &&
+        (treeBlocks[0]?.id !== blockId ? (
+          <NextSeo title={`${heading} (${journey?.title ?? ''})`} />
+        ) : (
+          <NextSeo title={`${journey?.title ?? ''} (${heading})`} />
+        ))}
       {children.map((block) => (
         <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
       ))}

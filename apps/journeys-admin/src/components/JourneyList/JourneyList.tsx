@@ -1,24 +1,20 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import { AuthUser } from 'next-firebase-auth'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-
-import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
 
-import { ActiveJourneyList } from './ActiveJourneyList'
 import { AddJourneyFab } from './AddJourneyFab'
-import { ArchivedJourneyList } from './ArchivedJourneyList'
 import { SortOrder } from './JourneySort'
-import { TrashedJourneyList } from './TrashedJourneyList'
+import { LoadingJourneyList } from './LoadingJourneyList'
 
 export interface JourneyListProps {
   sortOrder?: SortOrder
   event?: JourneyListEvent
-  authUser?: AuthUser
+  user?: User
 }
 
 export type JourneyListEvent =
@@ -32,12 +28,38 @@ export type JourneyListEvent =
   | 'deleteAllTrashed'
   | 'refetchTrashed'
 
+const ActiveJourneyList = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "ActiveJourneyList" */
+      './ActiveJourneyList'
+    ).then((mod) => mod.ActiveJourneyList),
+  { loading: () => <LoadingJourneyList /> }
+)
+
+const ArchivedJourneyList = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "ArchivedJourneyList" */
+      './ArchivedJourneyList'
+    ).then((mod) => mod.ArchivedJourneyList),
+  { loading: () => <LoadingJourneyList /> }
+)
+
+const TrashedJourneyList = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TrashedJourneyList" */
+      './TrashedJourneyList'
+    ).then((mod) => mod.TrashedJourneyList),
+  { loading: () => <LoadingJourneyList /> }
+)
+
 export function JourneyList({
-  authUser
-}: Pick<JourneyListProps, 'authUser'>): ReactElement {
+  user
+}: Pick<JourneyListProps, 'user'>): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const router = useRouter()
-  const { journeysSummaryReport } = useFlags()
   const [event, setEvent] = useState<JourneyListEvent>()
 
   const handleClick = (event: JourneyListEvent): void => {
@@ -49,15 +71,19 @@ export function JourneyList({
   }
 
   const journeyListProps: JourneyListProps = {
-    authUser,
+    user,
     sortOrder,
     event
   }
 
+  const activeTab = router?.query?.tab?.toString() ?? 'active'
+
   return (
     <>
-      {journeysSummaryReport && <MultipleSummaryReport />}
-      <Box sx={{ mx: { xs: -6, sm: 0 } }}>
+      <Box
+        sx={{ mx: { xs: -6, sm: 0 } }}
+        data-testid="JourneysAdminJourneyList"
+      >
         <Container disableGutters>
           <StatusTabPanel
             activeList={<ActiveJourneyList {...journeyListProps} />}
@@ -69,9 +95,7 @@ export function JourneyList({
           />
         </Container>
       </Box>
-      {!['archived', 'trashed'].includes(
-        router?.query?.tab?.toString() ?? ''
-      ) && <AddJourneyFab />}
+      {activeTab === 'active' && <AddJourneyFab />}
     </>
   )
 }

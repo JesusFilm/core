@@ -6,11 +6,20 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
-import { GET_USER_INVITES } from '../../../AccessDialog'
+import { GET_USER_INVITES } from '../../../../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
 
 import { USER_INVITE_REMOVE, USER_JOURNEY_REMOVE } from './RemoveUser'
 
 import { RemoveUser } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 describe('RemoveUser', () => {
   it('should remove user journey', async () => {

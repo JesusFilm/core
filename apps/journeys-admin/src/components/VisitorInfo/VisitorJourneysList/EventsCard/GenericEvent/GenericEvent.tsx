@@ -12,7 +12,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import { EventVariant, getEventVariant } from '../../utils'
 
-interface Props {
+interface GenericEventProps {
   createdAt?: string
   label?: string | null
   value?: string | ReactNode | null
@@ -30,7 +30,7 @@ export function GenericEvent({
   activity,
   duration,
   variant = EventVariant.default
-}: Props): ReactElement {
+}: GenericEventProps): ReactElement {
   const {
     textAlign,
     durationColor,
@@ -42,7 +42,7 @@ export function GenericEvent({
   } = getEventVariant(variant)
 
   return (
-    <TimelineItem>
+    <TimelineItem data-testid="GenericEvent">
       {/* Time */}
       <TimelineOppositeContent
         sx={{

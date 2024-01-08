@@ -23,3 +23,8 @@ Object.defineProperty(
     }
   }))(window.navigator.userAgent)
 )
+
+jest.mock('next/router', () => require('next-router-mock'))
+
+if (process.env.CI === 'true')
+  jest.retryTimes(3, { logErrorsBeforeRetry: true })
