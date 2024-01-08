@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 
-import { ScrollableSelect } from '../../../../../../../ScrollableSelect';
+import { HorizontalSelect } from '../../../../../../../HorizontalSelect';
 import { Swatch } from '../Swatch'
 
 interface PaletteColorPickerProps {
@@ -17,7 +17,7 @@ export function PaletteColorPicker({
   onChange
 }: PaletteColorPickerProps): ReactElement {
   return (
-    <ScrollableSelect onChange={onChange} id={selectedColor} sx={{width: '100%', overflowX:'scroll'}}>
+    <HorizontalSelect onChange={onChange} id={selectedColor} sx={{width: '100%', overflowX:'scroll'}}>
       {colors.map((color) => {
         return (
           <Swatch
@@ -27,6 +27,6 @@ export function PaletteColorPicker({
           />
         )
       })}
-    </ScrollableSelect>
+    </HorizontalSelect>
   )
 }

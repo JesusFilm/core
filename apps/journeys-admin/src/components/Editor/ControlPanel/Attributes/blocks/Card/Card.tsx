@@ -19,7 +19,7 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
-import { ScrollableSelect } from '../../../../../ScrollableSelect'
+import { HorizontalSelect } from '../../../../../HorizontalSelect'
 
 import { BackgroundColor } from './BackgroundColor'
 import { BackgroundMedia } from './BackgroundMedia'
@@ -123,7 +123,7 @@ export function Card({
           value="None"
           extra={
             <Box>
-              <ScrollableSelect
+              <HorizontalSelect
               onChange={async (val) => await handleLayoutChange(val === 'true')}
               >
                 <Box sx={{ display: 'flex'}} id="true" key="true" data-testid="true">
@@ -161,7 +161,7 @@ export function Card({
                     }}
                   />
                 </Box>
-              </ScrollableSelect>
+              </HorizontalSelect>
             </Box>
           }
           description="Background Media"

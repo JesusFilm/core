@@ -19,7 +19,7 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
 import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
-import { ScrollableSelect } from '../../../../../../ScrollableSelect'
+import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 
 export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
   mutation CardBlockThemeModeUpdate(
@@ -106,7 +106,7 @@ export function CardStyling(): ReactElement {
       </Box>
       <Divider /> */}
       <Box>
-        <ScrollableSelect
+        <HorizontalSelect
           onChange={handleChange}
           id={cardBlock?.themeMode ?? undefined}
         >
@@ -122,7 +122,7 @@ export function CardStyling(): ReactElement {
             <Image src={cardStyleDark} alt="Dark" width={68}
               height={105} />
           </Box>
-        </ScrollableSelect>
+        </HorizontalSelect>
       </Box>
     </>
   )

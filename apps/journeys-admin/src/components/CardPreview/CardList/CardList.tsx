@@ -38,7 +38,7 @@ import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { useSocialPreview } from '../../Editor/SocialProvider'
 import { FramePortal } from '../../FramePortal'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
-import { ScrollableSelect } from '../../ScrollableSelect'
+import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
 
 interface CardListProps {
@@ -110,7 +110,7 @@ export function CardList({
       : selected?.id
 
   return (
-    <ScrollableSelect
+    <HorizontalSelect
       onChange={handleChange}
       id={selectedId}
       isDragging={isDragging}
@@ -218,7 +218,7 @@ export function CardList({
           <CardItem key={step.id} id={step.id} step={step} />
         ))}
       {droppableProvided != null ? droppableProvided.placeholder : null}
-    </ScrollableSelect>
+    </HorizontalSelect>
   )
 }
 

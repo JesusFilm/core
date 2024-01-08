@@ -11,7 +11,7 @@ import {
   useRef
 } from 'react'
 
-export interface ScrollableSelectProps {
+export interface HorizontalSelectProps {
   onChange?: (id: string) => void
   id?: string
   children: ReactNode
@@ -20,14 +20,14 @@ export interface ScrollableSelectProps {
   isDragging?: boolean
 }
 
-export function ScrollableSelect({
+export function HorizontalSelect({
   children,
   id,
   onChange,
   sx,
   footer,
   isDragging
-}: ScrollableSelectProps): ReactElement {
+}: HorizontalSelectProps): ReactElement {
   const selectedRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
