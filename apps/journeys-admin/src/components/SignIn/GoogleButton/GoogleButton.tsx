@@ -24,6 +24,7 @@ export function GoogleButton(): ReactElement {
       startIcon={<GoogleIcon />}
       onClick={handleGoogleSignIn}
       fullWidth
+      data-testid="GoogleButton"
     >
       {t('Sign in with Google')}
     </Button>

@@ -24,6 +24,7 @@ export function FacebookButton(): ReactElement {
       startIcon={<FacebookIcon />}
       onClick={handleFacebookSignIn}
       fullWidth
+      data-testid="FacebookButton"
     >
       {t('Sign in with Facebook')}
     </Button>

@@ -89,7 +89,7 @@ export function RegisterPage({
           isSubmitting
         }) => (
           <Form noValidate autoComplete="off" data-testid="RegisterForm">
-            <Stack gap={4}>
+            <Stack gap={4} data-testid="RegisterPage">
               <Typography
                 variant="h5"
                 textAlign="left"

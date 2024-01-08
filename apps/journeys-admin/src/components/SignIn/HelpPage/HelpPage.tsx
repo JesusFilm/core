@@ -42,7 +42,7 @@ export function HelpPage({
         validationSchema={validationSchema}
         onSubmit={PasswordReset}
       >
-        <Stack gap={4}>
+        <Stack gap={4} data-testid="HelpPage">
           <Typography variant="h5" textAlign="left">
             {t('Sign In')}
           </Typography>

@@ -63,7 +63,7 @@ export function PasswordPage({
       >
         {({ values, handleChange, handleBlur, errors, touched }) => (
           <Form autoComplete="off" data-testid="">
-            <Stack gap={4}>
+            <Stack gap={4} data-testid="PasswordPage">
               <Typography
                 variant="h5"
                 textAlign="left"
