@@ -87,12 +87,14 @@ describe('UserTeamList', () => {
   }
 
   it('should show users in the team if present', () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByText, getByRole } = render(
       <MockedProvider>
         <UserTeamList
           data={mockData}
           currentUserTeam={mockCurrentUserTeam}
           loading={false}
+          handleTeamDataChange={mockHandleTeamDataChange}
         />
       </MockedProvider>
     )
@@ -105,12 +107,14 @@ describe('UserTeamList', () => {
   })
 
   it('should show loading skeleton if team not present', () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getAllByTestId } = render(
       <MockedProvider>
         <UserTeamList
           data={emptyMockData}
           currentUserTeam={mockCurrentUserTeam}
           loading={false}
+          handleTeamDataChange={mockHandleTeamDataChange}
         />
       </MockedProvider>
     )
@@ -119,12 +123,14 @@ describe('UserTeamList', () => {
   })
 
   it('should disable buttons if current user is not a manager of the team', () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
         <UserTeamList
           data={mockData}
           currentUserTeam={mockCurrentUserTeam2}
           loading={false}
+          handleTeamDataChange={mockHandleTeamDataChange}
         />
       </MockedProvider>
     )
@@ -133,6 +139,7 @@ describe('UserTeamList', () => {
   })
 
   it('should disable buttons if variant is readonly', () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
         <UserTeamList
@@ -140,6 +147,7 @@ describe('UserTeamList', () => {
           currentUserTeam={mockCurrentUserTeam}
           loading={false}
           variant="readonly"
+          handleTeamDataChange={mockHandleTeamDataChange}
         />
       </MockedProvider>
     )

@@ -56,9 +56,14 @@ describe('UserTeamListItem', () => {
   ]
 
   it('should change the team member permissions correctly', async () => {
+    const mockHandleTeamDataChange = jest.fn()
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <UserTeamListItem user={mockUser} disabled={false} />
+        <UserTeamListItem
+          user={mockUser}
+          disabled={false}
+          handleTeamDataChange={mockHandleTeamDataChange}
+        />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))

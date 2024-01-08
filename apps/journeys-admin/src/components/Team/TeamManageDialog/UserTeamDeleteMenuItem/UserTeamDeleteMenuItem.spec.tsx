@@ -38,16 +38,22 @@ describe('UserTeamDeleteMenuItem', () => {
   })
 
   it('should remove a team member', async () => {
+    const mockHandleTeamDataChange = jest.fn()
     const handleClick = jest.fn()
     const { getByText } = render(
       <MockedProvider mocks={mocks} cache={cache}>
-        <UserTeamDeleteMenuItem id="userTeamId" onClick={handleClick} />
+        <UserTeamDeleteMenuItem
+          id="userTeamId"
+          onClick={handleClick}
+          handleTeamDataChange={mockHandleTeamDataChange}
+        />
       </MockedProvider>
     )
     fireEvent.click(getByText('Remove'))
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
     })
+    expect(mockHandleTeamDataChange).toHaveBeenCalled()
     expect(cache.extract()['UserTeam:userTeamId']).toBeUndefined()
   })
 })
