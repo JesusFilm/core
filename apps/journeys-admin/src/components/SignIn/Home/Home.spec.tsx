@@ -1,6 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { UserCredential, fetchSignInMethodsForEmail } from 'firebase/auth'
-import { NextRouter } from 'next/router'
+import { fetchSignInMethodsForEmail } from 'firebase/auth'
 
 import { Home } from './Home'
 
@@ -8,11 +7,6 @@ jest.mock('firebase/auth', () => ({
   getAuth: jest.fn(),
   fetchSignInMethodsForEmail: jest.fn()
 }))
-
-// const mockFetchSignInMethodsForEmail =
-//   fetchSignInMethodsForEmail as jest.MockedFunction<
-//     typeof fetchSignInMethodsForEmail
-//   >
 
 describe('Home', () => {
   it('should render home page', () => {
