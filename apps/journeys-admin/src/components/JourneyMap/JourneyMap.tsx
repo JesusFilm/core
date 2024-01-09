@@ -1,5 +1,5 @@
 import dagre from 'dagre'
-import React, { useCallback, useState } from 'react'
+import React, { ReactElement, useCallback, useState } from 'react'
 import ReactFlow, {
   Edge,
   MarkerType,
@@ -15,10 +15,16 @@ import ReactFlow, {
 } from 'reactflow'
 
 import 'reactflow/dist/style.css'
+import {
+  ActiveFab,
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { StepBlockNextBlockUpdate } from '../../../__generated__/StepBlockNextBlockUpdate'
 import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../Editor/ControlPanel/Attributes/blocks/Step/NextCard/Cards'
+import { SocialShareAppearance } from '../Editor/Drawer/SocialShareAppearance'
 
 import ActionNode from './ActionNode'
 import CustomNode from './CustomNode'
@@ -28,6 +34,7 @@ import { styled } from '@mui/material/styles'
 import { Box } from '@mui/material'
 import { initConsoleObservable } from '@datadog/browser-core'
 import { useMutation } from '@apollo/client'
+import { functions } from 'lodash'
 
 const BoxStyled = styled(Box)`
   .react-flow .react-flow__node.selected {
@@ -125,12 +132,12 @@ const FlowMap = ({
   )
 }
 
-interface JourneyMapProps {
+export interface JourneyMapProps {
   width: any
   height: any
-  steps: Array<TreeBlock<StepBlock>>
-  selected?: TreeBlock<StepBlock>
-  onSelect?: ({ step, view }: OnSelectProps) => void
+  // steps: Array<TreeBlock<StepBlock>>
+  // selected?: TreeBlock<StepBlock>
+  // onSelect?: ({ step, view }: OnSelectProps) => void
   // showAddButton?: boolean
   // droppableProvided?: DroppableProvided
   // handleClick?: () => void
@@ -140,16 +147,51 @@ interface JourneyMapProps {
   // showNavigationCards?: boolean
 }
 
-export const JourneyMap = ({
+export function JourneyMap({
   width,
-  height,
-  steps,
-  selected,
-  onSelect
-}: JourneyMapProps) => {
+  height
+}: // steps,
+// selected,
+// onSelect
+JourneyMapProps): ReactElement {
   const [key, setKey] = useState(0)
   const dagreGraph = new dagre.graphlib.Graph()
   dagreGraph.setDefaultEdgeLabel(() => ({}))
+  const {
+    state: {
+      steps,
+      selectedBlock,
+      selectedComponent,
+      selectedStep,
+      activeTab,
+      journeyEditContentComponent
+    },
+    dispatch
+  } = useEditor()
+
+  const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
+    console.log('handleSelectStepPreview', { step, view })
+    if (step != null) {
+      dispatch({ type: 'SetSelectedStepAction', step })
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    } else if (view === ActiveJourneyEditContent.Action) {
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.Action
+      })
+    } else if (view === ActiveJourneyEditContent.SocialPreview) {
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.SocialPreview
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Social Share Preview',
+        mobileOpen: false,
+        children: <SocialShareAppearance />
+      })
+    }
+  }
 
   const nodeWidth = 130
   const nodeHeight = 60
@@ -522,7 +564,7 @@ export const JourneyMap = ({
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          onSelect={onSelect}
+          onSelect={handleSelectStepPreview}
           // fitView
           attributionPosition="bottom-left"
         />

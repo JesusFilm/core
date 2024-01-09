@@ -11,6 +11,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { JourneyMap } from '../JourneyMap'
 
 import { Canvas } from './Canvas'
 import { Properties } from './Properties'
@@ -64,13 +65,18 @@ export function Editor({
             journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
           }}
         >
-          {(state) =>
-            ({
-              [ActiveJourneyEditContent.Canvas]: <Canvas />,
-              [ActiveJourneyEditContent.Action]: <ActionsTable />,
-              [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
-            }[state.journeyEditContentComponent])
-          }
+          {(state) => (
+            <>
+              <JourneyMap width={800} height={400} />
+              {
+                {
+                  [ActiveJourneyEditContent.Canvas]: <Canvas />,
+                  [ActiveJourneyEditContent.Action]: <ActionsTable />,
+                  [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
+                }[state.journeyEditContentComponent]
+              }
+            </>
+          )}
         </EditorProvider>
       </SocialProvider>
     </JourneyProvider>
