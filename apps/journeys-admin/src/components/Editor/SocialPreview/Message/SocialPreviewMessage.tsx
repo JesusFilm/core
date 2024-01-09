@@ -8,12 +8,6 @@ import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields } from '../../../../../__generated__/JourneyFields'
-
-interface SocialPreviewMessageProps {
-  journey?: JourneyFields
-}
-
 interface MessageBubbleProps {
   height?: number
   width: number
