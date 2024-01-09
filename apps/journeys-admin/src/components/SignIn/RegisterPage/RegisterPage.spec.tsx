@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { FirebaseError } from 'firebase/app'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword
@@ -79,6 +80,39 @@ describe('PasswordPage', () => {
       expect(push).toHaveBeenCalledWith({
         pathname: '/users/terms-and-conditions'
       })
+    })
+  })
+
+  it('should show error if existing email is entered', async () => {
+    const mockCreateUserWithEmailAndPassword =
+      createUserWithEmailAndPassword as jest.MockedFunction<
+        typeof createUserWithEmailAndPassword
+      >
+
+    mockCreateUserWithEmailAndPassword.mockImplementation(() => {
+      throw new FirebaseError('auth/email-already-in-use', 'error message text')
+    })
+
+    const { getByLabelText, getByRole, getByText } = render(
+      <RegisterPage setActivePage={jest.fn()} userEmail="example@example.com" />
+    )
+
+    fireEvent.change(getByLabelText('Name'), {
+      target: { value: 'First name last name' }
+    })
+
+    fireEvent.change(getByLabelText('Password'), {
+      target: { value: 'Password' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => {
+      expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(
+        getByText('The email address is already used by another account')
+      ).toBeInTheDocument()
     })
   })
 
