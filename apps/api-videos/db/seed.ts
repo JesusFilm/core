@@ -53,8 +53,8 @@ async function importMediaComponents(): Promise<void> {
 async function main(): Promise<void> {
   console.log('importing mediaComponents as videos...')
   await importMediaComponents()
-  await algoliaSearch()
   console.log('mediaComponents imported')
+  await algoliaSearch()
 }
 main().catch((e) => {
   console.error(e)
