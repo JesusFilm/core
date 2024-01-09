@@ -1,19 +1,13 @@
 import { render } from '@testing-library/react'
 
-import { ActivePage } from '../SignIn'
-
 import { FacebookPage } from './FaceBookPage'
-
-const userEmail = 'test@exampleemail.com'
 
 describe('FacebookPage', () => {
   it('should render useremail', () => {
     const { getByText } = render(
       <FacebookPage
-        userEmail={userEmail}
-        setActivePage={function (activePage: ActivePage): void {
-          throw new Error('Function not implemented.')
-        }}
+        userEmail="test@exampleemail.com"
+        setActivePage={jest.fn()}
       />
     )
 
@@ -22,5 +16,7 @@ describe('FacebookPage', () => {
     expect(getByText("You've already used")).toBeInTheDocument()
     expect(getByText('Sign in with')).toBeInTheDocument()
     expect(getByText('Facebook to continue')).toBeInTheDocument()
+
+    expect(getByText('test@exampleemail.com')).toBeInTheDocument()
   })
 })
