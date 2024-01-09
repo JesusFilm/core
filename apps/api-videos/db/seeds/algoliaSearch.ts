@@ -9,7 +9,7 @@ const prisma = new PrismaClient()
 // update env key to be using actual JFP key
 const client = algoliasearch(
   'FJYYBFHBHS',
-  process.env.ALGOLIA_API_KEY_GERONIMO ?? ''
+  process.env.ALGOLIA_API_KEY_DEV ?? ''
 )
 
 export async function algoliaSearch(): Promise<void> {
