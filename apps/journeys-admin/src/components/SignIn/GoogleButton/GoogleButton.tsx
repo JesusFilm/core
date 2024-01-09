@@ -10,9 +10,7 @@ export function GoogleButton(): ReactElement {
   const router = useRouter()
   async function handleGoogleSignIn(): Promise<void> {
     const auth = getAuth()
-    const provider = new GoogleAuthProvider()
-    provider.setCustomParameters({ prompt: 'select_account' })
-    await signInWithPopup(auth, provider)
+    await signInWithPopup(auth, new GoogleAuthProvider())
     await router.push('/')
   }
 
