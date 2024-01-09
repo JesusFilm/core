@@ -79,8 +79,7 @@ export function PasswordPage({
               </Typography>
               <TextField
                 name="email"
-                label="email"
-                hiddenLabel
+                label="Email"
                 placeholder={t('Enter your email address here')}
                 variant="standard"
                 value={values.email}
@@ -95,8 +94,7 @@ export function PasswordPage({
               />
               <TextField
                 name="password"
-                label="password"
-                hiddenLabel
+                label="Password"
                 placeholder={t('Enter Password')}
                 variant="standard"
                 value={values.password}

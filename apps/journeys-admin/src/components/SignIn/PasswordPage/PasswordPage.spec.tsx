@@ -15,7 +15,7 @@ describe('PasswordPage', () => {
     )
 
     expect(getByText('Sign in')).toBeInTheDocument()
-    expect(getByRole('textbox', { name: 'email' })).toHaveValue(
+    expect(getByRole('textbox', { name: 'Email' })).toHaveValue(
       'example@example.com'
     )
   })
@@ -41,13 +41,29 @@ describe('PasswordPage', () => {
       <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
     )
 
-    fireEvent.change(getByLabelText('password'), {
+    fireEvent.change(getByLabelText('Password'), {
       target: { value: 'Password' }
     })
     fireEvent.click(getByRole('button', { name: 'SIGN IN' }))
 
     await waitFor(() => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
+    })
+  })
+
+  it('should take user to help page if they have trouble signing in', async () => {
+    const mockSetActivePage = jest.fn()
+
+    const { getByRole } = render(
+      <PasswordPage
+        setActivePage={mockSetActivePage}
+        userEmail="example@example.com"
+      />
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Trouble signing in?' }))
+    await waitFor(() => {
+      expect(mockSetActivePage).toHaveBeenCalledWith('help')
     })
   })
 })
