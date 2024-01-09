@@ -66,7 +66,7 @@ export function RegisterPage({
     try {
       await createAccountAndSignIn(values.email, values.password)
       await router.push({
-        pathname: '/users/terms-and-conditions'
+        pathname: '/'
       })
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
