@@ -61,15 +61,24 @@ export function RegisterPage({
     const auth = getAuth()
     await createUserWithEmailAndPassword(auth, email, password)
     await signInWithEmailAndPassword(auth, email, password)
-    console.log('User account created and signed in successfully')
   }
-  async function handleCreateAccount(params): Promise<void> {
-    console.log(params)
-    await createAccountAndSignIn(params.email, params.password)
-    await router.push({
-      pathname: '/users/terms-and-conditions'
-    })
-    console.log('CALLED')
+  async function handleCreateAccount(values, { setFieldError }): Promise<void> {
+    try {
+      console.log(values.email)
+      console.log(values.password)
+      await createAccountAndSignIn(values.email, values.password)
+      await router.push({
+        pathname: '/users/terms-and-conditions'
+      })
+    } catch (error) {
+      console.error(error)
+      if (error.code === 'auth/email-already-in-use') {
+        setFieldError(
+          'email',
+          'The email address is already used by another account'
+        )
+      }
+    }
   }
   return (
     <>
