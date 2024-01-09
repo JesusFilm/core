@@ -11,7 +11,7 @@ import { ReactElement, ReactNode } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { usePageWrapperStyles } from '../../NewPageWrapper/utils/usePageWrapperStyles'
+import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 
 interface DrawerContentProps {
   title?: string
@@ -74,7 +74,8 @@ export function Drawer(): ReactElement {
     <Paper
       elevation={0}
       sx={{
-        display: { xs: 'none', md: 'block' },
+        display: { xs: 'none', md: 'flex' },
+        flexDirection: 'column',
         position: 'absolute',
         top: 0,
         right: 0,

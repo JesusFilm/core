@@ -2,6 +2,10 @@ data "aws_acm_certificate" "acm_central_jesusfilm_org" {
   domain = "*.stage.central.jesusfilm.org"
 }
 
+data "aws_acm_certificate" "acm_nextstep_is" {
+  domain = "*.nextstep.is"
+}
+
 data "aws_route53_zone" "route53_central_jesusfilm_org" {
   name = "central.jesusfilm.org"
 }
@@ -46,4 +50,7 @@ data "aws_ssm_parameter" "doppler_api_videos_stage_token" {
 
 data "aws_ssm_parameter" "cloudflared_stage_token" {
   name = "/terraform/prd/CLOUDFLARED_STAGE_TOKEN"
+}
+data "aws_ssm_parameter" "doppler_journeys_admin_stage_token" {
+  name = "/terraform/prd/DOPPLER_JOURNEYS_ADMIN_STAGE_TOKEN"
 }

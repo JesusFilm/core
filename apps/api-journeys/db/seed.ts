@@ -1,4 +1,4 @@
-// version 9
+// version 10
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { discoveryAdminCenter } from './seeds/discoveryAdminCenter'
@@ -12,6 +12,7 @@ import { nua8 } from './seeds/nua8'
 import { nua9 } from './seeds/nua9'
 import { onboarding } from './seeds/onboarding'
 import { onboardingTemplates } from './seeds/onboardingTemplates'
+import { playwrightUserAccess } from './seeds/playwrightUserAccess'
 
 async function main(): Promise<void> {
   // this should be removed when the UI can support team management
@@ -27,6 +28,7 @@ async function main(): Promise<void> {
   await discoveryAdminCenter()
   await discoveryAdminRight()
   await distinctVisitor()
+  await playwrightUserAccess()
 }
 main().catch((e) => {
   console.error(e)

@@ -2,8 +2,8 @@ import { createSvgIcon } from '@mui/material/utils'
 
 export default createSvgIcon(
   <path
-    fill-rule="evenodd"
-    clip-rule="evenodd"
+    fillRule="evenodd"
+    clipRule="evenodd"
     d="M5.4 4.4c.2-.3.5-.4.9-.4H18c.6 0 1 .4 1 1v10.5H6.3c-.5 0-.9 0-1.3.3V5.2c0-.3.1-.6.4-.8ZM5 18.7c0 .4.1.7.4 1 .2.2.5.3.9.3h11.5l-.5-.6a1 1 0 0 1 0-1.3l.5-.6H6.3c-.4 0-.7.1-1 .4-.2.2-.3.5-.3.9Zm15.7-1.5-1.4 1.6 1.4 1.5A1 1 0 0 1 20 22H6.3c-.9 0-1.7-.3-2.3-1-.6-.6-1-1.4-1-2.3V5.3c0-1 .4-1.7 1-2.4.6-.6 1.4-.9 2.3-.9H18a3 3 0 0 1 3 3v11.5c0 .3-.1.5-.3.7ZM13 6.4a1 1 0 1 0-2 0v1.2H9.7a1 1 0 1 0 0 2H11v3.5a1 1 0 1 0 2 0V9.6h1.3a1 1 0 1 0 0-2H13V6.4Z"
   />,
   'Bible'

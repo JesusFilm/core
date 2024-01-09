@@ -6,6 +6,9 @@ import '../../../test/i18n'
 
 import {
   getJourneysMock,
+  getJourneysMockWithAcceptanceTag,
+  getJourneysMockWithoutTagsEnglish,
+  getJourneysMockWithoutTagsFrench,
   getJourneysWithoutLanguageIdsMock,
   getLanguagesMock,
   getTagsMock
@@ -32,7 +35,8 @@ describe('TemplateGallery', () => {
         mocks={[
           getJourneysWithoutLanguageIdsMock,
           getLanguagesMock,
-          getTagsMock
+          getTagsMock,
+          getJourneysMockWithAcceptanceTag
         ]}
       >
         <TemplateGallery />
@@ -43,16 +47,18 @@ describe('TemplateGallery', () => {
     ).toBeInTheDocument()
     await waitFor(() =>
       expect(
-        getAllByRole('heading', { name: 'All Languages' })[0]
+        getAllByRole('heading', { name: 'English' })[0]
       ).toBeInTheDocument()
     )
-    expect(
-      getByRole('heading', { level: 5, name: 'Acceptance' })
-    ).toBeInTheDocument()
-    expect(getByRole('heading', { level: 5, name: 'Hope' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { level: 6, name: 'Acceptance' })
+      ).toBeInTheDocument()
+    )
+    expect(getByRole('heading', { level: 6, name: 'Hope' })).toBeInTheDocument()
   })
 
-  it('should render templates filtered via tags', async () => {
+  it('should render templates with multiple filtered tags', async () => {
     const push = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
@@ -60,7 +66,14 @@ describe('TemplateGallery', () => {
     } as unknown as NextRouter)
 
     const { getByRole, queryByRole } = render(
-      <MockedProvider mocks={[getJourneysMock, getLanguagesMock, getTagsMock]}>
+      <MockedProvider
+        mocks={[
+          getJourneysMock,
+          getLanguagesMock,
+          getTagsMock,
+          getJourneysMockWithAcceptanceTag
+        ]}
+      >
         <TemplateGallery />
       </MockedProvider>
     )
@@ -92,15 +105,20 @@ describe('TemplateGallery', () => {
 
   it('should render templates filtered via language ids', async () => {
     const push = jest.fn()
+    const on = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
+      events: {
+        on
+      },
       query: { languageIds: [] }
     } as unknown as NextRouter)
 
-    const { getByRole, getAllByRole } = render(
+    const { getByRole, getAllByRole, getByTestId } = render(
       <MockedProvider
         mocks={[
           getJourneysWithoutLanguageIdsMock,
+          getJourneysMockWithoutTagsFrench,
           getLanguagesMock,
           getTagsMock
         ]}
@@ -111,15 +129,58 @@ describe('TemplateGallery', () => {
     await waitFor(() =>
       fireEvent.click(getAllByRole('heading', { name: 'All Languages' })[0])
     )
-    fireEvent.focus(getByRole('combobox'))
-    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    fireEvent.click(getByRole('option', { name: 'French Français' }))
-    fireEvent.click(getByRole('button', { name: 'Save' }))
+
+    fireEvent.click(getByRole('button', { name: 'French Français' }))
+    fireEvent.click(getByTestId('PresentationLayer'))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        push,
+        events: {
+          on
+        },
+        query: {
+          languageIds: ['496'],
+          param: 'template-language'
+        }
+      })
+    })
+  })
+
+  it('should render templates with a felt needs tags selected', async () => {
+    const push = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      push,
+      query: { tagIds: [], languageIds: ['529'] }
+    } as unknown as NextRouter)
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          getJourneysMockWithoutTagsEnglish,
+          getJourneysMockWithAcceptanceTag,
+          getLanguagesMock,
+          getTagsMock
+        ]}
+      >
+        <TemplateGallery />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(
+        getByRole('button', { name: 'Acceptance Acceptance Acceptance' })
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.click(
+      getByRole('button', { name: 'Acceptance Acceptance Acceptance' })
+    )
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith({
         push,
         query: {
-          languageIds: ['496']
+          tagIds: 'acceptanceTagId',
+          languageIds: ['529']
         }
       })
     })

@@ -12,6 +12,8 @@ directive @extends on OBJECT | INTERFACE
 
 scalar DateTime
 
+scalar Json
+
 enum ThemeMode {
   dark
   light
@@ -142,6 +144,8 @@ extend type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): CardBlock!
+  formBlockCreate(input: FormBlockCreateInput!): FormBlock!
+  formBlockUpdate(id: ID!, input: FormBlockUpdateInput!): FormBlock
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
   iconBlockUpdate(
     id: ID!
@@ -335,6 +339,76 @@ type Journey
   userJourneys: [UserJourney!]
 }
 
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  block(id: ID!): Block!
+  hosts(teamId: ID!): [Host!]!
+
+  """
+  returns all journeys that match the provided filters
+  If no team id is provided and template is not true then only returns journeys
+  where the user is not a member of a team but is an editor or owner of the
+  journey
+  """
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+
+    """Use Last Active Team Id from JourneyProfile (if null will error)"""
+    useLastActiveTeamId: Boolean
+  ): [Journey!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
+  adminJourney(id: ID!, idType: IdType): Journey!
+  journeys(where: JourneysFilter): [Journey!]!
+  journey(id: ID!, idType: IdType): Journey!
+  getJourneyProfile: JourneyProfile
+
+  """Get a list of Visitor Information by Journey"""
+  journeyVisitorsConnection(
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection!
+
+  """Get a JourneyVisitor count by JourneyVisitorFilter"""
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+  teams: [Team!]!
+  team(id: ID!): Team!
+  userInvites(journeyId: ID!): [UserInvite!]
+  getUserRole: UserRole
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
+  userTeam(id: ID!): UserTeam!
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
+
+  """A list of visitors that are connected with a specific team."""
+  visitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+  ): VisitorsConnection!
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor!
+}
+
 enum ButtonVariant {
   text
   contained
@@ -439,6 +513,48 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+}
+
+type FormiumProject {
+  """The projectId of the project"""
+  id: String!
+
+  """The name of the project"""
+  name: String!
+}
+
+type FormiumForm {
+  """The formSlug of the form"""
+  slug: String!
+
+  """The name of the form"""
+  name: String!
+}
+
+type FormBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  action: Action
+  form: Json
+  projects: [FormiumProject!]!
+  projectId: String
+  forms: [FormiumForm!]!
+  formSlug: String
+  apiTokenExists: Boolean!
+}
+
+input FormBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
+input FormBlockUpdateInput {
+  projectId: String
+  apiToken: String
+  formSlug: String
 }
 
 enum GridDirection {
@@ -1282,10 +1398,10 @@ input StepViewEventCreateInput {
   """
   id: ID
 
-  """Id of the StepBlock"""
+  """Id of the current StepBlock"""
   blockId: ID!
 
-  """stepName of the stepBlock"""
+  """stepName of the current stepBlock"""
   value: String
 }
 
@@ -1729,68 +1845,6 @@ input HostUpdateInput {
   location: String
   src1: String
   src2: String
-}
-
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  hosts(teamId: ID!): [Host!]!
-
-  """
-  returns all journeys that match the provided filters
-  If no team id is provided and template is not true then only returns journeys
-  where the user is not a member of a team but is an editor or owner of the
-  journey
-  """
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]!
-  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey!
-  journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey!
-  getJourneyProfile: JourneyProfile
-
-  """Get a list of Visitor Information by Journey"""
-  journeyVisitorsConnection(
-    """Returns the elements in the list that match the specified filter."""
-    filter: JourneyVisitorFilter!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-
-    """Specifies the sort field for the list."""
-    sort: JourneyVisitorSort
-  ): JourneyVisitorsConnection!
-
-  """Get a JourneyVisitor count by JourneyVisitorFilter"""
-  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
-  teams: [Team!]!
-  team(id: ID!): Team!
-  userInvites(journeyId: ID!): [UserInvite!]
-  getUserRole: UserRole
-  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
-  userTeam(id: ID!): UserTeam!
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
-
-  """A list of visitors that are connected with a specific team."""
-  visitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-  ): VisitorsConnection!
-
-  """Get a single visitor"""
-  visitor(id: ID!): Visitor!
 }
 
 input HostCreateInput {

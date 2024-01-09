@@ -161,7 +161,7 @@ describe('Step', () => {
     })
   })
 
-  describe('StepPrevEventResolver', () => {
+  describe('StepPreviousEventResolver', () => {
     let resolver: StepPreviousEventResolver
 
     beforeEach(async () => {
@@ -173,7 +173,7 @@ describe('Step', () => {
       )
     })
 
-    describe('stepPrevEventCreate', () => {
+    describe('stepPreviousEventCreate', () => {
       const input: StepPreviousEventCreateInput = {
         id: '1',
         blockId: 'block.id',

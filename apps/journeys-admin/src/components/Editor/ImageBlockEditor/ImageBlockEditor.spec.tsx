@@ -1,10 +1,18 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
 import { ImageBlockEditor } from '.'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('ImageBlockEditor', () => {
   const imageBlock: ImageBlock = {
@@ -34,6 +42,17 @@ describe('ImageBlockEditor', () => {
   })
 
   it('should switch tabs', async () => {
+    const push = jest.fn()
+    const on = jest.fn()
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByText, getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
@@ -44,8 +63,40 @@ describe('ImageBlockEditor', () => {
     expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
     expect(getByText('Unsplash')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'custom-image' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
+
     expect(getByText('Add image by URL')).toBeInTheDocument()
     await fireEvent.click(getByRole('tab', { name: 'AI' }))
-    expect(getByRole('button', { name: 'Prompt' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Prompt' })).toBeInTheDocument()
+    )
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'ai-image' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
+
+    fireEvent.click(getByRole('tab', { name: 'Gallery' }))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'unsplash-image' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 })

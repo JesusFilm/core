@@ -3,15 +3,14 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '../../Team/TeamProvider'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, oldJourney } from '../journeyListData'
+import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
 import { SortOrder } from '../JourneySort'
 
 import {
@@ -26,20 +25,15 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
-const trashedJourneysMock = {
+const trashedJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.trashed]
+      status: [JourneyStatus.trashed],
+      useLastActiveTeamId: true
     }
   },
   result: {
@@ -60,11 +54,15 @@ const trashedJourneysMock = {
   }
 }
 
-const noJourneysMock = {
+const noJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.trashed]
+      status: [JourneyStatus.trashed],
+      useLastActiveTeamId: true
     }
   },
   result: {
@@ -74,49 +72,22 @@ const noJourneysMock = {
   }
 }
 
-const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-  request: {
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-  },
-  result: {
-    data: {
-      teams: [],
-      getJourneyProfile: {
-        __typename: 'JourneyProfile',
-        lastActiveTeamId: null
-      }
-    }
-  }
-}
-
 describe('TrashedJourneyList', () => {
   beforeAll(() => {
     jest.useFakeTimers()
-    jest.setSystemTime(new Date('2021-12-11'))
+    jest.setSystemTime(new Date(fakeDate))
   })
 
   it('should render journeys in descending createdAt date by default', async () => {
-    const result = jest.fn().mockReturnValueOnce({
-      data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
-        getJourneyProfile: {
-          __typename: 'JourneyProfile',
-          lastActiveTeamId: 'teamId'
-        }
-      }
-    })
     const { getAllByLabelText } = render(
-      <MockedProvider mocks={[trashedJourneysMock, { ...getTeams, result }]}>
+      <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
-          <TeamProvider>
-            <SnackbarProvider>
-              <TrashedJourneyList />
-            </SnackbarProvider>
-          </TeamProvider>
+          <SnackbarProvider>
+            <TrashedJourneyList />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
         'January 1'
@@ -128,15 +99,6 @@ describe('TrashedJourneyList', () => {
   })
 
   it('should order journeys in alphabetical order', async () => {
-    const result = jest.fn().mockReturnValueOnce({
-      data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
-        getJourneyProfile: {
-          __typename: 'JourneyProfile',
-          lastActiveTeamId: 'teamId'
-        }
-      }
-    })
     const trashedLowerCaseJourneyTitle = {
       ...defaultJourney,
       title: 'a lower case title',
@@ -156,7 +118,7 @@ describe('TrashedJourneyList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed],
-                teamId: undefined
+                useLastActiveTeamId: true
               }
             },
             result: {
@@ -164,23 +126,19 @@ describe('TrashedJourneyList', () => {
                 journeys: [trashedLowerCaseJourneyTitle, trashedOldJourney]
               }
             }
-          },
-          { ...getTeams, result }
+          }
         ]}
       >
         <ThemeProvider>
-          <TeamProvider>
-            <SnackbarProvider>
-              <TrashedJourneyList sortOrder={SortOrder.TITLE} />
-            </SnackbarProvider>
-          </TeamProvider>
+          <SnackbarProvider>
+            <TrashedJourneyList sortOrder={SortOrder.TITLE} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1, 2023English'
+        `a lower case titleJanuary 1English`
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
@@ -196,7 +154,8 @@ describe('TrashedJourneyList', () => {
             request: {
               query: GET_ADMIN_JOURNEYS,
               variables: {
-                status: [JourneyStatus.trashed]
+                status: [JourneyStatus.trashed],
+                useLastActiveTeamId: true
               }
             },
             result: {
@@ -226,21 +185,6 @@ describe('TrashedJourneyList', () => {
     expect(getAllByLabelText('journey-card')[1]).toBeUndefined()
   })
 
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <TrashedJourneyList />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(3)
-    )
-  })
-
   describe('Restore All', () => {
     const result = jest.fn(() => ({
       data: [{ id: defaultJourney.id, status: 'published' }]
@@ -255,7 +199,7 @@ describe('TrashedJourneyList', () => {
       result
     }
 
-    it('should display the restore all dialog', () => {
+    it('should display the restore all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
@@ -266,41 +210,26 @@ describe('TrashedJourneyList', () => {
         </MockedProvider>
       )
 
-      expect(getByText('Restore Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Restore Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should restore all journeys', async () => {
-      // const result = jest.fn().mockReturnValueOnce({
-      //   data: {
-      //     teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
-      //     getJourneyProfile: {
-      //       __typename: 'JourneyProfile',
-      //       lastActiveTeamId: 'teamId'
-      //     }
-      //   }
-      // })
       const { getByText } = render(
         <MockedProvider
-          mocks={[
-            trashedJourneysMock,
-            restoreJourneysMock,
-            noJourneysMock
-            // { ...getTeams, result }
-          ]}
+          mocks={[trashedJourneysMock, restoreJourneysMock, noJourneysMock]}
         >
           <ThemeProvider>
-            {/* <TeamProvider> */}
             <SnackbarProvider>
               <TrashedJourneyList
                 event="restoreAllTrashed"
                 user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
-            {/* </TeamProvider> */}
           </ThemeProvider>
         </MockedProvider>
       )
-      // await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
@@ -309,25 +238,14 @@ describe('TrashedJourneyList', () => {
     })
 
     it('should show error', async () => {
-      // const result = jest.fn().mockReturnValueOnce({
-      //   data: {
-      //     teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
-      //     getJourneyProfile: {
-      //       __typename: 'JourneyProfile',
-      //       lastActiveTeamId: 'teamId'
-      //     }
-      //   }
-      // })
       const { getByText } = render(
         <MockedProvider
           mocks={[
             trashedJourneysMock,
             { ...restoreJourneysMock, error: new Error('error') }
-            // { ...getTeams, result }
           ]}
         >
           <SnackbarProvider>
-            {/* <TeamProvider> */}
             <ThemeProvider>
               <SnackbarProvider>
                 <TrashedJourneyList
@@ -336,7 +254,6 @@ describe('TrashedJourneyList', () => {
                 />
               </SnackbarProvider>
             </ThemeProvider>
-            {/* </TeamProvider> */}
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -362,7 +279,7 @@ describe('TrashedJourneyList', () => {
       result
     }
 
-    it('should display the delete all dialog', () => {
+    it('should display the delete all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
@@ -372,41 +289,26 @@ describe('TrashedJourneyList', () => {
           </ThemeProvider>
         </MockedProvider>
       )
-      expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+      )
     })
 
     it('should trash all journeys', async () => {
-      // const result = jest.fn().mockReturnValueOnce({
-      //   data: {
-      //     teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
-      //     getJourneyProfile: {
-      //       __typename: 'JourneyProfile',
-      //       lastActiveTeamId: 'teamId'
-      //     }
-      //   }
-      // })
       const { getByText } = render(
         <MockedProvider
-          mocks={[
-            trashedJourneysMock,
-            deleteJourneysMock,
-            noJourneysMock
-            // { ...getTeams, result }
-          ]}
+          mocks={[trashedJourneysMock, deleteJourneysMock, noJourneysMock]}
         >
           <ThemeProvider>
-            {/* <TeamProvider> */}
             <SnackbarProvider>
               <TrashedJourneyList
                 event="deleteAllTrashed"
                 user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
-            {/* </TeamProvider> */}
           </ThemeProvider>
         </MockedProvider>
       )
-      // await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
@@ -415,38 +317,25 @@ describe('TrashedJourneyList', () => {
     })
 
     it('should show error', async () => {
-      const result = jest.fn().mockReturnValueOnce({
-        data: {
-          teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
-          getJourneyProfile: {
-            __typename: 'JourneyProfile',
-            lastActiveTeamId: 'teamId'
-          }
-        }
-      })
       const { getByText } = render(
         <MockedProvider
           mocks={[
             trashedJourneysMock,
-            { ...deleteJourneysMock, error: new Error('error') },
-            { ...getTeams, result }
+            { ...deleteJourneysMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
             <ThemeProvider>
-              <TeamProvider>
-                <SnackbarProvider>
-                  <TrashedJourneyList
-                    event="deleteAllTrashed"
-                    user={{ id: 'user-id1' } as unknown as User}
-                  />
-                </SnackbarProvider>
-              </TeamProvider>
+              <SnackbarProvider>
+                <TrashedJourneyList
+                  event="deleteAllTrashed"
+                  user={{ id: 'user-id1' } as unknown as User}
+                />
+              </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
