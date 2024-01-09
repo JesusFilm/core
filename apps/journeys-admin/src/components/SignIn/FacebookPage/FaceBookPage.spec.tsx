@@ -16,5 +16,7 @@ describe('FacebookPage', () => {
     expect(getByText("You've already used")).toBeInTheDocument()
     expect(getByText('Sign in with')).toBeInTheDocument()
     expect(getByText('Facebook to continue')).toBeInTheDocument()
+
+    expect(getByText('test@exampleemail.com')).toBeInTheDocument()
   })
 })
