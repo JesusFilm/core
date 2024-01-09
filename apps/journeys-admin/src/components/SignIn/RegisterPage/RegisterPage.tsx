@@ -99,7 +99,7 @@ export function RegisterPage({
               </Typography>
               <TextField
                 name="email"
-                hiddenLabel
+                label="Email"
                 placeholder={t('Enter your email address here')}
                 variant="standard"
                 value={values.email}
@@ -114,7 +114,7 @@ export function RegisterPage({
               />
               <TextField
                 name="name"
-                hiddenLabel
+                label="Name"
                 placeholder={t('First & last name')}
                 variant="standard"
                 value={values.name}
@@ -123,13 +123,13 @@ export function RegisterPage({
                 error={errors.name != null && touched.name != null}
                 helperText={
                   touched?.name != null &&
-                  errors.name != null && <>{errors.email}</>
+                  errors.name != null && <>{errors.name}</>
                 }
                 fullWidth
               />
               <TextField
                 name="password"
-                hiddenLabel
+                label="Password"
                 placeholder={t('Choose password')}
                 variant="standard"
                 value={values.password}
