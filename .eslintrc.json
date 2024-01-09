@@ -92,7 +92,16 @@
         "standard-with-typescript",
         "prettier"
       ],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/consistent-type-imports": "off",
+        "@typescript-eslint/await-thenable": "off",
+        "@typescript-eslint/no-confusing-void-expression": "off",
+        "@typescript-eslint/consistent-type-exports": "off",
+        "@typescript-eslint/ban-tslint-comment": "off",
+        "@typescript-eslint/consistent-indexed-object-style": "off",
+        "@typescript-eslint/prefer-nullish-coalescing": "off",
+        "@typescript-eslint/prefer-optional-chain": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],

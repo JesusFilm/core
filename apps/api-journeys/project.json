@@ -26,7 +26,8 @@
         ],
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "apps/api-journeys/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -52,22 +53,18 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-journeys"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
-      }
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-journeys"],
       "options": {
         "jestConfig": "apps/api-journeys/jest.config.ts",
-        "passWithNoTests": true,
         "fileReplacements": [
           {
             "replace": "apps/api-journeys/src/environments/environment.ts",

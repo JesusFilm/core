@@ -4,9 +4,9 @@ export default createSvgIcon(
   <>
     <path
       stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
       d="m7.01 22 4.697-4.217H18a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v9.783a3 3 0 0 0 3 3h1.01V22Z"
       fill="none"
     />
@@ -16,9 +16,9 @@ export default createSvgIcon(
     />
     <path
       fill="currentColor"
-      fill-rule="evenodd"
+      fillRule="evenodd"
       d="M11.817 4.79a1 1 0 0 1 1.23-.697c1.404.389 2.654 1.13 3.603 2.152l.001.001c.952 1.029 1.53 2.272 1.625 3.601a1 1 0 0 1-1.995.142c-.059-.825-.42-1.651-1.097-2.384-.681-.733-1.6-1.288-2.67-1.584a1 1 0 0 1-.697-1.23Zm-.473 2.781a1 1 0 0 1 1.23-.698 4.734 4.734 0 0 1 2.229 1.335c.595.643.965 1.43 1.028 2.286a1 1 0 1 1-1.994.147c-.026-.357-.181-.729-.502-1.075a2.735 2.735 0 0 0-1.293-.765 1 1 0 0 1-.698-1.23Z"
-      clip-rule="evenodd"
+      clipRule="evenodd"
     />
   </>,
   'Viber'
