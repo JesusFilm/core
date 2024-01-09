@@ -41,6 +41,8 @@ on:
         required: true
       DOPPLER_WATCH_ADMIN_TOKEN:
         required: true
+      DOPPLER_GITHUB_SERVICE_TOKEN:
+        required: true
 
 jobs:
   build-and-deploy:

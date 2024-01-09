@@ -13,11 +13,8 @@ module "seed" {
   doppler_token = var.doppler_token
   environment_variables = [
     "ARCLIGHT_API_KEY",
-    "DATABASE_DB",
-    "DATABASE_PASS",
-    "DATABASE_URL",
-    "DATABASE_USER",
-    "PG_DATABASE_URL"
+    "PG_DATABASE_URL",
+    "PG_DATABASE_URL_VIDEOS"
   ]
   cpu                     = 1024
   memory                  = 4096
@@ -26,11 +23,12 @@ module "seed" {
 }
 
 module "database" {
-  source                = "../../../infrastructure/modules/aws/aurora"
-  name                  = local.service_config.name
-  env                   = var.env
-  doppler_token         = var.doppler_token
-  doppler_project       = local.service_config.name
-  subnet_group_name     = var.subnet_group_name
-  vpc_security_group_id = var.vpc_security_group_id
+  source                  = "../../../infrastructure/modules/aws/aurora"
+  name                    = local.service_config.name
+  env                     = var.env
+  doppler_token           = var.doppler_token
+  doppler_project         = local.service_config.name
+  subnet_group_name       = var.subnet_group_name
+  vpc_security_group_id   = var.vpc_security_group_id
+  PG_DATABASE_URL_ENV_VAR = "PG_DATABASE_URL_VIDEOS"
 }

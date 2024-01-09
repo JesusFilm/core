@@ -26,7 +26,8 @@
         ],
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "apps/api-media/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -52,22 +53,18 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-media"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-media --transpileOnly"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["apps/api-media/**/*.ts"]
-      }
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-media"],
       "options": {
-        "jestConfig": "apps/api-media/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/api-media/jest.config.ts"
       }
     },
     "generate-graphql": {

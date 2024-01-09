@@ -2,8 +2,8 @@ import { createSvgIcon } from '@mui/material/utils'
 
 export default createSvgIcon(
   <path
-    fill-rule="evenodd"
-    clip-rule="evenodd"
+    fillRule="evenodd"
+    clipRule="evenodd"
     d="M14.725 4.093a2.2 2.2 0 0 1 3.11-.001l2.071 2.068a2.2 2.2 0 0 1 .001 3.112l-9.773 9.779a2.2 2.2 0 0 1-1.122.601l-4.366.88a1 1 0 0 1-1.178-1.179l.882-4.36a2.2 2.2 0 0 1 .6-1.12l9.775-9.78Zm1.697 1.414a.2.2 0 0 0-.283 0l-1.36 1.36 2.352 2.353 1.362-1.362a.2.2 0 0 0 0-.283l-2.07-2.068Zm-.705 5.127-2.352-2.352-7 7.005a.2.2 0 0 0-.055.102l-.583 2.885 2.89-.583a.2.2 0 0 0 .102-.054l6.998-7.003Z"
   />,
   'Edit2'

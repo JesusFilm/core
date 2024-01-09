@@ -228,7 +228,9 @@ describe('BackgroundMediaVideo', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Video' }))
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'Select Video' }))
+    )
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
@@ -385,8 +387,10 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(
-        getByRole('button', { name: '#FallingPlates #FallingPlates' })
+      await waitFor(() =>
+        fireEvent.click(
+          getByRole('button', { name: '#FallingPlates #FallingPlates' })
+        )
       )
       await waitFor(() => expect(getByText('Brand_Video')).toBeInTheDocument())
       fireEvent.click(getByRole('button', { name: 'Close' }))

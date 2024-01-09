@@ -2,8 +2,8 @@ import { createSvgIcon } from '@mui/material/utils'
 
 export default createSvgIcon(
   <path
-    fill-rule="evenodd"
-    clip-rule="evenodd"
+    fillRule="evenodd"
+    clipRule="evenodd"
     d="M1.693 1.693A1 1 0 0 1 2.4 1.4h4.8a1 1 0 1 1 0 2H4.814l3.693 3.693a1 1 0 1 1-1.414 1.414L3.4 4.814V7.2a1 1 0 1 1-2 0V2.4a1 1 0 0 1 .293-.707ZM19.186 3.4H16.8a1 1 0 1 1 0-2h4.8a1 1 0 0 1 1 1v4.8a1 1 0 1 1-2 0V4.814l-3.693 3.693a1 1 0 1 1-1.414-1.414L19.186 3.4ZM8.507 15.493a1 1 0 0 1 0 1.414L4.814 20.6H7.2a1 1 0 1 1 0 2H2.4a1 1 0 0 1-1-1v-4.8a1 1 0 1 1 2 0v2.386l3.693-3.693a1 1 0 0 1 1.414 0Zm6.986 0a1 1 0 0 1 1.414 0l3.693 3.693V16.8a1 1 0 1 1 2 0v4.8a1 1 0 0 1-1 1h-4.8a1 1 0 1 1 0-2h2.386l-3.693-3.693a1 1 0 0 1 0-1.414Z"
   />,
   'ArrowExpand1'
