@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { FirebaseError } from 'firebase/app'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 
 import { PasswordPage } from './PasswordPage'
@@ -48,6 +49,60 @@ describe('PasswordPage', () => {
 
     await waitFor(() => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
+    })
+  })
+
+  it('should show error text if password is incorrect', async () => {
+    const mockSignInWithEmailAndPassword =
+      signInWithEmailAndPassword as jest.MockedFunction<
+        typeof signInWithEmailAndPassword
+      >
+
+    mockSignInWithEmailAndPassword.mockImplementation(() => {
+      throw new FirebaseError('auth/wrong-password', 'error message text')
+    })
+
+    const { getByLabelText, getByRole, getByText } = render(
+      <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
+    )
+
+    fireEvent.change(getByLabelText('Password'), {
+      target: { value: 'Wrong Password' }
+    })
+    fireEvent.click(getByRole('button', { name: 'SIGN IN' }))
+
+    await waitFor(() => {
+      expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(getByText('Wrong Password')).toBeInTheDocument()
+    })
+  })
+
+  it('should show error text if user makes too many login attempts', async () => {
+    const mockSignInWithEmailAndPassword =
+      signInWithEmailAndPassword as jest.MockedFunction<
+        typeof signInWithEmailAndPassword
+      >
+
+    mockSignInWithEmailAndPassword.mockImplementation(() => {
+      throw new FirebaseError('auth/too-many-requests', 'error message text')
+    })
+
+    const { getByLabelText, getByRole, getByText } = render(
+      <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
+    )
+
+    fireEvent.change(getByLabelText('Password'), {
+      target: { value: 'Wrong Password' }
+    })
+    fireEvent.click(getByRole('button', { name: 'SIGN IN' }))
+
+    await waitFor(() => {
+      expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(getByText('Too many requests')).toBeInTheDocument()
     })
   })
 
