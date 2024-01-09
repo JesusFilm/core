@@ -109,15 +109,11 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/journeys-admin"],
       "options": {
-        "jestConfig": "apps/journeys-admin/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/journeys-admin/jest.config.ts"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["apps/journeys-admin/**/*.{ts,tsx,js,jsx}"]
-      },
       "outputs": ["{options.outputFile}"]
     },
     "type-check": {
