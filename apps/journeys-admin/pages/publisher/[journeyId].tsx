@@ -1,11 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,11 +11,6 @@ import { GetPublisher } from '../../__generated__/GetPublisher'
 import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { Role } from '../../__generated__/globalTypes'
 import { Editor } from '../../src/components/Editor'
-import { ControlPanel } from '../../src/components/Editor/ControlPanel'
-import { Drawer } from '../../src/components/Editor/Drawer'
-import { EditToolbar } from '../../src/components/Editor/EditToolbar'
-import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
-import { PageWrapper } from '../../src/components/PageWrapper'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
@@ -46,7 +36,6 @@ export const GET_PUBLISHER = gql`
 function TemplateEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const user = useUser()
   const { data } = useQuery<GetPublisherTemplate>(GET_PUBLISHER_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
@@ -71,19 +60,7 @@ function TemplateEditPage(): ReactElement {
           <Editor
             journey={data?.publisherTemplate ?? undefined}
             selectedStepId={router.query.stepId as string | undefined}
-          >
-            <PageWrapper
-              title={data?.publisherTemplate?.title ?? t('Edit Template')}
-              backHref="/publisher"
-              mainHeaderChildren={<EditToolbar />}
-              mainBodyPadding={false}
-              bottomPanelChildren={<ControlPanel />}
-              customSidePanel={<Drawer />}
-              user={user}
-            >
-              <JourneyEdit />
-            </PageWrapper>
-          </Editor>
+          />
         </>
       )}
       {data?.publisherTemplate != null && isPublisher !== true && (

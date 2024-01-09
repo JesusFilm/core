@@ -1,5 +1,6 @@
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import isFunction from 'lodash/isFunction'
 import {
   Dispatch,
   ReactElement,
@@ -225,7 +226,7 @@ export const EditorContext = createContext<{
 })
 
 interface EditorProviderProps {
-  children: ReactNode
+  children: ReactNode | ((state: EditorState) => ReactNode)
   initialState?: Partial<EditorState>
 }
 
@@ -273,7 +274,7 @@ export function EditorProvider({
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>
-      {children}
+      {isFunction(children) ? children(state) : children}
     </EditorContext.Provider>
   )
 }

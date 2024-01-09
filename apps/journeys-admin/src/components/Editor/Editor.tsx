@@ -1,4 +1,5 @@
-import { ReactElement, ReactNode } from 'react'
+import dynamic from 'next/dynamic'
+import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -11,20 +12,35 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
+import { Canvas } from './Canvas'
 import { Properties } from './Properties'
 import { SocialProvider } from './SocialProvider'
 
+const ActionsTable = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ActionsTable" */
+      './ActionsTable'
+    ).then((mod) => mod.ActionsTable),
+  { ssr: false }
+)
+const SocialPreview = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/SocialPreview" */
+      './SocialPreview'
+    ).then((mod) => mod.SocialPreview),
+  { ssr: false }
+)
 interface EditorProps {
   journey?: Journey
   selectedStepId?: string
-  children: ReactNode
   view?: ActiveJourneyEditContent
 }
 
 export function Editor({
   journey,
   selectedStepId,
-  children,
   view
 }: EditorProps): ReactElement {
   const steps =
@@ -35,11 +51,6 @@ export function Editor({
     selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
-  // const { setValue } = useSocialPreview()
-  // useEffect(() => {
-  //   setValue?.({ imageSrc: journey?.primaryImageBlock?.src })
-  //   console.log(journey?.primaryImageBlock?.src)
-  // }, [journey, setValue])
 
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -53,7 +64,13 @@ export function Editor({
             journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
           }}
         >
-          {children}
+          {(state) =>
+            ({
+              [ActiveJourneyEditContent.Canvas]: <Canvas />,
+              [ActiveJourneyEditContent.Action]: <ActionsTable />,
+              [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
+            }[state.journeyEditContentComponent])
+          }
         </EditorProvider>
       </SocialProvider>
     </JourneyProvider>

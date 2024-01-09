@@ -1,8 +1,21 @@
+import { render } from '@testing-library/react'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '../block'
 
-import { ActiveJourneyEditContent, reducer } from './EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  EditorProvider,
+  reducer,
+  useEditor
+} from './EditorProvider'
 
 import { ActiveFab, ActiveTab } from '.'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
 
 describe('EditorContext', () => {
   describe('reducer', () => {
@@ -436,6 +449,31 @@ describe('EditorContext', () => {
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         })
       })
+    })
+  })
+
+  describe('EditorProvider', () => {
+    function TestEditorState(): ReactElement {
+      const { state } = useEditor()
+      return <div>drawerTitle: {state.drawerTitle}</div>
+    }
+
+    it('should have correct initial state when children is function', () => {
+      const { getByText } = render(
+        <EditorProvider initialState={{ drawerTitle: 'drawerTitle' }}>
+          {({ drawerTitle }) => <>drawerTitle: {drawerTitle}</>}
+        </EditorProvider>
+      )
+      expect(getByText('drawerTitle: drawerTitle')).toBeInTheDocument()
+    })
+
+    it('should have correct initial state when children is component', () => {
+      const { getByText } = render(
+        <EditorProvider initialState={{ drawerTitle: 'drawerTitle' }}>
+          <TestEditorState />
+        </EditorProvider>
+      )
+      expect(getByText('drawerTitle: drawerTitle')).toBeInTheDocument()
     })
   })
 })
