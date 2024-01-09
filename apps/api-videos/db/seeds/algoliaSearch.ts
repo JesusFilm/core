@@ -19,17 +19,21 @@ export async function algoliaSearch(): Promise<void> {
   const videoTitles = await prisma.videoTitle.findMany()
   const videoVariants = await prisma.videoVariant.findMany()
 
+  const titlesMap = new Map(
+    videoTitles.map((title) => [title.videoId, title.value])
+  )
+  const variantsMap = new Map(
+    videoVariants.map((variant) => [variant.videoId, variant.duration])
+  )
+
   const transformedVideo = videos.map((video) => {
     return {
-      title: videoTitles.find((videoTitle) => videoTitle.videoId === video.id)
-        ?.value,
+      title: titlesMap.get(video.id),
       description: (video.description as unknown as Translation)[0].value,
       label: video.label,
       image: video.image,
       imageAlt: (video.imageAlt as unknown as Translation)[0].value,
-      duration: videoVariants.find(
-        (videoVariant) => videoVariant.videoId === video.id
-      )?.duration,
+      duration: variantsMap.get(video.id),
       childrenCount: video.childIds.length,
       snippet: (video.snippet as unknown as Translation)[0].value,
       slug: video.slug,
