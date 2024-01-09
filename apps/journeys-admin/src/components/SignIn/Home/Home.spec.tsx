@@ -21,6 +21,7 @@ describe('Home', () => {
     fireEvent.focus(getByRole('textbox'))
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
+    expect(getByRole('button', { name: 'Sign in with email' })).toBeDisabled()
   })
 
   it('should validate user email', async () => {
@@ -37,5 +38,6 @@ describe('Home', () => {
         getByText('Please enter a valid email address')
       ).toBeInTheDocument()
     )
+    expect(getByRole('button', { name: 'Sign in with email' })).toBeDisabled()
   })
 })
