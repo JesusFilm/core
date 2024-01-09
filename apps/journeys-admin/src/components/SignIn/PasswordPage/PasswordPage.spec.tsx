@@ -108,7 +108,7 @@ describe('PasswordPage', () => {
     )
 
     fireEvent.change(getByLabelText('Password'), {
-      target: { value: 'Wrong Password' }
+      target: { value: 'Password after too many requests' }
     })
     fireEvent.click(getByRole('button', { name: 'SIGN IN' }))
 
