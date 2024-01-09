@@ -1,6 +1,18 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { UserCredential, fetchSignInMethodsForEmail } from 'firebase/auth'
+import { NextRouter } from 'next/router'
 
 import { Home } from './Home'
+
+jest.mock('firebase/auth', () => ({
+  getAuth: jest.fn(),
+  fetchSignInMethodsForEmail: jest.fn()
+}))
+
+// const mockFetchSignInMethodsForEmail =
+//   fetchSignInMethodsForEmail as jest.MockedFunction<
+//     typeof fetchSignInMethodsForEmail
+//   >
 
 describe('Home', () => {
   it('should render home page', () => {
@@ -18,8 +30,7 @@ describe('Home', () => {
       <Home setActivePage={jest.fn()} setEmail={jest.fn()} />
     )
 
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.blur(getByRole('textbox'))
+    fireEvent.click(getByRole('button', { name: 'Sign in with email' }))
     await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
     expect(getByRole('button', { name: 'Sign in with email' })).toBeDisabled()
   })
@@ -39,5 +50,24 @@ describe('Home', () => {
       ).toBeInTheDocument()
     )
     expect(getByRole('button', { name: 'Sign in with email' })).toBeDisabled()
+  })
+
+  it('should start signing in when valid email entered', async () => {
+    const mockFetchSignInMethodsForEmail =
+      fetchSignInMethodsForEmail as jest.MockedFunction<
+        typeof fetchSignInMethodsForEmail
+      >
+
+    const { getByRole } = render(
+      <Home setActivePage={jest.fn()} setEmail={jest.fn()} />
+    )
+
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'example@example.com' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Sign in with email' }))
+    await waitFor(() =>
+      expect(mockFetchSignInMethodsForEmail).toHaveBeenCalled()
+    )
   })
 })
