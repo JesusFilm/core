@@ -67,8 +67,7 @@ export function RegisterPage({
     console.log(params)
     await createAccountAndSignIn(params.email, params.password)
     await router.push({
-      pathname: '/users/terms-and-conditions',
-      query: { redirect: router.query.redirect }
+      pathname: '/users/terms-and-conditions'
     })
     console.log('CALLED')
   }

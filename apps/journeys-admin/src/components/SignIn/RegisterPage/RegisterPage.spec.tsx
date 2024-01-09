@@ -1,11 +1,20 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from 'firebase/auth'
+import { NextRouter, useRouter } from 'next/router'
 
 import { RegisterPage } from './RegisterPage'
 
 jest.mock('firebase/auth', () => ({
   getAuth: jest.fn(),
-  createUserWithEmailAndPassword: jest.fn()
+  createUserWithEmailAndPassword: jest.fn(),
+  signInWithEmailAndPassword: jest.fn()
+}))
+
+jest.mock('next/router', () => ({
+  useRouter: jest.fn()
 }))
 
 describe('PasswordPage', () => {
@@ -38,6 +47,15 @@ describe('PasswordPage', () => {
         typeof createUserWithEmailAndPassword
       >
 
+    const mockSignInWithEmailAndPassword =
+      signInWithEmailAndPassword as jest.MockedFunction<
+        typeof signInWithEmailAndPassword
+      >
+
+    const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
     const { getByLabelText, getByRole } = render(
       <RegisterPage setActivePage={jest.fn()} userEmail="example@example.com" />
     )
@@ -53,6 +71,14 @@ describe('PasswordPage', () => {
 
     await waitFor(() => {
       expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        pathname: '/users/terms-and-conditions'
+      })
     })
   })
 
