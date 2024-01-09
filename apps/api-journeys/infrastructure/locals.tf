@@ -3,6 +3,7 @@ locals {
   environment_variables = [
     "FIREBASE_API_KEY",
     "PG_DATABASE_URL",
+    "PG_DATABASE_URL_JOURNEYS",
     "PLAYWRIGHT_USER_ID",
     "POWER_BI_CLIENT_ID",
     "POWER_BI_CLIENT_SECRET",

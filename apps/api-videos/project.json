@@ -26,7 +26,8 @@
         ],
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "apps/api-videos/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -63,17 +64,13 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["apps/api-videos/**/*.ts"]
-      }
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-videos"],
       "options": {
-        "jestConfig": "apps/api-videos/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/api-videos/jest.config.ts"
       }
     },
     "generate-graphql": {
