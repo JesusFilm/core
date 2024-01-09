@@ -12,7 +12,6 @@ import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/Block
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
 import { Properties } from './Properties'
-import { SocialProvider } from './SocialProvider'
 
 interface EditorProps {
   journey?: Journey
@@ -35,27 +34,20 @@ export function Editor({
     selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
-  // const { setValue } = useSocialPreview()
-  // useEffect(() => {
-  //   setValue?.({ imageSrc: journey?.primaryImageBlock?.src })
-  //   console.log(journey?.primaryImageBlock?.src)
-  // }, [journey, setValue])
 
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
-      <SocialProvider>
-        <EditorProvider
-          initialState={{
-            steps,
-            selectedStep,
-            drawerTitle: 'Properties',
-            drawerChildren: <Properties isPublisher={false} />,
-            journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
-          }}
-        >
-          {children}
-        </EditorProvider>
-      </SocialProvider>
+      <EditorProvider
+        initialState={{
+          steps,
+          selectedStep,
+          drawerTitle: 'Properties',
+          drawerChildren: <Properties isPublisher={false} />,
+          journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
+        }}
+      >
+        {children}
+      </EditorProvider>
     </JourneyProvider>
   )
 }

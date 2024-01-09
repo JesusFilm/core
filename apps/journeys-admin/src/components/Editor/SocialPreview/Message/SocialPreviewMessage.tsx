@@ -6,8 +6,9 @@ import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
-import { useSocialPreview } from '../../SocialProvider'
 
 interface SocialPreviewMessageProps {
   journey?: JourneyFields
@@ -79,10 +80,8 @@ export function MessageBubble({
     </Box>
   )
 }
-export function SocialPreviewMessage({
-  journey
-}: SocialPreviewMessageProps): ReactElement {
-  const { seoTitle, seoDescription, primaryImageBlock } = useSocialPreview()
+export function SocialPreviewMessage(): ReactElement {
+  const { journey } = useJourney()
   return (
     <Box
       width={256}
@@ -100,7 +99,7 @@ export function SocialPreviewMessage({
             <MessageBubble width={240} direction="right">
               <Stack direction="column">
                 <Stack direction="row" gap={2}>
-                  {primaryImageBlock?.src == null ? (
+                  {journey?.primaryImageBlock?.src == null ? (
                     <Box
                       width={60}
                       height={60}
@@ -109,23 +108,20 @@ export function SocialPreviewMessage({
                       borderRadius="6px"
                     />
                   ) : (
-                    primaryImageBlock?.src != null && (
-                      <Image
-                        src={primaryImageBlock.src}
-                        alt={primaryImageBlock.alt ?? ''}
-                        width="60"
-                        height="60"
-                        style={{
-                          borderRadius: '4px',
-                          maxWidth: '100%',
-                          height: 'auto',
-                          objectFit: 'cover'
-                        }}
-                      />
-                    )
+                    <Image
+                      src={journey.primaryImageBlock.src}
+                      alt={journey.primaryImageBlock.alt ?? ''}
+                      width="60"
+                      height="60"
+                      style={{
+                        borderRadius: '4px',
+                        maxWidth: '100%',
+                        objectFit: 'cover'
+                      }}
+                    />
                   )}
                   <Stack width={164} flexGrow={1} justifyContent="center">
-                    {isEmpty(seoTitle) ? (
+                    {isEmpty(journey?.seoTitle) ? (
                       <Box
                         width={156}
                         height={12}
@@ -140,10 +136,10 @@ export function SocialPreviewMessage({
                         fontSize={9}
                         lineHeight="12px"
                       >
-                        {seoTitle}
+                        {journey.seoTitle}
                       </Typography>
                     )}
-                    {isEmpty(seoDescription) ? (
+                    {isEmpty(journey?.seoDescription) ? (
                       <Box
                         width={110}
                         height={12}
@@ -157,7 +153,7 @@ export function SocialPreviewMessage({
                         fontSize={7}
                         lineHeight="11px"
                       >
-                        {seoDescription}
+                        {journey.seoDescription}
                       </Typography>
                     )}
                   </Stack>
