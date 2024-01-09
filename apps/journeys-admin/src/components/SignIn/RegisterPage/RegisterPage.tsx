@@ -64,19 +64,18 @@ export function RegisterPage({
   }
   async function handleCreateAccount(values, { setFieldError }): Promise<void> {
     try {
-      console.log(values.email)
-      console.log(values.password)
       await createAccountAndSignIn(values.email, values.password)
       await router.push({
         pathname: '/users/terms-and-conditions'
       })
     } catch (error) {
-      console.error(error)
       if (error.code === 'auth/email-already-in-use') {
         setFieldError(
           'email',
           'The email address is already used by another account'
         )
+      } else {
+        console.error(error)
       }
     }
   }
