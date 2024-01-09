@@ -26,7 +26,8 @@
         ],
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "apps/api-users/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -52,22 +53,18 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-users"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-users --transpileOnly"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["apps/api-users/**/*.ts"]
-      }
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-users"],
       "options": {
-        "jestConfig": "apps/api-users/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/api-users/jest.config.ts"
       }
     },
     "generate-graphql": {
