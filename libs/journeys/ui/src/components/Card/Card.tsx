@@ -203,6 +203,7 @@ export function Card({
     })
   }
   const handleNavigation = (e: MouseEvent): void => {
+    if (variant === 'admin') return
     const view = e.view as unknown as Window
     if (rtl) {
       const divide = view.innerWidth * 0.66

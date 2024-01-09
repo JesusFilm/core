@@ -124,7 +124,7 @@ describe('HostAvatarsButton', () => {
     expect(queryByTestId('ImageBlockHeader')).not.toBeInTheDocument()
   })
 
-  it('should open image edit library on avatar click', () => {
+  it('should open image edit library on avatar click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -146,7 +146,10 @@ describe('HostAvatarsButton', () => {
     )
 
     fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
+    )
+
     expect(getByRole('img')).toHaveAttribute('src', 'avatar1Src')
     fireEvent.click(getByRole('button', { name: 'close-image-library' }))
 

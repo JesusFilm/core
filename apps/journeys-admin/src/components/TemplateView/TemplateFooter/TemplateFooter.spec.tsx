@@ -19,7 +19,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TemplateFooter', () => {
   it('should render', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey }}>
           <TemplateFooter />
@@ -27,9 +27,6 @@ describe('TemplateFooter', () => {
       </MockedProvider>
     )
 
-    expect(
-      getByText('Use this template to make it your journey')
-    ).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Use This Template' })
     ).toBeInTheDocument()

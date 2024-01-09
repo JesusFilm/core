@@ -99,4 +99,16 @@ describe('TemplateGalleryCard', () => {
       '/templates/template-id'
     )
   })
+
+  it('should prioritize image loading', () => {
+    const { getByRole } = render(
+      <TemplateGalleryCard item={journey} priority />
+    )
+    expect(getByRole('img')).toHaveAttribute('rel', 'preload')
+  })
+
+  it('should not prioritize image loading', () => {
+    const { getByRole } = render(<TemplateGalleryCard item={journey} />)
+    expect(getByRole('img')).not.toHaveAttribute('rel')
+  })
 })

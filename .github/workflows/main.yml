@@ -138,6 +138,8 @@ jobs:
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
+          DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
+          DOPPLER_CONFIG: stg
         with:
           targets: fetch-secrets,build
   test:
@@ -249,7 +251,7 @@ jobs:
         run: nx affected --target=build-storybook shared-storybook --webpack-stats-json
       - name: Check for frontend changes
         id: check_files
-        uses: andstor/file-existence-action@v1
+        uses: andstor/file-existence-action@v2
         with:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow

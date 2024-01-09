@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -11,10 +12,6 @@ import { ReactElement } from 'react'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
-
-export interface TemplateGalleryCardProps {
-  item?: Journey
-}
 
 interface HoverLayerProps {
   className?: string
@@ -41,8 +38,14 @@ export function HoverLayer({ className }: HoverLayerProps): ReactElement {
   )
 }
 
+interface TemplateGalleryCardProps {
+  item?: Journey
+  priority?: boolean
+}
+
 export function TemplateGalleryCard({
-  item: journey
+  item: journey,
+  priority
 }: TemplateGalleryCardProps): ReactElement {
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
@@ -54,30 +57,33 @@ export function TemplateGalleryCard({
     localLanguage ?? nativeLanguage
   )
 
+  const theme = useTheme()
+
   const date =
     journey != null
       ? intlFormat(parseISO(journey.createdAt), {
           month: 'short',
-          year: isThisYear(parseISO(journey?.createdAt)) ? 'numeric' : undefined
+          year: isThisYear(parseISO(journey?.createdAt)) ? undefined : 'numeric'
         }).replace(' ', ', ')
       : ''
 
   return (
     <Card
       aria-label="templateGalleryCard"
-      variant="outlined"
+      tabIndex={0}
       sx={{
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer',
         width: { xs: 130, md: 180, xl: 240 },
         borderRadius: 2,
+        boxShadow: 'none',
         p: 2,
+        transition: (theme) => theme.transitions.create('background-color'),
         '& .MuiImageBackground-root': {
           transition: (theme) => theme.transitions.create('transform')
         },
         '&:hover': {
-          transition: (theme) => theme.transitions.create('background-color'),
           backgroundColor: (theme) => theme.palette.grey[200],
           '& .MuiImageBackground-root': {
             transform: 'scale(1.05)'
@@ -85,19 +91,26 @@ export function TemplateGalleryCard({
           '& .hoverImageEffects': {
             opacity: 0.3
           }
+        },
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: (theme) => theme.palette.primary.main
         }
       }}
     >
       <NextLink
-        href={journey != null ? `/templates/${journey.id}` : ''}
+        href={`/templates/${journey?.id ?? ''}`}
         passHref
         legacyBehavior
-        prefetch={false}
       >
         <Box
+          component="a"
+          tabIndex={-1}
           data-testid="templateGalleryCard"
           sx={{
-            height: 'inherit'
+            height: 'inherit',
+            color: 'inherit',
+            textDecoration: 'none'
           }}
         >
           {journey != null ? (
@@ -117,10 +130,17 @@ export function TemplateGalleryCard({
                 <>
                   <HoverLayer className="hoverImageEffects" />
                   <Image
+                    rel={priority === true ? 'preload' : undefined}
+                    priority={priority}
                     className="MuiImageBackground-root"
                     src={journey?.primaryImageBlock?.src}
                     alt={journey?.primaryImageBlock.alt}
                     fill
+                    sizes={`(max-width: ${
+                      theme.breakpoints.values.md - 0.5
+                    }px) 130px, (max-width: ${
+                      theme.breakpoints.values.xl - 0.5
+                    }px) 180px, 280px`}
                     style={{
                       objectFit: 'cover'
                     }}

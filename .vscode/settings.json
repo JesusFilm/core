@@ -73,7 +73,7 @@
     }
   ],
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "always"
   },
   "eslint.validate": ["javascript", "typescript"],
   "yaml.schemas": {

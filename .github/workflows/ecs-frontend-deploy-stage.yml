@@ -1,0 +1,28 @@
+name: Frontend push build
+on:
+  push:
+    branches:
+      - stage
+jobs:
+  journeys-admin:
+    uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-worker.yml@stage
+    with:
+      name: journeys-admin
+      env: stage
+      branch: ${{ github.ref_name }}
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
+      DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
+      DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}
+      DOPPLER_API_TAGS_TOKEN: ${{ secrets.DOPPLER_API_TAGS_TOKEN }}
+      DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
+      DOPPLER_API_VIDEOS_TOKEN: ${{ secrets.DOPPLER_API_VIDEOS_TOKEN }}
+      DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
+      DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
+      DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
+      DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+      DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
+      DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}

@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -17,12 +19,40 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
+import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 import { Attribute } from '../../Attribute'
 
-import { BackgroundColor } from './BackgroundColor'
-import { BackgroundMedia } from './BackgroundMedia'
-import { CardLayout } from './CardLayout'
-import { CardStyling } from './CardStyling'
+const BackgroundColor = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundColor/BackgroundColor" */ './BackgroundColor'
+    ).then((mod) => mod.BackgroundColor),
+  { ssr: false }
+)
+
+const BackgroundMedia = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/BackgroundMedia" */ './BackgroundMedia'
+    ).then((mod) => mod.BackgroundMedia),
+  { ssr: false }
+)
+
+const CardLayout = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/CardLayout/CardLayout" */ './CardLayout'
+    ).then((mod) => mod.CardLayout),
+  { ssr: false }
+)
+
+const CardStyling = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/CardStyling/CardStyling" */ './CardStyling'
+    ).then((mod) => mod.CardStyling),
+  { ssr: false }
+)
 
 export function Card({
   id,
@@ -33,6 +63,7 @@ export function Card({
   coverBlockId,
   children
 }: TreeBlock<CardBlock>): ReactElement {
+  const router = useRouter()
   const { dispatch } = useEditor()
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
@@ -50,12 +81,18 @@ export function Card({
   const selectedCardColor =
     backgroundColor ?? cardTheme.palette.background.paper
 
-  const handleBackgroundMediaClick = (): void => {
+  const handleBackgroundMediaClick = (param: string): void => {
     dispatch({
       type: 'SetDrawerPropsAction',
       title: 'Background Media Properties',
       mobileOpen: true,
       children: <BackgroundMedia />
+    })
+
+    router.query.param = param
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
     })
   }
 
@@ -99,7 +136,7 @@ export function Card({
             coverBlock.src.length
           )}
           description="Background Image"
-          onClick={handleBackgroundMediaClick}
+          onClick={() => handleBackgroundMediaClick('background-image')}
         />
       )}
       {coverBlock?.__typename === 'VideoBlock' && (
@@ -109,7 +146,7 @@ export function Card({
           name="Background"
           value={coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''}
           description="Background Video"
-          onClick={handleBackgroundMediaClick}
+          onClick={() => handleBackgroundMediaClick('background-video')}
         />
       )}
       {coverBlock == null && (
@@ -119,7 +156,7 @@ export function Card({
           name="Background"
           value="None"
           description="Background Media"
-          onClick={handleBackgroundMediaClick}
+          onClick={() => handleBackgroundMediaClick('background-video')}
         />
       )}
       <Attribute

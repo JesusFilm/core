@@ -15,7 +15,7 @@ import { AccessAvatars } from '../../../AccessAvatars'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
 interface JourneyCardInfoProps {
-  journey?: Journey
+  journey: Journey
   variant: JourneyCardVariant
 }
 
@@ -28,7 +28,7 @@ export function JourneyCardInfo({
   let inviteRequested: UserJourney[] | undefined
   if (
     variant === JourneyCardVariant.actionRequired &&
-    journey?.userJourneys != null
+    journey.userJourneys != null
   ) {
     inviteRequested = journey.userJourneys.filter(
       (uj) => uj.role === UserJourneyRole.inviteRequested
@@ -51,8 +51,8 @@ export function JourneyCardInfo({
       data-testid="JourneyCardInfo"
     >
       <AccessAvatars
-        journeyId={journey?.id}
-        userJourneys={inviteRequested ?? journey?.userJourneys ?? undefined}
+        journeyId={journey.id}
+        userJourneys={inviteRequested ?? journey.userJourneys ?? undefined}
       />
       {variant === JourneyCardVariant.actionRequired ? (
         <>
@@ -77,20 +77,12 @@ export function JourneyCardInfo({
           )}
         </>
       ) : (
-        <>
-          {journey != null ? (
-            <Stack direction="row" alignItems="center" spacing={1.5}>
-              <Globe1Icon sx={{ fontSize: 13 }} />
-              <Typography variant="caption">
-                {journey.language.name.find(({ primary }) => primary)?.value}
-              </Typography>
-            </Stack>
-          ) : (
-            <>
-              <Skeleton variant="text" width={40} />
-            </>
-          )}
-        </>
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <Globe1Icon sx={{ fontSize: 13 }} />
+          <Typography variant="caption">
+            {journey.language.name.find(({ primary }) => primary)?.value}
+          </Typography>
+        </Stack>
       )}
     </Stack>
   )

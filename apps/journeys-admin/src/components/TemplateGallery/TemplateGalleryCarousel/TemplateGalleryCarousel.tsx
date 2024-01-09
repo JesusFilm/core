@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import kebabCase from 'lodash/kebabCase'
 import {
   ComponentProps,
   ReactElement,
@@ -10,15 +11,12 @@ import {
   useRef,
   useState
 } from 'react'
-import SwiperCore, { A11y, Mousewheel, Navigation, SwiperOptions } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { NavigationOptions } from 'swiper/types/components/navigation'
+import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
+import { SwiperOptions } from 'swiper/types'
+import { NavigationOptions } from 'swiper/types/modules/navigation'
 
 import { NavButton } from './NavButton'
-
-import 'swiper/swiper.min.css'
-
-SwiperCore.use([Navigation, Mousewheel, A11y])
 
 const StyledSwiperContainer = styled(Swiper)(() => ({
   overflow: 'visible !important',
@@ -29,14 +27,17 @@ const StyledSwiperContainer = styled(Swiper)(() => ({
   }
 }))
 
+const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
+
 interface TemplateGalleryCarouselProps<T> {
   items: Array<T & { id: string }>
-  renderItem: (itemProps: { item?: T }) => ReactNode
+  renderItem: (itemProps: { item?: T; priority?: boolean }) => ReactNode
   heading?: string
   breakpoints: SwiperOptions['breakpoints']
   loading?: boolean
-  loadingSpacing?: ComponentProps<typeof Stack>['spacing']
+  cardSpacing?: ComponentProps<typeof Stack>['spacing']
   slidesOffsetBefore?: number
+  priority?: boolean
 }
 
 export function TemplateGalleryCarousel<T>({
@@ -45,10 +46,11 @@ export function TemplateGalleryCarousel<T>({
   heading,
   breakpoints,
   loading = false,
-  loadingSpacing,
-  slidesOffsetBefore
+  cardSpacing,
+  slidesOffsetBefore,
+  priority
 }: TemplateGalleryCarouselProps<T>): ReactElement {
-  const [swiper, setSwiper] = useState<SwiperCore>()
+  const [swiper, setSwiper] = useState<SwiperClass>()
   const [hovered, setHovered] = useState(false)
 
   const nextRef = useRef<HTMLButtonElement>(null)
@@ -69,9 +71,7 @@ export function TemplateGalleryCarousel<T>({
   return (
     <Box
       sx={{ position: 'relative' }}
-      data-testid={`${
-        heading?.replace(' ', '') ?? ''
-      }-template-gallery-carousel`}
+      data-testid={`${kebabCase(heading)}-template-gallery-carousel`}
       onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -79,7 +79,7 @@ export function TemplateGalleryCarousel<T>({
       {loading ? (
         <Stack
           direction="row"
-          spacing={loadingSpacing}
+          spacing={cardSpacing}
           sx={{
             mt: 4,
             minWidth: 'max-content',
@@ -95,6 +95,7 @@ export function TemplateGalleryCarousel<T>({
         </Stack>
       ) : (
         <StyledSwiperContainer
+          modules={[Navigation, Mousewheel, A11y, FreeMode]}
           freeMode
           speed={850}
           slidesPerView="auto"
@@ -102,18 +103,28 @@ export function TemplateGalleryCarousel<T>({
           watchOverflow
           allowTouchMove
           observer
-          slidesOffsetBefore={slidesOffsetBefore ?? 0}
           observeParents
           resizeObserver
           mousewheel={{ forceToAxis: true }}
           breakpoints={breakpoints}
           onSwiper={(swiper) => setSwiper(swiper)}
+          sx={{ ml: slidesOffsetBefore != null ? slidesOffsetBefore / 4 : 0 }}
         >
-          {items.map((item) => {
+          {items.map((item, index) => {
             return (
-              <SwiperSlide key={item.id} data-testid={`journey-${item.id}`}>
-                {renderItem({ item })}
-              </SwiperSlide>
+              <StyledSwiperSlide
+                key={item.id}
+                data-testid={`journey-${item.id}`}
+                onFocus={() => {
+                  if (swiper?.isEnd as boolean) {
+                    swiper?.slideTo(0)
+                  }
+                  swiper?.slideTo(index)
+                }}
+                sx={{ mr: cardSpacing }}
+              >
+                {renderItem({ item, priority })}
+              </StyledSwiperSlide>
             )
           })}
         </StyledSwiperContainer>

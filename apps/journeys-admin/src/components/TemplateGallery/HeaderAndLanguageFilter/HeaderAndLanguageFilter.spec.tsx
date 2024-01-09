@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery/useLanguagesQuery'
 
@@ -12,9 +13,27 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('HeaderAndLanguageFilter', () => {
   it('should open the language filter popper on button click', async () => {
     const onChange = jest.fn()
+    const push = jest.fn()
+    const on = jest.fn()
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByRole, getAllByRole, getAllByText, getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -104,5 +123,14 @@ describe('HeaderAndLanguageFilter', () => {
     await waitFor(() => expect(onChange).toHaveBeenCalledTimes(2))
     fireEvent.click(getByTestId('PresentationLayer'))
     await waitFor(() => expect(onChange).toHaveBeenCalledTimes(3))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'template-language' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 })
