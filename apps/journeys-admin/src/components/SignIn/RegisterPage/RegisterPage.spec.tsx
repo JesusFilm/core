@@ -78,7 +78,7 @@ describe('PasswordPage', () => {
     })
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith({
-        pathname: '/users/terms-and-conditions'
+        pathname: '/'
       })
     })
   })
