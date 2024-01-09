@@ -6,9 +6,9 @@ import { Translation } from '../../src/app/__generated__/graphql'
 
 const prisma = new PrismaClient()
 
-const client = algoliasearch('FJYYBFHBHS', '')
+const client = algoliasearch('FJYYBFHBHS', process.env.ALGOLIA_API_KEY_GERONIMO ?? '')
 
-export async function algolia(): Promise<void> {
+export async function algoliaSearch(): Promise<void> {
   console.log('starting algolia seed file')
 
   const videos = await prisma.video.findMany()
@@ -28,11 +28,11 @@ export async function algolia(): Promise<void> {
       childrenCount: video.childIds.length,  
       snippet: (video.snippet as unknown as Translation)[0].value,
       slug: video.slug,
+      objectID: video.id
     }
   })
 
   const index = client.initIndex('watch_videos')
-  await index.saveObject(transformedVideo).wait()
-  await index.search('watch_videos').then(({ hits }) => console.log(hits[0]))
+  await index.saveObjects(transformedVideo).wait()
   console.log('finished algolia seeding')
 }
