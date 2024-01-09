@@ -119,7 +119,7 @@ export function Canvas(): ReactElement {
       data-testid="EditorCanvas"
       sx={{
         display: 'flex',
-        height: '100%',
+        height: '100vh',
         justifyContent: 'center',
         alignItems: 'center'
       }}

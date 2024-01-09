@@ -15,16 +15,12 @@ import { GetJourney_journey as Journey } from '../../../../__generated__/GetJour
 import { ActionsBanner } from './ActionsBanner'
 import { ActionsList } from './ActionsList'
 
-interface ActionsTableProps {
-  hasAction?: (actions: boolean) => void
-}
-
 export interface Actions {
   url: string
   count: number
 }
 
-export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
+export function ActionsTable(): ReactElement {
   const { t } = useTranslation('journeys-admin')
   const { journey } = useJourney()
 
@@ -48,8 +44,6 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
   }
 
   const actions = countUrls(journey)
-
-  actions.length >= 1 ? hasAction?.(true) : hasAction?.(false)
 
   const goalLabel = (url: string): string => {
     if (url === '') return ''

@@ -10,12 +10,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { PageWrapper } from '../PageWrapper'
 import { ThemeProvider } from '../ThemeProvider'
-
-import { ControlPanel } from './ControlPanel'
-import { Drawer } from './Drawer'
-import { JourneyEdit } from './JourneyEdit'
 
 import { Editor } from '.'
 
@@ -82,14 +77,7 @@ describe('Editor', () => {
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
-            <Editor journey={journey}>
-              <PageWrapper
-                bottomPanelChildren={<ControlPanel />}
-                customSidePanel={<Drawer />}
-              >
-                <JourneyEdit />
-              </PageWrapper>
-            </Editor>
+            <Editor journey={journey} />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -103,14 +91,7 @@ describe('Editor', () => {
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
-            <Editor journey={journey}>
-              <PageWrapper
-                bottomPanelChildren={<ControlPanel />}
-                customSidePanel={<Drawer />}
-              >
-                <JourneyEdit />
-              </PageWrapper>
-            </Editor>
+            <Editor journey={journey} />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -125,14 +106,7 @@ describe('Editor', () => {
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
-            <Editor journey={journey}>
-              <PageWrapper
-                bottomPanelChildren={<ControlPanel />}
-                customSidePanel={<Drawer />}
-              >
-                <JourneyEdit />
-              </PageWrapper>
-            </Editor>
+            <Editor journey={journey} />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
