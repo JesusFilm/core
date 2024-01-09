@@ -226,7 +226,7 @@ export const EditorContext = createContext<{
 })
 
 interface EditorProviderProps {
-  children: ReactNode | ((state: EditorState) => ReactNode)
+  children: ((state: EditorState) => ReactNode) | ReactNode
   initialState?: Partial<EditorState>
 }
 

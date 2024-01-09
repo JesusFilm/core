@@ -14,7 +14,6 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 
 import { Canvas } from './Canvas'
 import { Properties } from './Properties'
-import { SocialProvider } from './SocialProvider'
 
 const ActionsTable = dynamic(
   async () =>
@@ -32,6 +31,7 @@ const SocialPreview = dynamic(
     ).then((mod) => mod.SocialPreview),
   { ssr: false }
 )
+
 interface EditorProps {
   journey?: Journey
   selectedStepId?: string
@@ -54,25 +54,23 @@ export function Editor({
 
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
-      <SocialProvider>
-        <EditorProvider
-          initialState={{
-            steps,
-            selectedStep,
-            drawerTitle: 'Properties',
-            drawerChildren: <Properties isPublisher={false} />,
-            journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
-          }}
-        >
-          {(state) =>
-            ({
-              [ActiveJourneyEditContent.Canvas]: <Canvas />,
-              [ActiveJourneyEditContent.Action]: <ActionsTable />,
-              [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
-            }[state.journeyEditContentComponent])
-          }
-        </EditorProvider>
-      </SocialProvider>
+      <EditorProvider
+        initialState={{
+          steps,
+          selectedStep,
+          drawerTitle: 'Properties',
+          drawerChildren: <Properties isPublisher={false} />,
+          journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
+        }}
+      >
+        {(state) =>
+          ({
+            [ActiveJourneyEditContent.Canvas]: <Canvas />,
+            [ActiveJourneyEditContent.Action]: <ActionsTable />,
+            [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
+          }[state.journeyEditContentComponent])
+        }
+      </EditorProvider>
     </JourneyProvider>
   )
 }

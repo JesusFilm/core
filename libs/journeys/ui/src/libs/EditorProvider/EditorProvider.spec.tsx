@@ -453,27 +453,27 @@ describe('EditorContext', () => {
   })
 
   describe('EditorProvider', () => {
-    function TestEditorState(): ReactElement {
+    function TestState(): ReactElement {
       const { state } = useEditor()
       return <div>drawerTitle: {state.drawerTitle}</div>
     }
 
-    it('should have correct initial state when children is function', () => {
+    it('should render children when component', () => {
       const { getByText } = render(
-        <EditorProvider initialState={{ drawerTitle: 'drawerTitle' }}>
-          {({ drawerTitle }) => <>drawerTitle: {drawerTitle}</>}
+        <EditorProvider initialState={{ drawerTitle: 'test' }}>
+          <TestState />
         </EditorProvider>
       )
-      expect(getByText('drawerTitle: drawerTitle')).toBeInTheDocument()
+      expect(getByText('drawerTitle: test')).toBeInTheDocument()
     })
 
-    it('should have correct initial state when children is component', () => {
+    it('should render children when function', () => {
       const { getByText } = render(
-        <EditorProvider initialState={{ drawerTitle: 'drawerTitle' }}>
-          <TestEditorState />
+        <EditorProvider initialState={{ drawerTitle: 'test' }}>
+          {(state) => <div>drawerTitle: {state.drawerTitle}</div>}
         </EditorProvider>
       )
-      expect(getByText('drawerTitle: drawerTitle')).toBeInTheDocument()
+      expect(getByText('drawerTitle: test')).toBeInTheDocument()
     })
   })
 })
