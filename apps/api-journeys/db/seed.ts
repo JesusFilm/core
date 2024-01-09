@@ -16,19 +16,19 @@ import { playwrightUserAccess } from './seeds/playwrightUserAccess'
 
 async function main(): Promise<void> {
   // this should be removed when the UI can support team management
-  await jfpTeam()
+  // await jfpTeam()
 
-  await nua9()
-  await nua8()
-  await nua2()
-  await nua1()
-  await onboarding()
-  await onboardingTemplates()
-  await discoveryAdminLeft()
-  await discoveryAdminCenter()
-  await discoveryAdminRight()
+  // await nua9()
+  // await nua8()
+  // await nua2()
+  // await nua1()
+  // await onboarding()
+  // await onboardingTemplates()
+  // await discoveryAdminLeft()
+  // await discoveryAdminCenter()
+  // await discoveryAdminRight()
   await distinctVisitor()
-  await playwrightUserAccess()
+  // await playwrightUserAccess()
 }
 main().catch((e) => {
   console.error(e)
