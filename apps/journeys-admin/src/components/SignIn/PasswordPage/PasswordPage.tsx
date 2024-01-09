@@ -47,8 +47,7 @@ export function PasswordPage({
       await signInWithEmailAndPassword(auth, values.email, values.password)
 
       await router.push({
-        pathname: '/users/terms-and-conditions',
-        query: { redirect: router.query.redirect }
+        pathname: '/users/terms-and-conditions'
       })
     } catch (error) {
       if (error.code === 'auth/wrong-password') {

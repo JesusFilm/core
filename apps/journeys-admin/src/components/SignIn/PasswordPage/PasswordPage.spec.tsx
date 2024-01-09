@@ -1,12 +1,17 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { FirebaseError } from 'firebase/app'
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import { NextRouter, useRouter } from 'next/router'
 
 import { PasswordPage } from './PasswordPage'
 
 jest.mock('firebase/auth', () => ({
   getAuth: jest.fn(),
   signInWithEmailAndPassword: jest.fn()
+}))
+
+jest.mock('next/router', () => ({
+  useRouter: jest.fn()
 }))
 
 describe('PasswordPage', () => {
@@ -32,11 +37,15 @@ describe('PasswordPage', () => {
     )
   })
 
-  it('should check if the user password is correct', async () => {
+  it('should sign user in if password is correct', async () => {
     const mockSignInWithEmailAndPassword =
       signInWithEmailAndPassword as jest.MockedFunction<
         typeof signInWithEmailAndPassword
       >
+
+    const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
     const { getByLabelText, getByRole } = render(
       <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
@@ -49,6 +58,11 @@ describe('PasswordPage', () => {
 
     await waitFor(() => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        pathname: '/users/terms-and-conditions'
+      })
     })
   })
 
