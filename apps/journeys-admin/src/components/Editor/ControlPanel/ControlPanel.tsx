@@ -237,16 +237,6 @@ export function ControlPanel(): ReactElement {
             {...tabA11yProps('control-panel', 0)}
             sx={{ flexGrow: 1 }}
           />
-          <Tab
-            label={t('Properties')}
-            {...tabA11yProps('control-panel', 1)}
-            sx={{ flexGrow: 1 }}
-            disabled={
-              steps == null ||
-              selected === 'none' ||
-              journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
-            }
-          />
           {hasVideoBlock ? (
             <Tooltip
               title={t('Blocks cannot be placed on top of Video Block')}
@@ -285,16 +275,6 @@ export function ControlPanel(): ReactElement {
             showNavigationCards
             isDraggable
           />
-        </TabPanel>
-        <TabPanel
-          name="control-panel"
-          value={activeTab}
-          index={1}
-          unmountUntilVisible
-        >
-          {selected !== 'none' && selectedStep !== undefined && (
-            <Attributes selected={selected} step={selectedStep} />
-          )}
         </TabPanel>
         <TabPanel
           name="control-panel"

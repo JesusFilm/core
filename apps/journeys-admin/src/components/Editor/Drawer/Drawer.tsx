@@ -11,6 +11,8 @@ import { ReactElement, ReactNode } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import X2Icon from '@core/shared/ui/icons/X2'
 
+import { Attributes } from '../ControlPanel/Attributes'
+
 interface DrawerContentProps {
   title?: string
   children?: ReactNode
@@ -55,10 +57,14 @@ export function Drawer(): ReactElement {
     state: {
       drawerTitle: title,
       drawerChildren: children,
-      drawerMobileOpen: mobileOpen
+      drawerMobileOpen: mobileOpen,
+      selectedComponent,
+      selectedBlock,
+      selectedStep
     },
     dispatch
   } = useEditor()
+  const selected = selectedComponent ?? selectedBlock ?? 'none'
 
   const handleDrawerToggle = (): void => {
     dispatch({
@@ -83,7 +89,9 @@ export function Drawer(): ReactElement {
       data-testid="EditorDrawer"
     >
       <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
-        {children}
+        {selected !== 'none' && selectedStep !== undefined && (
+          <Attributes selected={selected} step={selectedStep} />
+        )}
       </DrawerContent>
     </Paper>
   ) : (
