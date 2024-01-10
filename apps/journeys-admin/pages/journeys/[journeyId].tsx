@@ -22,8 +22,6 @@ import { Editor } from '../../src/components/Editor'
 import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
-import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
-import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 export const GET_ADMIN_JOURNEY = gql`
@@ -68,19 +66,16 @@ function JourneyEditPage(): ReactElement {
         journey={data?.journey ?? undefined}
         selectedStepId={router.query.stepId as string | undefined}
         view={router.query.view as ActiveJourneyEditContent | undefined}
-      >
-        <PageWrapper
-          title={data?.journey?.title ?? t('Edit Journey')}
-          backHref="/"
-          mainHeaderChildren={<EditToolbar />}
-          mainBodyPadding={false}
-          bottomPanelChildren={<ControlPanel />}
-          customSidePanel={<Drawer />}
-          user={user}
-        >
-          <JourneyEdit />
-        </PageWrapper>
-      </Editor>
+        PageWrapperProps={{
+          title: data?.journey?.title ?? t('Edit Journey'),
+          backHref: '/',
+          mainHeaderChildren: <EditToolbar />,
+          mainBodyPadding: false,
+          bottomPanelChildren: <ControlPanel />,
+          customSidePanel: <Drawer />,
+          user
+        }}
+      />
     </>
   )
 }

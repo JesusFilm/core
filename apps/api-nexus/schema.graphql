@@ -93,7 +93,7 @@ extend type Mutation {
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
   resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
-  resourceFromTemplate(input: ResourceFromSpreadsheetInput!): [Resource!]
+  resourceFromTemplate(nexusId: String!, file: Upload): [Resource!]
 }
 
 type Nexus
@@ -178,8 +178,6 @@ type TemplateResource
 input ResourceCreateInput {
   nexusId: String!
   name: String!
-  refLink: String
-  videoId: String
 }
 
 input ResourceUpdateInput {
@@ -207,7 +205,7 @@ input AddResourceFromGoogleDriveInput {
 }
 
 input ResourceFromSpreadsheetInput {
-  file: Upload!
+  file: Upload
   nexusId: String!
 }
 

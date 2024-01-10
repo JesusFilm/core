@@ -21,7 +21,8 @@
         ],
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "apps/api-languages/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -52,17 +53,13 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["apps/api-languages/**/*.ts"]
-      }
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-languages"],
       "options": {
-        "jestConfig": "apps/api-languages/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/api-languages/jest.config.ts"
       }
     },
     "generate-graphql": {

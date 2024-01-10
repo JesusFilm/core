@@ -152,8 +152,8 @@ export class ResourceResolver {
           createdAt: new Date(),
           sourceType: 'googleDrive',
         },
-      });
-      const fileUrl = this.googleDriveService.getFileUrl(fileId);
+      });;
+      const fileUrl = this.googleDriveService.getFileUrl(fileId);;
       await this.googleDriveService.setFilePermission({
         fileId,
         accessToken: input.authCode ?? '',
@@ -175,6 +175,7 @@ export class ResourceResolver {
         },
       });
     });
+    
     return await this.prismaService.resource.findMany({
       where: { googleDrive: { driveId: { in: input.fileIds } } },
       include: { googleDrive: true },

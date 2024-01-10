@@ -39,8 +39,6 @@ type TemplateResource @key(fields: "id") {
 input ResourceCreateInput {
   nexusId: String!
   name: String!
-  refLink: String
-  videoId: String
 }
 
 input ResourceUpdateInput {
