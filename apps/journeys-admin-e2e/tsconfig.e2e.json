@@ -5,7 +5,7 @@
     "outDir": "../../dist/out-tsc",
     "allowJs": true,
     "types": ["playwright", "node"],
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "include": ["src/**/*.ts", "src/**/*.js"]
 }
