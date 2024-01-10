@@ -26,12 +26,12 @@ export function EditToolbar(): ReactElement {
     <Stack
       direction="row"
       alignItems="center"
-      flexGrow={1}
       spacing={{ xs: 2, sm: 6 }}
       sx={{
         height: 86,
         backgroundColor: 'background.paper',
-        px: { xs: 2, sm: 4 }
+        px: { xs: 2, sm: 4 },
+        flexShrink: 0
       }}
     >
       <Image

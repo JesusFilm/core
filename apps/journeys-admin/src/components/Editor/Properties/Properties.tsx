@@ -1,46 +1,30 @@
-import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-
-import { SidePanel } from '../../PageWrapper/SidePanel'
-import { SidePanelContainer } from '../../PageWrapper/SidePanelContainer'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Stack from '@mui/material/Stack'
+import { ReactElement } from 'react'
 
 import { AccessControl } from './AccessControl'
 import { JourneyDetails } from './JourneyDetails'
 import { JourneyLink } from './JourneyLink'
-import { EmbedJourneyDialog } from './JourneyLink/EmbedJourneyDialog'
-import { SlugDialog } from './JourneyLink/SlugDialog'
 
 interface PropertiesProps {
   isPublisher?: boolean
 }
 
 export function Properties({ isPublisher }: PropertiesProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
-  const [showSlugDialog, setShowSlugDialog] = useState(false)
-  const [showEmbedDialog, setShowEmbedDialog] = useState(false)
-
   return (
-    <>
-      <SidePanel withAdminDrawer title={t('Properties')}>
-        <SidePanelContainer>
-          <JourneyDetails isPublisher={isPublisher} />
-        </SidePanelContainer>
-        <SidePanelContainer>
-          <AccessControl />
-        </SidePanelContainer>
-        <SidePanelContainer border={false}>
-          <JourneyLink />
-        </SidePanelContainer>
-      </SidePanel>
-      <SlugDialog
-        open={showSlugDialog}
-        onClose={() => setShowSlugDialog(false)}
-      />
-      <EmbedJourneyDialog
-        open={showEmbedDialog}
-        onClose={() => setShowEmbedDialog(false)}
-      />
-    </>
+    <Stack spacing={4} sx={{ py: 4 }} data-testid="Properties">
+      <Box sx={{ px: 6 }}>
+        <JourneyDetails isPublisher={isPublisher} />
+      </Box>
+      <Divider />
+      <Box sx={{ px: 6 }}>
+        <AccessControl />
+      </Box>
+      <Divider />
+      <Box sx={{ px: 6 }}>
+        <JourneyLink />
+      </Box>
+    </Stack>
   )
 }

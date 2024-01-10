@@ -54,15 +54,15 @@ export const BLOCK_ORDER_UPDATE = gql`
     }
   }
 `
-interface MoveBlockButtonsProps {
+interface MoveBlockProps {
   selectedBlock: TreeBlock
   selectedStep: TreeBlock
 }
 
-export function MoveBlockButtons({
+export function MoveBlock({
   selectedBlock,
   selectedStep
-}: MoveBlockButtonsProps): ReactElement {
+}: MoveBlockProps): ReactElement {
   const [blockOrderUpdate] = useMutation<BlockOrderUpdate>(BLOCK_ORDER_UPDATE)
   const { journey } = useJourney()
 
@@ -91,7 +91,7 @@ export function MoveBlockButtons({
     parentBlock != null ? parentBlock.children.length - 1 : 0
 
   return (
-    <Box data-testid="MoveBlockButtons">
+    <Box data-testid="MoveBlock">
       <ButtonGroup
         data-testid="move-block-buttons"
         disableElevation

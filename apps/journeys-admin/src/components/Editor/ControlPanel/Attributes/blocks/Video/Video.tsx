@@ -57,7 +57,6 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
           })
         }}
       />
-
       <Attribute
         id={`${id}-video-options`}
         icon={<Play1Icon />}

@@ -68,7 +68,7 @@ export function Editor({
           journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
         }}
       >
-        {(state) => (
+        {({ journeyEditContentComponent }) => (
           <Stack sx={{ height: '100vh' }}>
             <EditToolbar />
             <JourneyMap width={800} height={400} />
@@ -78,7 +78,7 @@ export function Editor({
                   [ActiveJourneyEditContent.Canvas]: <Canvas />,
                   [ActiveJourneyEditContent.Action]: <ActionsTable />,
                   [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
-                }[state.journeyEditContentComponent]
+                }[journeyEditContentComponent]
               }
               <Drawer />
             </Stack>
