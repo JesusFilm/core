@@ -90,8 +90,8 @@ export function TeamMenu(): ReactElement {
       {activeTeam != null && (
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           <TeamAvatars
-            onClick={async () => {
-              await setRoute('teams')
+            onClick={() => {
+              setRoute('teams')
               setTeamManageOpen(true)
             }}
             userTeams={activeTeam.userTeams}
