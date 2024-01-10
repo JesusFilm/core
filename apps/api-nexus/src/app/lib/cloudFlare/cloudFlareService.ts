@@ -1,25 +1,25 @@
-import { Injectable } from '@nestjs/common/decorators/core'
+import { Injectable } from '@nestjs/common/decorators/core';
 
 export interface CloudflareVideoUrlUploadResponse {
   result: {
-    uid: string
-  } | null
-  success: boolean
-  errors: string[]
-  messages: string[]
+    uid: string;
+  } | null;
+  success: boolean;
+  errors: string[];
+  messages: string[];
 }
 
 @Injectable()
 export class CloudFlareService {
-  rootUrl: string
+  rootUrl: string;
   constructor() {
-    this.rootUrl = 'https://api.cloudflare.com/client/v4/accounts/'
+    this.rootUrl = 'https://api.cloudflare.com/client/v4/accounts/';
   }
 
   async uploadToCloudflareByUrl(
     url: string,
     fileName: string,
-    userName: string
+    userName: string,
   ): Promise<CloudflareVideoUrlUploadResponse> {
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${
@@ -29,11 +29,11 @@ export class CloudFlareService {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url, creator: userName, name: fileName })
-      }
-    )
-    return await response.json()
+        body: JSON.stringify({ url, creator: userName, name: fileName }),
+      },
+    );
+    return await response.json();
   }
 }

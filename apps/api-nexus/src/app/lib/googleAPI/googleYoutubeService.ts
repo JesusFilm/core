@@ -1,71 +1,71 @@
-import { Injectable } from '@nestjs/common/decorators/core'
+import { Injectable } from '@nestjs/common/decorators/core';
 
 interface ChannelsRequest {
-  accessToken: string
+  accessToken: string;
 }
 
 interface ChannelsResponse {
-  kind: string
-  etag: string
+  kind: string;
+  etag: string;
   items: Array<{
-    kind: string
-    etag: string
-    id: string
+    kind: string;
+    etag: string;
+    id: string;
     snippet: {
-      title: string
-      description: string
-      customUrl: string
-      publishedAt: string
+      title: string;
+      description: string;
+      customUrl: string;
+      publishedAt: string;
       thumbnails: {
         default: {
-          url: string
-          width: number
-          height: number
-        }
+          url: string;
+          width: number;
+          height: number;
+        };
         medium: {
-          url: string
-          width: number
-          height: number
-        }
+          url: string;
+          width: number;
+          height: number;
+        };
         high: {
-          url: string
-          width: number
-          height: number
-        }
-      }
-    }
+          url: string;
+          width: number;
+          height: number;
+        };
+      };
+    };
     localized: {
-      title: string
-      description: string
-    }
-  }>
-  grant_type: 'authorization_code' | 'refresh_token'
+      title: string;
+      description: string;
+    };
+  }>;
+  grant_type: 'authorization_code' | 'refresh_token';
 }
 
 @Injectable()
 export class GoogleYoutubeService {
-  rootUrl: string
+  rootUrl: string;
   constructor() {
-    this.rootUrl = 'https://www.googleapis.com/youtube/v3/channels'
+    this.rootUrl = 'https://www.googleapis.com/youtube/v3/channels';
   }
 
   async getChannels(req: ChannelsRequest): Promise<ChannelsResponse> {
     const channelsParam = {
       part: ['snippet'],
-      mine: true
-    }
-    const params = new URLSearchParams()
+      mine: true,
+    };
+    const params = new URLSearchParams();
     Object.entries(channelsParam).forEach(([key, value]) => {
-      params.append(key, value.toString())
-    })
+      params.append(key, value.toString());
+    });
 
     const response = await fetch(`${this.rootUrl}?${params.toString()}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${req.accessToken}`
-      }
-    })
+        Authorization: `Bearer ${req.accessToken}`,
+      },
+    });
 
-    return await response.json()
+    return await response.json();
   }
 }

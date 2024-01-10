@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common'
+import { Module } from '@nestjs/common';
 
-import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
-import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService'
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth'
-import { PrismaService } from '../../lib/prisma.service'
+import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
+import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService';
+import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
+import { PrismaService } from '../../lib/prisma.service';
 
-import { ResourceResolver } from './resource.resolver'
+import { ResourceResolver } from './resource.resolver';
 
 @Module({
   imports: [],
@@ -14,7 +14,7 @@ import { ResourceResolver } from './resource.resolver'
     PrismaService,
     GoogleOAuthService,
     GoogleDriveService,
-    CloudFlareService
-  ]
+    CloudFlareService,
+  ],
 })
 export class ResourceModule {}
