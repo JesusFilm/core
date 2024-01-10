@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -48,22 +48,25 @@ describe('Attributes', () => {
     children: [card]
   }
 
-  it('should render card properties', () => {
+  it('should render card properties', async () => {
     const { getByText, queryByText } = render(
       <Attributes selected={card} step={card} />
     )
 
     expect(queryByText('Unlocked Card')).not.toBeInTheDocument()
-    expect(getByText('Background Color')).toBeInTheDocument()
+
+    await waitFor(() =>
+      expect(getByText('Background Color')).toBeInTheDocument()
+    )
   })
 
-  it('should only render step properties only if no children', () => {
+  it('should only render step properties only if no children', async () => {
     const stepOnly = { ...step, children: [] }
     const { getByText, getAllByRole } = render(
       <Attributes selected={stepOnly} step={stepOnly} />
     )
+    await waitFor(() => expect(getByText('Unlocked Card')).toBeInTheDocument())
 
-    expect(getByText('Unlocked Card')).toBeInTheDocument()
     expect(getAllByRole('button')).toHaveLength(1)
   })
 
@@ -114,7 +117,7 @@ describe('Attributes', () => {
     children: []
   }
 
-  it('should render step properties with video properties', () => {
+  it('should render step properties with video properties', async () => {
     const stepWithVideoOnly: TreeBlock = {
       ...step,
       children: [{ ...video, parentBlockId: 'step0.id' }]
@@ -127,7 +130,7 @@ describe('Attributes', () => {
 
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     expect(queryByTestId('move-block-buttons')).not.toBeInTheDocument()
-    expect(getByText('Video Source')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Video Source')).toBeInTheDocument())
   })
 
   it('should render video properties with move buttons', () => {
@@ -146,7 +149,7 @@ describe('Attributes', () => {
     expect(getByText('Video Source')).toBeInTheDocument()
   })
 
-  it('should render typography properties with move buttons', () => {
+  it('should render typography properties with move buttons', async () => {
     const block: TreeBlock = {
       id: 'typographyBlockId1',
       __typename: 'TypographyBlock',
@@ -165,12 +168,14 @@ describe('Attributes', () => {
     )
 
     expect(getByTestId('move-block-buttons')).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'Text Variant Body 2' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Text Variant Body 2' })
+      ).toBeInTheDocument()
+    )
   })
 
-  it('should render button properties with move buttons', () => {
+  it('should render button properties with move buttons', async () => {
     const block: TreeBlock = {
       id: 'button.id',
       __typename: 'ButtonBlock',
@@ -193,9 +198,11 @@ describe('Attributes', () => {
     )
 
     expect(getByTestId('move-block-buttons')).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'Button Size Medium' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Button Size Medium' })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should only render move buttons for Radio Question block', () => {
@@ -217,7 +224,7 @@ describe('Attributes', () => {
     expect(getAllByRole('button')).toHaveLength(2)
   })
 
-  it('should render Radio Option properties with move buttons', () => {
+  it('should render Radio Option properties with move buttons', async () => {
     const block: TreeBlock = {
       id: 'radio-option.id',
       __typename: 'RadioOptionBlock',
@@ -234,10 +241,12 @@ describe('Attributes', () => {
     )
 
     expect(getByTestId('move-block-buttons')).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    )
   })
 
-  it('should render Sign Up properties with move buttons', () => {
+  it('should render Sign Up properties with move buttons', async () => {
     const block: TreeBlock = {
       id: 'signup.id',
       __typename: 'SignUpBlock',
@@ -255,10 +264,12 @@ describe('Attributes', () => {
     )
 
     expect(getByTestId('move-block-buttons')).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    )
   })
 
-  it('should render Footer properties', () => {
+  it('should render Footer properties', async () => {
     const { queryByTestId, getByRole } = render(
       <MockedProvider>
         <Attributes selected="Footer" step={card} />
@@ -266,8 +277,36 @@ describe('Attributes', () => {
     )
 
     expect(queryByTestId('move-block-buttons')).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Chat Widget None' })
+      ).toBeInTheDocument()
+    )
+  })
+
+  it('should render FormBlock properties with move buttons', async () => {
+    const block: TreeBlock = {
+      __typename: 'FormBlock',
+      id: 'formBlock.id',
+      parentBlockId: card.id,
+      parentOrder: 0,
+      form: null,
+      action: null,
+      children: []
+    }
+
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <Attributes selected={block} step={{ ...card, children: [block] }} />
+      </MockedProvider>
+    )
+
+    expect(getByTestId('move-block-buttons')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    )
     expect(
-      getByRole('button', { name: 'Chat Widget None' })
+      getByRole('button', { name: 'Credentials Incomplete' })
     ).toBeInTheDocument()
   })
 })

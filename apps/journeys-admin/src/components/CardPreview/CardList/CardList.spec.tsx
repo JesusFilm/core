@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
-import { DragDropContext } from 'react-beautiful-dnd'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { DragDropContext, DroppableProvided } from 'react-beautiful-dnd'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -14,7 +14,6 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
-import { SocialProvider } from '../../Editor/SocialProvider'
 
 import { CardList } from '.'
 
@@ -126,7 +125,7 @@ describe('CardList', () => {
       style: {}
     },
     innerRef: jest.fn()
-  }
+  } as unknown as DroppableProvided
 
   const steps: Array<TreeBlock<StepBlock>> = [
     {
@@ -209,14 +208,12 @@ describe('CardList', () => {
     const handleClick = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
-        <SocialProvider>
-          <CardList
-            steps={steps}
-            selected={selected}
-            showAddButton
-            handleClick={handleClick}
-          />
-        </SocialProvider>
+        <CardList
+          steps={steps}
+          selected={selected}
+          showAddButton
+          handleClick={handleClick}
+        />
       </MockedProvider>
     )
     expect(getByRole('button')).toBeInTheDocument()
@@ -233,10 +230,10 @@ describe('CardList', () => {
     expect(queryByRole('DragHandleRoundedIcon')).not.toBeInTheDocument()
   })
 
-  it('should prompt users that a card is draggable', () => {
+  it('should prompt users that a card is draggable', async () => {
     const { getAllByTestId } = render(
       <MockedProvider>
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -246,6 +243,9 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
+    await waitFor(() => {
+      expect(getAllByTestId('DragIcon')[0]).toBeInTheDocument()
+    })
     const dragHandle = getAllByTestId('DragIcon')
     expect(dragHandle[0]).toHaveClass('MuiSvgIcon-root')
   })
@@ -253,7 +253,7 @@ describe('CardList', () => {
   it('contains goals card', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -287,7 +287,7 @@ describe('CardList', () => {
             variant: 'admin'
           }}
         >
-          <DragDropContext>
+          <DragDropContext onDragEnd={jest.fn()}>
             <CardList
               steps={steps}
               selected={selected}
@@ -306,7 +306,7 @@ describe('CardList', () => {
   it('contains social preview card', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -340,7 +340,7 @@ describe('CardList', () => {
             variant: 'admin'
           }}
         >
-          <DragDropContext>
+          <DragDropContext onDragEnd={jest.fn()}>
             <CardList
               steps={steps}
               selected={selected}
@@ -371,28 +371,23 @@ describe('CardList', () => {
                 id: '529',
                 bcp47: 'en',
                 iso3: 'eng'
+              },
+              primaryImageBlock: {
+                src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
               }
             } as unknown as Journey,
             variant: 'admin'
           }}
         >
-          <SocialProvider
-            initialValues={{
-              primaryImageBlock: {
-                src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
-              }
-            }}
-          >
-            <DragDropContext>
-              <CardList
-                steps={steps}
-                selected={selected}
-                droppableProvided={droppableProvided}
-                handleChange={handleChange}
-                showNavigationCards
-              />
-            </DragDropContext>
-          </SocialProvider>
+          <DragDropContext onDragEnd={jest.fn()}>
+            <CardList
+              steps={steps}
+              selected={selected}
+              droppableProvided={droppableProvided}
+              handleChange={handleChange}
+              showNavigationCards
+            />
+          </DragDropContext>
         </JourneyProvider>
       </MockedProvider>
     )
@@ -404,15 +399,13 @@ describe('CardList', () => {
   it('should render the goal and social navigation card if journey is not a template', async () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <SocialProvider>
-          <CardList
-            steps={steps}
-            selected={selected}
-            showAddButton
-            handleClick={jest.fn()}
-            showNavigationCards
-          />
-        </SocialProvider>
+        <CardList
+          steps={steps}
+          selected={selected}
+          showAddButton
+          handleClick={jest.fn()}
+          showNavigationCards
+        />
       </MockedProvider>
     )
     expect(getByTestId('NavigationCardGoals')).toBeInTheDocument()
@@ -438,7 +431,7 @@ describe('CardList', () => {
           }
         ]}
       >
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -473,7 +466,7 @@ describe('CardList', () => {
             variant: 'admin'
           }}
         >
-          <DragDropContext>
+          <DragDropContext onDragEnd={jest.fn()}>
             <CardList
               steps={steps}
               selected={selected}

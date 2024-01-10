@@ -73,14 +73,10 @@ export const Default = {
 }
 
 export const Loading = {
-  ...Default,
+  ...Template,
   args: {
-    loading: true
-  },
-  play: async () => {
-    await waitFor(async () => {
-      await userEvent.hover(screen.getByRole('group', { name: '1 / 8' }))
-    })
+    loading: true,
+    cardSpacing: 5
   }
 }
 
@@ -94,6 +90,7 @@ export const Heading = {
 export const Breakpoints = {
   ...Default,
   args: {
+    cardSpacing: 5,
     breakpoints: {
       '0': {
         slidesPerGroup: 1,

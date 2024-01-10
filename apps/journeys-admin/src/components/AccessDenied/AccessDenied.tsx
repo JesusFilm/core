@@ -135,6 +135,7 @@ export function AccessDenied({
               href="mailto:support@nextstep.is?subject=Need%20help%20with%20requesting%20editing%20access%20to%20the%20journey"
               passHref
               legacyBehavior
+              prefetch={false}
             >
               <Button
                 sx={{

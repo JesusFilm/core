@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { videos } from '../data'
 
@@ -26,7 +26,7 @@ describe('Video List Item', () => {
     expect(getByText('03:06')).toBeInTheDocument()
   })
 
-  it('should open VideoDetails', () => {
+  it('should open VideoDetails', async () => {
     const onSelect = jest.fn()
     const { getByRole, getByText } = render(
       <MockedProvider>
@@ -34,7 +34,7 @@ describe('Video List Item', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByText('Video Details')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Video Details')).toBeInTheDocument())
     fireEvent.click(getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalled()
   })

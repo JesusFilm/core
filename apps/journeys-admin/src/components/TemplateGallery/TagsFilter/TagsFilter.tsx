@@ -12,6 +12,8 @@ import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { ReactElement, useCallback } from 'react'
 
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+
 import { GetTags_tags as Tag } from '../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 import { ParentTagIcon } from '../../ParentTagIcon'
@@ -95,6 +97,7 @@ export function TagsFilter({
       fullWidth
       value={filteredSelectedTags}
       onChange={handleChange}
+      popupIcon={<ChevronDownIcon />}
       options={filteredChildTags}
       groupBy={(option) => option.parentId ?? ''}
       getOptionLabel={(option) =>
@@ -188,7 +191,14 @@ export function TagsFilter({
           </Typography>
         </Stack>
       )}
-      ChipProps={{ size: 'small' }}
+      ChipProps={{
+        size: 'small',
+        sx: {
+          '&.MuiChip-root': {
+            maxWidth: 'calc(100% - 15px)'
+          }
+        }
+      }}
       slotProps={{
         popper: {
           sx: {

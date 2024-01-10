@@ -15,7 +15,7 @@ export function NavigationButton({
   link
 }: NavigationButtonProps): ReactElement {
   return (
-    <NextLink href={link} passHref legacyBehavior>
+    <NextLink href={link} passHref legacyBehavior prefetch={false}>
       <Button
         aria-selected={selected}
         variant={selected ? 'contained' : 'outlined'}

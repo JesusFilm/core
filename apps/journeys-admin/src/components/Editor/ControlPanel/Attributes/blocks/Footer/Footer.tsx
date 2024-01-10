@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic'
 import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -9,8 +10,21 @@ import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
 import { Attribute } from '../../Attribute'
 
-import { Chat } from './Chat'
-import { HostSidePanel } from './HostSidePanel'
+const HostSidePanel = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/HostSidePanel/HostSidePanel" */ './HostSidePanel'
+    ).then((mod) => mod.HostSidePanel),
+  { ssr: false }
+)
+
+const Chat = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Chat/Chat" */ './Chat'
+    ).then((mod) => mod.Chat),
+  { ssr: false }
+)
 
 export function Footer(): ReactElement {
   const { dispatch } = useEditor()

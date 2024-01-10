@@ -2,10 +2,10 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import Divider from '@mui/material/Divider'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { ReactElement } from 'react'
-import {
-  Draggable,
+import type {
   DraggableProvided,
   DraggableStateSnapshot,
   DroppableProvided
@@ -34,12 +34,20 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
 import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
-import { useSocialPreview } from '../../Editor/SocialProvider'
 import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
 
 import { CardWrapper } from './CardWrapper'
+
+const Draggable = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "react-beautiful-dnd" */
+      'react-beautiful-dnd'
+    ).then((mod) => mod.Draggable),
+  { ssr: false }
+)
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -68,7 +76,6 @@ export function CardList({
     state: { journeyEditContentComponent }
   } = useEditor()
   const { journey } = useJourney()
-  const { primaryImageBlock } = useSocialPreview()
 
   const { data } = useUserRoleQuery()
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
@@ -156,7 +163,7 @@ export function CardList({
           title="Social Media"
           destination={ActiveJourneyEditContent.SocialPreview}
           header={
-            primaryImageBlock?.src == null ? (
+            journey?.primaryImageBlock?.src == null ? (
               <Box
                 bgcolor={(theme) => theme.palette.background.default}
                 borderRadius="4px"
@@ -170,14 +177,12 @@ export function CardList({
               </Box>
             ) : (
               <Image
-                src={primaryImageBlock?.src}
-                alt={primaryImageBlock?.src}
+                src={journey.primaryImageBlock.src}
+                alt={journey.primaryImageBlock.src}
                 width={72}
                 height={72}
                 style={{
                   borderRadius: '4px',
-                  maxWidth: '100%',
-                  height: 'auto',
                   objectFit: 'cover'
                 }}
               />
@@ -188,12 +193,7 @@ export function CardList({
       )}
       {droppableProvided != null &&
         steps.map((step, index) => (
-          <Draggable
-            key={step.id}
-            id={step.id}
-            draggableId={step.id}
-            index={index}
-          >
+          <Draggable key={step.id} draggableId={step.id} index={index}>
             {(provided, snapshot) => (
               <CardItem
                 key={step.id}
@@ -262,11 +262,7 @@ const CardItem = ({
             justifyContent: 'center'
           }}
         >
-          <DragIcon
-            sx={{
-              opacity: snapshot.isDragging === true ? 1 : 0.5
-            }}
-          />
+          <DragIcon sx={{ opacity: snapshot.isDragging ? 1 : 0.5 }} />
         </Box>
       )}
       <Box

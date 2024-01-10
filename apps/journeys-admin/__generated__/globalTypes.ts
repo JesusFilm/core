@@ -298,6 +298,18 @@ export interface EmailActionInput {
   email: string;
 }
 
+export interface FormBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+}
+
+export interface FormBlockUpdateInput {
+  projectId?: string | null;
+  apiToken?: string | null;
+  formSlug?: string | null;
+}
+
 export interface HostCreateInput {
   title: string;
   location?: string | null;
@@ -475,6 +487,22 @@ export interface StepBlockCreateInput {
 export interface StepBlockUpdateInput {
   nextBlockId?: string | null;
   locked?: boolean | null;
+}
+
+export interface StepNextEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  nextStepId: string;
+  label?: string | null;
+  value?: string | null;
+}
+
+export interface StepPreviousEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  previousStepId: string;
+  label?: string | null;
+  value?: string | null;
 }
 
 export interface StepViewEventCreateInput {

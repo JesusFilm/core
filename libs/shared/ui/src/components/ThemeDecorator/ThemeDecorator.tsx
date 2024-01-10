@@ -2,6 +2,7 @@ import { CacheProvider } from '@emotion/react'
 import { Parameters } from '@storybook/react'
 import { ReactElement, ReactNode } from 'react'
 
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { globalTypes } from '../../../../../../.storybook/preview'
 import { createEmotionCache } from '../../libs/createEmotionCache'
 import { ThemeMode, ThemeName, getTheme } from '../../libs/themes'
@@ -63,7 +64,7 @@ export const ThemeDecorator = ({
   rtl = false,
   locale = ''
 }: ThemeDecoratorProps): ReactElement => {
-  const storybookEmotionCache = createEmotionCache({ rtl, prepend: false })
+  const storybookEmotionCache = createEmotionCache({ rtl })
 
   switch (mode) {
     case 'all':

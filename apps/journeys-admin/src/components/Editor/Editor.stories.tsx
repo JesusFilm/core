@@ -21,12 +21,10 @@ import {
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { PageWrapper } from '../NewPageWrapper'
 
 import { ControlPanel } from './ControlPanel'
 import { Drawer } from './Drawer'
 import { EditToolbar } from './EditToolbar'
-import { JourneyEdit } from './JourneyEdit'
 
 import { Editor } from '.'
 
@@ -654,18 +652,15 @@ const Template: StoryObj<typeof Editor> = {
         <Editor
           journey={args.journey}
           view={args.view ?? ActiveJourneyEditContent.Canvas}
-        >
-          <PageWrapper
-            title={args.journey?.title ?? 'Edit Journey'}
-            mainHeaderChildren={<EditToolbar />}
-            bottomPanelChildren={<ControlPanel />}
-            customSidePanel={<Drawer />}
-            mainBodyPadding={false}
-            backHref="/journeys/nua-journey-ep-3-decision"
-          >
-            <JourneyEdit />
-          </PageWrapper>
-        </Editor>
+          PageWrapperProps={{
+            title: args.journey?.title ?? 'Edit Journey',
+            mainHeaderChildren: <EditToolbar />,
+            bottomPanelChildren: <ControlPanel />,
+            customSidePanel: <Drawer />,
+            mainBodyPadding: false,
+            backHref: '/journeys/nua-journey-ep-3-decision'
+          }}
+        />
       </MockedProvider>
     )
   }
@@ -680,6 +675,9 @@ export const SocialPreview = {
   ...Template,
   args: { journey },
   play: async () => {
+    await waitFor(async () => {
+      screen.getByTestId('NavigationCardSocial')
+    })
     const button = screen.getByTestId('NavigationCardSocial')
     await userEvent.click(button)
     await waitFor(async () => {
@@ -692,6 +690,9 @@ export const Goals = {
   ...Template,
   args: { journey },
   play: async () => {
+    await waitFor(async () => {
+      screen.getByTestId('NavigationCardGoals')
+    })
     const button = screen.getByTestId('NavigationCardGoals')
     await userEvent.click(button)
     await waitFor(async () => {

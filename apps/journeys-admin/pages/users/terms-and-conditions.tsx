@@ -3,8 +3,6 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ACCEPT_ALL_INVITES } from '..'
-import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TermsAndConditions } from '../../src/components/TermsAndConditions'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -29,17 +27,13 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, redirect, translations } = await initAndAuthApp({
+  const { redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
   })
 
   if (redirect != null) return { redirect }
-
-  await apolloClient.mutate<AcceptAllInvites>({
-    mutation: ACCEPT_ALL_INVITES
-  })
 
   return {
     props: {

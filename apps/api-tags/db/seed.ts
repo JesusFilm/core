@@ -1,4 +1,4 @@
-// version 5
+// version 6
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { PrismaClient } from '.prisma/api-tags-client'
@@ -40,73 +40,66 @@ async function upsertTag(
 
 async function main(): Promise<void> {
   await upsertTag('Felt Needs', [
-    'Loneliness',
-    'Fear/Anxiety',
-    'Depression',
-    'Love',
     'Acceptance',
+    'Anxiety',
+    'Depression',
+    'Forgiveness',
+    'Hope',
+    'Loneliness',
+    'Love',
     'Security',
     'Significance',
-    'Hope',
-    'Forgiveness'
-  ])
-  await upsertTag('Topics', [
-    'Health',
-    'Relationships',
-    'Finances',
-    'Work',
-    'Marriage',
-    'Addiction',
-    'Anger',
-    'Success',
-    'Prayer',
-    'Apologetics',
-    "Jesus' Teachings",
-    "Jesus' Love",
-    "Jesus' Life",
-    'Holy Spirit',
-    'Gospel presentations'
-  ])
-  await upsertTag('Holidays', [
-    'Christmas',
-    'Easter',
-    'Ramadan',
-    'Festival of Sacrifice',
-    'Night of Power',
-    'New Years',
-    'Mid-Autumn Festival',
-    "Women's Day",
-    'World Cup',
-    'World Youth Day',
-    'Olympics',
-    'Halloween',
-    "Valentine's Day",
-    "Mother's Day",
-    "Father's Day"
-  ])
-  await upsertTag('Audience', [
-    'Christian',
-    'Catholic',
-    'Orthodox',
-    'Men',
-    'Women',
-    'Children',
-    'Seeker',
-    'New Believer',
-    'Mature Believer',
     'Honor/Shame',
     'Fear/Power',
     'Guilt/Righteousness'
   ])
+  await upsertTag('Topics', [
+    'Addiction',
+    'Anger',
+    'Apologetics',
+    'Finances',
+    'Gospel presentations',
+    'Health',
+    'Holy Spirit',
+    "Jesus' Life",
+    'Relationships',
+    'Prayer',
+    'Work & Success'
+  ])
+  await upsertTag('Holidays', [
+    'Christmas/New Years',
+    'Easter',
+    'Ramadan',
+    'Halloween',
+    'Festivals',
+    'Sport Events',
+    'World Youth Day',
+    "Valentine's Day",
+    "Mother's & Women's Day",
+    "Father's Day"
+  ])
+  await upsertTag('Audience', [
+    'Catholic/Orthodox',
+    'Muslim',
+    'Hindu/Buddist',
+    'Athiest/Agnostic',
+    'Seeker',
+    'New Believer',
+    'Mature Believer',
+    'Men',
+    'Women',
+    'Children',
+    'Youth',
+    'Adults'
+  ])
   await upsertTag('Genre', [
-    'Drama',
-    'Historical',
-    'Comedy',
-    'Suspense',
-    'Explainer',
     'Animation',
+    'Explainer',
     'Inspirational',
-    'Testimonies'
+    'Series',
+    'Testimonies',
+    'Classic',
+    'Modern'
   ])
   await upsertTag(
     'Collections',
