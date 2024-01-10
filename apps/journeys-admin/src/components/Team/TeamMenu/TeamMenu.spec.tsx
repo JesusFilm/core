@@ -54,6 +54,7 @@ describe('TeamMenu', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: null
         }
       }
@@ -83,6 +84,7 @@ describe('TeamMenu', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: null
         }
       }
