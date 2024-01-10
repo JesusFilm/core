@@ -15,6 +15,8 @@ import ReactFlow, {
 } from 'reactflow'
 
 import 'reactflow/dist/style.css'
+import { boolean } from 'yup'
+
 import {
   ActiveFab,
   ActiveJourneyEditContent,
@@ -396,42 +398,72 @@ JourneyMapProps): ReactElement {
 
       x += 200
 
-      if (!step.nextBlockId && data[index + 1]) {
-        // console.log('No Next block connection')
-        links.push({
-          id: step.id + '->' + data[index + 1].id,
-          source: step.id,
-          target: data[index + 1].id,
-          markerEnd: {
-            type: MarkerType.Arrow
-          },
-          style: {
-            strokeWidth: 2,
-            strokeDasharray: 4
-            // stroke: '#FF0072',
+      // create an edge for a button
+      const currentCardBlock = step?.children[0]
+      let buttonBlockFound = false
+      currentCardBlock.children.forEach((child) => {
+        if (child.__typename === 'ButtonBlock') {
+          if (child.action) {
+            buttonBlockFound = true
+            console.log('Creating new button link')
+            console.log(`${step.id} -> ${child.action.blockId}`)
+            links.push({
+              id: step.id + '->' + child.action.blockId,
+              source: step.id,
+              target: child.action.blockId,
+              markerEnd: {
+                type: MarkerType.Arrow
+              },
+              style: {
+                strokeWidth: 2,
+                strokeDasharray: 4
+                // stroke: '#FF0072',
+              }
+              // label: 'Test',
+              // animated: true
+            })
           }
-          // label: 'Test',
-          // animated: true
-        })
-      }
+        }
+      })
 
-      if (step.nextBlockId && step.nextBlockId !== step.id) {
-        // console.log('Next block connection')
-        links.push({
-          id: step.id + '->' + step.nextBlockId,
-          source: step.id,
-          target: step.nextBlockId,
-          markerEnd: {
-            type: MarkerType.Arrow
-          },
-          style: {
-            strokeWidth: 2,
-            strokeDasharray: 4
-            // stroke: '#FF0072',
-          }
-          // label: 'Test',
-          // animated: true
-        })
+      if (!buttonBlockFound) {
+        if (!step.nextBlockId && data[index + 1]) {
+          // console.log('No Next block connection')
+          links.push({
+            id: step.id + '->' + data[index + 1].id,
+            source: step.id,
+            target: data[index + 1].id,
+            markerEnd: {
+              type: MarkerType.Arrow
+            },
+            style: {
+              strokeWidth: 2,
+              strokeDasharray: 4
+              // stroke: '#FF0072',
+            }
+            // label: 'Test',
+            // animated: true
+          })
+        }
+
+        if (step.nextBlockId && step.nextBlockId !== step.id) {
+          // console.log('Next block connection')
+          links.push({
+            id: step.id + '->' + step.nextBlockId,
+            source: step.id,
+            target: step.nextBlockId,
+            markerEnd: {
+              type: MarkerType.Arrow
+            },
+            style: {
+              strokeWidth: 2,
+              strokeDasharray: 4
+              // stroke: '#FF0072',
+            }
+            // label: 'Test',
+            // animated: true
+          })
+        }
       }
     })
 

@@ -15,6 +15,7 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 import { JourneyMap } from '../JourneyMap'
 
 import { Canvas } from './Canvas'
+import { ControlPanel } from './ControlPanel'
 import { Drawer } from './Drawer'
 import { EditToolbar } from './EditToolbar'
 import { Properties } from './Properties'
@@ -70,6 +71,7 @@ export function Editor({
         {(state) => (
           <Stack sx={{ height: '100vh' }}>
             <EditToolbar />
+            <JourneyMap width={800} height={400} />
             <Stack direction="row" flexGrow={1} sx={{ height: '100%' }}>
               {
                 {
@@ -80,6 +82,7 @@ export function Editor({
               }
               <Drawer />
             </Stack>
+            <ControlPanel />
           </Stack>
         )}
       </EditorProvider>
