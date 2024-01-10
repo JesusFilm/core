@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
@@ -14,11 +15,9 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 import { JourneyMap } from '../JourneyMap'
 
 import { Canvas } from './Canvas'
-import { ControlPanel } from './ControlPanel'
 import { Drawer } from './Drawer'
 import { EditToolbar } from './EditToolbar'
 import { Properties } from './Properties'
-import { SocialProvider } from './SocialProvider'
 
 const ActionsTable = dynamic(
   async () =>
@@ -36,6 +35,7 @@ const SocialPreview = dynamic(
     ).then((mod) => mod.SocialPreview),
   { ssr: false }
 )
+
 interface EditorProps {
   journey?: Journey
   selectedStepId?: string
@@ -58,19 +58,19 @@ export function Editor({
 
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
-      <SocialProvider>
-        <EditorProvider
-          initialState={{
-            steps,
-            selectedStep,
-            drawerTitle: 'Properties',
-            drawerChildren: <Properties isPublisher={false} />,
-            journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
-          }}
-        >
-          {(state) => (
-            <>
-              <JourneyMap width={800} height={400} />
+      <EditorProvider
+        initialState={{
+          steps,
+          selectedStep,
+          drawerTitle: 'Properties',
+          drawerChildren: <Properties isPublisher={false} />,
+          journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
+        }}
+      >
+        {(state) => (
+          <Stack sx={{ height: '100vh' }}>
+            <EditToolbar />
+            <Stack direction="row" flexGrow={1} sx={{ height: '100%' }}>
               {
                 {
                   [ActiveJourneyEditContent.Canvas]: <Canvas />,
@@ -78,13 +78,11 @@ export function Editor({
                   [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
                 }[state.journeyEditContentComponent]
               }
-              <EditToolbar />
               <Drawer />
-              <ControlPanel />
-            </>
-          )}
-        </EditorProvider>
-      </SocialProvider>
+            </Stack>
+          </Stack>
+        )}
+      </EditorProvider>
     </JourneyProvider>
   )
 }

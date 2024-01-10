@@ -119,9 +119,9 @@ export function Canvas(): ReactElement {
       data-testid="EditorCanvas"
       sx={{
         display: 'flex',
-        height: '100vh',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexGrow: 1
       }}
     >
       {selectedStep != null && (

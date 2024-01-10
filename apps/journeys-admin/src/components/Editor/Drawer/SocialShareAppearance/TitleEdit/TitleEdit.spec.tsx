@@ -4,7 +4,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { SocialProvider } from '../../../SocialProvider'
 
 import { JOURNEY_SEO_TITLE_UPDATE, TitleEdit } from './TitleEdit'
 
@@ -12,9 +11,7 @@ describe('TitleEdit', () => {
   it('should display suggested title length', () => {
     const { getByText } = render(
       <MockedProvider>
-        <SocialProvider>
-          <TitleEdit />
-        </SocialProvider>
+        <TitleEdit />
       </MockedProvider>
     )
     expect(getByText('Recommended length: 5 words')).toBeInTheDocument()
@@ -23,19 +20,17 @@ describe('TitleEdit', () => {
   it('should display seo title', () => {
     const { getByText } = render(
       <MockedProvider>
-        <SocialProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                title: 'journey title',
-                seoTitle: 'Social share title'
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <TitleEdit />
-          </JourneyProvider>
-        </SocialProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              title: 'journey title',
+              seoTitle: 'Social share title'
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <TitleEdit />
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByText('Social share title')).toBeInTheDocument()
@@ -44,19 +39,17 @@ describe('TitleEdit', () => {
   it('should display journey title when seo title not set', () => {
     const { getByText } = render(
       <MockedProvider>
-        <SocialProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                title: 'journey title',
-                seoTitle: null
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <TitleEdit />
-          </JourneyProvider>
-        </SocialProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              title: 'journey title',
+              seoTitle: null
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <TitleEdit />
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByText('journey title')).toBeInTheDocument()
@@ -90,16 +83,14 @@ describe('TitleEdit', () => {
           }
         ]}
       >
-        <SocialProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <TitleEdit />
-          </JourneyProvider>
-        </SocialProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <TitleEdit />
+        </JourneyProvider>
       </MockedProvider>
     )
 
