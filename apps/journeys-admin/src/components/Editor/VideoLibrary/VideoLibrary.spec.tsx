@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import {
   VideoBlockSource,
@@ -16,7 +17,17 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('VideoLibrary', () => {
+  const push = jest.fn()
+  const on = jest.fn()
+
   describe('smUp', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
@@ -207,10 +218,12 @@ describe('VideoLibrary', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(getByText("Andreas' Story")).toBeInTheDocument())
-    fireEvent.click(
-      getByRole('button', {
-        name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
-      })
+    await waitFor(() =>
+      fireEvent.click(
+        getByRole('button', {
+          name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
+        })
+      )
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({
@@ -224,7 +237,7 @@ describe('VideoLibrary', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('should render video details if videoId is not null', () => {
+  it('should render video details if videoId is not null', async () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
 
@@ -261,20 +274,74 @@ describe('VideoLibrary', () => {
         />
       </MockedProvider>
     )
-    expect(getByText('Video Details')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Video Details')).toBeInTheDocument())
   })
 
-  it('should render YouTube', () => {
+  it('should render YouTube', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByText, getByRole } = render(
       <MockedProvider>
         <VideoLibrary open />
       </MockedProvider>
     )
     fireEvent.click(getByRole('tab', { name: 'YouTube' }))
-    expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
+    )
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'video-youtube' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 
-  it('should render Cloudflare', () => {
+  it('should update url params on library tab click', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <VideoLibrary open />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('tab', { name: 'Upload' }))
+    fireEvent.click(getByRole('tab', { name: 'Library' }))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'video-library' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
+  })
+
+  it('should render Cloudflare', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByText, getByRole } = render(
       <MockedProvider>
         <VideoLibrary open />
@@ -282,5 +349,14 @@ describe('VideoLibrary', () => {
     )
     fireEvent.click(getByRole('tab', { name: 'Upload' }))
     expect(getByText('Drop a video here')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'video-upload' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 })

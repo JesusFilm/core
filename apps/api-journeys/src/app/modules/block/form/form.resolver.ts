@@ -147,4 +147,9 @@ export class FormBlockResolver {
       return null
     }
   }
+
+  @ResolveField('apiTokenExists')
+  apiTokenExists(@Parent() { apiToken }: Block): boolean {
+    return apiToken != null
+  }
 }

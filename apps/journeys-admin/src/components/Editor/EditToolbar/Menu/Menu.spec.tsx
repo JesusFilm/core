@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -23,7 +24,17 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('EditToolbar Menu', () => {
+  const push = jest.fn()
+  const on = jest.fn()
+
   it('should disable duplicate button when video block is selected', async () => {
     const { getByRole } = render(
       <SnackbarProvider>
@@ -302,7 +313,7 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
   })
 
-  it('should open templates dialog', () => {
+  it('should open templates dialog', async () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'stepId',
@@ -339,12 +350,22 @@ describe('EditToolbar Menu', () => {
     ).not.toBeInTheDocument()
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Template Settings' }))
-    expect(
-      getByRole('dialog', { name: 'Template Settings' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('dialog', { name: 'Template Settings' })
+      ).toBeInTheDocument()
+    )
   })
 
-  it('should handle edit journey title', () => {
+  it('should handle edit journey title', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
@@ -367,12 +388,30 @@ describe('EditToolbar Menu', () => {
     const menu = getByRole('button')
     fireEvent.click(menu)
     fireEvent.click(getByRole('menuitem', { name: 'Title' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
+    await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument())
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     expect(menu).not.toHaveAttribute('aria-expanded')
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'title' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 
-  it('should handle edit journey description', () => {
+  it('should handle edit journey description', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
@@ -395,8 +434,18 @@ describe('EditToolbar Menu', () => {
     const menu = getByRole('button')
     fireEvent.click(menu)
     fireEvent.click(getByRole('menuitem', { name: 'Description' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
+    await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument())
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     expect(menu).not.toHaveAttribute('aria-expanded')
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith({
+        query: { param: 'description' },
+        push,
+        events: {
+          on
+        }
+      })
+    })
   })
 })

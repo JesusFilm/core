@@ -8,7 +8,12 @@
         "project": ["apps/docs/tsconfig.json"]
       },
       "rules": {
-        "no-void": ["error", { "allowAsStatement": true }]
+        "no-void": [
+          "error",
+          {
+            "allowAsStatement": true
+          }
+        ]
       }
     },
     {

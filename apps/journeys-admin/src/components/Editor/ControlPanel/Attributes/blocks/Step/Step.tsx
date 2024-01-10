@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -10,7 +11,13 @@ import LockOpen1Icon from '@core/shared/ui/icons/LockOpen1'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../../Attribute'
 
-import { NextCard } from './NextCard'
+const NextCard = dynamic(
+  async () =>
+    await import(/* webpackChunkName: "NextCard" */ './NextCard').then(
+      (module) => module.NextCard
+    ),
+  { ssr: false }
+)
 
 export function Step({
   id,

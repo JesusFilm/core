@@ -112,7 +112,6 @@ export function LanguagesFilterPopper({
                             icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
                             checkedIcon={<CheckBoxIcon fontSize="small" />}
                             sx={{ mr: 2 }}
-                            onChange={handleChange}
                             checked={values?.languages?.some(
                               (language) => language.id === id
                             )}

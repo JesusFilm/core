@@ -27,7 +27,9 @@ describe('JourneyCardText', () => {
         variant={JourneyCardVariant.default}
       />
     )
-    expect(getByText('January 1 - a published journey')).toBeInTheDocument()
+    expect(
+      getByText('January 1, 2021 - a published journey')
+    ).toBeInTheDocument()
   })
 
   it('should show formatted date', () => {
@@ -37,7 +39,7 @@ describe('JourneyCardText', () => {
         variant={JourneyCardVariant.default}
       />
     )
-    expect(getByText('January 1')).toBeInTheDocument()
+    expect(getByText('January 1, 2021')).toBeInTheDocument()
   })
 
   it('should show date with year if journey is created before the current year', () => {
