@@ -1,9 +1,9 @@
 import '@core/nest/common/tracer'
-import { Logger as PinoLogger } from 'nestjs-pino'
 import { Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { json } from 'body-parser'
 import cors from 'cors'
+import { Logger as PinoLogger } from 'nestjs-pino'
 
 import { AppModule } from './app/app.module'
 import { PrismaService } from './app/lib/prisma.service'
