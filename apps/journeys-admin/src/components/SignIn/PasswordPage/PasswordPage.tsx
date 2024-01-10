@@ -47,8 +47,7 @@ export function PasswordPage({
       await signInWithEmailAndPassword(auth, values.email, values.password)
 
       await router.push({
-        pathname: '/users/terms-and-conditions',
-        query: { redirect: router.query.redirect }
+        pathname: '/'
       })
     } catch (error) {
       if (error.code === 'auth/wrong-password') {
@@ -79,7 +78,7 @@ export function PasswordPage({
               </Typography>
               <TextField
                 name="email"
-                hiddenLabel
+                label="Email"
                 placeholder={t('Enter your email address here')}
                 variant="standard"
                 value={values.email}
@@ -94,7 +93,7 @@ export function PasswordPage({
               />
               <TextField
                 name="password"
-                hiddenLabel
+                label="Password"
                 placeholder={t('Enter Password')}
                 variant="standard"
                 value={values.password}

@@ -1,1 +1,0 @@
-export { FacebookButton } from './FacebookButton'

@@ -6,8 +6,7 @@ import { ComponentProps, ReactNode } from 'react'
 
 import { journeysAdminConfig } from '../../libs/storybook'
 
-import { FacebookPage } from './FacebookPage'
-import { GooglePage } from './GooglePage'
+import { EmailUsedPage } from './EmailUsedPage'
 import { HelpPage } from './HelpPage'
 import { PasswordPage } from './PasswordPage'
 import { RegisterPage } from './RegisterPage'
@@ -69,16 +68,14 @@ export const Register = {
 export const Google = {
   ...Template,
   args: {
-    children: <GooglePage setActivePage={setActivePage} userEmail={userEmail} />
+    children: <EmailUsedPage userEmail={userEmail} variant="Google" />
   }
 }
 
 export const Facebook = {
   ...Template,
   args: {
-    children: (
-      <FacebookPage setActivePage={setActivePage} userEmail={userEmail} />
-    )
+    children: <EmailUsedPage userEmail={userEmail} variant="Facebook" />
   }
 }
 

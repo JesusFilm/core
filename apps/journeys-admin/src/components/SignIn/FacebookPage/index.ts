@@ -1,1 +1,0 @@
-export { FacebookPage } from './FaceBookPage'

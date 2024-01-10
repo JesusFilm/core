@@ -11,10 +11,9 @@ import { useTranslation } from 'react-i18next'
 
 import logo from '../../../public/logo.svg'
 
-import { FacebookPage } from './FacebookPage'
-import { GooglePage } from './GooglePage'
+import { EmailUsedPage } from './EmailUsedPage'
 import { HelpPage } from './HelpPage'
-import { Home } from './Home'
+import { HomePage } from './HomePage'
 import { PasswordPage } from './PasswordPage'
 import { RegisterPage } from './RegisterPage'
 
@@ -37,7 +36,7 @@ export function SignIn(): ReactElement {
   let children
   switch (activePage) {
     case 'home':
-      children = <Home setActivePage={setActivePage} setEmail={setEmail} />
+      children = <HomePage setActivePage={setActivePage} setEmail={setEmail} />
       break
     case 'password':
       children = (
@@ -50,14 +49,10 @@ export function SignIn(): ReactElement {
       )
       break
     case 'google.com':
-      children = (
-        <GooglePage setActivePage={setActivePage} userEmail={userEmail} />
-      )
+      children = <EmailUsedPage userEmail={userEmail} variant="Google" />
       break
     case 'facebook.com':
-      children = (
-        <FacebookPage setActivePage={setActivePage} userEmail={userEmail} />
-      )
+      children = <EmailUsedPage userEmail={userEmail} variant="Facebook" />
       break
     case 'help':
       children = (

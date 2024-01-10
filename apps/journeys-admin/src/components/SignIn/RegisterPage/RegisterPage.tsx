@@ -64,20 +64,18 @@ export function RegisterPage({
   }
   async function handleCreateAccount(values, { setFieldError }): Promise<void> {
     try {
-      console.log(values.email)
-      console.log(values.password)
       await createAccountAndSignIn(values.email, values.password)
       await router.push({
-        pathname: '/users/terms-and-conditions',
-        query: { redirect: router.query.redirect }
+        pathname: '/'
       })
     } catch (error) {
-      console.error(error)
       if (error.code === 'auth/email-already-in-use') {
         setFieldError(
           'email',
           'The email address is already used by another account'
         )
+      } else {
+        console.error(error)
       }
     }
   }
@@ -108,7 +106,7 @@ export function RegisterPage({
               </Typography>
               <TextField
                 name="email"
-                hiddenLabel
+                label="Email"
                 placeholder={t('Enter your email address here')}
                 variant="standard"
                 value={values.email}
@@ -123,7 +121,7 @@ export function RegisterPage({
               />
               <TextField
                 name="name"
-                hiddenLabel
+                label="Name"
                 placeholder={t('First & last name')}
                 variant="standard"
                 value={values.name}
@@ -138,7 +136,7 @@ export function RegisterPage({
               />
               <TextField
                 name="password"
-                hiddenLabel
+                label="Password"
                 placeholder={t('Choose password')}
                 variant="standard"
                 value={values.password}
