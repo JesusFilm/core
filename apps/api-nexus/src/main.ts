@@ -1,6 +1,5 @@
 import '@core/nest/common/tracer'
 import { Logger as PinoLogger } from 'nestjs-pino'
-
 import { Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { json } from 'body-parser'

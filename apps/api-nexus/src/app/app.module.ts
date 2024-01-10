@@ -6,7 +6,6 @@ import {
 } from '@nestjs/apollo'
 import { GraphQLModule } from '@nestjs/graphql'
 import { LoggerModule } from 'nestjs-pino'
-
 import { Module } from '@nestjs/common'
 
 import { ChannelsModule } from './modules/channel/channel.module'
