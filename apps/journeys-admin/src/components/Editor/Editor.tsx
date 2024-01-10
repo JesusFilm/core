@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
@@ -13,6 +14,8 @@ import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/Block
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
 import { Canvas } from './Canvas'
+import { Drawer } from './Drawer'
+import { EditToolbar } from './EditToolbar'
 import { Properties } from './Properties'
 
 const ActionsTable = dynamic(
@@ -63,13 +66,21 @@ export function Editor({
           journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
         }}
       >
-        {(state) =>
-          ({
-            [ActiveJourneyEditContent.Canvas]: <Canvas />,
-            [ActiveJourneyEditContent.Action]: <ActionsTable />,
-            [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
-          }[state.journeyEditContentComponent])
-        }
+        {(state) => (
+          <Stack sx={{ height: '100vh' }}>
+            <EditToolbar />
+            <Stack direction="row" flexGrow={1} sx={{ height: '100%' }}>
+              {
+                {
+                  [ActiveJourneyEditContent.Canvas]: <Canvas />,
+                  [ActiveJourneyEditContent.Action]: <ActionsTable />,
+                  [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
+                }[state.journeyEditContentComponent]
+              }
+              <Drawer />
+            </Stack>
+          </Stack>
+        )}
       </EditorProvider>
     </JourneyProvider>
   )

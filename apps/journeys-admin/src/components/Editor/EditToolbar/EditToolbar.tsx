@@ -1,49 +1,118 @@
-import Chip from '@mui/material/Chip'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import Image from 'next/image'
+import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
+
+import logo from '../../../../public/taskbar-icon.svg'
 
 import { Analytics } from './Analytics'
-import { DeleteBlock } from './DeleteBlock'
-import { DuplicateBlock } from './DuplicateBlock'
 import { Menu } from './Menu'
 
 export function EditToolbar(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { state } = useEditor()
 
   return (
     <Stack
       direction="row"
       alignItems="center"
-      justifyContent="flex-end"
       flexGrow={1}
+      spacing={{ xs: 2, sm: 6 }}
+      sx={{
+        height: 86,
+        backgroundColor: 'background.paper',
+        px: { xs: 2, sm: 4 }
+      }}
     >
+      <Image
+        src={logo}
+        alt="Next Steps"
+        height={32}
+        width={32}
+        style={{
+          maxWidth: '100%',
+          height: 'auto'
+        }}
+      />
+      <NextLink href="/" passHref legacyBehavior>
+        <IconButton>
+          <ChevronLeftIcon />
+        </IconButton>
+      </NextLink>
       {journey != null && (
         <>
-          <Analytics journey={journey} variant="button" />
-          <Chip
-            icon={<EyeOpenIcon />}
-            label="Preview"
+          <Box
+            bgcolor={(theme) => theme.palette.background.default}
+            borderRadius="4px"
+            width={50}
+            height={50}
+            justifyContent="center"
+            alignItems="center"
+            sx={{ display: { xs: 'none', sm: 'flex' } }}
+          >
+            {journey?.primaryImageBlock?.src == null ? (
+              <ThumbsUpIcon color="error" />
+            ) : (
+              <Image
+                src={journey.primaryImageBlock.src}
+                alt={journey.primaryImageBlock.src}
+                width={50}
+                height={50}
+                style={{
+                  borderRadius: '4px',
+                  objectFit: 'cover'
+                }}
+              />
+            )}
+          </Box>
+          <Stack flexGrow={1} sx={{ minWidth: 0 }}>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {journey.title}
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {journey.description}
+            </Typography>
+          </Stack>
+          <Button
+            variant="contained"
             component="a"
             href={`/api/preview?slug=${journey.slug}`}
             target="_blank"
-            variant="outlined"
-            clickable
+            color="secondary"
+            startIcon={<EyeOpenIcon />}
             sx={{
               display: {
                 xs: 'none',
                 md: 'flex'
               }
             }}
-          />
+          >
+            {t('Preview')}
+          </Button>
           <IconButton
             aria-label="Preview"
             href={`/api/preview?slug=${journey.slug}`}
@@ -57,23 +126,9 @@ export function EditToolbar(): ReactElement {
           >
             <EyeOpenIcon />
           </IconButton>
+          <Analytics journey={journey} variant="button" />
         </>
       )}
-
-      <DeleteBlock
-        variant="button"
-        disabled={
-          state.journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
-        }
-      />
-      <DuplicateBlock
-        variant="button"
-        disabled={
-          state.journeyEditContentComponent !==
-            ActiveJourneyEditContent.Canvas ||
-          state.selectedBlock?.__typename === 'VideoBlock'
-        }
-      />
       <Menu />
     </Stack>
   )
