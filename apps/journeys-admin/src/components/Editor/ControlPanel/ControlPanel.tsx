@@ -193,7 +193,7 @@ export function ControlPanel(): ReactElement {
   }
 
   return (
-    <Stack sx={{ height: '100%' }} data-testid="EditorControlPanel">
+    <Stack sx={{ height: 250 }} data-testid="EditorControlPanel">
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
         {journeyEditContentComponent ===
           ActiveJourneyEditContent.SocialPreview && (
