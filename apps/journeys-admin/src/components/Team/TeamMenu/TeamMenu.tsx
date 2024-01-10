@@ -59,7 +59,7 @@ export function TeamMenu(): ReactElement {
 
   function setRoute(param: string): void {
     router.query.param = param
-    void router.push(router)
+    void router.push(router, undefined, { shallow: true })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })
@@ -90,8 +90,8 @@ export function TeamMenu(): ReactElement {
       {activeTeam != null && (
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           <TeamAvatars
-            onClick={() => {
-              setRoute('teams')
+            onClick={async () => {
+              await setRoute('teams')
               setTeamManageOpen(true)
             }}
             userTeams={activeTeam.userTeams}

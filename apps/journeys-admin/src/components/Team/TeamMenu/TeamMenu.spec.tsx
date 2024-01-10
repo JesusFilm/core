@@ -116,13 +116,17 @@ describe('TeamMenu', () => {
       expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
     )
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'create-team' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'create-team' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
 
     fireEvent.click(getByRole('button'))
@@ -135,13 +139,17 @@ describe('TeamMenu', () => {
       expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
     )
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'rename-team' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'rename-team' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
 
     fireEvent.click(getByRole('button'))
@@ -154,13 +162,17 @@ describe('TeamMenu', () => {
       expect(queryByTestId('dialog-close-button')).not.toBeInTheDocument()
     )
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'teams' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'teams' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 
