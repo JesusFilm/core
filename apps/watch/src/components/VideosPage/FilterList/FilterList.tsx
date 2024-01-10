@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography'
 import algoliasearch from 'algoliasearch'
 import { Formik } from 'formik'
 import { ReactElement, ReactNode, SyntheticEvent, useState } from 'react'
-import { InstantSearch } from 'react-instantsearch'
+import { InstantSearch, SearchBox } from 'react-instantsearch'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
@@ -142,7 +142,7 @@ export function FilterList({
 
   const searchClient = algoliasearch(
     'FJYYBFHBHS',
-    '68350ba7a8f40b6bafc0947a3b0e7238'
+    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
   )
 
   const subtitleLanguages = languagesData?.languages.filter((language) =>
@@ -233,7 +233,7 @@ export function FilterList({
             headingIcon={<TitleIcon />}
             heading="Title"
           >
-            <InstantSearch searchClient={searchClient} indexName="watch_videos">
+            <InstantSearch searchClient={searchClient} indexName="watch_videos" routing>
               <TextField
                 value={values.title}
                 name="title"
@@ -244,6 +244,7 @@ export function FilterList({
                 helperText="724+ titles"
                 fullWidth
               />
+              <SearchBox />
             </InstantSearch>
           </Accordion>
           <SubmitListener />
