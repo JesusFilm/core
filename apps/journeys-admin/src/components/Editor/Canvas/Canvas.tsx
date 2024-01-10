@@ -24,6 +24,7 @@ import { FramePortal } from '../../FramePortal'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
+import { QuickControls } from './QuickControls'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 
@@ -114,16 +115,16 @@ export function Canvas(): ReactElement {
   }
 
   return (
-    <Box
+    <Stack
       onClick={handleSelectCard}
       data-testid="EditorCanvas"
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexGrow: 1
-      }}
+      direction="row"
+      spacing={4}
+      flexGrow={1}
+      justifyContent="center"
+      alignItems="center"
     >
+      <QuickControls />
       {selectedStep != null && (
         <Box
           data-testid={`step-${selectedStep.id}`}
@@ -189,6 +190,6 @@ export function Canvas(): ReactElement {
           </FramePortal>
         </Box>
       )}
-    </Box>
+    </Stack>
   )
 }

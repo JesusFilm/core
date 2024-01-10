@@ -10,12 +10,12 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
-import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
+import { BlockDuplicate } from '../../../../../../__generated__/BlockDuplicate'
 import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../__generated__/BlockFields'
-import { MenuItem } from '../../../MenuItem'
+} from '../../../../../../__generated__/BlockFields'
+import { MenuItem } from '../../../../MenuItem'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
@@ -130,6 +130,11 @@ export function DuplicateBlock({
           disabled={disableAction}
           onClick={handleDuplicateBlock}
           data-testId={`Duplicate-${blockLabel}`}
+          sx={{
+            borderRadius: '100%',
+            border: '1px solid #E6E6E6',
+            p: 3
+          }}
         >
           <CopyLeftIcon />
         </IconButton>

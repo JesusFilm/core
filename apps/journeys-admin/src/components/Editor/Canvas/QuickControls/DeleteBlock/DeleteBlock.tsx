@@ -9,9 +9,9 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
-import { BlockDelete } from '../../../../../__generated__/BlockDelete'
-import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
-import { MenuItem } from '../../../MenuItem'
+import { BlockDelete } from '../../../../../../__generated__/BlockDelete'
+import { blockDeleteUpdate } from '../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { MenuItem } from '../../../../MenuItem'
 
 import getSelected from './utils/getSelected'
 

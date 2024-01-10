@@ -8,8 +8,6 @@ import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { MoveBlockButtons } from './MoveBlockButtons'
-
 const Footer = dynamic(
   async () =>
     await import(
@@ -107,22 +105,12 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
         return <></>
     }
   } else {
-    const withMoveButtons = (block: ReactElement): ReactElement => {
-      return (
-        <>
-          <MoveBlockButtons selectedBlock={selected} selectedStep={step} />
-          <Divider orientation="vertical" variant="middle" flexItem />
-          {block}
-        </>
-      )
-    }
-
     switch (selected.__typename) {
       case 'CardBlock':
         return <Card {...selected} />
 
       case 'FormBlock':
-        return withMoveButtons(<Form {...selected} />)
+        return <Form {...selected} />
 
       case 'StepBlock': {
         const block = selected.children.find(
@@ -142,39 +130,35 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
       }
 
       case 'VideoBlock': {
-        return step.id === selected.parentBlockId ? (
-          <Video {...selected} />
-        ) : (
-          withMoveButtons(<Video {...selected} />)
-        )
+        return <Video {...selected} />
       }
 
       case 'ImageBlock': {
-        return withMoveButtons(<Image {...selected} alt={selected.alt} />)
+        return <Image {...selected} alt={selected.alt} />
       }
 
       case 'TypographyBlock': {
-        return withMoveButtons(<Typography {...selected} />)
+        return <Typography {...selected} />
       }
 
       case 'ButtonBlock': {
-        return withMoveButtons(<Button {...selected} />)
+        return <Button {...selected} />
       }
 
       case 'RadioQuestionBlock': {
-        return withMoveButtons(<></>)
+        return <></>
       }
 
       case 'RadioOptionBlock': {
-        return withMoveButtons(<RadioOption {...selected} />)
+        return <RadioOption {...selected} />
       }
 
       case 'SignUpBlock': {
-        return withMoveButtons(<SignUp {...selected} />)
+        return <SignUp {...selected} />
       }
 
       case 'TextResponseBlock': {
-        return withMoveButtons(<TextResponse {...selected} />)
+        return <TextResponse {...selected} />
       }
 
       default:
