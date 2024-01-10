@@ -14,6 +14,9 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 import { JourneyMap } from '../JourneyMap'
 
 import { Canvas } from './Canvas'
+import { ControlPanel } from './ControlPanel'
+import { Drawer } from './Drawer'
+import { EditToolbar } from './EditToolbar'
 import { Properties } from './Properties'
 import { SocialProvider } from './SocialProvider'
 
@@ -75,6 +78,9 @@ export function Editor({
                   [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
                 }[state.journeyEditContentComponent]
               }
+              <EditToolbar />
+              <Drawer />
+              <ControlPanel />
             </>
           )}
         </EditorProvider>
