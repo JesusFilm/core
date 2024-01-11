@@ -71,6 +71,16 @@ model Resource {
     privacy         PrivacyStatus?
     sourceType      SourceType
     localizations   ResourceLocalization[]
+    googleDrive     GoogleDriveResource?
+}
+
+model GoogleDriveResource {
+    id           String   @id @default(uuid())
+    resourceId   String   @unique
+    driveId      String
+    mimeType     String
+    refreshToken String
+    resource     Resource @relation(fields: [resourceId], references: [id])
 }
 
 model ResourceLocalization {

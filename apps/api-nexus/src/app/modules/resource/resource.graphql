@@ -25,6 +25,11 @@ type ResourceLocalization @key(fields: "id") {
   language: String!
 }
 
+type GoogleAuthResponse {
+  id: ID!
+  accessToken: String!
+}
+
 enum PrivacyStatus {
   public
   unlisted
@@ -80,6 +85,11 @@ input ResourceFromSpreadsheetInput {
   nexusId: String!
 }
 
+input GoogleAuthInput {
+  authCode: String!
+  url: String!
+}
+
 extend type Query {
   resources(where: ResourceFilter): [Resource!]
   resource(id: ID!): Resource!
@@ -91,4 +101,5 @@ extend type Mutation {
   resourceDelete(id: ID!): Resource!
   resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
   resourceFromTemplate(nexusId: String!, file: Upload): [Resource!]
+  getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
 }

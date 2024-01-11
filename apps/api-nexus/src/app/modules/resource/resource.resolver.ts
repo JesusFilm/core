@@ -8,9 +8,12 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser';
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId';
 
 import {
+  GoogleAuthInput,
+  GoogleAuthResponse,
   ResourceCreateInput,
   ResourceFilter,
-  ResourceUpdateInput,
+  ResourceFromGoogleDriveInput,
+  ResourceUpdateInput
 } from '../../__generated__/graphql';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
 import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService';
@@ -114,67 +117,66 @@ export class ResourceResolver {
     return resource;
   }
 
-  // @Mutation()
-  // async resourceFromGoogleDrive(
-  //   @CurrentUserId() userId: string,
-  //   @CurrentUser() user: User,
-  //   @Args('input') input: ResourceFromGoogleDriveInput,
-  // ): Promise<Resource[]> {
-  //   const nexus = await this.prismaService.nexus.findUnique({
-  //     where: { id: input.nexusId, userNexuses: { every: { userId } } },
-  //   });
-  //   if (nexus == null)
-  //     throw new GraphQLError('nexus not found', {
-  //       extensions: { code: 'NOT_FOUND' },
-  //     });
-  //   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  //   await input.fileIds.forEach(async (fileId) => {
-  //     const driveFile = await this.googleDriveService.getFile({
-  //       fileId,
-  //       accessToken: input.authCode ?? '',
-  //     });
-  //     if (driveFile == null)
-  //       throw new GraphQLError('file not found', {
-  //         extensions: { code: 'NOT_FOUND' },
-  //       });
-  //     const resource = await this.prismaService.resource.create({
-  //       data: {
-  //         id: uuidv4(),
-  //         name: driveFile.name,
-  //         nexusId: nexus.id,
-  //         status: 'published',
-  //         createdAt: new Date(),
-  //         sourceType: 'googleDrive',
-  //       },
-  //     });;
-  //     const fileUrl = this.googleDriveService.getFileUrl(fileId);;
-  //     await this.googleDriveService.setFilePermission({
-  //       fileId,
-  //       accessToken: input.authCode ?? '',
-  //     });
-  //     const res = await this.cloudFlareService.uploadToCloudflareByUrl(
-  //       fileUrl,
-  //       driveFile.name,
-  //       userId,
-  //     );
-  //     console.log('CLOUD FLARE', res);
-  //     await this.prismaService.googleDriveResource.create({
-  //       data: {
-  //         id: uuidv4(),
-  //         resourceId: resource.id,
-  //         driveId: driveFile.id,
-  //         title: driveFile.name,
-  //         mimeType: driveFile.mimeType,
-  //         refreshToken: input.authCode ?? '',
-  //       },
-  //     });
-  //   });
+  @Mutation()
+  async resourceFromGoogleDrive(
+    @CurrentUserId() userId: string,
+    @CurrentUser() user: User,
+    @Args('input') input: ResourceFromGoogleDriveInput,
+  ): Promise<Resource[]> {
+    const nexus = await this.prismaService.nexus.findUnique({
+      where: { id: input.nexusId, userNexuses: { every: { userId } } },
+    });
+    if (nexus == null)
+      throw new GraphQLError('nexus not found', {
+        extensions: { code: 'NOT_FOUND' },
+      });
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    await input.fileIds.forEach(async (fileId) => {
+      const driveFile = await this.googleDriveService.getFile({
+        fileId,
+        accessToken: input.authCode ?? '',
+      });
+      if (driveFile == null)
+        throw new GraphQLError('file not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      const resource = await this.prismaService.resource.create({
+        data: {
+          id: uuidv4(),
+          name: driveFile.name,
+          nexusId: nexus.id,
+          status: 'published',
+          createdAt: new Date(),
+          sourceType: 'googleDrive',
+        },
+      });;
+      const fileUrl = this.googleDriveService.getFileUrl(fileId);;
+      await this.googleDriveService.setFilePermission({
+        fileId,
+        accessToken: input.authCode ?? '',
+      });
+      const res = await this.cloudFlareService.uploadToCloudflareByUrl(
+        fileUrl,
+        driveFile.name,
+        userId,
+      );
+      console.log('CLOUD FLARE', res);
+      await this.prismaService.googleDriveResource.create({
+        data: {
+          id: uuidv4(),
+          resourceId: resource.id,
+          driveId: driveFile.id,
+          mimeType: driveFile.mimeType,
+          refreshToken: input.authCode ?? '',
+        },
+      });
+    });
 
-  //   return await this.prismaService.resource.findMany({
-  //     where: { googleDrive: { driveId: { in: input.fileIds } } },
-  //     include: { googleDrive: true },
-  //   });
-  // }
+    return await this.prismaService.resource.findMany({
+      where: { googleDrive: { driveId: { in: input.fileIds } } },
+      include: { googleDrive: true },
+    });
+  }
 
   @Mutation()
   async resourceFromTemplate(
@@ -203,7 +205,7 @@ export class ResourceResolver {
     );
 
     for (const row of rows) {
-      const { filename, title, description, keywords, category, privacy } = row;
+      const { filename, title, description, keywords, category } = row;
 
       if (filename !== undefined) {
         const resource = await this.prismaService.resource.create({
@@ -242,18 +244,15 @@ export class ResourceResolver {
 
   @Mutation()
   async getGoogleAccessToken(
-    @CurrentUserId() userId: string,
-    @CurrentUser() user: User,
-    @Args('authCode') authCode: string,
-    @Args('url') url: string,
-    @Args('clientId') clientId: string,
-    @Args('clientSecret') clientSecret: string,
-  ): Promise<{ id: string; accessToken: string }> {
+    // @CurrentUserId() userId: string,
+    // @CurrentUser() user: User,
+    @Args('input') input: GoogleAuthInput,
+  ): Promise<GoogleAuthResponse> {
     const { accessToken, refreshToken } = await this.exchangeAuthCodeForTokens(
-      authCode,
-      url,
-      clientId,
-      clientSecret,
+      input.authCode,
+      input.url,
+      process.env.GOOGLE_CLIENT_ID ?? '',
+      process.env.GOOGLE_CLIENT_SECRET ?? '',
     );
 
     const tokenRecord = await this.prismaService.googleAccessToken.create({
@@ -267,6 +266,18 @@ export class ResourceResolver {
       accessToken,
     };
   }
+
+  // @Mutation()
+  // async uploadToYoutube(
+  //   @CurrentUserId() userId: string,
+  //   @CurrentUser() user: User,
+  //   @Args('channelId') channelId: string,
+  //   @Args('resourceId') url: string,
+    
+  // ): Promise<unknown> {
+    
+  //   // TODO: Downloadfile
+  // }
 
   private async handleGoogleDriveOperations(
     tokenId: string,
@@ -346,6 +357,7 @@ export class ResourceResolver {
   private async downloadSpreadsheet(
     spreadsheetId: string,
     accessToken: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
     const sheetsApiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/0`;
     const response = await fetch(sheetsApiUrl, {
