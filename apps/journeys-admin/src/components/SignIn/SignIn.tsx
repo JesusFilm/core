@@ -12,9 +12,9 @@ import { useTranslation } from 'react-i18next'
 import logo from '../../../public/logo.svg'
 
 import { EmailUsedPage } from './EmailUsedPage'
-import { PasswordResetPage } from './PasswordResetPage'
 import { HomePage } from './HomePage'
 import { PasswordPage } from './PasswordPage'
+import { PasswordResetPage } from './PasswordResetPage'
 import { RegisterPage } from './RegisterPage'
 
 export type ActivePage =

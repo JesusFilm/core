@@ -7,8 +7,8 @@ import { ComponentProps, ReactNode } from 'react'
 import { journeysAdminConfig } from '../../libs/storybook'
 
 import { EmailUsedPage } from './EmailUsedPage'
-import { PasswordResetPage } from './PasswordResetPage'
 import { PasswordPage } from './PasswordPage'
+import { PasswordResetPage } from './PasswordResetPage'
 import { RegisterPage } from './RegisterPage'
 import { SignIn } from './SignIn'
 
