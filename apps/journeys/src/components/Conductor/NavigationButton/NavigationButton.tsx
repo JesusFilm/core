@@ -213,7 +213,6 @@ export function NavigationButton({
       sx={{
         ...alignSx,
         position: 'absolute',
-        border: '1px solid red',
         // StepFooter heights
         bottom: { xs: '170px', sm: '133px', lg: '60.5px' },
         zIndex: 2,
@@ -237,9 +236,8 @@ export function NavigationButton({
           onClick={() => handleNav(variant)}
           disableRipple
           sx={{
-            mx: { xs: 2, lg: 8 },
-            mt: { xs: 16.5, md: 7, lg: 3.5 },
-            p: 2
+            mx: { xs: 0, lg: 6 },
+            mt: { xs: 16.5, md: 7, lg: 3.5 }
           }}
         >
           {alignment === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
