@@ -1,1 +1,0 @@
-export { JourneyMap } from './JourneyMap'

@@ -1,101 +1,87 @@
 import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
 import dagre from 'dagre'
-import { ComponentProps, ReactElement, useMemo } from 'react'
+import { TFunction } from 'i18next'
+import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
+  Controls,
   Edge,
   MarkerType,
   Node,
   Position,
   ReactFlow,
-  ReactFlowProvider,
   useEdgesState,
   useNodesState
 } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { StepBlockNextBlockUpdate } from '../../../__generated__/StepBlockNextBlockUpdate'
 import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../Editor/ControlPanel/Attributes/blocks/Step/NextCard/Cards'
 
-import { ActionNode, ActionNodeType } from './ActionNode'
-import { CustomNode, CustomNodeType } from './CustomNode'
+import {
+  RadioOptionBlockNode,
+  RadioOptionBlockNodeData
+} from './nodes/RadioOptionBlockNode'
+import { StepBlockNode, StepBlockNodeData } from './nodes/StepBlockNode'
 
 import 'reactflow/dist/style.css'
 
-const BoxStyled = styled(Box)`
-  .react-flow .react-flow__node.selected {
-    border-radius: 6px;
-    box-shadow: 0px 0px 0px 6px #e4e4e4, 0px 0px 0px 8px #c52d3a;
+function getStepBlockNodeData(card?: TreeBlock<CardBlock>): StepBlockNodeData {
+  if (card == null) return {}
+
+  let bgImage: string | undefined
+
+  const coverBlock = card.children.find(
+    (block) =>
+      block.id === card.coverBlockId &&
+      (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
+  ) as TreeBlock | undefined
+
+  if (coverBlock?.__typename === 'VideoBlock') {
+    bgImage =
+      (coverBlock.source !== VideoBlockSource.youTube &&
+      coverBlock.source !== VideoBlockSource.cloudflare
+        ? // Use posterBlockId image or default poster image on video
+          coverBlock?.posterBlockId != null
+          ? (
+              coverBlock.children.find(
+                (block) =>
+                  block.id === coverBlock.posterBlockId &&
+                  block.__typename === 'ImageBlock'
+              ) as TreeBlock<ImageBlock>
+            ).src
+          : coverBlock?.video?.image
+        : // Use Youtube or Cloudflare set poster image
+          coverBlock?.image) ?? undefined
+  } else if (coverBlock?.__typename === 'ImageBlock') {
+    bgImage = coverBlock?.src ?? undefined
   }
 
-  .react-flow__handle.connectionindicator {
-    background: #bbb;
-    width: 8px;
-    height: 8px;
-    opacity: 0;
+  return {
+    bgColor: card.backgroundColor,
+    bgImage
   }
-
-  .react-flow__node.selected
-    .react-flow__handle.connectionindicator.react-flow__handle-right {
-    background: #fff;
-    border-color: #c52d3a;
-    border-width: 2px;
-    width: 12px;
-    height: 12px;
-    opacity: 1;
-  }
-
-  .react-flow__node.selected .react-flow__handle-right,
-  .react-flow__node:hover .react-flow__handle-right {
-    right: -15px;
-  }
-
-  .react-flow__node .react-flow__handle-right {
-    right: -6px;
-  }
-
-  .react-flow__node .react-flow__handle-left {
-    left: -6px;
-  }
-
-  .react-flow__node.selected .react-flow__handle-left,
-  .react-flow__node:hover .react-flow__handle-left {
-    left: -15px;
-  }
-`
-
-function findContent(
-  block?: TreeBlock<CardBlock>
-): [image?: string, title?: string] {
-  if (block == null) return [undefined, undefined]
-
-  let image: string | undefined
-  let title: string | undefined
-  for (let i = block.children.length - 1; i >= 0; i--) {
-    const child = block.children[i]
-    if (child.__typename === 'ImageBlock' && child?.src != null) {
-      image = child?.src
-    }
-
-    if (child.__typename === 'TypographyBlock' && child?.content != null) {
-      title = child.content
-    }
-  }
-
-  return [image, title]
 }
 
-type InternalNode = Node<ActionNodeType | CustomNodeType>
+type InternalNode =
+  | Node<StepBlockNodeData, 'StepBlock'>
+  | Node<RadioOptionBlockNodeData, 'RadioOptionBlock'>
 
-function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
+function transformSteps(
+  steps: Array<TreeBlock<StepBlock>>,
+  t: TFunction
+): {
   nodes: InternalNode[]
   edges: Edge[]
 } {
@@ -108,12 +94,10 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
         if (child.__typename === 'RadioOptionBlock') {
           nodes.push({
             id: child.id,
-            type: 'action',
+            type: child.__typename,
             selectable: false,
             data: {
-              type: 'custom',
-              title: child.label,
-              subline: 'MULTI CHOICE'
+              title: child.label
             },
             position: { x: 0, y: 0 }
           })
@@ -156,23 +140,18 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
 
   steps.forEach((step, index) => {
     findRadioQuestions(step, step.id)
-
     const card = step.children.find(
-      (block) => block.__typename === 'CardBlock'
+      (card) => card.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-
-    const [stepImage, stepTitle] = findContent(card)
+    const data = getStepBlockNodeData(card)
     nodes.push({
       id: step.id,
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
-      type: 'custom',
+      type: step.__typename,
       data: {
-        type: 'custom',
-        title: stepTitle,
-        subline: 'api.ts',
-        bgColor: card?.backgroundColor,
-        bgImage: stepImage
+        ...data,
+        title: getStepHeading(step.id, step.children, steps, t)
       },
       position: { x: 0, y: 0 }
     })
@@ -240,15 +219,16 @@ const nodeWidth = 130
 const nodeHeight = 60
 
 function getLayoutedElements(
-  steps?: Array<TreeBlock<StepBlock>>,
-  direction = 'TB'
+  steps: Array<TreeBlock<StepBlock>>,
+  direction: string,
+  t: TFunction
 ): { nodes: InternalNode[]; edges: Edge[] } {
   const dagreGraph = new dagre.graphlib.Graph()
   dagreGraph.setDefaultEdgeLabel(() => ({}))
 
   if (steps == null) return { nodes: [], edges: [] }
 
-  const { nodes, edges } = transformSteps(steps)
+  const { nodes, edges } = transformSteps(steps, t)
   const isHorizontal = direction === 'LR'
   dagreGraph.setGraph({
     rankdir: direction,
@@ -282,36 +262,20 @@ function getLayoutedElements(
   return { nodes, edges }
 }
 
-function FlowMap(props: ComponentProps<typeof ReactFlow>): ReactElement {
-  return (
-    <BoxStyled width="100%" height="100%">
-      <ReactFlow
-        {...props}
-        fitView
-        nodeTypes={{
-          action: ActionNode,
-          custom: CustomNode
-        }}
-        attributionPosition="bottom-left"
-        style={{}}
-        proOptions={{ hideAttribution: true }}
-      />
-    </BoxStyled>
-  )
-}
-
-export function JourneyMap(): ReactElement {
+export function JourneyFlow(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { steps }
   } = useEditor()
 
-  const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(
-    () => getLayoutedElements(steps, 'LR'),
-    [steps]
-  )
+  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([])
 
-  const [nodes, , onNodesChange] = useNodesState(layoutedNodes)
-  const [edges, , onEdgesChange] = useEdgesState(layoutedEdges)
+  useEffect(() => {
+    const { nodes, edges } = getLayoutedElements(steps ?? [], 'LR', t)
+    setNodes(nodes)
+    setEdges(edges)
+  }, [steps, t, setNodes, setEdges])
 
   const [stepBlockNextBlockUpdate] = useMutation<StepBlockNextBlockUpdate>(
     STEP_BLOCK_NEXT_BLOCK_UPDATE
@@ -334,16 +298,22 @@ export function JourneyMap(): ReactElement {
   }
 
   return (
-    <Box sx={{ height: '800px' }}>
-      <ReactFlowProvider>
-        <FlowMap
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-        />
-      </ReactFlowProvider>
+    <Box sx={{ height: 400, flexShrink: 0 }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        // onNodesChange={onNodesChange}
+        // onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView
+        nodeTypes={{
+          RadioOptionBlock: RadioOptionBlockNode,
+          StepBlock: StepBlockNode
+        }}
+        proOptions={{ hideAttribution: true }}
+      >
+        <Controls showInteractive={false} />
+      </ReactFlow>
     </Box>
   )
 }

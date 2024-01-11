@@ -12,7 +12,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import { JourneyMap } from '../JourneyMap'
+import { JourneyFlow } from '../JourneyFlow'
 
 import { Canvas } from './Canvas'
 import { ControlPanel } from './ControlPanel'
@@ -71,7 +71,7 @@ export function Editor({
         {({ journeyEditContentComponent }) => (
           <Stack sx={{ height: '100vh' }}>
             <EditToolbar />
-            <JourneyMap width={800} height={400} />
+            <JourneyFlow />
             <Stack direction="row" flexGrow={1} sx={{ height: '100%' }}>
               {
                 {
