@@ -128,11 +128,13 @@ export function Canvas(): ReactElement {
         <Box
           data-testid={`step-${selectedStep.id}`}
           sx={{
-            height: 'calc(100% - 32px)',
-            width: 'calc(100% - 32px)',
+            width: '100%',
             maxWidth: 360,
             maxHeight: 640,
             aspectRatio: '9 / 16',
+            boxSizing: 'border-box',
+            margin: '16px',
+            position: 'relative',
             display: 'flex',
             borderRadius: 5,
             transition: '0.2s outline ease-out 0.1s',
