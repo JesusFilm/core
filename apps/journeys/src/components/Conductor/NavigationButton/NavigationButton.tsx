@@ -238,14 +238,8 @@ export function NavigationButton({
           disableRipple
           sx={{
             mx: { xs: 2, lg: 8 },
-            mt: { xs: 17, md: 7, lg: 4 },
-            p: 2,
-            color: (theme) => theme.palette.common.white,
-            backgroundColor: (theme) => `${theme.palette.grey[700]}33`,
-            '&:hover': {
-              color: (theme) => theme.palette.common.white,
-              backgroundColor: (theme) => `${theme.palette.grey[700]}4d`
-            }
+            mt: { xs: 16.5, md: 7, lg: 3.5 },
+            p: 2
           }}
         >
           {alignment === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
