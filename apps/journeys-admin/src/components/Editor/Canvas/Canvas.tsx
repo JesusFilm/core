@@ -132,6 +132,7 @@ export function Canvas(): ReactElement {
             width: 'calc(100% - 32px)',
             maxWidth: 360,
             maxHeight: 640,
+            aspectRatio: '9 / 16',
             display: 'flex',
             borderRadius: 5,
             transition: '0.2s outline ease-out 0.1s',
