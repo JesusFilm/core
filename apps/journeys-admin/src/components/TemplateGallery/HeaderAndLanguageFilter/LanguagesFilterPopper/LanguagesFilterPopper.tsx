@@ -63,7 +63,7 @@ export function LanguagesFilterPopper({
               left: 0,
               right: 0,
               backgroundColor: 'transparent',
-              zIndex: zIndex.modal,
+              zIndex: zIndex.fab,
               display: open ? 'block' : 'none'
             }}
           />
@@ -80,7 +80,7 @@ export function LanguagesFilterPopper({
                   open={open}
                   anchorEl={anchorEl}
                   sx={{
-                    zIndex: zIndex.modal,
+                    zIndex: zIndex.fab,
                     py: 2,
                     backgroundColor: 'background.paper',
                     borderRadius: 1,
