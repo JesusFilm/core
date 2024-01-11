@@ -74,7 +74,8 @@ export function Drawer(): ReactElement {
     <Paper
       elevation={0}
       sx={{
-        display: { xs: 'none', md: 'block' },
+        display: { xs: 'none', md: 'flex' },
+        flexDirection: 'column',
         position: 'absolute',
         top: 0,
         right: 0,

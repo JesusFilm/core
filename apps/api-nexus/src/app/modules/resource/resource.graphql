@@ -1,0 +1,84 @@
+scalar Upload
+
+type Resource @key(fields: "id") {
+  id: ID!
+  nexusId: String!
+  nexus: Nexus!
+  name: String!
+  googleDrive: GoogleDriveResource
+  createdAt: DateTime!
+  status: ResourceStatus!
+  templateResource: TemplateResource
+}
+
+enum ResourceStatus {
+  deleted
+  published
+}
+
+type GoogleDriveResource @key(fields: "id") {
+  id: ID!
+  resourceId: String!
+  resource: Resource!
+  title: String!
+  driveId: String!
+  mimeType: String!
+  refreshToken: String!
+}
+
+type TemplateResource @key(fields: "id") {
+  id: ID!
+  resourceId: String!
+  resource: Resource!
+  fileName: String!
+  title: String!
+  description: String!
+  keywords: String!
+}
+
+input ResourceCreateInput {
+  nexusId: String!
+  name: String!
+}
+
+input ResourceUpdateInput {
+  name: String
+}
+
+input ResourceFromGoogleDriveInput {
+  fileIds: [String!]!
+  authCode: String!
+  nexusId: String!
+}
+
+input ResourceFilter {
+  ids: [ID!]
+  name: String
+  nexusId: String
+  status: ResourceStatus
+  limit: Int
+}
+
+input AddResourceFromGoogleDriveInput {
+  accessToken: String!
+  fileId: String!
+  nexusId: String!
+}
+
+input ResourceFromSpreadsheetInput {
+  file: Upload
+  nexusId: String!
+}
+
+extend type Query {
+  resources(where: ResourceFilter): [Resource!]
+  resource(id: ID!): Resource!
+}
+
+extend type Mutation {
+  resourceCreate(input: ResourceCreateInput!): Resource!
+  resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
+  resourceDelete(id: ID!): Resource!
+  resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
+  resourceFromTemplate(nexusId: String!, file: Upload): [Resource!]
+}
