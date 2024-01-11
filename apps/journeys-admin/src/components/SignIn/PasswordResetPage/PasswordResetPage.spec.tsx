@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 
-import { PasswordResetPage } from './PasswordResetPage' // Adjust the path based on your project structure
+import { PasswordResetPage } from './PasswordResetPage'
 
 describe('PasswordResetPage', () => {
   const mockSetActivePage = jest.fn()
@@ -13,7 +13,6 @@ describe('PasswordResetPage', () => {
       />
     )
 
-    // Ensure that the component renders with the default user email
     expect(getByText('Sign In')).toBeInTheDocument()
     expect(
       getByText(
@@ -31,7 +30,6 @@ describe('PasswordResetPage', () => {
       />
     )
     fireEvent.click(getByRole('button', { name: 'CANCEL' }))
-    // Ensure that the setActivePage function is called with the correct argument
     expect(mockSetActivePage).toHaveBeenCalledWith('password')
   })
 })
