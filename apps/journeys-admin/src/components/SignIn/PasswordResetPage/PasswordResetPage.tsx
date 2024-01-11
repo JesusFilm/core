@@ -10,14 +10,14 @@ import { InferType, object, string } from 'yup'
 
 import type { ActivePage } from '../SignIn'
 
-interface HelpPageProps {
+interface PasswordResetPageProps {
   setActivePage: (activePage: ActivePage) => void
   userEmail: string
 }
-export function HelpPage({
+export function PasswordResetPage({
   userEmail,
   setActivePage
-}: HelpPageProps): ReactElement {
+}: PasswordResetPageProps): ReactElement {
   const { t } = useTranslation()
   const validationSchema = object().shape({
     email: string()
@@ -42,7 +42,7 @@ export function HelpPage({
         validationSchema={validationSchema}
         onSubmit={PasswordReset}
       >
-        <Stack gap={4} data-testid="HelpPage">
+        <Stack gap={4}>
           <Typography variant="h5" textAlign="left">
             {t('Sign In')}
           </Typography>

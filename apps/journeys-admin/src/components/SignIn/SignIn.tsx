@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import logo from '../../../public/logo.svg'
 
 import { EmailUsedPage } from './EmailUsedPage'
-import { HelpPage } from './HelpPage'
+import { PasswordResetPage } from './PasswordResetPage'
 import { HomePage } from './HomePage'
 import { PasswordPage } from './PasswordPage'
 import { RegisterPage } from './RegisterPage'
@@ -56,7 +56,10 @@ export function SignIn(): ReactElement {
       break
     case 'help':
       children = (
-        <HelpPage setActivePage={setActivePage} userEmail={userEmail} />
+        <PasswordResetPage
+          setActivePage={setActivePage}
+          userEmail={userEmail}
+        />
       )
       break
     default:

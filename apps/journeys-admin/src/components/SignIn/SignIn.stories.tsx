@@ -7,7 +7,7 @@ import { ComponentProps, ReactNode } from 'react'
 import { journeysAdminConfig } from '../../libs/storybook'
 
 import { EmailUsedPage } from './EmailUsedPage'
-import { HelpPage } from './HelpPage'
+import { PasswordResetPage } from './PasswordResetPage'
 import { PasswordPage } from './PasswordPage'
 import { RegisterPage } from './RegisterPage'
 import { SignIn } from './SignIn'
@@ -82,7 +82,9 @@ export const Facebook = {
 export const Help = {
   ...Template,
   args: {
-    children: <HelpPage setActivePage={setActivePage} userEmail={userEmail} />
+    children: (
+      <PasswordResetPage setActivePage={setActivePage} userEmail={userEmail} />
+    )
   }
 }
 

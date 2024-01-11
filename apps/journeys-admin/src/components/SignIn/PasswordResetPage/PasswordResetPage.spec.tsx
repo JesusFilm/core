@@ -1,15 +1,15 @@
 import { fireEvent, render } from '@testing-library/react'
 
-import { HelpPage } from './HelpPage' // Adjust the path based on your project structure
+import { PasswordResetPage } from './PasswordResetPage' // Adjust the path based on your project structure
 
-describe('HelpPage', () => {
+describe('PasswordResetPage', () => {
   const mockSetActivePage = jest.fn()
 
   beforeEach(() => jest.resetAllMocks())
 
-  it('should render HelpPage component with default user email', () => {
+  it('should render with default user email', () => {
     const { getByText, getByRole } = render(
-      <HelpPage
+      <PasswordResetPage
         userEmail="test@example.com"
         setActivePage={mockSetActivePage}
       />
@@ -27,7 +27,7 @@ describe('HelpPage', () => {
 
   it('should trigger cancel button click', () => {
     const { getByRole } = render(
-      <HelpPage
+      <PasswordResetPage
         userEmail="test@example.com"
         setActivePage={mockSetActivePage}
       />
