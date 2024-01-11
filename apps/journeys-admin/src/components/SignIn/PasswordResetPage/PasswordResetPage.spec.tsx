@@ -5,8 +5,6 @@ import { PasswordResetPage } from './PasswordResetPage' // Adjust the path based
 describe('PasswordResetPage', () => {
   const mockSetActivePage = jest.fn()
 
-  beforeEach(() => jest.resetAllMocks())
-
   it('should render with default user email', () => {
     const { getByText, getByRole } = render(
       <PasswordResetPage
