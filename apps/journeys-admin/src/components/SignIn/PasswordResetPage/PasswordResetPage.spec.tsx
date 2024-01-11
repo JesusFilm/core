@@ -32,6 +32,6 @@ describe('PasswordResetPage', () => {
     )
     fireEvent.click(getByRole('button', { name: 'CANCEL' }))
     // Ensure that the setActivePage function is called with the correct argument
-    expect(mockSetActivePage).toHaveBeenCalledWith('home')
+    expect(mockSetActivePage).toHaveBeenCalledWith('password')
   })
 })

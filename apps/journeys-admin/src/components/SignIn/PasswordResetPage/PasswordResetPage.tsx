@@ -60,7 +60,7 @@ export function PasswordResetPage({
               justifyContent: 'flex-end'
             }}
           >
-            <Button size="large" onClick={() => setActivePage('home')}>
+            <Button size="large" onClick={() => setActivePage('password')}>
               {t('CANCEL')}
             </Button>
             <Button size="large" variant="contained">
