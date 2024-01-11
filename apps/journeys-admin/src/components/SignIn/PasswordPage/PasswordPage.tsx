@@ -51,9 +51,15 @@ export function PasswordPage({
       })
     } catch (error) {
       if (error.code === 'auth/wrong-password') {
-        setFieldError('password', 'Wrong Password')
+        setFieldError(
+          'password',
+          "The email and password you entered don't match"
+        )
       } else if (error.code === 'auth/too-many-requests') {
-        setFieldError('password', 'Too many requests')
+        setFieldError(
+          'password',
+          'You have entered an incorrect password too many times. Please try again in a few minutes.'
+        )
       } else {
         console.error('An error occurred:', error.message)
       }
