@@ -9,16 +9,38 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 import { useTeam } from '../../Team/TeamProvider'
+import { gql, useLazyQuery } from '@apollo/client'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
 }
 
+export const GET_TEAMS_LAZY_QUERY = gql`
+  query GetTeamsLazyQuery {
+    teams {
+      id
+      title
+      publicTitle
+      userTeams {
+        id
+        user {
+          id
+          firstName
+          lastName
+          imageUrl
+        }
+      }
+    }
+  }
+`
+
 export function CreateJourneyButton({
   signedIn = false
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { query } = useTeam()
+  const [getTeams] = useLazyQuery(GET_TEAMS_LAZY_QUERY, {
+    nextFetchPolicy: 'cache-only'
+  })
   const router = useRouter()
   const { journey } = useJourney()
   const [openTeamDialog, setOpenTeamDialog] = useState(false)
@@ -66,34 +88,30 @@ export function CreateJourneyButton({
 
   const handleCheckSignIn = (): void => {
     if (signedIn) {
+      void getTeams()
       setOpenTeamDialog(true)
     } else {
-      void router
-        .push(
-          {
-            pathname: '/users/sign-in',
-            query: {
-              redirect: `${
-                window.location.origin + router.asPath
-              }?createNew=true`
-            }
-          },
-          undefined,
-          {
-            shallow: true
+      void router.push(
+        {
+          pathname: '/users/sign-in',
+          query: {
+            redirect: `${window.location.origin + router.asPath}?createNew=true`
           }
-        )
-        .then(() => {
-          setOpenTeamDialog(true)
-        })
+        },
+        undefined,
+        {
+          shallow: true
+        }
+      )
     }
   }
 
   useEffect(() => {
     if (router.query.createNew === 'true') {
+      void getTeams()
       setOpenTeamDialog(true)
     }
-  }, [router, query, handleCreateJourney])
+  }, [router, getTeams, handleCreateJourney])
 
   return (
     <>
