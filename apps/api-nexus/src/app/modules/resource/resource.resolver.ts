@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import { Readable } from 'stream';
-
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
-import { Upload } from 'graphql-upload-minimal';
 import { v4 as uuidv4 } from 'uuid';
-import XLSX from 'xlsx';
 
 import { Prisma, Resource } from '.prisma/api-nexus-client';
 import { User } from '@core/nest/common/firebaseClient';
@@ -13,10 +8,12 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser';
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId';
 
 import {
+  GoogleAuthInput,
+  GoogleAuthResponse,
   ResourceCreateInput,
   ResourceFilter,
   ResourceFromGoogleDriveInput,
-  ResourceUpdateInput,
+  ResourceUpdateInput
 } from '../../__generated__/graphql';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
 import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService';
@@ -44,7 +41,7 @@ export class ResourceResolver {
       where: {
         AND: [filter, { nexus: { userNexuses: { every: { userId } } } }],
       },
-      include: { googleDrive: true, templateResource: true },
+      include: { localizations: true },
       take: where?.limit ?? undefined,
     });
 
@@ -169,13 +166,12 @@ export class ResourceResolver {
           id: uuidv4(),
           resourceId: resource.id,
           driveId: driveFile.id,
-          title: driveFile.name,
           mimeType: driveFile.mimeType,
           refreshToken: input.authCode ?? '',
         },
       });
     });
-    
+
     return await this.prismaService.resource.findMany({
       where: { googleDrive: { driveId: { in: input.fileIds } } },
       include: { googleDrive: true },
@@ -187,7 +183,9 @@ export class ResourceResolver {
     @CurrentUserId() userId: string,
     @CurrentUser() user: User,
     @Args('nexusId') nexusId: string,
-    @Args('file', { type: () => Upload }) file: any,
+    @Args('tokenId') tokenId: string,
+    @Args('spreadsheetId') spreadsheetId: string,
+    @Args('drivefolderId') drivefolderId: string,
   ): Promise<Resource[]> {
     const nexus = await this.prismaService.nexus.findUnique({
       where: {
@@ -200,34 +198,14 @@ export class ResourceResolver {
         extensions: { code: 'NOT_FOUND' },
       });
 
-    const fileData = await file.promise;
-    const { createReadStream } = fileData;
-
-    const stream = createReadStream();
-    const buffer = await this.streamToBuffer(stream);
-
-    const workbook = XLSX.read(buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const rows: SpreadsheetRow[] = XLSX.utils.sheet_to_json(worksheet);
+    const rows = await this.handleGoogleDriveOperations(
+      tokenId,
+      spreadsheetId,
+      drivefolderId,
+    );
 
     for (const row of rows) {
-      const {
-        filename,
-        channel,
-        title,
-        description,
-        keywords,
-        spoken_language,
-        caption_file,
-        caption_language,
-        category,
-        privacy,
-        notify_subscribers,
-        custom_thumbnail,
-        playlist_id,
-        is_made_for_kids,
-      } = row;
+      const { filename, title, description, keywords, category } = row;
 
       if (filename !== undefined) {
         const resource = await this.prismaService.resource.create({
@@ -238,44 +216,18 @@ export class ResourceResolver {
             status: 'published',
             sourceType: 'template',
             createdAt: new Date(),
+            category,
+            privacy: 'public',
           },
         });
 
-        await this.prismaService.templateResource.create({
+        await this.prismaService.resourceLocalization.create({
           data: {
             resourceId: resource.id,
-            filename,
-            channel,
-            spokenLanguage: spoken_language,
-            captionLanguage: caption_language,
-            captionFile: caption_file,
-            category,
-            privacyStatus: 'public',
-            notifySubscribers: notify_subscribers,
-            customThumbnail: custom_thumbnail,
-            playlistId: playlist_id,
-            isMadeForKids: is_made_for_kids,
-            titles: {
-              create: {
-                languageEntries: {
-                  create: [{ text: title, languageCode: 'en' }],
-                },
-              },
-            },
-            descriptions: {
-              create: {
-                languageEntries: {
-                  create: [{ text: description, languageCode: 'en' }],
-                },
-              },
-            },
-            keywords: {
-              create: keywords.split(',').map((keyword) => ({
-                languageEntries: {
-                  create: [{ text: keyword.trim(), languageCode: 'en' }],
-                },
-              })),
-            },
+            title,
+            description,
+            keywords,
+            language: 'en',
           },
         });
       }
@@ -286,33 +238,195 @@ export class ResourceResolver {
         id: nexusId,
         nexus: { userNexuses: { every: { userId } } },
       },
-      include: { templateResource: true },
+      include: { localizations: true },
     });
   }
 
-  private async streamToBuffer(stream: Readable): Promise<Buffer> {
-    const chunks: Uint8Array[] = [];
-    return await new Promise<Buffer>((resolve, reject) => {
-      stream.on('data', (chunk: Uint8Array) => chunks.push(chunk));
-      stream.on('error', (err) => reject(err));
-      stream.on('end', () => resolve(Buffer.concat(chunks)));
+  @Mutation()
+  async getGoogleAccessToken(
+    // @CurrentUserId() userId: string,
+    // @CurrentUser() user: User,
+    @Args('input') input: GoogleAuthInput,
+  ): Promise<GoogleAuthResponse> {
+    const { accessToken, refreshToken } = await this.exchangeAuthCodeForTokens(
+      input.authCode,
+      input.url,
+      process.env.GOOGLE_CLIENT_ID ?? '',
+      process.env.GOOGLE_CLIENT_SECRET ?? '',
+    );
+
+    const tokenRecord = await this.prismaService.googleAccessToken.create({
+      data: {
+        refreshToken,
+      },
     });
+
+    return {
+      id: tokenRecord.id,
+      accessToken,
+    };
+  }
+
+  // @Mutation()
+  // async uploadToYoutube(
+  //   @CurrentUserId() userId: string,
+  //   @CurrentUser() user: User,
+  //   @Args('channelId') channelId: string,
+  //   @Args('resourceId') url: string,
+    
+  // ): Promise<unknown> {
+    
+  //   // TODO: Downloadfile
+  // }
+
+  private async handleGoogleDriveOperations(
+    tokenId: string,
+    spreadsheetId: string,
+    drivefolderId: string,
+  ): Promise<SpreadsheetRow[]> {
+    const googleAccessToken =
+      await this.prismaService.googleAccessToken.findUnique({
+        where: { id: tokenId },
+      });
+
+    if (googleAccessToken === null) {
+      throw new Error('Invalid tokenId');
+    }
+
+    const accessToken = await this.getNewAccessToken(
+      googleAccessToken.refreshToken,
+    );
+
+    const spreadsheetData = await this.downloadSpreadsheet(
+      spreadsheetId,
+      accessToken,
+    );
+
+    const spreadsheetRows: SpreadsheetRow[] = [];
+
+    for (const [
+      filename,
+      title,
+      description,
+      keywords,
+      category,
+      privacy,
+    ] of spreadsheetData) {
+      const fileExists = await this.checkFileExistsInDriveFolder(
+        filename,
+        drivefolderId,
+        accessToken,
+      );
+
+      if (fileExists) {
+        const row: SpreadsheetRow = {
+          filename,
+          title,
+          description,
+          keywords,
+          category,
+          privacy,
+        };
+        spreadsheetRows.push(row);
+      }
+    }
+
+    return spreadsheetRows;
+  }
+
+  private async getNewAccessToken(refreshToken: string): Promise<string> {
+    const refreshTokenUrl = 'https://oauth2.googleapis.com/token';
+
+    const response = await fetch(refreshTokenUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: process.env.GOOGLE_CLIENT_ID ?? '',
+        client_secret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+        refresh_token: refreshToken,
+        grant_type: 'refresh_token',
+      }),
+    });
+
+    const data = await response.json();
+    return data.access_token;
+  }
+
+  private async downloadSpreadsheet(
+    spreadsheetId: string,
+    accessToken: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Promise<any> {
+    const sheetsApiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/0`;
+    const response = await fetch(sheetsApiUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await response.json();
+    return data.values;
+  }
+
+  private async exchangeAuthCodeForTokens(
+    authCode: string,
+    redirectUri: string,
+    clientId: string,
+    clientSecret: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const tokenExchangeUrl = 'https://oauth2.googleapis.com/token';
+
+    const response = await fetch(tokenExchangeUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        code: authCode,
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code',
+      }),
+    });
+
+    const data = await response.json();
+    return {
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+    };
+  }
+
+  private async checkFileExistsInDriveFolder(
+    filename: string,
+    folderId: string,
+    accessToken: string,
+  ): Promise<boolean> {
+    const driveApiUrl = `https://www.googleapis.com/drive/v3/files?q='${encodeURIComponent(
+      folderId,
+    )}'+in+parents+and+name='${encodeURIComponent(
+      filename,
+    )}'&fields=files(id,name)&key=${process.env.GOOGLE_API_KEY}`;
+    const response = await fetch(driveApiUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await response.json();
+    return Boolean(data.files) && data.files.length > 0;
   }
 }
 
 interface SpreadsheetRow {
   filename: string;
-  channel: string;
   title: string;
   description: string;
   keywords: string;
-  spoken_language: string;
-  caption_file: string;
-  caption_language: string;
   category: string;
   privacy: string;
-  notify_subscribers: boolean;
-  custom_thumbnail: string;
-  playlist_id: string;
-  is_made_for_kids: boolean;
 }

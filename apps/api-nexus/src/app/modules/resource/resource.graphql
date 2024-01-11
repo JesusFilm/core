@@ -5,35 +5,50 @@ type Resource @key(fields: "id") {
   nexusId: String!
   nexus: Nexus!
   name: String!
-  googleDrive: GoogleDriveResource
-  createdAt: DateTime!
   status: ResourceStatus!
-  templateResource: TemplateResource
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+  googleDriveLink: String!
+  category: String!
+  privacy: PrivacyStatus!
+  sourceType: SourceType!
+  localizations: [ResourceLocalization]!
+}
+
+type ResourceLocalization @key(fields: "id") {
+  id: ID!
+  resourceId: String!
+  title: String!
+  description: String!
+  keywords: String!
+  language: String!
+}
+
+type GoogleAuthResponse {
+  id: ID!
+  accessToken: String!
+}
+
+enum PrivacyStatus {
+  public
+  unlisted
+  private
+}
+
+enum SourceType {
+    googleDrive
+    template
+    archlight
+    other
 }
 
 enum ResourceStatus {
   deleted
   published
-}
-
-type GoogleDriveResource @key(fields: "id") {
-  id: ID!
-  resourceId: String!
-  resource: Resource!
-  title: String!
-  driveId: String!
-  mimeType: String!
-  refreshToken: String!
-}
-
-type TemplateResource @key(fields: "id") {
-  id: ID!
-  resourceId: String!
-  resource: Resource!
-  fileName: String!
-  title: String!
-  description: String!
-  keywords: String!
+  processing
+  error
+  uploaded
 }
 
 input ResourceCreateInput {
@@ -70,6 +85,11 @@ input ResourceFromSpreadsheetInput {
   nexusId: String!
 }
 
+input GoogleAuthInput {
+  authCode: String!
+  url: String!
+}
+
 extend type Query {
   resources(where: ResourceFilter): [Resource!]
   resource(id: ID!): Resource!
@@ -81,4 +101,5 @@ extend type Mutation {
   resourceDelete(id: ID!): Resource!
   resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
   resourceFromTemplate(nexusId: String!, file: Upload): [Resource!]
+  getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
 }

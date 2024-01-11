@@ -140,39 +140,47 @@ type Resource
   nexusId: String!
   nexus: Nexus!
   name: String!
-  googleDrive: GoogleDriveResource
-  createdAt: DateTime!
   status: ResourceStatus!
-  templateResource: TemplateResource
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+  googleDriveLink: String!
+  category: String!
+  privacy: PrivacyStatus!
+  sourceType: SourceType!
+  localizations: [ResourceLocalization]!
+}
+
+type ResourceLocalization
+  @key(fields: "id")
+{
+  id: ID!
+  resourceId: String!
+  title: String!
+  description: String!
+  keywords: String!
+  language: String!
+}
+
+enum PrivacyStatus {
+  public
+  unlisted
+  private
+}
+
+enum SourceType {
+  googleDrive
+  template
+  archlight
+  other
 }
 
 enum ResourceStatus {
   deleted
   published
-}
-
-type GoogleDriveResource
-  @key(fields: "id")
-{
-  id: ID!
-  resourceId: String!
-  resource: Resource!
-  title: String!
-  driveId: String!
-  mimeType: String!
-  refreshToken: String!
-}
-
-type TemplateResource
-  @key(fields: "id")
-{
-  id: ID!
-  resourceId: String!
-  resource: Resource!
-  fileName: String!
-  title: String!
-  description: String!
-  keywords: String!
+  processing
+  error
+  uploaded
 }
 
 input ResourceCreateInput {
@@ -217,4 +225,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Channel | GoogleDriveResource | Nexus | Resource | TemplateResource
+union _Entity = Channel | Nexus | Resource | ResourceLocalization

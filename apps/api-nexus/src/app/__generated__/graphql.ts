@@ -18,9 +18,25 @@ export enum NexusStatus {
     published = "published"
 }
 
+export enum PrivacyStatus {
+    "public" = "public",
+    unlisted = "unlisted",
+    "private" = "private"
+}
+
+export enum SourceType {
+    googleDrive = "googleDrive",
+    template = "template",
+    archlight = "archlight",
+    other = "other"
+}
+
 export enum ResourceStatus {
     deleted = "deleted",
-    published = "published"
+    published = "published",
+    processing = "processing",
+    error = "error",
+    uploaded = "uploaded"
 }
 
 export class ChannelCreateInput {
@@ -72,8 +88,6 @@ export class NexusFilter {
 export class ResourceCreateInput {
     nexusId: string;
     name: string;
-    refLink?: Nullable<string>;
-    videoId?: Nullable<string>;
 }
 
 export class ResourceUpdateInput {
@@ -101,8 +115,13 @@ export class AddResourceFromGoogleDriveInput {
 }
 
 export class ResourceFromSpreadsheetInput {
-    file: Upload;
+    file?: Nullable<Upload>;
     nexusId: string;
+}
+
+export class GoogleAuthInput {
+    authCode: string;
+    url: string;
 }
 
 export class Channel {
@@ -160,32 +179,31 @@ export class Resource {
     nexusId: string;
     nexus: Nexus;
     name: string;
-    googleDrive?: Nullable<GoogleDriveResource>;
-    createdAt: DateTime;
     status: ResourceStatus;
-    templateResource?: Nullable<TemplateResource>;
+    createdAt: DateTime;
+    updatedAt?: Nullable<DateTime>;
+    deletedAt?: Nullable<DateTime>;
+    googleDriveLink: string;
+    category: string;
+    privacy: PrivacyStatus;
+    sourceType: SourceType;
+    localizations: Nullable<ResourceLocalization>[];
 }
 
-export class GoogleDriveResource {
-    __typename?: 'GoogleDriveResource';
+export class ResourceLocalization {
+    __typename?: 'ResourceLocalization';
     id: string;
     resourceId: string;
-    resource: Resource;
-    title: string;
-    driveId: string;
-    mimeType: string;
-    refreshToken: string;
-}
-
-export class TemplateResource {
-    __typename?: 'TemplateResource';
-    id: string;
-    resourceId: string;
-    resource: Resource;
-    fileName: string;
     title: string;
     description: string;
     keywords: string;
+    language: string;
+}
+
+export class GoogleAuthResponse {
+    __typename?: 'GoogleAuthResponse';
+    id: string;
+    accessToken: string;
 }
 
 export class Translation {
@@ -218,7 +236,9 @@ export abstract class IMutation {
 
     abstract resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
 
-    abstract resourceFromTemplate(input: ResourceFromSpreadsheetInput): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+    abstract resourceFromTemplate(nexusId: string, file?: Nullable<Upload>): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+
+    abstract getGoogleAccessToken(input: GoogleAuthInput): GoogleAuthResponse | Promise<GoogleAuthResponse>;
 }
 
 export class Language {
