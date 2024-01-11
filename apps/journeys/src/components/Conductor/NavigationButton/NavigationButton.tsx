@@ -224,35 +224,33 @@ export function NavigationButton({
           sm: 'calc(100vh - 238px)',
           lg: 'calc(100% - 105px)'
         },
-        alignItems: 'center',
-        pointerEvents: 'none'
+        alignItems: 'center'
       }}
     >
-      {/* <Fade
+      <Fade
         in={canNavigate && showNavigation && !disabled}
         timeout={{ appear: 300, exit: 1000 }}
-      > */}
-      <IconButton
-        data-testid={`ConductorNavigationButton${capitalize(variant)}`}
-        size="small"
-        onClick={() => handleNav(variant)}
-        disableRipple
-        sx={{
-          pointerEvents: 'all',
-          mx: { xs: 2, lg: 8 },
-          mt: { xs: 17, md: 7, lg: 4 },
-          p: 2,
-          color: (theme) => theme.palette.common.white,
-          backgroundColor: (theme) => `${theme.palette.grey[700]}33`,
-          '&:hover': {
-            color: (theme) => theme.palette.common.white,
-            backgroundColor: (theme) => `${theme.palette.grey[700]}4d`
-          }
-        }}
       >
-        {alignment === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-      </IconButton>
-      {/* </Fade> */}
+        <IconButton
+          data-testid={`ConductorNavigationButton${capitalize(variant)}`}
+          size="small"
+          onClick={() => handleNav(variant)}
+          disableRipple
+          sx={{
+            mx: { xs: 2, lg: 8 },
+            mt: { xs: 17, md: 7, lg: 4 },
+            p: 2,
+            color: (theme) => theme.palette.common.white,
+            backgroundColor: (theme) => `${theme.palette.grey[700]}33`,
+            '&:hover': {
+              color: (theme) => theme.palette.common.white,
+              backgroundColor: (theme) => `${theme.palette.grey[700]}4d`
+            }
+          }}
+        >
+          {alignment === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+        </IconButton>
+      </Fade>
     </NavigationContainer>
   )
 }
