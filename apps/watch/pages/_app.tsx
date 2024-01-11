@@ -1,12 +1,14 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import algoliasearch from 'algoliasearch'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
 import { DefaultSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
+import { InstantSearch } from 'react-instantsearch'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -50,26 +52,36 @@ export default function WatchApp({
     initialState: initialPageProps.initialApolloState
   })
 
+  const searchClient = algoliasearch(
+    'FJYYBFHBHS',
+    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+  )
+
   return (
     <ApolloProvider client={client}>
       <CacheProvider value={emotionCache}>
-        <DefaultSeo
-          titleTemplate="%s | Jesus Film Project"
-          defaultTitle="Watch | Jesus Film Project"
-          description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
-        />
-        <Head>
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width"
+        <InstantSearch
+          searchClient={searchClient}
+          indexName="watch_videos"
+          routing
+        >
+          <DefaultSeo
+            titleTemplate="%s | Jesus Film Project"
+            defaultTitle="Watch | Jesus Film Project"
+            description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
           />
-        </Head>
-        {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
-          process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
-          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
-          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
-            <Script id="datadog-rum">
-              {`
+          <Head>
+            <meta
+              name="viewport"
+              content="minimum-scale=1, initial-scale=1, width=device-width"
+            />
+          </Head>
+          {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
+            process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
+            process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
+            process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
+              <Script id="datadog-rum">
+                {`
              (function(h,o,u,n,d) {
                h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
                d=o.createElement(u);d.async=1;d.src=n
@@ -96,14 +108,15 @@ export default function WatchApp({
                });
              })
            `}
-            </Script>
-          )}
-        <ThemeProvider
-          themeName={ThemeName.website}
-          themeMode={ThemeMode.light}
-        >
-          <Component {...pageProps} />
-        </ThemeProvider>
+              </Script>
+            )}
+          <ThemeProvider
+            themeName={ThemeName.website}
+            themeMode={ThemeMode.light}
+          >
+            <Component {...pageProps} />
+          </ThemeProvider>
+        </InstantSearch>
       </CacheProvider>
     </ApolloProvider>
   )

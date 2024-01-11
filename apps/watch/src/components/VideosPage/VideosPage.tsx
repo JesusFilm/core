@@ -5,6 +5,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
+import { useHits, useSearchBox } from 'react-instantsearch'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { GetVideos } from '../../../__generated__/GetVideos'
@@ -66,7 +67,17 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
   const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
   const [previousCount, setPreviousCount] = useState(0)
+  const { refine } = useSearchBox()
+  const { hits } = useHits()
+  const [inputValue, setInputValue] = useState('')
 
+  function setQuery(newQuery: string): void {
+    setInputValue(newQuery)
+
+    refine(newQuery)
+  }
+
+  console.log('hits', hits)
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
   const query = new URLSearchParams(
@@ -125,6 +136,7 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
     void router.push(`/videos?${params.toString()}`, undefined, {
       shallow: true
     })
+    if (inputValue != null) setQuery(inputValue)
   }
 
   const { data: languagesData, loading: languagesLoading } =

@@ -9,10 +9,8 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import algoliasearch from 'algoliasearch'
 import { Formik } from 'formik'
 import { ReactElement, ReactNode, SyntheticEvent, useState } from 'react'
-import { InstantSearch, SearchBox } from 'react-instantsearch'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
@@ -21,8 +19,6 @@ import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import type { VideoPageFilter } from '../VideosPage'
 
 import { LanguagesFilter } from './LanguagesFilter'
-
-
 
 const subtitleLanguageIds = [
   '411',
@@ -140,11 +136,6 @@ export function FilterList({
       setExpanded(isExpanded ? panel : false)
     }
 
-  const searchClient = algoliasearch(
-    'FJYYBFHBHS',
-    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
-  )
-
   const subtitleLanguages = languagesData?.languages.filter((language) =>
     subtitleLanguageIds.includes(language.id)
   )
@@ -233,19 +224,16 @@ export function FilterList({
             headingIcon={<TitleIcon />}
             heading="Title"
           >
-            <InstantSearch searchClient={searchClient} indexName="watch_videos" routing>
-              <TextField
-                value={values.title}
-                name="title"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                label="Search Titles"
-                variant="outlined"
-                helperText="724+ titles"
-                fullWidth
-              />
-              <SearchBox />
-            </InstantSearch>
+            <TextField
+              value={values.title}
+              name="title"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              label="Search Titles"
+              variant="outlined"
+              helperText="724+ titles"
+              fullWidth
+            />
           </Accordion>
           <SubmitListener />
         </Box>
