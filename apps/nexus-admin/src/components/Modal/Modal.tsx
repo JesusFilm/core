@@ -3,6 +3,7 @@ import { FC, ReactNode } from 'react'
 
 interface ModalProps {
   title: string
+  subtitle?: string
   open: boolean
   handleClose: () => void
   children: ReactNode
@@ -11,6 +12,7 @@ interface ModalProps {
 
 export const Modal: FC<ModalProps> = ({
   title,
+  subtitle,
   open,
   handleClose,
   children,
@@ -29,11 +31,18 @@ export const Modal: FC<ModalProps> = ({
           left: '50%',
           transform: 'translate(-50%, -50%)'
         }}
-        spacing={10}
+        spacing={6}
       >
-        <Typography variant="h5" sx={{ fontWeight: 700 }}>
-          {title}
-        </Typography>
+        <Stack spacing={2}>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            {title}
+          </Typography>
+          {subtitle && (
+            <Typography variant="body2" sx={{ fontWeight: 700 }}>
+              {subtitle}
+            </Typography>
+          )}
+        </Stack>
         {children}
         {actions}
       </Stack>

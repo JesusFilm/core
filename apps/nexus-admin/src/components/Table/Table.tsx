@@ -1,5 +1,9 @@
 import { Paper } from '@mui/material'
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import {
+  DataGrid,
+  GridColDef,
+  GridColumnVisibilityModel
+} from '@mui/x-data-grid'
 import { FC } from 'react'
 
 import { TableHeader } from './TableHeader'
@@ -10,6 +14,9 @@ interface TableProps {
   title: string
   subtitle: string
   loading: boolean
+  hasTableView: boolean
+  onTableView: () => void
+  columnsVisibility?: GridColumnVisibilityModel
 }
 
 export const Table: FC<TableProps> = ({
@@ -17,7 +24,10 @@ export const Table: FC<TableProps> = ({
   rows,
   title,
   subtitle,
-  loading
+  loading,
+  hasTableView = false,
+  onTableView,
+  columnsVisibility
 }) => {
   return (
     <Paper>
@@ -40,7 +50,9 @@ export const Table: FC<TableProps> = ({
         slotProps={{
           toolbar: {
             title,
-            subtitle
+            subtitle,
+            hasTableView,
+            onTableView
           }
         }}
         sx={{
@@ -49,6 +61,7 @@ export const Table: FC<TableProps> = ({
             fontWeight: 700
           }
         }}
+        columnVisibilityModel={columnsVisibility}
       />
     </Paper>
   )

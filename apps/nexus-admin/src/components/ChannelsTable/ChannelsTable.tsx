@@ -6,18 +6,20 @@ import {
   Avatar,
   Chip,
   IconButton,
+  Paper,
   Popover,
   Stack,
   Typography
 } from '@mui/material'
-import { GridCellParams } from '@mui/x-data-grid'
+import { DataGrid, GridCellParams } from '@mui/x-data-grid'
 import { useGoogleLogin } from '@react-oauth/google'
 import { FC, useState } from 'react'
 
 import { Channels_channels } from '../../../__generated__/Channels'
 import { ConnectChannel } from '../../../__generated__/ConnectChannel'
 import { GET_CHANNELS } from '../../../pages/channels'
-import { Table } from '../Table'
+
+import { ChannelsTableHeader } from './ChannelsTableHeader'
 
 const CHANNEL_CONNECT = gql`
   mutation ConnectChannel($input: ConnectYoutubeChannelInput!) {
@@ -46,6 +48,10 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
   const [channelId, setChannelId] = useState<string>('')
   const [channelConnect] = useMutation<ConnectChannel>(CHANNEL_CONNECT, {
     refetchQueries: [GET_CHANNELS]
+  })
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10
   })
 
   const googleLogin = useGoogleLogin({
@@ -136,13 +142,26 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
   ]
 
   return (
-    <>
-      <Table
-        columns={columns}
+    <Paper>
+      <DataGrid
+        autoHeight
+        disableColumnMenu
+        disableRowSelectionOnClick
         rows={data}
-        title="Channels Created"
-        subtitle="Additional description if required"
+        columns={columns}
         loading={loading}
+        pageSizeOptions={[5, 10]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        slots={{
+          toolbar: ChannelsTableHeader
+        }}
+        sx={{
+          fontFamily: 'Montserrat',
+          '& .MuiDataGrid-columnHeaderTitle': {
+            fontWeight: 700
+          }
+        }}
       />
       <Popover
         open={Boolean(morePopup)}
@@ -178,6 +197,6 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
           </Stack>
         </Stack>
       </Popover>
-    </>
+    </Paper>
   )
 }

@@ -1,6 +1,7 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Stack } from '@mui/material'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import {
@@ -93,6 +94,7 @@ const ResourcesPage = () => {
   const [openPicker] = useDrivePicker()
   const isSSRMode = typeof window !== 'undefined'
   const nexusId = isSSRMode ? localStorage.getItem('nexusId') : ''
+  const router = useRouter()
 
   const { data, loading } = useQuery<Resources>(GET_RESOURCES, {
     variables: {
@@ -112,13 +114,13 @@ const ResourcesPage = () => {
   })
 
   useEffect(() => {
-    if (data) {
+    if (data != null) {
       setResources(data?.resources as Resources_resources[])
     }
   }, [data])
 
   useEffect(() => {
-    if (resourceData) {
+    if (resourceData != null) {
       setResource(resourceData?.resource)
     }
   }, [resourceData])
@@ -163,6 +165,8 @@ const ResourcesPage = () => {
                   tokenInfo = gapi.auth.getToken()
                 }
 
+                console.log(data)
+
                 const fileIds: string[] = []
 
                 data.docs.forEach((doc) => fileIds.push(doc.id))
@@ -196,7 +200,9 @@ const ResourcesPage = () => {
     <MainLayout title="Resources">
       <Stack spacing={14}>
         <Stack
-          alignItems="flex-start"
+          direction="row"
+          alignItems="center"
+          spacing={4}
           sx={{
             pt: 4
           }}
@@ -206,6 +212,12 @@ const ResourcesPage = () => {
             onClick={async () => await openGooglePicker()}
           >
             Load from Google drive
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => router.push('/resources/import-youtube-template')}
+          >
+            Import from Youtube Template
           </Button>
         </Stack>
         <ResourcesTable

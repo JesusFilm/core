@@ -40,7 +40,7 @@ export const Sidebar: FC = () => {
       icon: (
         <LibraryBooksIcon
           sx={{
-            color: pathname === '/resources' ? 'primary.main' : '#fff'
+            color: pathname.includes('/resources') ? 'primary.main' : '#fff'
           }}
         />
       )
@@ -52,7 +52,7 @@ export const Sidebar: FC = () => {
       icon: (
         <CampaignIcon
           sx={{
-            color: pathname === '/channels' ? 'primary.main' : '#fff'
+            color: pathname.includes('/channels') ? 'primary.main' : '#fff'
           }}
         />
       )
@@ -64,7 +64,7 @@ export const Sidebar: FC = () => {
       icon: (
         <ListIcon
           sx={{
-            color: pathname === '/jobs' ? 'primary.main' : '#fff'
+            color: pathname.includes('/jobs') ? 'primary.main' : '#fff'
           }}
         />
       )
@@ -131,8 +131,9 @@ export const Sidebar: FC = () => {
                 <ListItemText
                   primary={sidebarLink.name}
                   sx={{
-                    color:
-                      pathname === sidebarLink.slug ? 'primary.main' : '#fff'
+                    color: pathname.includes(sidebarLink.slug)
+                      ? 'primary.main'
+                      : '#fff'
                   }}
                 />
               )}
