@@ -5,6 +5,19 @@ import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { TemplateVideoPlayer } from './TemplateVideoPlayer'
 
 describe('TemplateVideoPlayer', () => {
+  const OLD_ENV = process.env
+  const mockedEnv = {
+    NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE: 'mock-customer-code'
+  }
+
+  beforeEach(() => {
+    process.env = { NODE_ENV: 'test', ...mockedEnv }
+  })
+
+  afterAll(() => {
+    process.env = OLD_ENV
+  })
+
   it('should render internal videos', async () => {
     const { getByTestId } = render(
       <TemplateVideoPlayer
@@ -38,7 +51,7 @@ describe('TemplateVideoPlayer', () => {
       )
     ).toHaveAttribute(
       'src',
-      'https://customer-.cloudflarestream.com/someCloudflareId/manifest/video.m3u8'
+      'https://customer-mock-customer-code.cloudflarestream.com/someCloudflareId/manifest/video.m3u8'
     )
   })
 
