@@ -112,15 +112,11 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/watch"],
       "options": {
-        "jestConfig": "apps/watch/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/watch/jest.config.ts"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["apps/watch/**/*.{ts,tsx,js,jsx}"]
-      },
       "outputs": ["{options.outputFile}"]
     },
     "type-check": {

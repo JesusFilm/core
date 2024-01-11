@@ -2,7 +2,8 @@ locals {
   port = 4002
   environment_variables = [
     "GOOGLE_APPLICATION_JSON",
-    "PG_DATABASE_URL"
+    "PG_DATABASE_URL",
+    "PG_DATABASE_URL_USERS"
   ]
   service_config = {
     name           = "api-users"
