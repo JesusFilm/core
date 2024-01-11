@@ -49,7 +49,7 @@ export function TeamManageDialog({
           }
           fullscreen={!smUp}
           testId="TeamManageDialog"
-          sx={{ top: toolbar.height }}
+          sx={{ top: smUp ? 0 : toolbar.height }}
         >
           <Stack spacing={4}>
             {userTeamList}
