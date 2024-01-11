@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -7,7 +7,7 @@ import {
   withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
@@ -18,11 +18,15 @@ import {
   GetAdminJourneyVariables
 } from '../../__generated__/GetAdminJourney'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
+import { UserJourneyRequest } from '../../__generated__/UserJourneyRequest'
+import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
 import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+
+
 
 export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -41,7 +45,19 @@ export const USER_JOURNEY_OPEN = gql`
   }
 `
 
-function JourneyEditPage(): ReactElement {
+export const USER_JOURNEY_REQUEST = gql`
+  mutation UserJourneyRequest($journeyId: ID!) {
+    userJourneyRequest(journeyId: $journeyId, idType: databaseId) {
+      id
+    }
+  }
+`
+interface JourneyInviteProps {
+  status: string; 
+  journeyId: string; 
+}
+
+function JourneyEditPage({status,journeyId}: JourneyInviteProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
@@ -51,10 +67,22 @@ function JourneyEditPage(): ReactElement {
       variables: { id: router.query.journeyId as string }
     }
   )
+  const [userJourneyRequest] =
+    useMutation<UserJourneyRequest>(USER_JOURNEY_REQUEST)
+  const [requestReceived, setRequestReceived] = useState(false)
 
-  return (
-    <>
-      <NextSeo
+  const handleClick = async (): Promise<void> => {
+    await userJourneyRequest({
+      variables: { journeyId }
+    })
+    setRequestReceived(true)
+  }
+
+    return (
+      status === 'noAccess' ? <AccessDenied
+      handleClick={handleClick}
+      requestedAccess={requestReceived}/> : <>
+        <NextSeo
         title={
           data?.journey?.title != null
             ? t('Edit {{title}}', { title: data.journey.title })
@@ -62,7 +90,7 @@ function JourneyEditPage(): ReactElement {
         }
         description={data?.journey?.description ?? undefined}
       />
-      <Editor
+        <Editor
         journey={data?.journey ?? undefined}
         selectedStepId={router.query.stepId as string | undefined}
         view={router.query.view as ActiveJourneyEditContent | undefined}
@@ -76,8 +104,10 @@ function JourneyEditPage(): ReactElement {
           user
         }}
       />
-    </>
-  )
+      </>
+      
+    )
+
 }
 
 export const getServerSideProps = withUserTokenSSR({
@@ -123,11 +153,22 @@ export const getServerSideProps = withUserTokenSSR({
         }
       }
     }
+    if(error.message === 'user is not allowed to view journey') {
+      return { 
+        props: {
+          status: 'noAccess',
+          ...translations,
+          flags,
+          initialApolloState: apolloClient.cache.extract()
+        }
+      }
+    }
     throw error
   }
 
   return {
     props: {
+      status: 'success',
       ...translations,
       flags,
       initialApolloState: apolloClient.cache.extract()
