@@ -1,11 +1,11 @@
 generator client {
   provider = "prisma-client-js"
-  output   = env("PRISMA_LOCATION")
+  output   = env("PRISMA_LOCATION_MEDIA")
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL")
+  url      = env("PG_DATABASE_URL_MEDIA")
 }
 
 model CloudflareImage {
