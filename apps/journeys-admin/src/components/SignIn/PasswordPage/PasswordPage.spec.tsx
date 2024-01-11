@@ -89,7 +89,9 @@ describe('PasswordPage', () => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
     })
     await waitFor(() => {
-      expect(getByText('Wrong Password')).toBeInTheDocument()
+      expect(
+        getByText("The email and password you entered don't match")
+      ).toBeInTheDocument()
     })
   })
 
@@ -116,7 +118,11 @@ describe('PasswordPage', () => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
     })
     await waitFor(() => {
-      expect(getByText('Too many requests')).toBeInTheDocument()
+      expect(
+        getByText(
+          'You have entered an incorrect password too many times. Please try again in a few minutes.'
+        )
+      ).toBeInTheDocument()
     })
   })
 
