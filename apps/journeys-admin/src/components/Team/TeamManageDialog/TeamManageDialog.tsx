@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@core/shared/ui/Dialog'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
+import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
+
 import { TeamManageWrapper } from './TeamManageWrapper'
 
 interface TeamManageDialogProps {
@@ -19,6 +21,7 @@ export function TeamManageDialog({
   open,
   onClose
 }: TeamManageDialogProps): ReactElement {
+  const { toolbar } = usePageWrapperStyles()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -46,6 +49,7 @@ export function TeamManageDialog({
           }
           fullscreen={!smUp}
           testId="TeamManageDialog"
+          sx={{ top: toolbar.height }}
         >
           <Stack spacing={4}>
             {userTeamList}
