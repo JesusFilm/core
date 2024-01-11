@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -53,7 +53,12 @@ export function Canvas(): ReactElement {
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
 
+  const copyInterval = useRef<null | ReturnType<typeof setTimeout>>(null)
+  const [isCopying, setIsCopying] = useState(false)
+
   function handleSelectCard(): void {
+    // if user is copying from typog blocks or text, keep focus on typog blocks
+    if (isCopying && selectedBlock?.__typename === 'TypographyBlock') return
     // Prevent losing focus on empty input
     if (
       selectedBlock?.__typename === 'TypographyBlock' &&
@@ -115,6 +120,15 @@ export function Canvas(): ReactElement {
 
   return (
     <Box
+      onMouseDown={(): void => {
+        setIsCopying(false)
+        copyInterval.current = setInterval(() => {
+          setIsCopying(true)
+        }, 200)
+      }}
+      onMouseUp={() => {
+        if (copyInterval.current != null) clearTimeout(copyInterval.current)
+      }}
       onClick={handleSelectCard}
       data-testid="EditorCanvas"
       sx={{

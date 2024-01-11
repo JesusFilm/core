@@ -86,6 +86,49 @@ describe('Canvas', () => {
     })
   })
 
+  it('should not select step on long click', () => {
+    const { getByTestId, queryByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider initialState={initialState}>
+                <TestEditorState />
+                <Canvas />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.mouseDown(getByTestId('step-step0.id'))
+    fireEvent.mouseUp(getByTestId('step-step0.id'))
+    expect(queryByText('activeTab: Properties')).not.toBeInTheDocument()
+    expect(
+      queryByText('drawerTitle: Next Card Properties')
+    ).not.toBeInTheDocument()
+    expect(queryByText('drawerMobileOpen: true')).not.toBeInTheDocument()
+    expect(
+      queryByText('selectedAttributeId: step0.id-next-block')
+    ).not.toBeInTheDocument()
+  })
+
   it('should select step on click', () => {
     const { getByTestId, getByText } = render(
       <MockedProvider>
