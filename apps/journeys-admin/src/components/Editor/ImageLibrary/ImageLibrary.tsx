@@ -12,6 +12,7 @@ import { Dialog as SharedUiDialog } from '@core/shared/ui/Dialog'
 import X2Icon from '@core/shared/ui/icons/X2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 import { ImageBlockEditor } from '../ImageBlockEditor'
 
 export const DRAWER_WIDTH = 328
@@ -27,6 +28,8 @@ function Drawer({
   open,
   onClose
 }: DrawerOrDialogProps): ReactElement {
+  const { toolbar } = usePageWrapperStyles()
+
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -46,7 +49,7 @@ function Drawer({
         '& .MuiDrawer-paper': {
           boxSizing: 'border-box',
           width: smUp ? DRAWER_WIDTH : '100%',
-          height: '100%',
+          maxHeight: `calc(100vh - ${toolbar.height})`,
           display: 'flex'
         }
       }}

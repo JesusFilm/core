@@ -24,6 +24,7 @@ import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 
 import { VideoFromLocal } from './VideoFromLocal'
+import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 
 const VideoDetails = dynamic(
   async () =>
@@ -63,6 +64,7 @@ export function VideoLibrary({
   onSelect: handleSelect
 }: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const { toolbar } = usePageWrapperStyles()
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const router = useRouter()
@@ -126,7 +128,7 @@ export function VideoLibrary({
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: smUp ? DRAWER_WIDTH : '100%',
-            height: '100%',
+            maxHeight: `calc(100vh - ${toolbar.height})`,
             display: 'flex'
           }
         }}

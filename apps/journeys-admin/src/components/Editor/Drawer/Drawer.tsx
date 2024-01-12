@@ -52,7 +52,7 @@ function DrawerContent({
 }
 
 export function Drawer(): ReactElement {
-  const { sidePanel } = usePageWrapperStyles()
+  const { sidePanel, toolbar } = usePageWrapperStyles()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
     state: {
@@ -101,6 +101,11 @@ export function Drawer(): ReactElement {
         onClose={handleDrawerToggle}
         sx={{
           display: { xs: 'block', md: 'none' }
+        }}
+        PaperProps={{
+          sx: {
+            maxHeight: `calc(100vh - ${toolbar.height})`
+          }
         }}
         data-testid="EditorDrawer"
       >
