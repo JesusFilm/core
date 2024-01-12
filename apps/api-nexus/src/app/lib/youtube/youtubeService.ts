@@ -1,7 +1,6 @@
 import { createReadStream, statSync } from 'fs';
 
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { google } from 'googleapis';
 
 interface Credential {
@@ -14,10 +13,10 @@ interface Credential {
 export class YoutubeService {
   private readonly credential: Credential;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor() {
     this.credential = {
-      client_secret: this.configService.get<string>('CLIENT_SECRET') ?? '',
-      client_id: this.configService.get<string>('CLIENT_ID') ?? '',
+      client_secret: process.env.CLIENT_SECRET ?? '',
+      client_id: process.env.CLIENT_ID ?? '',
       redirect_uris: ['https://localhost:5357'],
     };
   }
@@ -39,7 +38,7 @@ export class YoutubeService {
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async uploadVideo(token: string, filePath: string, channelId: string) {
+  async uploadVideo(token: string, filePath: string, channelId: string, title: string, description: string) {
     const service = google.youtube('v3');
     const fileSize = statSync(filePath).size;
 
@@ -50,8 +49,8 @@ export class YoutubeService {
         notifySubscribers: false,
         requestBody: {
           snippet: {
-            title: 'Test Video Upload',
-            description: 'This is a test video uploaded via the YouTube API',
+            title,
+            description,
             channelId,
           },
           status: {
