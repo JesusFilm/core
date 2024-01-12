@@ -93,7 +93,9 @@ extend type Mutation {
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
   resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
-  resourceFromTemplate(nexusId: String!, file: Upload): [Resource!]
+  resourceFromTemplate(nexusId: String!, tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
+  getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
+  uploadToYoutube(channelId: String!, resourceId: String!): Boolean
 }
 
 type Nexus
@@ -162,6 +164,11 @@ type ResourceLocalization
   language: String!
 }
 
+type GoogleAuthResponse {
+  id: ID!
+  accessToken: String!
+}
+
 enum PrivacyStatus {
   public
   unlisted
@@ -215,6 +222,11 @@ input AddResourceFromGoogleDriveInput {
 input ResourceFromSpreadsheetInput {
   file: Upload
   nexusId: String!
+}
+
+input GoogleAuthInput {
+  authCode: String!
+  url: String!
 }
 
 scalar _FieldSet
