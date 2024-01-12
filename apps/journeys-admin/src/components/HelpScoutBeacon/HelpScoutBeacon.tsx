@@ -49,7 +49,15 @@ export function HelpScoutBeacon({
   const [hasLoaded, setHasLoaded] = useState(false)
   const [beaconOpen, setBeaconOpen] = useState(false)
 
+  const newUserPaths = [
+    '/users/sign-in',
+    '/users/terms-and-conditions',
+    '/onboarding-form',
+    '/teams/new'
+  ]
+
   const handleClick = (): void => {
+    console.log(router.route)
     if (window.Beacon != null) {
       window.Beacon('on', 'open', () => {
         setBeaconOpen(true)
@@ -122,7 +130,7 @@ export function HelpScoutBeacon({
           width: 24,
           height: 24,
           color:
-            mdUp || router.route === '/users/sign-in'
+            mdUp || newUserPaths.includes(router.route)
               ? 'secondary.dark'
               : 'background.paper'
         }}
