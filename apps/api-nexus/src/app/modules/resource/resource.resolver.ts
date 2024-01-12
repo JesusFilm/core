@@ -1,3 +1,5 @@
+import { unlink } from 'fs';
+
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { google } from 'googleapis';
 import { GraphQLError } from 'graphql';
@@ -233,6 +235,8 @@ export class ResourceResolver {
       );
       console.log('CLOUD FLARE', res);
 
+      // await this.cloudFlareService.makeVideoPublic(res?.result?.uid ?? '');
+
       const resource = await this.prismaService.resource.create({
         data: {
           id: uuidv4(),
@@ -246,6 +250,8 @@ export class ResourceResolver {
           privacy: 'public',
         },
       });
+
+      console.log('addedResource', resource);
 
       await this.prismaService.resourceLocalization.create({
         data: {
@@ -269,8 +275,8 @@ export class ResourceResolver {
 
   @Mutation()
   async getGoogleAccessToken(
-    // @CurrentUserId() userId: string,
-    // @CurrentUser() user: User,
+    @CurrentUserId() userId: string,
+    @CurrentUser() user: User,
     @Args('input') input: GoogleAuthInput,
   ): Promise<GoogleAuthResponse> {
     const { accessToken, refreshToken } = await this.exchangeAuthCodeForTokens(
@@ -292,18 +298,56 @@ export class ResourceResolver {
     };
   }
 
-  // @Mutation()
-  // async uploadToYoutube(
-  //   @CurrentUserId() userId: string,
-  //   @CurrentUser() user: User,
-  //   @Args('channelId') channelId: string,
-  //   @Args('resourceId') url: string,
+  @Mutation()
+  async uploadToYoutube(
+    @CurrentUserId() userId: string,
+    @CurrentUser() user: User,
+    @Args('channelId') channelId: string,
+    @Args('resourceId') resourceId: string,
+  ): Promise<boolean> {
+    console.log('channelId', channelId);
+    console.log('resourceId', resourceId);
 
-  // ): Promise<unknown> {
+    const resource = await this.prismaService.resource.findUnique({
+      where: { id: resourceId },
+      include: { localizations: true },
+    });
 
-  //   // TODO: Downloadfile
-  //   // TODO: UploadToYoutube
-  // }
+    console.log('resource', resource);
+
+    const filePath = await this.cloudFlareService.downloadFile(
+      resource?.cloudflareId ?? '',
+      resource?.id ?? '',
+    );
+    console.log('filePath', filePath);
+
+    const channel = await this.prismaService.channel.findUnique({
+      where: { id: channelId },
+      include: { youtube: true },
+    });
+
+    const accessToken = await this.getNewAccessToken(
+      channel?.youtube?.refreshToken ?? '',
+    );
+
+    await this.youtubeService.uploadVideo(
+      accessToken,
+      filePath,
+      channel?.youtube?.youtubeId ?? '',
+      resource?.localizations?.[0]?.title ?? 'Nexus Video Title',
+      resource?.localizations?.[0]?.description ?? 'Nexus Video Description',
+    );
+
+    unlink(filePath, (err) => {
+      if (err !== null) {
+        console.error('Error deleting file:', err);
+        return;
+      }
+      console.log('File deleted successfully');
+    });
+
+    return true;
+  }
 
   private async handleGoogleDriveOperations(
     tokenId: string,
@@ -319,6 +363,7 @@ export class ResourceResolver {
       throw new Error('Invalid tokenId');
     }
 
+    console.log('refreshToken', googleAccessToken.refreshToken);
     const accessToken = await this.getNewAccessToken(
       googleAccessToken.refreshToken,
     );
@@ -388,6 +433,7 @@ export class ResourceResolver {
     accessToken: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
+    console.log('spreadsheetId', spreadsheetId);
     const sheetsApiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1`;
     const response = await fetch(sheetsApiUrl, {
       method: 'GET',

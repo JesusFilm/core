@@ -45,7 +45,26 @@ export class CloudFlareService {
     return await response.json();
   }
 
-  async downloadFile(fileId: string): Promise<string> {
+  async makeVideoPublic(videoId: string): Promise<void> {
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${
+        process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+      }/media/${videoId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ requireSignedURLs: false, allowedOrigins: [] }),
+      },
+    );
+
+    const data = await response.json();
+    console.log('makeVideoPublic', data);
+  }
+
+  async downloadFile(fileId: string, resourceId: string): Promise<string> {
     const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
     const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
     const url = `${this.apiUrl}/accounts/${CLOUDFLARE_ACCOUNT_ID}/stream/${fileId}/downloads`;
@@ -55,7 +74,7 @@ export class CloudFlareService {
       },
     });
     const fileUrl = res.data.result.default.url;
-    const fileName = basename(fileUrl);
+    const fileName = resourceId + basename(fileUrl);
     const outputPath = join(this.downloadDirectory, fileName);
 
     const writer = createWriteStream(outputPath);
