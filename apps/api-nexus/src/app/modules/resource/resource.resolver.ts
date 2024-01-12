@@ -204,8 +204,8 @@ export class ResourceResolver {
 
   @Mutation()
   async resourceFromTemplate(
-    // @CurrentUserId() userId: string,
-    // @CurrentUser() user: User,
+    @CurrentUserId() userId: string,
+    @CurrentUser() user: User,
     @Args('nexusId') nexusId: string,
     @Args('tokenId') tokenId: string,
     @Args('spreadsheetId') spreadsheetId: string,
@@ -214,7 +214,7 @@ export class ResourceResolver {
     const nexus = await this.prismaService.nexus.findUnique({
       where: {
         id: nexusId,
-        // userNexuses: { every: { userId } },
+        userNexuses: { every: { userId } },
       },
     });
     if (nexus == null)
@@ -287,7 +287,7 @@ export class ResourceResolver {
         nexusId: nexusId,
         nexus: {
           userNexuses: {
-            // every: { userId }
+            every: { userId },
           },
         },
       },
@@ -327,15 +327,10 @@ export class ResourceResolver {
     @Args('channelId') channelId: string,
     @Args('resourceId') resourceId: string,
   ): Promise<boolean> {
-    console.log('channelId', channelId);
-    console.log('resourceId', resourceId);
-
     const resource = await this.prismaService.resource.findUnique({
       where: { id: resourceId },
       include: { localizations: true },
     });
-
-    console.log('resource', resource);
 
     const filePath = await this.cloudFlareService.downloadFile(
       resource?.cloudflareId ?? '',
