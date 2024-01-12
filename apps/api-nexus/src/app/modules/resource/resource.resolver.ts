@@ -44,7 +44,16 @@ export class ResourceResolver {
 
     const resources = await this.prismaService.resource.findMany({
       where: {
-        AND: [filter, { nexus: { userNexuses: { every: { userId } } } }],
+        AND: [
+          filter,
+          {
+            nexus: {
+              userNexuses: {
+                every: { userId },
+              },
+            },
+          },
+        ],
       },
       include: { localizations: true },
       take: where?.limit ?? undefined,
@@ -195,8 +204,8 @@ export class ResourceResolver {
 
   @Mutation()
   async resourceFromTemplate(
-    @CurrentUserId() userId: string,
-    @CurrentUser() user: User,
+    // @CurrentUserId() userId: string,
+    // @CurrentUser() user: User,
     @Args('nexusId') nexusId: string,
     @Args('tokenId') tokenId: string,
     @Args('spreadsheetId') spreadsheetId: string,
@@ -205,13 +214,26 @@ export class ResourceResolver {
     const nexus = await this.prismaService.nexus.findUnique({
       where: {
         id: nexusId,
-        userNexuses: { every: { userId } },
+        // userNexuses: { every: { userId } },
       },
     });
     if (nexus == null)
       throw new GraphQLError('nexus not found', {
         extensions: { code: 'NOT_FOUND' },
       });
+
+    const googleAccessToken =
+      await this.prismaService.googleAccessToken.findUnique({
+        where: { id: tokenId },
+      });
+
+    if (googleAccessToken === null) {
+      throw new Error('Invalid tokenId');
+    }
+
+    const accessToken = await this.getNewAccessToken(
+      googleAccessToken.refreshToken,
+    );
 
     const rows = await this.handleGoogleDriveOperations(
       tokenId,
@@ -225,19 +247,19 @@ export class ResourceResolver {
       const fileUrl = this.googleDriveService.getFileUrl(fileId);
       await this.googleDriveService.setFilePermission({
         fileId,
-        accessToken: tokenId ?? '',
+        accessToken,
       });
 
       const res = await this.cloudFlareService.uploadToCloudflareByUrl(
         fileUrl,
         filename,
-        'diye',
+        'ben',
       );
-      console.log('CLOUD FLARE', res);
+      console.log('CLOUD FLARE', res?.result?.uid ?? '');
 
       // await this.cloudFlareService.makeVideoPublic(res?.result?.uid ?? '');
 
-      const resource = await this.prismaService.resource.create({
+      await this.prismaService.resource.create({
         data: {
           id: uuidv4(),
           cloudflareId: res?.result?.uid ?? '',
@@ -248,26 +270,26 @@ export class ResourceResolver {
           createdAt: new Date(),
           category,
           privacy: 'public',
-        },
-      });
-
-      console.log('addedResource', resource);
-
-      await this.prismaService.resourceLocalization.create({
-        data: {
-          resourceId: resource.id,
-          title,
-          description,
-          keywords,
-          language: 'en',
+          localizations: {
+            create: {
+              title,
+              description,
+              keywords,
+              language: 'en',
+            },
+          },
         },
       });
     }
 
     return await this.prismaService.resource.findMany({
       where: {
-        id: nexusId,
-        nexus: { userNexuses: { every: { userId } } },
+        nexusId: nexusId,
+        nexus: {
+          userNexuses: {
+            // every: { userId }
+          },
+        },
       },
       include: { localizations: true },
     });
@@ -363,7 +385,6 @@ export class ResourceResolver {
       throw new Error('Invalid tokenId');
     }
 
-    console.log('refreshToken', googleAccessToken.refreshToken);
     const accessToken = await this.getNewAccessToken(
       googleAccessToken.refreshToken,
     );
@@ -388,10 +409,8 @@ export class ResourceResolver {
         drivefolderId,
         filename,
       );
-
-      console.log('driveFile', fileId);
-
       if (fileId !== null) {
+        console.log('driveFile', fileId);
         const row: SpreadsheetRow = {
           fileId,
           filename,
@@ -431,9 +450,7 @@ export class ResourceResolver {
   private async downloadSpreadsheet(
     spreadsheetId: string,
     accessToken: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
-    console.log('spreadsheetId', spreadsheetId);
     const sheetsApiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1`;
     const response = await fetch(sheetsApiUrl, {
       method: 'GET',
@@ -441,9 +458,7 @@ export class ResourceResolver {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-
     const data = await response.json();
-    console.log('data', data);
     return data.values;
   }
 
@@ -454,7 +469,6 @@ export class ResourceResolver {
     clientSecret: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const tokenExchangeUrl = 'https://oauth2.googleapis.com/token';
-
     const response = await fetch(tokenExchangeUrl, {
       method: 'POST',
       headers: {
@@ -476,7 +490,6 @@ export class ResourceResolver {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   async findFile(auth, folderId, fileName) {
     const drive = google.drive({ version: 'v3', auth });
     const driveResponse = await drive.files.list({

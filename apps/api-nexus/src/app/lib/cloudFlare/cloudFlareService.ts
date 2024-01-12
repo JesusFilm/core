@@ -49,14 +49,14 @@ export class CloudFlareService {
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${
         process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-      }/media/${videoId}`,
+      }/media/${videoId}/downloads`,
       {
-        method: 'PATCH',
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ requireSignedURLs: false, allowedOrigins: [] }),
+        body: JSON.stringify({}),
       },
     );
 

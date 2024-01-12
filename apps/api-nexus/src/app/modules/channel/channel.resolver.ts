@@ -65,12 +65,11 @@ export class ChannelResolver {
 
   @Mutation()
   async channelCreate(
-    // @CurrentUserId() userId: string,
+    @CurrentUserId() userId: string,
     @Args('input') input: ChannelCreateInput,
   ): Promise<Channel | undefined> {
     const nexus = await this.prismaService.nexus.findUnique({
-      where: { id: input.nexusId, 
-        userNexuses: { every: { userId: 'userId' } } },
+      where: { id: input.nexusId, userNexuses: { every: { userId } } },
     });
     if (nexus == null) {
       throw new GraphQLError('Nexus not found.');
@@ -131,7 +130,7 @@ export class ChannelResolver {
 
   @Mutation()
   async connectYoutubeChannel(
-    // @CurrentUserId() userId: string,
+    @CurrentUserId() userId: string,
     @Args('input') input: ConnectYoutubeChannelInput,
   ): Promise<Channel | null> {
     const authResponse = await this.googleOAuth.getAccessToken({
@@ -166,7 +165,7 @@ export class ChannelResolver {
     const _channel = await this.prismaService.channel.update({
       where: {
         id: youtubeChannel.channelId,
-        // nexus: { userNexuses: { every: { userId } } },
+        nexus: { userNexuses: { every: { userId } } },
       },
       data: {
         connected: true,
