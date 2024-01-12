@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -5,6 +6,7 @@ import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 
 import {
@@ -13,6 +15,8 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import { StepBlockNextBlockUpdate } from '../../../../__generated__/StepBlockNextBlockUpdate'
+import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../Editor/ControlPanel/Attributes/blocks/Step/NextCard/Cards'
 
 import { BaseNode } from './BaseNode'
 
@@ -63,9 +67,29 @@ export function StepBlockNode({
     | TreeBlock<CardBlock>
     | undefined
   const bgImage = getBackgroundImage(card)
+  const [stepBlockNextBlockUpdate] = useMutation<StepBlockNextBlockUpdate>(
+    STEP_BLOCK_NEXT_BLOCK_UPDATE
+  )
+
+  const { journey } = useJourney()
+
+  async function onConnect(params): Promise<void> {
+    if (journey == null) return
+
+    await stepBlockNextBlockUpdate({
+      variables: {
+        id: params.source,
+        journeyId: journey.id,
+        input: {
+          nextBlockId: params.target
+        }
+      }
+    })
+  }
 
   return (
     <BaseNode
+      onSourceConnect={onConnect}
       icon={
         card?.backgroundColor != null || bgImage != null ? (
           <Box

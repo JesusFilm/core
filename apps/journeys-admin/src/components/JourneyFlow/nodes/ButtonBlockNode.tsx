@@ -2,14 +2,13 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../__generated__/GetJourney'
 
-import { BaseNode } from './BaseNode'
+import { ActionNode } from './ActionNode'
 
-export type ButtonBlockNodeData = TreeBlock<ButtonBlock>
+export type ButtonBlockNodeData = ButtonBlock
 
 export function ButtonBlockNode({
   data: block
@@ -17,8 +16,8 @@ export function ButtonBlockNode({
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <BaseNode
-      isTargetConnectable={false}
+    <ActionNode
+      block={block}
       title={
         block.label != null && block.label !== '' ? block.label : t('Button')
       }

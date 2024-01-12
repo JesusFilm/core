@@ -2,14 +2,13 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 
-import { BaseNode } from './BaseNode'
+import { ActionNode } from './ActionNode'
 
-export type VideoBlockNodeData = TreeBlock<VideoBlock>
+export type VideoBlockNodeData = VideoBlock
 
 export function VideoBlockNode({
   data: block
@@ -17,8 +16,8 @@ export function VideoBlockNode({
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <BaseNode
-      isTargetConnectable={false}
+    <ActionNode
+      block={block}
       title={block.video?.title?.[0]?.value ?? block.title ?? t('Video')}
       icon={<VideoOnIcon />}
     />

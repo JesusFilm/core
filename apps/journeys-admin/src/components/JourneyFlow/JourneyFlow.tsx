@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import dagre from 'dagre'
 import findIndex from 'lodash/findIndex'
+import flatMapDeep from 'lodash/flatMapDeep'
 import { ReactElement, useEffect } from 'react'
 import {
   Controls,
@@ -16,12 +15,20 @@ import {
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
-import { StepBlockNextBlockUpdate } from '../../../__generated__/StepBlockNextBlockUpdate'
-import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../Editor/ControlPanel/Attributes/blocks/Step/NextCard/Cards'
+import { BlockFields } from '../../../__generated__/BlockFields'
+import {
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_FormBlock as FormBlock,
+  GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock,
+  GetJourney_journey_blocks_SignUpBlock as SignUpBlock,
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../__generated__/GetJourney'
 
+import { NODE_HEIGHT, NODE_WIDTH } from './nodes/BaseNode'
 import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
 import { FormBlockNode, FormBlockNodeData } from './nodes/FormBlockNode'
 import {
@@ -54,8 +61,8 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   const nodes: InternalNode[] = []
   const edges: Edge[] = []
 
-  interface Connection {
-    block: TreeBlock
+  interface Connection<T = BlockFields> {
+    block: TreeBlock<T>
     step: TreeBlock<StepBlock>
     steps: Array<TreeBlock<StepBlock>>
   }
@@ -65,6 +72,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     if (index < 0) return
     if (step.nextBlockId == null && steps[index + 1] != null) {
       edges.push({
+        type: 'smoothstep',
         id: `${block.id}->${steps[index + 1].id}`,
         source: block.id,
         target: steps[index + 1].id,
@@ -79,6 +87,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     }
     if (step.nextBlockId != null && step.nextBlockId !== step.id) {
       edges.push({
+        type: 'smoothstep',
         id: `${block.id}->${step.nextBlockId}`,
         source: block.id,
         target: step.nextBlockId,
@@ -93,26 +102,46 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     }
   }
 
-  function processBlock({ block, step, steps }: Connection): void {
-    if (
-      block.__typename === 'RadioOptionBlock' ||
-      block.__typename === 'ButtonBlock' ||
-      block.__typename === 'TextResponseBlock' ||
-      block.__typename === 'SignUpBlock' ||
-      block.__typename === 'FormBlock' ||
-      block.__typename === 'VideoBlock'
-    ) {
+  function processCard({
+    block: card,
+    step,
+    steps,
+    x,
+    y
+  }: Connection<CardBlock> & { x: number; y: number }): void {
+    const blocks = flatMapDeep(card.children, (block) => {
+      if (card.coverBlockId === block.id) return []
+      return [block, block.children]
+    }).filter(
+      (block) =>
+        block.__typename === 'RadioOptionBlock' ||
+        block.__typename === 'ButtonBlock' ||
+        block.__typename === 'TextResponseBlock' ||
+        block.__typename === 'SignUpBlock' ||
+        block.__typename === 'FormBlock' ||
+        block.__typename === 'VideoBlock'
+    ) as Array<
+      | RadioOptionBlock
+      | ButtonBlock
+      | TextResponseBlock
+      | SignUpBlock
+      | FormBlock
+      | VideoBlock
+    >
+
+    blocks.forEach((block, index) => {
       nodes.push({
         id: block.id,
         type: block.__typename,
         selectable: false,
         data: block,
-        position: { x: 0, y: 0 }
+        position: { x, y: y + (NODE_HEIGHT + 20) * (index + 1) }
       })
 
       if (block.action != null) {
         if (block.action.__typename === 'NavigateToBlockAction') {
           edges.push({
+            type: 'smoothstep',
             id: `${block.id}->${block.action.blockId}`,
             source: block.id,
             target: block.action.blockId,
@@ -128,26 +157,12 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
           connectBlockToNextBlock({ block, step, steps })
         }
       }
-
-      edges.push({
-        id: `${step.id}->${block.id}`,
-        source: step.id,
-        target: block.id,
-        style: {
-          strokeWidth: 2
-        }
-      })
-    }
-
-    block.children.forEach((child) => {
-      if (block.__typename === 'CardBlock' && block.coverBlockId === child.id) {
-        return
-      }
-      processBlock({ block: child, step, steps })
     })
   }
 
-  steps.forEach((step) => {
+  steps.forEach((step, index) => {
+    const x = index * (NODE_WIDTH + 100)
+    const y = index * 50
     nodes.push({
       id: step.id,
       sourcePosition: Position.Right,
@@ -157,56 +172,15 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
         ...step,
         steps
       },
-      position: { x: 0, y: 0 }
+      position: { x, y }
     })
-    processBlock({ block: step, step, steps })
+
+    const cardBlock = step?.children.find(
+      (child) => child.__typename === 'CardBlock'
+    ) as TreeBlock<CardBlock> | undefined
+    if (cardBlock != null)
+      processCard({ block: cardBlock, step, steps, x: x + 20, y })
     connectBlockToNextBlock({ block: step, step, steps })
-  })
-
-  return { nodes, edges }
-}
-
-const nodeWidth = 130
-const nodeHeight = 60
-
-function getLayoutedElements(
-  steps: Array<TreeBlock<StepBlock>>,
-  direction: string
-): { nodes: InternalNode[]; edges: Edge[] } {
-  const dagreGraph = new dagre.graphlib.Graph()
-  dagreGraph.setDefaultEdgeLabel(() => ({}))
-
-  if (steps == null) return { nodes: [], edges: [] }
-
-  const { nodes, edges } = transformSteps(steps)
-  const isHorizontal = direction === 'LR'
-  dagreGraph.setGraph({
-    rankdir: direction,
-    nodesep: 30, // vertical
-    ranksep: 80, // horizontal
-    ranker: 'tight-tree'
-  })
-
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight })
-  })
-
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target)
-  })
-
-  dagre.layout(dagreGraph)
-
-  nodes.forEach((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id)
-    node.targetPosition = isHorizontal ? Position.Left : Position.Top
-    node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom
-
-    node.position = {
-      x: nodeWithPosition.x - nodeWidth / 2,
-      y: nodeWithPosition.y - nodeHeight / 2
-    }
-    return node
   })
 
   return { nodes, edges }
@@ -221,37 +195,16 @@ export function JourneyFlow(): ReactElement {
   const [edges, setEdges] = useEdgesState([])
 
   useEffect(() => {
-    const { nodes, edges } = getLayoutedElements(steps ?? [], 'LR')
+    const { nodes, edges } = transformSteps(steps ?? [])
     setNodes(nodes)
     setEdges(edges)
   }, [steps, setNodes, setEdges])
-
-  const [stepBlockNextBlockUpdate] = useMutation<StepBlockNextBlockUpdate>(
-    STEP_BLOCK_NEXT_BLOCK_UPDATE
-  )
-
-  const { journey } = useJourney()
-
-  async function onConnect(params): Promise<void> {
-    if (journey == null) return
-
-    await stepBlockNextBlockUpdate({
-      variables: {
-        id: params.source,
-        journeyId: journey.id,
-        input: {
-          nextBlockId: params.target
-        }
-      }
-    })
-  }
 
   return (
     <Box sx={{ height: 800, flexShrink: 0 }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onConnect={onConnect}
         fitView
         nodeTypes={{
           RadioOptionBlock: RadioOptionBlockNode,

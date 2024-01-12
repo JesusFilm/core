@@ -2,11 +2,15 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
-import { Handle, Position } from 'reactflow'
+import { Handle, OnConnect, Position } from 'reactflow'
+
+export const NODE_WIDTH = 150
+export const NODE_HEIGHT = 80
 
 interface BaseNodeProps {
   isTargetConnectable?: boolean
   isSourceConnectable?: boolean
+  onSourceConnect?: OnConnect
   icon: ReactNode
   title: string
 }
@@ -14,6 +18,7 @@ interface BaseNodeProps {
 export function BaseNode({
   isTargetConnectable,
   isSourceConnectable,
+  onSourceConnect,
   icon,
   title
 }: BaseNodeProps): ReactElement {
@@ -24,8 +29,8 @@ export function BaseNode({
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          width: 150,
-          height: 80,
+          width: NODE_WIDTH,
+          height: NODE_HEIGHT,
           gap: 2
         }}
       >
@@ -41,16 +46,16 @@ export function BaseNode({
           {title}
         </Typography>
       </CardContent>
-      <Handle
-        type="target"
-        position={Position.Left}
-        isConnectable={isTargetConnectable}
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        isConnectable={isSourceConnectable}
-      />
+      {isTargetConnectable !== false && (
+        <Handle type="target" position={Position.Left} />
+      )}
+      {isSourceConnectable !== false && (
+        <Handle
+          type="source"
+          position={Position.Right}
+          onConnect={onSourceConnect}
+        />
+      )}
     </Card>
   )
 }
