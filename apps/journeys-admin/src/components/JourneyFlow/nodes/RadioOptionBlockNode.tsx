@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -13,10 +14,14 @@ export type RadioOptionBlockNodeData = TreeBlock<RadioOptionBlock>
 export function RadioOptionBlockNode({
   data: block
 }: NodeProps<RadioOptionBlockNodeData>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <BaseNode
       isTargetConnectable={false}
-      title={block.label}
+      title={
+        block.label != null && block.label !== '' ? block.label : t('Option')
+      }
       icon={<CheckContainedIcon />}
     />
   )

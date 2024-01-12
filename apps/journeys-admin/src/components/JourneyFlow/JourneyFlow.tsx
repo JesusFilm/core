@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import dagre from 'dagre'
+import findIndex from 'lodash/findIndex'
 import { ReactElement, useEffect } from 'react'
 import {
   Controls,
@@ -53,7 +54,46 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   const nodes: InternalNode[] = []
   const edges: Edge[] = []
 
-  function processBlock(block: TreeBlock, step: TreeBlock<StepBlock>): void {
+  interface Connection {
+    block: TreeBlock
+    step: TreeBlock<StepBlock>
+    steps: Array<TreeBlock<StepBlock>>
+  }
+
+  function connectBlockToNextBlock({ block, step, steps }: Connection): void {
+    const index = findIndex(steps, (child) => child.id === step.id)
+    if (index < 0) return
+    if (step.nextBlockId == null && steps[index + 1] != null) {
+      edges.push({
+        id: `${block.id}->${steps[index + 1].id}`,
+        source: block.id,
+        target: steps[index + 1].id,
+        markerEnd: {
+          type: MarkerType.Arrow
+        },
+        style: {
+          strokeWidth: 2,
+          strokeDasharray: 4
+        }
+      })
+    }
+    if (step.nextBlockId != null && step.nextBlockId !== step.id) {
+      edges.push({
+        id: `${block.id}->${step.nextBlockId}`,
+        source: block.id,
+        target: step.nextBlockId,
+        markerEnd: {
+          type: MarkerType.Arrow
+        },
+        style: {
+          strokeWidth: 2,
+          strokeDasharray: 4
+        }
+      })
+    }
+  }
+
+  function processBlock({ block, step, steps }: Connection): void {
     if (
       block.__typename === 'RadioOptionBlock' ||
       block.__typename === 'ButtonBlock' ||
@@ -70,21 +110,23 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
         position: { x: 0, y: 0 }
       })
 
-      if (
-        block.action != null &&
-        block.action.__typename === 'NavigateToBlockAction'
-      ) {
-        edges.push({
-          id: `${block.id}->${block.action.blockId}`,
-          source: block.id,
-          target: block.action.blockId,
-          markerEnd: {
-            type: MarkerType.Arrow
-          },
-          style: {
-            strokeWidth: 2
-          }
-        })
+      if (block.action != null) {
+        if (block.action.__typename === 'NavigateToBlockAction') {
+          edges.push({
+            id: `${block.id}->${block.action.blockId}`,
+            source: block.id,
+            target: block.action.blockId,
+            markerEnd: {
+              type: MarkerType.Arrow
+            },
+            style: {
+              strokeWidth: 2
+            }
+          })
+        }
+        if (block.action.__typename === 'NavigateAction') {
+          connectBlockToNextBlock({ block, step, steps })
+        }
       }
 
       edges.push({
@@ -101,11 +143,11 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
       if (block.__typename === 'CardBlock' && block.coverBlockId === child.id) {
         return
       }
-      processBlock(child, step)
+      processBlock({ block: child, step, steps })
     })
   }
 
-  steps.forEach((step, index) => {
+  steps.forEach((step) => {
     nodes.push({
       id: step.id,
       sourcePosition: Position.Right,
@@ -117,37 +159,8 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
       },
       position: { x: 0, y: 0 }
     })
-    processBlock(step, step)
-
-    if (step.nextBlockId == null && steps[index + 1] != null) {
-      edges.push({
-        id: `${step.id}->${steps[index + 1].id}`,
-        source: step.id,
-        target: steps[index + 1].id,
-        markerEnd: {
-          type: MarkerType.Arrow
-        },
-        style: {
-          strokeWidth: 2,
-          strokeDasharray: 4
-        }
-      })
-    }
-
-    if (step.nextBlockId != null && step.nextBlockId !== step.id) {
-      edges.push({
-        id: `${step.id}->${step.nextBlockId}`,
-        source: step.id,
-        target: step.nextBlockId,
-        markerEnd: {
-          type: MarkerType.Arrow
-        },
-        style: {
-          strokeWidth: 2,
-          strokeDasharray: 4
-        }
-      })
-    }
+    processBlock({ block: step, step, steps })
+    connectBlockToNextBlock({ block: step, step, steps })
   })
 
   return { nodes, edges }

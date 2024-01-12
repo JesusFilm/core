@@ -7,8 +7,8 @@ import { Handle, Position } from 'reactflow'
 interface BaseNodeProps {
   isTargetConnectable?: boolean
   isSourceConnectable?: boolean
-  icon?: ReactNode
-  title?: string
+  icon: ReactNode
+  title: string
 }
 
 export function BaseNode({
