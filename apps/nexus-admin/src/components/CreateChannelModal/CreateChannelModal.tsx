@@ -43,7 +43,7 @@ export const CreateChannelModal: FC<CreateChannelModalProps> = ({
     }
   })
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     onClose()
     formik.resetForm()
   }

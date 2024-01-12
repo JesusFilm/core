@@ -2,7 +2,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Stack } from '@mui/material'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import {
   PickerCallback,
@@ -24,9 +24,13 @@ export const GET_RESOURCES = gql`
     resources(where: $where) {
       id
       name
-      googleDrive {
+      localizations {
+        id
+        keywords
+        language
+        resourceId
         title
-        driveId
+        description
       }
       status
     }
@@ -38,9 +42,13 @@ const GET_RESOURCE = gql`
     resource(id: $resourceId) {
       id
       name
-      googleDrive {
+      localizations {
+        id
+        keywords
+        language
+        resourceId
         title
-        driveId
+        description
       }
       status
     }
@@ -52,9 +60,13 @@ const RESOURCE_LOAD = gql`
     resourceFromGoogleDrive(input: $input) {
       id
       name
-      googleDrive {
+      localizations {
+        id
+        keywords
+        language
+        resourceId
         title
-        driveId
+        description
       }
       status
     }
@@ -66,9 +78,13 @@ const RESOURCE_UPDATE = gql`
     resourceUpdate(id: $resourceId, input: $input) {
       id
       name
-      googleDrive {
+      localizations {
+        id
+        keywords
+        language
+        resourceId
         title
-        driveId
+        description
       }
       status
     }
@@ -83,7 +99,7 @@ const RESOURCE_DELETE = gql`
   }
 `
 
-const ResourcesPage = () => {
+const ResourcesPage: FC = () => {
   const [deleteResourceModal, setDeleteResourceModal] = useState<boolean>(false)
   const [resourceId, setResourceId] = useState<string>('')
   const [resources, setResources] = useState<Resources_resources[]>([])
@@ -130,6 +146,7 @@ const ResourcesPage = () => {
   const [resourceDelete] = useMutation<ResourceDelete>(RESOURCE_DELETE)
 
   const openGooglePicker = async () => {
+    // eslint-disable-next-line import/dynamic-import-chunkname
     const gapi = await import('gapi-script').then((module) => module.gapi)
 
     gapi.load('client:auth2', () => {
@@ -184,7 +201,7 @@ const ResourcesPage = () => {
     fileIds: string[],
     accessToken: string
   ) => {
-    resourceLoad({
+    void resourceLoad({
       variables: {
         input: {
           authCode: accessToken,
@@ -238,7 +255,7 @@ const ResourcesPage = () => {
         onClose={() => setOpenUpdateResourceModal(false)}
         data={resource}
         onUpdate={(resourceData) => {
-          resourceUpdate({
+          void resourceUpdate({
             variables: {
               resourceId,
               input: resourceData
@@ -255,7 +272,7 @@ const ResourcesPage = () => {
         onClose={() => setDeleteResourceModal(false)}
         content="Are you sure you would like to delete this resource?"
         onDelete={() => {
-          resourceDelete({
+          void resourceDelete({
             variables: {
               resourceId
             },

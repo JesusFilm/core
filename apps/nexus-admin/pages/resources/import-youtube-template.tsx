@@ -9,17 +9,52 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useGoogleLogin } from '@react-oauth/google'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 
 import { MainLayout } from '../../src/components/MainLayout'
 
+import { GET_RESOURCES } from '.'
+
 const GET_GOOGLE_ACCESS_TOKEN = gql`
   mutation getGoogleAccessToken($input: GoogleAuthInput!) {
     getGoogleAccessToken(input: $input) {
       id
       accessToken
+    }
+  }
+`
+
+const GET_RESOUCE_FROM_TEMPLATE = gql`
+  mutation ResourceFromTemplate(
+    $nexusId: String!
+    $tokenId: String!
+    $spreadsheetId: String!
+    $drivefolderId: String!
+  ) {
+    resourceFromTemplate(
+      nexusId: $nexusId
+      tokenId: $tokenId
+      spreadsheetId: $spreadsheetId
+      drivefolderId: $drivefolderId
+    ) {
+      id
+      nexusId
+      name
+      status
+      createdAt
+      updatedAt
+      deletedAt
+      googleDriveLink
+      category
+      privacy
+      sourceType
+      localizations {
+        id
+        title
+      }
     }
   }
 `
@@ -31,11 +66,16 @@ const ImportYouTubeTemplatePage: FC = () => {
     useState<CallbackDoc | null>(null)
   const [openPicker] = useDrivePicker()
   const [getGoogleAccessToken] = useMutation(GET_GOOGLE_ACCESS_TOKEN)
+  const [getResourceFromTemplate] = useMutation(GET_RESOUCE_FROM_TEMPLATE)
   const [googleAccessToken, setGoogleAccessToken] = useState('')
   const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
   const [resourceType, setResourceType] = useState<'file' | 'directory' | ''>(
     ''
   )
+  const nexusId =
+    typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
+
+  const router = useRouter()
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
@@ -72,6 +112,7 @@ const ImportYouTubeTemplatePage: FC = () => {
 
         if (data.action === 'picked') {
           setSelectedTemplateFile(data.docs[0])
+          console.log(data.docs[0]?.id)
           console.log(googleAccessTokenId)
         }
       }
@@ -109,6 +150,21 @@ const ImportYouTubeTemplatePage: FC = () => {
       }
     }
   }, [googleAccessToken])
+
+  const uploadYoutubeTemplate = (): void => {
+    void getResourceFromTemplate({
+      variables: {
+        nexusId,
+        tokenId: googleAccessTokenId,
+        spreadsheetId: selectedTemplateFile?.id,
+        drivefolderId: selectedVideosDirectory?.id
+      },
+      onCompleted: () => {
+        router.push('/resources')
+      },
+      refetchQueries: [GET_RESOURCES]
+    })
+  }
 
   return (
     <MainLayout title="Import Youtube Template">
@@ -182,8 +238,18 @@ const ImportYouTubeTemplatePage: FC = () => {
             justifyContent="flex-end"
             spacing={4}
           >
-            <Button sx={{ alignSelf: 'flex-end' }}>Cancel</Button>
-            <Button variant="contained" sx={{ alignSelf: 'flex-end' }}>
+            <Button sx={{ alignSelf: 'flex-end' }} onClick={router.back}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ alignSelf: 'flex-end' }}
+              disabled={
+                selectedTemplateFile === null ||
+                selectedVideosDirectory === null
+              }
+              onClick={uploadYoutubeTemplate}
+            >
               Upload Youtube Template
             </Button>
           </Stack>

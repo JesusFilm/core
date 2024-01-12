@@ -1,7 +1,8 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { Button, Stack } from '@mui/material'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
-import { useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 
 import { Channel, Channel_channel } from '../../__generated__/Channel'
 import { ChannelCreate } from '../../__generated__/ChannelCreate'
@@ -72,7 +73,7 @@ const CHANNEL_DELETE = gql`
   }
 `
 
-const ChannelsPage = () => {
+const ChannelsPage: FC = () => {
   const [openCreateChannelModal, setOpenCreateChannelModal] =
     useState<boolean>(false)
   const [openUpdateChannelModal, setOpenUpdateChannelModal] =
@@ -94,7 +95,7 @@ const ChannelsPage = () => {
   })
 
   const { data: channelData } = useQuery<Channel>(GET_CHANNEL, {
-    skip: !channelId,
+    skip: channelId === '',
     variables: {
       channelID: channelId,
       nexusId
@@ -106,13 +107,13 @@ const ChannelsPage = () => {
   const [channelDelete] = useMutation<ChannelDelete>(CHANNEL_DELETE)
 
   useEffect(() => {
-    if (data) {
+    if (data !== undefined) {
       setChannels(data?.channels as Channels_channels[])
     }
   }, [data])
 
   useEffect(() => {
-    if (channelData) {
+    if (channelData !== undefined) {
       setChannel(channelData?.channel)
     }
   }, [channelData])
@@ -150,7 +151,7 @@ const ChannelsPage = () => {
         open={openCreateChannelModal}
         onClose={() => setOpenCreateChannelModal(false)}
         onCreate={(channelData) => {
-          channelCreate({
+          void channelCreate({
             variables: {
               input: { nexusId, ...channelData }
             },
@@ -166,7 +167,7 @@ const ChannelsPage = () => {
         onClose={() => setOpenUpdateChannelModal(false)}
         data={channel}
         onUpdate={(channelData) => {
-          channelUpdate({
+          void channelUpdate({
             variables: {
               channelId,
               input: channelData
@@ -183,7 +184,7 @@ const ChannelsPage = () => {
         onClose={() => setDeleteChannelModal(false)}
         content="Are you sure you would like to delete this channel?"
         onDelete={() => {
-          channelDelete({
+          void channelDelete({
             variables: {
               channelId
             },

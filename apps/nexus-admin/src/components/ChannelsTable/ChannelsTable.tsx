@@ -57,7 +57,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: ({ code }) => {
-      channelConnect({
+      void channelConnect({
         variables: {
           input: {
             channelId,

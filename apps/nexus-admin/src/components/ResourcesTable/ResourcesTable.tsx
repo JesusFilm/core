@@ -1,3 +1,4 @@
+import { gql, useMutation, useQuery } from '@apollo/client'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
@@ -13,10 +14,18 @@ import {
 import { DataGrid, GridCellParams } from '@mui/x-data-grid'
 import { FC, useState } from 'react'
 
+import { Channels } from '../../../__generated__/Channels'
 import { Resources_resources } from '../../../__generated__/Resources'
+import { GET_CHANNELS } from '../../../pages/channels'
 import { ViewResourceTableModal } from '../ViewResourceTableModal/ViewResourceTableModal'
 
 import { ResourcesTableHeader } from './ResourcesTableHeader'
+
+const UPLOAD_TO_YOUTUBE = gql`
+  mutation UploadToYoutube($channelId: String!, $resourceId: String!) {
+    uploadToYoutube(channelId: $channelId, resourceId: $resourceId)
+  }
+`
 
 interface ResourcesTableProps {
   data: Resources_resources[] | []
@@ -38,12 +47,15 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
     page: 0,
     pageSize: 10
   })
+  const [uploadToYoutube] = useMutation(UPLOAD_TO_YOUTUBE)
+  const nexusId =
+    typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
 
   const defaultColumnsVisibility = {
     status: true,
     name: true,
-    title: false,
-    description: false,
+    title: true,
+    description: true,
     keywords: true,
     upload: true,
     action: true
@@ -52,7 +64,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
     defaultColumnsVisibility
   )
 
-  const allColumnsVisibility = () =>
+  const allColumnsVisibility = (): void =>
     setColumnsVisibility({
       status: true,
       name: true,
@@ -72,6 +84,15 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
   const resetColumnsVisibility = () =>
     setColumnsVisibility(defaultColumnsVisibility)
 
+  const { data: channelsData } = useQuery<Channels>(GET_CHANNELS, {
+    variables: {
+      where: {
+        status: 'published',
+        nexusId
+      }
+    }
+  })
+
   const columns = [
     {
       field: 'status',
@@ -80,20 +101,47 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
       renderCell: () => <Chip label="Success" color="success" />
     },
     { field: 'name', headerName: 'Filename', flex: 1 },
-    { field: 'title', headerName: 'Title', flex: 1 },
-    { field: 'description', headerName: 'Description', flex: 1 },
+    {
+      field: 'title',
+      headerName: 'Title',
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Typography>{row.localizations?.[0]?.title}</Typography>
+      )
+    },
+    {
+      field: 'description',
+      headerName: 'Description',
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Typography>{row.localizations?.[0]?.description}</Typography>
+      )
+    },
     {
       field: 'keywords',
       headerName: 'Keywords',
-      flex: 1,
-      renderCell: () => <Chip label="Youtube" variant="outlined" />
+      flex: 2,
+      renderCell: ({ row }) => (
+        <Chip label={row.localizations?.[0]?.keywords} variant="outlined" />
+      )
     },
     {
       field: 'upload',
       headerName: 'Upload',
       flex: 1,
-      renderCell: () => (
-        <Button variant="contained" color="secondary">
+      renderCell: ({ row }) => (
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            void uploadToYoutube({
+              variables: {
+                channelId: channelsData?.channels?.[0]?.id,
+                resourceId: row.id
+              }
+            })
+          }}
+        >
           Upload to Youtube
         </Button>
       )
