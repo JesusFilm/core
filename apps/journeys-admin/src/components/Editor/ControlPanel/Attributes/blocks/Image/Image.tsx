@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic'
 import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -18,16 +19,8 @@ const ImageOptions = dynamic(
 
 export function Image(block: TreeBlock<ImageBlock>): ReactElement {
   const { id } = block
-
+  const { t } = useTranslation()
   const { dispatch } = useEditor()
-
-  const openDrawer = (): void =>
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Image',
-      mobileOpen: true,
-      children: <ImageOptions />
-    })
 
   useEffect(() => {
     dispatch({
@@ -47,11 +40,13 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
       <Attribute
         id={`${id}-image-options`}
         icon={<Image3Icon />}
-        name="Image Source"
+        name={t('Image Source')}
         value={block?.alt ?? ''}
-        description="Image Options"
-        onClick={openDrawer}
-      />
+        description={t('Image Options')}
+        drawerTitle={t('Image')}
+      >
+        <ImageOptions />
+      </Attribute>
     </>
   )
 }

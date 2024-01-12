@@ -37,15 +37,10 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
         name={t('Action')}
         value={selectedAction?.label ?? 'None'}
         description={t('Action')}
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: t('Action'),
-            mobileOpen: true,
-            children: <Action />
-          })
-        }}
-      />
+        drawerTitle={t('Action')}
+      >
+        <Action />
+      </Attribute>
 
       <Attribute
         id={`${id}-form-credentials`}
@@ -53,15 +48,10 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
         name={t('Credentials')}
         value={form != null && 'name' in form ? t('Complete') : t('Incomplete')}
         description={t('Formium Credentials')}
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: t('Credentials'),
-            mobileOpen: true,
-            children: <Credentials />
-          })
-        }}
-      />
+        drawerTitle={t('Credentials')}
+      >
+        <Credentials />
+      </Attribute>
     </>
   )
 }

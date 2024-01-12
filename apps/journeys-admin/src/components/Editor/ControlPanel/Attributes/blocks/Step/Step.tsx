@@ -26,8 +26,7 @@ export function Step({
   locked
 }: TreeBlock<StepBlock>): ReactElement {
   const {
-    state: { steps },
-    dispatch
+    state: { steps }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -47,18 +46,13 @@ export function Step({
     <Attribute
       id={`next-step-${id}`}
       icon={locked ? <Lock1Icon /> : <LockOpen1Icon />}
-      name="Next Card"
+      name={t('Next Card')}
       value={heading}
-      description={locked ? 'Locked With Interaction' : 'Unlocked Card'}
-      onClick={() => {
-        dispatch({
-          type: 'SetDrawerPropsAction',
-          title: t('Next Card Properties'),
-          mobileOpen: true,
-          children: <NextCard />
-        })
-      }}
+      description={locked ? t('Locked With Interaction') : t('Unlocked Card')}
+      drawerTitle={t('Next Card Properties')}
       testId={`Step-${id}`}
-    />
+    >
+      <NextCard />
+    </Attribute>
   )
 }

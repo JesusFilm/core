@@ -1,5 +1,6 @@
 import capitalize from 'lodash/capitalize'
 import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -35,6 +36,7 @@ export function Button({
   children
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
+  const { t } = useTranslation()
 
   const startIcon = children.find(
     (block) => block.id === startIconId
@@ -63,104 +65,87 @@ export function Button({
       <Attribute
         id={`${id}-button-action`}
         icon={<LinkIcon />}
-        name="Action"
+        name={t('Action')}
         value={selectedAction?.label ?? 'None'}
-        description="Action"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Action',
-            mobileOpen: true,
-            children: <Action />
-          })
-        }}
-      />
+        description={t('Action')}
+        drawerTitle="Action"
+      >
+        <Action />
+      </Attribute>
 
       <Attribute
         id={`${id}-button-color`}
         icon={<ColorDisplayIcon color={buttonColor} />}
-        name="Color"
+        name={t('Color')}
         value={capitalize(buttonColor?.toString() ?? ButtonColor.primary)}
-        description="Background Color"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Button Color',
-            mobileOpen: true,
-            children: <Color />
-          })
-        }}
-      />
+        description={t('Background Color')}
+        drawerTitle={t('Button Color')}
+      >
+        <Color />
+      </Attribute>
 
+      {/* 
+        adding t function
+        const { t } = useTranslation()
+
+        update name, description with t function
+
+        add drawer title with t function
+        - take the value from the dispatch.title
+
+        moving the dispatch.children as a child to the attribute
+
+        remove onClick
+        */}
       <Attribute
         id={`${id}-button-size`}
         icon={<SpaceHorizontalIcon />}
-        name="Button Size"
+        name={t('Button Size')}
         value={capitalize(size?.toString() ?? ButtonSize.medium)}
-        description="Button Size"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Button Size',
-            mobileOpen: true,
-            children: <Size />
-          })
-        }}
-      />
+        description={t('Button Size')}
+        drawerTitle={t('Button Size')}
+      >
+        <Size />
+      </Attribute>
 
       <Attribute
         id={`${id}-button-variant`}
         icon={<TransformIcon />}
-        name="Variant"
+        name={t('Variant')}
         value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
-        description="Button Variant"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Button Variant ',
-            mobileOpen: true,
-            children: <Variant />
-          })
-        }}
-      />
+        description={t('Button Variant')}
+        drawerTitle="Button Variant "
+      >
+        <Variant />
+      </Attribute>
 
       <Attribute
         id={`${id}-button-leading-icon`}
         icon={<AlertCircleIcon />}
-        name="Leading Icon"
+        name={t('Leading Icon')}
         value={
           icons.find(({ value }) => value === startIcon?.iconName)?.label ??
           'None'
         }
-        description="Leading Icon"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Leading Icon ',
-            mobileOpen: true,
-            children: <Icon id={startIcon.id} />
-          })
-        }}
-      />
+        description={t('Leading Icon')}
+        drawerTitle="Leading Icon "
+      >
+        <Icon id={startIcon.id} />
+      </Attribute>
 
       <Attribute
         id={`${id}-button-trailing-icon`}
         icon={<AlertCircleIcon />}
-        name="Trailing Icon"
+        name={t('Trailing Icon')}
         value={
           icons.find(({ value }) => value === endIcon?.iconName)?.label ??
           'None'
         }
-        description="Trailing Icon"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Trailing Icon ',
-            mobileOpen: true,
-            children: <Icon id={endIcon.id} />
-          })
-        }}
-      />
+        description={t('Trailing Icon')}
+        drawerTitle="Trailing Icon "
+      >
+        <Icon id={endIcon.id} />
+      </Attribute>
     </>
   )
 }

@@ -77,30 +77,20 @@ export function Footer(): ReactElement {
         name={t('Hosted By')}
         value={hostName ?? t('None')}
         description={t("Host's name")}
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: t('Hosted By'),
-            mobileOpen: true,
-            children: <HostSidePanel />
-          })
-        }}
-      />
+        drawerTitle={t('Hosted By')}
+      >
+        <HostSidePanel />
+      </Attribute>
       <Attribute
         id="chat-widget"
         icon={<MessageChat1Icon />}
         name={t('Chat Widget')}
         value={platforms ?? t('None')}
         description={t('Chat Platform')}
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: t('Chat Widget'),
-            mobileOpen: true,
-            children: <Chat />
-          })
-        }}
-      />
+        drawerTitle={t('Chat Widget')}
+      >
+        <Chat />
+      </Attribute>
     </>
   )
 }

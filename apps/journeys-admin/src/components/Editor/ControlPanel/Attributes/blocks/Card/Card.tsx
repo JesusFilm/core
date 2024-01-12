@@ -1,11 +1,10 @@
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -19,7 +18,6 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
-import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 import { Attribute } from '../../Attribute'
 
 const BackgroundColor = dynamic(
@@ -63,10 +61,9 @@ export function Card({
   coverBlockId,
   children
 }: TreeBlock<CardBlock>): ReactElement {
-  const router = useRouter()
-  const { dispatch } = useEditor()
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
+  const { t } = useTranslation()
 
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>
@@ -80,21 +77,6 @@ export function Card({
   })
   const selectedCardColor =
     backgroundColor ?? cardTheme.palette.background.paper
-
-  const handleBackgroundMediaClick = (param: string): void => {
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Background Media Properties',
-      mobileOpen: true,
-      children: <BackgroundMedia />
-    })
-
-    router.query.param = param
-    void router.push(router)
-    router.events.on('routeChangeComplete', () => {
-      setBeaconPageViewed(param)
-    })
-  }
 
   return (
     <>
@@ -114,55 +96,60 @@ export function Card({
             />
           </Paper>
         }
-        name="Color"
+        name={t('Color')}
         value={selectedCardColor.toUpperCase()}
-        description="Background Color"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Background Color Properties',
-            mobileOpen: true,
-            children: <BackgroundColor />
-          })
-        }}
-      />
+        description={t('Background Color')}
+        drawerTitle="Background Color Properties"
+      >
+        <BackgroundColor />
+      </Attribute>
+
       {coverBlock?.__typename === 'ImageBlock' && coverBlock.src != null && (
         <Attribute
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
-          name="Background"
+          name={t('Background')}
           value={coverBlock.src.substring(
             coverBlock.src.lastIndexOf('/') + 1,
             coverBlock.src.length
           )}
-          description="Background Image"
-          onClick={() => handleBackgroundMediaClick('background-image')}
-        />
+          description={t('Background Image')}
+          drawerTitle={t('Background Media Properties')}
+          param="background-image"
+        >
+          <BackgroundMedia />
+        </Attribute>
       )}
       {coverBlock?.__typename === 'VideoBlock' && (
         <Attribute
           id={`${id}-cover-block`}
           icon={<VideoOnIcon />}
-          name="Background"
+          name={t('Background')}
           value={coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''}
-          description="Background Video"
-          onClick={() => handleBackgroundMediaClick('background-video')}
-        />
+          description={t('Background Video')}
+          drawerTitle={t('Background Media Properties')}
+          param="background-video"
+        >
+          <BackgroundMedia />
+        </Attribute>
       )}
       {coverBlock == null && (
         <Attribute
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
-          name="Background"
+          name={t('Background')}
           value="None"
-          description="Background Media"
-          onClick={() => handleBackgroundMediaClick('background-video')}
-        />
+          description={t('Background Media')}
+          drawerTitle={t('Background Media Properties')}
+          param="background-video"
+        >
+          <BackgroundMedia />
+        </Attribute>
       )}
       <Attribute
         icon={<PaletteIcon />}
         id={`${id}-theme-mode`}
-        name="Style"
+        name={t('Style')}
         value={
           themeMode == null
             ? 'Default'
@@ -170,31 +157,21 @@ export function Card({
             ? 'Light'
             : 'Dark'
         }
-        description="Card Styling"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Card Style Property',
-            mobileOpen: true,
-            children: <CardStyling />
-          })
-        }}
-      />
+        description={t('Card Styling')}
+        drawerTitle={t('Card Style Property')}
+      >
+        <CardStyling />
+      </Attribute>
       <Attribute
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-fullscreen`}
-        name="Layout"
+        name={t('Layout')}
         value={fullscreen ? 'Expanded' : 'Contained'}
-        description="Content Appearance"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Card Layout Property',
-            mobileOpen: true,
-            children: <CardLayout />
-          })
-        }}
-      />
+        description={t('Content Appearance')}
+        drawerTitle={t('Card Layout Property')}
+      >
+        <CardLayout />
+      </Attribute>
     </>
   )
 }

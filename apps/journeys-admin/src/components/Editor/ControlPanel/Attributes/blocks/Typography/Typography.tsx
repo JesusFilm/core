@@ -1,6 +1,7 @@
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -17,6 +18,7 @@ import { Variant } from './Variant'
 
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   const { id, align, color, variant } = block
+  const { t } = useTranslation()
 
   const { dispatch } = useEditor()
 
@@ -37,52 +39,37 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       <Attribute
         id={`${id}-typography-variant`}
         icon={<Type2Icon />}
-        name="Text Variant"
+        name={t('Text Variant')}
         value={capitalize(
           lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
         )}
-        description="Text Variant"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Text Variant',
-            mobileOpen: true,
-            children: <Variant />
-          })
-        }}
-      />
+        description={t('Text Variant')}
+        drawerTitle={t('Text Variant')}
+      >
+        <Variant />
+      </Attribute>
 
       <Attribute
         id={`${id}-typography-color`}
         icon={<ColorDisplayIcon color={color} />}
-        name="Color"
+        name={t('Color')}
         value={capitalize(color?.toString() ?? 'primary')}
-        description="Text Color"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Text Color',
-            mobileOpen: true,
-            children: <Color />
-          })
-        }}
-      />
+        description={t('Text Color')}
+        drawerTitle={t('Text Color')}
+      >
+        <Color />
+      </Attribute>
 
       <Attribute
         id={`${id}-typography-alignment`}
         icon={<AlignLeftIcon />}
-        name="Text Alignment"
+        name={t('Text Alignment')}
         value={capitalize(align?.toString() ?? 'Left')}
-        description="Text Alignment"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Text Alignment',
-            mobileOpen: true,
-            children: <Align />
-          })
-        }}
-      />
+        description={t('Text Alignment')}
+        drawerTitle={t('Text Alignment')}
+      >
+        <Align />
+      </Attribute>
     </>
   )
 }

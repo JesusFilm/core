@@ -1,4 +1,5 @@
 import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -13,6 +14,7 @@ export function RadioOption({
   action
 }: TreeBlock<RadioOptionBlock>): ReactElement {
   const { dispatch } = useEditor()
+  const { t } = useTranslation()
 
   useEffect(() => {
     dispatch({
@@ -31,22 +33,17 @@ export function RadioOption({
       <Attribute
         id={`${id}-radio-option-action`}
         icon={<LinkIcon />}
-        name="Action"
+        name={t('Action')}
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
           'None'
         }
-        description="Action"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Action',
-            mobileOpen: true,
-            children: <Action />
-          })
-        }}
+        description={t('Action')}
+        drawerTitle={t('Action')}
         testId="RadioOption"
-      />
+      >
+        <Action />
+      </Attribute>
     </>
   )
 }

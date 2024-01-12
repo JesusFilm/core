@@ -1,4 +1,5 @@
 import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -21,6 +22,7 @@ export function SignUp({
   const submitIcon = children.find(
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
+  const { t } = useTranslation()
 
   useEffect(() => {
     dispatch({
@@ -39,40 +41,30 @@ export function SignUp({
       <Attribute
         id={`${id}-signup-action`}
         icon={<LinkIcon />}
-        name="Action"
+        name={t('Action')}
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
           'None'
         }
-        description="Form Submission"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Form Submission',
-            mobileOpen: true,
-            children: <Action />
-          })
-        }}
-      />
+        description={t('Form Submission')}
+        drawerTitle={t('Form Submission')}
+      >
+        <Action />
+      </Attribute>
 
       <Attribute
         id={`${id}-signup-icon`}
         icon={<InformationCircleContained />}
-        name="Button Icon"
+        name={t('Button Icon')}
         value={
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
           'None'
         }
-        description="Button Icon"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Button Icon',
-            mobileOpen: true,
-            children: <Icon id={submitIcon.id} />
-          })
-        }}
-      />
+        description={t('Button Icon')}
+        drawerTitle={t('Button Icon')}
+      >
+        <Icon id={submitIcon.id} />
+      </Attribute>
     </>
   )
 }

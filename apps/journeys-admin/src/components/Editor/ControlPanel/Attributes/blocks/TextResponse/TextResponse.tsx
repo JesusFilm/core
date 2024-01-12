@@ -1,8 +1,8 @@
 import Divider from '@mui/material/Divider'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
@@ -22,68 +22,53 @@ export function TextResponse({
   submitIconId,
   label
 }: TreeBlock<TextResponseBlock>): ReactElement {
-  const { dispatch } = useEditor()
   const submitIcon = children.find(
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
+  const { t } = useTranslation()
 
   return (
     <>
       <Attribute
         id={`${id}-text-field-options`}
         icon={<TextInput1Icon />}
-        name="Feedback"
+        name={t('Feedback')}
         value={label}
-        description="Feedback Properties"
-        onClick={(): void =>
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Feedback Properties',
-            mobileOpen: true,
-            children: <TextResponseFields />
-          })
-        }
-      />
+        description={t('Feedback Properties')}
+        drawerTitle={t('Feedback Properties')}
+      >
+        <TextResponseFields />
+      </Attribute>
 
       <Divider orientation="vertical" variant="middle" flexItem />
 
       <Attribute
         id={`${id}-text-field-action`}
         icon={<LinkIcon />}
-        name="Action"
+        name={t('Action')}
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
           'None'
         }
-        description="Form Submission"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Action',
-            mobileOpen: true,
-            children: <Action />
-          })
-        }}
-      />
+        description={t('Form Submission')}
+        drawerTitle={t('Action')}
+      >
+        <Action />
+      </Attribute>
 
       <Attribute
         id={`${id}-text-field-icon`}
         icon={<InformationCircleContainedIcon />}
-        name="Button Icon"
+        name={t('Button Icon')}
         value={
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
           'None'
         }
-        description="Button Icon"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Button Icon',
-            mobileOpen: true,
-            children: <Icon id={submitIcon.id} />
-          })
-        }}
-      />
+        description={t('Button Icon')}
+        drawerTitle={t('Button Icon')}
+      >
+        <Icon id={submitIcon.id} />
+      </Attribute>
     </>
   )
 }
