@@ -310,23 +310,22 @@ export class ResourceResolver {
     spreadsheetId: string,
     drivefolderId: string,
   ): Promise<SpreadsheetRow[]> {
-    // const googleAccessToken =
-    //   await this.prismaService.googleAccessToken.findUnique({
-    //     where: { id: tokenId },
-    //   });
+    const googleAccessToken =
+      await this.prismaService.googleAccessToken.findUnique({
+        where: { id: tokenId },
+      });
 
-    // if (googleAccessToken === null) {
-    //   throw new Error('Invalid tokenId');
-    // }
+    if (googleAccessToken === null) {
+      throw new Error('Invalid tokenId');
+    }
 
-    // const accessToken = await this.getNewAccessToken(
-    //   googleAccessToken.refreshToken,
-    // );
+    const accessToken = await this.getNewAccessToken(
+      googleAccessToken.refreshToken,
+    );
 
     const spreadsheetData = await this.downloadSpreadsheet(
       spreadsheetId,
-      // accessToken,
-      tokenId,
+      accessToken,
     );
 
     const spreadsheetRows: SpreadsheetRow[] = [];
@@ -339,19 +338,12 @@ export class ResourceResolver {
       category,
       privacy,
     ] of spreadsheetData) {
-      // const fileExists = await this.checkFileExistsInDriveFolder(
-      //   filename,
-      //   drivefolderId,
-      //   accessToken,
-      // );
-
       const fileId = await this.findFile(
-        // this.youtubeService.authorize(accessToken),
-        this.youtubeService.authorize(tokenId),
+        this.youtubeService.authorize(accessToken),
         drivefolderId,
         filename,
       );
-      
+
       console.log('driveFile', fileId);
 
       if (fileId !== null) {
@@ -438,27 +430,6 @@ export class ResourceResolver {
     };
   }
 
-  private async checkFileExistsInDriveFolder(
-    filename: string,
-    folderId: string,
-    accessToken: string,
-  ): Promise<boolean> {
-    const driveApiUrl = `https://www.googleapis.com/drive/v3/files?q='${encodeURIComponent(
-      folderId,
-    )}'+in+parents+and+name='${encodeURIComponent(
-      filename,
-    )}'&fields=files(id,name)&key=${process.env.GOOGLE_API_KEY}`;
-    const response = await fetch(driveApiUrl, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    const data = await response.json();
-    return Boolean(data.files) && data.files.length > 0;
-  }
-
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   async findFile(auth, folderId, fileName) {
     const drive = google.drive({ version: 'v3', auth });
@@ -467,24 +438,7 @@ export class ResourceResolver {
       fields: 'files(id, name)',
     });
 
-    // if (err) return console.log('The API returned an error: ' + err);
-    //     if (res) {
-    //       const files = res.data.files;
-    //       if (files) {
-    //         if (files.length) {
-    //           console.log('File ID:', files[0].id);
-    //       } else {
-    //           console.log('No files found.');
-    //         }
-    //       }
-    //     }
-
-    if (driveResponse !== null) {
-      // console.log('driveResponse', data.files[0])
-      return driveResponse?.data?.files?.[0]?.id ?? null
-    }
-
-    return null
+    return driveResponse?.data?.files?.[0]?.id ?? null;
   }
 }
 
