@@ -152,9 +152,46 @@ interface AttributesProps {
 }
 
 export function Attributes({ selected, step }: AttributesProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  // Map typename to labels when we have translation keys
+  const blockLabel =
+    typeof selected === 'string'
+      ? t(selected)
+      : selected.__typename === 'StepBlock'
+      ? t('Card')
+      : selected.__typename === 'SignUpBlock'
+      ? t('Subscribe')
+      : selected.__typename === 'TextResponseBlock'
+      ? t('Feedback')
+      : selected.__typename === 'RadioQuestionBlock'
+      ? t('Poll')
+      : selected.__typename === 'RadioOptionBlock'
+      ? t('Poll Option')
+      : selected.__typename.replace('Block', '')
   return (
-    <Stack>
-      <AttributesContent selected={selected} step={step} />
-    </Stack>
+    <>
+      <Stack
+        direction="row"
+        spacing={4}
+        sx={{
+          overflowX: 'auto',
+          py: 5,
+          px: 6
+        }}
+      >
+        <AttributesContent selected={selected} step={step} />
+      </Stack>
+      <Box
+        sx={{
+          py: 4.25,
+          borderTop: (theme) => `1px solid ${theme.palette.divider}`
+        }}
+      >
+        <MuiTypography align="center">
+          {t('Editing {{block}} Properties', { block: blockLabel })}
+        </MuiTypography>
+      </Box>
+    </>
   )
 }
