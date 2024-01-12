@@ -22,7 +22,6 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
-import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 
 import { VideoFromLocal } from './VideoFromLocal'
 
@@ -64,7 +63,6 @@ export function VideoLibrary({
   onSelect: handleSelect
 }: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const { toolbar } = usePageWrapperStyles()
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const router = useRouter()
@@ -128,7 +126,6 @@ export function VideoLibrary({
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: smUp ? DRAWER_WIDTH : '100%',
-            maxHeight: `calc(100vh - ${toolbar.height})`,
             display: 'flex'
           }
         }}

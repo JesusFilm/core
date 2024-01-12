@@ -79,6 +79,14 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
           caption: 'span'
         }
       }
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          // this is equal to 100vh - the maxHeight prop of MuiToolbar also defined in this file so that drawers don't cover the appbar
+          maxHeight: `calc(100vh - 48px)`
+        }
+      }
     }
   }
 }
