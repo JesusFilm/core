@@ -59,6 +59,7 @@ model ChannelYoutube {
 
 model Resource {
     id              String                 @id @default(uuid())
+    cloudflareId    String
     nexusId         String
     name            String
     nexus           Nexus                  @relation(fields: [nexusId], references: [id])

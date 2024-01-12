@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { google } from 'googleapis';
 import { GraphQLError } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,11 +14,12 @@ import {
   ResourceCreateInput,
   ResourceFilter,
   ResourceFromGoogleDriveInput,
-  ResourceUpdateInput
+  ResourceUpdateInput,
 } from '../../__generated__/graphql';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
 import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService';
 import { PrismaService } from '../../lib/prisma.service';
+import { YoutubeService } from '../../lib/youtube/youtubeService';
 
 @Resolver('Resource')
 export class ResourceResolver {
@@ -25,6 +27,7 @@ export class ResourceResolver {
     private readonly prismaService: PrismaService,
     private readonly googleDriveService: GoogleDriveService,
     private readonly cloudFlareService: CloudFlareService,
+    private readonly youtubeService: YoutubeService,
   ) {}
 
   @Query()
@@ -77,7 +80,13 @@ export class ResourceResolver {
       });
 
     const resource = await this.prismaService.resource.create({
-      data: { ...input, nexusId: nexus.id, id: uuidv4(), sourceType: 'other' },
+      data: {
+        ...input,
+        cloudflareId: 'cloudflareId',
+        nexusId: nexus.id,
+        id: uuidv4(),
+        sourceType: 'other',
+      },
     });
 
     return resource;
@@ -140,17 +149,8 @@ export class ResourceResolver {
         throw new GraphQLError('file not found', {
           extensions: { code: 'NOT_FOUND' },
         });
-      const resource = await this.prismaService.resource.create({
-        data: {
-          id: uuidv4(),
-          name: driveFile.name,
-          nexusId: nexus.id,
-          status: 'published',
-          createdAt: new Date(),
-          sourceType: 'googleDrive',
-        },
-      });;
-      const fileUrl = this.googleDriveService.getFileUrl(fileId);;
+
+      const fileUrl = this.googleDriveService.getFileUrl(fileId);
       await this.googleDriveService.setFilePermission({
         fileId,
         accessToken: input.authCode ?? '',
@@ -161,6 +161,19 @@ export class ResourceResolver {
         userId,
       );
       console.log('CLOUD FLARE', res);
+
+      const resource = await this.prismaService.resource.create({
+        data: {
+          id: uuidv4(),
+          cloudflareId: 'cloudflareId',
+          name: driveFile.name,
+          nexusId: nexus.id,
+          status: 'published',
+          createdAt: new Date(),
+          sourceType: 'googleDrive',
+        },
+      });
+
       await this.prismaService.googleDriveResource.create({
         data: {
           id: uuidv4(),
@@ -205,32 +218,44 @@ export class ResourceResolver {
     );
 
     for (const row of rows) {
-      const { filename, title, description, keywords, category } = row;
+      const { fileId, filename, title, description, keywords, category } = row;
 
-      if (filename !== undefined) {
-        const resource = await this.prismaService.resource.create({
-          data: {
-            id: uuidv4(),
-            name: filename,
-            nexusId: nexus.id,
-            status: 'published',
-            sourceType: 'template',
-            createdAt: new Date(),
-            category,
-            privacy: 'public',
-          },
-        });
+      const fileUrl = this.googleDriveService.getFileUrl(fileId);
+      await this.googleDriveService.setFilePermission({
+        fileId,
+        accessToken: tokenId ?? '',
+      });
 
-        await this.prismaService.resourceLocalization.create({
-          data: {
-            resourceId: resource.id,
-            title,
-            description,
-            keywords,
-            language: 'en',
-          },
-        });
-      }
+      const res = await this.cloudFlareService.uploadToCloudflareByUrl(
+        fileUrl,
+        filename,
+        'diye',
+      );
+      console.log('CLOUD FLARE', res);
+
+      const resource = await this.prismaService.resource.create({
+        data: {
+          id: uuidv4(),
+          cloudflareId: res?.result?.uid ?? '',
+          name: filename,
+          nexusId: nexus.id,
+          status: 'published',
+          sourceType: 'template',
+          createdAt: new Date(),
+          category,
+          privacy: 'public',
+        },
+      });
+
+      await this.prismaService.resourceLocalization.create({
+        data: {
+          resourceId: resource.id,
+          title,
+          description,
+          keywords,
+          language: 'en',
+        },
+      });
     }
 
     return await this.prismaService.resource.findMany({
@@ -273,10 +298,11 @@ export class ResourceResolver {
   //   @CurrentUser() user: User,
   //   @Args('channelId') channelId: string,
   //   @Args('resourceId') url: string,
-    
+
   // ): Promise<unknown> {
-    
+
   //   // TODO: Downloadfile
+  //   // TODO: UploadToYoutube
   // }
 
   private async handleGoogleDriveOperations(
@@ -284,22 +310,23 @@ export class ResourceResolver {
     spreadsheetId: string,
     drivefolderId: string,
   ): Promise<SpreadsheetRow[]> {
-    const googleAccessToken =
-      await this.prismaService.googleAccessToken.findUnique({
-        where: { id: tokenId },
-      });
+    // const googleAccessToken =
+    //   await this.prismaService.googleAccessToken.findUnique({
+    //     where: { id: tokenId },
+    //   });
 
-    if (googleAccessToken === null) {
-      throw new Error('Invalid tokenId');
-    }
+    // if (googleAccessToken === null) {
+    //   throw new Error('Invalid tokenId');
+    // }
 
-    const accessToken = await this.getNewAccessToken(
-      googleAccessToken.refreshToken,
-    );
+    // const accessToken = await this.getNewAccessToken(
+    //   googleAccessToken.refreshToken,
+    // );
 
     const spreadsheetData = await this.downloadSpreadsheet(
       spreadsheetId,
-      accessToken,
+      // accessToken,
+      tokenId,
     );
 
     const spreadsheetRows: SpreadsheetRow[] = [];
@@ -312,14 +339,24 @@ export class ResourceResolver {
       category,
       privacy,
     ] of spreadsheetData) {
-      const fileExists = await this.checkFileExistsInDriveFolder(
-        filename,
-        drivefolderId,
-        accessToken,
-      );
+      // const fileExists = await this.checkFileExistsInDriveFolder(
+      //   filename,
+      //   drivefolderId,
+      //   accessToken,
+      // );
 
-      if (fileExists) {
+      const fileId = await this.findFile(
+        // this.youtubeService.authorize(accessToken),
+        this.youtubeService.authorize(tokenId),
+        drivefolderId,
+        filename,
+      );
+      
+      console.log('driveFile', fileId);
+
+      if (fileId !== null) {
         const row: SpreadsheetRow = {
+          fileId,
           filename,
           title,
           description,
@@ -357,9 +394,9 @@ export class ResourceResolver {
   private async downloadSpreadsheet(
     spreadsheetId: string,
     accessToken: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
-    const sheetsApiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/0`;
+    const sheetsApiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1`;
     const response = await fetch(sheetsApiUrl, {
       method: 'GET',
       headers: {
@@ -368,6 +405,7 @@ export class ResourceResolver {
     });
 
     const data = await response.json();
+    console.log('data', data);
     return data.values;
   }
 
@@ -420,9 +458,38 @@ export class ResourceResolver {
     const data = await response.json();
     return Boolean(data.files) && data.files.length > 0;
   }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  async findFile(auth, folderId, fileName) {
+    const drive = google.drive({ version: 'v3', auth });
+    const driveResponse = await drive.files.list({
+      q: `'${folderId}' in parents and name='${fileName}' and trashed=false`,
+      fields: 'files(id, name)',
+    });
+
+    // if (err) return console.log('The API returned an error: ' + err);
+    //     if (res) {
+    //       const files = res.data.files;
+    //       if (files) {
+    //         if (files.length) {
+    //           console.log('File ID:', files[0].id);
+    //       } else {
+    //           console.log('No files found.');
+    //         }
+    //       }
+    //     }
+
+    if (driveResponse !== null) {
+      // console.log('driveResponse', data.files[0])
+      return driveResponse?.data?.files?.[0]?.id ?? null
+    }
+
+    return null
+  }
 }
 
 interface SpreadsheetRow {
+  fileId: string;
   filename: string;
   title: string;
   description: string;

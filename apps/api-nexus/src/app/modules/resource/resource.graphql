@@ -100,6 +100,6 @@ extend type Mutation {
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
   resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
-  resourceFromTemplate(nexusId: String!, file: Upload): [Resource!]
+  resourceFromTemplate(tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
 }
