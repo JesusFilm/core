@@ -45,7 +45,7 @@ export function HelpScoutBeacon({
   const { breakpoints, zIndex } = useTheme()
   const router = useRouter()
   const previousUrlRef = useRef(router.asPath)
-  const matches = useMediaQuery(breakpoints.up('md'))
+  const mdUp = useMediaQuery(breakpoints.up('md'))
   const [hasLoaded, setHasLoaded] = useState(false)
   const [beaconOpen, setBeaconOpen] = useState(false)
 
@@ -122,7 +122,7 @@ export function HelpScoutBeacon({
           width: 24,
           height: 24,
           color:
-            matches || userInfo.email === null
+            mdUp || router.route === '/users/sign-in'
               ? 'secondary.dark'
               : 'background.paper'
         }}
