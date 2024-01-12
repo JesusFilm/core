@@ -22,9 +22,9 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
+import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 
 import { VideoFromLocal } from './VideoFromLocal'
-import { usePageWrapperStyles } from '../../PageWrapper/utils/usePageWrapperStyles'
 
 const VideoDetails = dynamic(
   async () =>
