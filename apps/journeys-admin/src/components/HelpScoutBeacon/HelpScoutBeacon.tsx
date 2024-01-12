@@ -121,7 +121,10 @@ export function HelpScoutBeacon({
           right: { xs: 10, md: 10 },
           width: 24,
           height: 24,
-          color: matches ? 'secondary.dark' : 'background.paper'
+          color:
+            matches || userInfo.email === null
+              ? 'secondary.dark'
+              : 'background.paper'
         }}
       >
         {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
