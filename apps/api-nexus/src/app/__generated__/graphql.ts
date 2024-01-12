@@ -236,9 +236,11 @@ export abstract class IMutation {
 
     abstract resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
 
-    abstract resourceFromTemplate(nexusId: string, file?: Nullable<Upload>): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+    abstract resourceFromTemplate(nexusId: string, tokenId: string, spreadsheetId: string, drivefolderId: string): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
 
     abstract getGoogleAccessToken(input: GoogleAuthInput): GoogleAuthResponse | Promise<GoogleAuthResponse>;
+
+    abstract uploadToYoutube(channelId: string, resourceId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
 export class Language {
