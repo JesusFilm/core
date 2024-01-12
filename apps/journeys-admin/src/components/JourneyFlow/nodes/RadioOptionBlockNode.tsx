@@ -1,32 +1,23 @@
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import { Handle, NodeProps, Position } from 'reactflow'
+import { NodeProps } from 'reactflow'
 
-export interface RadioOptionBlockNodeData {
-  title?: string
-}
+import { TreeBlock } from '@core/journeys/ui/block'
+import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
+
+import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
+
+import { BaseNode } from './BaseNode'
+
+export type RadioOptionBlockNodeData = TreeBlock<RadioOptionBlock>
 
 export function RadioOptionBlockNode({
-  data
+  data: block
 }: NodeProps<RadioOptionBlockNodeData>): ReactElement {
   return (
-    <Box
-      sx={{
-        borderRadius: 2,
-        minHeight: '30px',
-        overflow: 'hidden',
-        display: 'flex',
-        padding: '2px 6px',
-        position: 'relative',
-        flexGrow: 1,
-        border: 'solid 2px #b1b1b7',
-        background: '#e6e6e6'
-      }}
-    >
-      <Typography>{data.title}</Typography>
-      <Handle type="target" position={Position.Left} isConnectable={false} />
-      <Handle type="source" position={Position.Right} />
-    </Box>
+    <BaseNode
+      isTargetConnectable={false}
+      title={block.label}
+      icon={<CheckContainedIcon />}
+    />
   )
 }

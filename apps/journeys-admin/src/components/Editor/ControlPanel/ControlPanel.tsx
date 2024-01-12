@@ -279,7 +279,7 @@ export function ControlPanel(): ReactElement {
         <TabPanel
           name="control-panel"
           value={activeTab}
-          index={2}
+          index={1}
           unmountUntilVisible
         >
           <BlocksTab />

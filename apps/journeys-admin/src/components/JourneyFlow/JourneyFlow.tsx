@@ -1,9 +1,7 @@
 import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import dagre from 'dagre'
-import { TFunction } from 'i18next'
 import { ReactElement, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
   Controls,
   Edge,
@@ -17,198 +15,138 @@ import {
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
-} from '../../../__generated__/GetJourney'
-import { VideoBlockSource } from '../../../__generated__/globalTypes'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { StepBlockNextBlockUpdate } from '../../../__generated__/StepBlockNextBlockUpdate'
 import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../Editor/ControlPanel/Attributes/blocks/Step/NextCard/Cards'
 
+import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
+import { FormBlockNode, FormBlockNodeData } from './nodes/FormBlockNode'
 import {
   RadioOptionBlockNode,
   RadioOptionBlockNodeData
 } from './nodes/RadioOptionBlockNode'
+import { SignUpBlockNode, SignUpBlockNodeData } from './nodes/SignUpBlockNode'
 import { StepBlockNode, StepBlockNodeData } from './nodes/StepBlockNode'
+import {
+  TextResponseBlockNode,
+  TextResponseBlockNodeData
+} from './nodes/TextResponseBlockNode'
+import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
 
 import 'reactflow/dist/style.css'
-
-function getStepBlockNodeData(card?: TreeBlock<CardBlock>): StepBlockNodeData {
-  if (card == null) return {}
-
-  let bgImage: string | undefined
-
-  const coverBlock = card.children.find(
-    (block) =>
-      block.id === card.coverBlockId &&
-      (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
-  ) as TreeBlock | undefined
-
-  if (coverBlock?.__typename === 'VideoBlock') {
-    bgImage =
-      (coverBlock.source !== VideoBlockSource.youTube &&
-      coverBlock.source !== VideoBlockSource.cloudflare
-        ? // Use posterBlockId image or default poster image on video
-          coverBlock?.posterBlockId != null
-          ? (
-              coverBlock.children.find(
-                (block) =>
-                  block.id === coverBlock.posterBlockId &&
-                  block.__typename === 'ImageBlock'
-              ) as TreeBlock<ImageBlock>
-            ).src
-          : coverBlock?.video?.image
-        : // Use Youtube or Cloudflare set poster image
-          coverBlock?.image) ?? undefined
-  } else if (coverBlock?.__typename === 'ImageBlock') {
-    bgImage = coverBlock?.src ?? undefined
-  }
-
-  return {
-    bgColor: card.backgroundColor,
-    bgImage
-  }
-}
 
 type InternalNode =
   | Node<StepBlockNodeData, 'StepBlock'>
   | Node<RadioOptionBlockNodeData, 'RadioOptionBlock'>
+  | Node<ButtonBlockNodeData, 'ButtonBlock'>
+  | Node<TextResponseBlockNodeData, 'TextResponseBlock'>
+  | Node<SignUpBlockNodeData, 'SignUpBlock'>
+  | Node<FormBlockNodeData, 'FormBlock'>
+  | Node<VideoBlockNodeData, 'VideoBlock'>
 
-function transformSteps(
-  steps: Array<TreeBlock<StepBlock>>,
-  t: TFunction
-): {
+function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   nodes: InternalNode[]
   edges: Edge[]
 } {
   const nodes: InternalNode[] = []
   const edges: Edge[] = []
 
-  function findRadioQuestions(block: TreeBlock, stepBlockId: string): void {
-    if (block.__typename === 'RadioQuestionBlock') {
-      block.children.forEach((child) => {
-        if (child.__typename === 'RadioOptionBlock') {
-          nodes.push({
-            id: child.id,
-            type: child.__typename,
-            selectable: false,
-            data: {
-              title: child.label
-            },
-            position: { x: 0, y: 0 }
-          })
+  function processBlock(block: TreeBlock, step: TreeBlock<StepBlock>): void {
+    if (
+      block.__typename === 'RadioOptionBlock' ||
+      block.__typename === 'ButtonBlock' ||
+      block.__typename === 'TextResponseBlock' ||
+      block.__typename === 'SignUpBlock' ||
+      block.__typename === 'FormBlock' ||
+      block.__typename === 'VideoBlock'
+    ) {
+      nodes.push({
+        id: block.id,
+        type: block.__typename,
+        selectable: false,
+        data: block,
+        position: { x: 0, y: 0 }
+      })
 
-          if (
-            child.action != null &&
-            child.action.__typename === 'NavigateToBlockAction'
-          ) {
-            edges.push({
-              id: `${child.id}->${child.action.blockId}`,
-              source: child.id,
-              target: child.action.blockId,
-              markerEnd: {
-                type: MarkerType.Arrow
-              },
-              style: {
-                strokeWidth: 2
-              }
-            })
+      if (
+        block.action != null &&
+        block.action.__typename === 'NavigateToBlockAction'
+      ) {
+        edges.push({
+          id: `${block.id}->${block.action.blockId}`,
+          source: block.id,
+          target: block.action.blockId,
+          markerEnd: {
+            type: MarkerType.Arrow
+          },
+          style: {
+            strokeWidth: 2
           }
+        })
+      }
 
-          if (child.id != null) {
-            edges.push({
-              id: `${stepBlockId}->${child.id}`,
-              source: stepBlockId,
-              target: child.id,
-              style: {
-                strokeWidth: 2
-              }
-            })
-          }
+      edges.push({
+        id: `${step.id}->${block.id}`,
+        source: step.id,
+        target: block.id,
+        style: {
+          strokeWidth: 2
         }
       })
     }
 
-    if (block.children != null) {
-      block.children.forEach((child) => findRadioQuestions(child, stepBlockId))
-    }
+    block.children.forEach((child) => {
+      if (block.__typename === 'CardBlock' && block.coverBlockId === child.id) {
+        return
+      }
+      processBlock(child, step)
+    })
   }
 
   steps.forEach((step, index) => {
-    findRadioQuestions(step, step.id)
-    const card = step.children.find(
-      (card) => card.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
-    const data = getStepBlockNodeData(card)
     nodes.push({
       id: step.id,
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
       type: step.__typename,
       data: {
-        ...data,
-        title: getStepHeading(step.id, step.children, steps, t)
+        ...step,
+        steps
       },
       position: { x: 0, y: 0 }
     })
-    let buttonBlockFound = false
-    card?.children.forEach((child) => {
-      if (child.__typename === 'ButtonBlock') {
-        if (
-          child.action != null &&
-          child.action.__typename === 'NavigateToBlockAction'
-        ) {
-          buttonBlockFound = true
-          edges.push({
-            id: `${step.id}->${child.action.blockId}`,
-            source: step.id,
-            target: child.action.blockId,
-            markerEnd: {
-              type: MarkerType.Arrow
-            },
-            style: {
-              strokeWidth: 2,
-              strokeDasharray: 4
-            }
-          })
+    processBlock(step, step)
+
+    if (step.nextBlockId == null && steps[index + 1] != null) {
+      edges.push({
+        id: `${step.id}->${steps[index + 1].id}`,
+        source: step.id,
+        target: steps[index + 1].id,
+        markerEnd: {
+          type: MarkerType.Arrow
+        },
+        style: {
+          strokeWidth: 2,
+          strokeDasharray: 4
         }
-      }
-    })
+      })
+    }
 
-    if (!buttonBlockFound) {
-      if (step.nextBlockId == null && steps[index + 1] != null) {
-        edges.push({
-          id: `${step.id}->${steps[index + 1].id}`,
-          source: step.id,
-          target: steps[index + 1].id,
-          markerEnd: {
-            type: MarkerType.Arrow
-          },
-          style: {
-            strokeWidth: 2,
-            strokeDasharray: 4
-          }
-        })
-      }
-
-      if (step.nextBlockId != null && step.nextBlockId !== step.id) {
-        edges.push({
-          id: `${step.id}->${step.nextBlockId}`,
-          source: step.id,
-          target: step.nextBlockId,
-          markerEnd: {
-            type: MarkerType.Arrow
-          },
-          style: {
-            strokeWidth: 2,
-            strokeDasharray: 4
-          }
-        })
-      }
+    if (step.nextBlockId != null && step.nextBlockId !== step.id) {
+      edges.push({
+        id: `${step.id}->${step.nextBlockId}`,
+        source: step.id,
+        target: step.nextBlockId,
+        markerEnd: {
+          type: MarkerType.Arrow
+        },
+        style: {
+          strokeWidth: 2,
+          strokeDasharray: 4
+        }
+      })
     }
   })
 
@@ -220,15 +158,14 @@ const nodeHeight = 60
 
 function getLayoutedElements(
   steps: Array<TreeBlock<StepBlock>>,
-  direction: string,
-  t: TFunction
+  direction: string
 ): { nodes: InternalNode[]; edges: Edge[] } {
   const dagreGraph = new dagre.graphlib.Graph()
   dagreGraph.setDefaultEdgeLabel(() => ({}))
 
   if (steps == null) return { nodes: [], edges: [] }
 
-  const { nodes, edges } = transformSteps(steps, t)
+  const { nodes, edges } = transformSteps(steps)
   const isHorizontal = direction === 'LR'
   dagreGraph.setGraph({
     rankdir: direction,
@@ -263,19 +200,18 @@ function getLayoutedElements(
 }
 
 export function JourneyFlow(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { steps }
   } = useEditor()
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [nodes, setNodes] = useNodesState([])
+  const [edges, setEdges] = useEdgesState([])
 
   useEffect(() => {
-    const { nodes, edges } = getLayoutedElements(steps ?? [], 'LR', t)
+    const { nodes, edges } = getLayoutedElements(steps ?? [], 'LR')
     setNodes(nodes)
     setEdges(edges)
-  }, [steps, t, setNodes, setEdges])
+  }, [steps, setNodes, setEdges])
 
   const [stepBlockNextBlockUpdate] = useMutation<StepBlockNextBlockUpdate>(
     STEP_BLOCK_NEXT_BLOCK_UPDATE
@@ -298,17 +234,20 @@ export function JourneyFlow(): ReactElement {
   }
 
   return (
-    <Box sx={{ height: 400, flexShrink: 0 }}>
+    <Box sx={{ height: 800, flexShrink: 0 }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        // onNodesChange={onNodesChange}
-        // onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
         nodeTypes={{
           RadioOptionBlock: RadioOptionBlockNode,
-          StepBlock: StepBlockNode
+          StepBlock: StepBlockNode,
+          ButtonBlock: ButtonBlockNode,
+          TextResponseBlock: TextResponseBlockNode,
+          SignUpBlock: SignUpBlockNode,
+          FormBlock: FormBlockNode,
+          VideoBlock: VideoBlockNode
         }}
         proOptions={{ hideAttribution: true }}
       >
