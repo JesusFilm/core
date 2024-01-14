@@ -28,7 +28,7 @@ export function CreateJourneyButton({
 
   const router = useRouter()
   const { journey } = useJourney()
-  const [openTeamDialog, setOpenTeamDialog] = useState<boolean | null>(null)
+  const [openTeamDialog, setOpenTeamDialog] = useState<boolean | undefined>()
   const [loadingJourney, setLoadingJourney] = useState(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
