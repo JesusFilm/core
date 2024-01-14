@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -71,6 +72,9 @@ export function StepBlockNode({
     STEP_BLOCK_NEXT_BLOCK_UPDATE
   )
 
+  const {
+    state: { selectedStep, selectedBlock }
+  } = useEditor()
   const { journey } = useJourney()
 
   async function onConnect(params): Promise<void> {
@@ -89,6 +93,13 @@ export function StepBlockNode({
 
   return (
     <BaseNode
+      selected={
+        selectedStep?.id === step.id
+          ? selectedBlock?.id === step.id
+            ? true
+            : 'descendant'
+          : false
+      }
       onSourceConnect={onConnect}
       icon={
         card?.backgroundColor != null || bgImage != null ? (

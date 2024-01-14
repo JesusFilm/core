@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/client'
 import { ComponentProps, ReactElement } from 'react'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields } from '../../../../__generated__/BlockFields'
@@ -28,6 +29,10 @@ export function ActionNode({
   >(NAVIGATE_TO_BLOCK_ACTION_UPDATE)
 
   const { journey } = useJourney()
+
+  const {
+    state: { selectedBlock }
+  } = useEditor()
 
   async function onConnect(params): Promise<void> {
     if (journey == null) return
@@ -60,6 +65,7 @@ export function ActionNode({
 
   return (
     <BaseNode
+      selected={selectedBlock?.id === block.id}
       isTargetConnectable={false}
       onSourceConnect={onConnect}
       {...props}

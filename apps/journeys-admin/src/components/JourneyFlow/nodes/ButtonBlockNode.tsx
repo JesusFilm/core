@@ -11,7 +11,8 @@ import { ActionNode } from './ActionNode'
 export type ButtonBlockNodeData = ButtonBlock
 
 export function ButtonBlockNode({
-  data: block
+  data: block,
+  ...props
 }: NodeProps<ButtonBlockNodeData>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 

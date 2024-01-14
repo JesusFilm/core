@@ -13,6 +13,7 @@ interface BaseNodeProps {
   onSourceConnect?: OnConnect
   icon: ReactNode
   title: string
+  selected?: 'descendant' | boolean
 }
 
 export function BaseNode({
@@ -20,10 +21,23 @@ export function BaseNode({
   isSourceConnectable,
   onSourceConnect,
   icon,
-  title
+  title,
+  selected = false
 }: BaseNodeProps): ReactElement {
   return (
-    <Card>
+    <Card
+      sx={{
+        borderRadius: 1,
+        outline: '2px solid',
+        outlineColor: (theme) =>
+          selected === true
+            ? theme.palette.primary.main
+            : selected === 'descendant'
+            ? theme.palette.divider
+            : 'transparent',
+        outlineOffset: '5px'
+      }}
+    >
       <CardContent
         sx={{
           display: 'flex',

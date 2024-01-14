@@ -121,23 +121,66 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
         block.__typename === 'FormBlock' ||
         block.__typename === 'VideoBlock'
     ) as Array<
-      | RadioOptionBlock
-      | ButtonBlock
-      | TextResponseBlock
-      | SignUpBlock
-      | FormBlock
-      | VideoBlock
+      TreeBlock<
+        | RadioOptionBlock
+        | ButtonBlock
+        | TextResponseBlock
+        | SignUpBlock
+        | FormBlock
+        | VideoBlock
+      >
     >
 
     blocks.forEach((block, index) => {
-      nodes.push({
+      const node = {
         id: block.id,
-        type: block.__typename,
         selectable: false,
-        data: block,
         position: { x, y: y + (NODE_HEIGHT + 20) * (index + 1) }
-      })
-
+      }
+      switch (block.__typename) {
+        case 'RadioOptionBlock':
+          nodes.push({
+            ...node,
+            type: block.__typename,
+            data: block
+          })
+          break
+        case 'ButtonBlock':
+          nodes.push({
+            ...node,
+            type: block.__typename,
+            data: block
+          })
+          break
+        case 'TextResponseBlock':
+          nodes.push({
+            ...node,
+            type: block.__typename,
+            data: block
+          })
+          break
+        case 'SignUpBlock':
+          nodes.push({
+            ...node,
+            type: block.__typename,
+            data: block
+          })
+          break
+        case 'FormBlock':
+          nodes.push({
+            ...node,
+            type: block.__typename,
+            data: block
+          })
+          break
+        case 'VideoBlock':
+          nodes.push({
+            ...node,
+            type: block.__typename,
+            data: block
+          })
+          break
+      }
       if (block.action != null) {
         if (block.action.__typename === 'NavigateToBlockAction') {
           edges.push({
