@@ -1,3 +1,4 @@
+import { gql, useLazyQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
@@ -8,8 +9,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
-import { useTeam } from '../../Team/TeamProvider'
-import { gql, useLazyQuery } from '@apollo/client'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
