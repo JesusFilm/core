@@ -57,7 +57,6 @@ export function HelpScoutBeacon({
   ]
 
   const handleClick = (): void => {
-    console.log(router.route)
     if (window.Beacon != null) {
       window.Beacon('on', 'open', () => {
         setBeaconOpen(true)
