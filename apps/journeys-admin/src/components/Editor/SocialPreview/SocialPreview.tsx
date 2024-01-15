@@ -22,27 +22,25 @@ export function SocialPreview(): ReactElement {
   return (
     <>
       {mdUp ? (
-        <Box data-testid="SocialPreview">
-          <Stack
-            direction="row"
-            justifyContent="space-evenly"
-            alignContent="start"
-            divider={
-              <Divider
-                orientation="vertical"
-                sx={{
-                  width: '2px',
-                  height: '308px',
-                  bgcolor: '#DCDDE5',
-                  display: { sm: 'none', md: 'inherit' }
-                }}
-              />
-            }
-          >
-            <SocialPreviewPost />
-            <SocialPreviewMessage />
-          </Stack>
-        </Box>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-evenly"
+          data-testid="SocialPreview"
+          sx={{ width: '100%', height: '100%' }}
+        >
+          <SocialPreviewPost />
+          <Divider
+            orientation="vertical"
+            sx={{
+              height: '308px',
+              bgcolor: '#DCDDE5',
+              transform: 'scale(1.33)',
+              transformOrigin: 'top center'
+            }}
+          />
+          <SocialPreviewMessage />
+        </Stack>
       ) : (
         <Box data-testid="SocialPreview">
           <Swiper

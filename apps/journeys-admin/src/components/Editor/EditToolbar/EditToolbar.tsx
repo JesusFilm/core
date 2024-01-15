@@ -18,6 +18,8 @@ import logo from '../../../../public/taskbar-icon.svg'
 import { Analytics } from './Analytics'
 import { Menu } from './Menu'
 
+export const EDIT_TOOLBAR_HEIGHT = 86
+
 export function EditToolbar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -28,7 +30,7 @@ export function EditToolbar(): ReactElement {
       alignItems="center"
       spacing={{ xs: 2, sm: 6 }}
       sx={{
-        height: 86,
+        height: EDIT_TOOLBAR_HEIGHT,
         backgroundColor: 'background.paper',
         px: { xs: 2, sm: 4 },
         flexShrink: 0

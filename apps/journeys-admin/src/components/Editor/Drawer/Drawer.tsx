@@ -12,8 +12,6 @@ import { useTranslation } from 'react-i18next'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { Attributes } from '../ControlPanel/Attributes'
-
 interface DrawerContentProps {
   title?: string
   children?: ReactNode
@@ -59,13 +57,10 @@ export function Drawer(): ReactElement {
       drawerTitle: title,
       drawerChildren: children,
       drawerMobileOpen: mobileOpen,
-      selectedComponent,
-      selectedBlock,
-      selectedStep
+      selectedBlock
     },
     dispatch
   } = useEditor()
-  const selected = selectedComponent ?? selectedBlock ?? 'none'
   const { t } = useTranslation('apps-journeys-admin')
 
   let blockTitle: string | undefined
@@ -117,6 +112,7 @@ export function Drawer(): ReactElement {
       sx={{
         display: { xs: 'none', md: 'flex' },
         flexDirection: 'column',
+        flexShrink: 0,
         width: 420,
         border: 1,
         borderColor: 'divider',
@@ -127,9 +123,7 @@ export function Drawer(): ReactElement {
       data-testid="EditorDrawer"
     >
       <DrawerContent title={blockTitle} handleDrawerToggle={handleDrawerToggle}>
-        {selected !== 'none' && selectedStep !== undefined && (
-          <Attributes selected={selected} step={selectedStep} />
-        )}
+        {children}
       </DrawerContent>
     </Paper>
   ) : (

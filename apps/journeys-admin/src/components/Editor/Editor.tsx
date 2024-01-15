@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
@@ -12,11 +13,13 @@ import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { JourneyFlow } from '../JourneyFlow'
 
 import { Canvas } from './Canvas'
+import { CardSidebar } from './CardSidebar'
 import { ControlPanel } from './ControlPanel'
 import { Drawer } from './Drawer'
-import { EditToolbar } from './EditToolbar'
+import { EDIT_TOOLBAR_HEIGHT, EditToolbar } from './EditToolbar'
 import { Properties } from './Properties'
 
 const ActionsTable = dynamic(
@@ -55,6 +58,7 @@ export function Editor({
     selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -70,17 +74,23 @@ export function Editor({
         {({ journeyEditContentComponent }) => (
           <Stack sx={{ height: '100vh' }}>
             <EditToolbar />
-            <Stack direction="row" flexGrow={1} sx={{ height: '100%' }}>
+            <Stack
+              direction="row"
+              flexGrow={1}
+              sx={{ height: `calc(${EDIT_TOOLBAR_HEIGHT}px - 100%)` }}
+            >
+              {smUp && <CardSidebar />}
               {
                 {
                   [ActiveJourneyEditContent.Canvas]: <Canvas />,
                   [ActiveJourneyEditContent.Action]: <ActionsTable />,
-                  [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
+                  [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />,
+                  [ActiveJourneyEditContent.JourneyFlow]: <JourneyFlow />
                 }[journeyEditContentComponent]
               }
               <Drawer />
             </Stack>
-            <ControlPanel />
+            {!smUp && <ControlPanel />}
           </Stack>
         )}
       </EditorProvider>
