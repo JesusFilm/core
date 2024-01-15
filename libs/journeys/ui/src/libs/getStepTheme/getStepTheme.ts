@@ -8,7 +8,7 @@ import { JourneyFields } from '../JourneyProvider/__generated__/JourneyFields'
 export function getStepTheme(
   block: TreeBlock<StepFields> | TreeBlock<CardFields>,
   journey?: Pick<JourneyFields, 'themeName' | 'themeMode'>
-): { themeName: ThemeName; themeMode: ThemeMode } {
+): { themeName: Omit<ThemeName, 'journeyUi'>; themeMode: ThemeMode } {
   const cardFromStep =
     block.children.length > 0 && block.children[0].__typename === 'CardBlock'
       ? block.children[0]

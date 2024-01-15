@@ -7,7 +7,7 @@ declare module '@mui/material' {
   }
 }
 
-export const uiTypography: Pick<ThemeOptions, 'typography'> = {
+export const journeyUiTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
     fontFamily: ['"Montserrat","Open Sans","Tahoma","Verdana",sans-serif'].join(
       ','
@@ -85,7 +85,7 @@ export const uiTypography: Pick<ThemeOptions, 'typography'> = {
   }
 }
 
-export const uiTypographyArabic: Pick<ThemeOptions, 'typography'> = {
+export const journeyUiTypographyArabic: Pick<ThemeOptions, 'typography'> = {
   typography: {
     fontFamily: ['"El Messiri","Tajawal","Arial",sans-serif'].join(','),
     h1: {
@@ -152,7 +152,7 @@ export const uiTypographyArabic: Pick<ThemeOptions, 'typography'> = {
   }
 }
 
-export const uiTypographyUrdu: Pick<ThemeOptions, 'typography'> = {
+export const journeyUiTypographyUrdu: Pick<ThemeOptions, 'typography'> = {
   typography: {
     fontFamily: ['"Arial",sans-serif'].join(','),
     h1: {
