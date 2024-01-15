@@ -75,7 +75,7 @@ export function ImageBlockHeader({
                 ? 'Upload failed'
                 : 'No Image Selected'}
             </Typography>
-            {unsplashAuthor != null ? (
+            {unsplashAuthor != null && selectedBlock?.src != null ? (
               <Link
                 href={`https://unsplash.com/@${
                   unsplashAuthor.username ?? ''
@@ -94,7 +94,7 @@ export function ImageBlockHeader({
                 display={selectedBlock != null ? 'flex' : 'none'}
                 color="text.secondary"
               >
-                {selectedBlock != null
+                {selectedBlock?.src != null
                   ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
                   : ''}
               </Typography>
