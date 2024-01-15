@@ -54,10 +54,9 @@ export const USER_JOURNEY_REQUEST = gql`
 `
 interface JourneyInviteProps {
   status: string; 
-  journeyId: string; 
 }
 
-function JourneyEditPage({status,journeyId}: JourneyInviteProps): ReactElement {
+function JourneyEditPage({status}: JourneyInviteProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
@@ -67,13 +66,14 @@ function JourneyEditPage({status,journeyId}: JourneyInviteProps): ReactElement {
       variables: { id: router.query.journeyId as string }
     }
   )
+
   const [userJourneyRequest] =
     useMutation<UserJourneyRequest>(USER_JOURNEY_REQUEST)
   const [requestReceived, setRequestReceived] = useState(false)
 
   const handleClick = async (): Promise<void> => {
     await userJourneyRequest({
-      variables: { journeyId }
+      variables: { journeyId: router.query.journeyId }
     })
     setRequestReceived(true)
   }
@@ -105,9 +105,7 @@ function JourneyEditPage({status,journeyId}: JourneyInviteProps): ReactElement {
         }}
       />
       </>
-      
     )
-
 }
 
 export const getServerSideProps = withUserTokenSSR({
@@ -149,7 +147,7 @@ export const getServerSideProps = withUserTokenSSR({
       return {
         redirect: {
           permanent: false,
-          destination: `/journeys`
+          destination: `/journeys/${query?.journeyId as string}`
         }
       }
     }
