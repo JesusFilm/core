@@ -17,6 +17,7 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName } from '@core/shared/ui/themes'
 
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../FramePortal'
@@ -113,6 +114,9 @@ export function Canvas(): ReactElement {
     })
   }
 
+  const theme =
+    selectedStep != null ? getStepTheme(selectedStep, journey) : null
+
   return (
     <Box
       onClick={handleSelectCard}
@@ -124,7 +128,7 @@ export function Canvas(): ReactElement {
         alignItems: 'center'
       }}
     >
-      {selectedStep != null && (
+      {selectedStep != null && theme != null && (
         <Box
           data-testid={`step-${selectedStep.id}`}
           sx={{
@@ -143,11 +147,7 @@ export function Canvas(): ReactElement {
           }}
         >
           <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
-            <ThemeProvider
-              {...getStepTheme(selectedStep, journey)}
-              rtl={rtl}
-              locale={locale}
-            >
+            <ThemeProvider {...theme} rtl={rtl} locale={locale}>
               <Stack
                 justifyContent="center"
                 sx={{
@@ -156,7 +156,15 @@ export function Canvas(): ReactElement {
                   borderRadius: 5
                 }}
               >
-                <StepHeader />
+                <ThemeProvider
+                  themeName={ThemeName.journeyUi}
+                  themeMode={theme.themeMode}
+                  rtl={rtl}
+                  locale={locale}
+                  nested
+                >
+                  <StepHeader />
+                </ThemeProvider>
                 <BlockRenderer
                   block={selectedStep}
                   wrappers={{
@@ -172,18 +180,26 @@ export function Canvas(): ReactElement {
                     FormWrapper
                   }}
                 />
-                <StepFooter
-                  sx={{
-                    outline:
-                      selectedComponent === 'Footer'
-                        ? '2px solid #C52D3A'
-                        : 'none',
-                    outlineOffset: -4,
-                    borderRadius: 5,
-                    cursor: 'pointer'
-                  }}
-                  onFooterClick={handleFooterClick}
-                />
+                <ThemeProvider
+                  themeName={ThemeName.journeyUi}
+                  themeMode={theme.themeMode}
+                  rtl={rtl}
+                  locale={locale}
+                  nested
+                >
+                  <StepFooter
+                    sx={{
+                      outline:
+                        selectedComponent === 'Footer'
+                          ? '2px solid #C52D3A'
+                          : 'none',
+                      outlineOffset: -4,
+                      borderRadius: 5,
+                      cursor: 'pointer'
+                    }}
+                    onFooterClick={handleFooterClick}
+                  />
+                </ThemeProvider>
               </Stack>
             </ThemeProvider>
           </FramePortal>
