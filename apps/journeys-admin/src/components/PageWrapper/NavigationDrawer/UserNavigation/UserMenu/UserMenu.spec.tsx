@@ -67,6 +67,7 @@ describe('UserMenu', () => {
           ],
           getJourneyProfile: {
             __typename: 'JourneyProfile',
+            id: 'journeyProfileId',
             lastActiveTeamId: 'teamId'
           }
         }
