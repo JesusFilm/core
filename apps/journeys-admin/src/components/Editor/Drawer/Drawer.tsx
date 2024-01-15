@@ -7,6 +7,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import X2Icon from '@core/shared/ui/icons/X2'
@@ -65,6 +66,43 @@ export function Drawer(): ReactElement {
     dispatch
   } = useEditor()
   const selected = selectedComponent ?? selectedBlock ?? 'none'
+  const { t } = useTranslation('apps-journeys-admin')
+
+  let blockTitle: string | undefined
+  switch (selectedBlock?.__typename) {
+    case 'ButtonBlock':
+      blockTitle = t('Button Properties')
+      break
+    case 'FormBlock':
+      blockTitle = t('Form Properties')
+      break
+    case 'ImageBlock':
+      blockTitle = t('Image Properties')
+      break
+    case 'RadioQuestionBlock':
+      blockTitle = t('Poll Properties')
+      break
+    case 'RadioOptionBlock':
+      blockTitle = t('Poll Option Properties')
+      break
+    case 'SignUpBlock':
+      blockTitle = t('Subscribe Properties')
+      break
+    case 'StepBlock':
+      blockTitle = t('Card Properties')
+      break
+    case 'TextResponseBlock':
+      blockTitle = t('Feedback Properties')
+      break
+    case 'TypographyBlock':
+      blockTitle = t('Typography Properties')
+      break
+    case 'VideoBlock':
+      blockTitle = t('Video Properties')
+      break
+    default:
+      blockTitle = title
+  }
 
   const handleDrawerToggle = (): void => {
     dispatch({
@@ -88,7 +126,7 @@ export function Drawer(): ReactElement {
       }}
       data-testid="EditorDrawer"
     >
-      <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
+      <DrawerContent title={blockTitle} handleDrawerToggle={handleDrawerToggle}>
         {selected !== 'none' && selectedStep !== undefined && (
           <Attributes selected={selected} step={selectedStep} />
         )}

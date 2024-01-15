@@ -19,7 +19,7 @@ const ImageOptions = dynamic(
 
 export function Image(block: TreeBlock<ImageBlock>): ReactElement {
   const { id } = block
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
 
   useEffect(() => {

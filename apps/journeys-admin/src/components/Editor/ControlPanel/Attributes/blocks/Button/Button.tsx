@@ -36,7 +36,7 @@ export function Button({
   children
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const startIcon = children.find(
     (block) => block.id === startIconId
@@ -68,7 +68,7 @@ export function Button({
         name={t('Action')}
         value={selectedAction?.label ?? 'None'}
         description={t('Action')}
-        drawerTitle="Action"
+        drawerTitle={t('Action')}
       >
         <Action />
       </Attribute>
@@ -84,19 +84,6 @@ export function Button({
         <Color />
       </Attribute>
 
-      {/* 
-        adding t function
-        const { t } = useTranslation()
-
-        update name, description with t function
-
-        add drawer title with t function
-        - take the value from the dispatch.title
-
-        moving the dispatch.children as a child to the attribute
-
-        remove onClick
-        */}
       <Attribute
         id={`${id}-button-size`}
         icon={<SpaceHorizontalIcon />}

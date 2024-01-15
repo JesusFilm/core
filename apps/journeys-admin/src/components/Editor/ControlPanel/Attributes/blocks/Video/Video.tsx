@@ -14,7 +14,7 @@ import { VideoOptions } from './Options/VideoOptions'
 
 export function Video(block: TreeBlock<VideoBlock>): ReactElement {
   const { id, videoId } = block
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const { dispatch } = useEditor()
 

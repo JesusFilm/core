@@ -4,18 +4,18 @@ import PaletteIcon from '@core/shared/ui/icons/Palette'
 
 import { journeysAdminConfig } from '../../../../libs/storybook'
 
-import { Button } from '.'
+import { Accordion } from '.'
 
-const ButtonStory: Meta<typeof Button> = {
+const AccordionStory: Meta<typeof Accordion> = {
   ...journeysAdminConfig,
-  component: Button,
-  title: 'Journeys-Admin/Editor/ControlPanel/Button'
+  component: Accordion,
+  title: 'Journeys-Admin/Editor/ControlPanel/Accordion'
 }
 
-export const Default: StoryObj<typeof Button> = {
+export const Default: StoryObj<typeof Accordion> = {
   render: () => {
     return (
-      <Button
+      <Accordion
         icon={<PaletteIcon />}
         name="Style"
         value="Dark"
@@ -25,10 +25,10 @@ export const Default: StoryObj<typeof Button> = {
   }
 }
 
-export const Empty: StoryObj<typeof Button> = {
+export const Empty: StoryObj<typeof Accordion> = {
   render: () => {
     return (
-      <Button
+      <Accordion
         icon={<PaletteIcon />}
         name="Style"
         value=""
@@ -38,24 +38,24 @@ export const Empty: StoryObj<typeof Button> = {
   }
 }
 
-export const Selected: StoryObj<typeof Button> = {
+export const Expanded: StoryObj<typeof Accordion> = {
   render: () => {
     return (
-      <Button
+      <Accordion
         icon={<PaletteIcon />}
         name="Style"
         value="Dark"
         description="Card Styling"
-        selected
+        expanded
       />
     )
   }
 }
 
-export const Minimal: StoryObj<typeof Button> = {
+export const Minimal: StoryObj<typeof Accordion> = {
   render: () => {
-    return <Button icon={<PaletteIcon />} value="Palette" selected />
+    return <Accordion icon={<PaletteIcon />} value="Palette" expanded />
   }
 }
 
-export default ButtonStory
+export default AccordionStory

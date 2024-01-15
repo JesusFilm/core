@@ -22,7 +22,7 @@ export function SignUp({
   const submitIcon = children.find(
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
 
   useEffect(() => {
     dispatch({

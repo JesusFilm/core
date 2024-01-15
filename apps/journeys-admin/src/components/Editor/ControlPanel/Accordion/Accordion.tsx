@@ -7,6 +7,8 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 interface AccordionProps {
   icon: ReactElement
   name?: string
@@ -28,89 +30,50 @@ export function Accordion({
   testId,
   children
 }: AccordionProps): ReactElement {
+  const { dispatch } = useEditor()
+
   const handleClick = (): void => {
-    onClick?.()
+    if (expanded !== true) {
+      onClick?.()
+    } else {
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    }
   }
 
   // need accordian details content
   // need accordianSummary content
+  // get rid of border radius
+  // needs a divider
+  // remove elevation
 
   return (
-    <Box
-      // sx={{
-      //   maxWidth: 150
-      // }}
+    <MuiAccordion
+      elevation={0}
+      square
+      disableGutters
+      expanded={expanded}
+      onChange={handleClick}
+      sx={{ p: 0, '&.Mui-expanded:before': { opacity: 1 } }}
       onMouseDown={(e) => e.preventDefault()}
       data-testid={`JourneysAdminButton${testId ?? ''}`}
     >
-      {/* <MuiCard
-        variant="outlined"
-        sx={{
-          borderBottomRightRadius: 0,
-          borderBottomLeftRadius: 0,
-          borderBottom: 0
-        }}
+      <AccordionSummary
+        sx={{ p: 4, '.MuiAccordionSummary-content': { m: 0 } }}
+        expandIcon={<ExpandMoreIcon sx={{ color: 'primary.main' }} />}
       >
-        <CardActionArea onClick={handleClick} sx={{ minHeight: 60 }}>
-          <CardContent sx={{ py: 2, px: 4 }}>
-            <Stack spacing={3} alignItems="center" direction="row">
-              {icon}
-              <Box sx={{ maxWidth: 92, overflow: 'hidden' }}>
-                {name != null && (
-                  <Typography variant="caption" color="text.secondary" noWrap>
-                    {name}
-                  </Typography>
-                )}
-                <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
-              </Box>
-            </Stack>
-          </CardContent>
-        </CardActionArea>
-      </MuiCard>
-      <Divider
-        color="primary"
-        sx={{
-          transition: '0.2s border-color ease-out',
-          borderBottomWidth: 2,
-          borderColor: (theme) =>
-            expanded === true
-              ? theme.palette.primary.main
-              : theme.palette.divider
-        }}
-      />
-      <Box sx={{ height: 24 }}>
-        {description != null && (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            align="center"
-            noWrap
-            component="div"
-            sx={{ pt: 1 }}
-          >
-            {description}
-          </Typography>
-        )}
-      </Box> */}
-      <MuiAccordion expanded={expanded} onChange={handleClick}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ color: 'primary.main' }} />}
-        >
-          {/* <Typography>{name}</Typography> */}
-          <Stack spacing={3} alignItems="center" direction="row">
-            {icon}
-            <Box sx={{ maxWidth: 92, overflow: 'hidden' }}>
-              {name != null && (
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {name}
-                </Typography>
-              )}
-              <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
-            </Box>
-          </Stack>
-        </AccordionSummary>
-        <AccordionDetails>{children}</AccordionDetails>
-      </MuiAccordion>
-    </Box>
+        <Stack spacing={3} alignItems="center" direction="row">
+          {icon}
+          <Box sx={{ maxWidth: 92, overflow: 'hidden' }}>
+            {name != null && (
+              <Typography variant="caption" color="text.secondary" noWrap>
+                {name}
+              </Typography>
+            )}
+            <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
+          </Box>
+        </Stack>
+      </AccordionSummary>
+      <AccordionDetails sx={{ p: 5, pt: 0 }}>{children}</AccordionDetails>
+    </MuiAccordion>
   )
 }

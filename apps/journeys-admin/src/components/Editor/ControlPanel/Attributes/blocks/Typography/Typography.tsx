@@ -18,7 +18,7 @@ import { Variant } from './Variant'
 
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   const { id, align, color, variant } = block
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const { dispatch } = useEditor()
 

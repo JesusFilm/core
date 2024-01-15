@@ -14,7 +14,7 @@ export function RadioOption({
   action
 }: TreeBlock<RadioOptionBlock>): ReactElement {
   const { dispatch } = useEditor()
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
 
   useEffect(() => {
     dispatch({

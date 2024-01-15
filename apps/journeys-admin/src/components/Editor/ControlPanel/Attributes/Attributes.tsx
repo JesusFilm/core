@@ -1,10 +1,7 @@
-import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import MuiTypography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
