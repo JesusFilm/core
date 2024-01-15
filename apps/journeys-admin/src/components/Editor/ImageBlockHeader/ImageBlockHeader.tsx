@@ -93,12 +93,12 @@ export function ImageBlockHeader({
             ) : (
               <Typography
                 variant="caption"
-                display={selectedBlock != null ? 'flex' : 'none'}
+                display={
+                  selectedBlock?.src != null && !loading ? 'flex' : 'none'
+                }
                 color="text.secondary"
               >
-                {selectedBlock?.src != null
-                  ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
-                  : ''}
+                {`${selectedBlock?.width} x ${selectedBlock?.height} pixels`}
               </Typography>
             )}
           </Stack>
