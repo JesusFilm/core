@@ -24,6 +24,7 @@ export function VideoGrid({
   containerSlug,
   variant = 'expanded'
 }: VideoGridProps): ReactElement {
+  console.log('videoGrid', videos)
   return (
     <Grid
       container

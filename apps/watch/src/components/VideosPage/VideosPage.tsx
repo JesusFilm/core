@@ -57,6 +57,7 @@ interface VideosProps {
 }
 
 export interface VideoPageFilter {
+  ids?: string[]
   availableVariantLanguageIds?: string[]
   subtitleLanguageIds?: string[]
   title?: string
@@ -69,15 +70,13 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
   const [previousCount, setPreviousCount] = useState(0)
   const { refine } = useSearchBox()
   const { hits } = useHits()
-  const [inputValue, setInputValue] = useState('')
 
   function setQuery(newQuery: string): void {
-    setInputValue(newQuery)
-
     refine(newQuery)
   }
 
   console.log('hits', hits)
+
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
   const query = new URLSearchParams(
@@ -119,9 +118,13 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
     (video) => video.variant !== null
   )
 
+  console.log('realVideos', realVideos)
+
   function handleFilterChange(filter: VideoPageFilter): void {
+    const objectIDs = hits.map((hit) => hit.objectID)
+    console.log('objectIDs', objectIDs)
     void refetch({
-      where: filter,
+      where: { ...filter, ids: objectIDs ?? undefined },
       offset: 0,
       limit,
       languageId:
@@ -132,11 +135,13 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
       params.set('language', filter.availableVariantLanguageIds[0])
     if (filter.subtitleLanguageIds != null)
       params.set('subtitle', filter.subtitleLanguageIds[0])
-    if (filter.title != null) params.set('title', filter.title)
+    if (filter.title != null) {
+      params.set('title', filter.title)
+      setQuery(filter.title)
+    }
     void router.push(`/videos?${params.toString()}`, undefined, {
       shallow: true
     })
-    if (inputValue != null) setQuery(inputValue)
   }
 
   const { data: languagesData, loading: languagesLoading } =
@@ -181,7 +186,11 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
           <Box sx={{ width: '100%' }}>
             <VideoGrid
               videos={
-                data?.videos == null ? (loading ? [] : videos) : realVideos
+                data?.videos == null
+                  ? loading
+                    ? []
+                    : data?.videos
+                  : realVideos
               }
               onLoadMore={handleLoadMore}
               loading={loading}

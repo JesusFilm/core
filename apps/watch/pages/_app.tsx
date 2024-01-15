@@ -8,7 +8,7 @@ import Script from 'next/script'
 import { DefaultSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
-import { InstantSearch } from 'react-instantsearch'
+import { Configure, InstantSearch } from 'react-instantsearch'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -60,11 +60,8 @@ export default function WatchApp({
   return (
     <ApolloProvider client={client}>
       <CacheProvider value={emotionCache}>
-        <InstantSearch
-          searchClient={searchClient}
-          indexName="watch_videos"
-          routing
-        >
+        <InstantSearch searchClient={searchClient} indexName="watch_videos">
+          <Configure hitsPerPage={100} />
           <DefaultSeo
             titleTemplate="%s | Jesus Film Project"
             defaultTitle="Watch | Jesus Film Project"
