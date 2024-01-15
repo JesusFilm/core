@@ -67,7 +67,7 @@ export function ImageBlockHeader({
             <Typography variant="subtitle2" color="text.secondary">
               {loading
                 ? 'Image is uploading...'
-                : selectedBlock != null
+                : selectedBlock?.src != null
                 ? 'Selected Image'
                 : showAdd
                 ? 'Select Image'
