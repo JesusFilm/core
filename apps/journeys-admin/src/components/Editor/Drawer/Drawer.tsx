@@ -73,6 +73,7 @@ export function Drawer(): ReactElement {
       sx={{
         display: { xs: 'none', md: 'flex' },
         flexDirection: 'column',
+        flexShrink: 0,
         width: 420,
         border: 1,
         borderColor: 'divider',

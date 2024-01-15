@@ -21,8 +21,10 @@ export function SocialPreviewPost(): ReactElement {
   return (
     <Box
       width={256}
-      mx="auto"
-      sx={{ transform: { xs: 'scale(1)', lg: 'scale(1.33)' } }}
+      sx={{
+        transform: { xs: 'scale(1)', lg: 'scale(1.33)' },
+        transformOrigin: 'top center'
+      }}
       data-testid="SocialPreviewPost"
     >
       <Stack direction="column" justifyContent="start" alignContent="center">

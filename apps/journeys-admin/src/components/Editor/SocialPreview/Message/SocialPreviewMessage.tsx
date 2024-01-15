@@ -79,8 +79,10 @@ export function SocialPreviewMessage(): ReactElement {
   return (
     <Box
       width={256}
-      mx="auto"
-      sx={{ transform: { md: 'scale(1)', lg: 'scale(1.33)' } }}
+      sx={{
+        transform: { md: 'scale(1)', lg: 'scale(1.33)' },
+        transformOrigin: 'top center'
+      }}
       data-testid="SocialPreviewMessage"
     >
       <Stack direction="column" justifyContent="start">

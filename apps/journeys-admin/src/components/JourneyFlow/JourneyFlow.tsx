@@ -244,7 +244,7 @@ export function JourneyFlow(): ReactElement {
   }, [steps, setNodes, setEdges])
 
   return (
-    <Box sx={{ height: 800, flexShrink: 0 }}>
+    <Box sx={{ width: '100%', height: '100%' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
