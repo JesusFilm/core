@@ -2,7 +2,7 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
-import { Theme } from '@mui/material/styles'
+import { Theme , useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Toolbar from '@mui/material/Toolbar'
@@ -24,6 +24,7 @@ import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 
 import { VideoFromLocal } from './VideoFromLocal'
+
 
 const VideoDetails = dynamic(
   async () =>
@@ -66,6 +67,7 @@ export function VideoLibrary({
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const router = useRouter()
+  const { zIndex } = useTheme()
 
   useEffect(() => {
     // opens video details if videoId is not null
@@ -119,6 +121,7 @@ export function VideoLibrary({
         elevation={smUp ? 1 : 0}
         hideBackdrop
         sx={{
+          zIndex:zIndex.modal,
           left: {
             xs: 0,
             sm: 'unset'
@@ -137,13 +140,13 @@ export function VideoLibrary({
               variant="subtitle1"
               noWrap
               component="div"
-              sx={{ flexGrow: 1 }}
+              sx={{ flexGrow: 1, zIndex: zIndex.modal }}
             >
               Video Library
             </Typography>
             <IconButton
               onClick={onClose}
-              sx={{ display: 'inline-flex' }}
+              sx={{ display: 'inline-flex', zIndex: zIndex.modal }}
               edge="end"
             >
               <X2Icon />
