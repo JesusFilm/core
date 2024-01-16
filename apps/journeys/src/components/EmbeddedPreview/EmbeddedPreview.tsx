@@ -1,8 +1,8 @@
 import Close from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { useRouter } from 'next/router'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import isFunction from 'lodash/isFunction'
+import { ReactElement, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -24,40 +24,44 @@ export function EmbeddedPreview({
   blocks
 }: EmbeddedPreviewProps): ReactElement {
   const { journey, variant } = useJourney()
-  const maximizableElement = useRef(null)
+
   const viewportHeight = use100vh()
-  const [allowFullWindow, setAllowFullWindow] = useState(true)
-  // Use full container / fullWindow mode over fullScreen to avoid video playback issues
   const [isFullWindow, setIsFullWindow] = useState(false)
 
-  const maximizeView = useCallback(
-    (value: boolean) => {
-      setIsFullWindow(value)
-      window.parent.postMessage(value, '*')
-    },
-    [setIsFullWindow]
-  )
+  async function requestFullscreen(): Promise<void> {
+    const elem = document.documentElement
 
-  // use router internally on this component as it does not function properly when passed as prop
-  const router = useRouter()
-  const once = useRef(false)
-
-  const handleClick = useCallback((): void => {
-    if (allowFullWindow) maximizeView(true)
-  }, [allowFullWindow, maximizeView])
-
-  useEffect(() => {
-    if (!once.current) {
-      if (router?.query?.preview === 'true') {
-        setAllowFullWindow(false)
-        once.current = true
-      }
-      if (router?.query?.autoexpand === 'true') {
-        handleClick()
-        once.current = true
-      }
+    /* View in fullscreen */
+    if (isFunction(elem.requestFullscreen)) {
+      await elem.requestFullscreen()
+      setIsFullWindow(true)
+    } else if (isFunction(elem.webkitRequestFullscreen)) {
+      /* Safari */
+      await elem.webkitRequestFullscreen()
+      setIsFullWindow(true)
+    } else if (isFunction(elem.msRequestFullscreen)) {
+      /* IE11 */
+      await elem.msRequestFullscreen()
+      setIsFullWindow(true)
     }
-  }, [setAllowFullWindow, handleClick, router?.query])
+  }
+
+  async function exitFullscreen(): Promise<void> {
+    /* View in fullscreen */
+    if (isFunction(document.exitFullscreen)) {
+      await document.exitFullscreen()
+      setIsFullWindow(false)
+    } else if (isFunction(document.mozCancelFullScreen)) {
+      await document.mozCancelFullScreen()
+      setIsFullWindow(false)
+    } else if (isFunction(document.webkitExitFullscreen)) {
+      await document.webkitExitFullscreen()
+      setIsFullWindow(false)
+    } else if (isFunction(document.msExitFullscreen)) {
+      await document.msExitFullscreen()
+      setIsFullWindow(false)
+    }
+  }
 
   const ClickableCard = (): ReactElement => (
     <Box
@@ -66,11 +70,11 @@ export function EmbeddedPreview({
         flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
-        cursor: allowFullWindow ? 'pointer' : 'default',
+        cursor: 'pointer',
         zindex: 10,
         height: '100%'
       }}
-      onClick={() => handleClick()}
+      onClick={requestFullscreen}
     >
       <Box
         sx={{
@@ -139,7 +143,6 @@ export function EmbeddedPreview({
         {!isFullWindow && <ClickableCard />}
         <Box
           id="embed-fullscreen-container"
-          ref={maximizableElement}
           sx={{
             backgroundColor: 'background.default',
             overflow: 'hidden'
@@ -155,9 +158,7 @@ export function EmbeddedPreview({
                   zIndex: 1000,
                   color: 'text.primary'
                 }}
-                onClick={() => {
-                  maximizeView(false)
-                }}
+                onClick={exitFullscreen}
               >
                 <Close />
               </IconButton>

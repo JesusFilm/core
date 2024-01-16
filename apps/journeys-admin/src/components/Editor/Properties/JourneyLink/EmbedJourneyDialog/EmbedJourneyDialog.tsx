@@ -33,19 +33,14 @@ export function EmbedJourneyDialog({
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  // Self-closing iframe tag breaks embed on WordPress
-  const iframeLink = `<div style="position: relative; width: 100%; overflow: hidden; padding-top: 150%;"><iframe  id="jfm-iframe" src="${
+  // this should match apps/journeys/pages/api/oembed.ts
+  const providerUrl = `https://${
     process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'your.nextstep.is'
-  }/embed/${
-    journey?.slug as string
-  }" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; width: 100%; height: 100%; border: none;" allow="fullscreen; autoplay"></iframe></div><script>window.addEventListener('message', event => { if(event.origin==='https://your.nextstep.is'){ const iframe=document.getElementById('jfm-iframe')
-if(event.data === true){ 
-iframe.style.position="fixed"
-iframe.style.zIndex="999999999999999999999"
-} else {
-iframe.style.position="absolute"
-iframe.style.zIndex="auto"
-}}})</script>`
+  }`
+  const embedUrl = `${providerUrl}/embed/${journey?.slug as string}`
+
+  // Self-closing iframe tag breaks embed on WordPress
+  const iframeLink = `<iframe src="${embedUrl}" frameborder="0" allow="fullscreen; autoplay" allowfullscreen></iframe>`
 
   const handleSubmit = async (): Promise<void> => {
     await navigator.clipboard.writeText(iframeLink ?? '')
