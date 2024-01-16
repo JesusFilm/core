@@ -32,22 +32,7 @@ export default async function Handler(
       html: `<div style="position:relative;width:100%;overflow:hidden;padding-top:150%">
       <iframe id="ns-iframe" src="${embedUrl}" style="position:absolute;top:0;left:0;bottom:0;right:0;width:100%;height:100%;border:none" allow="fullscreen; autoplay" allowfullscreen="true" onclick="openFullscreen();">
       </iframe>
-      </div>
-      <script>window.addEventListener("message",e=>{if("${providerUrl}"===e.origin)
-      {let t=document.getElementById("ns-iframe");
-      !0===e.data?(t.style.position="fixed",t.style.zIndex="999999999999999999999"):(t.style.position="absolute",t.style.zIndex="auto")}});</script>
-      <script>
-      var t = document.getElementById("ns-iframe");
-      function openFullscreen() {
-        if (t.requestFullscreen) {
-          t.requestFullscreen();
-        } else if (t.webkitRequestFullscreen) { /* Safari */
-          t.webkitRequestFullscreen();
-        } else if (t.msRequestFullscreen) { /* IE11 */
-          t.msRequestFullscreen();
-        }
-      }
-      </script>`,
+      </div>`,
       width: 375,
       height: 500,
       // oembed optional fields
