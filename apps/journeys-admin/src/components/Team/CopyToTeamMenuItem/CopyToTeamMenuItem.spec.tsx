@@ -142,13 +142,17 @@ describe('DuplicateJourneys', () => {
     expect(getByText('Journey Copied')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'copy-journey' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'copy-journey' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })
