@@ -56,7 +56,6 @@ export function Canvas(): ReactElement {
 
   useEffect(() => {
     if (screen.height < 1020) {
-      // test
       setScale(`${Math.min((screen.height - 390) / 640, 1)}`) // Initial card resize
     }
     const handleScale = (): void => {
@@ -153,7 +152,7 @@ export function Canvas(): ReactElement {
             Width: 360,
             minWidth: 360,
             maxHeight: 640,
-            m: 0, // stops it form hugging content below
+            m: 0, // This prevents it from hugging the content below
             display: 'flex',
             transition: '0.2s outline ease-out 0.1s',
             borderRadius: 5,
