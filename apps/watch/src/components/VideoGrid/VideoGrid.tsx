@@ -2,6 +2,7 @@ import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
+import { BaseHit, Hit } from 'instantsearch.js'
 import { ComponentProps, ReactElement } from 'react'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
@@ -9,6 +10,7 @@ import { VideoCard } from '../VideoCard'
 
 interface VideoGridProps {
   videos?: VideoChildFields[]
+  algoliaVideos?
   loading?: boolean
   hasNextPage?: boolean
   onLoadMore?: () => Promise<void>
@@ -21,6 +23,7 @@ export function VideoGrid({
   hasNextPage,
   onLoadMore,
   videos,
+  algoliaVideos,
   containerSlug,
   variant = 'expanded'
 }: VideoGridProps): ReactElement {
@@ -32,7 +35,7 @@ export function VideoGrid({
       rowSpacing={variant === 'expanded' ? 8 : 4}
       data-testid="VideoGrid"
     >
-      {(videos?.length ?? 0) > 0 &&
+      {/* {(videos?.length ?? 0) > 0 &&
         videos?.map((video, index) => (
           <Grid item key={index} xs={12} md={4} xl={3}>
             <VideoCard
@@ -41,7 +44,21 @@ export function VideoGrid({
               variant={variant}
             />
           </Grid>
-        ))}
+        ))} */}
+
+      {(algoliaVideos?.length ?? 0) > 0 &&
+        algoliaVideos?.map((video, index) => {
+          console.log(video)
+          return (
+            <Grid item key={index} xs={12} md={4} xl={3}>
+              <VideoCard
+                video={{ ...video, title: [{ value: video.title[0].value }] }}
+                containerSlug={containerSlug}
+                variant={variant}
+              />
+            </Grid>
+          )
+        })}
       {loading === true && (
         <>
           <Grid item xs={12} md={4} xl={3}>

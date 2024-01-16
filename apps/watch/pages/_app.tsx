@@ -60,8 +60,8 @@ export default function WatchApp({
   return (
     <ApolloProvider client={client}>
       <CacheProvider value={emotionCache}>
-        <InstantSearch searchClient={searchClient} indexName="watch_videos">
-          <Configure hitsPerPage={100} />
+        <InstantSearch searchClient={searchClient} indexName="video_variants">
+          <Configure hitsPerPage={20} />
           <DefaultSeo
             titleTemplate="%s | Jesus Film Project"
             defaultTitle="Watch | Jesus Film Project"
