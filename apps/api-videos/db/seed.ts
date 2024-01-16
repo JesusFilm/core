@@ -7,7 +7,7 @@ import { fetchMediaComponentsAndTransformToVideos } from '../src/libs/arclight'
 import { fetchMediaLanguagesAndTransformToLanguages } from '../src/libs/arclight/arclight'
 import { ExportedVideo, handleVideo } from '../src/libs/postgresSeed'
 
-import { algoliaSearch } from './seeds/algoliaSearch'
+import { syncVideosWithAlgolia } from './seeds/syncVideosWithAlgolia'
 
 const prisma = new PrismaClient()
 
@@ -54,7 +54,7 @@ async function main(): Promise<void> {
   console.log('importing mediaComponents as videos...')
   await importMediaComponents()
   console.log('mediaComponents imported')
-  await algoliaSearch()
+  await syncVideosWithAlgolia()
 }
 main().catch((e) => {
   console.error(e)
