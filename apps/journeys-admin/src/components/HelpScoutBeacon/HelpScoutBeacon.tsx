@@ -45,9 +45,16 @@ export function HelpScoutBeacon({
   const { breakpoints, zIndex } = useTheme()
   const router = useRouter()
   const previousUrlRef = useRef(router.asPath)
-  const matches = useMediaQuery(breakpoints.up('md'))
+  const mdUp = useMediaQuery(breakpoints.up('md'))
   const [hasLoaded, setHasLoaded] = useState(false)
   const [beaconOpen, setBeaconOpen] = useState(false)
+
+  const newUserPaths = [
+    '/users/sign-in',
+    '/users/terms-and-conditions',
+    '/onboarding-form',
+    '/teams/new'
+  ]
 
   const handleClick = (): void => {
     if (window.Beacon != null) {
@@ -121,7 +128,10 @@ export function HelpScoutBeacon({
           right: { xs: 20, md: 10 },
           width: 24,
           height: 24,
-          color: matches ? 'secondary.dark' : 'background.paper'
+          color:
+            mdUp || newUserPaths.includes(router.route)
+              ? 'secondary.dark'
+              : 'background.paper'
         }}
       >
         {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}

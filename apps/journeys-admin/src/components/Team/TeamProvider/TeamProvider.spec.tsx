@@ -69,6 +69,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
       teams,
       getJourneyProfile: {
         __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
         lastActiveTeamId: 'teamId1'
       }
     }
@@ -96,6 +97,7 @@ describe('TeamProvider', () => {
           teams,
           getJourneyProfile: {
             __typename: 'JourneyProfile',
+            id: 'journeyProfileId',
             lastActiveTeamId: 'teamId2'
           }
         }

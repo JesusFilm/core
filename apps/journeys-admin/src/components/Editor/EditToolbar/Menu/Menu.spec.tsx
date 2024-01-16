@@ -393,13 +393,17 @@ describe('EditToolbar Menu', () => {
     expect(menu).not.toHaveAttribute('aria-expanded')
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'title' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'title' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 
@@ -439,13 +443,17 @@ describe('EditToolbar Menu', () => {
     expect(menu).not.toHaveAttribute('aria-expanded')
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'description' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'description' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })
