@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -44,6 +44,7 @@ const HostSidePanel = dynamic(
 )
 
 export function Canvas(): ReactElement {
+  const [scale, setScale] = useState('1')
   const router = useRouter()
   const {
     state: { selectedStep, selectedBlock, selectedComponent },
@@ -52,6 +53,20 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
+
+  // useEffect(() => {
+  //   const handleScale = (): void => {
+  //     // Max screen height
+  //     if (screen.height < 1020) {
+  //       setScale(Math.min((screen.height - 270) / 640, 1) + '')
+  //     }
+  //   }
+
+  //   window.addEventListener('resize', handleScale)
+  //   return () => {
+  //     window.removeEventListener('resize', handleScale)
+  //   }
+  // }, [])
 
   function handleSelectCard(): void {
     // Prevent losing focus on empty input
@@ -132,28 +147,19 @@ export function Canvas(): ReactElement {
             aspectRatio: '9 / 16',
             maxWidth: 360,
             maxHeight: 640,
-            display: 'flex'
+            display: 'flex',
+            transition: '0.2s outline ease-out 0.1s',
+            borderRadius: 5,
+            outline: (theme) =>
+              selectedStep.id === selectedBlock?.id
+                ? `2px solid ${theme.palette.primary.main}`
+                : `2px solid ${theme.palette.background.default}`,
+            outlineOffset: 4,
+            transform: `scale(${scale})`,
+            transformOrigin: 'top'
           }}
         >
-          <FramePortal
-            width="100%"
-            height="100%"
-            sx={{
-              transform: {
-                xs: 'scale(0.85)',
-                sm: 'scale(0.9)',
-                md: 'scale(0.95)'
-              },
-              transition: '0.2s outline ease-out 0.1s',
-              borderRadius: 5,
-              outline: (theme) =>
-                selectedStep.id === selectedBlock?.id
-                  ? `2px solid ${theme.palette.primary.main}`
-                  : `2px solid ${theme.palette.background.default}`,
-              outlineOffset: 4
-            }}
-            dir={rtl ? 'rtl' : 'ltr'}
-          >
+          <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
             <ThemeProvider
               {...getStepTheme(selectedStep, journey)}
               rtl={rtl}
