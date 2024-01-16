@@ -4,13 +4,11 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import { useInfiniteHits, useSearchBox } from 'react-instantsearch'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
-import { GetVideos } from '../../../__generated__/GetVideos'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
@@ -52,33 +50,6 @@ function isAtEnd(count: number, limit: number, previousCount: number): boolean {
   return count % limit !== 0
 }
 
-// interface VideoVariant {
-//   slug: string
-//   languageId: string
-// }
-
-// interface AlgoliaVideos {
-//   objectId: string
-//   title: string[]
-//   description: string
-//   label: string
-//   image: string
-//   imageAlt: string
-//   duration: number
-//   childrenCount: number
-//   snippet: string
-//   slug: string
-//   variant: VideoVariant
-// }
-
-// type LocalVideos = VideoChildFields[]
-
-// type Videos = LocalVideos | AlgoliaVideos
-
-// interface VideosProps {
-//   videos: Videos
-// }
-
 export interface VideoPageFilter {
   ids?: string[]
   availableVariantLanguageIds?: string[]
@@ -86,12 +57,12 @@ export interface VideoPageFilter {
   title?: string
 }
 
-export function VideosPage({ videos }: VideosProps): ReactElement {
+export function VideosPage(): ReactElement {
   const router = useRouter()
   // const languageContext = useLanguage()
   // const [isEnd, setIsEnd] = useState(false)
   // const [previousCount, setPreviousCount] = useState(0)
-  const { query: algoliaQuery, refine } = useSearchBox()
+  const { refine } = useSearchBox()
   const { hits: algoliaVideos } = useInfiniteHits()
 
   function setQuery(newQuery: string): void {
@@ -106,25 +77,7 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
       : undefined
   )
 
-  // const { variants, ...convertedVideos } = algoliaVideos
-  console.log('algoliaVideos', algoliaVideos)
-  console.log('algoliaQuery', algoliaQuery)
-
-  // const filter: VideoPageFilter = {
-  //   availableVariantLanguageIds:
-  //     query.get('language') != null
-  //       ? [query.get('language') as string]
-  //       : undefined,
-  //   subtitleLanguageIds:
-  //     query.get('subtitle') != null
-  //       ? [query.get('subtitle') as string]
-  //       : undefined,
-  //   title:
-  //     query.get('title') != null ? (query.get('title') as string) : undefined
-  // }
-
   function handleFilterChange(filter): void {
-    console.log('enter handleFilterChange')
     setQuery(filter.title)
 
     const params = new URLSearchParams()
@@ -146,20 +99,16 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
       variables: { languageId: '529' }
     })
 
-  // useEffect(() => {
-  //   setIsEnd(isAtEnd(data?.videos.length ?? 0, limit, previousCount))
-  // }, [data?.videos.length, setIsEnd, previousCount])
+  function convertAlgoliaVideos(videos): VideoChildFields[] {
+    return videos.map((video) => ({
+      ...video,
+      title: [{ value: video.titles[0] }], // TODO: update when more titles
+      imageAlt: [{ value: video.imageAlt }],
+      snippet: [{ value: video.snippet }]
+    }))
+  }
 
-  // const handleLoadMore = async (): Promise<void> => {
-  //   if (isEnd) return
-
-  //   setPreviousCount(data?.videos.length ?? 0)
-  //   await fetchMore({
-  //     variables: {
-  //       offset: data?.videos.length ?? 0
-  //     }
-  //   })
-  // }
+  const videos = convertAlgoliaVideos(algoliaVideos)
 
   return (
     <PageWrapper hero={<VideosHero />} testId="VideosPage">
@@ -183,7 +132,6 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
           <Box sx={{ width: '100%' }}>
             <VideoGrid
               videos={videos}
-              algoliaVideos={algoliaVideos}
               // onLoadMore={handleLoadMore}
               // loading={loading}
               // hasNextPage={!isEnd}
