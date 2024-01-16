@@ -57,12 +57,16 @@ export interface VideoPageFilter {
   title?: string
 }
 
-export function VideosPage(): ReactElement {
+interface VideoProps {
+  localVideos: VideoChildFields[]
+}
+
+export function VideosPage({ localVideos }: VideoProps): ReactElement {
   const router = useRouter()
   // const languageContext = useLanguage()
   // const [isEnd, setIsEnd] = useState(false)
   // const [previousCount, setPreviousCount] = useState(0)
-  const { refine } = useSearchBox()
+  const { query: algoliaQuery, refine } = useSearchBox()
   const { hits: algoliaVideos } = useInfiniteHits()
 
   // we intentionally use window.location.search to prevent multiple renders
@@ -107,6 +111,8 @@ export function VideosPage(): ReactElement {
   }
   const videos = convertAlgoliaVideos(algoliaVideos)
 
+  // add realvideos check
+
   return (
     <PageWrapper hero={<VideosHero />} testId="VideosPage">
       <Container maxWidth="xxl">
@@ -128,7 +134,7 @@ export function VideosPage(): ReactElement {
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              videos={videos}
+              videos={algoliaQuery !== '' ? videos : localVideos}
               // onLoadMore={handleLoadMore}
               // loading={loading}
               // hasNextPage={!isEnd}

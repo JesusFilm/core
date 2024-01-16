@@ -20,7 +20,7 @@ interface VideosPageProps {
   initialApolloState: NormalizedCacheObject
 }
 function VideosPage({ videos }): ReactElement {
-  return <Videos videos={videos} />
+  return <Videos localVideos={videos} />
 }
 
 const videoIds = [
