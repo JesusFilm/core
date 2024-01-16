@@ -54,19 +54,22 @@ export function Canvas(): ReactElement {
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
 
-  // useEffect(() => {
-  //   const handleScale = (): void => {
-  //     // Max screen height
-  //     if (screen.height < 1020) {
-  //       setScale(Math.min((screen.height - 270) / 640, 1) + '')
-  //     }
-  //   }
+  useEffect(() => {
+    if (screen.height < 1020) {
+      // test
+      setScale(`${Math.min((screen.height - 390) / 640, 1)}`) // Initial card resize
+    }
+    const handleScale = (): void => {
+      if (screen.height < 1020) {
+        setScale(`${Math.min((screen.height - 390) / 640, 1)}`) // Dynamic resizing
+      }
+    }
 
-  //   window.addEventListener('resize', handleScale)
-  //   return () => {
-  //     window.removeEventListener('resize', handleScale)
-  //   }
-  // }, [])
+    window.addEventListener('resize', handleScale)
+    return () => {
+      window.removeEventListener('resize', handleScale)
+    }
+  }, [])
 
   function handleSelectCard(): void {
     // Prevent losing focus on empty input
@@ -136,17 +139,21 @@ export function Canvas(): ReactElement {
         display: 'flex',
         height: '100%',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        p: 5,
+        overflow: 'hidden'
       }}
     >
       {selectedStep != null && (
         <Box
           data-testid={`step-${selectedStep.id}`}
           sx={{
-            height: 'calc(100% - 32px)',
+            height: 640,
             aspectRatio: '9 / 16',
-            maxWidth: 360,
+            Width: 360,
+            minWidth: 360,
             maxHeight: 640,
+            m: 0, // stops it form hugging content below
             display: 'flex',
             transition: '0.2s outline ease-out 0.1s',
             borderRadius: 5,
@@ -156,7 +163,8 @@ export function Canvas(): ReactElement {
                 : `2px solid ${theme.palette.background.default}`,
             outlineOffset: 4,
             transform: `scale(${scale})`,
-            transformOrigin: 'top'
+            transformOrigin: 'top',
+            overflow: 'hidden'
           }}
         >
           <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
