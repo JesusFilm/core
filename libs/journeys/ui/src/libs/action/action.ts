@@ -32,7 +32,12 @@ export function handleAction(
       nextActiveBlock()
       break
     case 'LinkAction':
-      if (action.url.startsWith('http')) {
+      if (
+        action.url.startsWith('http') &&
+        !action.url.includes('your.nextstep.is') &&
+        !action.url.includes('localhost:4100') &&
+        !action.url.includes('journeys')
+      ) {
         window.open(action.url, '_blank')
       } else {
         void router.push(action.url)
