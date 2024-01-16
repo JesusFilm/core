@@ -142,62 +142,51 @@ export function Canvas(): ReactElement {
             outlineOffset: 4
           }}
         >
-          <Box
-            sx={{
-              height: 'calc(100% + 300px)',
-              width: 'calc(100% + 300px)',
-              transformOrigin: 'top left'
-            }}
-          >
-            <FramePortal
-              dir={rtl ? 'rtl' : 'ltr'}
-              sx={{ height: 'calc(100% + 90px)', width: 'calc(100% + 90px)' }}
+          <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
+            <ThemeProvider
+              {...getStepTheme(selectedStep, journey)}
+              rtl={rtl}
+              locale={locale}
             >
-              <ThemeProvider
-                {...getStepTheme(selectedStep, journey)}
-                rtl={rtl}
-                locale={locale}
+              <Stack
+                justifyContent="center"
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: 5
+                }}
               >
-                <Stack
-                  justifyContent="center"
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: 5
+                <StepHeader />
+                <BlockRenderer
+                  block={selectedStep}
+                  wrappers={{
+                    Wrapper: SelectableWrapper,
+                    TypographyWrapper: InlineEditWrapper,
+                    ButtonWrapper: InlineEditWrapper,
+                    RadioQuestionWrapper: InlineEditWrapper,
+                    RadioOptionWrapper: InlineEditWrapper,
+                    TextResponseWrapper: InlineEditWrapper,
+                    SignUpWrapper: InlineEditWrapper,
+                    VideoWrapper,
+                    CardWrapper,
+                    FormWrapper
                   }}
-                >
-                  <StepHeader />
-                  <BlockRenderer
-                    block={selectedStep}
-                    wrappers={{
-                      Wrapper: SelectableWrapper,
-                      TypographyWrapper: InlineEditWrapper,
-                      ButtonWrapper: InlineEditWrapper,
-                      RadioQuestionWrapper: InlineEditWrapper,
-                      RadioOptionWrapper: InlineEditWrapper,
-                      TextResponseWrapper: InlineEditWrapper,
-                      SignUpWrapper: InlineEditWrapper,
-                      VideoWrapper,
-                      CardWrapper,
-                      FormWrapper
-                    }}
-                  />
-                  <StepFooter
-                    sx={{
-                      outline:
-                        selectedComponent === 'Footer'
-                          ? '2px solid #C52D3A'
-                          : 'none',
-                      outlineOffset: -4,
-                      borderRadius: 5,
-                      cursor: 'pointer'
-                    }}
-                    onFooterClick={handleFooterClick}
-                  />
-                </Stack>
-              </ThemeProvider>
-            </FramePortal>
-          </Box>
+                />
+                <StepFooter
+                  sx={{
+                    outline:
+                      selectedComponent === 'Footer'
+                        ? '2px solid #C52D3A'
+                        : 'none',
+                    outlineOffset: -4,
+                    borderRadius: 5,
+                    cursor: 'pointer'
+                  }}
+                  onFooterClick={handleFooterClick}
+                />
+              </Stack>
+            </ThemeProvider>
+          </FramePortal>
         </Box>
       )}
     </Box>
