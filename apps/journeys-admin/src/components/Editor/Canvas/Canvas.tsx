@@ -129,20 +129,31 @@ export function Canvas(): ReactElement {
           data-testid={`step-${selectedStep.id}`}
           sx={{
             height: 'calc(100% - 32px)',
-            width: 'calc(100% - 32px)',
+            aspectRatio: '9 / 16',
             maxWidth: 360,
             maxHeight: 640,
-            display: 'flex',
-            borderRadius: 5,
-            transition: '0.2s outline ease-out 0.1s',
-            outline: (theme) =>
-              selectedStep.id === selectedBlock?.id
-                ? `2px solid ${theme.palette.primary.main}`
-                : `2px solid ${theme.palette.background.default}`,
-            outlineOffset: 4
+            display: 'flex'
           }}
         >
-          <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
+          <FramePortal
+            width="100%"
+            height="100%"
+            sx={{
+              transform: {
+                xs: 'scale(0.85)',
+                sm: 'scale(0.9)',
+                md: 'scale(0.95)'
+              },
+              transition: '0.2s outline ease-out 0.1s',
+              borderRadius: 5,
+              outline: (theme) =>
+                selectedStep.id === selectedBlock?.id
+                  ? `2px solid ${theme.palette.primary.main}`
+                  : `2px solid ${theme.palette.background.default}`,
+              outlineOffset: 4
+            }}
+            dir={rtl ? 'rtl' : 'ltr'}
+          >
             <ThemeProvider
               {...getStepTheme(selectedStep, journey)}
               rtl={rtl}
