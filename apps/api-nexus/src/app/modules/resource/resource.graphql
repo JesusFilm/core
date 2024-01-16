@@ -9,7 +9,7 @@ type Resource @key(fields: "id") {
   createdAt: DateTime!
   updatedAt: DateTime
   deletedAt: DateTime
-  googleDriveLink: String!
+  googleDriveLink: String
   category: String!
   privacy: PrivacyStatus!
   sourceType: SourceType!
@@ -37,10 +37,10 @@ enum PrivacyStatus {
 }
 
 enum SourceType {
-    googleDrive
-    template
-    archlight
-    other
+  googleDrive
+  template
+  archlight
+  other
 }
 
 enum ResourceStatus {
@@ -100,7 +100,12 @@ extend type Mutation {
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
   resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
-  resourceFromTemplate(nexusId: String!, tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
+  resourceFromTemplate(
+    nexusId: String!
+    tokenId: String!
+    spreadsheetId: String!
+    drivefolderId: String!
+  ): [Resource!]
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
 }
