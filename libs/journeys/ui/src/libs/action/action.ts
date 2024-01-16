@@ -10,6 +10,12 @@ export function handleAction(
   router: NextRouter,
   action?: ActionFields | null
 ): void {
+  const journeysUrls = [
+    'your.nextstep.is',
+    'localhost:4100',
+    'your-stage.nextstep.is'
+  ]
+
   if (action == null) return
   switch (action.__typename) {
     case 'NavigateToBlockAction':
@@ -34,9 +40,7 @@ export function handleAction(
     case 'LinkAction':
       if (
         action.url.startsWith('http') &&
-        !action.url.includes('your.nextstep.is') &&
-        !action.url.includes('localhost:4100') &&
-        !action.url.includes('journeys')
+        !journeysUrls.some((substring) => action.url.includes(substring))
       ) {
         window.open(action.url, '_blank')
       } else {
