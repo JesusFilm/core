@@ -44,6 +44,7 @@ const HostSidePanel = dynamic(
 )
 
 export function Canvas(): ReactElement {
+  const frameRef = useRef<HTMLIFrameElement>(null)
   const router = useRouter()
   const {
     state: { selectedStep, selectedBlock, selectedComponent },
@@ -53,12 +54,15 @@ export function Canvas(): ReactElement {
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
 
-  const copyInterval = useRef<null | ReturnType<typeof setTimeout>>(null)
-  const [isCopying, setIsCopying] = useState(false)
-
   function handleSelectCard(): void {
+    const iframeDocument =
+      frameRef.current?.contentDocument ??
+      frameRef.current?.contentWindow?.document
+
+    const selectedText = iframeDocument?.getSelection()?.toString()
+    console.log(selectedText)
     // if user is copying from typog blocks or text, keep focus on typog blocks
-    if (isCopying && selectedBlock?.__typename === 'TypographyBlock') return
+    if (selectedText != null && selectedText !== '') return
     // Prevent losing focus on empty input
     if (
       selectedBlock?.__typename === 'TypographyBlock' &&
@@ -120,15 +124,6 @@ export function Canvas(): ReactElement {
 
   return (
     <Box
-      onMouseDown={(): void => {
-        setIsCopying(false)
-        copyInterval.current = setInterval(() => {
-          setIsCopying(true)
-        }, 200)
-      }}
-      onMouseUp={() => {
-        if (copyInterval.current != null) clearTimeout(copyInterval.current)
-      }}
       onClick={handleSelectCard}
       data-testid="EditorCanvas"
       sx={{
@@ -156,7 +151,12 @@ export function Canvas(): ReactElement {
             outlineOffset: 4
           }}
         >
-          <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
+          <FramePortal
+            width="100%"
+            height="100%"
+            dir={rtl ? 'rtl' : 'ltr'}
+            ref={frameRef}
+          >
             <ThemeProvider
               {...getStepTheme(selectedStep, journey)}
               rtl={rtl}

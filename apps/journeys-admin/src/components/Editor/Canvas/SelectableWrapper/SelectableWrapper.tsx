@@ -51,6 +51,7 @@ export function SelectableWrapper({
 
   // TODO: Test dispatch via E2E
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
+    console.log(window.getSelection()?.toString())
     // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
     if (block.__typename === 'RadioQuestionBlock') {
       // Directly edit RadioQuestionBlock
