@@ -91,6 +91,7 @@ export function StepFooter({
               sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}
               spacing={-1.5}
             >
+              {/* ----------- HERE ----------- */}
               <Typography
                 sx={{
                   zIndex: 1,

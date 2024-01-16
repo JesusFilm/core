@@ -66,6 +66,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
         }}
       >
         <MuiMenuItem disabled>
+          {/* ----------- HERE ----------- */}
           <Typography color="text.primary" variant="body2">
             {journey?.team?.publicTitle !== '' &&
             journey?.team?.publicTitle !== null
@@ -84,6 +85,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
           legacyBehavior
         >
           <MuiMenuItem onClick={handleClose}>
+            {/* ----------- HERE ----------- */}
             <Typography color="text.primary" variant="body2">
               {t('Report this content')}
             </Typography>
@@ -107,6 +109,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
           </Link>
         </NextLink>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
+          {/* ----------- HERE ----------- */}
           <Typography
             color={(theme) => theme.palette.action.disabled}
             variant="caption"
@@ -125,6 +128,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
           </Typography>
         </Box>
         <MuiMenuItem disabled>
+          {/* ----------- HERE ----------- */}
           <Typography variant="caption" color="primary.light">
             {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
           </Typography>
