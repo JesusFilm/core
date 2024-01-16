@@ -35,6 +35,9 @@ export async function syncVideosWithAlgolia(): Promise<void> {
         image: video.image,
         imageAlt: (video.imageAlt as unknown as Translation)[0].value,
         childrenCount: video.childIds.length,
+        duration: video.variants.find(
+          (variant) => variant.languageId === video.primaryLanguageId
+        )?.duration,
         snippet: (video.snippet as unknown as Translation)[0].value,
         slug: video.slug,
         variants: video.variants.map((variant) => ({
