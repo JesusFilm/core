@@ -27,6 +27,11 @@ export async function syncVideosWithAlgolia(): Promise<void> {
     })
 
     const transformedVideos = videos.map((video) => {
+      // once we have all the variants remove this logic
+      // do the variant convertion on client side
+      const variant = video.variants.find(
+        (variant) => variant.languageId === video.primaryLanguageId
+      )
       return {
         objectID: video.id,
         titles: video.title.map((title) => title.value),
@@ -35,11 +40,12 @@ export async function syncVideosWithAlgolia(): Promise<void> {
         image: video.image,
         imageAlt: (video.imageAlt as unknown as Translation)[0].value,
         childrenCount: video.childIds.length,
-        duration: video.variants.find(
-          (variant) => variant.languageId === video.primaryLanguageId
-        )?.duration,
         snippet: (video.snippet as unknown as Translation)[0].value,
         slug: video.slug,
+        variant: {
+          duration: variant?.duration,
+          slug: variant?.slug
+        },
         variants: video.variants.map((variant) => ({
           slug: variant.slug,
           languageId: variant.languageId
