@@ -6,7 +6,10 @@ import { Translation } from '../../src/app/__generated__/graphql'
 
 const prisma = new PrismaClient()
 
-const client = algoliasearch('FJYYBFHBHS', process.env.ALGOLIA_API_KEY ?? '')
+const client = algoliasearch(
+  process.env.ALGOLIA_APP_ID ?? '',
+  process.env.ALGOLIA_API_KEY ?? ''
+)
 
 export async function syncVideosWithAlgolia(): Promise<void> {
   console.log('syncing videos to algolia...')
