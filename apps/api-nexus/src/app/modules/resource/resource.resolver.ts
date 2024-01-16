@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { unlink } from 'fs';
 
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
@@ -243,26 +245,30 @@ export class ResourceResolver {
 
     for (const row of rows) {
       const { fileId, filename, title, description, keywords, category } = row;
+      let cloudflareId: string | null = null;
 
-      const fileUrl = this.googleDriveService.getFileUrl(fileId);
-      await this.googleDriveService.setFilePermission({
-        fileId,
-        accessToken,
-      });
+      if (fileId !== null) {
+        const fileUrl = this.googleDriveService.getFileUrl(fileId);
+        await this.googleDriveService.setFilePermission({
+          fileId,
+          accessToken,
+        });
 
-      const res = await this.cloudFlareService.uploadToCloudflareByUrl(
-        fileUrl,
-        filename,
-        'ben',
-      );
-      console.log('CLOUD FLARE', res?.result?.uid ?? '');
+        const res = await this.cloudFlareService.uploadToCloudflareByUrl(
+          fileUrl,
+          filename,
+          'ben',
+        );
+        console.log('CLOUD FLARE', res?.result?.uid ?? '');
+        cloudflareId = res?.result?.uid ?? '';
+      }
 
       // await this.cloudFlareService.makeVideoPublic(res?.result?.uid ?? '');
 
       await this.prismaService.resource.create({
         data: {
           id: uuidv4(),
-          cloudflareId: res?.result?.uid ?? '',
+          cloudflareId,
           name: filename,
           nexusId: nexus.id,
           status: 'published',
@@ -284,7 +290,7 @@ export class ResourceResolver {
 
     return await this.prismaService.resource.findMany({
       where: {
-        nexusId: nexusId,
+        nexusId,
         nexus: {
           userNexuses: {
             every: { userId },
@@ -393,33 +399,51 @@ export class ResourceResolver {
 
     for (const [
       filename,
+      channel,
+      custom_id,
+      add_asset_labels,
       title,
       description,
       keywords,
+      spoken_language,
+      caption_file,
+      caption_language,
       category,
       privacy,
+      notify_subscribers,
+      start_time,
+      end_time,
+      custom_thumbnail,
+      ownership,
+      block_outside_ownership,
+      usage_policy,
+      enable_content_id,
+      reference_exclusions,
+      match_policy,
+      ad_types,
+      ad_break_times,
+      playlist_id,
+      is_made_for_kids,
+      is_enabled_for_shorts_remix,
     ] of spreadsheetData) {
       const fileId = await this.findFile(
         this.youtubeService.authorize(accessToken),
         drivefolderId,
         filename,
       );
-      if (fileId !== null) {
-        console.log('driveFile', fileId);
-        const row: SpreadsheetRow = {
-          fileId,
-          filename,
-          title,
-          description,
-          keywords,
-          category,
-          privacy,
-        };
-        spreadsheetRows.push(row);
-      }
+      console.log('driveFile', fileId);
+      const row: SpreadsheetRow = {
+        fileId,
+        filename,
+        title,
+        description,
+        keywords,
+        category,
+        privacy,
+      };
+      spreadsheetRows.push(row);
     }
-
-    return spreadsheetRows;
+    return spreadsheetRows.slice(1);
   }
 
   private async getNewAccessToken(refreshToken: string): Promise<string> {
@@ -485,7 +509,7 @@ export class ResourceResolver {
     };
   }
 
-  async findFile(auth, folderId, fileName) {
+  async findFile(auth, folderId, fileName): Promise<string | null> {
     const drive = google.drive({ version: 'v3', auth });
     const driveResponse = await drive.files.list({
       q: `'${folderId}' in parents and name='${fileName}' and trashed=false`,
@@ -497,7 +521,7 @@ export class ResourceResolver {
 }
 
 interface SpreadsheetRow {
-  fileId: string;
+  fileId: string | null;
   filename: string;
   title: string;
   description: string;

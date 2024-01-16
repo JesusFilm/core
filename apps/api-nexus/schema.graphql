@@ -146,7 +146,7 @@ type Resource
   createdAt: DateTime!
   updatedAt: DateTime
   deletedAt: DateTime
-  googleDriveLink: String!
+  googleDriveLink: String
   category: String!
   privacy: PrivacyStatus!
   sourceType: SourceType!
