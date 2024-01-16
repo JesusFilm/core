@@ -9,8 +9,13 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import X2Icon from '@core/shared/ui/icons/X2'
+
+import { Attributes } from '../ControlPanel/Attributes'
 
 interface DrawerContentProps {
   title?: string
@@ -57,12 +62,15 @@ export function Drawer(): ReactElement {
       drawerTitle: title,
       drawerChildren: children,
       drawerMobileOpen: mobileOpen,
-      selectedBlock
+      selectedComponent,
+      selectedBlock,
+      selectedStep,
+      journeyEditContentComponent
     },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-
+  const selected = selectedComponent ?? selectedBlock ?? 'none'
   let blockTitle: string | undefined
   switch (selectedBlock?.__typename) {
     case 'ButtonBlock':
@@ -98,6 +106,17 @@ export function Drawer(): ReactElement {
     default:
       blockTitle = title
   }
+  switch (journeyEditContentComponent) {
+    case ActiveJourneyEditContent.SocialPreview:
+      blockTitle = t('Social Share Preview')
+      break
+    case ActiveJourneyEditContent.Action:
+      blockTitle = t('Information')
+      break
+    case ActiveJourneyEditContent.JourneyFlow:
+      blockTitle = t('Properties')
+      break
+  }
 
   const handleDrawerToggle = (): void => {
     dispatch({
@@ -106,6 +125,9 @@ export function Drawer(): ReactElement {
     })
   }
 
+  // may need to add a "!selectedStep?.children[0].children.length === 0" case
+  // into the drawerContent. because if the card is empty(ie it's a blank card)
+  // then we want to show the card templates drawer
   return smUp ? (
     <Paper
       elevation={0}
@@ -123,7 +145,18 @@ export function Drawer(): ReactElement {
       data-testid="EditorDrawer"
     >
       <DrawerContent title={blockTitle} handleDrawerToggle={handleDrawerToggle}>
-        {children}
+        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas ? (
+          selected !== 'none' &&
+          selectedStep !== undefined &&
+          !(selectedStep?.children[0]?.children.length === 0) && (
+            <Attributes selected={selected} step={selectedStep} />
+          )
+        ) : (
+          <>
+            {console.log('hello')}
+            {children}
+          </>
+        )}
       </DrawerContent>
     </Paper>
   ) : (

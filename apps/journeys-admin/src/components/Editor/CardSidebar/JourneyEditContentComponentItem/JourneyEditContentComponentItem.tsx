@@ -1,11 +1,15 @@
 import Box from '@mui/material/Box'
 import { ReactElement, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
+import { ActionDetails } from '../../ActionDetails'
+import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
+import { Properties } from '../../Properties'
 import { CardItem } from '../CardItem'
 
 interface JourneyEditContentComponentItemProps {
@@ -21,12 +25,38 @@ export function JourneyEditContentComponentItem({
     dispatch,
     state: { journeyEditContentComponent }
   } = useEditor()
+  const { t } = useTranslation('apps-journeys-admin')
 
   function handleClick(): void {
     dispatch({
       type: 'SetJourneyEditContentAction',
       component
     })
+    switch (component) {
+      case ActiveJourneyEditContent.SocialPreview:
+        dispatch({
+          type: 'SetDrawerPropsAction',
+          title: t('Social Share Preview'),
+          children: <SocialShareAppearance />
+        })
+        break
+      case ActiveJourneyEditContent.Action:
+        dispatch({
+          type: 'SetDrawerPropsAction',
+          mobileOpen: true,
+          title: t('Information'),
+          children: <ActionDetails />
+        })
+        break
+      case ActiveJourneyEditContent.JourneyFlow:
+        dispatch({
+          type: 'SetDrawerPropsAction',
+          mobileOpen: true,
+          title: t('Properties'),
+          children: <Properties isPublisher={false} />
+        })
+        break
+    }
   }
 
   return (

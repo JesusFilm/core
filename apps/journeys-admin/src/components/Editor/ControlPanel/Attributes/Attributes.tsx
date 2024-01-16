@@ -1,7 +1,10 @@
+import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
+import MuiTypography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -174,7 +177,8 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
         sx={{
           overflowX: 'auto',
           py: 5,
-          px: 6
+          px: 6,
+          display: { xs: 'flex', sm: 'none' }
         }}
       >
         <AttributesContent selected={selected} step={step} />
@@ -182,13 +186,22 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
       <Box
         sx={{
           py: 4.25,
-          borderTop: (theme) => `1px solid ${theme.palette.divider}`
+          borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+          display: { xs: 'block', sm: 'none' }
         }}
       >
         <MuiTypography align="center">
           {t('Editing {{block}} Properties', { block: blockLabel })}
         </MuiTypography>
       </Box>
+      <Stack
+        sx={{
+          display: { xs: 'none', sm: 'flex' },
+          overflow: 'auto'
+        }}
+      >
+        <AttributesContent selected={selected} step={step} />
+      </Stack>
     </>
   )
 }
