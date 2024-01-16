@@ -65,10 +65,6 @@ export function VideosPage(): ReactElement {
   const { refine } = useSearchBox()
   const { hits: algoliaVideos } = useInfiniteHits()
 
-  function setQuery(newQuery: string): void {
-    refine(newQuery)
-  }
-
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
   const query = new URLSearchParams(
@@ -78,16 +74,18 @@ export function VideosPage(): ReactElement {
   )
 
   function handleFilterChange(filter): void {
-    setQuery(filter.title)
+    refine(filter.title)
 
     const params = new URLSearchParams()
     if (filter.availableVariantLanguageIds != null)
       params.set('language', filter.availableVariantLanguageIds[0])
-    if (filter.subtitleLanguageIds != null)
+    if (filter.subtitleLanguageIds != null) {
       params.set('subtitle', filter.subtitleLanguageIds[0])
+    }
+
     if (filter.title != null) {
       params.set('title', filter.title)
-      setQuery(filter.title)
+      refine(filter.title)
     }
     void router.push(`/videos?${params.toString()}`, undefined, {
       shallow: true
@@ -107,7 +105,6 @@ export function VideosPage(): ReactElement {
       snippet: [{ value: video.snippet }]
     }))
   }
-
   const videos = convertAlgoliaVideos(algoliaVideos)
 
   return (
