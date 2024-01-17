@@ -28,7 +28,7 @@ function VideosPage({ videos }): ReactElement {
   )
 
   return (
-    <InstantSearch searchClient={searchClient} indexName="video_variants">
+    <InstantSearch searchClient={searchClient} indexName="videos">
       <Configure hitsPerPage={20} />
       <Videos localVideos={videos} />
     </InstantSearch>

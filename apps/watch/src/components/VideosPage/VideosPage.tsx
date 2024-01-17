@@ -92,7 +92,7 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
 
   function formatFilter(filter: VideoPageFilter): string {
     return Object.values(filter)
-      .filter((e) => e !== undefined)
+      .filter((query) => query !== undefined)
       .join(' ')
   }
 
