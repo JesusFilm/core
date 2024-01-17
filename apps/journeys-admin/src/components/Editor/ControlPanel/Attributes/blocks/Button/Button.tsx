@@ -117,7 +117,7 @@ export function Button({
         description={t('Leading Icon')}
         drawerTitle="Leading Icon "
       >
-        <Icon id={startIcon.id} />
+        <Icon id={startIcon?.id} />
       </Attribute>
 
       <Attribute
@@ -131,7 +131,7 @@ export function Button({
         description={t('Trailing Icon')}
         drawerTitle="Trailing Icon "
       >
-        <Icon id={endIcon.id} />
+        <Icon id={endIcon?.id} />
       </Attribute>
     </>
   )

@@ -93,7 +93,7 @@ export function Drawer(): ReactElement {
       blockTitle = t('Subscribe Properties')
       break
     case 'StepBlock':
-      if (selectedBlock.children[0].children.length > 0) {
+      if (selectedBlock.children[0]?.children.length > 0) {
         blockTitle = t('Card Properties')
       } else {
         blockTitle = t('Card Templates')
@@ -150,7 +150,7 @@ export function Drawer(): ReactElement {
         {journeyEditContentComponent === ActiveJourneyEditContent.Canvas
           ? selected !== 'none' &&
             selectedStep !== undefined &&
-            (selectedStep.children[0].children.length > 0 ? (
+            (selectedStep.children[0]?.children.length > 0 ? (
               <Attributes selected={selected} step={selectedStep} />
             ) : (
               <CardTemplateDrawer />
