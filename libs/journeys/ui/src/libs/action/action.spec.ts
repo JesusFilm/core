@@ -125,7 +125,9 @@ describe('action', () => {
       expect(router.push).toHaveBeenCalledWith('fact-or-fiction')
     })
 
-    it('should handle internal LinkAction for Journey Link', () => {
+    it('should not open new tab for internal links to journeys', () => {
+      window.open = jest.fn()
+
       handleAction(router, {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
@@ -135,6 +137,7 @@ describe('action', () => {
       expect(router.push).toHaveBeenCalledWith(
         'https://your.nextstep.is/fact-or-fiction'
       )
+      expect(window.open).not.toHaveBeenCalled()
     })
   })
 })
