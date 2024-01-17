@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next'
 
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '../../src/components/Team/TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_CURRENT_USER } from '../../src/libs/useCurrentUserLazyQuery'
 
@@ -39,9 +41,34 @@ export const getServerSideProps = withUserTokenSSR({
 
   // Needed to populate user team list, do not remove:
   await apolloClient.query({ query: GET_CURRENT_USER })
+  const query = await apolloClient.query({
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  })
+
+  if (query?.data.teams[0].id != null && query.data.teams.length === 1) {
+    await apolloClient.mutate({
+      mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: {
+          lastActiveTeamId: query.data.teams[0].id
+        }
+      }
+    })
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/?onboarding=true'
+      },
+      props: {
+        initialApolloState: apolloClient.cache.extract(),
+        ...translations
+      }
+    }
+  }
 
   return {
     props: {
+      initialApolloState: apolloClient.cache.extract(),
       ...translations
     }
   }

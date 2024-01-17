@@ -73,6 +73,7 @@ export const getServerSideProps = withUserTokenSSR({
   return {
     props: {
       form,
+      initialApolloState: apolloClient.cache.extract(),
       ...translations
     }
   }
