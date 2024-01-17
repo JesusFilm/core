@@ -42,10 +42,11 @@ export const getServerSideProps = withUserTokenSSR({
   // Needed to populate user team list, do not remove:
   await apolloClient.query({ query: GET_CURRENT_USER })
   const query = await apolloClient.query({
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+    errorPolicy: 'none'
   })
 
-  if (query?.data.teams[0].id != null && query.data.teams.length === 1) {
+  if (query?.data?.teams[0]?.id != null && query.data.teams.length === 1) {
     await apolloClient.mutate({
       mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
       variables: {
