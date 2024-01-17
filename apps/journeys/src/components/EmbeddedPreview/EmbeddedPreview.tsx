@@ -2,7 +2,7 @@ import Close from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import isFunction from 'lodash/isFunction'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -27,6 +27,15 @@ export function EmbeddedPreview({
 
   const viewportHeight = use100vh()
   const [isFullWindow, setIsFullWindow] = useState(false)
+
+  useEffect(() => {
+    function onFullscreenChange(): void {
+      setIsFullWindow(Boolean(document.fullscreenElement))
+    }
+    document.addEventListener('fullscreenchange', onFullscreenChange)
+    return () =>
+      document.removeEventListener('fullscreenchange', onFullscreenChange)
+  }, [])
 
   async function requestFullscreen(): Promise<void> {
     const elem = document.documentElement
