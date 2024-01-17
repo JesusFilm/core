@@ -43,12 +43,12 @@ export function RegisterPage({
       .required(t('Required')),
     name: string()
       .trim()
-      .min(2, 'Too Short!')
-      .max(50, 'Too Long!')
+      .min(2, t('Too Short!'))
+      .max(50, t('Too Long!'))
       .required(t('Enter your account name')),
     password: string()
       .required(t('Enter your password'))
-      .min(6, 'Password must be at least 6 characters long')
+      .min(6, t('Password must be at least 6 characters long'))
   })
   async function createAccountAndSignIn(
     email: string,
@@ -68,7 +68,7 @@ export function RegisterPage({
       if (error.code === 'auth/email-already-in-use') {
         setFieldError(
           'email',
-          'The email address is already used by another account'
+          t('The email address is already used by another account')
         )
       } else {
         console.error(error)

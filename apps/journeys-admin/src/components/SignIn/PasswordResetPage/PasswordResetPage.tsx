@@ -27,7 +27,7 @@ export function PasswordResetPage({
     values: InferType<typeof validationSchema>,
     actions: FormikHelpers<InferType<typeof validationSchema>>
   ): Promise<void> {
-    // Needs custom emailing server
+    // TODO: Needs custom emailing server
     // https://firebase.google.com/docs/auth/admin/email-action-links#generate_password_reset_email_link
   }
 
