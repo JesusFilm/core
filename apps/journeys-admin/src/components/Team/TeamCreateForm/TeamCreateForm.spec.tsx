@@ -66,6 +66,7 @@ describe('TeamCreateForm', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: null
         }
       }
