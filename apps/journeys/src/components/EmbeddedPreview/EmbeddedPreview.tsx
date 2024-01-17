@@ -74,6 +74,7 @@ export function EmbeddedPreview({
 
   const ClickableCard = (): ReactElement => (
     <Box
+      data-testid="clickable-card-embed"
       sx={{
         p: 8,
         flexGrow: 1,
@@ -160,6 +161,7 @@ export function EmbeddedPreview({
           {isFullWindow && (
             <>
               <IconButton
+                data-testid="CloseIconButton"
                 sx={{
                   position: 'absolute',
                   top: 0,
