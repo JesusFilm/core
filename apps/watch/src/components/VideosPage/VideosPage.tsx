@@ -88,7 +88,7 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
         availableVariantLanguageIds != null
           ? {
               duration: video.variant.duration,
-              variant: video.variants.find(
+              slug: video.variants.find(
                 (variant) =>
                   variant.languageId === availableVariantLanguageIds[0]
               )
