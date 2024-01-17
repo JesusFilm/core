@@ -7,7 +7,7 @@ import {
   withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { ReactElement} from 'react'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
@@ -42,7 +42,7 @@ export const USER_JOURNEY_OPEN = gql`
   }
 `
 
-function JourneyEditPage({status}): ReactElement {
+function JourneyEditPage({ status }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
@@ -53,10 +53,11 @@ function JourneyEditPage({status}): ReactElement {
     }
   )
 
-    return (
-      status === 'noAccess' ? <AccessDenied/> : 
-      <>
-        <NextSeo
+  return status === 'noAccess' ? (
+    <AccessDenied />
+  ) : (
+    <>
+      <NextSeo
         title={
           data?.journey?.title != null
             ? t('Edit {{title}}', { title: data.journey.title })
@@ -64,7 +65,7 @@ function JourneyEditPage({status}): ReactElement {
         }
         description={data?.journey?.description ?? undefined}
       />
-        <Editor
+      <Editor
         journey={data?.journey ?? undefined}
         selectedStepId={router.query.stepId as string | undefined}
         view={router.query.view as ActiveJourneyEditContent | undefined}
@@ -78,8 +79,8 @@ function JourneyEditPage({status}): ReactElement {
           user
         }}
       />
-      </>
-    )
+    </>
+  )
 }
 
 export const getServerSideProps = withUserTokenSSR({
@@ -125,8 +126,8 @@ export const getServerSideProps = withUserTokenSSR({
         }
       }
     }
-    if(error.message === 'user is not allowed to view journey') {
-      return { 
+    if (error.message === 'user is not allowed to view journey') {
+      return {
         props: {
           status: 'noAccess',
           ...translations,
