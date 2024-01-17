@@ -20,6 +20,7 @@ import { VideoGrid } from '../VideoGrid/VideoGrid'
 import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
+import { convertAlgoliaVideos } from './utils'
 
 export const GET_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
@@ -65,6 +66,7 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
   const { status } = useInstantSearch()
   const { query: algoliaQuery, refine } = useSearchBox()
   const { hits: algoliaVideos, isLastPage, showMore } = useInfiniteHits()
+
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
   const query = new URLSearchParams(
@@ -81,42 +83,6 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
     query.get('subtitles') != null
       ? [query.get('subtitles') as string]
       : undefined
-
-  function convertAlgoliaVideos(videos): VideoChildFields[] {
-    return videos.map((video) => {
-      const variant =
-        availableVariantLanguageIds != null
-          ? {
-              duration: video.variant.duration,
-              slug: video.variants.find(
-                (variant) =>
-                  variant.languageId === availableVariantLanguageIds[0]
-              )?.slug
-            }
-          : undefined
-
-      const videoFields = {
-        ...video,
-        title: [{ value: video.titles[0] }],
-        imageAlt: [{ value: video.imageAlt }],
-        snippet: [{ value: video.snippet }]
-      }
-
-      if (variant != null) {
-        videoFields.variant = {
-          duration: variant.duration,
-          slug: variant.slug
-        }
-      }
-      return videoFields
-    })
-  }
-
-  const videos = convertAlgoliaVideos(algoliaVideos)
-
-  console.log(videos)
-
-  const realVideos = localVideos.filter((video) => video !== null)
 
   const filter: VideoPageFilter = {
     availableVariantLanguageIds,
@@ -148,6 +114,13 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
       shallow: true
     })
   }
+
+  const videos = convertAlgoliaVideos(
+    algoliaVideos,
+    availableVariantLanguageIds
+  )
+
+  const realVideos = localVideos.filter((video) => video !== null)
 
   const { data: languagesData, loading: languagesLoading } =
     useQuery<GetLanguages>(GET_LANGUAGES, {
