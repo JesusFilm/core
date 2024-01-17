@@ -56,10 +56,6 @@ export function Canvas(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   useEffect(() => {
-    if (screen.height < 1030) {
-      setScale(`${Math.min((screen.height - 390) / 640, 1)}`)
-      setPosition('absolute')
-    }
     const handleScale = (): void => {
       if (screen.height < 1030) {
         setScale(`${Math.min((screen.height - 390) / 640, 1)}`)
@@ -68,6 +64,8 @@ export function Canvas(): ReactElement {
         setPosition('relative')
       }
     }
+
+    handleScale()
 
     window.addEventListener('resize', handleScale)
     return () => {
@@ -167,7 +165,7 @@ export function Canvas(): ReactElement {
             outlineOffset: 4,
             transformOrigin: 'center',
             transform: `scale(${scale})`,
-            position: `${position}`
+            position
           }}
         >
           <FramePortal
