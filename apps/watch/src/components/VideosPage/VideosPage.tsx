@@ -72,6 +72,23 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
     showMore
   } = useInfiniteHits()
 
+  function convertAlgoliaVideos(videos): VideoChildFields[] {
+    // title should default to english unless a user selects a language
+    // variant should default to english unless a user selects a subtitle or language
+
+    return videos.map((video) => ({
+      ...video,
+      title: [{ value: video.titles[0] }], // TODO: update when more titles
+      imageAlt: [{ value: video.imageAlt }],
+      snippet: [{ value: video.snippet }]
+      // variant needs to be converted here
+      // it needs to also update if a user sets a filter for language
+    }))
+  }
+  const videos = convertAlgoliaVideos(algoliaVideos)
+
+  const realVideos = localVideos.filter((video) => video !== null)
+
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
   const query = new URLSearchParams(
@@ -94,17 +111,23 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
   }
 
   function handleFilterChange(filter): void {
-    refine(filter.title)
-
     const params = new URLSearchParams()
-    if (filter.availableVariantLanguageIds != null)
-      params.set('language', filter.availableVariantLanguageIds[0])
-    if (filter.subtitleLanguageIds != null) {
-      params.set('subtitle', filter.subtitleLanguageIds[0])
+
+    const languages = filter.availableVariantLanguageIds
+    const subtitles = filter.subtitleLanguageIds
+    const title = filter.title
+
+    if (languages != null) {
+      params.set('languages', languages[0])
+      refine(languages[0])
     }
-    if (filter.title != null) {
-      params.set('title', filter.title)
-      refine(filter.title)
+    if (subtitles != null) {
+      params.set('subtitles', subtitles[0])
+      refine(subtitles[0])
+    }
+    if (title != null) {
+      params.set('title', title)
+      refine(title)
     }
     void router.push(`/videos?${params.toString()}`, undefined, {
       shallow: true
@@ -115,18 +138,6 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
     useQuery<GetLanguages>(GET_LANGUAGES, {
       variables: { languageId: '529' }
     })
-
-  function convertAlgoliaVideos(videos): VideoChildFields[] {
-    return videos.map((video) => ({
-      ...video,
-      title: [{ value: video.titles[0] }], // TODO: update when more titles
-      imageAlt: [{ value: video.imageAlt }],
-      snippet: [{ value: video.snippet }]
-    }))
-  }
-  const videos = convertAlgoliaVideos(algoliaVideos)
-
-  const realVideos = localVideos.filter((video) => video !== null)
 
   const handleLoadMore = async (): Promise<void> => {
     if (isLastPage) return
