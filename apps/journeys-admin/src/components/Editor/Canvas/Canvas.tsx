@@ -57,8 +57,8 @@ export function Canvas(): ReactElement {
 
   useEffect(() => {
     const handleScale = (): void => {
-      if (screen.height < 1030) {
-        setScale(`${Math.min((screen.height - 390) / 640, 1)}`)
+      if (window.innerHeight < 1030) {
+        setScale(`${Math.min((window.innerHeight - 390) / 640, 1)}`)
         setPosition('absolute')
       } else {
         setPosition('relative')
