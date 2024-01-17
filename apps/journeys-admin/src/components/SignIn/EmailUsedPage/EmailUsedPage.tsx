@@ -3,16 +3,10 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { PageProps } from '../HomePage/HomePage'
 import { SignInServiceButton } from '../SignInServiceButton'
 
-interface EmailUsedPageProps {
-  userEmail: string
-  variant: 'Google' | 'Facebook'
-}
-export function EmailUsedPage({
-  userEmail,
-  variant
-}: EmailUsedPageProps): ReactElement {
+export function EmailUsedPage({ userEmail, variant }: PageProps): ReactElement {
   const { t } = useTranslation()
   return (
     <>

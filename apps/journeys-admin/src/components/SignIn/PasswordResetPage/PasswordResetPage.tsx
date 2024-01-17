@@ -8,16 +8,12 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { InferType, object, string } from 'yup'
 
-import type { ActivePage } from '../SignIn'
+import { PageProps } from '../HomePage/HomePage'
 
-interface PasswordResetPageProps {
-  setActivePage: (activePage: ActivePage) => void
-  userEmail: string
-}
 export function PasswordResetPage({
   userEmail,
   setActivePage
-}: PasswordResetPageProps): ReactElement {
+}: PageProps): ReactElement {
   const { t } = useTranslation()
   const validationSchema = object().shape({
     email: string()

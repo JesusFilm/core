@@ -36,7 +36,9 @@ export function SignIn(): ReactElement {
   let children
   switch (activePage) {
     case 'home':
-      children = <HomePage setActivePage={setActivePage} setEmail={setEmail} />
+      children = (
+        <HomePage setActivePage={setActivePage} setUserEmail={setEmail} />
+      )
       break
     case 'password':
       children = (
@@ -49,10 +51,22 @@ export function SignIn(): ReactElement {
       )
       break
     case 'google.com':
-      children = <EmailUsedPage userEmail={userEmail} variant="Google" />
+      children = (
+        <EmailUsedPage
+          setActivePage={setActivePage}
+          userEmail={userEmail}
+          variant="Google"
+        />
+      )
       break
     case 'facebook.com':
-      children = <EmailUsedPage userEmail={userEmail} variant="Facebook" />
+      children = (
+        <EmailUsedPage
+          setActivePage={setActivePage}
+          userEmail={userEmail}
+          variant="Facebook"
+        />
+      )
       break
     case 'help':
       children = (

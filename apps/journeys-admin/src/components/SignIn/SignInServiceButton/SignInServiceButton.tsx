@@ -13,7 +13,7 @@ import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 
 interface SignInServiceButtonProps {
-  variant: 'Facebook' | 'Google'
+  variant?: 'Facebook' | 'Google'
 }
 
 export function SignInServiceButton({
@@ -37,11 +37,11 @@ export function SignInServiceButton({
       variant="outlined"
       size="large"
       color="secondary"
-      startIcon={variant === 'Google' ? <GoogleIcon /> : <FacebookIcon />}
+      startIcon={variant === 'Facebook' ? <FacebookIcon /> : <GoogleIcon />}
       onClick={handleSignIn}
       fullWidth
     >
-      {t(`Sign in with ${variant === 'Google' ? 'Google' : 'Facebook'}`)}
+      {t(`Sign in with ${variant === 'Facebook' ? 'Facebook' : 'Google'}`)}
     </Button>
   )
 }

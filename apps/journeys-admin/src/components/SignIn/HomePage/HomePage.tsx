@@ -14,11 +14,18 @@ import { InferType, object, string } from 'yup'
 import type { ActivePage } from '../SignIn'
 import { SignInServiceButton } from '../SignInServiceButton'
 
-interface HomeProps {
+export interface PageProps {
+  userEmail?: string
+  setUserEmail?: (userEmail: string) => void
+  activePage?: ActivePage
   setActivePage: (activePage: ActivePage) => void
-  setEmail: (email: string) => void
+  variant?: 'Google' | 'Facebook'
 }
-export function HomePage({ setActivePage, setEmail }: HomeProps): ReactElement {
+
+export function HomePage({
+  setActivePage,
+  setUserEmail
+}: PageProps): ReactElement {
   const { t } = useTranslation()
   const validationSchema = object().shape({
     email: string()
@@ -49,7 +56,9 @@ export function HomePage({ setActivePage, setEmail }: HomeProps): ReactElement {
           break
       }
     }
-    setEmail(values.email)
+    if (setUserEmail != null) {
+      setUserEmail(values.email)
+    }
   }
   return (
     <>

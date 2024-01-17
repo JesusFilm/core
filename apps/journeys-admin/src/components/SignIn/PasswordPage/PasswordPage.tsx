@@ -14,16 +14,12 @@ import React, { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
-import type { ActivePage } from '../SignIn'
+import { PageProps } from '../HomePage/HomePage'
 
-interface PasswordPageProps {
-  setActivePage: (activePage: ActivePage) => void
-  userEmail: string
-}
 export function PasswordPage({
   userEmail,
   setActivePage
-}: PasswordPageProps): ReactElement {
+}: PageProps): ReactElement {
   const auth = getAuth()
   const [showPassword, setShowPassword] = React.useState(false)
   const handleClickShowPassword = (): void => setShowPassword((show) => !show)
