@@ -35,6 +35,7 @@ const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 describe('EmbeddedPreview', () => {
   beforeEach(() => {
     document.exitFullscreen = jest.fn()
+    document.documentElement.requestFullscreen = jest.fn()
   })
 
   afterEach(() => jest.clearAllMocks())
