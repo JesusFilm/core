@@ -34,19 +34,6 @@ export function TeamOnboarding(): ReactElement {
     UPDATE_LAST_ACTIVE_TEAM_ID
   )
 
-  useEffect(() => {
-    if (query.data?.teams != null) {
-      setActiveTeam(query.data.teams[0])
-      const redirect =
-        router.query.redirect != null
-          ? new URL(
-              `${window.location.origin}${router.query.redirect as string}`
-            )
-          : '/?onboarding=true'
-      void router.push(redirect)
-    }
-  }, [query.data?.teams, router, setActiveTeam])
-
   return (
     <>
       {activeTeam != null ? (

@@ -13,6 +13,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { JourneyProfileOnboardingFormComplete } from '../../../__generated__/JourneyProfileOnboardingFormComplete'
+import { useTeam } from '../Team/TeamProvider'
 
 export const JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE = gql`
   mutation JourneyProfileOnboardingFormComplete {
@@ -39,12 +40,25 @@ export function OnboardingForm({
       JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE
     )
 
+  const { activeTeam } = useTeam()
+
   async function handleSubmit(): Promise<void> {
     await journeyProfileOnboardingFormComplete()
-    await router?.push({
-      pathname: '/teams/new',
-      query: { redirect: router.query.redirect }
-    })
+    console.log(activeTeam)
+    if (activeTeam != null) {
+      const redirect =
+        router.query.redirect != null
+          ? new URL(
+              `${window.location.origin}${router.query.redirect as string}`
+            )
+          : '/?onboarding=true'
+      await router.push(redirect)
+    } else {
+      await router?.push({
+        pathname: '/teams/new',
+        query: { redirect: router.query.redirect }
+      })
+    }
   }
 
   return (

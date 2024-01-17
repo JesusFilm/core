@@ -13,6 +13,8 @@ import { formiumClient } from '@core/shared/ui/formiumClient'
 
 import { OnboardingForm } from '../src/components/OnboardingForm'
 import { OnboardingPageWrapper } from '../src/components/OnboardingPageWrapper'
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '../src/components/Team/TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 
 interface OnboardingFormPageProps {
@@ -41,7 +43,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { redirect, translations } = await initAndAuthApp({
+  const { redirect, translations, apolloClient } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -52,6 +54,19 @@ export const getServerSideProps = withUserTokenSSR({
   const form = await formiumClient.getFormBySlug(
     process.env.NEXT_PUBLIC_FORMIUM_PROJECT_SLUG ?? ''
   )
+
+  const query = await apolloClient.query({
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  })
+
+  await apolloClient.mutate({
+    mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
+    variables: {
+      input: {
+        lastActiveTeamId: query.data.teams[0].id
+      }
+    }
+  })
 
   return {
     props: {
