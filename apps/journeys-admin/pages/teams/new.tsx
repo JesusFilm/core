@@ -41,11 +41,14 @@ export const getServerSideProps = withUserTokenSSR({
 
   // Needed to populate user team list, do not remove:
   await apolloClient.query({ query: GET_CURRENT_USER })
+
+  // check if user has been invited to a team but has no active team:
   const query = await apolloClient.query({
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
     errorPolicy: 'none'
   })
 
+  // set active team to invited team and redirect:
   if (query?.data?.teams[0]?.id != null && query.data.teams.length === 1) {
     await apolloClient.mutate({
       mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
