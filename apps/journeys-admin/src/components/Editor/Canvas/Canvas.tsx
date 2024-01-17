@@ -45,6 +45,7 @@ const HostSidePanel = dynamic(
 
 export function Canvas(): ReactElement {
   const [scale, setScale] = useState('1')
+  const [position, setPosition] = useState('relative')
   const router = useRouter()
   const {
     state: { selectedStep, selectedBlock, selectedComponent },
@@ -55,12 +56,16 @@ export function Canvas(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   useEffect(() => {
-    if (screen.height < 1020) {
-      setScale(`${Math.min((screen.height - 390) / 640, 1)}`) // Initial card resize
+    if (screen.height < 1030) {
+      setScale(`${Math.min((screen.height - 390) / 640, 1)}`)
+      setPosition('absolute')
     }
     const handleScale = (): void => {
-      if (screen.height < 1020) {
-        setScale(`${Math.min((screen.height - 390) / 640, 1)}`) // Dynamic resizing
+      if (screen.height < 1030) {
+        setScale(`${Math.min((screen.height - 390) / 640, 1)}`)
+        setPosition('absolute')
+      } else {
+        setPosition('relative')
       }
     }
 
@@ -139,8 +144,7 @@ export function Canvas(): ReactElement {
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        p: 5,
-        overflow: 'hidden'
+        p: 5
       }}
     >
       {selectedStep != null && (
@@ -152,7 +156,7 @@ export function Canvas(): ReactElement {
             Width: 360,
             minWidth: 360,
             maxHeight: 640,
-            m: 0, // This prevents it from hugging the content below
+            m: 0,
             display: 'flex',
             transition: '0.2s outline ease-out 0.1s',
             borderRadius: 5,
@@ -161,12 +165,17 @@ export function Canvas(): ReactElement {
                 ? `2px solid ${theme.palette.primary.main}`
                 : `2px solid ${theme.palette.background.default}`,
             outlineOffset: 4,
+            transformOrigin: 'center',
             transform: `scale(${scale})`,
-            transformOrigin: 'top',
-            overflow: 'hidden'
+            position: `${position}`
           }}
         >
-          <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
+          <FramePortal
+            width="100%"
+            height="100%"
+            sx={{ overflow: 'hidden ', position: 'fixed' }}
+            dir={rtl ? 'rtl' : 'ltr'}
+          >
             <ThemeProvider
               {...getStepTheme(selectedStep, journey)}
               rtl={rtl}
