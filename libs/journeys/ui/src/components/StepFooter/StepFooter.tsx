@@ -87,12 +87,9 @@ export function StepFooter({
             gap={2}
           >
             {hasAvatar && <HostAvatars hasPlaceholder={variant === 'admin'} />}
-            <Stack
-              sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}
-              spacing={-1.5}
-            >
-              {/* ----------- HERE: Footer title ----------- */}
+            <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
               <Typography
+                variant="subtitle1"
                 sx={{
                   zIndex: 1,
                   // Always dark mode on lg breakpoint

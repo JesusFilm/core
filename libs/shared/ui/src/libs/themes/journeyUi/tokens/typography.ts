@@ -1,6 +1,7 @@
 import { ThemeOptions } from '@mui/material/styles'
 
 // Update the Typography's variant prop options
+
 declare module '@mui/material' {
   interface TypographyPropsVariantOverrides {
     button: false
@@ -46,16 +47,18 @@ export const journeyUiTypography: Pick<ThemeOptions, 'typography'> = {
       textTransform: 'uppercase'
     },
     subtitle1: {
-      fontSize: 18,
+      fontFamily: '"Open Sans"',
+      fontSize: 12,
       fontWeight: 600,
-      lineHeight: '24px',
-      letterSpacing: 0.5
+      lineHeight: '18px',
+      fontFeatureSettings: '"clig" off, "liga"'
     },
     subtitle2: {
-      fontSize: 16,
+      fontFamily: '"Open Sans"',
+      fontSize: 10,
       fontWeight: 600,
-      lineHeight: '24px',
-      letterSpacing: 0.5
+      lineHeight: '15px',
+      fontFeatureSettings: '"clig" off, "liga"'
     },
     body1: {
       fontFamily: '"Open Sans"',
@@ -63,12 +66,11 @@ export const journeyUiTypography: Pick<ThemeOptions, 'typography'> = {
       fontWeight: 600,
       lineHeight: '18px'
     },
-    // menu item / footer title
     body2: {
-      fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
+      fontFamily: '"Open Sans"',
       fontSize: 14,
       fontWeight: 400,
-      lineHeight: '20px'
+      lineHeight: '22px'
     },
     overline: {
       fontSize: 11,
@@ -77,12 +79,11 @@ export const journeyUiTypography: Pick<ThemeOptions, 'typography'> = {
       letterSpacing: 3,
       marginBottom: '4px'
     },
-    // message / copy right / Host
     caption: {
       fontFamily: '"Open Sans"',
-      fontSize: 10,
-      fontWeight: 600,
-      lineHeight: '15px'
+      fontSize: 12,
+      fontWeight: 400,
+      lineHeight: '18px'
     }
   }
 }

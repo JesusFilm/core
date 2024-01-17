@@ -117,7 +117,6 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
           </Link>
         </NextLink>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
-          {/* ----------- HERE: Message ----------- */}
           <Typography
             color={(theme) => theme.palette.action.disabled}
             variant="caption"
@@ -136,7 +135,6 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
           </Typography>
         </Box>
         <MuiMenuItem disabled>
-          {/* ----------- HERE: copy right ----------- */}
           <Typography variant="caption" color="primary.light">
             {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
           </Typography>

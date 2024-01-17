@@ -13,11 +13,10 @@ export function HostTitleLocation(): ReactElement {
       ? '\u00A0\u00B7\u00A0'
       : ''
 
-  // ----------- HERE: Host -----------
   return host != null ? (
     <Typography
       data-testid="StepFooterHostTitleLocation"
-      variant="caption"
+      variant="subtitle2"
       sx={{
         whiteSpace: 'nowrap',
         overflow: 'clip',
