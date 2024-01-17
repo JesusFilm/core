@@ -5,7 +5,11 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
-import { useInfiniteHits, useSearchBox } from 'react-instantsearch'
+import {
+  useInfiniteHits,
+  useInstantSearch,
+  useSearchBox
+} from 'react-instantsearch'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
@@ -43,13 +47,6 @@ export const GET_LANGUAGES = gql`
   }
 `
 
-export const limit = 20
-
-function isAtEnd(count: number, limit: number, previousCount: number): boolean {
-  if (count === previousCount) return true
-  return count % limit !== 0
-}
-
 export interface VideoPageFilter {
   ids?: string[]
   availableVariantLanguageIds?: string[]
@@ -63,11 +60,15 @@ interface VideoProps {
 
 export function VideosPage({ localVideos }: VideoProps): ReactElement {
   const router = useRouter()
-  // const languageContext = useLanguage()
-  // const [isEnd, setIsEnd] = useState(false)
-  // const [previousCount, setPreviousCount] = useState(0)
+  const { status } = useInstantSearch()
   const { query: algoliaQuery, refine } = useSearchBox()
-  const { hits: algoliaVideos } = useInfiniteHits()
+  const {
+    hits: algoliaVideos,
+    isFirstPage,
+    isLastPage,
+    showPrevious,
+    showMore
+  } = useInfiniteHits()
 
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
@@ -86,7 +87,6 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
     if (filter.subtitleLanguageIds != null) {
       params.set('subtitle', filter.subtitleLanguageIds[0])
     }
-
     if (filter.title != null) {
       params.set('title', filter.title)
       refine(filter.title)
@@ -111,7 +111,13 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
   }
   const videos = convertAlgoliaVideos(algoliaVideos)
 
-  // add realvideos check
+  const realVideos = localVideos.filter((video) => video !== null)
+
+  const handleLoadMore = async (): Promise<void> => {
+    if (isLastPage) return
+
+    showMore()
+  }
 
   return (
     <PageWrapper hero={<VideosHero />} testId="VideosPage">
@@ -126,7 +132,6 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
         >
           <Box sx={{ minWidth: '278px' }}>
             <FilterList
-              // filter={filter}
               onChange={handleFilterChange}
               languagesData={languagesData}
               languagesLoading={languagesLoading}
@@ -134,10 +139,10 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              videos={algoliaQuery !== '' ? videos : localVideos}
-              // onLoadMore={handleLoadMore}
-              // loading={loading}
-              // hasNextPage={!isEnd}
+              videos={algoliaQuery !== '' ? videos : realVideos}
+              onLoadMore={handleLoadMore}
+              loading={status === 'loading' || status === 'stalled'}
+              hasNextPage={!isLastPage}
               variant="expanded"
             />
           </Box>
