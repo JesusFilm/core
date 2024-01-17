@@ -40,12 +40,6 @@ export function Accordion({
     }
   }
 
-  // need accordian details content
-  // need accordianSummary content
-  // get rid of border radius
-  // needs a divider
-  // remove elevation
-
   return (
     <MuiAccordion
       elevation={0}

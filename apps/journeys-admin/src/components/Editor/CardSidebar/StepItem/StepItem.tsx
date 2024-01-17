@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -21,8 +20,6 @@ import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { FramePortal } from '../../../FramePortal'
 import { CardWrapper } from '../../Canvas/CardWrapper'
 import { VideoWrapper } from '../../Canvas/VideoWrapper'
-import { CardTemplateDrawer } from '../../CardTemplateDrawer'
-import { Properties } from '../../Properties'
 import { CardItem } from '../CardItem'
 
 interface StepItemProps {
@@ -36,7 +33,6 @@ export function StepItem({ step, index }: StepItemProps): ReactElement {
     dispatch,
     state: { selectedStep, journeyEditContentComponent }
   } = useEditor()
-  const { t } = useTranslation('apps-journeys-admin')
   const { rtl, locale } = getJourneyRTL(journey)
   const cardBlock = step.children.find(
     (child) => child.__typename === 'CardBlock'
