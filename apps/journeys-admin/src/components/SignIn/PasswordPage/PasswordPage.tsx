@@ -49,12 +49,14 @@ export function PasswordPage({
       if (error.code === 'auth/wrong-password') {
         setFieldError(
           'password',
-          "The email and password you entered don't match"
+          t("The email and password you entered don't match")
         )
       } else if (error.code === 'auth/too-many-requests') {
         setFieldError(
           'password',
-          'You have entered an incorrect password too many times. Please try again in a few minutes.'
+          t(
+            'You have entered an incorrect password too many times. Please try again in a few minutes.'
+          )
         )
       } else {
         console.error('An error occurred:', error.message)
@@ -64,7 +66,7 @@ export function PasswordPage({
   return (
     <>
       <Formik
-        initialValues={{ email: `${userEmail}`, password: '' }}
+        initialValues={{ email: userEmail, password: '' }}
         validationSchema={validationSchema}
         onSubmit={handleLogin}
       >

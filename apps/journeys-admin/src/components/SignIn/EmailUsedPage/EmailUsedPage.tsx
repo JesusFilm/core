@@ -15,15 +15,11 @@ export function EmailUsedPage({ userEmail, variant }: PageProps): ReactElement {
       </Typography>
       <Box>
         <Typography>{t("You've already used")}</Typography>
-        <Typography sx={{ fontWeight: 'bold' }}>
-          {t(`${userEmail}.`)}
-        </Typography>
+        <Typography sx={{ fontWeight: 'bold' }}>{userEmail}</Typography>
         <Typography>
-          {t(
-            `Sign in with ${
-              variant === 'Google' ? 'Google' : 'Facebook'
-            } to continue.`
-          )}
+          {t(`Sign in with {{service}} to continue.`, {
+            service: variant === 'Google' ? t('Google') : t('Facebook')
+          })}
         </Typography>
       </Box>
       <SignInServiceButton variant={variant} />
