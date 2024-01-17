@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -7,7 +7,7 @@ import {
   withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState } from 'react'
+import { ReactElement} from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
@@ -18,15 +18,12 @@ import {
   GetAdminJourneyVariables
 } from '../../__generated__/GetAdminJourney'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
-import { UserJourneyRequest } from '../../__generated__/UserJourneyRequest'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
 import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-
-
 
 export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -45,18 +42,7 @@ export const USER_JOURNEY_OPEN = gql`
   }
 `
 
-export const USER_JOURNEY_REQUEST = gql`
-  mutation UserJourneyRequest($journeyId: ID!) {
-    userJourneyRequest(journeyId: $journeyId, idType: databaseId) {
-      id
-    }
-  }
-`
-interface JourneyInviteProps {
-  status: string; 
-}
-
-function JourneyEditPage({status}: JourneyInviteProps): ReactElement {
+function JourneyEditPage({status}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
@@ -67,21 +53,9 @@ function JourneyEditPage({status}: JourneyInviteProps): ReactElement {
     }
   )
 
-  const [userJourneyRequest] =
-    useMutation<UserJourneyRequest>(USER_JOURNEY_REQUEST)
-  const [requestReceived, setRequestReceived] = useState(false)
-
-  const handleClick = async (): Promise<void> => {
-    await userJourneyRequest({
-      variables: { journeyId: router.query.journeyId }
-    })
-    setRequestReceived(true)
-  }
-
     return (
-      status === 'noAccess' ? <AccessDenied
-      handleClick={handleClick}
-      requestedAccess={requestReceived}/> : <>
+      status === 'noAccess' ? <AccessDenied/> : 
+      <>
         <NextSeo
         title={
           data?.journey?.title != null
@@ -147,7 +121,7 @@ export const getServerSideProps = withUserTokenSSR({
       return {
         redirect: {
           permanent: false,
-          destination: `/journeys/${query?.journeyId as string}`
+          destination: `/journeys`
         }
       }
     }
