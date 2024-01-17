@@ -64,13 +64,7 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
   const router = useRouter()
   const { status } = useInstantSearch()
   const { query: algoliaQuery, refine } = useSearchBox()
-  const {
-    hits: algoliaVideos,
-    isFirstPage,
-    isLastPage,
-    showPrevious,
-    showMore
-  } = useInfiniteHits()
+  const { hits: algoliaVideos, isLastPage, showMore } = useInfiniteHits()
 
   function convertAlgoliaVideos(videos): VideoChildFields[] {
     // title should default to english unless a user selects a language
@@ -140,8 +134,6 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
     })
 
   const handleLoadMore = async (): Promise<void> => {
-    if (isLastPage) return
-
     showMore()
   }
 
@@ -166,10 +158,10 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              videos={algoliaQuery !== '' ? videos : realVideos}
+              videos={algoliaQuery === '' ? realVideos : videos}
               onLoadMore={handleLoadMore}
               loading={status === 'loading' || status === 'stalled'}
-              hasNextPage={!isLastPage}
+              hasNextPage={algoliaQuery === '' ? false : !isLastPage}
               variant="expanded"
             />
           </Box>
