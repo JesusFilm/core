@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -630,9 +629,7 @@ const Template: Story = {
           }}
         >
           <EditorProvider initialState={{ steps, ...state }}>
-            <Box sx={{ height: '100vh', width: '100vw' }}>
-              <Canvas />
-            </Box>
+            <Canvas />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
