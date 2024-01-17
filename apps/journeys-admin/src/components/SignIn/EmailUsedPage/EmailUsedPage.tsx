@@ -16,7 +16,7 @@ export function EmailUsedPage({
   const { t } = useTranslation()
   return (
     <>
-      <Typography variant="h5" textAlign="left">
+      <Typography variant="h6" textAlign="left">
         {t('You already have an account')}
       </Typography>
       <Box>

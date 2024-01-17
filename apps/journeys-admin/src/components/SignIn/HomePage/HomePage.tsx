@@ -24,8 +24,8 @@ export function HomePage({ setActivePage, setEmail }: HomeProps): ReactElement {
     email: string()
       .trim()
       .lowercase()
-      .email(t('Please enter a valid email address'))
-      .required(t('Required'))
+      .email(t('Please enter a valid email address.'))
+      .required(t('Please enter your email address.'))
   })
   async function handleEmailSignIn(
     values: InferType<typeof validationSchema>
@@ -54,7 +54,7 @@ export function HomePage({ setActivePage, setEmail }: HomeProps): ReactElement {
   return (
     <>
       <Box>
-        <Typography variant="h5" textAlign="center" gutterBottom>
+        <Typography variant="h6" textAlign="center" gutterBottom>
           {t('Log in or Sign up')}
         </Typography>
         <Typography variant="body2" textAlign="center">

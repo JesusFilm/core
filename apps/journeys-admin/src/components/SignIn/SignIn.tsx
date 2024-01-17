@@ -76,16 +76,7 @@ export function SignIn(): ReactElement {
       }}
       data-testid="JourneysAdminSignIn"
     >
-      <Image
-        src={logo}
-        alt="Next Steps"
-        height={68}
-        width={152}
-        style={{
-          maxWidth: '100%',
-          height: 'auto'
-        }}
-      />
+      <Image src={logo} alt="Next Steps" height={41} width={228} />
       <Card
         sx={{
           width: { xs: '100%', sm: 397 },
@@ -108,7 +99,10 @@ export function SignIn(): ReactElement {
             sx={{ gap: 3 }}
           >
             <HelpOutlineIcon color="secondary" />
-            <Link href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request">
+            <Link
+              sx={{ textDecoration: 'none' }}
+              href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
+            >
               {t('Need help?')}
             </Link>
           </Typography>

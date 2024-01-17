@@ -3,13 +3,13 @@ import { ReactElement } from 'react'
 
 export function FacebookIcon(): ReactElement {
   return (
-    <SvgIcon>
+    <SvgIcon sx={{ height: 16 }}>
       <svg
-        xmlns="http://www.w3.org/2000/svg"
         width="16"
         height="16"
         viewBox="0 0 16 16"
         fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
         <path
           d="M13.1 15H2.9C1.85066 15 1 14.1493 1 13.1V2.9C1 1.85066 1.85066 1 2.9 1H13.1C14.1493 1 15 1.85066 15 2.9V13.1C15 14.1493 14.1493 15 13.1 15Z"

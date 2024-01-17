@@ -23,8 +23,8 @@ export function PasswordResetPage({
     email: string()
       .trim()
       .lowercase()
-      .email(t('Please enter a valid email address'))
-      .required(t('Required'))
+      .email(t('Please enter a valid email address.'))
+      .required(t('Please enter your email address.'))
   })
 
   async function PasswordReset(
@@ -43,15 +43,19 @@ export function PasswordResetPage({
         onSubmit={PasswordReset}
       >
         <Stack gap={4}>
-          <Typography variant="h5" textAlign="left">
-            {t('Sign In')}
+          <Typography variant="h6" textAlign="left">
+            {t('Reset Password')}
           </Typography>
           <Typography textAlign="left">
             {t(
-              'Get instructions sent to this email that explain how to reset your password'
+              'Get instructions sent to this email that explain how to reset your password.'
             )}
           </Typography>
-          <TextField variant="standard" defaultValue={t(`${userEmail}`)} />
+          <TextField
+            variant="standard"
+            defaultValue={t(`${userEmail}`)}
+            required
+          />
           <Box
             sx={{
               display: 'flex',
@@ -60,7 +64,7 @@ export function PasswordResetPage({
               justifyContent: 'flex-end'
             }}
           >
-            <Button size="large" onClick={() => setActivePage('password')}>
+            <Button size="large" onClick={() => setActivePage('home')}>
               {t('CANCEL')}
             </Button>
             <Button size="large" variant="contained">

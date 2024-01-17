@@ -75,11 +75,7 @@ export function PasswordPage({
         {({ values, handleChange, handleBlur, errors, touched }) => (
           <Form autoComplete="off" data-testid="">
             <Stack gap={4} data-testid="PasswordPage">
-              <Typography
-                variant="h5"
-                textAlign="left"
-                sx={{ fontWeight: 'bold' }}
-              >
+              <Typography variant="h6" textAlign="left">
                 {t('Sign in')}
               </Typography>
               <TextField

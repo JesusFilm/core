@@ -98,7 +98,7 @@ export function RegisterPage({
           <Form noValidate autoComplete="off" data-testid="RegisterForm">
             <Stack gap={4} data-testid="RegisterPage">
               <Typography
-                variant="h5"
+                variant="h6"
                 textAlign="left"
                 sx={{ fontWeight: 'bold' }}
               >
