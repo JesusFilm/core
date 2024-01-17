@@ -296,13 +296,17 @@ describe('VideoLibrary', () => {
       expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
     )
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'video-youtube' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'video-youtube' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 
@@ -323,13 +327,17 @@ describe('VideoLibrary', () => {
     fireEvent.click(getByRole('tab', { name: 'Upload' }))
     fireEvent.click(getByRole('tab', { name: 'Library' }))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'video-library' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'video-library' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 
@@ -350,13 +358,17 @@ describe('VideoLibrary', () => {
     fireEvent.click(getByRole('tab', { name: 'Upload' }))
     expect(getByText('Drop a video here')).toBeInTheDocument()
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'video-upload' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'video-upload' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })
