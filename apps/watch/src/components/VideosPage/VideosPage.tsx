@@ -91,7 +91,7 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
               slug: video.variants.find(
                 (variant) =>
                   variant.languageId === availableVariantLanguageIds[0]
-              )
+              )?.slug
             }
           : undefined
 
