@@ -59,14 +59,16 @@ export const getServerSideProps = withUserTokenSSR({
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   })
 
-  await apolloClient.mutate({
-    mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
-    variables: {
-      input: {
-        lastActiveTeamId: query.data.teams[0].id
+  if (query.data.teams[0].id != null) {
+    await apolloClient.mutate({
+      mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: {
+          lastActiveTeamId: query.data.teams[0].id
+        }
       }
-    }
-  })
+    })
+  }
 
   return {
     props: {
