@@ -19,8 +19,8 @@ export function PasswordResetPage({
     email: string()
       .trim()
       .lowercase()
-      .email(t('Please enter a valid email address.'))
-      .required(t('Please enter your email address.'))
+      .email(t('Please enter a valid email address'))
+      .required(t('Please enter your email address'))
   })
 
   async function PasswordReset(

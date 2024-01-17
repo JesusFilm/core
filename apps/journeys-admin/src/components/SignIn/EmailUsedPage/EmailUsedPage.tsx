@@ -17,7 +17,7 @@ export function EmailUsedPage({ userEmail, variant }: PageProps): ReactElement {
         <Typography>{t("You've already used")}</Typography>
         <Typography sx={{ fontWeight: 'bold' }}>{userEmail}</Typography>
         <Typography>
-          {t(`Sign in with {{service}} to continue.`, {
+          {t(`Sign in with {{service}} to continue`, {
             service: variant === 'Google' ? t('Google') : t('Facebook')
           })}
         </Typography>

@@ -35,7 +35,7 @@ export function PasswordPage({
       .trim()
       .lowercase()
       .email(t('Please enter a valid email address'))
-      .required(t('Required')),
+      .required(t('Please enter your email address')),
     password: string().required(t('Enter your password'))
   })
   async function handleLogin(values, { setFieldError }): Promise<void> {

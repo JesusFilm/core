@@ -31,8 +31,8 @@ export function HomePage({
     email: string()
       .trim()
       .lowercase()
-      .email(t('Please enter a valid email address.'))
-      .required(t('Please enter your email address.'))
+      .email(t('Please enter a valid email address'))
+      .required(t('Please enter your email address'))
   })
   async function handleEmailSignIn(
     values: InferType<typeof validationSchema>
