@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form } from 'formik'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
@@ -33,6 +33,19 @@ export function TeamOnboarding(): ReactElement {
   const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
     UPDATE_LAST_ACTIVE_TEAM_ID
   )
+
+  useEffect(() => {
+    if (query.data?.teams != null) {
+      setActiveTeam(query.data.teams[0])
+      const redirect =
+        router.query.redirect != null
+          ? new URL(
+              `${window.location.origin}${router.query.redirect as string}`
+            )
+          : '/?onboarding=true'
+      void router.push(redirect)
+    }
+  }, [query.data?.teams, router, setActiveTeam])
 
   return (
     <>
