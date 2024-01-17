@@ -34,7 +34,7 @@ export function PasswordResetPage({
   return (
     <>
       <Formik
-        initialValues={{ email: `${userEmail}` }}
+        initialValues={{ email: userEmail }}
         validationSchema={validationSchema}
         onSubmit={PasswordReset}
       >
@@ -48,9 +48,11 @@ export function PasswordResetPage({
             )}
           </Typography>
           <TextField
-            variant="standard"
-            defaultValue={t(`${userEmail}`)}
-            required
+            name="email"
+            label="Email"
+            placeholder={t('Enter your email address here')}
+            variant="filled"
+            fullWidth
           />
           <Box
             sx={{

@@ -10,7 +10,8 @@ import Typography from '@mui/material/Typography'
 import {
   createUserWithEmailAndPassword,
   getAuth,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  updateProfile
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
@@ -52,15 +53,23 @@ export function RegisterPage({
   })
   async function createAccountAndSignIn(
     email: string,
+    name: string,
     password: string
   ): Promise<void> {
     const auth = getAuth()
-    await createUserWithEmailAndPassword(auth, email, password)
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    )
+    await updateProfile(userCredential.user, {
+      displayName: name
+    })
     await signInWithEmailAndPassword(auth, email, password)
   }
   async function handleCreateAccount(values, { setFieldError }): Promise<void> {
     try {
-      await createAccountAndSignIn(values.email, values.password)
+      await createAccountAndSignIn(values.email, values.name, values.password)
       await router.push({
         pathname: '/'
       })
@@ -78,7 +87,7 @@ export function RegisterPage({
   return (
     <>
       <Formik
-        initialValues={{ name: '', password: '', email: `${userEmail}` }}
+        initialValues={{ name: '', password: '', email: userEmail }}
         validationSchema={validationSchema}
         onSubmit={handleCreateAccount}
       >
@@ -104,7 +113,7 @@ export function RegisterPage({
                 name="email"
                 label="Email"
                 placeholder={t('Enter your email address here')}
-                variant="standard"
+                variant="filled"
                 value={values.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -119,7 +128,7 @@ export function RegisterPage({
                 name="name"
                 label="Name"
                 placeholder={t('First & last name')}
-                variant="standard"
+                variant="filled"
                 value={values.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -134,7 +143,7 @@ export function RegisterPage({
                 name="password"
                 label="Password"
                 placeholder={t('Choose password')}
-                variant="standard"
+                variant="filled"
                 value={values.password}
                 onChange={handleChange}
                 onBlur={handleBlur}

@@ -80,7 +80,7 @@ export function PasswordPage({
                 name="email"
                 label="Email"
                 placeholder={t('Enter your email address here')}
-                variant="standard"
+                variant="filled"
                 value={values.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -95,7 +95,7 @@ export function PasswordPage({
                 name="password"
                 label="Password"
                 placeholder={t('Enter Password')}
-                variant="standard"
+                variant="filled"
                 value={values.password}
                 onChange={handleChange}
                 onBlur={handleBlur}
