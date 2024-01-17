@@ -44,26 +44,6 @@ export function StepItem({ step, index }: StepItemProps): ReactElement {
 
   function handleClick(): void {
     dispatch({ type: 'SetSelectedStepAction', step })
-    if (step.children[0].children.length === 0) {
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        id: undefined
-      })
-      dispatch({
-        type: 'SetDrawerPropsAction',
-        mobileOpen: false,
-        title: t('Card Templates'),
-        children: <CardTemplateDrawer />
-      })
-      console.log('dispatched card templates')
-    } else {
-      dispatch({
-        type: 'SetDrawerPropsAction',
-        mobileOpen: false,
-        title: t('Properties'),
-        children: <Properties isPublisher={false} />
-      })
-    }
   }
 
   const selected =

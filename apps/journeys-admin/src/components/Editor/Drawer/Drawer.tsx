@@ -15,6 +15,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import X2Icon from '@core/shared/ui/icons/X2'
 
+import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { Attributes } from '../ControlPanel/Attributes'
 
 interface DrawerContentProps {
@@ -92,7 +93,11 @@ export function Drawer(): ReactElement {
       blockTitle = t('Subscribe Properties')
       break
     case 'StepBlock':
-      blockTitle = t('Card Properties')
+      if (selectedBlock.children[0].children.length > 0) {
+        blockTitle = t('Card Properties')
+      } else {
+        blockTitle = t('Card Templates')
+      }
       break
     case 'TextResponseBlock':
       blockTitle = t('Feedback Properties')
@@ -125,9 +130,6 @@ export function Drawer(): ReactElement {
     })
   }
 
-  // may need to add a "!selectedStep?.children[0].children.length === 0" case
-  // into the drawerContent. because if the card is empty(ie it's a blank card)
-  // then we want to show the card templates drawer
   return smUp ? (
     <Paper
       elevation={0}
@@ -145,18 +147,15 @@ export function Drawer(): ReactElement {
       data-testid="EditorDrawer"
     >
       <DrawerContent title={blockTitle} handleDrawerToggle={handleDrawerToggle}>
-        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas ? (
-          selected !== 'none' &&
-          selectedStep !== undefined &&
-          !(selectedStep?.children[0]?.children.length === 0) && (
-            <Attributes selected={selected} step={selectedStep} />
-          )
-        ) : (
-          <>
-            {console.log('hello')}
-            {children}
-          </>
-        )}
+        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas
+          ? selected !== 'none' &&
+            selectedStep !== undefined &&
+            (selectedStep.children[0].children.length > 0 ? (
+              <Attributes selected={selected} step={selectedStep} />
+            ) : (
+              <CardTemplateDrawer />
+            ))
+          : children}
       </DrawerContent>
     </Paper>
   ) : (
