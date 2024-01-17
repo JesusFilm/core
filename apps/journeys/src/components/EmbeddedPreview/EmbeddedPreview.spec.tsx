@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, getByTestId, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
