@@ -61,8 +61,11 @@ export function ActionsTable(): ReactElement {
   return (
     <Stack
       gap={2}
-      justifyContent="center"
+      justifyContent={
+        actions != null && actions.length > 0 ? 'flex-start' : 'center'
+      }
       py={6}
+      flexGrow={1}
       data-testid="EditorActionsTable"
     >
       {journey != null &&
