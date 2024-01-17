@@ -80,7 +80,18 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
       : undefined
   )
 
-  // add filter logic through useEffect
+  const filter: VideoPageFilter = {
+    availableVariantLanguageIds:
+      query.get('language') != null
+        ? [query.get('language') as string]
+        : undefined,
+    subtitleLanguageIds:
+      query.get('subtitle') != null
+        ? [query.get('subtitle') as string]
+        : undefined,
+    title:
+      query.get('title') != null ? (query.get('title') as string) : undefined
+  }
 
   function handleFilterChange(filter): void {
     refine(filter.title)
@@ -136,6 +147,7 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
         >
           <Box sx={{ minWidth: '278px' }}>
             <FilterList
+              filter={filter}
               onChange={handleFilterChange}
               languagesData={languagesData}
               languagesLoading={languagesLoading}

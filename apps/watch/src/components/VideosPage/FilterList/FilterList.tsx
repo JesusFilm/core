@@ -118,14 +118,14 @@ function Accordion({
 }
 
 interface FilterListProps {
-  filter?: VideoPageFilter
+  filter: VideoPageFilter
   onChange: (filter: VideoPageFilter) => void
   languagesData?: GetLanguages
   languagesLoading: boolean
 }
 
 export function FilterList({
-  // filter,
+  filter,
   onChange,
   languagesData,
   languagesLoading
@@ -159,21 +159,21 @@ export function FilterList({
   }
 
   const initialValues = {
-    language: languageOptionFromIds([]),
-    subtitleLanguage: languageOptionFromIds([]),
-    title: ''
+    language: languageOptionFromIds(filter.availableVariantLanguageIds),
+    subtitleLanguage: languageOptionFromIds(filter.subtitleLanguageIds),
+    title: filter.title
   }
 
   function handleSubmit(values: typeof initialValues): void {
     onChange({
-      // availableVariantLanguageIds:
-      //   values.language != null && values.language.id !== ''
-      //     ? [values.language.id]
-      //     : undefined,
-      // subtitleLanguageIds:
-      //   values.subtitleLanguage != null && values.subtitleLanguage.id !== ''
-      //     ? [values.subtitleLanguage.id]
-      //     : undefined,
+      availableVariantLanguageIds:
+        values.language != null && values.language.id !== ''
+          ? [values.language.id]
+          : undefined,
+      subtitleLanguageIds:
+        values.subtitleLanguage != null && values.subtitleLanguage.id !== ''
+          ? [values.subtitleLanguage.id]
+          : undefined,
       title:
         values.title != null && values.title !== '' ? values.title : undefined
     })
