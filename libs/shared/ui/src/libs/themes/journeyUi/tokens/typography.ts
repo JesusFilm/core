@@ -58,11 +58,12 @@ export const journeyUiTypography: Pick<ThemeOptions, 'typography'> = {
       letterSpacing: 0.5
     },
     body1: {
-      fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
-      fontSize: 16,
-      fontWeight: 400,
-      lineHeight: '24px'
+      fontFamily: '"Open Sans"',
+      fontSize: 12,
+      fontWeight: 600,
+      lineHeight: '18px'
     },
+    // menu item / footer title
     body2: {
       fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
       fontSize: 14,
@@ -76,11 +77,12 @@ export const journeyUiTypography: Pick<ThemeOptions, 'typography'> = {
       letterSpacing: 3,
       marginBottom: '4px'
     },
+    // message / copy right / Host
     caption: {
-      fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
-      fontSize: 12,
-      fontWeight: 400,
-      lineHeight: '20px'
+      fontFamily: '"Open Sans"',
+      fontSize: 10,
+      fontWeight: 600,
+      lineHeight: '15px'
     }
   }
 }
