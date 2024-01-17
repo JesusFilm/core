@@ -23,7 +23,7 @@ interface VideosPageProps {
 }
 function VideosPage({ videos }): ReactElement {
   const searchClient = algoliasearch(
-    'FJYYBFHBHS',
+    process.env.NEXT_PUBLIC_ALGOLIA_APP_KEY ?? '',
     process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
   )
 

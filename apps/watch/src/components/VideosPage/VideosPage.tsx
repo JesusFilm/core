@@ -47,6 +47,8 @@ export const GET_LANGUAGES = gql`
   }
 `
 
+export const limit = 20
+
 export interface VideoPageFilter {
   ids?: string[]
   availableVariantLanguageIds?: string[]
@@ -77,6 +79,8 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
       ? window.location.search.split('?')[1]
       : undefined
   )
+
+  // add filter logic through useEffect
 
   function handleFilterChange(filter): void {
     refine(filter.title)
