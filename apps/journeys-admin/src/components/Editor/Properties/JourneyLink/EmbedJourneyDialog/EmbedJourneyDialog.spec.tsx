@@ -55,7 +55,7 @@ describe('embedJourneyDialog', () => {
     })
 
     it('should copy the embed code from the modal', async () => {
-      const embedCode = `<iframe src="https://${process.env.NEXT_PUBLIC_JOURNEYS_URL}/embed/undefined" frameborder="0" allow="fullscreen; autoplay" allowfullscreen></iframe>`
+      const embedCode = `<iframe src="https://${process.env.NEXT_PUBLIC_JOURNEYS_URL}/embed/undefined" style="border: 0" allow="fullscreen; autoplay" allowfullscreen></iframe>`
       const { getByText, getByRole } = render(
         <SnackbarProvider>
           <EmbedJourneyDialog open onClose={onClose} />
