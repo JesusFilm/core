@@ -65,24 +65,6 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
   const { status } = useInstantSearch()
   const { query: algoliaQuery, refine } = useSearchBox()
   const { hits: algoliaVideos, isLastPage, showMore } = useInfiniteHits()
-
-  function convertAlgoliaVideos(videos): VideoChildFields[] {
-    // title should default to english unless a user selects a language
-    // variant should default to english unless a user selects a subtitle or language
-
-    return videos.map((video) => ({
-      ...video,
-      title: [{ value: video.titles[0] }], // TODO: update when more titles
-      imageAlt: [{ value: video.imageAlt }],
-      snippet: [{ value: video.snippet }]
-      // variant needs to be converted here
-      // it needs to also update if a user sets a filter for language
-    }))
-  }
-  const videos = convertAlgoliaVideos(algoliaVideos)
-
-  const realVideos = localVideos.filter((video) => video !== null)
-
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
   const query = new URLSearchParams(
@@ -91,15 +73,50 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
       : undefined
   )
 
+  const availableVariantLanguageIds =
+    query.get('languages') != null
+      ? [query.get('languages') as string]
+      : undefined
+  const subtitleLanguageIds =
+    query.get('subtitles') != null
+      ? [query.get('subtitles') as string]
+      : undefined
+
+  function convertAlgoliaVideos(videos): VideoChildFields[] {
+    return videos.map((video) => {
+      const variant =
+        availableVariantLanguageIds != null
+          ? video.variants.find(
+              (variant) => variant.languageId === availableVariantLanguageIds[0]
+            )
+          : undefined
+
+      const videoFields = {
+        ...video,
+        title: [{ value: video.titles[0] }],
+        imageAlt: [{ value: video.imageAlt }],
+        snippet: [{ value: video.snippet }]
+      }
+
+      if (variant != null) {
+        videoFields.variant = {
+          duration: variant.duration,
+          slug: variant.slug
+        }
+      }
+      return videoFields
+    })
+  }
+
+  const videos = convertAlgoliaVideos(algoliaVideos)
+
+  console.log(videos)
+
+  const realVideos = localVideos.filter((video) => video !== null)
+
   const filter: VideoPageFilter = {
-    availableVariantLanguageIds:
-      query.get('language') != null
-        ? [query.get('language') as string]
-        : undefined,
-    subtitleLanguageIds:
-      query.get('subtitle') != null
-        ? [query.get('subtitle') as string]
-        : undefined,
+    availableVariantLanguageIds,
+    subtitleLanguageIds,
     title:
       query.get('title') != null ? (query.get('title') as string) : undefined
   }
