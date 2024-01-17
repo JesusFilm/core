@@ -47,8 +47,11 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
     width: '84px !important'
   },
   '.swiper-pagination-bullet': {
-    background: theme.palette.common.white,
-    opacity: '60%'
+    opacity: '60%',
+    background: theme.palette.primary.main,
+    [theme.breakpoints.up('lg')]: {
+      background: theme.palette.common.white
+    }
   },
   '.swiper-pagination-bullet-active': {
     opacity: '100%'
@@ -178,6 +181,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
 
+  const currentTheme = getStepTheme(activeBlock, journey)
+
   return (
     <Box
       sx={{
@@ -196,105 +201,94 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         data-testid="Conductor"
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
-          <StyledSwiperContainer
-            modules={[Pagination]}
-            dir={!rtl ? 'ltr' : 'rtl'}
-            pagination={{ dynamicBullets: true }}
-            slidesPerView="auto"
-            centeredSlides
-            centeredSlidesBounds
-            resizeObserver
-            onSwiper={(swiper) => setSwiper(swiper)}
-            allowTouchMove={false}
-            onSlideChange={() => setShowHeaderFooter(true)}
-            sx={{
-              '.swiper-pagination': {
-                display: showHeaderFooter ? 'block' : 'none'
-              }
-            }}
-          >
-            {treeBlocks.map((block) => {
-              const theme = getStepTheme(
-                block as TreeBlock<StepFields>,
-                journey
-              )
-              return (
+          <ThemeProvider {...currentTheme} locale={locale} rtl={rtl}>
+            <StyledSwiperContainer
+              modules={[Pagination]}
+              dir={!rtl ? 'ltr' : 'rtl'}
+              pagination={{ dynamicBullets: true }}
+              slidesPerView="auto"
+              centeredSlides
+              centeredSlidesBounds
+              resizeObserver
+              onSwiper={(swiper) => setSwiper(swiper)}
+              allowTouchMove={false}
+              onSlideChange={() => setShowHeaderFooter(true)}
+              sx={{
+                '.swiper-pagination': {
+                  display: showHeaderFooter ? 'block' : 'none'
+                }
+              }}
+            >
+              {treeBlocks.map((block) => (
                 <SwiperSlide
                   key={block.id}
                   onClick={() => setShowNavigation(true)}
                 >
                   {({ isActive }) =>
                     isActive && (
-                      <ThemeProvider
-                        {...theme}
-                        locale={locale}
-                        rtl={rtl}
-                        nested
+                      <Fade
+                        in={activeBlock?.id === block.id}
+                        mountOnEnter
+                        unmountOnExit
                       >
-                        <Fade
-                          in={activeBlock?.id === block.id}
-                          mountOnEnter
-                          unmountOnExit
+                        <Stack
+                          justifyContent="center"
+                          sx={{
+                            maxHeight: {
+                              xs: '100vh',
+                              lg: 'calc(100vh - 80px)'
+                            },
+                            height: {
+                              xs: 'inherit',
+                              lg: 'calc(54.25vw + 102px)'
+                            },
+                            px: { lg: 6 }
+                          }}
                         >
-                          <Stack
-                            justifyContent="center"
-                            sx={{
-                              maxHeight: {
-                                xs: '100vh',
-                                lg: 'calc(100vh - 80px)'
-                              },
-                              height: {
-                                xs: 'inherit',
-                                lg: 'calc(54.25vw + 102px)'
-                              },
-                              px: { lg: 6 }
-                            }}
-                          >
-                            {showHeaderFooter && router.query.noi == null && (
-                              <ThemeProvider
-                                themeName={ThemeName.journeyUi}
-                                themeMode={theme.themeMode}
-                                locale={locale}
-                                rtl={rtl}
-                                nested
-                              >
-                                <StepHeader sx={{ ...mobileNotchStyling }} />
-                              </ThemeProvider>
-                            )}
-                            <BlockRenderer block={block} />
+                          {showHeaderFooter && router.query.noi == null && (
                             <ThemeProvider
                               themeName={ThemeName.journeyUi}
-                              themeMode={theme.themeMode}
+                              themeMode={currentTheme.themeMode}
                               locale={locale}
                               rtl={rtl}
                               nested
                             >
-                              <StepFooter
-                                sx={{
-                                  visibility: showHeaderFooter
-                                    ? 'visible'
-                                    : 'hidden',
-                                  ...mobileNotchStyling
-                                }}
-                              />
+                              <StepHeader sx={{ ...mobileNotchStyling }} />
                             </ThemeProvider>
-                          </Stack>
-                        </Fade>
-                      </ThemeProvider>
+                          )}
+                          <BlockRenderer block={block} />
+                          <ThemeProvider
+                            themeName={ThemeName.journeyUi}
+                            themeMode={currentTheme.themeMode}
+                            locale={locale}
+                            rtl={rtl}
+                            nested
+                          >
+                            <StepFooter
+                              sx={{
+                                visibility: showHeaderFooter
+                                  ? 'visible'
+                                  : 'hidden',
+                                ...mobileNotchStyling
+                              }}
+                            />
+                          </ThemeProvider>
+                        </Stack>
+                      </Fade>
                     )
                   }
                 </SwiperSlide>
-              )
-            })}
-            <NavigationButton
-              variant={rtl ? 'next' : 'previous'}
-              alignment="left"
-            />
-            <NavigationButton
-              variant={rtl ? 'previous' : 'next'}
-              alignment="right"
-            />
-          </StyledSwiperContainer>
+              ))}
+              <NavigationButton
+                variant={rtl ? 'next' : 'previous'}
+                alignment="left"
+              />
+              <NavigationButton
+                variant={rtl ? 'previous' : 'next'}
+                alignment="right"
+              />
+            </StyledSwiperContainer>
+          </ThemeProvider>
         </Box>
       </Stack>
     </Box>
