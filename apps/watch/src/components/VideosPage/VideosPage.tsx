@@ -86,9 +86,13 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
     return videos.map((video) => {
       const variant =
         availableVariantLanguageIds != null
-          ? video.variants.find(
-              (variant) => variant.languageId === availableVariantLanguageIds[0]
-            )
+          ? {
+              duration: video.variant.duration,
+              variant: video.variants.find(
+                (variant) =>
+                  variant.languageId === availableVariantLanguageIds[0]
+              )
+            }
           : undefined
 
       const videoFields = {
