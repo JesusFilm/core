@@ -67,7 +67,7 @@ export function ImageBlockHeader({
             <Typography variant="subtitle2" color="text.secondary">
               {loading
                 ? 'Image is uploading...'
-                : selectedBlock != null
+                : selectedBlock?.src != null
                 ? 'Selected Image'
                 : showAdd
                 ? 'Select Image'
@@ -75,7 +75,9 @@ export function ImageBlockHeader({
                 ? 'Upload failed'
                 : 'No Image Selected'}
             </Typography>
-            {unsplashAuthor != null ? (
+            {unsplashAuthor != null &&
+            selectedBlock?.src != null &&
+            !loading ? (
               <Link
                 href={`https://unsplash.com/@${
                   unsplashAuthor.username ?? ''
@@ -91,12 +93,12 @@ export function ImageBlockHeader({
             ) : (
               <Typography
                 variant="caption"
-                display={selectedBlock != null ? 'flex' : 'none'}
+                display={
+                  selectedBlock?.src != null && !loading ? 'flex' : 'none'
+                }
                 color="text.secondary"
               >
-                {selectedBlock != null
-                  ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
-                  : ''}
+                {`${selectedBlock?.width} x ${selectedBlock?.height} pixels`}
               </Typography>
             )}
           </Stack>
