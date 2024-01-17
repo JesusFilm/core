@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import {
   useInfiniteHits,
   useInstantSearch,
@@ -79,19 +79,30 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
     query.get('languages') != null
       ? [query.get('languages') as string]
       : undefined
-  const subtitleLanguageIds =
-    query.get('subtitles') != null
-      ? [query.get('subtitles') as string]
-      : undefined
 
   const filter: VideoPageFilter = {
     availableVariantLanguageIds,
-    subtitleLanguageIds,
+    subtitleLanguageIds:
+      query.get('subtitles') != null
+        ? [query.get('subtitles') as string]
+        : undefined,
     title:
       query.get('title') != null ? (query.get('title') as string) : undefined
   }
 
-  function handleFilterChange(filter): void {
+  function formatFilter(filter: VideoPageFilter): string {
+    return Object.values(filter)
+      .filter((e) => e !== undefined)
+      .join(' ')
+  }
+
+  const formattedString = formatFilter(filter)
+
+  useEffect(() => {
+    refine(formattedString)
+  }, [refine, formattedString])
+
+  function handleFilterChange(filter: VideoPageFilter): void {
     const params = new URLSearchParams()
 
     const languages = filter.availableVariantLanguageIds
@@ -100,15 +111,12 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
 
     if (languages != null) {
       params.set('languages', languages[0])
-      refine(languages[0])
     }
     if (subtitles != null) {
       params.set('subtitles', subtitles[0])
-      refine(subtitles[0])
     }
     if (title != null) {
       params.set('title', title)
-      refine(title)
     }
     void router.push(`/videos?${params.toString()}`, undefined, {
       shallow: true

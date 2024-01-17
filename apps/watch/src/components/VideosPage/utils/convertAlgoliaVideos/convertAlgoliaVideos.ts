@@ -10,12 +10,14 @@ export function convertAlgoliaVideos(videos, languageIds): VideoChildFields[] {
         ?.slug
     }
 
+    // video.variant is a temporary fix
+    // Everything in it will be removed once we're past paywall
     const variant =
       languageIds != null
         ? {
             duration: video.variant.duration,
             slug:
-              findVariantSlug(video.variant, languageIds) ?? video.variant.slug
+              findVariantSlug(video.variants, languageIds) ?? video.variant.slug
           }
         : undefined
 
