@@ -116,7 +116,7 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
       params.set('subtitles', subtitles[0])
     }
     if (title != null) {
-      params.set('title', title)
+      title === '' ? params.set('title', '') : params.set('title', title)
     }
     void router.push(`/videos?${params.toString()}`, undefined, {
       shallow: true
