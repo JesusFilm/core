@@ -48,6 +48,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
       ],
       getJourneyProfile: {
         __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
         lastActiveTeamId: 'teamId'
       }
     }
@@ -62,6 +63,7 @@ const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
       teams: [],
       getJourneyProfile: {
         __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
         lastActiveTeamId: null
       }
     }
