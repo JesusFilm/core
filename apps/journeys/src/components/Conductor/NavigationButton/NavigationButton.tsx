@@ -223,7 +223,8 @@ export function NavigationButton({
           sm: 'calc(100vh - 238px)',
           lg: 'calc(100% - 105px)'
         },
-        alignItems: 'center'
+        alignItems: 'center',
+        pointerEvents: 'none'
       }}
     >
       <Fade
@@ -236,6 +237,7 @@ export function NavigationButton({
           onClick={() => handleNav(variant)}
           disableRipple
           sx={{
+            pointerEvents: 'all',
             mx: { xs: 0, lg: 6 },
             mt: { xs: 16.5, md: 7, lg: 3.5 }
           }}
