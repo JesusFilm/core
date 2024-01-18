@@ -110,6 +110,7 @@ export function RegisterPage({
                 {t('Create account')}
               </Typography>
               <TextField
+                autoComplete="on"
                 name="email"
                 label="Email"
                 placeholder={t('Enter your email address here')}
@@ -125,6 +126,7 @@ export function RegisterPage({
                 fullWidth
               />
               <TextField
+                autoComplete="on"
                 name="name"
                 label="Name"
                 placeholder={t('First & last name')}
@@ -140,6 +142,7 @@ export function RegisterPage({
                 fullWidth
               />
               <TextField
+                autoComplete="on"
                 name="password"
                 label="Password"
                 placeholder={t('Choose password')}

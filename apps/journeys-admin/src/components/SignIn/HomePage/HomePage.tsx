@@ -90,6 +90,7 @@ export function HomePage({
           <Form noValidate autoComplete="off" data-testid="EmailSignInForm">
             <Stack gap={4}>
               <TextField
+                autoComplete="on"
                 name="email"
                 hiddenLabel
                 placeholder={t('Enter your email address here')}
