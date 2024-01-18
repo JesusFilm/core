@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import { AccessDenied, USER_JOURNEY_REQUEST } from './AccessDenied'
 
@@ -7,22 +8,37 @@ import { AccessDenied, USER_JOURNEY_REQUEST } from './AccessDenied'
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
-  // () => ({ query: { tab: 'active' } }))
 }))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('AccessDenied', () => {
   it('should request access', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { journeyId: 'mockedJourneyId' }
+    } as unknown as NextRouter)
+
     // define the request access mock
-    const mocks = {
+    const mockUserJourneyResult = jest.fn(() => ({
+      data: {
+        userJourneyRequest: {
+          id: 'mockedJourneyId',
+          __typename: 'UserJourney'
+        }
+      }
+    }))
+
+    const mockUserJourneyRequest = {
       request: {
         query: USER_JOURNEY_REQUEST,
         variables: { journeyId: 'mockedJourneyId' }
-      }
+      },
+      result: mockUserJourneyResult
     }
 
     // pass the mock into mocked provider
     const { getAllByRole } = render(
-      <MockedProvider mocks={[mocks]}>
+      <MockedProvider mocks={[mockUserJourneyRequest]}>
         <AccessDenied />
       </MockedProvider>
     )
@@ -32,14 +48,18 @@ describe('AccessDenied', () => {
 
     // await waitFor expect result to have been called
     await waitFor(() =>
-      expect(mocks[0].result.data.userJourneyRequest.id).toBeTruthy()
+      expect(
+        mockUserJourneyResult
+      ).toHaveBeenCalled()
     )
 
     // expect text and icon to change
     expect(
-      getAllByRole('button', { name: 'Request Now' })[0]
-    ).toHaveTextContent('Request Sent')
+      getAllByRole('heading', { name: 'Request Sent' })[0]
+    ).toBeInTheDocument()
   })
+
+
 
   it('should show back button', () => {
     const { getByRole } = render(

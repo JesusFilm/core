@@ -6,7 +6,7 @@ import List from '@mui/material/List'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
-import router from 'next/router'
+import {useRouter} from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -29,6 +29,7 @@ export const USER_JOURNEY_REQUEST = gql`
 export function AccessDenied(): ReactElement {
   const [userJourneyRequest] =
     useMutation<UserJourneyRequest>(USER_JOURNEY_REQUEST)
+    const router = useRouter()
   const [requestedAccess, setRequestReceived] = useState(false)
 
   const handleClick = async (): Promise<void> => {
