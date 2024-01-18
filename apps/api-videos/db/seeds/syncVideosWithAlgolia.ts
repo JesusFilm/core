@@ -37,6 +37,7 @@ export async function syncVideosWithAlgolia(): Promise<void> {
         childrenCount: video.childIds.length,
         snippet: (video.snippet as unknown as Translation)[0].value,
         slug: video.slug,
+        duration: video.variants[0].duration,
         variants: video.variants.map((variant) => ({
           slug: variant.slug,
           languageId: variant.languageId
@@ -48,7 +49,7 @@ export async function syncVideosWithAlgolia(): Promise<void> {
     console.log('syncVideosWithAlgolia duration(s):', duration * 0.001)
     console.log('syncVideosWithAlgolia page:', offset)
 
-    const index = client.initIndex('video_variants')
+    const index = client.initIndex('videos')
     await index.saveObjects(transformedVideos).wait()
 
     if (videos.length === 11) offset += 10
