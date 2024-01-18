@@ -57,7 +57,7 @@ export const FramePortal = memo(
     ref
   ): ReactElement {
     const frameRef = useRef<HTMLIFrameElement>(null)
-    useImperativeHandle(ref, () => frameRef.current!, [])
+    useImperativeHandle(ref, () => frameRef.current as HTMLIFrameElement, [])
     // If we portal content into the iframe before the load event then that
     // content is dropped in firefox.
     const [iframeLoaded, dispatch] = useReducer(() => true, false)
