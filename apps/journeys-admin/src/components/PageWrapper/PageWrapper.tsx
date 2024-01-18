@@ -107,6 +107,8 @@ export function PageWrapper({
                             ? ''
                             : `${navbar.width} - `
                         }${sidePanel.width})`
+                      : router.route.includes('/reports')
+                      ? '100vw'
                       : 'inherit'
                 }
               }}
