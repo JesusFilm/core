@@ -71,13 +71,14 @@ export function PageWrapper({
         data-testid="JourneysAdminPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          <NavigationDrawer
-            open={open}
-            onClose={setOpen}
-            user={user}
-            selectedPage={router?.pathname?.split('/')[1]}
-          />
-
+          {!router.route.includes('/journeys/') && (
+            <NavigationDrawer
+              open={open}
+              onClose={setOpen}
+              user={user}
+              selectedPage={router?.pathname?.split('/')[1]}
+            />
+          )}
           <Stack
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
@@ -101,7 +102,11 @@ export function PageWrapper({
                   xs: 'inherit',
                   md:
                     sidePanelChildren != null || customSidePanel != null
-                      ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
+                      ? `calc(100vw - ${
+                          router.route.includes('/journeys/')
+                            ? ''
+                            : `${navbar.width} - `
+                        }${sidePanel.width})`
                       : 'inherit'
                 }
               }}
