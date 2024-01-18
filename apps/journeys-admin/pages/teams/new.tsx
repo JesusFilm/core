@@ -43,18 +43,18 @@ export const getServerSideProps = withUserTokenSSR({
   await apolloClient.query({ query: GET_CURRENT_USER })
 
   // check if user has been invited to a team but has no active team:
-  const query = await apolloClient.query({
+  const { data } = await apolloClient.query({
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
     errorPolicy: 'none'
   })
 
   // set active team to invited team and redirect:
-  if (query?.data?.teams[0]?.id != null && query.data.teams.length === 1) {
+  if (data.teams.length > 0 && data.teams[0].id != null) {
     await apolloClient.mutate({
       mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
       variables: {
         input: {
-          lastActiveTeamId: query.data.teams[0].id
+          lastActiveTeamId: data.teams[0].id
         }
       }
     })
