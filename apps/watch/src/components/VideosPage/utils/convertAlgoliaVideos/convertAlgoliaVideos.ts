@@ -15,7 +15,7 @@ export function convertAlgoliaVideos(videos, languageIds): VideoChildFields[] {
     const variant =
       languageIds != null
         ? {
-            duration: video.variant.duration,
+            duration: video.duration,
             slug:
               findVariantSlug(video.variants, languageIds) ?? video.variant.slug
           }
@@ -25,12 +25,16 @@ export function convertAlgoliaVideos(videos, languageIds): VideoChildFields[] {
       ...video,
       title: [{ value: video.titles[0] }],
       imageAlt: [{ value: video.imageAlt }],
-      snippet: [{ value: video.snippet }]
+      snippet: [{ value: video.snippet }],
+      variant: {
+        duration: video.duration,
+        slug: video.variant.slug
+      }
     }
 
     if (variant != null) {
       videoFields.variant = {
-        duration: variant.duration,
+        duration: video.duration,
         slug: variant.slug
       }
     }
