@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ReactElement, useRef, useState } from 'react'
+import { ReactElement, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -45,6 +45,7 @@ const HostSidePanel = dynamic(
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
+  const selectionRef = useRef(false)
   const router = useRouter()
   const {
     state: { selectedStep, selectedBlock, selectedComponent },
@@ -60,14 +61,17 @@ export function Canvas(): ReactElement {
       frameRef.current?.contentWindow?.document
 
     const selectedText = iframeDocument?.getSelection()?.toString()
-    console.log(selectedText)
+
     // if user is copying from typog blocks or text, keep focus on typog blocks
-    if (selectedText != null && selectedText !== '') return
+    if (selectedText != null && selectedText !== '' && !selectionRef.current) {
+      return
+    }
     // Prevent losing focus on empty input
     if (
       selectedBlock?.__typename === 'TypographyBlock' &&
       selectedBlock.content === ''
     ) {
+      selectionRef.current = false
       return
     }
     dispatch({
@@ -89,6 +93,8 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: `${selectedStep?.id ?? ''}-next-block`
     })
+
+    selectionRef.current = false
   }
 
   function handleFooterClick(): void {
@@ -125,6 +131,9 @@ export function Canvas(): ReactElement {
   return (
     <Box
       onClick={handleSelectCard}
+      onMouseDown={() => {
+        selectionRef.current = true
+      }}
       data-testid="EditorCanvas"
       sx={{
         display: 'flex',
