@@ -64,13 +64,17 @@ describe('ImageBlockEditor', () => {
     expect(getByText('Unsplash')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Custom' }))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'custom-image' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'custom-image' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
 
     expect(getByText('Add image by URL')).toBeInTheDocument()
@@ -79,24 +83,32 @@ describe('ImageBlockEditor', () => {
       expect(getByRole('button', { name: 'Prompt' })).toBeInTheDocument()
     )
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'ai-image' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'ai-image' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
 
     fireEvent.click(getByRole('tab', { name: 'Gallery' }))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'unsplash-image' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'unsplash-image' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })

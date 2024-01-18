@@ -1,12 +1,12 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
-  output          = env("PRISMA_LOCATION")
+  output          = env("PRISMA_LOCATION_VIDEOS")
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL")
+  url      = env("PG_DATABASE_URL_VIDEOS")
 }
 
 enum IdType {
