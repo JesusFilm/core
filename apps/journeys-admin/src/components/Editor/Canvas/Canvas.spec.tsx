@@ -182,16 +182,14 @@ describe('Canvas', () => {
     await waitFor(() => {
       typogBlock = iframe.contentDocument?.body.getElementsByTagName('h3')[0]
     })
-
     await userEvent.pointer([
-      // touch the screen at element1
+      // mouse down the screen at typography block
       { keys: '[MouseLeft>]', target: typogBlock },
-      // move the touch pointer to element2
+      // move the pointer onto the card component
       { pointerName: 'mouse', target: iframe },
-      // release the touch pointer at the last position (element2)
+      // release the pointer at card component
       { keys: '[/MouseLeft]' }
     ])
-
     await waitFor(() =>
       expect(queryByText('activeTab: Properties')).not.toBeInTheDocument()
     )

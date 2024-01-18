@@ -45,6 +45,7 @@ const HostSidePanel = dynamic(
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
+  // this ref handles if the mouseDown event of the onClick event's target is the card component
   const selectionRef = useRef(false)
   const router = useRouter()
   const {
@@ -71,6 +72,7 @@ export function Canvas(): ReactElement {
       selectedBlock?.__typename === 'TypographyBlock' &&
       selectedBlock.content === ''
     ) {
+      // reset click origin
       selectionRef.current = false
       return
     }
@@ -93,7 +95,7 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: `${selectedStep?.id ?? ''}-next-block`
     })
-
+    // reset click origin
     selectionRef.current = false
   }
 
@@ -132,6 +134,7 @@ export function Canvas(): ReactElement {
     <Box
       onClick={handleSelectCard}
       onMouseDown={() => {
+        // click target was the card component and not it's children blocks
         selectionRef.current = true
       }}
       data-testid="EditorCanvas"
