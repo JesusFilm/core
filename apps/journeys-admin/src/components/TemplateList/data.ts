@@ -8,6 +8,8 @@ import {
 } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../../../__generated__/ImageFields'
 
+export const fakeDate = '2021-12-11'
+
 const imageBlock: ImageFields = {
   __typename: 'ImageBlock',
   id: 'primaryImage.id1',
@@ -28,7 +30,7 @@ export const defaultTemplate: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
-  createdAt: formatISO(startOfYear(new Date())),
+  createdAt: formatISO(startOfYear(new Date(fakeDate))),
   publishedAt: null,
   status: JourneyStatus.draft,
   seoTitle: null,
