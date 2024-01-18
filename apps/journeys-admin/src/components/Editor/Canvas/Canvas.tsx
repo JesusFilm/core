@@ -121,8 +121,7 @@ export function Canvas(): ReactElement {
         display: 'flex',
         height: '100%',
         justifyContent: 'center',
-        alignItems: 'center',
-        p: 5
+        alignItems: 'center'
       }}
     >
       {selectedStep != null && (
@@ -134,7 +133,6 @@ export function Canvas(): ReactElement {
             maxHeight: 640,
             aspectRatio: '9 / 16',
             boxSizing: 'border-box',
-            margin: '16px',
             position: 'relative',
             display: 'flex',
             borderRadius: 5,
@@ -144,7 +142,8 @@ export function Canvas(): ReactElement {
                 ? `2px solid ${theme.palette.primary.main}`
                 : `2px solid ${theme.palette.background.default}`,
             outlineOffset: 5,
-            transformOrigin: 'center'
+            transformOrigin: 'center',
+            m: '16px'
           }}
         >
           <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
