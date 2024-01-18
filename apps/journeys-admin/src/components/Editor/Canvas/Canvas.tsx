@@ -44,8 +44,6 @@ const HostSidePanel = dynamic(
 )
 
 export function Canvas(): ReactElement {
-  const [scale, setScale] = useState('1')
-  const [position, setPosition] = useState('relative')
   const router = useRouter()
   const {
     state: { selectedStep, selectedBlock, selectedComponent },
@@ -54,24 +52,6 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
-
-  useEffect(() => {
-    const handleScale = (): void => {
-      if (window.innerHeight < 1030) {
-        setScale(`${Math.min((window.innerHeight - 390) / 640, 1)}`)
-        setPosition('absolute')
-      } else {
-        setPosition('relative')
-      }
-    }
-
-    handleScale()
-
-    window.addEventListener('resize', handleScale)
-    return () => {
-      window.removeEventListener('resize', handleScale)
-    }
-  }, [])
 
   function handleSelectCard(): void {
     // Prevent losing focus on empty input
@@ -149,31 +129,25 @@ export function Canvas(): ReactElement {
         <Box
           data-testid={`step-${selectedStep.id}`}
           sx={{
-            height: 640,
-            aspectRatio: '9 / 16',
-            Width: 360,
-            minWidth: 360,
+            width: '100%',
+            maxWidth: 360,
             maxHeight: 640,
-            m: 0,
+            aspectRatio: '9 / 16',
+            boxSizing: 'border-box',
+            margin: '16px',
+            position: 'relative',
             display: 'flex',
-            transition: '0.2s outline ease-out 0.1s',
             borderRadius: 5,
+            transition: '0.2s outline ease-out 0.1s',
             outline: (theme) =>
               selectedStep.id === selectedBlock?.id
                 ? `2px solid ${theme.palette.primary.main}`
                 : `2px solid ${theme.palette.background.default}`,
-            outlineOffset: 4,
-            transformOrigin: 'center',
-            transform: `scale(${scale})`,
-            position
+            outlineOffset: 5,
+            transformOrigin: 'center'
           }}
         >
-          <FramePortal
-            width="100%"
-            height="100%"
-            sx={{ overflow: 'hidden ', position: 'fixed' }}
-            dir={rtl ? 'rtl' : 'ltr'}
-          >
+          <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
             <ThemeProvider
               {...getStepTheme(selectedStep, journey)}
               rtl={rtl}
