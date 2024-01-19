@@ -122,7 +122,13 @@ export function HomePage({
                   type="password"
                   autoComplete="current-password"
                   name="password"
-                  style={{ display: 'block', opacity: 0, height: 0 }}
+                  style={{
+                    display: 'block',
+                    opacity: 0,
+                    height: 0,
+                    padding: 0,
+                    border: 0
+                  }}
                   onChange={handleChange}
                 />
               </div>
