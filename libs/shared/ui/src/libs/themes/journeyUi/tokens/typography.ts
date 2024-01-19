@@ -1,6 +1,12 @@
 import { ThemeOptions } from '@mui/material/styles'
 
-// Update the Typography's variant prop options
+import {
+  baseTypography,
+  baseTypographyArabic,
+  baseTypographyUrdu
+} from '../../base/tokens/typography'
+
+// should match base values until we have a need for different values
 
 declare module '@mui/material' {
   interface TypographyPropsVariantOverrides {
@@ -10,42 +16,7 @@ declare module '@mui/material' {
 
 export const journeyUiTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
-    fontFamily: ['"Montserrat","Open Sans","Tahoma","Verdana",sans-serif'].join(
-      ','
-    ),
-    h1: {
-      fontSize: 36,
-      fontWeight: 600,
-      lineHeight: '38px',
-      textShadow: '0px 1px 3px rgba(0, 0, 0, 0.25)'
-    },
-    h2: {
-      fontSize: 28,
-      fontWeight: 800,
-      lineHeight: '33px'
-    },
-    h3: {
-      fontSize: 24,
-      fontWeight: 800,
-      lineHeight: '28px'
-    },
-    h4: {
-      fontSize: 22,
-      fontWeight: 800,
-      lineHeight: '27px'
-    },
-    h5: {
-      fontSize: 18,
-      fontWeight: 800,
-      lineHeight: '23px'
-    },
-    h6: {
-      fontSize: 14,
-      fontWeight: 600,
-      lineHeight: '20px',
-      letterSpacing: 2,
-      textTransform: 'uppercase'
-    },
+    ...baseTypography.typography,
     subtitle1: {
       fontFamily: '"Open Sans"',
       fontSize: 12,
@@ -60,24 +31,11 @@ export const journeyUiTypography: Pick<ThemeOptions, 'typography'> = {
       lineHeight: '15px',
       fontFeatureSettings: '"clig" off, "liga"'
     },
-    body1: {
-      fontFamily: '"Open Sans"',
-      fontSize: 12,
-      fontWeight: 600,
-      lineHeight: '18px'
-    },
     body2: {
       fontFamily: '"Open Sans"',
       fontSize: 14,
       fontWeight: 400,
       lineHeight: '22px'
-    },
-    overline: {
-      fontSize: 11,
-      fontWeight: 600,
-      lineHeight: '16px',
-      letterSpacing: 3,
-      marginBottom: '4px'
     },
     caption: {
       fontFamily: '"Open Sans"',
@@ -90,133 +48,52 @@ export const journeyUiTypography: Pick<ThemeOptions, 'typography'> = {
 
 export const journeyUiTypographyArabic: Pick<ThemeOptions, 'typography'> = {
   typography: {
-    fontFamily: ['"El Messiri","Tajawal","Arial",sans-serif'].join(','),
-    h1: {
-      fontSize: 36,
-      fontWeight: 600,
-      lineHeight: '46px'
-    },
-    h2: {
-      fontSize: 28,
-      fontWeight: 700,
-      lineHeight: '38px'
-    },
-    h3: {
-      fontSize: 24,
-      fontWeight: 700,
-      lineHeight: '34px'
-    },
-    h4: {
-      fontSize: 22,
-      fontWeight: 700,
-      lineHeight: '32px'
-    },
-    h5: {
-      fontSize: 18,
-      fontWeight: 700,
-      lineHeight: '28px'
-    },
-    h6: {
-      fontSize: 16,
-      fontWeight: 700,
-      lineHeight: '24px'
-    },
+    ...baseTypographyArabic.typography,
     subtitle1: {
-      fontSize: 18,
+      fontSize: 12,
       fontWeight: 600,
-      lineHeight: '28px'
+      lineHeight: '18px'
     },
     subtitle2: {
-      fontSize: 16,
+      fontSize: 10,
       fontWeight: 600,
-      lineHeight: '26px'
-    },
-    body1: {
-      fontSize: 16,
-      fontWeight: 400,
-      lineHeight: '26px'
+      lineHeight: '15px'
     },
     body2: {
       fontSize: 14,
       fontWeight: 400,
-      lineHeight: '24px'
-    },
-    overline: {
-      fontSize: 16,
-      fontWeight: 700,
-      lineHeight: '24px'
-      // marginBottom: '4px'
+      lineHeight: '22px'
     },
     caption: {
       fontSize: 12,
       fontWeight: 400,
-      lineHeight: '20px'
+      lineHeight: '18px'
     }
   }
 }
 
 export const journeyUiTypographyUrdu: Pick<ThemeOptions, 'typography'> = {
   typography: {
-    fontFamily: ['"Arial",sans-serif'].join(','),
-    h1: {
-      fontSize: 36,
-      fontWeight: 700,
-      lineHeight: '46px'
-    },
-    h2: {
-      fontSize: 28,
-      fontWeight: 700,
-      lineHeight: '38px'
-    },
-    h3: {
-      fontSize: 24,
-      fontWeight: 700,
-      lineHeight: '34px'
-    },
-    h4: {
-      fontSize: 22,
-      fontWeight: 700,
-      lineHeight: '32px'
-    },
-    h5: {
-      fontSize: 18,
-      fontWeight: 700,
-      lineHeight: '28px'
-    },
-    h6: {
-      fontSize: 16,
-      fontWeight: 700,
-      lineHeight: '24px'
-    },
+    ...baseTypographyUrdu.typography,
     subtitle1: {
-      fontSize: 18,
-      fontWeight: 700,
-      lineHeight: '28px'
+      fontSize: 12,
+      fontWeight: 600,
+      lineHeight: '18px'
     },
     subtitle2: {
-      fontSize: 16,
-      fontWeight: 700,
-      lineHeight: '26px'
-    },
-    body1: {
-      fontSize: 16,
-      fontWeight: 400,
-      lineHeight: '26px'
+      fontSize: 10,
+      fontWeight: 600,
+      lineHeight: '15px'
     },
     body2: {
       fontSize: 14,
       fontWeight: 400,
-      lineHeight: '24px'
-    },
-    overline: {
-      fontSize: 14,
-      fontWeight: 700,
-      lineHeight: '24px'
+      lineHeight: '22px'
     },
     caption: {
       fontSize: 12,
       fontWeight: 400,
-      lineHeight: '20px'
+      lineHeight: '18px'
     }
   }
 }
