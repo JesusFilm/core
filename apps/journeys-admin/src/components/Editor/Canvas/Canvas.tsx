@@ -132,10 +132,12 @@ export function Canvas(): ReactElement {
         <Box
           data-testid={`step-${selectedStep.id}`}
           sx={{
-            height: 'calc(100% - 32px)',
-            width: 'calc(100% - 32px)',
+            width: '100%',
             maxWidth: 360,
             maxHeight: 640,
+            aspectRatio: '9 / 16',
+            boxSizing: 'border-box',
+            position: 'relative',
             display: 'flex',
             borderRadius: 5,
             transition: '0.2s outline ease-out 0.1s',
@@ -143,7 +145,9 @@ export function Canvas(): ReactElement {
               selectedStep.id === selectedBlock?.id
                 ? `2px solid ${theme.palette.primary.main}`
                 : `2px solid ${theme.palette.background.default}`,
-            outlineOffset: 4
+            outlineOffset: 5,
+            transformOrigin: 'center',
+            m: '16px'
           }}
         >
           <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
