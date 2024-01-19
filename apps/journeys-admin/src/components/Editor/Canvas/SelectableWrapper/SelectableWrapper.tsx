@@ -124,6 +124,7 @@ export function SelectableWrapper({
       }}
       onClickCapture={handleSelectBlock}
       onClick={blockNonSelectionEvents}
+      onMouseDown={blockNonSelectionEvents}
     >
       {children}
     </Box>
