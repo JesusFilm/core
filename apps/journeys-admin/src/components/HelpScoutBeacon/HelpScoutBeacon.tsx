@@ -125,7 +125,8 @@ export function HelpScoutBeacon({
           position: 'fixed',
           top: { xs: 11.5, md: 11.5 },
           zIndex: zIndex.drawer + 2,
-          right: { xs: 10, md: 15 },
+          right: { xs: 20, md: 15 },
+
           width: 24,
           height: 24,
           color:
