@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
-import React, { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
@@ -21,7 +21,7 @@ export function PasswordPage({
   setActivePage
 }: PageProps): ReactElement {
   const auth = getAuth()
-  const [showPassword, setShowPassword] = React.useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const handleClickShowPassword = (): void => setShowPassword((show) => !show)
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -71,12 +71,15 @@ export function PasswordPage({
         onSubmit={handleLogin}
       >
         {({ values, handleChange, handleBlur, errors, touched }) => (
-          <Form autoComplete="off" data-testid="">
+          <Form>
             <Stack gap={4} data-testid="PasswordPage">
               <Typography variant="h6" textAlign="left">
                 {t('Sign in')}
               </Typography>
               <TextField
+                id="username"
+                type="email"
+                autoComplete="username"
                 name="email"
                 label="Email"
                 placeholder={t('Enter your email address here')}
@@ -92,6 +95,7 @@ export function PasswordPage({
                 fullWidth
               />
               <TextField
+                autoComplete="current-password"
                 name="password"
                 label="Password"
                 placeholder={t('Enter Password')}
@@ -105,7 +109,7 @@ export function PasswordPage({
                   errors.password != null && <>{errors.password}</>
                 }
                 fullWidth
-                id="standard-adornment-password"
+                id="current-password"
                 type={showPassword ? 'text' : 'password'}
                 InputProps={{
                   endAdornment: (

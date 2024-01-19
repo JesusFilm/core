@@ -87,23 +87,39 @@ export function HomePage({
           isValid,
           isSubmitting
         }) => (
-          <Form noValidate autoComplete="off" data-testid="EmailSignInForm">
+          <Form data-testid="EmailSignInForm">
             <Stack gap={4}>
-              <TextField
-                autoComplete="on"
-                name="email"
-                hiddenLabel
-                placeholder={t('Enter your email address here')}
-                variant="filled"
-                value={values.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={errors.email != null && touched.email != null}
-                helperText={
-                  touched?.email != null && errors.email != null && errors.email
-                }
-                fullWidth
-              />
+              <div>
+                <TextField
+                  id="username"
+                  type="email"
+                  autoComplete="username"
+                  name="email"
+                  hiddenLabel
+                  placeholder={t('Enter your email address here')}
+                  variant="filled"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.email != null && touched.email != null}
+                  helperText={
+                    touched?.email != null &&
+                    errors.email != null &&
+                    errors.email
+                  }
+                  fullWidth
+                />
+                <input
+                  id="current-password"
+                  type="password"
+                  autoComplete="current-password"
+                  name="password"
+                  style={{ display: 'block', opacity: 0, height: 0 }}
+                  onChange={(event) => {
+                    console.log(event)
+                  }}
+                />
+              </div>
               <Button
                 variant="contained"
                 size="large"

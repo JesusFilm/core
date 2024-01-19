@@ -48,7 +48,9 @@ export function PasswordResetPage({
             )}
           </Typography>
           <TextField
-            autoComplete="on"
+            id="username"
+            type="email"
+            autoComplete="username"
             name="email"
             label="Email"
             placeholder={t('Enter your email address here')}
