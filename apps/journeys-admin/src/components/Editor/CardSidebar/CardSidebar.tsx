@@ -13,6 +13,7 @@ export function CardSidebar(): ReactElement {
   const {
     state: { steps }
   } = useEditor()
+
   return (
     <>
       <Stack

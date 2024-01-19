@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -37,18 +37,30 @@ export function StepItem({ step, index }: StepItemProps): ReactElement {
   const cardBlock = step.children.find(
     (child) => child.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
+  const selected =
+    selectedStep?.id === step.id &&
+    journeyEditContentComponent === ActiveJourneyEditContent.Canvas
+  const ref = useRef<HTMLDivElement>(null)
 
   function handleClick(): void {
     dispatch({ type: 'SetSelectedStepAction', step })
   }
 
-  const selected =
-    selectedStep?.id === step.id &&
-    journeyEditContentComponent === ActiveJourneyEditContent.Canvas
+  useEffect(() => {
+    // Scroll to the bottom when steps change
+    if (ref?.current != null && selected) {
+      ref.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      })
+    }
+  }, [selected])
+
   return (
     <CardItem selected={selected} onClick={handleClick}>
       <Typography>{index + 1}</Typography>
       <Box
+        ref={ref}
         sx={{
           width: 84,
           height: 132,
