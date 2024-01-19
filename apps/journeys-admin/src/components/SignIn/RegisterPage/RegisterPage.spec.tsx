@@ -10,7 +10,13 @@ import { RegisterPage } from './RegisterPage'
 
 jest.mock('firebase/auth', () => ({
   getAuth: jest.fn(),
-  createUserWithEmailAndPassword: jest.fn(),
+  createUserWithEmailAndPassword: jest.fn().mockImplementation(async () => {
+    const user = {
+      updateProfile: jest.fn()
+    }
+    return await Promise.resolve({ user })
+  }),
+  updateProfile: jest.fn(async () => await Promise.resolve()),
   signInWithEmailAndPassword: jest.fn()
 }))
 
