@@ -13,10 +13,10 @@ describe('PasswordResetPage', () => {
       />
     )
 
-    expect(getByText('Sign In')).toBeInTheDocument()
+    expect(getByText('Reset Password')).toBeInTheDocument()
     expect(
       getByText(
-        'Get instructions sent to this email that explain how to reset your password'
+        'Get instructions sent to this email that explain how to reset your password.'
       )
     ).toBeInTheDocument()
     expect(getByRole('textbox')).toHaveValue('test@example.com')
@@ -30,6 +30,6 @@ describe('PasswordResetPage', () => {
       />
     )
     fireEvent.click(getByRole('button', { name: 'CANCEL' }))
-    expect(mockSetActivePage).toHaveBeenCalledWith('password')
+    expect(mockSetActivePage).toHaveBeenCalledWith('home')
   })
 })

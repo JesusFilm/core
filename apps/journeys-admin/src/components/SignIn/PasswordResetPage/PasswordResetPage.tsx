@@ -55,6 +55,7 @@ export function PasswordResetPage({
             label="Email"
             placeholder={t('Enter your email address here')}
             variant="filled"
+            value={userEmail}
             fullWidth
           />
           <Box

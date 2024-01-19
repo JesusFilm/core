@@ -3,25 +3,35 @@ import { render } from '@testing-library/react'
 import { EmailUsedPage } from './EmailUsedPage'
 
 describe('EmailUsedPage', () => {
+  const setActivePage = jest.fn()
+
   it('should render if account has been registered with Google', () => {
     const { getByText } = render(
-      <EmailUsedPage userEmail="test@exampleemail.com" variant="Google" />
+      <EmailUsedPage
+        userEmail="test@exampleemail.com"
+        variant="Google"
+        setActivePage={setActivePage}
+      />
     )
 
     expect(getByText('You already have an account')).toBeInTheDocument()
     expect(getByText("You've already used")).toBeInTheDocument()
-    expect(getByText('test@exampleemail.com.')).toBeInTheDocument()
-    expect(getByText('Sign in with Google to continue.')).toBeInTheDocument()
+    expect(getByText('test@exampleemail.com')).toBeInTheDocument()
+    expect(getByText('Sign in with Google to continue')).toBeInTheDocument()
   })
 
   it('should render if account has been registered with Facebook', () => {
     const { getByText } = render(
-      <EmailUsedPage userEmail="test@exampleemail.com" variant="Facebook" />
+      <EmailUsedPage
+        userEmail="test@exampleemail.com"
+        variant="Facebook"
+        setActivePage={setActivePage}
+      />
     )
 
     expect(getByText('You already have an account')).toBeInTheDocument()
     expect(getByText("You've already used")).toBeInTheDocument()
-    expect(getByText('test@exampleemail.com.')).toBeInTheDocument()
-    expect(getByText('Sign in with Facebook to continue.')).toBeInTheDocument()
+    expect(getByText('test@exampleemail.com')).toBeInTheDocument()
+    expect(getByText('Sign in with Facebook to continue')).toBeInTheDocument()
   })
 })
