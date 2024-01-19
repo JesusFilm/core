@@ -15,7 +15,6 @@ import { LoadingJourneyList } from '../LoadingJourneyList'
 
 import { ActivePriorityList } from './ActivePriorityList'
 import { AddJourneyButton } from './AddJourneyButton'
-import { DiscoveryJourneys } from './DiscoveryJourneys'
 
 const Dialog = dynamic(
   async () =>
@@ -174,7 +173,6 @@ export function ActiveJourneyList({
           )}
         </Box>
       )}
-      <DiscoveryJourneys />
       <Stack alignItems="center">
         <Typography
           variant="caption"
