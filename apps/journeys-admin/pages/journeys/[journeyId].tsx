@@ -53,32 +53,36 @@ function JourneyEditPage({ status }): ReactElement {
     }
   )
 
-  return status === 'noAccess' ? (
-    <AccessDenied />
-  ) : (
+  return (
     <>
       <NextSeo
         title={
-          data?.journey?.title != null
+          status === 'noAccess'
+            ? t('Request Access')
+            : data?.journey?.title != null
             ? t('Edit {{title}}', { title: data.journey.title })
             : t('Edit Journey')
         }
         description={data?.journey?.description ?? undefined}
       />
-      <Editor
-        journey={data?.journey ?? undefined}
-        selectedStepId={router.query.stepId as string | undefined}
-        view={router.query.view as ActiveJourneyEditContent | undefined}
-        PageWrapperProps={{
-          title: data?.journey?.title ?? t('Edit Journey'),
-          backHref: '/',
-          mainHeaderChildren: <EditToolbar />,
-          mainBodyPadding: false,
-          bottomPanelChildren: <ControlPanel />,
-          customSidePanel: <Drawer />,
-          user
-        }}
-      />
+      {status === 'noAccess' ? (
+        <AccessDenied />
+      ) : (
+        <Editor
+          journey={data?.journey ?? undefined}
+          selectedStepId={router.query.stepId as string | undefined}
+          view={router.query.view as ActiveJourneyEditContent | undefined}
+          PageWrapperProps={{
+            title: data?.journey?.title ?? t('Edit Journey'),
+            backHref: '/',
+            mainHeaderChildren: <EditToolbar />,
+            mainBodyPadding: false,
+            bottomPanelChildren: <ControlPanel />,
+            customSidePanel: <Drawer />,
+            user
+          }}
+        />
+      )}
     </>
   )
 }
