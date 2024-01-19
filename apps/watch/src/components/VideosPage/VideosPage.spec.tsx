@@ -15,6 +15,20 @@ jest.mock('next/router', () => ({
   }))
 }))
 
+jest.mock('react-instantsearch', () => ({
+  _esModule: true,
+  useInstantSearch: jest.fn(() => ({
+    query: ''
+  })),
+  useSearchBox: jest.fn(() => ({
+    query: '',
+    refine: jest.fn()
+  })),
+  useInfiniteHits: jest.fn(() => ({
+    hits: []
+  }))
+}))
+
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('VideosPage', () => {
@@ -22,7 +36,7 @@ describe('VideosPage', () => {
     it('should render a grid', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <VideosPage videos={videos} />
+          <VideosPage localVideos={videos} />
         </MockedProvider>
       )
       expect(getByTestId('VideoGrid')).toBeInTheDocument()
@@ -50,7 +64,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage videos={videos} />
+          <VideosPage localVideos={videos} />
         </MockedProvider>
       )
       await waitFor(() => {
@@ -134,7 +148,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage videos={[]} />
+          <VideosPage localVideos={[]} />
         </MockedProvider>
       )
       const comboboxEl = getByRole('combobox', {
@@ -218,7 +232,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage videos={[]} />
+          <VideosPage localVideos={[]} />
         </MockedProvider>
       )
       fireEvent.click(getByTestId('filter-item-subtitles'))
@@ -299,7 +313,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage videos={[]} />
+          <VideosPage localVideos={[]} />
         </MockedProvider>
       )
 

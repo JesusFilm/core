@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
+import algoliasearch from 'algoliasearch'
 import { ComponentProps } from 'react'
+import { InstantSearch } from 'react-instantsearch'
 
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
@@ -12,6 +14,8 @@ const VideosStory: Meta<typeof VideosPage> = {
   component: VideosPage,
   title: 'Watch/VideosPage'
 }
+
+const searchClient = algoliasearch('', '')
 
 const Template: StoryObj<
   ComponentProps<typeof VideosPage> & { limit: number }
@@ -39,7 +43,9 @@ const Template: StoryObj<
           }
         ]}
       >
-        <VideosPage videos={videos} />
+        <InstantSearch searchClient={searchClient} indexName="videos">
+          <VideosPage localVideos={videos} />
+        </InstantSearch>
       </MockedProvider>
     )
   }
