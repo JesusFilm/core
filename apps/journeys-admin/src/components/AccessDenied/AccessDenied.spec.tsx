@@ -1,6 +1,8 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+
+import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
 
 import { AccessDenied, USER_JOURNEY_REQUEST } from './AccessDenied'
 
@@ -17,21 +19,19 @@ describe('AccessDenied', () => {
       query: { journeyId: 'mockedJourneyId' }
     } as unknown as NextRouter)
 
-    const mockUserJourneyResult = jest.fn(() => ({
-      data: {
-        userJourneyRequest: {
-          id: 'mockedJourneyId',
-          __typename: 'UserJourney'
-        }
-      }
-    }))
-
-    const mockUserJourneyRequest = {
+    const mockUserJourneyRequest: MockedResponse<UserJourneyRequest> = {
       request: {
         query: USER_JOURNEY_REQUEST,
         variables: { journeyId: 'mockedJourneyId' }
       },
-      result: mockUserJourneyResult
+      result: jest.fn(() => ({
+        data: {
+          userJourneyRequest: {
+            id: 'mockedJourneyId',
+            __typename: 'UserJourney'
+          }
+        }
+      }))
     }
 
     const { getAllByRole } = render(
@@ -42,7 +42,9 @@ describe('AccessDenied', () => {
 
     fireEvent.click(getAllByRole('button', { name: 'Request Now' })[0])
 
-    await waitFor(() => expect(mockUserJourneyResult).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockUserJourneyRequest.result).toHaveBeenCalled()
+    )
 
     expect(
       getAllByRole('heading', { name: 'Request Sent' })[0]
