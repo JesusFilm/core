@@ -74,7 +74,6 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
         }}
       >
         <MuiMenuItem disabled>
-          {/* ----------- HERE: Menu Item ----------- */}
           <Typography color="text.primary" variant="body2">
             {journey?.team?.publicTitle !== '' &&
             journey?.team?.publicTitle !== null
@@ -93,7 +92,6 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
           legacyBehavior
         >
           <MuiMenuItem onClick={handleClose}>
-            {/* ----------- HERE: Menu Item ----------- */}
             <Typography color="text.primary" variant="body2">
               {t('Report this content')}
             </Typography>
