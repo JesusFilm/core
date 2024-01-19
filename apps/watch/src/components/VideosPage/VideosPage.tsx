@@ -75,28 +75,21 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
       : undefined
   )
 
-  const availableVariantLanguageIds =
-    query.get('languages') != null
-      ? [query.get('languages') as string]
-      : undefined
+  const getQueryParamArray = (param: string | null): string[] | undefined =>
+    param != null ? [param] : undefined
+
+  const availableVariantLanguageIds = getQueryParamArray(query.get('languages'))
 
   const filter: VideoPageFilter = {
     availableVariantLanguageIds,
-    subtitleLanguageIds:
-      query.get('subtitles') != null
-        ? [query.get('subtitles') as string]
-        : undefined,
+    subtitleLanguageIds: getQueryParamArray(query.get('subtitles')),
     title:
       query.get('title') != null ? (query.get('title') as string) : undefined
   }
 
-  function formatFilter(filter: VideoPageFilter): string {
-    return Object.values(filter)
-      .filter((query) => query !== undefined)
-      .join(' ')
-  }
-
-  const formattedString = formatFilter(filter)
+  const formattedString = Object.values(filter)
+    .filter((query) => query !== undefined)
+    .join(' ')
 
   useEffect(() => {
     refine(formattedString)
@@ -105,19 +98,16 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
   function handleFilterChange(filter: VideoPageFilter): void {
     const params = new URLSearchParams()
 
-    const languages = filter.availableVariantLanguageIds
-    const subtitles = filter.subtitleLanguageIds
-    const title = filter.title
+    const setQueryParam = (paramName: string, value?: string | null): void => {
+      if (value != null) {
+        params.set(paramName, value)
+      }
+    }
 
-    if (languages != null) {
-      params.set('languages', languages[0])
-    }
-    if (subtitles != null) {
-      params.set('subtitles', subtitles[0])
-    }
-    if (title != null) {
-      title === '' ? params.set('title', '') : params.set('title', title)
-    }
+    setQueryParam('languages', filter.availableVariantLanguageIds?.[0])
+    setQueryParam('subtitles', filter.subtitleLanguageIds?.[0])
+    setQueryParam('title', filter.title)
+
     void router.push(`/videos?${params.toString()}`, undefined, {
       shallow: true
     })
