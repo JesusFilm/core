@@ -51,7 +51,6 @@ export const GET_LANGUAGES = gql`
 export const limit = 20
 
 export interface VideoPageFilter {
-  ids?: string[]
   availableVariantLanguageIds?: string[]
   subtitleLanguageIds?: string[]
   title?: string
