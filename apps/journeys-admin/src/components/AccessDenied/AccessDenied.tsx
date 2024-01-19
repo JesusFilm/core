@@ -28,6 +28,7 @@ export const USER_JOURNEY_REQUEST = gql`
 export function AccessDenied(): ReactElement {
   const [userJourneyRequest] =
     useMutation<UserJourneyRequest>(USER_JOURNEY_REQUEST)
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [requestedAccess, setRequestReceived] = useState(false)
 
@@ -37,8 +38,6 @@ export function AccessDenied(): ReactElement {
     })
     setRequestReceived(true)
   }
-
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>

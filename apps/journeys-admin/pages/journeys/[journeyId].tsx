@@ -122,7 +122,7 @@ export const getServerSideProps = withUserTokenSSR({
       return {
         redirect: {
           permanent: false,
-          destination: `/journeys`
+          destination: `/`
         }
       }
     }
