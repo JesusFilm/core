@@ -29,6 +29,7 @@ export function SignIn(): ReactElement {
   const { t } = useTranslation()
   const [activePage, setActivePage] = useState<ActivePage>('home')
   const [userEmail, setUserEmail] = useState<string>('')
+  const [userPassword, setUserPassword] = useState<string>('')
 
   const setEmail = (email): void => {
     setUserEmail(email)
@@ -37,12 +38,20 @@ export function SignIn(): ReactElement {
   switch (activePage) {
     case 'home':
       children = (
-        <HomePage setActivePage={setActivePage} setUserEmail={setEmail} />
+        <HomePage
+          setActivePage={setActivePage}
+          setUserEmail={setEmail}
+          setUserPassword={setUserPassword}
+        />
       )
       break
     case 'password':
       children = (
-        <PasswordPage setActivePage={setActivePage} userEmail={userEmail} />
+        <PasswordPage
+          setActivePage={setActivePage}
+          userEmail={userEmail}
+          userPassword={userPassword}
+        />
       )
       break
     case 'register':

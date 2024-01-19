@@ -17,6 +17,8 @@ import { SignInServiceButton } from '../SignInServiceButton'
 export interface PageProps {
   userEmail?: string
   setUserEmail?: (userEmail: string) => void
+  userPassword?: string
+  setUserPassword?: (userPassword: string) => void
   activePage?: ActivePage
   setActivePage: (activePage: ActivePage) => void
   variant?: 'Google' | 'Facebook'
@@ -24,7 +26,8 @@ export interface PageProps {
 
 export function HomePage({
   setActivePage,
-  setUserEmail
+  setUserEmail,
+  setUserPassword
 }: PageProps): ReactElement {
   const { t } = useTranslation()
   const validationSchema = object().shape({
@@ -32,7 +35,8 @@ export function HomePage({
       .trim()
       .lowercase()
       .email(t('Please enter a valid email address'))
-      .required(t('Please enter your email address'))
+      .required(t('Please enter your email address')),
+    password: string().min(6)
   })
   async function handleEmailSignIn(
     values: InferType<typeof validationSchema>
@@ -58,6 +62,9 @@ export function HomePage({
     }
     if (setUserEmail != null) {
       setUserEmail(values.email)
+    }
+    if (setUserPassword != null) {
+      setUserPassword(values.password ?? '')
     }
   }
   return (
@@ -110,14 +117,13 @@ export function HomePage({
                   fullWidth
                 />
                 <input
+                  tabIndex={-1}
                   id="current-password"
                   type="password"
                   autoComplete="current-password"
                   name="password"
                   style={{ display: 'block', opacity: 0, height: 0 }}
-                  onChange={(event) => {
-                    console.log(event)
-                  }}
+                  onChange={handleChange}
                 />
               </div>
               <Button

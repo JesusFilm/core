@@ -18,6 +18,7 @@ import { PageProps } from '../HomePage/HomePage'
 
 export function PasswordPage({
   userEmail,
+  userPassword,
   setActivePage
 }: PageProps): ReactElement {
   const auth = getAuth()
@@ -66,7 +67,7 @@ export function PasswordPage({
   return (
     <>
       <Formik
-        initialValues={{ email: userEmail, password: '' }}
+        initialValues={{ email: userEmail, password: userPassword }}
         validationSchema={validationSchema}
         onSubmit={handleLogin}
       >
