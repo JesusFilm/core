@@ -109,6 +109,7 @@ export function JourneyCardMenu({
         aria-haspopup="true"
         aria-expanded={open ? 'true' : 'false'}
         onClick={handleOpenMenu}
+        edge="end"
       >
         <MoreIcon />
       </IconButton>
