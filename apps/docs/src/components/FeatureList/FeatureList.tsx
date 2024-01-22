@@ -31,7 +31,7 @@ export function FeatureList(): ReactElement {
 
   const features: Item[] = [
     {
-      title: 'Deploy Quickly',
+      title: t('Deploy Quickly'),
       description: (
         <>
           {t(
@@ -42,7 +42,7 @@ export function FeatureList(): ReactElement {
       )
     },
     {
-      title: 'Common Environment',
+      title: t('Common Environment'),
       description: (
         <>
           {t(
@@ -53,11 +53,11 @@ export function FeatureList(): ReactElement {
       )
     },
     {
-      title: 'Powered by Typescript',
+      title: t('Powered by Typescript'),
       description: (
         <>
           {t(
-            'TypeScript is a strongly typed programming language that builds on' +
+            'TypeScript is a strongly typed programming language that builds on ' +
               'JavaScript, giving you better tooling at any scale.'
           )}
         </>

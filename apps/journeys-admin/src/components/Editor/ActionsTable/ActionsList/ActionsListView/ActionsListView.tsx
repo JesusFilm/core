@@ -34,6 +34,7 @@ export function ActionsListView({
   handleClick
 }: ActionsListViewProps): ReactElement {
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const { t } = useTranslation('apps-journeys-admin')
 
   const GoalIcon = ({ url }: { url: string }): ReactElement => {
     const color = selectedAction === url ? 'primary.main' : 'secondary.light'
@@ -48,8 +49,6 @@ export function ActionsListView({
         return <></>
     }
   }
-
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>

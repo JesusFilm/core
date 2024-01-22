@@ -14,6 +14,8 @@ interface GoalDescriptionProps {
 }
 
 export function ActionInformation(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const GoalDescription = ({
     label,
     description,
@@ -31,8 +33,6 @@ export function ActionInformation(): ReactElement {
       </Stack>
     </Stack>
   )
-
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Stack gap={2} sx={{ p: 6 }} data-testid="ActionInformation">

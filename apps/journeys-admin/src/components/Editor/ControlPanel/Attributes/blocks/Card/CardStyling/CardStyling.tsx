@@ -53,6 +53,7 @@ export function CardStyling(): ReactElement {
     CARD_BLOCK_THEME_MODE_UPDATE
   )
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
     if (journey != null && cardBlock != null) {
@@ -76,8 +77,6 @@ export function CardStyling(): ReactElement {
       })
     }
   }
-
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>
