@@ -9,6 +9,8 @@ export type ActivePage =
 export interface PageProps {
   userEmail?: string
   setUserEmail?: (userEmail: string) => void
+  userPassword?: string
+  setUserPassword?: (userPassword: string) => void
   activePage?: ActivePage
   setActivePage?: (activePage: ActivePage) => void
   service?: 'google.com' | 'facebook.com'
