@@ -10,6 +10,7 @@ import { EmailUsedPage } from './EmailUsedPage'
 import { PasswordPage } from './PasswordPage'
 import { PasswordResetPage } from './PasswordResetPage'
 import { RegisterPage } from './RegisterPage'
+import { ResetPasswordSentPage } from './ResetPasswordSentPage'
 import { SignIn } from './SignIn'
 
 const SignInStory: Meta<typeof SignIn> = {
@@ -70,9 +71,9 @@ export const Google = {
   args: {
     children: (
       <EmailUsedPage
+        activePage="google.com"
         setActivePage={setActivePage}
         userEmail={userEmail}
-        variant="Google"
       />
     )
   }
@@ -83,9 +84,9 @@ export const Facebook = {
   args: {
     children: (
       <EmailUsedPage
+        activePage="facebook.com"
         setActivePage={setActivePage}
         userEmail={userEmail}
-        variant="Facebook"
       />
     )
   }
@@ -96,6 +97,18 @@ export const Help = {
   args: {
     children: (
       <PasswordResetPage setActivePage={setActivePage} userEmail={userEmail} />
+    )
+  }
+}
+
+export const Reset = {
+  ...Template,
+  args: {
+    children: (
+      <ResetPasswordSentPage
+        setActivePage={setActivePage}
+        userEmail={userEmail}
+      />
     )
   }
 }
