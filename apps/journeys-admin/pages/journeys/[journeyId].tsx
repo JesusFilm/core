@@ -18,12 +18,11 @@ import {
   GetAdminJourneyVariables
 } from '../../__generated__/GetAdminJourney'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
+import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
 import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
-import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
-import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 export const GET_ADMIN_JOURNEY = gql`
@@ -43,7 +42,7 @@ export const USER_JOURNEY_OPEN = gql`
   }
 `
 
-function JourneyEditPage(): ReactElement {
+function JourneyEditPage({ status }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
@@ -58,29 +57,32 @@ function JourneyEditPage(): ReactElement {
     <>
       <NextSeo
         title={
-          data?.journey?.title != null
+          status === 'noAccess'
+            ? t('Request Access')
+            : data?.journey?.title != null
             ? t('Edit {{title}}', { title: data.journey.title })
             : t('Edit Journey')
         }
         description={data?.journey?.description ?? undefined}
       />
-      <Editor
-        journey={data?.journey ?? undefined}
-        selectedStepId={router.query.stepId as string | undefined}
-        view={router.query.view as ActiveJourneyEditContent | undefined}
-      >
-        <PageWrapper
-          title={data?.journey?.title ?? t('Edit Journey')}
-          backHref="/"
-          mainHeaderChildren={<EditToolbar />}
-          mainBodyPadding={false}
-          bottomPanelChildren={<ControlPanel />}
-          customSidePanel={<Drawer />}
-          user={user}
-        >
-          <JourneyEdit />
-        </PageWrapper>
-      </Editor>
+      {status === 'noAccess' ? (
+        <AccessDenied />
+      ) : (
+        <Editor
+          journey={data?.journey ?? undefined}
+          selectedStepId={router.query.stepId as string | undefined}
+          view={router.query.view as ActiveJourneyEditContent | undefined}
+          PageWrapperProps={{
+            title: data?.journey?.title ?? t('Edit Journey'),
+            backHref: '/',
+            mainHeaderChildren: <EditToolbar />,
+            mainBodyPadding: false,
+            bottomPanelChildren: <ControlPanel />,
+            customSidePanel: <Drawer />,
+            user
+          }}
+        />
+      )}
     </>
   )
 }
@@ -124,7 +126,17 @@ export const getServerSideProps = withUserTokenSSR({
       return {
         redirect: {
           permanent: false,
-          destination: `/journeys`
+          destination: `/`
+        }
+      }
+    }
+    if (error.message === 'user is not allowed to view journey') {
+      return {
+        props: {
+          status: 'noAccess',
+          ...translations,
+          flags,
+          initialApolloState: apolloClient.cache.extract()
         }
       }
     }
@@ -133,6 +145,7 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
+      status: 'success',
       ...translations,
       flags,
       initialApolloState: apolloClient.cache.extract()

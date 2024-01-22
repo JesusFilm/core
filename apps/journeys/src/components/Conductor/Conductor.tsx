@@ -56,7 +56,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
-  const stepTheme = getStepTheme(activeBlock, journey)
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -166,6 +165,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
 
+  const currentTheme = getStepTheme(activeBlock, journey)
+
   return (
     <Stack
       data-testid="Conductor"
@@ -177,7 +178,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         overflow: 'hidden'
       }}
     >
-      <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+      <ThemeProvider {...currentTheme} locale={locale} rtl={rtl} nested>
         {showHeaderFooter && router.query.noi == null && (
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
