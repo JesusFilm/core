@@ -42,9 +42,6 @@ export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
               color="inherit"
               aria-label="open drawer"
               onClick={onClick}
-              sx={{
-                display: router.route.includes('/journeys/') ? 'none' : 'flex'
-              }}
             >
               <Menu1Icon sx={{ color: 'background.paper' }} />
             </IconButton>

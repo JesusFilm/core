@@ -33,7 +33,10 @@ export function MainPanelHeader({
         color="default"
         sx={{
           position: { xs: 'fixed', md: 'sticky' },
-          top: { xs: toolbar.height, md: 0 },
+          top: {
+            xs: router.route.includes('/journeys/') ? 0 : toolbar.height,
+            md: 0
+          },
           width: 'inherit'
         }}
         data-testid="MainPanelHeader"

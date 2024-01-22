@@ -85,15 +85,19 @@ export function PageWrapper({
             sx={{
               backgroundColor: 'background.default',
               width: { xs: '100vw', md: `calc(100vw - ${navbar.width})` },
-              pt: { xs: toolbar.height, md: 0 },
+              pt: {
+                xs: router.route.includes('/journeys/') ? 0 : toolbar.height,
+                md: 0
+              },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0
               }
             }}
           >
-            {showAppHeader && <AppHeader onClick={() => setOpen(!open)} />}
-
+            {showAppHeader && !router.route.includes('/journeys/') && (
+              <AppHeader onClick={() => setOpen(!open)} />
+            )}
             <Stack
               component="main"
               flexGrow={1}
