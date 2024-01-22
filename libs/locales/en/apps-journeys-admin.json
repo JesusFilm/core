@@ -472,5 +472,8 @@
   "drawerMobileOpen: ": "drawerMobileOpen: ",
   "journeyEditContentComponent: ": "journeyEditContentComponent: ",
   "selectedComponent: ": "selectedComponent: ",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>",
+  "languagesCount": "{{count}} Language",
+  "languagesCount_plural": "{{count}} Languages"
+  
 }
