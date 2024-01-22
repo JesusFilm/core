@@ -8,6 +8,7 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { use100vh } from 'react-div-100vh'
+import { useTranslation } from 'react-i18next'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -17,6 +18,8 @@ import logo from '../../../public/logo.svg'
 export function IFrameTest(): ReactElement {
   const { query } = useRouter()
   const viewportHeight = use100vh()
+
+  const { t } = useTranslation('apps-journeys')
 
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
@@ -40,9 +43,11 @@ export function IFrameTest(): ReactElement {
               }}
             />
             <Typography>
-              This page has been created to test the embed code.{' '}
+              {t('This page has been created to test the embed code.')}{' '}
               <strong>
-                If you&apos;ve found this page in error click the button below.
+                {t(
+                  "If you've found this page in error click the button below."
+                )}
               </strong>
             </Typography>
             <NextLink
@@ -51,7 +56,7 @@ export function IFrameTest(): ReactElement {
               legacyBehavior
             >
               <Button variant="contained" fullWidth>
-                Get me out of here!
+                {t('Get me out of here!')}
               </Button>
             </NextLink>
             <Box sx={{ flexGrow: 1, width: '100%' }}>

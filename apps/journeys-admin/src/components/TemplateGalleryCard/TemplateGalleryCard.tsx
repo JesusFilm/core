@@ -9,6 +9,7 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
@@ -58,7 +59,7 @@ export function TemplateGalleryCard({
   )
 
   const theme = useTheme()
-
+  const { t } = useTranslation('apps-journeys-admin')
   const date =
     journey != null
       ? intlFormat(parseISO(journey.createdAt), {
@@ -182,7 +183,9 @@ export function TemplateGalleryCard({
                     color: (theme) => theme.palette.grey[700]
                   }}
                 >
-                  {date} ● {displayLanguage}
+                  {date}
+                  {t(' ● ')}
+                  {displayLanguage}
                 </Typography>
                 <Box
                   sx={{

@@ -6,6 +6,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -168,12 +169,14 @@ export function Action(): ReactElement {
     setAction(event.target.value)
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Stack sx={{ pt: 4, px: 6 }} data-testid="Action">
         <FormControl variant="filled">
           <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
-            Navigate to:
+            {t('Navigate to:')}
           </InputLabel>
 
           <Select
@@ -198,7 +201,7 @@ export function Action(): ReactElement {
         </FormControl>
 
         <Typography variant="caption" color="secondary.main">
-          Redirect user to the selected resource
+          {t('Redirect user to the selected resource')}
         </Typography>
         {action === 'NavigateAction' && <NavigateAction />}
         {action === 'LinkAction' && <LinkAction />}
