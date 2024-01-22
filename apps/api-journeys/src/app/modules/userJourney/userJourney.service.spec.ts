@@ -1,29 +1,29 @@
+import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import { Queue } from 'bullmq'
 
 import { Journey } from '.prisma/api-journeys-client'
 
-import { ApiUserEmailJob, UserJourneyService } from './userJourney.service'
+import { UserJourneyModule } from '../userJourney/userJourney.module'
+
+import { UserJourneyService } from './userJourney.service'
 
 describe('UserJourneyService', () => {
   let service: UserJourneyService
-  let emailQueue: Queue<ApiUserEmailJob>
+  let emailQueue
 
   beforeEach(async () => {
+    emailQueue = {
+      add: jest.fn()
+    }
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UserJourneyService,
-        {
-          provide: Queue,
-          useValue: {
-            add: jest.fn()
-          }
-        }
-      ]
-    }).compile()
+      imports: [UserJourneyModule]
+    })
+      .overrideProvider(getQueueToken('api-users-email'))
+      .useValue(emailQueue)
+      .compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)
-    emailQueue = module.get<Queue<ApiUserEmailJob>>(Queue)
   })
 
   describe('sendEmail', () => {
