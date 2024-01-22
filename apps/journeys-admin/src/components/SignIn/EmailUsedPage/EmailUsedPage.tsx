@@ -20,15 +20,13 @@ export function EmailUsedPage({
       <Typography variant="h6" textAlign="left">
         {t('You already have an account')}
       </Typography>
-      <Box>
-        <Typography>{t("You've already used")}</Typography>
-        <Typography sx={{ fontWeight: 'bold' }}>{userEmail}</Typography>
-        <Typography>
-          {t(`Sign in with {{service}} to continue`, {
-            service: activePage === 'google.com' ? t('Google') : t('Facebook')
-          })}
-        </Typography>
-      </Box>
+      <Typography>
+        {t("You've already used ")}
+        <Box sx={{ fontWeight: 'bold', display: 'inline' }}>{userEmail}</Box>
+        {t(` Sign in with {{service}} to continue`, {
+          service: activePage === 'google.com' ? t('Google') : t('Facebook')
+        })}
+      </Typography>
       <SignInServiceButton service={activePage} />
     </>
   )
