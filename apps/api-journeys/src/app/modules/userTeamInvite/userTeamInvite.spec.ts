@@ -9,6 +9,7 @@ import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserTeamInviteResolver } from './userTeamInvite.resolver'
+import { UserTeamInviteService } from './userTeamInvite.service'
 
 describe('UserTeamInviteResolver', () => {
   let resolver: UserTeamInviteResolver,
@@ -42,11 +43,19 @@ describe('UserTeamInviteResolver', () => {
     team
   }
 
+  const userTeamInviteService = {
+    provide: UserTeamInviteService,
+    useFactory: () => ({
+      sendEmail: jest.fn().mockResolvedValue(null)
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         UserTeamInviteResolver,
+        userTeamInviteService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
