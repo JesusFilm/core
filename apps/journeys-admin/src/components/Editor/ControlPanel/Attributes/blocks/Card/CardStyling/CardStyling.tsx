@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -76,6 +77,8 @@ export function CardStyling(): ReactElement {
     }
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
@@ -100,7 +103,7 @@ export function CardStyling(): ReactElement {
               {cardBlock?.themeMode === ThemeMode.light && 'Light'}
               {cardBlock?.themeMode === ThemeMode.dark && 'Dark'}
             </Typography>
-            <Typography variant="caption">Card Style</Typography>
+            <Typography variant="caption">{t('Card Style')}</Typography>
           </Stack>
         </Stack>
       </Box>

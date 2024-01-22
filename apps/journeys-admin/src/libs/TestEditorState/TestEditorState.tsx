@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   ActiveFab,
@@ -14,18 +15,41 @@ export function TestEditorState({
   renderChildren
 }: TestEditorStateProps): ReactElement {
   const { state } = useEditor()
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <div>selectedBlock: {state.selectedBlock?.id}</div>
-      <div>activeFab: {ActiveFab[state.activeFab]}</div>
-      <div>activeTab: {ActiveTab[state.activeTab]}</div>
-      <div>drawerTitle: {state.drawerTitle}</div>
-      <div>selectedAttributeId: {state.selectedAttributeId}</div>
-      <div>drawerMobileOpen: {state.drawerMobileOpen.toString()}</div>
       <div>
-        journeyEditContentComponent: {state.journeyEditContentComponent}
+        {t('selectedBlock: ')}
+        {state.selectedBlock?.id}
       </div>
-      <div>selectedComponent: {state.selectedComponent}</div>
+      <div>
+        {t('activeFab: ')}
+        {ActiveFab[state.activeFab]}
+      </div>
+      <div>
+        {t('activeTab: ')}
+        {ActiveTab[state.activeTab]}
+      </div>
+      <div>
+        {t('drawerTitle: ')}
+        {state.drawerTitle}
+      </div>
+      <div>
+        {t('selectedAttributeId: ')}
+        {state.selectedAttributeId}
+      </div>
+      <div>
+        {t('drawerMobileOpen: ')}
+        {state.drawerMobileOpen.toString()}
+      </div>
+      <div>
+        {t('journeyEditContentComponent: ')}
+        {state.journeyEditContentComponent}
+      </div>
+      <div>
+        {t('selectedComponent: ')}
+        {state.selectedComponent}
+      </div>
       {renderChildren === true && <div>{state.drawerChildren}</div>}
     </>
   )

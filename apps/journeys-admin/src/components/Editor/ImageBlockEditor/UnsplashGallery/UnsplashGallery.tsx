@@ -3,6 +3,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ListUnsplashCollectionPhotos } from '../../../../../__generated__/ListUnsplashCollectionPhotos'
 import { SearchUnsplashPhotos } from '../../../../../__generated__/SearchUnsplashPhotos'
@@ -161,15 +162,17 @@ export function UnsplashGallery({
     setQuery(query)
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Stack sx={{ p: 6 }} data-testid="UnsplashGallery">
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
       <UnsplashCollections onClick={handleCollectionChange} />
       <Stack sx={{ pt: 4, pb: 1 }}>
         <Typography variant="overline" color="primary">
-          Unsplash
+          {t('Unsplash')}
         </Typography>
-        <Typography variant="h6">Featured Images</Typography>
+        <Typography variant="h6">{t('Featured Images')}</Typography>
       </Stack>
       {query == null && listData != null && (
         <UnsplashList
@@ -184,7 +187,7 @@ export function UnsplashGallery({
         />
       )}
       <LoadingButton variant="outlined" onClick={nextPage} size="medium">
-        Load More
+        {t('Load More')}
       </LoadingButton>
     </Stack>
   )

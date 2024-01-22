@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import Image from 'next/image'
 import { ComponentProps, ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import useDownloader from 'react-use-downloader'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -48,7 +49,7 @@ export function DownloadDialog({
   const { title, image, imageAlt, variant } = useVideo()
   const { percentage, download, cancel, isInProgress } = useDownloader()
   const [openTerms, setOpenTerms] = useState<boolean>(false)
-
+  const { t } = useTranslation('apps-watch')
   const downloads = variant?.downloads ?? []
   const language = variant?.language ?? {
     __typename: 'Language',
@@ -189,7 +190,7 @@ export function DownloadDialog({
                     sx={{ cursor: 'pointer' }}
                     onClick={() => setOpenTerms(true)}
                   >
-                    Terms of Use
+                    {t('Terms of Use')}
                   </Link>
                 </FormGroup>
                 <LoadingButton
@@ -210,7 +211,7 @@ export function DownloadDialog({
                     />
                   }
                 >
-                  Download
+                  {t('Download')}
                 </LoadingButton>
               </Stack>
               <TermsOfUseDialog

@@ -3,6 +3,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -19,6 +20,8 @@ interface HomePageProps {
 }
 
 export function HomePage({ videos }: HomePageProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   return (
     <PageWrapper hero={<HomeHero />}>
       <ThemeProvider
@@ -44,7 +47,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
             >
               <Stack spacing={10}>
                 <Typography variant="h3" component="h2" color="text.primary">
-                  About Our Project
+                  {t('About Our Project')}
                 </Typography>
                 <Stack direction="row" spacing={4}>
                   <Box
@@ -60,11 +63,13 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
                     sx={{ opacity: 0.85 }}
                     color="text.primary"
                   >
-                    With 70% of the world not being able to speak English, there
-                    is a huge opportunity for the gospel to spread to unreached
-                    places. We have a vision to make it easier to watch,
-                    download and share Christian videos with people in their
-                    native heart language.
+                    {t(
+                      'With 70% of the world not being able to speak English, there ' +
+                        'is a huge opportunity for the gospel to spread to unreached ' +
+                        'places. We have a vision to make it easier to watch, ' +
+                        'download and share Christian videos with people in their ' +
+                        'native heart language.'
+                    )}
                   </Typography>
                 </Stack>
                 <Typography
@@ -73,10 +78,12 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
                   sx={{ opacity: 0.8 }}
                   color="text.primary"
                 >
-                  Jesus Film Project is a Christian ministry with a vision to
-                  reach the world with the gospel of Jesus Christ through
-                  evangelistic videos. Watch from over 2000 languages on any
-                  device and share it with others.
+                  {t(
+                    'Jesus Film Project is a Christian ministry with a vision to\n' +
+                      'reach the world with the gospel of Jesus Christ through\n' +
+                      'evangelistic videos. Watch from over 2000 languages on any\n' +
+                      'device and share it with others.'
+                  )}
                 </Typography>
               </Stack>
             </Box>

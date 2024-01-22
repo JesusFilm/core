@@ -4,12 +4,15 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { HeroOverlay } from '../../HeroOverlay'
 
 import JesusHeader from './assets/jesus.jpg'
 
 export function HomeHero(): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   return (
     <Box
       sx={{
@@ -48,7 +51,7 @@ export function HomeHero(): ReactElement {
           sx={{ zIndex: 2 }}
         >
           <Typography variant="h1" color="secondary.contrastText">
-            Free Gospel Video{' '}
+            {t('Free Gospel Video')}{' '}
             <Box
               component="span"
               sx={{
@@ -58,9 +61,9 @@ export function HomeHero(): ReactElement {
                 textUnderlineOffset: { xs: 5, md: 10 }
               }}
             >
-              Streaming
+              {t('Streaming')}
             </Box>{' '}
-            Library.
+            {t('Library.')}
           </Typography>
           <Typography
             variant="h5"
@@ -68,7 +71,7 @@ export function HomeHero(): ReactElement {
             color="secondary.contrastText"
             sx={{ opacity: 0.7 }}
           >
-            Watch, learn and share the gospel in over 2000 languages
+            {t('Watch, learn and share the gospel in over 2000 languages')}
           </Typography>
         </Stack>
       </Container>

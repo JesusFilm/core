@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import { MouseEvent, ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -34,7 +35,7 @@ export function UserTeamInviteListItem({
   function handleClose(): void {
     setAnchorEl(null)
   }
-
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <ListItem
@@ -57,7 +58,7 @@ export function UserTeamInviteListItem({
               typography: 'body2'
             }}
           >
-            Invited
+            {t('Invited')}
           </Button>
         }
         data-testid={`UserTeamInviteListItem-${user.id}`}

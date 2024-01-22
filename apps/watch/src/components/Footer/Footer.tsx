@@ -3,6 +3,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { FooterLink } from './FooterLink'
 import { FooterLinks } from './FooterLinks'
@@ -10,6 +11,7 @@ import { FooterLogos } from './FooterLogos'
 import { FooterSocials } from './FooterSocials'
 
 export function Footer(): ReactElement {
+  const { t } = useTranslation('apps-watch')
   return (
     <>
       <Divider sx={{ height: 2 }} />
@@ -31,10 +33,15 @@ export function Footer(): ReactElement {
           <Stack direction="row" spacing={4} justifyContent="space-between">
             <Stack direction="row" spacing={10} justifyContent="space-between">
               <Typography variant="body2">
-                Copyright © 1995-{new Date().getFullYear()}
+                {t('Copyright © 1995-')}
+                {new Date().getFullYear()}
               </Typography>
-              <Typography variant="body2">Jesus Film Project®</Typography>
-              <Typography variant="body2">All rights reserved</Typography>
+              <Typography variant="body2">
+                {t('Jesus Film Project®')}
+              </Typography>
+              <Typography variant="body2">
+                {t('All rights reserved')}
+              </Typography>
             </Stack>
             <Stack direction="row" spacing={4} justifyContent="space-between">
               <FooterLink
@@ -62,8 +69,12 @@ export function Footer(): ReactElement {
             alignItems="center"
           >
             <Stack>
-              <Typography variant="body2">Copyright © 1995-2023</Typography>
-              <Typography variant="body2">Jesus Film Project®</Typography>
+              <Typography variant="body2">
+                {t('Copyright © 1995-2023')}
+              </Typography>
+              <Typography variant="body2">
+                {t('Jesus Film Project®')}
+              </Typography>
             </Stack>
             <FooterLogos />
           </Stack>
@@ -73,7 +84,7 @@ export function Footer(): ReactElement {
               label="Legal Statement"
               variant="body2"
             />
-            <Typography variant="body2">All rights reserved</Typography>
+            <Typography variant="body2">{t('All rights reserved')}</Typography>
             <FooterLink
               url="https://www.jesusfilm.org/terms/"
               label="Terms of use"

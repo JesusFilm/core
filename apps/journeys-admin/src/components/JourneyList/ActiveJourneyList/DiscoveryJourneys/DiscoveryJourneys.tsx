@@ -25,7 +25,7 @@ export function DiscoveryJourneys(): ReactElement {
     >
       <EmbedJourney slug="admin-left">
         <Typography variant="h1" gutterBottom textAlign="center">
-          ⚠️
+          {t('⚠️')}
         </Typography>
         <Typography variant="h6" gutterBottom textAlign="center">
           {t('Beta version')}

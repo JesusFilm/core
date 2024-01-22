@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
@@ -16,6 +17,9 @@ import { NewVideoButton } from './NewVideoButton'
 
 export function BlocksTab(): ReactElement {
   const { formiumForm } = useFlags()
+
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Stack
@@ -42,7 +46,9 @@ export function BlocksTab(): ReactElement {
           borderTop: (theme) => `1px solid ${theme.palette.divider}`
         }}
       >
-        <MuiTypography align="center">Select a Block to Insert</MuiTypography>
+        <MuiTypography align="center">
+          {t('Select a Block to Insert')}
+        </MuiTypography>
       </Box>
     </>
   )

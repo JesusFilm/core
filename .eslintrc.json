@@ -110,6 +110,7 @@
     },
     {
       "files": ["*.tsx", "*.jsx"],
+      "extends": ["plugin:i18next/recommended"],
       "rules": {
         "react/jsx-indent": ["error", 2],
         "react/self-closing-comp": [
@@ -136,7 +137,8 @@
       ],
       "rules": {
         "jest/no-disabled-tests": "off",
-        "jest/require-top-level-describe": "error"
+        "jest/require-top-level-describe": "error",
+        "i18next/no-literal-string": "off"
       }
     },
     {
@@ -147,7 +149,10 @@
         "*.stories.jsx"
       ],
       "plugins": ["storybook"],
-      "extends": ["plugin:storybook/recommended"]
+      "extends": ["plugin:storybook/recommended"],
+      "rules": {
+        "i18next/no-literal-string": "off"
+      }
     }
   ]
 }

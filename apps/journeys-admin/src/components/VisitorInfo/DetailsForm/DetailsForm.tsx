@@ -114,7 +114,7 @@ export function DetailsForm({ id }: DetailsFormProps): ReactElement {
                         onChange={handleChange}
                         onBlur={handleBlur}
                       >
-                        <MenuItem value="">⚪️</MenuItem>
+                        <MenuItem value="">{t('⚪️')}</MenuItem>
                         <MenuItem value={VisitorStatus.star}>⭐</MenuItem>
                         <MenuItem value={VisitorStatus.prohibited}>🚫</MenuItem>
                         <MenuItem value={VisitorStatus.checkMarkSymbol}>

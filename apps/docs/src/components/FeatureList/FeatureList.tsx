@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import React, { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import styles from './FeatureList.module.css'
 
@@ -8,36 +9,6 @@ interface Item {
   image?: string
   description: ReactElement
 }
-
-const features: Item[] = [
-  {
-    title: 'Deploy Quickly',
-    description: (
-      <>
-        Our Continuous Integration &amp; Continuous Delivery pipeline lets you
-        deliver code changes more frequently and reliably.
-      </>
-    )
-  },
-  {
-    title: 'Common Environment',
-    description: (
-      <>
-        We run on Docker. This means every developer shares the same environment
-        that closely mimics production making collaboration simple.
-      </>
-    )
-  },
-  {
-    title: 'Powered by Typescript',
-    description: (
-      <>
-        TypeScript is a strongly typed programming language that builds on
-        JavaScript, giving you better tooling at any scale.
-      </>
-    )
-  }
-]
 
 function Feature({ title, image, description }: Item): ReactElement {
   return (
@@ -56,6 +27,44 @@ function Feature({ title, image, description }: Item): ReactElement {
 }
 
 export function FeatureList(): ReactElement {
+  const { t } = useTranslation('apps-docs')
+
+  const features: Item[] = [
+    {
+      title: 'Deploy Quickly',
+      description: (
+        <>
+          {t(
+            'Our Continuous Integration &amp; Continuous Delivery pipeline lets you\n' +
+              'deliver code changes more frequently and reliably.'
+          )}
+        </>
+      )
+    },
+    {
+      title: 'Common Environment',
+      description: (
+        <>
+          {t(
+            'We run on Docker. This means every developer shares the same environment\n' +
+              'that closely mimics production making collaboration simple.'
+          )}
+        </>
+      )
+    },
+    {
+      title: 'Powered by Typescript',
+      description: (
+        <>
+          {t(
+            'TypeScript is a strongly typed programming language that builds on\n' +
+              'JavaScript, giving you better tooling at any scale.'
+          )}
+        </>
+      )
+    }
+  ]
+
   return (
     <section className={styles.featureList}>
       <div className="container">

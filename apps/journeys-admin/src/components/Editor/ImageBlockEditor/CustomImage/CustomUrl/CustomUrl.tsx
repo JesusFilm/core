@@ -71,7 +71,7 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
       >
         <LinkIcon />
         <Typography variant="subtitle2" sx={{ pl: 2, pr: 1 }}>
-          Add image by URL
+          {t('Add image by URL')}
         </Typography>
         {open ? (
           <ChevronUpIcon sx={{ ml: 'auto' }} />

@@ -5,6 +5,7 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
@@ -37,6 +38,7 @@ export function VideoBlockEditorSettingsPoster({
   const [loading, setLoading] = useState(false)
   const handleLoading = (): void => setLoading(true)
   const handleLoad = (): void => setLoading(false)
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Stack
@@ -51,13 +53,13 @@ export function VideoBlockEditorSettingsPoster({
           color={disabled ? theme.palette.action.disabled : ''}
           sx={{ letterSpacing: 0 }}
         >
-          Cover Image
+          {t('Cover Image')}
         </Typography>
         <Typography
           variant="caption"
           color={disabled ? theme.palette.action.disabled : ''}
         >
-          Appears while video is loading
+          {t('Appears while video is loading')}
         </Typography>
       </Stack>
       <Box
