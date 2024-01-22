@@ -19,6 +19,7 @@ import { MenuItem } from '../../../MenuItem'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
+  closeMenu?: () => void
   disabled?: boolean
 }
 
@@ -30,9 +31,12 @@ export const BLOCK_DUPLICATE = gql`
   }
 `
 
+
+
 export function DuplicateBlock({
   variant,
-  disabled = false
+  disabled = false,
+  closeMenu
 }: DuplicateBlockProps): ReactElement {
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
 
@@ -89,6 +93,9 @@ export function DuplicateBlock({
         }
       })
       if (data?.blockDuplicate != null) {
+        if (closeMenu != null) {
+          closeMenu()
+        }
         if (selectedBlock.__typename === 'StepBlock') {
           const stepBlocks = transformer(
             data?.blockDuplicate as BlockFields[]
