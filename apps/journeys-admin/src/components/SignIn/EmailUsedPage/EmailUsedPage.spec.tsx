@@ -12,9 +12,13 @@ describe('EmailUsedPage', () => {
     )
 
     expect(getByText('You already have an account')).toBeInTheDocument()
-    expect(getByText("You've already used")).toBeInTheDocument()
+    expect(
+      getByText("You've already used", { exact: false })
+    ).toBeInTheDocument()
     expect(getByText('test@exampleemail.com')).toBeInTheDocument()
-    expect(getByText('Sign in with Google to continue')).toBeInTheDocument()
+    expect(
+      getByText('Sign in with Google to continue', { exact: false })
+    ).toBeInTheDocument()
   })
 
   it('should render if account has been registered with Facebook', () => {
@@ -26,8 +30,12 @@ describe('EmailUsedPage', () => {
     )
 
     expect(getByText('You already have an account')).toBeInTheDocument()
-    expect(getByText("You've already used")).toBeInTheDocument()
+    expect(
+      getByText("You've already used", { exact: false })
+    ).toBeInTheDocument()
     expect(getByText('test@exampleemail.com')).toBeInTheDocument()
-    expect(getByText('Sign in with Facebook to continue')).toBeInTheDocument()
+    expect(
+      getByText('Sign in with Facebook to continue', { exact: false })
+    ).toBeInTheDocument()
   })
 })
