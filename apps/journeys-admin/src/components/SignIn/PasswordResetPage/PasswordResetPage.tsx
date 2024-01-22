@@ -12,6 +12,7 @@ import { PageProps } from '../types'
 
 export function PasswordResetPage({
   userEmail,
+  setUserEmail,
   setActivePage
 }: PageProps): ReactElement {
   const auth = getAuth()
@@ -30,6 +31,10 @@ export function PasswordResetPage({
   ): Promise<void> {
     try {
       await sendPasswordResetEmail(auth, values.email)
+      if (setActivePage != null && setUserEmail != null) {
+        setUserEmail(values.email)
+        setActivePage('reset')
+      }
     } catch (error) {
       setFieldError(
         'email',

@@ -5,6 +5,7 @@ export type ActivePage =
   | 'google.com'
   | 'facebook.com'
   | 'help'
+  | 'reset'
 
 export interface PageProps {
   userEmail?: string

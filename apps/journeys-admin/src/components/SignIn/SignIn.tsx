@@ -16,6 +16,7 @@ import { HomePage } from './HomePage'
 import { PasswordPage } from './PasswordPage'
 import { PasswordResetPage } from './PasswordResetPage'
 import { RegisterPage } from './RegisterPage'
+import { ResetPasswordSentPage } from './ResetPasswordSentPage'
 import { ActivePage, PageProps } from './types'
 
 export function SignIn(): ReactElement {
@@ -52,6 +53,9 @@ export function SignIn(): ReactElement {
       break
     case 'help':
       page = <PasswordResetPage {...props} />
+      break
+    case 'reset':
+      page = <ResetPasswordSentPage {...props} />
       break
     default:
       page = <></>
