@@ -33,7 +33,7 @@ describe('SignInServiceButton', () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
-    const { getByRole } = render(<SignInServiceButton variant="Google" />)
+    const { getByRole } = render(<SignInServiceButton service="google.com" />)
 
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
@@ -46,7 +46,7 @@ describe('SignInServiceButton', () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
-    const { getByRole } = render(<SignInServiceButton variant="Facebook" />)
+    const { getByRole } = render(<SignInServiceButton service="facebook.com" />)
 
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())

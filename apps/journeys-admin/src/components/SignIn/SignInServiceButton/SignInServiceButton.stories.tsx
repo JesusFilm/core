@@ -15,13 +15,13 @@ const Template: StoryObj<typeof SignInServiceButton> = {
   render: ({ ...args }) => {
     return (
       <MockedProvider>
-        <SignInServiceButton variant={args.variant} />
+        <SignInServiceButton service={args.service} />
       </MockedProvider>
     )
   }
 }
 
-export const Google = { ...Template, args: { variant: 'Google' } }
-export const Facebook = { ...Template, args: { variant: 'Facebook' } }
+export const Google = { ...Template, args: { service: 'google.com' } }
+export const Facebook = { ...Template, args: { service: 'facebook.com' } }
 
 export default SignInServiceButtonStory

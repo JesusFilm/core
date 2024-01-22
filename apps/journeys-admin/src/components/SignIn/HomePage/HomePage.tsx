@@ -51,7 +51,7 @@ export function HomePage({
       }
     }
     setUserEmail?.(values.email)
-    setUserPassword?.(values.password)
+    setUserPassword?.(values.password ?? '')
   }
   return (
     <>
