@@ -18,7 +18,6 @@ export interface MainBodyContainerProps {
 
 export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
-  const router = useRouter()
 
   return (
     <Box
