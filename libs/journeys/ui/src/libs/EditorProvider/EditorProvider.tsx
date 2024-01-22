@@ -29,9 +29,10 @@ export enum ActiveFab {
 }
 
 export enum ActiveJourneyEditContent {
+  Action = 'action',
   Canvas = 'canvas',
-  SocialPreview = 'social',
-  Action = 'action'
+  JourneyFlow = 'journeyFlow',
+  SocialPreview = 'social'
 }
 
 export interface EditorState {

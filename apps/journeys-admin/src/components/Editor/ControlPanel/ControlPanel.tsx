@@ -171,6 +171,18 @@ export function ControlPanel(): ReactElement {
         mobileOpen: false,
         children: <SocialShareAppearance />
       })
+    } else if (view === ActiveJourneyEditContent.JourneyFlow) {
+      setRoute('journeyFlow')
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.JourneyFlow
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        mobileOpen: false,
+        title: t('Properties'),
+        children: <Properties isPublisher={false} />
+      })
     }
   }
 

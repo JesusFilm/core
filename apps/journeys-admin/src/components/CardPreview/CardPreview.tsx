@@ -106,6 +106,9 @@ export function CardPreview({
       case 'social':
         onSelect?.({ view: ActiveJourneyEditContent.SocialPreview })
         return
+      case 'journeyFlow':
+        onSelect?.({ view: ActiveJourneyEditContent.JourneyFlow })
+        return
     }
     if (steps == null) return
 

@@ -13,6 +13,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { JourneyFlow } from '../JourneyFlow'
 import { PageWrapper } from '../PageWrapper'
 
 import { Canvas } from './Canvas'
@@ -49,6 +50,7 @@ function bgColor(
 ): string {
   if (
     view === ActiveJourneyEditContent.SocialPreview ||
+    view === ActiveJourneyEditContent.JourneyFlow ||
     (hasAction && view === ActiveJourneyEditContent.Action)
   ) {
     return theme.palette.background.default
@@ -97,6 +99,7 @@ export function Editor({
               {
                 {
                   [ActiveJourneyEditContent.Canvas]: <Canvas />,
+                  [ActiveJourneyEditContent.JourneyFlow]: <JourneyFlow />,
                   [ActiveJourneyEditContent.Action]: (
                     <ActionsTable
                       hasAction={(action) => setHasAction(action)}

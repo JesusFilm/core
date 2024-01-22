@@ -109,12 +109,20 @@ export function CardList({
     )
   }
 
-  const selectedId =
-    journeyEditContentComponent === ActiveJourneyEditContent.Action
-      ? 'goals'
-      : journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
-      ? 'social'
-      : selected?.id
+  let selectedId: string | undefined
+  switch (journeyEditContentComponent) {
+    case ActiveJourneyEditContent.Action:
+      selectedId = 'goals'
+      break
+    case ActiveJourneyEditContent.SocialPreview:
+      selectedId = 'social'
+      break
+    case ActiveJourneyEditContent.JourneyFlow:
+      selectedId = 'journeyFlow'
+      break
+    default:
+      selectedId = selected?.id
+  }
 
   return (
     <HorizontalSelect
@@ -187,6 +195,28 @@ export function CardList({
                 }}
               />
             )
+          }
+          loading={journey == null}
+        />
+      )}
+      {showNavigation === true && (
+        <NavigationCard
+          key="journeyFlow"
+          id="journeyFlow"
+          title="Flow"
+          destination={ActiveJourneyEditContent.JourneyFlow}
+          header={
+            <Box
+              bgcolor={(theme) => theme.palette.background.paper}
+              borderRadius={1}
+              width={72}
+              height={72}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <TargetIcon color="error" />
+            </Box>
           }
           loading={journey == null}
         />
