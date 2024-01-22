@@ -99,7 +99,7 @@ export function RegisterPage({
           isValid,
           isSubmitting
         }) => (
-          <Form noValidate autoComplete="off" data-testid="RegisterForm">
+          <Form data-testid="RegisterForm">
             <Stack gap={4} data-testid="RegisterPage">
               <Typography
                 variant="h6"
@@ -109,23 +109,8 @@ export function RegisterPage({
                 {t('Create account')}
               </Typography>
               <TextField
-                autoComplete="on"
-                name="email"
-                label="Email"
-                placeholder={t('Enter your email address here')}
-                variant="filled"
-                value={values.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={errors.email != null && touched.email != null}
-                helperText={
-                  touched?.email != null &&
-                  errors.email != null && <>{errors.email}</>
-                }
-                fullWidth
-              />
-              <TextField
-                autoComplete="on"
+                id="name"
+                autoComplete="name"
                 name="name"
                 label="Name"
                 placeholder={t('First & last name')}
@@ -141,7 +126,26 @@ export function RegisterPage({
                 fullWidth
               />
               <TextField
-                autoComplete="on"
+                id="username"
+                type="email"
+                autoComplete="username"
+                name="email"
+                label="Email"
+                placeholder={t('Enter your email address here')}
+                variant="filled"
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={errors.email != null && touched.email != null}
+                helperText={
+                  touched?.email != null &&
+                  errors.email != null && <>{errors.email}</>
+                }
+                fullWidth
+              />
+              <TextField
+                id="new-password"
+                autoComplete="new-password"
                 name="password"
                 label="Password"
                 placeholder={t('Choose password')}
@@ -155,7 +159,6 @@ export function RegisterPage({
                   errors.password != null && <>{errors.password}</>
                 }
                 fullWidth
-                id="standard-adornment-password"
                 type={showPassword ? 'text' : 'password'}
                 InputProps={{
                   endAdornment: (

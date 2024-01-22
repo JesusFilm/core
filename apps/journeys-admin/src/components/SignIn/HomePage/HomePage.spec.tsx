@@ -24,6 +24,9 @@ describe('Home', () => {
     await waitFor(() =>
       expect(getByText('Please enter your email address')).toBeInTheDocument()
     )
+    await waitFor(() =>
+      expect(getByText('Please enter your email address')).toBeInTheDocument()
+    )
     expect(getByRole('button', { name: 'Sign in with email' })).toBeDisabled()
   })
 

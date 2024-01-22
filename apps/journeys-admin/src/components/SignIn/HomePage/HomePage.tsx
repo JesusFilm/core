@@ -16,7 +16,8 @@ import { PageProps } from '../types'
 
 export function HomePage({
   setActivePage,
-  setUserEmail
+  setUserEmail,
+  setUserPassword
 }: PageProps): ReactElement {
   const { t } = useTranslation()
   const validationSchema = object().shape({
@@ -24,7 +25,8 @@ export function HomePage({
       .trim()
       .lowercase()
       .email(t('Please enter a valid email address'))
-      .required(t('Please enter your email address'))
+      .required(t('Please enter your email address')),
+    password: string().min(6)
   })
   async function handleEmailSignIn(
     values: InferType<typeof validationSchema>
@@ -49,6 +51,7 @@ export function HomePage({
       }
     }
     setUserEmail?.(values.email)
+    setUserPassword?.(values.password)
   }
   return (
     <>
@@ -77,23 +80,44 @@ export function HomePage({
           isValid,
           isSubmitting
         }) => (
-          <Form noValidate autoComplete="off" data-testid="EmailSignInForm">
+          <Form data-testid="EmailSignInForm">
             <Stack gap={4}>
-              <TextField
-                autoComplete="on"
-                name="email"
-                hiddenLabel
-                placeholder={t('Enter your email address here')}
-                variant="filled"
-                value={values.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={errors.email != null && touched.email != null}
-                helperText={
-                  touched?.email != null && errors.email != null && errors.email
-                }
-                fullWidth
-              />
+              <div>
+                <TextField
+                  id="username"
+                  type="email"
+                  autoComplete="username"
+                  name="email"
+                  hiddenLabel
+                  placeholder={t('Enter your email address here')}
+                  variant="filled"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.email != null && touched.email != null}
+                  helperText={
+                    touched?.email != null &&
+                    errors.email != null &&
+                    errors.email
+                  }
+                  fullWidth
+                />
+                <input
+                  tabIndex={-1}
+                  id="current-password"
+                  type="password"
+                  autoComplete="current-password"
+                  name="password"
+                  style={{
+                    display: 'block',
+                    opacity: 0,
+                    height: 0,
+                    padding: 0,
+                    border: 0
+                  }}
+                  onChange={handleChange}
+                />
+              </div>
               <Button
                 variant="contained"
                 size="large"

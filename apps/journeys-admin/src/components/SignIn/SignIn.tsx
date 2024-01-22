@@ -22,13 +22,16 @@ export function SignIn(): ReactElement {
   const { t } = useTranslation()
   const [activePage, setActivePage] = useState<ActivePage>('home')
   const [userEmail, setUserEmail] = useState<string>('')
+  const [userPassword, setUserPassword] = useState<string>('')
 
   let page: ReactElement<PageProps>
   const props: PageProps = {
     activePage,
     setActivePage,
     userEmail,
-    setUserEmail
+    setUserEmail,
+    userPassword,
+    setUserPassword
   }
 
   switch (activePage) {

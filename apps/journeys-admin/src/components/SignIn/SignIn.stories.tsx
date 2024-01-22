@@ -68,14 +68,26 @@ export const Register = {
 export const Google = {
   ...Template,
   args: {
-    children: <EmailUsedPage userEmail={userEmail} variant="Google" />
+    children: (
+      <EmailUsedPage
+        setActivePage={setActivePage}
+        userEmail={userEmail}
+        variant="Google"
+      />
+    )
   }
 }
 
 export const Facebook = {
   ...Template,
   args: {
-    children: <EmailUsedPage userEmail={userEmail} variant="Facebook" />
+    children: (
+      <EmailUsedPage
+        setActivePage={setActivePage}
+        userEmail={userEmail}
+        variant="Facebook"
+      />
+    )
   }
 }
 
