@@ -13,18 +13,18 @@ import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 
 interface SignInServiceButtonProps {
-  variant?: 'Facebook' | 'Google'
+  service: 'google.com' | 'facebook.com'
 }
 
 export function SignInServiceButton({
-  variant
+  service
 }: SignInServiceButtonProps): ReactElement {
   const { t } = useTranslation()
   const router = useRouter()
   async function handleSignIn(): Promise<void> {
     const auth = getAuth()
     const authProvider =
-      variant === 'Google'
+      service === 'google.com'
         ? new GoogleAuthProvider()
         : new FacebookAuthProvider()
     authProvider.setCustomParameters({ prompt: 'select_account' })
@@ -37,11 +37,11 @@ export function SignInServiceButton({
       variant="outlined"
       size="large"
       color="secondary"
-      startIcon={variant === 'Facebook' ? <FacebookIcon /> : <GoogleIcon />}
+      startIcon={service === 'google.com' ? <GoogleIcon /> : <FacebookIcon />}
       onClick={handleSignIn}
       fullWidth
     >
-      {t(`Sign in with ${variant === 'Facebook' ? 'Facebook' : 'Google'}`)}
+      {t(`Sign in with ${service === 'google.com' ? 'Google' : 'Facebook'}`)}
     </Button>
   )
 }

@@ -2,6 +2,11 @@ import { fireEvent, render } from '@testing-library/react'
 
 import { PasswordResetPage } from './PasswordResetPage'
 
+jest.mock('firebase/auth', () => ({
+  getAuth: jest.fn(),
+  signInWithEmailAndPassword: jest.fn()
+}))
+
 describe('PasswordResetPage', () => {
   const mockSetActivePage = jest.fn()
 
@@ -13,10 +18,10 @@ describe('PasswordResetPage', () => {
       />
     )
 
-    expect(getByText('Sign In')).toBeInTheDocument()
+    expect(getByText('Reset Password')).toBeInTheDocument()
     expect(
       getByText(
-        'Get instructions sent to this email that explain how to reset your password'
+        'Get instructions sent to this email that explain how to reset your password.'
       )
     ).toBeInTheDocument()
     expect(getByRole('textbox')).toHaveValue('test@example.com')
@@ -29,7 +34,7 @@ describe('PasswordResetPage', () => {
         setActivePage={mockSetActivePage}
       />
     )
-    fireEvent.click(getByRole('button', { name: 'CANCEL' }))
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
     expect(mockSetActivePage).toHaveBeenCalledWith('password')
   })
 })

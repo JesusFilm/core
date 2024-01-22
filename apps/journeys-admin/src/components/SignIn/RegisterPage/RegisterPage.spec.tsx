@@ -1,6 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { FirebaseError } from 'firebase/app'
 import {
+  UserCredential,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword
 } from 'firebase/auth'
@@ -11,7 +12,8 @@ import { RegisterPage } from './RegisterPage'
 jest.mock('firebase/auth', () => ({
   getAuth: jest.fn(),
   createUserWithEmailAndPassword: jest.fn(),
-  signInWithEmailAndPassword: jest.fn()
+  signInWithEmailAndPassword: jest.fn(),
+  updateProfile: jest.fn()
 }))
 
 jest.mock('next/router', () => ({
@@ -35,7 +37,7 @@ describe('PasswordPage', () => {
       <RegisterPage setActivePage={jest.fn()} userEmail="example@example.com" />
     )
 
-    fireEvent.click(getByRole('button', { name: 'Save' }))
+    fireEvent.click(getByRole('button', { name: 'Sign Up' }))
     await waitFor(() =>
       expect(getByText('Enter your password')).toBeInTheDocument()
     )
@@ -56,6 +58,11 @@ describe('PasswordPage', () => {
     const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    mockCreateUserWithEmailAndPassword.mockResolvedValue({
+      user: {
+        uid: '123'
+      }
+    } as unknown as UserCredential)
 
     const { getByLabelText, getByRole } = render(
       <RegisterPage setActivePage={jest.fn()} userEmail="example@example.com" />
@@ -68,7 +75,7 @@ describe('PasswordPage', () => {
     fireEvent.change(getByLabelText('Password'), {
       target: { value: 'Password' }
     })
-    fireEvent.click(getByRole('button', { name: 'Save' }))
+    fireEvent.click(getByRole('button', { name: 'Sign Up' }))
 
     await waitFor(() => {
       expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalled()
@@ -104,7 +111,7 @@ describe('PasswordPage', () => {
     fireEvent.change(getByLabelText('Password'), {
       target: { value: 'Password' }
     })
-    fireEvent.click(getByRole('button', { name: 'Save' }))
+    fireEvent.click(getByRole('button', { name: 'Sign Up' }))
 
     await waitFor(() => {
       expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalled()

@@ -17,7 +17,7 @@ jest.mock('next/router', () => ({
 describe('PasswordPage', () => {
   it('should render password page', () => {
     const { getByText, getByRole } = render(
-      <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
+      <PasswordPage userEmail="example@example.com" />
     )
 
     expect(getByText('Sign in')).toBeInTheDocument()
@@ -28,10 +28,10 @@ describe('PasswordPage', () => {
 
   it('should require user to enter a password', async () => {
     const { getByText, getByRole } = render(
-      <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
+      <PasswordPage userEmail="example@example.com" />
     )
 
-    fireEvent.click(getByRole('button', { name: 'SIGN IN' }))
+    fireEvent.click(getByRole('button', { name: 'Sign In' }))
     await waitFor(() =>
       expect(getByText('Enter your password')).toBeInTheDocument()
     )
@@ -48,13 +48,13 @@ describe('PasswordPage', () => {
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
     const { getByLabelText, getByRole } = render(
-      <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
+      <PasswordPage userEmail="example@example.com" />
     )
 
     fireEvent.change(getByLabelText('Password'), {
       target: { value: 'Password' }
     })
-    fireEvent.click(getByRole('button', { name: 'SIGN IN' }))
+    fireEvent.click(getByRole('button', { name: 'Sign In' }))
 
     await waitFor(() => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
@@ -83,7 +83,7 @@ describe('PasswordPage', () => {
     fireEvent.change(getByLabelText('Password'), {
       target: { value: 'Wrong Password' }
     })
-    fireEvent.click(getByRole('button', { name: 'SIGN IN' }))
+    fireEvent.click(getByRole('button', { name: 'Sign In' }))
 
     await waitFor(() => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
@@ -112,7 +112,7 @@ describe('PasswordPage', () => {
     fireEvent.change(getByLabelText('Password'), {
       target: { value: 'Password after too many requests' }
     })
-    fireEvent.click(getByRole('button', { name: 'SIGN IN' }))
+    fireEvent.click(getByRole('button', { name: 'Sign In' }))
 
     await waitFor(() => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
@@ -126,17 +126,17 @@ describe('PasswordPage', () => {
     })
   })
 
-  it('should take user to help page if they have trouble signing in', async () => {
+  it('should take user to help page if they have forgotten their password', async () => {
     const mockSetActivePage = jest.fn()
 
-    const { getByRole } = render(
+    const { getByText } = render(
       <PasswordPage
         setActivePage={mockSetActivePage}
         userEmail="example@example.com"
       />
     )
 
-    fireEvent.click(getByRole('button', { name: 'Trouble signing in?' }))
+    fireEvent.click(getByText('Forgot your password?'))
     await waitFor(() => {
       expect(mockSetActivePage).toHaveBeenCalledWith('help')
     })

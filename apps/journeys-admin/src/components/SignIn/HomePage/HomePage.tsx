@@ -11,16 +11,8 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { InferType, object, string } from 'yup'
 
-import type { ActivePage } from '../SignIn'
 import { SignInServiceButton } from '../SignInServiceButton'
-
-export interface PageProps {
-  userEmail?: string
-  setUserEmail?: (userEmail: string) => void
-  activePage?: ActivePage
-  setActivePage: (activePage: ActivePage) => void
-  variant?: 'Google' | 'Facebook'
-}
+import { PageProps } from '../types'
 
 export function HomePage({
   setActivePage,
@@ -40,25 +32,23 @@ export function HomePage({
     const auth = getAuth()
     const result = await fetchSignInMethodsForEmail(auth, values.email)
     if (result.length === 0) {
-      setActivePage('register')
+      setActivePage?.('register')
     } else {
       switch (result[0]) {
         case 'password':
-          setActivePage('password')
+          setActivePage?.('password')
           break
         case 'google.com':
-          setActivePage('google.com')
+          setActivePage?.('google.com')
           break
         case 'facebook.com':
-          setActivePage('facebook.com')
+          setActivePage?.('facebook.com')
           break
         default:
           break
       }
     }
-    if (setUserEmail != null) {
-      setUserEmail(values.email)
-    }
+    setUserEmail?.(values.email)
   }
   return (
     <>
@@ -70,8 +60,8 @@ export function HomePage({
           {t("No account? We'll create one for you automatically.")}
         </Typography>
       </Box>
-      <SignInServiceButton variant="Google" />
-      <SignInServiceButton variant="Facebook" />
+      <SignInServiceButton service="google.com" />
+      <SignInServiceButton service="facebook.com" />
       <Divider>{t('OR')}</Divider>
       <Formik
         initialValues={{ email: '' }}

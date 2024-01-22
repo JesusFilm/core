@@ -1,9 +1,9 @@
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
+import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -14,7 +14,7 @@ import React, { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
-import { PageProps } from '../HomePage/HomePage'
+import { PageProps } from '../types'
 
 export function PasswordPage({
   userEmail,
@@ -121,32 +121,33 @@ export function PasswordPage({
                   )
                 }}
               />
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-around'
-                }}
-              >
+              <Typography variant="caption" textAlign="right">
+                <Link
+                  onClick={() => setActivePage?.('help')}
+                  sx={{ textDecoration: 'none' }}
+                >
+                  {t('Forgot your password?')}
+                </Link>
+              </Typography>
+              <Stack direction="row" spacing={2}>
                 <Button
                   variant="text"
-                  size="medium"
+                  size="large"
                   fullWidth
-                  onClick={() => setActivePage('help')}
+                  onClick={() => setActivePage?.('home')}
                 >
-                  {t('Trouble signing in?')}
+                  {t('Cancel')}
                 </Button>
                 <Button
                   variant="contained"
-                  size="medium"
+                  size="large"
                   color="secondary"
                   type="submit"
                   fullWidth
                 >
-                  {t('SIGN IN')}
+                  {t('Sign In')}
                 </Button>
-              </Box>
+              </Stack>
             </Stack>
           </Form>
         )}

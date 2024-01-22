@@ -1,6 +1,5 @@
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -19,7 +18,7 @@ import React, { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
-import { PageProps } from '../HomePage/HomePage'
+import { PageProps } from '../types'
 
 export function RegisterPage({
   setActivePage,
@@ -172,19 +171,12 @@ export function RegisterPage({
                   )
                 }}
               />
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-around'
-                }}
-              >
+              <Stack direction="row" spacing={2}>
                 <Button
                   variant="text"
                   size="large"
                   fullWidth
-                  onClick={() => setActivePage('home')}
+                  onClick={() => setActivePage?.('home')}
                 >
                   {t('Cancel')}
                 </Button>
@@ -196,9 +188,9 @@ export function RegisterPage({
                   fullWidth
                   disabled={!isValid || isSubmitting}
                 >
-                  {t('Save')}
+                  {t('Sign Up')}
                 </Button>
-              </Box>
+              </Stack>
             </Stack>
           </Form>
         )}

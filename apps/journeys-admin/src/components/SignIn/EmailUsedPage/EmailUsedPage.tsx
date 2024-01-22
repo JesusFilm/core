@@ -3,10 +3,17 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PageProps } from '../HomePage/HomePage'
 import { SignInServiceButton } from '../SignInServiceButton'
+import { PageProps } from '../types'
 
-export function EmailUsedPage({ userEmail, variant }: PageProps): ReactElement {
+interface EmailUsedPageProps extends PageProps {
+  activePage: 'google.com' | 'facebook.com'
+}
+
+export function EmailUsedPage({
+  activePage,
+  userEmail
+}: EmailUsedPageProps): ReactElement {
   const { t } = useTranslation()
   return (
     <>
@@ -18,11 +25,11 @@ export function EmailUsedPage({ userEmail, variant }: PageProps): ReactElement {
         <Typography sx={{ fontWeight: 'bold' }}>{userEmail}</Typography>
         <Typography>
           {t(`Sign in with {{service}} to continue`, {
-            service: variant === 'Google' ? t('Google') : t('Facebook')
+            service: activePage === 'google.com' ? t('Google') : t('Facebook')
           })}
         </Typography>
       </Box>
-      <SignInServiceButton variant={variant} />
+      <SignInServiceButton service={activePage} />
     </>
   )
 }

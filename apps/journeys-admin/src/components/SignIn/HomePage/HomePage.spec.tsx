@@ -10,9 +10,7 @@ jest.mock('firebase/auth', () => ({
 
 describe('Home', () => {
   it('should render home page', () => {
-    const { getByText } = render(
-      <HomePage setActivePage={jest.fn()} setEmail={jest.fn()} />
-    )
+    const { getByText } = render(<HomePage />)
     expect(getByText('Log in or Sign up')).toBeInTheDocument()
     expect(
       getByText("No account? We'll create one for you automatically.")
@@ -20,19 +18,17 @@ describe('Home', () => {
   })
 
   it('should require user to enter an email', async () => {
-    const { getByRole, getByText } = render(
-      <HomePage setActivePage={jest.fn()} setEmail={jest.fn()} />
-    )
+    const { getByRole, getByText } = render(<HomePage />)
 
     fireEvent.click(getByRole('button', { name: 'Sign in with email' }))
-    await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByText('Please enter your email address')).toBeInTheDocument()
+    )
     expect(getByRole('button', { name: 'Sign in with email' })).toBeDisabled()
   })
 
   it('should validate user email', async () => {
-    const { getByRole, getByText } = render(
-      <HomePage setActivePage={jest.fn()} setEmail={jest.fn()} />
-    )
+    const { getByRole, getByText } = render(<HomePage />)
 
     fireEvent.change(getByRole('textbox'), {
       target: { value: 'Invalid Email Address' }
@@ -52,9 +48,7 @@ describe('Home', () => {
         typeof fetchSignInMethodsForEmail
       >
 
-    const { getByRole } = render(
-      <HomePage setActivePage={jest.fn()} setEmail={jest.fn()} />
-    )
+    const { getByRole } = render(<HomePage />)
 
     fireEvent.change(getByRole('textbox'), {
       target: { value: 'example@example.com' }

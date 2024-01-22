@@ -16,69 +16,45 @@ import { HomePage } from './HomePage'
 import { PasswordPage } from './PasswordPage'
 import { PasswordResetPage } from './PasswordResetPage'
 import { RegisterPage } from './RegisterPage'
-
-export type ActivePage =
-  | 'home'
-  | 'password'
-  | 'register'
-  | 'google.com'
-  | 'facebook.com'
-  | 'help'
+import { ActivePage, PageProps } from './types'
 
 export function SignIn(): ReactElement {
   const { t } = useTranslation()
   const [activePage, setActivePage] = useState<ActivePage>('home')
   const [userEmail, setUserEmail] = useState<string>('')
 
-  const setEmail = (email): void => {
-    setUserEmail(email)
+  let page: ReactElement<PageProps>
+  const props: PageProps = {
+    activePage,
+    setActivePage,
+    userEmail,
+    setUserEmail
   }
-  let children
+
   switch (activePage) {
     case 'home':
-      children = (
-        <HomePage setActivePage={setActivePage} setUserEmail={setEmail} />
-      )
+      page = <HomePage {...props} />
       break
     case 'password':
-      children = (
-        <PasswordPage setActivePage={setActivePage} userEmail={userEmail} />
-      )
+      page = <PasswordPage {...props} />
       break
     case 'register':
-      children = (
-        <RegisterPage setActivePage={setActivePage} userEmail={userEmail} />
-      )
+      page = <RegisterPage {...props} />
       break
     case 'google.com':
-      children = (
-        <EmailUsedPage
-          setActivePage={setActivePage}
-          userEmail={userEmail}
-          variant="Google"
-        />
-      )
+      page = <EmailUsedPage {...props} activePage="google.com" />
       break
     case 'facebook.com':
-      children = (
-        <EmailUsedPage
-          setActivePage={setActivePage}
-          userEmail={userEmail}
-          variant="Facebook"
-        />
-      )
+      page = <EmailUsedPage {...props} activePage="facebook.com" />
       break
     case 'help':
-      children = (
-        <PasswordResetPage
-          setActivePage={setActivePage}
-          userEmail={userEmail}
-        />
-      )
+      page = <PasswordResetPage {...props} />
       break
     default:
+      page = <></>
       break
   }
+
   return (
     <Box
       sx={{
@@ -101,7 +77,7 @@ export function SignIn(): ReactElement {
         <CardContent
           sx={{ display: 'flex', flexDirection: 'column', gap: 4, p: 6, pt: 7 }}
         >
-          {children}
+          {page}
           <Divider sx={{ width: 397 }} />
           <Typography
             variant="body2"
