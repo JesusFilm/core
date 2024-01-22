@@ -4,6 +4,7 @@ import { Processor, WorkerHost } from '@nestjs/bullmq'
 // import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
+// to do: add accessKeyId & secretAccessKey via env vars
 // AWS.config.update({ region: 'us-east-2' })
 
 export interface EmailJob {
@@ -14,7 +15,7 @@ export interface EmailJob {
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
   async process(job: Job<EmailJob>): Promise<void> {
-    console.log('message queue job:', job.name)
+    // console.log('message queue job:', job.name)
     // await new SES()
     //   .sendEmail({
     //     Source: 'support@nextstep.is',
