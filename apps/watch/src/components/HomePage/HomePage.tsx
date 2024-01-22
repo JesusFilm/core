@@ -79,9 +79,9 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
                   color="text.primary"
                 >
                   {t(
-                    'Jesus Film Project is a Christian ministry with a vision to\n' +
-                      'reach the world with the gospel of Jesus Christ through\n' +
-                      'evangelistic videos. Watch from over 2000 languages on any\n' +
+                    'Jesus Film Project is a Christian ministry with a vision to ' +
+                      'reach the world with the gospel of Jesus Christ through ' +
+                      'evangelistic videos. Watch from over 2000 languages on any ' +
                       'device and share it with others.'
                   )}
                 </Typography>

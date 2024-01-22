@@ -35,7 +35,7 @@ export function FeatureList(): ReactElement {
       description: (
         <>
           {t(
-            'Our Continuous Integration &amp; Continuous Delivery pipeline lets you\n' +
+            'Our Continuous Integration & Continuous Delivery pipeline lets you ' +
               'deliver code changes more frequently and reliably.'
           )}
         </>
@@ -46,7 +46,7 @@ export function FeatureList(): ReactElement {
       description: (
         <>
           {t(
-            'We run on Docker. This means every developer shares the same environment\n' +
+            'We run on Docker. This means every developer shares the same environment ' +
               'that closely mimics production making collaboration simple.'
           )}
         </>
@@ -57,7 +57,7 @@ export function FeatureList(): ReactElement {
       description: (
         <>
           {t(
-            'TypeScript is a strongly typed programming language that builds on\n' +
+            'TypeScript is a strongly typed programming language that builds on' +
               'JavaScript, giving you better tooling at any scale.'
           )}
         </>
