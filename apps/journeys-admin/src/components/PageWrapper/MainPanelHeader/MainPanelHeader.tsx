@@ -9,6 +9,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 
+import { LanguageSelector } from '../../LanguageSelector'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelHeaderProps {
@@ -73,6 +74,7 @@ export function MainPanelHeader({
           {children}
         </Toolbar>
       </AppBar>
+      <LanguageSelector />
       {/* Reserves space beneath MainHeader on mobile - allows us to export MainPanel */}
       <Toolbar variant={toolbar.variant} sx={{ display: { md: 'none' } }} />
     </>
