@@ -1,8 +1,10 @@
+import { MailerService } from '@nestjs-modules/mailer'
 import { Job } from 'bullmq'
 
 import { EmailConsumer, EmailJob } from './email.consumer'
 
 const sendEmailMock = jest.fn().mockReturnValue({ promise: jest.fn() })
+// Mock the SES sendEmail method
 jest.mock('aws-sdk', () => ({
   config: {
     update() {
@@ -15,10 +17,10 @@ jest.mock('aws-sdk', () => ({
 }))
 
 describe('EmailConsumer', () => {
-  let emailConsumer: EmailConsumer
+  let emailConsumer: EmailConsumer, mailerService: MailerService
 
   beforeEach(() => {
-    emailConsumer = new EmailConsumer()
+    emailConsumer = new EmailConsumer(mailerService)
   })
 
   it('should process the email job', async () => {
@@ -30,8 +32,6 @@ describe('EmailConsumer', () => {
         body: 'Test Body'
       }
     } as unknown as Job<EmailJob, unknown, string>
-
-    // Mock the SES sendEmail method
 
     await emailConsumer.process(job)
 
