@@ -270,6 +270,7 @@ export function Card({
     </Paper>
   )
 
+  // const WrappedCard = enhance(variant, id)
   const WrappedCard = enhance(variant, id, activeBlock?.children[0].id)
 
   return WrappedCard(Card)
@@ -282,11 +283,7 @@ const enhance = (
 ) =>
   function component(baseComponent: ReactElement) {
     if (variant === 'default') {
-      return (
-        <Fade in={activeCardId === cardId} mountOnEnter unmountOnExit>
-          {baseComponent}
-        </Fade>
-      )
+      return <Fade in={activeCardId === cardId}>{baseComponent}</Fade>
     } else {
       return baseComponent
     }

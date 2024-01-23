@@ -13,7 +13,6 @@ import {
   previousActiveBlock,
   useBlocks
 } from '@core/journeys/ui/block'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -25,6 +24,7 @@ import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
+import { CardRenderer } from './CardRenderer'
 import { NavigationButton } from './NavigationButton'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
@@ -165,7 +165,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
 
-  const currentTheme = getStepTheme(activeBlock, journey)
+  const stepTheme = getStepTheme(activeBlock, journey)
 
   return (
     <Stack
@@ -178,12 +178,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         overflow: 'hidden'
       }}
     >
-      <ThemeProvider {...currentTheme} locale={locale} rtl={rtl} nested>
+      <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
         {showHeaderFooter && router.query.noi == null && (
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
         <Stack sx={{ height: '100%' }}>
-          <BlockRenderer block={activeBlock} />
+          <CardRenderer {...stepTheme} />
 
           <NavigationButton
             variant={rtl ? 'next' : 'previous'}
