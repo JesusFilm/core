@@ -98,9 +98,9 @@ export function CardStyling(): ReactElement {
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">
-              {cardBlock?.themeMode == null && 'Default'}
-              {cardBlock?.themeMode === ThemeMode.light && 'Light'}
-              {cardBlock?.themeMode === ThemeMode.dark && 'Dark'}
+              {cardBlock?.themeMode == null && t('Default')}
+              {cardBlock?.themeMode === ThemeMode.light && t('Light')}
+              {cardBlock?.themeMode === ThemeMode.dark && t('Dark')}
             </Typography>
             <Typography variant="caption">{t('Card Style')}</Typography>
           </Stack>

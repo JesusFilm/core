@@ -89,7 +89,7 @@ export function CardLayout(): ReactElement {
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">
-              {cardBlock?.fullscreen ?? false ? 'Expanded' : 'Contained'}
+              {cardBlock?.fullscreen ?? false ? t('Expanded') : t('Contained')}
             </Typography>
             <Typography variant="caption">{t('Card Layout')}</Typography>
           </Stack>
