@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
 
@@ -144,9 +144,11 @@ export function VideoHeroOverlay({
               >
                 <AccessTime sx={{ width: 17, height: 17 }} />
                 {variant !== null && (
+                <Trans t={t}>
                   <Typography variant="body1" sx={{ whiteSpace: 'nowrap' }}>
                     {secondsToMinutes(variant.duration)} {t(' min')}
                   </Typography>
+                </Trans>
                 )}
               </Stack>
             </Stack>

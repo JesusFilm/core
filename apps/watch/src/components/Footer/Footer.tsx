@@ -3,7 +3,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 
 import { FooterLink } from './FooterLink'
 import { FooterLinks } from './FooterLinks'
@@ -32,10 +32,12 @@ export function Footer(): ReactElement {
           </Stack>
           <Stack direction="row" spacing={4} justifyContent="space-between">
             <Stack direction="row" spacing={10} justifyContent="space-between">
-              <Typography variant="body2">
-                {t('Copyright © 1995-')}
-                {new Date().getFullYear()}
-              </Typography>
+              <Trans t={t}>
+                <Typography variant="body2">
+                  {t('Copyright © 1995-')}
+                  {new Date().getFullYear()}
+                </Typography>
+              </Trans>
               <Typography variant="body2">
                 {t('Jesus Film Project®')}
               </Typography>
