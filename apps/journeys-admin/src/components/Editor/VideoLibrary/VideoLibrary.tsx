@@ -2,7 +2,7 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
-import { Theme } from '@mui/material/styles'
+import { Theme, useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Toolbar from '@mui/material/Toolbar'
@@ -66,6 +66,7 @@ export function VideoLibrary({
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const router = useRouter()
+  const { zIndex } = useTheme()
 
   useEffect(() => {
     // opens video details if videoId is not null
@@ -119,6 +120,7 @@ export function VideoLibrary({
         elevation={smUp ? 1 : 0}
         hideBackdrop
         sx={{
+          zIndex: zIndex.modal,
           left: {
             xs: 0,
             sm: 'unset'
