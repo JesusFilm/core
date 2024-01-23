@@ -5,7 +5,7 @@ import Button from '@mui/material/Button'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { Theme, useTheme } from '@mui/material/styles'
+import { Theme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -63,7 +63,6 @@ export function VideoDetails({
   activeVideoBlock
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const { zIndex } = useTheme()
   const [blockDeleteForCoverImage] = useMutation<BlockDeleteForCoverImage>(
     BLOCK_DELETE_FOR_COVER_IMAGE
   )
@@ -122,7 +121,7 @@ export function VideoDetails({
         elevation={smUp ? 1 : 0}
         hideBackdrop
         sx={{
-          zIndex: zIndex.modal,
+          zIndex: (theme) => theme.zIndex.modal,
           left: {
             xs: 0,
             sm: 'unset'
