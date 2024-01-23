@@ -72,7 +72,6 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     if (index < 0) return
     if (step.nextBlockId == null && steps[index + 1] != null) {
       edges.push({
-        type: 'smoothstep',
         id: `${block.id}->${steps[index + 1].id}`,
         source: block.id,
         target: steps[index + 1].id,
@@ -87,7 +86,6 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     }
     if (step.nextBlockId != null && step.nextBlockId !== step.id) {
       edges.push({
-        type: 'smoothstep',
         id: `${block.id}->${step.nextBlockId}`,
         source: block.id,
         target: step.nextBlockId,
@@ -184,7 +182,6 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
       if (block.action != null) {
         if (block.action.__typename === 'NavigateToBlockAction') {
           edges.push({
-            type: 'smoothstep',
             id: `${block.id}->${block.action.blockId}`,
             source: block.id,
             target: block.action.blockId,
