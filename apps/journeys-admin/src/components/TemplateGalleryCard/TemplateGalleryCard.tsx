@@ -9,7 +9,7 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
@@ -174,19 +174,21 @@ export function TemplateGalleryCard({
           >
             {journey != null ? (
               <>
-                <Typography
-                  variant="overline2"
-                  sx={{
-                    whiteSpace: 'noWrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    color: (theme) => theme.palette.grey[700]
-                  }}
-                >
-                  {date}
-                  {t(' ● ')}
-                  {displayLanguage}
-                </Typography>
+                <Trans t={t} values={{ date, displayLanguage }}>
+                  <Typography
+                    variant="overline2"
+                    sx={{
+                      whiteSpace: 'noWrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      color: (theme) => theme.palette.grey[700]
+                    }}
+                  >
+                    {date}
+                    {' ● '}
+                    {displayLanguage}
+                  </Typography>
+                </Trans>
                 <Box
                   sx={{
                     display: { xs: 'none', md: '-webkit-box' },
