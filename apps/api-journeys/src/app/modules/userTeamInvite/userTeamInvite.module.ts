@@ -6,11 +6,16 @@ import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserTeamInviteResolver } from './userTeamInvite.resolver'
+import { BullModule } from '@nestjs/bullmq'
+import { UserTeamInviteService } from './userTeamInvite.service'
 
 @Global()
 @Module({
-  imports: [CaslAuthModule.register(AppCaslFactory)],
-  providers: [UserTeamInviteResolver, PrismaService],
-  exports: [UserTeamInviteResolver]
+  imports: [
+    CaslAuthModule.register(AppCaslFactory),
+    BullModule.registerQueue({ name: 'api-journeys-email' })
+  ],
+  providers: [UserTeamInviteResolver, PrismaService, UserTeamInviteService],
+  exports: [UserTeamInviteResolver, UserTeamInviteService]
 })
 export class UserTeamInviteModule {}
