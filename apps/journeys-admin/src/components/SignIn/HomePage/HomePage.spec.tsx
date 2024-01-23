@@ -17,6 +17,16 @@ describe('Home', () => {
     ).toBeInTheDocument()
   })
 
+  it('should render google and facebook login buttons', () => {
+    const { getByRole } = render(<HomePage />)
+    expect(
+      getByRole('button', { name: 'Sign in with Google' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Sign in with Facebook' })
+    ).toBeInTheDocument()
+  })
+
   it('should require user to enter an email', async () => {
     const { getByRole, getByText } = render(<HomePage />)
 
@@ -43,6 +53,16 @@ describe('Home', () => {
       ).toBeInTheDocument()
     )
     expect(getByRole('button', { name: 'Sign in with email' })).toBeDisabled()
+  })
+
+  it('should disable email sign in button on invalid click', async () => {
+    const { getByRole } = render(<HomePage />)
+
+    const signInButton = getByRole('button', { name: 'Sign in with email' })
+    expect(signInButton).not.toBeDisabled()
+    fireEvent.click(signInButton)
+
+    expect(signInButton).toBeDisabled()
   })
 
   it('should start signing in when valid email entered', async () => {

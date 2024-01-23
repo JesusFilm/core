@@ -16,14 +16,13 @@ jest.mock('next/router', () => ({
 
 describe('PasswordPage', () => {
   it('should render password page', () => {
-    const { getByText, getByRole } = render(
-      <PasswordPage userEmail="example@example.com" />
+    const { getByText, getByLabelText } = render(
+      <PasswordPage userEmail="example@example.com" userPassword="example" />
     )
 
     expect(getByText('Sign in')).toBeInTheDocument()
-    expect(getByRole('textbox', { name: 'Email' })).toHaveValue(
-      'example@example.com'
-    )
+    expect(getByLabelText('Email')).toHaveValue('example@example.com')
+    expect(getByLabelText('Password')).toHaveValue('example')
   })
 
   it('should require user to enter a password', async () => {
@@ -140,5 +139,36 @@ describe('PasswordPage', () => {
     await waitFor(() => {
       expect(mockSetActivePage).toHaveBeenCalledWith('help')
     })
+  })
+
+  it('should take user to home page on pressing cancel', async () => {
+    const mockSetActivePage = jest.fn()
+
+    const { getByRole } = render(
+      <PasswordPage
+        setActivePage={mockSetActivePage}
+        userEmail="example@example.com"
+      />
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    await waitFor(() => {
+      expect(mockSetActivePage).toHaveBeenCalledWith('home')
+    })
+  })
+
+  it('should toggle password visibility on clicking eye', async () => {
+    const { getByLabelText } = render(
+      <PasswordPage
+        setActivePage={jest.fn()}
+        userEmail="example@example.com"
+        userPassword="example"
+      />
+    )
+    const passwordInput = getByLabelText('Password')
+    expect(passwordInput).toHaveAttribute('type', 'password')
+
+    fireEvent.click(getByLabelText('toggle password visibility'))
+    expect(passwordInput).toHaveAttribute('type', 'text')
   })
 })

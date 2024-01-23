@@ -138,6 +138,17 @@ describe('PasswordPage', () => {
     )
   })
 
+  it('should toggle password visibility on clicking eye', async () => {
+    const { getByLabelText } = render(
+      <RegisterPage setActivePage={jest.fn()} userPassword="example" />
+    )
+    const passwordInput = getByLabelText('Password')
+    expect(passwordInput).toHaveAttribute('type', 'password')
+
+    fireEvent.click(getByLabelText('toggle password visibility'))
+    expect(passwordInput).toHaveAttribute('type', 'text')
+  })
+
   it('should check if name is too short', async () => {
     const { getByLabelText, getByText } = render(
       <RegisterPage setActivePage={jest.fn()} userEmail="example@example.com" />

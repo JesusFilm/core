@@ -35,7 +35,7 @@ describe('SignInServiceButton', () => {
 
     const { getByRole } = render(<SignInServiceButton service="google.com" />)
 
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('button', { name: 'Sign in with Google' }))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
     expect(push).toHaveBeenCalledWith('/')
   })
