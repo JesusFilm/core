@@ -8,7 +8,7 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { use100vh } from 'react-div-100vh'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -42,14 +42,15 @@ export function IFrameTest(): ReactElement {
                 alignSelf: 'center'
               }}
             />
-            <Typography>
-              {t('This page has been created to test the embed code.')}{' '}
-              <strong>
-                {t(
-                  "If you've found this page in error click the button below."
-                )}
-              </strong>
-            </Typography>
+            <Trans t={t}>
+              <Typography>
+                This page has been created to test the embed code.
+                <strong>
+                  If you&apos;ve found this page in error click the button
+                  below.
+                </strong>
+              </Typography>
+            </Trans>
             <NextLink
               href={`/${query.journeySlug?.toString() ?? ''}`}
               passHref
