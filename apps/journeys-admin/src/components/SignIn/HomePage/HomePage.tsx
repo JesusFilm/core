@@ -103,6 +103,7 @@ export function HomePage({
                   fullWidth
                 />
                 <input
+                  aria-label="password-input"
                   tabIndex={-1}
                   id="current-password"
                   type="password"
