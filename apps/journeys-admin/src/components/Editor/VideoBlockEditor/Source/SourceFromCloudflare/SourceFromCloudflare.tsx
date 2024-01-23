@@ -53,7 +53,7 @@ export function SourceFromCloudflare({
             overflow: 'hidden'
           }}
         >
-          {t('Custom Video\u00A0')}
+          {t('Custom Video')}
         </Typography>
       </Box>
       <Edit2Icon color="primary" />
