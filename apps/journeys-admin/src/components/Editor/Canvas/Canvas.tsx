@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import { ReactElement, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -44,6 +44,9 @@ const HostSidePanel = dynamic(
 )
 
 export function Canvas(): ReactElement {
+  const frameRef = useRef<HTMLIFrameElement>(null)
+  // this ref handles if the mouseDown event of the onClick event's target is the card component
+  const selectionRef = useRef(false)
   const router = useRouter()
   const {
     state: { selectedStep, selectedBlock, selectedComponent },
@@ -54,11 +57,23 @@ export function Canvas(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   function handleSelectCard(): void {
+    const iframeDocument =
+      frameRef.current?.contentDocument ??
+      frameRef.current?.contentWindow?.document
+
+    const selectedText = iframeDocument?.getSelection()?.toString()
+
+    // if user is copying from typog blocks or text, keep focus on typog blocks
+    if (selectedText != null && selectedText !== '' && !selectionRef.current) {
+      return
+    }
     // Prevent losing focus on empty input
     if (
       selectedBlock?.__typename === 'TypographyBlock' &&
       selectedBlock.content === ''
     ) {
+      // reset click origin
+      selectionRef.current = false
       return
     }
     dispatch({
@@ -80,6 +95,8 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: `${selectedStep?.id ?? ''}-next-block`
     })
+    // reset click origin
+    selectionRef.current = false
   }
 
   function handleFooterClick(): void {
@@ -116,6 +133,10 @@ export function Canvas(): ReactElement {
   return (
     <Box
       onClick={handleSelectCard}
+      onMouseDown={() => {
+        // click target was the card component and not it's children blocks
+        selectionRef.current = true
+      }}
       data-testid="EditorCanvas"
       sx={{
         display: 'flex',
@@ -128,10 +149,12 @@ export function Canvas(): ReactElement {
         <Box
           data-testid={`step-${selectedStep.id}`}
           sx={{
-            height: 'calc(100% - 32px)',
-            width: 'calc(100% - 32px)',
+            width: '100%',
             maxWidth: 360,
             maxHeight: 640,
+            aspectRatio: '9 / 16',
+            boxSizing: 'border-box',
+            position: 'relative',
             display: 'flex',
             borderRadius: 5,
             transition: '0.2s outline ease-out 0.1s',
@@ -139,10 +162,17 @@ export function Canvas(): ReactElement {
               selectedStep.id === selectedBlock?.id
                 ? `2px solid ${theme.palette.primary.main}`
                 : `2px solid ${theme.palette.background.default}`,
-            outlineOffset: 4
+            outlineOffset: 5,
+            transformOrigin: 'center',
+            m: '16px'
           }}
         >
-          <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
+          <FramePortal
+            width="100%"
+            height="100%"
+            dir={rtl ? 'rtl' : 'ltr'}
+            ref={frameRef}
+          >
             <ThemeProvider
               {...getStepTheme(selectedStep, journey)}
               rtl={rtl}

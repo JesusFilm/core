@@ -1,6 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import { Form } from '@formium/client'
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
@@ -10,7 +9,9 @@ import { useTranslation } from 'react-i18next'
 
 import { FormiumForm } from '@core/shared/ui/FormiumForm'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { JourneyProfileOnboardingFormComplete } from '../../../__generated__/JourneyProfileOnboardingFormComplete'
 
 export const JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE = gql`
@@ -52,7 +53,11 @@ export function OnboardingForm({
         <Typography variant="h4">{t('A Few Questions')}</Typography>
         <Typography variant="body1">{t('Help us serve you better')}</Typography>
       </Stack>
-      <Box sx={{ width: '397px' }}>
+      <ThemeProvider
+        themeName={ThemeName.base}
+        themeMode={ThemeMode.light}
+        nested
+      >
         <FormiumForm
           form={form}
           userId={user.id}
@@ -63,7 +68,7 @@ export function OnboardingForm({
           submitIcon={<ArrowRightIcon />}
           onSubmit={handleSubmit}
         />
-      </Box>
+      </ThemeProvider>
     </Stack>
   )
 }

@@ -5,7 +5,7 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Checkbox from '@mui/material/Checkbox'
 import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { FieldArray, Form, Formik, FormikValues } from 'formik'
 import { Dispatch, ReactElement, SetStateAction } from 'react'
@@ -38,6 +38,8 @@ export function LanguagesFilterPopper({
   anchorEl,
   sortedLanguages
 }: LanguagesFilterPopperProps): ReactElement {
+  const { zIndex } = useTheme()
+
   return (
     <Formik
       initialValues={{
@@ -61,7 +63,7 @@ export function LanguagesFilterPopper({
               left: 0,
               right: 0,
               backgroundColor: 'transparent',
-              zIndex: 9999,
+              zIndex: zIndex.fab,
               display: open ? 'block' : 'none'
             }}
           />
@@ -78,7 +80,7 @@ export function LanguagesFilterPopper({
                   open={open}
                   anchorEl={anchorEl}
                   sx={{
-                    zIndex: 9999,
+                    zIndex: zIndex.fab,
                     py: 2,
                     backgroundColor: 'background.paper',
                     borderRadius: 1,
@@ -112,7 +114,6 @@ export function LanguagesFilterPopper({
                             icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
                             checkedIcon={<CheckBoxIcon fontSize="small" />}
                             sx={{ mr: 2 }}
-                            onChange={handleChange}
                             checked={values?.languages?.some(
                               (language) => language.id === id
                             )}

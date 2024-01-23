@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18-alpine3.18
 
 ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
 

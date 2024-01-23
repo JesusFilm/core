@@ -23,6 +23,7 @@ export function CopyToTeamMenuItem({
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -47,7 +48,7 @@ export function CopyToTeamMenuItem({
 
   function setRoute(param: string): void {
     router.query.param = param
-    void router.push(router)
+    void router.push(router, undefined, { shallow: true })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })

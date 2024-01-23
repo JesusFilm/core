@@ -21,12 +21,10 @@ import {
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { PageWrapper } from '../PageWrapper'
 
 import { ControlPanel } from './ControlPanel'
 import { Drawer } from './Drawer'
 import { EditToolbar } from './EditToolbar'
-import { JourneyEdit } from './JourneyEdit'
 
 import { Editor } from '.'
 
@@ -654,18 +652,15 @@ const Template: StoryObj<typeof Editor> = {
         <Editor
           journey={args.journey}
           view={args.view ?? ActiveJourneyEditContent.Canvas}
-        >
-          <PageWrapper
-            title={args.journey?.title ?? 'Edit Journey'}
-            mainHeaderChildren={<EditToolbar />}
-            bottomPanelChildren={<ControlPanel />}
-            customSidePanel={<Drawer />}
-            mainBodyPadding={false}
-            backHref="/journeys/nua-journey-ep-3-decision"
-          >
-            <JourneyEdit />
-          </PageWrapper>
-        </Editor>
+          PageWrapperProps={{
+            title: args.journey?.title ?? 'Edit Journey',
+            mainHeaderChildren: <EditToolbar />,
+            bottomPanelChildren: <ControlPanel />,
+            customSidePanel: <Drawer />,
+            mainBodyPadding: false,
+            backHref: '/journeys/nua-journey-ep-3-decision'
+          }}
+        />
       </MockedProvider>
     )
   }

@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import TagManager from 'react-gtm-module'
@@ -11,11 +11,13 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../Team/TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../Team/TeamSelect/TeamSelect'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
 
@@ -116,10 +118,11 @@ describe('CreateJourneyButton', () => {
         <CreateJourneyButton signedIn />
       </MockedProvider>
     )
-
-    expect(
-      getByRole('dialog', { name: 'Add Journey to Team' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('dialog', { name: 'Add Journey to Team' })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should open team dialog on button click if signed in', () => {
@@ -216,6 +219,25 @@ describe('CreateJourneyButton', () => {
       query: { createNew: false }
     } as unknown as NextRouter)
 
+    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId'
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyProfileUpdate: {
+            __typename: 'JourneyProfile',
+            id: 'teamId'
+          }
+        }
+      }))
+    }
+
     const result = jest.fn(() => {
       return {
         data: {
@@ -229,6 +251,7 @@ describe('CreateJourneyButton', () => {
     const { getByRole } = render(
       <MockedProvider
         mocks={[
+          updateLastActiveTeamIdMock,
           {
             request: {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -265,6 +288,9 @@ describe('CreateJourneyButton', () => {
 
     fireEvent.click(getByRole('button', { name: 'Add' }))
 
+    await waitFor(() =>
+      expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
+    )
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() =>
       expect(mockedDataLayer).toHaveBeenCalledWith({
@@ -289,7 +315,16 @@ describe('CreateJourneyButton', () => {
       query: { createNew: false }
     } as unknown as NextRouter)
     const { getByRole } = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          }
+        ]}
+      >
         <TeamProvider>
           <JourneyProvider value={{}}>
             <CreateJourneyButton signedIn />
