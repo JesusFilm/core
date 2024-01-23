@@ -174,7 +174,7 @@ export function TemplateGalleryCard({
           >
             {journey != null ? (
               <>
-                <Trans t={t} values={{ date, displayLanguage }}>
+                <Trans t={t}>
                   <Typography
                     variant="overline2"
                     sx={{

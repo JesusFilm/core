@@ -15,9 +15,7 @@ export function TestEditorState({
   renderChildren
 }: TestEditorStateProps): ReactElement {
   const { state } = useEditor()
-  const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Trans t={t}>
       <>
         <div>selectedBlock: {state.selectedBlock?.id}</div>
         <div>activeFab: {ActiveFab[state.activeFab]}</div>
@@ -31,6 +29,6 @@ export function TestEditorState({
         <div>selectedComponent: {state.selectedComponent}</div>
         {renderChildren === true && <div>{state.drawerChildren}</div>}
       </>
-    </Trans>
+
   )
 }
