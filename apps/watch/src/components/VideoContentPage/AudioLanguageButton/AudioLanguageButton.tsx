@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
-import { Trans } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -32,6 +32,7 @@ interface AudioLanguageButtonProps {
 export function AudioLanguageButton({
   componentVariant
 }: AudioLanguageButtonProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const { variant, variantLanguagesCount } = useVideo()
   const [openAudioLanguageDialog, setOpenAudioLanguageDialog] = useState(false)
   const [loadAudioLanguageDialog, setLoadAudioLanguageDialog] = useState(false)
@@ -86,11 +87,11 @@ export function AudioLanguageButton({
             }}
           >
             <AddOutlined fontSize="small" />
-            <Typography variant="subtitle1" sx={{ whiteSpace: 'nowrap' }}>
-              <Trans i18nKey="languages" count={variantLanguagesCount - 1}>
+            <Trans t={t} count={variantLanguagesCount - 1}>
+              <Typography variant="subtitle1" sx={{ whiteSpace: 'nowrap' }}>
                 {variantLanguagesCount - 1} Language
-              </Trans>
-            </Typography>
+              </Typography>
+            </Trans>
           </Box>
           <KeyboardArrowDownOutlined fontSize="small" />
         </Button>
