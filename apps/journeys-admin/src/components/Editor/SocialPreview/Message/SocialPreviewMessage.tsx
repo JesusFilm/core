@@ -161,10 +161,9 @@ export function SocialPreviewMessage(): ReactElement {
                     lineHeight="12px"
                     mt={1}
                     color="#C52D3A"
+                    // eslint-disable-next-line i18next/no-literal-string
                   >
-                    {t('https://your.nextstep.is/{{slug}}', {
-                      slug: journey.slug
-                    })}
+                    https://your.nextstep.is/{journey.slug}
                   </Typography>
                 </Box>
               </Stack>
