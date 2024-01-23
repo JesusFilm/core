@@ -49,7 +49,7 @@ export function SourceFromYouTube({
             overflow: 'hidden'
           }}
         >
-          {t('YouTube \u00A0')}
+          {t('YouTube')}
         </Typography>
       </Box>
       <Edit2Icon color="primary" />
