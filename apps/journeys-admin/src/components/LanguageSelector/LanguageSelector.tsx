@@ -32,7 +32,7 @@ export function LanguageSelector({
 
   const handleLocaleSwitch = useCallback(
     async (localeId: string | undefined) => {
-      const locale = languages.find((l) => l.id === localeId)?.bcp47
+      const locale = languages.find((l) => l.id === localeId)?.bcp47.slice(0, 2)
 
       const path = router.asPath
       return await router.push(path, path, { locale })

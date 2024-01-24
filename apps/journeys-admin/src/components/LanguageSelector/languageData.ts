@@ -266,17 +266,17 @@ export const languages = [
     ]
   },
   {
-    bcp47: 'zh',
-    id: '20615',
+    bcp47: 'zh-hans',
+    id: '21754',
     iso3: 'cmn',
     name: [
       {
         primary: true,
-        value: '普通話 '
+        value: '中文'
       },
       {
         primary: false,
-        value: 'Chinese, Mandarin'
+        value: 'Chinese, Simplified'
       }
     ]
   }
