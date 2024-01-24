@@ -1,6 +1,6 @@
 # Update the VARIANT arg in docker-compose.yml to pick a Node version
 ARG VARIANT=18
-FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-${VARIANT}-bullseye
+FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:${VARIANT}-bullseye
 
 # Update args in docker-compose.yaml to set the UID/GID of the "node" user.
 ARG USER_UID=1000

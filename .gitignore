@@ -41,7 +41,7 @@ apps/api-gateway/router
 .DS_Store
 Thumbs.db
 
-#local .env files
+# local .env files
 .env
 .env*local
 
@@ -71,3 +71,6 @@ terraform.tfstate.backup
 **/playwright/.cache/
 
 .nx/cache
+
+# react-email
+.react-email
