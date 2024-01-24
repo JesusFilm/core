@@ -1,0 +1,18 @@
+{
+  "https://your.nextstep.is/{{slug}}": "https://your.nextstep.is/{{slug}}",
+  "Custom Video\u00a0": "Custom Video\u00a0",
+  "YouTube \u00a0": "YouTube \u00a0",
+  "⚠️": "⚠️",
+  " ● ": " ● ",
+  "⚪️": "⚪️",
+  "selectedBlock: ": "selectedBlock: ",
+  "activeFab: ": "activeFab: ",
+  "activeTab: ": "activeTab: ",
+  "drawerTitle: ": "drawerTitle: ",
+  "selectedAttributeId: ": "selectedAttributeId: ",
+  "drawerMobileOpen: ": "drawerMobileOpen: ",
+  "journeyEditContentComponent: ": "journeyEditContentComponent: ",
+  "selectedComponent: ": "selectedComponent: ",
+  "languagesCount": "{{count}} Language",
+  "languagesCount_plural": "{{count}} Languages"
+}
