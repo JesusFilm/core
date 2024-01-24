@@ -20,11 +20,11 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async process(job: Job<EmailJob>): Promise<void> {
-    console.log('message queue job:', job.name)
     try {
       await this.mailerService.sendMail({
         to: job.data.email,
         subject: job.data.subject,
+        text: job.data.text,
         html: job.data.body
       })
     } catch (e) {
@@ -43,6 +43,10 @@ export class EmailConsumer extends WorkerHost {
             Html: {
               Charset: 'UTF-8',
               Data: job.data.body
+            },
+            Text: {
+              Charset: 'UTF-8',
+              Data: job.data.text
             }
           }
         }

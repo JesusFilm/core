@@ -1,8 +1,10 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
+import { render } from '@react-email/render'
 
 import { Team } from '.prisma/api-journeys-client'
 
+import TeamInviteEmail from '../../emails/TeamInvite'
 import { UserTeamInviteModule } from '../userTeamInvite/userTeamInvite.module'
 
 import { UserTeamInviteService } from './userTeamInvite.service'
@@ -34,11 +36,28 @@ describe('UserTeamService', () => {
       } as unknown as Team
       const email = 'tav@example.com'
       const expectedSubject = `Invitation to join team: ${team.title}`
-      const expectedBody = `<html><body>You have been invited to join the team: ${
-        team.title
-      }. You can join your team at: <a href="${
-        process.env.JOURNEYS_ADMIN_URL ?? ''
-      }/">${process.env.JOURNEYS_ADMIN_URL ?? ''}/</a>.</body></html>`
+
+      const expectedBody = render(
+        TeamInviteEmail({
+          teamName: team.title,
+          email,
+          inviteLink: `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
+        }),
+        {
+          pretty: true
+        }
+      )
+
+      const expectedText = render(
+        TeamInviteEmail({
+          teamName: team.title,
+          email,
+          inviteLink: `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
+        }),
+        {
+          plainText: true
+        }
+      )
 
       await service.sendEmail(team, email)
 
@@ -47,7 +66,8 @@ describe('UserTeamService', () => {
         {
           email,
           subject: expectedSubject,
-          body: expectedBody
+          body: expectedBody,
+          text: expectedText
         },
         {
           removeOnComplete: true,
