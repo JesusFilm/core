@@ -22,21 +22,33 @@ export function CardRenderer({
   const { blockHistory, getNextBlock } = useBlocks()
   const { journey } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
+  const [activeBlock, setActiveBlock] = useState<TreeBlock<StepFields>>()
+  const [previousBlock, setPreviousBlock] = useState<TreeBlock<StepFields>>()
+  const [nextBlock, setNextBlock] = useState<TreeBlock<StepFields>>()
 
   const getCurrentActiveBlock = (): TreeBlock<StepFields> =>
     blockHistory[blockHistory.length - 1] as TreeBlock<StepFields>
   const getPreviousBlock = (): TreeBlock<StepFields> =>
     blockHistory[blockHistory.length - 2] as TreeBlock<StepFields>
 
-  const activeBlock = getCurrentActiveBlock()
+  useEffect(() => {
+    const currentBlock = getCurrentActiveBlock()
 
-  const previousBlock = getPreviousBlock()
-
-  const nextBlock = getNextBlock({ activeBlock })
-
-  const Wrapper = ({ children }): ReactElement => (
-    <Box sx={{ border: '1px solid white' }}>{children}</Box>
-  )
+    if (previousBlock != null && previousBlock.id === currentBlock.id) {
+      setActiveBlock(previousBlock)
+      setPreviousBlock(getPreviousBlock())
+      setNextBlock(activeBlock)
+    } else if (nextBlock != null && nextBlock.id === currentBlock.id) {
+      setActiveBlock(nextBlock)
+      setPreviousBlock(activeBlock)
+      setNextBlock(getNextBlock({ activeBlock: nextBlock }))
+    } else {
+      setActiveBlock(currentBlock)
+      setPreviousBlock(getPreviousBlock())
+      setNextBlock(getNextBlock({ activeBlock: currentBlock }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blockHistory])
 
   return (
     <ThemeProvider
@@ -46,17 +58,15 @@ export function CardRenderer({
       rtl={rtl}
       nested
     >
-      <Wrapper>
+      <Box sx={{ width: 0, height: 0 }}>
         <BlockRenderer block={previousBlock} />
-      </Wrapper>
+      </Box>
 
-      <Wrapper>
-        <BlockRenderer block={activeBlock} />
-      </Wrapper>
+      <BlockRenderer block={activeBlock} />
 
-      <Wrapper>
+      <Box sx={{ width: 0, height: 0 }}>
         <BlockRenderer block={nextBlock} />
-      </Wrapper>
+      </Box>
     </ThemeProvider>
   )
 }

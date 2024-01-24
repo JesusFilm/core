@@ -269,8 +269,6 @@ export function Card({
       )}
     </Paper>
   )
-
-  // const WrappedCard = enhance(variant, id)
   const WrappedCard = enhance(variant, id, activeBlock?.children[0].id)
 
   return WrappedCard(Card)
