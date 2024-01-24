@@ -24,7 +24,7 @@ export function LanguageSelector({
     where: {
       ids: [
         // add missing languages
-        '20533', // Arabic, Egyptian Colloquial
+        '22658', // Arabic, Modern Standard
         '529', // English
         '1106', // Deutsch, German, Standard
         '496', // Français, French
@@ -54,7 +54,7 @@ export function LanguageSelector({
         case '529':
           locale = 'en'
           break
-        case '20533':
+        case '22658':
           locale = 'ar'
           break
         case '1106':
