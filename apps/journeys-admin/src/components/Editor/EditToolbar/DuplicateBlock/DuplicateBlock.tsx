@@ -63,7 +63,8 @@ export function DuplicateBlock({
         update(cache, { data }) {
           if (data?.blockDuplicate != null) {
             if (closeMenu != null) {
-              closeMenu()}
+              closeMenu()
+            }
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
