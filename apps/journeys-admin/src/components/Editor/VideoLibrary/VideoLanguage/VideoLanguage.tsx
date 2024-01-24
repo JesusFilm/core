@@ -51,6 +51,7 @@ export function VideoLanguage({
       elevation={smUp ? 1 : undefined}
       hideBackdrop={smUp}
       sx={{
+        zIndex: (theme) => theme.zIndex.modal,
         '& .MuiDrawer-paper': {
           boxSizing: { sm: 'border-box' },
           width: { sm: DRAWER_WIDTH },
