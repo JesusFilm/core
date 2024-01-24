@@ -20,6 +20,8 @@ export class UserInviteService {
       {
         email,
         subject: `Invitation to edit journey: ${journey.title}`,
+        // render react email to raw text string
+        text: '',
         body: `<html><body>You have been invited to edit the journey: ${journey.title}. You can find the journey at: <a href="${url}">${url}</a>.</body></html>`
       },
       {
