@@ -1,5 +1,6 @@
+import { TranslationStatus } from '@crowdin/crowdin-api-client'
 import { useRouter } from 'next/router'
-import { ReactElement, useCallback } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -14,6 +15,10 @@ interface LanguageSelectorProps {
   onClose: () => void
 }
 
+const credentials = {
+  token: process.env.NEXT_PUBLIC_CROWDIN_ACCESS_TOKEN ?? ''
+}
+
 export function LanguageSelector({
   open,
   onClose
@@ -21,12 +26,34 @@ export function LanguageSelector({
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
 
+  const [availableLanguageIds, setAvailableLanguageIds] = useState<string[]>([])
+
+  console.log(availableLanguageIds)
+
+  useEffect(() => {
+    const translationStatus = new TranslationStatus(credentials)
+
+    translationStatus
+      .getProjectProgress(518286)
+      .then((r) => {
+        console.log(r.data)
+        const availableLanguages = languages.filter((l) => {
+          const crowdinLanguageData = r.data.find(
+            // need a better way to do this check - not sure it's always the same.
+            (cl) => cl.data.language.twoLettersCode === l.bcp47.slice(0, 2)
+          )
+          return crowdinLanguageData?.data.approvalProgress === 100
+        })
+
+        setAvailableLanguageIds(availableLanguages.map((l) => l.id))
+      })
+      .catch((error) => console.error(error))
+  }, [])
+
   const { data, loading } = useLanguagesQuery({
     languageId: '529',
     where: {
-      ids: languages.map((language) => {
-        return language.id
-      })
+      ids: availableLanguageIds
     }
   })
 
