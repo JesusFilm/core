@@ -39,7 +39,7 @@ describe('EmailConsumer', () => {
         body: 'Test Body'
       },
       name: 'email-job'
-    } as unknown as Job<EmailJob, any, string>
+    } as unknown as Job<EmailJob>
 
     const user = {
       email: 'test@example.com'
@@ -85,7 +85,7 @@ describe('EmailConsumer', () => {
         body: 'Test Body'
       },
       name: 'email-job'
-    } as unknown as Job<EmailJob, unknown, string>
+    } as unknown as Job<EmailJob>
 
     jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null)
 
