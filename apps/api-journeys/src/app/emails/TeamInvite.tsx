@@ -16,18 +16,16 @@ import { ReactElement } from 'react'
 
 interface TeamInviteEmailProps {
   email?: string
-  invitedByUsername?: string
   teamName?: string
   inviteLink?: string
 }
 
 export const TeamInviteEmail = ({
   email,
-  invitedByUsername,
   teamName,
   inviteLink
 }: TeamInviteEmailProps): ReactElement => {
-  const previewText = `Join ${invitedByUsername} on Next Steps`
+  const previewText = `Join ${teamName} on Next Steps`
 
   return (
     <Html>
@@ -43,8 +41,8 @@ export const TeamInviteEmail = ({
               Hello {email},
             </Text>
             <Text className="text-black text-[14px] leading-[24px]">
-              <strong>{invitedByUsername}</strong> has invited you to the{' '}
-              <strong>{teamName}</strong> team on <strong>Next Steps</strong>.
+              {'You have been invited to join: '}
+              <strong>{teamName}</strong> on <strong>Next Steps</strong>.
             </Text>
             <Section className="text-center mt-[32px] mb-[32px]">
               <Button
@@ -75,7 +73,6 @@ export const TeamInviteEmail = ({
 
 TeamInviteEmail.PreviewProps = {
   email: 'james@example.com',
-  invitedByUsername: 'Johnathon',
   teamName: 'JFP Sol Team',
   inviteLink: 'https://admin.nextstep.is/'
 } satisfies TeamInviteEmailProps

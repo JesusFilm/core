@@ -1,9 +1,11 @@
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
+import { render } from '@react-email/render'
 import { Queue } from 'bullmq'
 
 import { Team } from '.prisma/api-journeys-client'
 
+import TeamInviteEmail from '../../emails/TeamInvite'
 import { EmailJob } from '../email/email.consumer'
 
 @Injectable()
@@ -15,12 +17,27 @@ export class UserTeamInviteService {
 
   async sendEmail(team: Team, email: string): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
+    const html = render(
+      TeamInviteEmail({ teamName: team.title, email, inviteLink: url }),
+      {
+        pretty: true
+      }
+    )
+
+    const text = render(
+      TeamInviteEmail({ teamName: team.title, email, inviteLink: url }),
+      {
+        plainText: true
+      }
+    )
+
     await this.emailQueue.add(
       'email',
       {
         email,
         subject: `Invitation to join team: ${team.title}`,
-        body: `<html><body>You have been invited to join the team: ${team.title}. You can join your team at: <a href="${url}">${url}</a>.</body></html>`
+        body: html,
+        text
       },
       {
         removeOnComplete: true,

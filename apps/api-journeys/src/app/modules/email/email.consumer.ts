@@ -11,6 +11,7 @@ export interface EmailJob {
   email: string
   subject: string
   body: string
+  text: string
 }
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
