@@ -5,6 +5,8 @@ import { Queue } from 'bullmq'
 import { Journey } from '.prisma/api-journeys-client'
 
 import { EmailJob } from '../email/email.consumer'
+import { render } from '@react-email/render'
+import JourneyInviteEmail from '../../emails/JourneyInvite'
 
 @Injectable()
 export class UserInviteService {
@@ -15,14 +17,35 @@ export class UserInviteService {
 
   async sendEmail(journey: Journey, email: string): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
+    const html = render(
+      JourneyInviteEmail({
+        email: email,
+        journeyTitle: journey.title,
+        inviteLink: url
+      }),
+      {
+        pretty: true
+      }
+    )
+
+    const text = render(
+      JourneyInviteEmail({
+        email: email,
+        journeyTitle: journey.title,
+        inviteLink: url
+      }),
+      {
+        plainText: true
+      }
+    )
+
     await this.emailQueue.add(
       'email',
       {
         email,
         subject: `Invitation to edit journey: ${journey.title}`,
-        // render react email to raw text string
-        text: '',
-        body: `<html><body>You have been invited to edit the journey: ${journey.title}. You can find the journey at: <a href="${url}">${url}</a>.</body></html>`
+        text,
+        body: html
       },
       {
         removeOnComplete: true,
