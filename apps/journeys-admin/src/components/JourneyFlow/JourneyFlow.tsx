@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import findIndex from 'lodash/findIndex'
 import flatMapDeep from 'lodash/flatMapDeep'
 import { ReactElement, useEffect } from 'react'
+import ELK, { ElkNode } from 'elkjs/lib/elk.bundled.js'
 import {
   Controls,
   Edge,
@@ -10,7 +11,8 @@ import {
   Position,
   ReactFlow,
   useEdgesState,
-  useNodesState
+  useNodesState,
+  useReactFlow
 } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -53,6 +55,67 @@ type InternalNode =
   | Node<SignUpBlockNodeData, 'SignUpBlock'>
   | Node<FormBlockNodeData, 'FormBlock'>
   | Node<VideoBlockNodeData, 'VideoBlock'>
+
+const getElkLayout = async (nodes: Node[], edges: Edge[]) => {
+  const elk = new ELK()
+  const graph: ElkNode = {
+    id: 'root',
+    layoutOptions: {
+      'elk.algorithm': 'layered',
+      'elk.layered.layering.strategy': 'LONGEST_PATH_SOURCE',
+      'elk.spacing.nodeNode': '100',
+      'elk.spacing.edgeNode': '50',
+      'elk.layered.spacing.nodeNodeBetweenLayers': '400'
+    },
+    children: nodes.map((node) => ({
+      id: node.id,
+      'elk.position': {
+        x: node.position.x,
+        y: node.position.y
+      }
+    })),
+    edges: edges.map((edge) => ({
+      id: edge.id,
+      sources: [edge.source],
+      targets: [edge.target]
+    }))
+  }
+
+  const layout = await elk.layout(graph)
+  if (!layout || !layout.children) {
+    return {
+      nodes: [],
+      edges: []
+    }
+  }
+
+  return {
+    nodes: layout.children.map((node) => {
+      const initialNode = nodes.find((n) => n.id === node.id)
+      if (!initialNode) {
+        throw new Error('Node not found')
+      }
+      return {
+        ...initialNode,
+        position: {
+          x: node.x,
+          y: node.y
+        }
+      } as Node
+    }),
+    edges: (layout.edges ?? []).map((edge) => {
+      const initialEdge = edges.find((e) => e.id === edge.id)
+      if (!initialEdge) {
+        throw new Error('Edge not found')
+      }
+      return {
+        ...initialEdge,
+        source: edge.sources[0],
+        target: edge.targets[0]
+      } as Edge
+    })
+  }
+}
 
 function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   nodes: InternalNode[]
@@ -222,7 +285,6 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
       processCard({ block: cardBlock, step, steps, x: x + 20, y })
     connectBlockToNextBlock({ block: step, step, steps })
   })
-
   return { nodes, edges }
 }
 
@@ -235,9 +297,18 @@ export function JourneyFlow(): ReactElement {
   const [edges, setEdges] = useEdgesState([])
 
   useEffect(() => {
+    const setLayout = async (nodes, edges) => {
+      const { nodes: layoutNodes, edges: layoutEdges } = await getElkLayout(
+        nodes,
+        edges
+      )
+      console.log(layoutNodes)
+      setNodes(layoutNodes)
+      setEdges(layoutEdges)
+    }
+
     const { nodes, edges } = transformSteps(steps ?? [])
-    setNodes(nodes)
-    setEdges(edges)
+    setLayout(nodes, edges)
   }, [steps, setNodes, setEdges])
 
   return (
