@@ -46,8 +46,7 @@ export function IFrameTest(): ReactElement {
               <Typography>
                 This page has been created to test the embed code.
                 <strong>
-                  If you&apos;ve found this page in error click the button
-                  below.
+                  If youve found this page in error click the button below.
                 </strong>
               </Typography>
             </Trans>

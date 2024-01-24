@@ -155,7 +155,7 @@ export function SocialPreviewMessage(): ReactElement {
                   </Stack>
                 </Stack>
                 <Box maxWidth={224}>
-                  // eslint-disable-next-line i18next/no-literal-string
+                  {/* {eslint-disable-next-line i18next/no-literal-string} */}
                   <Typography
                     variant="body1"
                     fontSize={8}

@@ -174,21 +174,20 @@ export function TemplateGalleryCard({
           >
             {journey != null ? (
               <>
-                <Trans t={t}>
-                  <Typography
-                    variant="overline2"
-                    sx={{
-                      whiteSpace: 'noWrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      color: (theme) => theme.palette.grey[700]
-                    }}
-                  >
-                    {date}
-                    {' ● '}
-                    {displayLanguage}
-                  </Typography>
-                </Trans>
+                <Typography
+                  variant="overline2"
+                  sx={{
+                    whiteSpace: 'noWrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    color: (theme) => theme.palette.grey[700]
+                  }}
+                >
+                  {t('{{ date }} ● {{ displayLanguage }}', {
+                    date: date,
+                    displayLanguage: displayLanguage
+                  })}
+                </Typography>
                 <Box
                   sx={{
                     display: { xs: 'none', md: '-webkit-box' },
