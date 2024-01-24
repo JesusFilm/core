@@ -23,7 +23,6 @@ export class EmailConsumer extends WorkerHost {
     try {
       await this.mailerService.sendMail({
         to: job.data.email,
-        // from: 'support@nextstep.is',
         subject: job.data.subject,
         html: job.data.body
       })
