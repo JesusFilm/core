@@ -1,12 +1,12 @@
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
+import { render } from '@react-email/render'
 import { Queue } from 'bullmq'
 
 import { Journey } from '.prisma/api-journeys-client'
 
-import { EmailJob } from '../email/email.consumer'
-import { render } from '@react-email/render'
 import JourneyInviteEmail from '../../emails/JourneyInvite'
+import { EmailJob } from '../email/email.consumer'
 
 @Injectable()
 export class UserInviteService {
@@ -19,7 +19,7 @@ export class UserInviteService {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
     const html = render(
       JourneyInviteEmail({
-        email: email,
+        email,
         journeyTitle: journey.title,
         inviteLink: url
       }),
@@ -30,7 +30,7 @@ export class UserInviteService {
 
     const text = render(
       JourneyInviteEmail({
-        email: email,
+        email,
         journeyTitle: journey.title,
         inviteLink: url
       }),
