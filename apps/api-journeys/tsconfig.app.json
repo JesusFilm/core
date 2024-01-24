@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "jsx": "preserve",
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": [
@@ -12,5 +13,5 @@
     "target": "es2021"
   },
   "exclude": ["**/*.spec.ts", "jest.config.ts"],
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "**/*.tsx"]
 }
