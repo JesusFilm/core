@@ -1,10 +1,11 @@
+import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { Team } from '.prisma/api-journeys-client'
 
-import { UserTeamInviteService } from './userTeamInvite.service'
 import { UserTeamInviteModule } from '../userTeamInvite/userTeamInvite.module'
-import { getQueueToken } from '@nestjs/bullmq'
+
+import { UserTeamInviteService } from './userTeamInvite.service'
 
 describe('UserTeamService', () => {
   let service: UserTeamInviteService
