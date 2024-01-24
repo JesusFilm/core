@@ -87,13 +87,11 @@ export function AudioLanguageButton({
             }}
           >
             <AddOutlined fontSize="small" />
-            <Trans t={t} count={variantLanguagesCount - 1}>
-              <Typography variant="subtitle1" sx={{ whiteSpace: 'nowrap' }}>
-                {t('{{ languageCount }} Languages', {
-                  languageCount: variantLanguagesCount - 1
-                })}
-              </Typography>
-            </Trans>
+            <Typography variant="subtitle1" sx={{ whiteSpace: 'nowrap' }}>
+              {t('{{ languageCount }} Languages', {
+                languageCount: variantLanguagesCount - 1
+              })}
+            </Typography>
           </Box>
           <KeyboardArrowDownOutlined fontSize="small" />
         </Button>
