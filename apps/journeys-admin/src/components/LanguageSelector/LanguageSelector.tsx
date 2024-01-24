@@ -1,13 +1,23 @@
-import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
+import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 
-export function LanguageSelector(): ReactElement {
+interface LanguageSelectorProps {
+  open: boolean
+  onClose: () => void
+}
+
+export function LanguageSelector({
+  open,
+  onClose
+}: LanguageSelectorProps): ReactElement {
   const router = useRouter()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const { data, loading } = useLanguagesQuery({
     languageId: '529',
@@ -110,13 +120,20 @@ export function LanguageSelector(): ReactElement {
   )
 
   return (
-    <Box sx={{ width: '400px', m: 5 }}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      dialogTitle={{
+        title: t('Change Language'),
+        closeButton: true
+      }}
+    >
       <LanguageAutocomplete
         onChange={async (value) => await handleLocaleSwitch(value?.id)}
         // need to add value
         languages={data?.languages}
         loading={loading}
       />
-    </Box>
+    </Dialog>
   )
 }
