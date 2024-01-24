@@ -69,8 +69,9 @@ export function Video({
   posterBlockId,
   children,
   action,
-  objectFit
-}: TreeBlock<VideoFields>): ReactElement {
+  objectFit,
+  activeStep
+}: TreeBlock<VideoFields> & { activeStep: boolean }): ReactElement {
   const [loading, setLoading] = useState(true)
   const [showPoster, setShowPoster] = useState(true)
   const theme = useTheme()
@@ -118,8 +119,8 @@ export function Video({
             doubleClick: true
           },
           responsive: true,
-          muted: muted === true,
-          autoplay
+          muted: muted === true
+          // autoplay
         })
       )
     }
@@ -169,8 +170,9 @@ export function Video({
             activeCard?.find((child: TreeBlock) => child.id === blockId) != null
           ) {
             player.muted(true)
+          } else if (activeStep) {
+            void player.play()
           }
-          void player.play()
         }
       }
     }
@@ -207,7 +209,15 @@ export function Video({
         player.off('ended', handleVideoEnd)
       }
     }
-  }, [player, selectedBlock, startAt, autoplay, activeBlock, blockId])
+  }, [
+    player,
+    selectedBlock,
+    startAt,
+    autoplay,
+    activeBlock,
+    blockId,
+    activeStep
+  ])
 
   // player.duration() can change after play
   useEffect(() => {

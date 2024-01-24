@@ -37,9 +37,10 @@ export function Step({
   )
 
   const { variant, journey } = useJourney()
-  const { treeBlocks } = useBlocks()
+  const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
 
+  const activeBlock = blockHistory[blockHistory.length - 1]
   const heading = getStepHeading(blockId, children, treeBlocks, t)
 
   useEffect(() => {
@@ -71,7 +72,12 @@ export function Step({
           <NextSeo title={`${journey?.title ?? ''} (${heading})`} />
         ))}
       {children.map((block) => (
-        <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
+        <BlockRenderer
+          block={block}
+          wrappers={wrappers}
+          key={block.id}
+          activeStep={blockId === activeBlock?.id}
+        />
       ))}
     </>
   )

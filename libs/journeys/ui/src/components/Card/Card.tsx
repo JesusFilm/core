@@ -42,6 +42,7 @@ export const STEP_PREVIOUS_EVENT_CREATE = gql`
 
 interface CardProps extends TreeBlock<CardFields> {
   wrappers?: WrappersProps
+  activeStep: boolean
 }
 
 export function Card({
@@ -50,7 +51,8 @@ export function Card({
   backgroundColor,
   coverBlockId,
   fullscreen,
-  wrappers
+  wrappers,
+  activeStep
 }: CardProps): ReactElement {
   const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
     STEP_NEXT_EVENT_CREATE
@@ -109,7 +111,12 @@ export function Card({
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
     .map((block) => (
-      <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
+      <BlockRenderer
+        block={block}
+        wrappers={wrappers}
+        key={block.id}
+        activeStep={activeStep}
+      />
     ))
 
   const hasFullscreenVideo =

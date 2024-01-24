@@ -49,7 +49,7 @@ const DynamicButton = dynamic<TreeBlock<ButtonBlock>>(
 )
 
 const DynamicCard = dynamic<
-  TreeBlock<CardBlock> & { wrappers?: WrappersProps }
+  TreeBlock<CardBlock> & { wrappers?: WrappersProps; activeStep: boolean }
 >(
   async () =>
     // eslint-disable-next-line import/no-cycle
@@ -129,13 +129,15 @@ const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
 interface BlockRenderProps {
   block?: TreeBlock
   wrappers?: WrappersProps
+  activeStep: boolean
 }
 
 const DefaultWrapper: WrapperFn = ({ children }) => children
 
 export function BlockRenderer({
   block,
-  wrappers
+  wrappers,
+  activeStep
 }: BlockRenderProps): ReactElement {
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
@@ -167,7 +169,11 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <CardWrapper block={block}>
-            <DynamicCard {...block} wrappers={wrappers} />
+            <DynamicCard
+              {...block}
+              wrappers={wrappers}
+              activeStep={activeStep}
+            />
           </CardWrapper>
         </Wrapper>
       )
@@ -239,7 +245,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <VideoWrapper block={block}>
-            <Video {...block} />
+            <Video {...block} activeStep={activeStep} />
           </VideoWrapper>
         </Wrapper>
       )
