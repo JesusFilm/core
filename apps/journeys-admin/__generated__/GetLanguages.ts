@@ -18,6 +18,7 @@ export interface GetLanguages_languages_name {
 export interface GetLanguages_languages {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
   name: GetLanguages_languages_name[];
 }
 
