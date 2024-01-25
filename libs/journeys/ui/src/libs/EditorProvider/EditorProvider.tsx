@@ -35,6 +35,12 @@ export enum ActiveJourneyEditContent {
   JourneyFlow = 'journeyFlow'
 }
 
+export enum ActiveSlide {
+  JourneyFlow = 0,
+  Canvas = 1,
+  Drawer = 2
+}
+
 export interface EditorState {
   steps?: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
@@ -44,8 +50,9 @@ export interface EditorState {
   drawerTitle?: string
   drawerChildren?: ReactNode
   drawerMobileOpen: boolean
-  activeTab: ActiveTab
   activeFab: ActiveFab
+  activeSlide?: ActiveSlide
+  activeTab: ActiveTab
   journeyEditContentComponent: ActiveJourneyEditContent
   smUp?: boolean
 }
@@ -219,8 +226,9 @@ export const EditorContext = createContext<{
   state: {
     steps: [],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
+    activeTab: ActiveTab.Journey,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   },
   dispatch: () => null
@@ -241,8 +249,9 @@ export function EditorProvider({
     selectedStep: initialState?.steps?.[0],
     selectedBlock: initialState?.steps?.[0],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
+    activeTab: ActiveTab.Journey,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
     smUp,
     ...initialState

@@ -3,6 +3,7 @@ import findIndex from 'lodash/findIndex'
 import flatMapDeep from 'lodash/flatMapDeep'
 import { ReactElement, useEffect } from 'react'
 import {
+  Background,
   Controls,
   Edge,
   MarkerType,
@@ -261,6 +262,7 @@ export function JourneyFlow(): ReactElement {
         proOptions={{ hideAttribution: true }}
       >
         <Controls showInteractive={false} />
+        <Background color="#aaa" gap={16} />
       </ReactFlow>
     </Box>
   )
