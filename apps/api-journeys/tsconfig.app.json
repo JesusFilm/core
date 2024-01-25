@@ -2,7 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "esModuleInterop": true,
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": [

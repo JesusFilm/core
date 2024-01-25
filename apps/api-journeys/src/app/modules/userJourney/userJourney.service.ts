@@ -7,6 +7,7 @@ import { Journey } from '.prisma/api-journeys-client'
 export interface ApiUserEmailJob {
   userId: string
   subject: string
+  text: string
   body: string
 }
 
@@ -19,11 +20,13 @@ export class UserJourneyService {
 
   async sendEmail(journey: Journey, userId: string): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
+
     await this.emailQueue.add(
       'email',
       {
         userId,
         subject: `Access to edit journey: ${journey.title}`,
+        text: `You have been granted access to edit the journey: ${journey.title}. You can find the journey at: ${url}`,
         body: `<html><body>You have been granted access to edit the journey: ${journey.title}. You can find the journey at: <a href="${url}">${url}</a>.</body></html>`
       },
       {
