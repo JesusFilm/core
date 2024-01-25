@@ -12,9 +12,9 @@ describe('LanguageSelector', () => {
   it('should render language selector', () => {
     jest
       .spyOn(TranslationStatus.prototype, 'getProjectProgress')
-      .mockImplementation(() => {
+      .mockImplementation(async () => {
         console.log('mock implementation')
-        return Promise.resolve({
+        return await Promise.resolve({
           pagination: {
             offset: 0,
             limit: 25
@@ -45,9 +45,8 @@ describe('LanguageSelector', () => {
   it('should show languages that are translated fully', async () => {
     jest
       .spyOn(TranslationStatus.prototype, 'getProjectProgress')
-      .mockImplementation(() => {
-        console.log('mock implementation')
-        return Promise.resolve({
+      .mockImplementation(async () => {
+        return await Promise.resolve({
           pagination: {
             offset: 0,
             limit: 25
