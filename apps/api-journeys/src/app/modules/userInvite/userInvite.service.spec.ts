@@ -1,8 +1,10 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
+import { render } from '@react-email/render'
 
 import { Journey } from '.prisma/api-journeys-client'
 
+import JourneyInviteEmail from '../../emails/JourneyInvite'
 import { UserInviteModule } from '../userInvite/userInvite.module'
 
 import { UserInviteService } from './userInvite.service'
@@ -37,7 +39,26 @@ describe('UserTeamService', () => {
       }`
       const email = 'tav@example.com'
       const expectedSubject = `Invitation to edit journey: ${journey.title}`
-      const expectedBody = `<html><body>You have been invited to edit the journey: ${journey.title}. You can find the journey at: <a href="${url}">${url}</a>.</body></html>`
+      const expectedBody = render(
+        JourneyInviteEmail({
+          email,
+          journeyTitle: journey.title,
+          inviteLink: url
+        }),
+        {
+          pretty: true
+        }
+      )
+      const expectedText = render(
+        JourneyInviteEmail({
+          email,
+          journeyTitle: journey.title,
+          inviteLink: url
+        }),
+        {
+          plainText: true
+        }
+      )
 
       await service.sendEmail(journey, email)
 
@@ -46,7 +67,8 @@ describe('UserTeamService', () => {
         {
           email,
           subject: expectedSubject,
-          body: expectedBody
+          body: expectedBody,
+          text: expectedText
         },
         {
           removeOnComplete: true,
