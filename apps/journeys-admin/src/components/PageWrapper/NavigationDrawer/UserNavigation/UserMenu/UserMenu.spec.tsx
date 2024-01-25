@@ -46,6 +46,7 @@ describe('UserMenu', () => {
     )
     expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     expect(getByText('amin@email.com')).toBeInTheDocument()
+    expect(getByText('Language')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Logout' })).toBeInTheDocument()
   })
 
