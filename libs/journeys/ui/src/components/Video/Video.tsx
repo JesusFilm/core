@@ -167,7 +167,12 @@ export function Video({
           ) {
             player.muted(true)
           } else if (activeStep) {
-            void player.play()
+            void player.play()?.catch((error) => {
+              if (error.name === 'NotAllowedError') {
+                player.muted(true)
+                void player.play()
+              }
+            })
           }
         }
       }
