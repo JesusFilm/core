@@ -104,7 +104,6 @@ export function Video({
   // Initiate video player
   useEffect(() => {
     if (videoRef.current != null) {
-      console.log('1 INITIATE')
       setPlayer(
         videojs(videoRef.current, {
           ...defaultVideoJsOptions,
@@ -128,7 +127,6 @@ export function Video({
 
   useEffect(() => {
     if (videoRef.current != null) {
-      console.log('2 PAUSE')
       videoRef.current.pause()
     }
   }, [])
@@ -148,7 +146,6 @@ export function Video({
     const startTime = startAt ?? 0
 
     const handleStopLoading = (): void => {
-      console.log('3 STOP LOADING')
       if (player != null && (player.currentTime() ?? 0) < startTime) {
         player.currentTime(startTime)
       }
@@ -157,7 +154,6 @@ export function Video({
 
     const handleVideoReady = (): void => {
       if (player != null) {
-        console.log('4 READY')
         player.currentTime(startTime)
 
         // iOS blocks videos from calling seeked so loading hangs
@@ -177,13 +173,11 @@ export function Video({
       }
     }
     const handlePlaying = (): void => {
-      console.log('5 PLAYING FN')
       handleStopLoading()
       setShowPoster(false)
     }
 
     const handleVideoEnd = (): void => {
-      console.log('6 END FN')
       setLoading(false)
       if (player?.isFullscreen() === true && player != null) {
         void player.exitFullscreen()
@@ -234,7 +228,6 @@ export function Video({
       }
 
       if (selectedBlock === undefined) {
-        console.log('7 DURATION CHANGE')
         player.on('durationchange', handleDurationChange)
       }
       return () => {
@@ -248,7 +241,6 @@ export function Video({
   // Pause video if admin
   useEffect(() => {
     if (selectedBlock !== undefined) {
-      console.log('8 ADMIN')
       player?.pause()
     }
   }, [selectedBlock, player])
@@ -276,8 +268,6 @@ export function Video({
 
   const isFillAndNotYoutube = (): boolean =>
     videoFit === 'cover' && source !== VideoBlockSource.youTube
-
-  console.log('------------------------------------------------------')
 
   return (
     <Box

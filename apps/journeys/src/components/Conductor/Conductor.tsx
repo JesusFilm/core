@@ -70,10 +70,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   useEffect(() => {
     let touchstartX = 0
     let touchendX = 0
+    const swipeSensitivity = 50
 
     function checkDirection(): void {
-      if (touchendX + 50 < touchstartX && enableTouchMoveNext) nextActiveBlock()
-      if (touchendX - 50 > touchstartX) previousActiveBlock()
+      if (touchendX + swipeSensitivity < touchstartX && enableTouchMoveNext)
+        nextActiveBlock()
+      if (touchendX - swipeSensitivity > touchstartX) previousActiveBlock()
     }
 
     function touchStart(e): void {
