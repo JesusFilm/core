@@ -154,12 +154,22 @@ describe('LanguageSelector', () => {
                     ]
                   },
                   {
+                    id: '529',
+                    bcp47: 'en',
+                    name: [
+                      {
+                        primary: true,
+                        value: 'English'
+                      }
+                    ]
+                  },
+                  {
                     id: '496',
                     bcp47: 'fr',
                     name: [
                       {
                         primary: true,
-                        value: ' اللغة العربية'
+                        value: 'Français'
                       },
                       {
                         primary: false,
@@ -181,6 +191,7 @@ describe('LanguageSelector', () => {
     await waitFor(() =>
       expect(getByText('Arabic, Modern Standard')).toBeInTheDocument()
     )
+    expect(getByText('English')).toBeInTheDocument()
     expect(queryByText('French')).toBeNull()
   })
 })
