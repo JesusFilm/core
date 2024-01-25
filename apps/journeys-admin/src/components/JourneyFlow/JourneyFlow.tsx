@@ -1,20 +1,31 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react-hooks/rules-of-hooks */
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
 import findIndex from 'lodash/findIndex'
 import flatMapDeep from 'lodash/flatMapDeep'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, ReactNode, useEffect } from 'react'
 import {
   Controls,
   Edge,
+  Handle,
   MarkerType,
   Node,
+  OnConnect,
   Position,
   ReactFlow,
   useEdgesState,
   useNodesState
 } from 'reactflow'
+import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields } from '../../../__generated__/BlockFields'
 import {
@@ -27,6 +38,12 @@ import {
   GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import {
+  StepAndCardBlockCreate,
+  StepAndCardBlockCreateVariables
+} from '../../../__generated__/StepAndCardBlockCreate'
+import { STEP_AND_CARD_BLOCK_CREATE } from '../CardPreview/CardPreview'
 
 import { NODE_HEIGHT, NODE_WIDTH } from './nodes/BaseNode'
 import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
@@ -229,7 +246,11 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   return { nodes, edges }
 }
 
-export function JourneyFlow(): ReactElement {
+export function JourneyFlow(
+  onSourceConnect?: (
+    params: { target: string } | Parameters<OnConnect>[0]
+  ) => void
+): ReactElement {
   const {
     state: { steps }
   } = useEditor()
@@ -243,11 +264,92 @@ export function JourneyFlow(): ReactElement {
     setEdges(edges)
   }, [steps, setNodes, setEdges])
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const onConnectEnd = (params) => {
+    // const targetNode = params.target
+    // console.log('connect ended')
+    // console.log('params', params, '\n\n\ntarget: ', targetNode)
+
+    // if (targetNode.className === 'react-flow__pane') {
+    //   console.log('create new node')
+    // }
+    // if (
+    //   targetNode.className ===
+    //   'MuiCardContent-root css-1gw0hyo-MuiCardContent-root'
+    // ) {
+    //   console.log('Attach to node: ')
+    // }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    createNewNode(params)
+  }
+  const { journey } = useJourney()
+  const [stepAndCardBlockCreate] = useMutation<
+    StepAndCardBlockCreate,
+    StepAndCardBlockCreateVariables
+  >(STEP_AND_CARD_BLOCK_CREATE)
+
+  const createNewNode = async (params): Promise<void> => {
+    if (journey == null) return
+
+    const stepId = uuidv4()
+    const cardId = uuidv4()
+    const { data } = await stepAndCardBlockCreate({
+      variables: {
+        stepBlockCreateInput: {
+          id: stepId,
+          journeyId: journey.id
+        },
+        cardBlockCreateInput: {
+          id: cardId,
+          journeyId: journey.id,
+          parentBlockId: stepId,
+          themeMode: ThemeMode.dark,
+          themeName: ThemeName.base
+        }
+      },
+      update(cache, { data }) {
+        if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
+          cache.modify({
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
+            fields: {
+              blocks(existingBlockRefs = []) {
+                const newStepBlockRef = cache.writeFragment({
+                  data: data.stepBlockCreate,
+                  fragment: gql`
+                    fragment NewBlock on Block {
+                      id
+                    }
+                  `
+                })
+                const newCardBlockRef = cache.writeFragment({
+                  data: data.cardBlockCreate,
+                  fragment: gql`
+                    fragment NewBlock on Block {
+                      id
+                    }
+                  `
+                })
+                return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
+              }
+            }
+          })
+        }
+      }
+    })
+    if (data?.stepBlockCreate != null) {
+      onSourceConnect?.({
+        target: data.stepBlockCreate.id
+      })
+    }
+  }
+
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        onConnectEnd={onConnectEnd}
         fitView
         nodeTypes={{
           RadioOptionBlock: RadioOptionBlockNode,
