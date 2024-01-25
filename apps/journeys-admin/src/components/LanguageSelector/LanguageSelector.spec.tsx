@@ -1,10 +1,18 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { TranslationStatus } from '@crowdin/crowdin-api-client'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 
 import { LanguageSelector } from './LanguageSelector'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('LanguageSelector', () => {
   it('should render language selector', () => {
@@ -193,5 +201,112 @@ describe('LanguageSelector', () => {
     )
     expect(getByText('English')).toBeInTheDocument()
     expect(queryByText('French')).toBeNull()
+  })
+
+  it('should translate page when new language selected', async () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({
+      push,
+      asPath: '/'
+    } as unknown as NextRouter)
+    jest
+      .spyOn(TranslationStatus.prototype, 'getProjectProgress')
+      .mockImplementation(async () => {
+        return await Promise.resolve({
+          pagination: {
+            offset: 0,
+            limit: 25
+          },
+          data: [
+            {
+              data: {
+                approvalProgress: 100,
+                words: {
+                  approved: 1,
+                  preTranslateAppliedTo: 0,
+                  total: 1,
+                  translated: 1
+                },
+                phrases: {
+                  approved: 1,
+                  preTranslateAppliedTo: 0,
+                  total: 1,
+                  translated: 1
+                },
+                translationProgress: 100,
+                languageId: 'ar',
+                eTag: '',
+                language: {
+                  twoLettersCode: '',
+                  androidCode: '',
+                  dialectOf: '',
+                  editorCode: '',
+                  id: '',
+                  locale: '',
+                  name: 'Arabic',
+                  osxCode: '',
+                  osxLocale: 'ar',
+                  pluralCategoryNames: [],
+                  pluralExamples: [],
+                  pluralRules: '',
+                  textDirection: 'rtl',
+                  threeLettersCode: ''
+                }
+              }
+            }
+          ]
+        })
+      })
+
+    const { getByText, getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LANGUAGES,
+              variables: {
+                languageId: '529'
+              }
+            },
+            result: {
+              data: {
+                languages: [
+                  {
+                    id: '22658',
+                    bcp47: 'ar',
+                    name: [
+                      {
+                        primary: true,
+                        value: ' اللغة العربية'
+                      },
+                      {
+                        primary: false,
+                        value: 'Arabic, Modern Standard'
+                      }
+                    ]
+                  },
+                  {
+                    id: '529',
+                    bcp47: 'en',
+                    name: [
+                      {
+                        primary: true,
+                        value: 'English'
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]}
+      >
+        <LanguageSelector open onClose={jest.fn()} />
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Open' }))
+    await waitFor(() => fireEvent.click(getByText('Arabic, Modern Standard')))
+    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'ar' })
   })
 })
