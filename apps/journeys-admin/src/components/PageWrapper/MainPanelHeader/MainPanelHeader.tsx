@@ -9,7 +9,6 @@ import { ReactElement, ReactNode } from 'react'
 
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 
-import { LanguageSelector } from '../../LanguageSelector'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelHeaderProps {
