@@ -27,8 +27,6 @@ export function LanguageSelector({
 
   const [languageData, setLanguageData] = useState<Language[]>([])
 
-  console.log(languageData)
-
   const { data, loading } = useLanguagesQuery({
     languageId: '529'
   })
