@@ -198,7 +198,6 @@ export function BaseNode({
         type="source"
         position={Position.Right}
         onConnect={onSourceConnect}
-        onClick={handleClick}
         style={{
           width: '15px',
           height: '15px',

@@ -82,6 +82,9 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     block: TreeBlock<T>
     step: TreeBlock<StepBlock>
     steps: Array<TreeBlock<StepBlock>>
+    onSourceConnect?: (
+      params: { target: string } | Parameters<OnConnect>[0]
+    ) => void
   }
 
   function connectBlockToNextBlock({ block, step, steps }: Connection): void {
@@ -266,22 +269,21 @@ export function JourneyFlow(
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const onConnectEnd = (params) => {
-    // const targetNode = params.target
-    // console.log('connect ended')
-    // console.log('params', params, '\n\n\ntarget: ', targetNode)
+    const targetNode = params.target
+    console.log('connect ended')
+    console.log('params', params, '\n\n\ntarget: ', targetNode)
 
-    // if (targetNode.className === 'react-flow__pane') {
-    //   console.log('create new node')
-    // }
+    if (targetNode.className === 'react-flow__pane') {
+      console.log('create new node')
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      createNewNode(params)
+    }
     // if (
     //   targetNode.className ===
     //   'MuiCardContent-root css-1gw0hyo-MuiCardContent-root'
     // ) {
     //   console.log('Attach to node: ')
     // }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    createNewNode(params)
   }
   const { journey } = useJourney()
   const [stepAndCardBlockCreate] = useMutation<
@@ -337,11 +339,6 @@ export function JourneyFlow(
         }
       }
     })
-    if (data?.stepBlockCreate != null) {
-      onSourceConnect?.({
-        target: data.stepBlockCreate.id
-      })
-    }
   }
 
   return (
