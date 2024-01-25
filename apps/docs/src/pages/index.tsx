@@ -11,7 +11,7 @@ import styles from './index.module.css'
 
 function HomepageHeader(): ReactElement {
   const { siteConfig } = useDocusaurusContext()
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('apps-docs')
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
@@ -25,8 +25,9 @@ function HomepageHeader(): ReactElement {
             to="/docs/welcome"
           >
             {t('Welcome - 5min ')}
+            {/* eslint-disable-next-line i18next/no-literal-string */}
             <span role="img" aria-label="time emoji">
-              {t('⏱️')}
+              ⏱️
             </span>
           </Link>
         </div>
