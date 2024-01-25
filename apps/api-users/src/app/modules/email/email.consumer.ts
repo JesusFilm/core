@@ -12,6 +12,7 @@ AWS.config.update({ region: 'us-east-2' })
 export interface EmailJob {
   userId: string
   subject: string
+  text: string
   body: string
 }
 
@@ -28,21 +29,20 @@ export class EmailConsumer extends WorkerHost {
     const user = await this.prismaService.user.findUnique({
       where: { userId: job.data.userId }
     })
-
+    if (user == null) {
+      throw new Error('User not found')
+    }
     try {
       await this.mailerService.sendMail({
         to: user?.email,
         subject: job.data.subject,
-        // text: job.data.text,
+        text: job.data.text,
         html: job.data.body
       })
     } catch (e) {
       console.log(e)
     }
-    if (user == null) {
-      throw new Error('User not found')
-    }
-    console.log('message queue job:', job.name)
+
     await await new SES()
       .sendEmail({
         Source: 'support@nextstep.is',
