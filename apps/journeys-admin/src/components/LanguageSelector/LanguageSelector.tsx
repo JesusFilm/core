@@ -43,7 +43,10 @@ export function LanguageSelector({
               // need a better way to do this check - not sure it's always the same.
               (cl) => cl.data.language.osxLocale.toLowerCase() === l.bcp47
             )
-            return crowdinLanguageData?.data.approvalProgress === 100
+            return (
+              l.id === '529' ||
+              crowdinLanguageData?.data.approvalProgress === 100
+            )
           })
 
           setLanguageData(availableLanguages)
