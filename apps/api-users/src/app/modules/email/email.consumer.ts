@@ -5,6 +5,7 @@ import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
 import { PrismaService } from '../../lib/prisma.service'
+import { MailerService } from '@nestjs-modules/mailer'
 
 AWS.config.update({ region: 'us-east-2' })
 
@@ -16,14 +17,28 @@ export interface EmailJob {
 
 @Processor('api-users-email')
 export class EmailConsumer extends WorkerHost {
-  constructor(private readonly prismaService: PrismaService) {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly mailerService: MailerService
+  ) {
     super()
   }
 
   async process(job: Job<EmailJob>): Promise<void> {
     const user = await this.prismaService.user.findUnique({
-      where: { id: job.data.userId }
+      where: { userId: job.data.userId }
     })
+
+    try {
+      await this.mailerService.sendMail({
+        to: user?.email,
+        subject: job.data.subject,
+        // text: job.data.text,
+        html: job.data.body
+      })
+    } catch (e) {
+      console.log(e)
+    }
     if (user == null) {
       throw new Error('User not found')
     }

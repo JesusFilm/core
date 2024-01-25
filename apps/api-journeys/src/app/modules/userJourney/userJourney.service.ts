@@ -19,6 +19,7 @@ export class UserJourneyService {
 
   async sendEmail(journey: Journey, userId: string): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
+
     await this.emailQueue.add(
       'email',
       {
