@@ -6,9 +6,8 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
-
-import { languages } from './languageData'
 
 interface LanguageSelectorProps {
   open: boolean
@@ -26,9 +25,9 @@ export function LanguageSelector({
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
 
-  const [availableLanguageIds, setAvailableLanguageIds] = useState<string[]>([])
+  const [languageData, setLanguageData] = useState<Language[]>([])
 
-  console.log(availableLanguageIds)
+  console.log(languageData)
 
   const { data, loading } = useLanguagesQuery({
     languageId: '529'
@@ -46,10 +45,10 @@ export function LanguageSelector({
               // need a better way to do this check - not sure it's always the same.
               (cl) => cl.data.language.osxLocale.toLowerCase() === l.bcp47
             )
-            return crowdinLanguageData?.data.approvalProgress === 100
+            return crowdinLanguageData?.data.approvalProgress === 0
           })
 
-          setAvailableLanguageIds(availableLanguages.map((l) => l.id))
+          setLanguageData(availableLanguages)
         })
         .catch((error) => console.error(error))
     }
@@ -57,12 +56,13 @@ export function LanguageSelector({
 
   const handleLocaleSwitch = useCallback(
     async (localeId: string | undefined) => {
-      const locale = languages.find((l) => l.id === localeId)?.bcp47.slice(0, 2)
+      const language = data?.languages.find((l) => l.id === localeId)
+      const locale = language?.bcp47?.slice(0, 2)
 
       const path = router.asPath
       return await router.push(path, path, { locale })
     },
-    [router]
+    [router, data?.languages]
   )
 
   return (
@@ -77,7 +77,7 @@ export function LanguageSelector({
       <LanguageAutocomplete
         onChange={async (value) => await handleLocaleSwitch(value?.id)}
         // need to add value
-        languages={data?.languages}
+        languages={languageData}
         loading={loading}
       />
     </Dialog>
