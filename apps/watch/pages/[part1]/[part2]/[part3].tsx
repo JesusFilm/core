@@ -1,10 +1,12 @@
 import { gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
 import { GetVideoContainerAndVideoContent } from '../../../__generated__/GetVideoContainerAndVideoContent'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import i18nConfig from '../../../next-i18next.config'
 import { VideoContentPage } from '../../../src/components/VideoContentPage'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
@@ -90,7 +92,12 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     revalidate: 3600,
     props: {
       container: data.container,
-      content: data.content
+      content: data.content,
+      ...serverSideTranslations(
+        context.locale ?? 'en',
+        ['apps-journeys-admin', 'libs-journeys-ui'],
+        i18nConfig
+      )
     }
   }
 }

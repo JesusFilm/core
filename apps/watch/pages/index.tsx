@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 import { GetStaticProps } from 'next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
 import {
@@ -7,6 +8,7 @@ import {
   GetHomeVideos_videos as Video
 } from '../__generated__/GetHomeVideos'
 import { VideoChildFields } from '../__generated__/VideoChildFields'
+import i18nConfig from '../next-i18next.config'
 import { HomePage as VideoHomePage } from '../src/components/HomePage'
 import { createApolloClient } from '../src/libs/apolloClient'
 import { VIDEO_CHILD_FIELDS } from '../src/libs/videoChildFields'
@@ -53,7 +55,9 @@ function HomePage({ videos }: HomePageProps): ReactElement {
   return <VideoHomePage videos={videos} />
 }
 
-export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
+export const getStaticProps: GetStaticProps<HomePageProps> = async ({
+  locale
+}) => {
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetHomeVideos>({
     query: GET_HOME_VIDEOS,
@@ -72,7 +76,12 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
   return {
     revalidate: 3600,
     props: {
-      videos
+      videos,
+      ...serverSideTranslations(
+        locale ?? 'en',
+        ['apps-journeys-admin', 'libs-journeys-ui'],
+        i18nConfig
+      )
     }
   }
 }
