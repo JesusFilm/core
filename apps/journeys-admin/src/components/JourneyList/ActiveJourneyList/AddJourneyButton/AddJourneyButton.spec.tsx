@@ -118,6 +118,7 @@ describe('AddJourneyButton', () => {
         teams: [],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: null
         }
       }
