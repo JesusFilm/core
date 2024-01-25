@@ -7,8 +7,6 @@ import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 import { LanguageSelector } from './LanguageSelector'
 
 describe('LanguageSelector', () => {
-  beforeEach(() => {})
-
   it('should render language selector', () => {
     jest
       .spyOn(TranslationStatus.prototype, 'getProjectProgress')
