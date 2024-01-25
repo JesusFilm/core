@@ -198,9 +198,7 @@ export function BaseNode({
           {title}
         </Typography>
       </CardContent>
-      {isTargetConnectable !== false && (
-        <Handle type="target" position={Position.Left} />
-      )}
+      {isTargetConnectable && <Handle type="target" position={Position.Left} />}
       {isSourceConnectable !== false && (
         <Handle
           type="source"
@@ -214,6 +212,6 @@ export function BaseNode({
           }}
         />
       )}
-    </Card>
+    </Box>
   )
 }
