@@ -38,6 +38,7 @@
     "@apollo/subgraph": "^2.5.4",
     "@casl/ability": "^6.5.0",
     "@casl/prisma": "^1.4.1",
+    "@crowdin/crowdin-api-client": "^1.29.5",
     "@docusaurus/core": "^3.0.1",
     "@docusaurus/preset-classic": "^3.0.1",
     "@emotion/cache": "11.11.0",
