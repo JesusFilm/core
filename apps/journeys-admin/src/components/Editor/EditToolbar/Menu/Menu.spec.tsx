@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, queryByRole, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
@@ -312,6 +312,82 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
   })
+
+  it('should close the block menu upon duplicating block', async () => {
+    const selectedBlock: TreeBlock<TypographyBlock> = {
+      id: 'typography0.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: 'card1.id',
+      parentOrder: 0,
+      content: 'Title',
+      variant: null,
+      color: null,
+      align: null,
+      children: []
+    }
+
+    const { getByRole, getByTestId, queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+        >
+          <JourneyProvider
+            value={{
+              journey: {
+                status: JourneyStatus.draft,
+                tags: []
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock }}>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByTestId('JourneysAdminMenuItemDuplicate-Block'))
+    await waitFor(() => expect(queryByRole('menu')).toBeNull())
+  })
+
+  // it('should open the card menu on icon', () => {
+  //   const selectedBlock: TreeBlock<StepBlock> = {
+  //     __typename: 'StepBlock',
+  //     id: 'stepId',
+  //     parentBlockId: 'journeyId',
+  //     parentOrder: 0,
+  //     locked: true,
+  //     nextBlockId: null,
+  //     children: []
+  //   }
+  //
+  //   const { getByRole, getByTestId } = render(
+  //     <SnackbarProvider>
+  //       <MockedProvider>
+  //         <JourneyProvider
+  //           value={{
+  //             journey: {
+  //               status: JourneyStatus.draft,
+  //               tags: []
+  //             } as unknown as Journey,
+  //             variant: 'admin'
+  //           }}
+  //         >
+  //           <EditorProvider initialState={{ selectedBlock }}>
+  //             <Menu />
+  //           </EditorProvider>
+  //         </JourneyProvider>
+  //       </MockedProvider>
+  //     </SnackbarProvider>
+  //   )
+  //   expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
+  //   fireEvent.click(getByRole('button'))
+  //   expect(getByRole('menu')).toBeInTheDocument()
+  //   expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+  //   expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+  // })
 
   it('should open templates dialog', async () => {
     const selectedBlock: TreeBlock<StepBlock> = {
