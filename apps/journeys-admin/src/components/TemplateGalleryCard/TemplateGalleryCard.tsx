@@ -184,8 +184,8 @@ export function TemplateGalleryCard({
                   }}
                 >
                   {t('{{ date }} ● {{ displayLanguage }}', {
-                    date: date,
-                    displayLanguage: displayLanguage
+                    date,
+                    displayLanguage
                   })}
                 </Typography>
                 <Box
