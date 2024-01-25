@@ -95,7 +95,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       content: data.content,
       ...serverSideTranslations(
         context.locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
+        ['apps-watch'],
         i18nConfig
       )
     }
