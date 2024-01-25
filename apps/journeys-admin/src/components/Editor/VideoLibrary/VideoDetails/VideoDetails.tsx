@@ -124,6 +124,7 @@ export function VideoDetails({
         elevation={smUp ? 1 : 0}
         hideBackdrop
         sx={{
+          zIndex: (theme) => theme.zIndex.modal,
           left: {
             xs: 0,
             sm: 'unset'
