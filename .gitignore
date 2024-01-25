@@ -70,4 +70,7 @@ terraform.tfstate.backup
 **/playwright-report/
 **/playwright/.cache/
 
+# ignore old locale files
+/libs/locales/**/*_old.json
+
 .nx/cache
