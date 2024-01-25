@@ -74,7 +74,6 @@ export function MainPanelHeader({
           {children}
         </Toolbar>
       </AppBar>
-      <LanguageSelector />
       {/* Reserves space beneath MainHeader on mobile - allows us to export MainPanel */}
       <Toolbar variant={toolbar.variant} sx={{ display: { md: 'none' } }} />
     </>
