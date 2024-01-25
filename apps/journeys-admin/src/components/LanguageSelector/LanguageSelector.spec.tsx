@@ -69,15 +69,15 @@ describe('LanguageSelector', () => {
                 languageId: 'ar',
                 eTag: '',
                 language: {
-                  twoLettersCode: 'ar',
+                  twoLettersCode: '',
                   androidCode: '',
                   dialectOf: '',
                   editorCode: '',
                   id: '',
                   locale: '',
-                  name: '',
+                  name: 'Arabic',
                   osxCode: '',
-                  osxLocale: '',
+                  osxLocale: 'ar',
                   pluralCategoryNames: [],
                   pluralExamples: [],
                   pluralRules: '',
@@ -105,15 +105,15 @@ describe('LanguageSelector', () => {
                 languageId: 'fr',
                 eTag: '',
                 language: {
-                  twoLettersCode: 'fr',
+                  twoLettersCode: '',
                   androidCode: '',
                   dialectOf: '',
                   editorCode: '',
                   id: '',
                   locale: '',
-                  name: '',
+                  name: 'French',
                   osxCode: '',
-                  osxLocale: '',
+                  osxLocale: 'fr',
                   pluralCategoryNames: [],
                   pluralExamples: [],
                   pluralRules: '',
@@ -126,17 +126,14 @@ describe('LanguageSelector', () => {
         })
       })
 
-    const { getByText, getByRole } = render(
+    const { getByText, getByRole, queryByText } = render(
       <MockedProvider
         mocks={[
           {
             request: {
               query: GET_LANGUAGES,
               variables: {
-                languageId: '529',
-                where: {
-                  ids: ['22658']
-                }
+                languageId: '529'
               }
             },
             result: {
@@ -144,6 +141,7 @@ describe('LanguageSelector', () => {
                 languages: [
                   {
                     id: '22658',
+                    bcp47: 'ar',
                     name: [
                       {
                         primary: true,
@@ -152,6 +150,20 @@ describe('LanguageSelector', () => {
                       {
                         primary: false,
                         value: 'Arabic, Modern Standard'
+                      }
+                    ]
+                  },
+                  {
+                    id: '496',
+                    bcp47: 'fr',
+                    name: [
+                      {
+                        primary: true,
+                        value: ' اللغة العربية'
+                      },
+                      {
+                        primary: false,
+                        value: 'French'
                       }
                     ]
                   }
@@ -169,5 +181,6 @@ describe('LanguageSelector', () => {
     await waitFor(() =>
       expect(getByText('Arabic, Modern Standard')).toBeInTheDocument()
     )
+    expect(queryByText('French')).toBeNull()
   })
 })
