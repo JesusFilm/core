@@ -30,32 +30,30 @@ export function LanguageSelector({
 
   console.log(availableLanguageIds)
 
+  const { data, loading } = useLanguagesQuery({
+    languageId: '529'
+  })
+
   useEffect(() => {
     const translationStatus = new TranslationStatus(credentials)
 
-    translationStatus
-      .getProjectProgress(518286)
-      .then((r) => {
-        console.log(r.data)
-        const availableLanguages = languages.filter((l) => {
-          const crowdinLanguageData = r.data.find(
-            // need a better way to do this check - not sure it's always the same.
-            (cl) => cl.data.language.twoLettersCode === l.bcp47.slice(0, 2)
-          )
-          return crowdinLanguageData?.data.approvalProgress === 100
+    if (data !== undefined) {
+      translationStatus
+        .getProjectProgress(518286)
+        .then((r) => {
+          const availableLanguages = data.languages.filter((l) => {
+            const crowdinLanguageData = r.data.find(
+              // need a better way to do this check - not sure it's always the same.
+              (cl) => cl.data.language.osxLocale.toLowerCase() === l.bcp47
+            )
+            return crowdinLanguageData?.data.approvalProgress === 100
+          })
+
+          setAvailableLanguageIds(availableLanguages.map((l) => l.id))
         })
-
-        setAvailableLanguageIds(availableLanguages.map((l) => l.id))
-      })
-      .catch((error) => console.error(error))
-  }, [])
-
-  const { data, loading } = useLanguagesQuery({
-    languageId: '529',
-    where: {
-      ids: availableLanguageIds
+        .catch((error) => console.error(error))
     }
-  })
+  }, [data])
 
   const handleLocaleSwitch = useCallback(
     async (localeId: string | undefined) => {
