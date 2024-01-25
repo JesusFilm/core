@@ -120,9 +120,9 @@ export function Canvas(): ReactElement {
       data-testid="EditorCanvas"
       direction="row"
       spacing={4}
-      flexGrow={1}
       justifyContent="center"
       alignItems="center"
+      sx={{ height: '100%', width: '100%' }}
     >
       <QuickControls />
       {selectedStep != null && (

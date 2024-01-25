@@ -25,6 +25,7 @@ interface BaseNodeProps {
   onSourceConnect?: (
     params: { target: string } | Parameters<OnConnect>[0]
   ) => void
+  onClick?: () => void
   icon: ReactNode
   title: string
   selected?: 'descendant' | boolean
@@ -34,6 +35,7 @@ export function BaseNode({
   isTargetConnectable,
   isSourceConnectable,
   onSourceConnect,
+  onClick,
   icon,
   title,
   selected = false
@@ -122,6 +124,7 @@ export function BaseNode({
           height: NODE_HEIGHT,
           gap: 2
         }}
+        onClick={onClick}
       >
         {icon}
         <Typography
@@ -181,6 +184,7 @@ export function BaseNode({
           height: NODE_HEIGHT,
           gap: 2
         }}
+        onClick={onClick}
       >
         {icon}
         <Typography
@@ -194,16 +198,22 @@ export function BaseNode({
           {title}
         </Typography>
       </CardContent>
-      <Handle
-        type="source"
-        position={Position.Right}
-        onConnect={onSourceConnect}
-        style={{
-          width: '15px',
-          height: '15px',
-          background: '#636363'
-        }}
-      />
-    </Box>
+      {isTargetConnectable !== false && (
+        <Handle type="target" position={Position.Left} />
+      )}
+      {isSourceConnectable !== false && (
+        <Handle
+          type="source"
+          position={Position.Right}
+          onConnect={onSourceConnect}
+          onClick={handleClick}
+          style={{
+            width: '15px',
+            height: '15px',
+            background: '#636363'
+          }}
+        />
+      )}
+    </Card>
   )
 }

@@ -10,6 +10,7 @@ import findIndex from 'lodash/findIndex'
 import flatMapDeep from 'lodash/flatMapDeep'
 import { ReactElement, ReactNode, useEffect } from 'react'
 import {
+  Background,
   Controls,
   Edge,
   Handle,
@@ -360,6 +361,7 @@ export function JourneyFlow(
         proOptions={{ hideAttribution: true }}
       >
         <Controls showInteractive={false} />
+        <Background color="#aaa" gap={16} />
       </ReactFlow>
     </Box>
   )

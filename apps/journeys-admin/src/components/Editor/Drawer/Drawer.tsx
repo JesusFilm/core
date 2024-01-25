@@ -134,15 +134,14 @@ export function Drawer(): ReactElement {
     <Paper
       elevation={0}
       sx={{
-        display: { xs: 'none', md: 'flex' },
+        display: 'flex',
         flexDirection: 'column',
-        flexShrink: 0,
-        width: 420,
         border: 1,
         borderColor: 'divider',
         borderRadius: 0,
         overflow: 'hidden',
-        m: 4
+        height: '100%',
+        width: '100%'
       }}
       data-testid="EditorDrawer"
     >
