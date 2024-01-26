@@ -238,6 +238,51 @@ describe('DuplicateBlock', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('should call closeMenu after clicking duplicate', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        blockDuplicate: {
+          id: 'duplicatedId',
+          parentOrder: 1
+        }
+      }
+    }))
+    const closeMenuMock = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BLOCK_DUPLICATE,
+              variables: {
+                id: step.id,
+                journeyId: 'journeyId',
+                parentOrder: null
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock: step }}>
+              <DuplicateBlock variant="list-item" closeMenu={closeMenuMock} />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(closeMenuMock).not.toHaveBeenCalled())
+    fireEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
+    await waitFor(() => expect(closeMenuMock).toHaveBeenCalled())
+  })
+
   it('should be disabled if nothing is selected', () => {
     const { getByRole } = render(
       <SnackbarProvider>

@@ -373,6 +373,7 @@ describe('EditToolbar Menu', () => {
     await waitFor(() => expect(queryByRole('menu')).toBeInTheDocument())
     fireEvent.click(getByTestId('JourneysAdminMenuItemDuplicate-Block'))
     await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
+    expect(result).toHaveBeenCalled()
   })
 
   it('should open templates dialog', async () => {
