@@ -70,3 +70,5 @@ export function CardRenderer({
     </ThemeProvider>
   )
 }
+
+// return <Fade in={activeCardId === cardId}>{baseComponent}</Fade>

@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import Fade from '@mui/material/Fade'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
 import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
@@ -237,7 +236,7 @@ export function Card({
     }
   }
 
-  const Card: ReactElement = (
+  return (
     <Paper
       data-testid={`JourneysCard-${id}`}
       sx={{
@@ -276,20 +275,4 @@ export function Card({
       )}
     </Paper>
   )
-  const WrappedCard = enhance(variant, id, activeBlock?.children[0].id)
-
-  return WrappedCard(Card)
 }
-
-const enhance = (
-  variant: 'default' | 'admin' | 'embed' | undefined,
-  cardId: string,
-  activeCardId?: string
-) =>
-  function component(baseComponent: ReactElement) {
-    if (variant === 'default') {
-      return <Fade in={activeCardId === cardId}>{baseComponent}</Fade>
-    } else {
-      return baseComponent
-    }
-  }
