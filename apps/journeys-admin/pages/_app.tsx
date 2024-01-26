@@ -46,7 +46,7 @@ function JourneysAdminApp({
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const rtl = i18n !== null ? getLocaleRTL('en') : false
+  const rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
 
   const emotionCache = createEmotionCache({ rtl })
 
