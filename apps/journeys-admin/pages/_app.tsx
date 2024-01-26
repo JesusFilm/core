@@ -46,16 +46,9 @@ function JourneysAdminApp({
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
-  console.log(rtl)
+  const rtl = i18n !== null ? getLocaleRTL('en') : false
 
-  const emotionCache = useMemo(() => {
-    if (rtl) {
-      return createEmotionCache({ rtl })
-    } else {
-      return createEmotionCache({})
-    }
-  }, [rtl])
+  const emotionCache = createEmotionCache({ rtl })
 
   const user =
     pageProps.userSerialized != null
