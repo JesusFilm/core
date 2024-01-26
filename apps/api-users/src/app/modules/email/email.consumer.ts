@@ -1,11 +1,11 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
 import { Processor, WorkerHost } from '@nestjs/bullmq'
+import { MailerService } from '@nestjs-modules/mailer'
 import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
 import { PrismaService } from '../../lib/prisma.service'
-import { MailerService } from '@nestjs-modules/mailer'
 
 AWS.config.update({ region: 'us-east-2' })
 
