@@ -48,6 +48,10 @@ function JourneysAdminApp({
 
   const rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
 
+  if (typeof window !== 'undefined') {
+    document.body.setAttribute('dir', `${rtl ? 'rtl' : 'ltr'}`)
+  }
+
   const emotionCache = createEmotionCache({ rtl })
 
   const user =

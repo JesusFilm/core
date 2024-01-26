@@ -2,19 +2,16 @@ import type { EmotionCache } from '@emotion/cache'
 import createEmotionServer from '@emotion/server/create-instance'
 import type { AppType, Enhancer } from 'next/dist/shared/lib/utils'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
-import { i18n } from 'next-i18next'
 import { FunctionComponent, ReactElement } from 'react'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
-import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
 }> {
   render(): ReactElement {
-    const rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
     return (
-      <Html lang="en" dir={rtl ? 'rtl' : 'ltr'}>
+      <Html lang="en">
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link
