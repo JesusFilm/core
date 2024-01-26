@@ -9,6 +9,7 @@ import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
+import { ScheduleModule } from '@nestjs/schedule'
 
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
@@ -26,12 +27,14 @@ import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserTeamModule } from './modules/userTeam/userTeam.module'
 import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
+import { EmailSubscriptionModule } from './modules/emailSubscriptions/emailSubscriptions.module'
 
 @Module({
   imports: [
     ActionModule,
     BlockModule,
     EmailModule,
+    EmailSubscriptionModule,
     EventModule,
     HostModule,
     JourneyModule,
@@ -86,6 +89,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
         level: process.env.NODE_ENV !== 'production' ? 'trace' : 'info'
       }
     }),
+    ScheduleModule.forRoot(),
     DatadogTraceModule.forRoot()
   ]
 })
