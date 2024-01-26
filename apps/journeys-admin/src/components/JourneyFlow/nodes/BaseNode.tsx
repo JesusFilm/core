@@ -147,6 +147,18 @@ export function BaseNode({
           background: '#636363'
         }}
       />
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectableStart={false}
+        style={{
+          width: '100%',
+          height: '100%',
+          borderRadius: 0,
+          background: '#636363',
+          opacity: 0
+        }}
+      />
       {isSourceConnectable !== false && (
         <Handle
           type="source"
