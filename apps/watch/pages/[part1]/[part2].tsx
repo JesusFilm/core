@@ -93,11 +93,11 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     revalidate: 3600,
     props: {
       content: data.content,
-      ...serverSideTranslations(
+      ...(await serverSideTranslations(
         context.locale ?? 'en',
         ['apps-watch'],
         i18nConfig
-      )
+      ))
     }
   }
 }

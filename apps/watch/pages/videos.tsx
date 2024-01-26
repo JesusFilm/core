@@ -89,7 +89,11 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
     props: {
       initialApolloState: apolloClient.cache.extract(),
       videos,
-      ...serverSideTranslations(locale ?? 'en', ['apps-watch'], i18nConfig)
+      ...(await serverSideTranslations(
+        locale ?? 'en',
+        ['apps-watch'],
+        i18nConfig
+      ))
     }
   }
 }

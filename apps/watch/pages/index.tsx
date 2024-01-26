@@ -77,7 +77,11 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
     revalidate: 3600,
     props: {
       videos,
-      ...serverSideTranslations(locale ?? 'en', ['apps-watch'], i18nConfig)
+      ...(await serverSideTranslations(
+        locale ?? 'en',
+        ['apps-watch'],
+        i18nConfig
+      ))
     }
   }
 }
