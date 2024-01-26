@@ -61,12 +61,12 @@ export function BaseNode({
         </Typography>
       </CardContent>
       {isTargetConnectable !== false && (
-        <Handle type="target" position={Position.Left} />
+        <Handle type="target" position={Position.Top} />
       )}
       {isSourceConnectable !== false && (
         <Handle
           type="source"
-          position={Position.Right}
+          position={Position.Bottom}
           onConnect={onSourceConnect}
         />
       )}

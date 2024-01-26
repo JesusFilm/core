@@ -11,8 +11,7 @@ import {
   Position,
   ReactFlow,
   useEdgesState,
-  useNodesState,
-  useReactFlow
+  useNodesState
 } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -47,6 +46,25 @@ import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
 
 import 'reactflow/dist/style.css'
 
+const mrtreeLayout = {
+  'elk.algorithm': 'mrtree',
+  'elk.direction': 'DOWN',
+  'elk.spacing.nodeNode': '200',
+  'elk.spacing.edgeNode': '50'
+}
+
+const bestLayoutOptions = {
+  'elk.algorithm': 'layered',
+  'elk.direction': 'DOWN',
+  'elk.spacing.nodeNode': '250',
+  'elk.spacing.edgeNode': '125',
+  'elk.layered.spacing.nodeNodeBetweenLayers': '250',
+  'elk.layered.layering.strategy': 'INTERACTIVE',
+  'elk.layered.considerModelOrder.strategy': 'PREFER_EDGES',
+  'elk.layered.crossingMinimization.strategy': 'NONE',
+  'elk.layered.nodePlacement.strategy': 'INTERACTIVE'
+}
+
 type InternalNode =
   | Node<StepBlockNodeData, 'StepBlock'>
   | Node<RadioOptionBlockNodeData, 'RadioOptionBlock'>
@@ -62,17 +80,18 @@ const getElkLayout = async (nodes: Node[], edges: Edge[]) => {
     id: 'root',
     layoutOptions: {
       'elk.algorithm': 'layered',
-      'elk.layered.layering.strategy': 'LONGEST_PATH_SOURCE',
-      'elk.spacing.nodeNode': '100',
-      'elk.spacing.edgeNode': '50',
-      'elk.layered.spacing.nodeNodeBetweenLayers': '400'
+      'elk.direction': 'DOWN',
+      'elk.spacing.nodeNode': '250',
+      'elk.spacing.edgeNode': '125',
+      'elk.layered.spacing.nodeNodeBetweenLayers': '250',
+      'elk.layered.layering.strategy': 'INTERACTIVE',
+      'elk.layered.considerModelOrder.strategy': 'PREFER_EDGES',
+      'elk.layered.crossingMinimization.strategy': 'NONE',
+      'elk.layered.nodePlacement.strategy': 'INTERACTIVE'
     },
     children: nodes.map((node) => ({
       id: node.id,
-      'elk.position': {
-        x: node.position.x,
-        y: node.position.y
-      }
+      'elk.alignment': node.type === 'StepBlock' ? 'CENTER' : 'AUTOMATIC'
     })),
     edges: edges.map((edge) => ({
       id: edge.id,
@@ -124,6 +143,15 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   const nodes: InternalNode[] = []
   const edges: Edge[] = []
 
+  const filterBlocks = [
+    'RadioOptionBlock',
+    'ButtonBlock',
+    'TextResponseBlock',
+    'SignUpBlock',
+    'FormBlock',
+    'VideoBlock'
+  ]
+
   interface Connection<T = BlockFields> {
     block: TreeBlock<T>
     step: TreeBlock<StepBlock>
@@ -173,15 +201,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     const blocks = flatMapDeep(card.children, (block) => {
       if (card.coverBlockId === block.id) return []
       return [block, block.children]
-    }).filter(
-      (block) =>
-        block.__typename === 'RadioOptionBlock' ||
-        block.__typename === 'ButtonBlock' ||
-        block.__typename === 'TextResponseBlock' ||
-        block.__typename === 'SignUpBlock' ||
-        block.__typename === 'FormBlock' ||
-        block.__typename === 'VideoBlock'
-    ) as Array<
+    }).filter((block) => filterBlocks.includes(block.__typename)) as Array<
       TreeBlock<
         | RadioOptionBlock
         | ButtonBlock
@@ -191,7 +211,6 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
         | VideoBlock
       >
     >
-
     blocks.forEach((block, index) => {
       const node = {
         id: block.id,
@@ -262,10 +281,9 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
       }
     })
   }
-
   steps.forEach((step, index) => {
     const x = index * (NODE_WIDTH + 100)
-    const y = index * 50
+    const y = 0
     nodes.push({
       id: step.id,
       sourcePosition: Position.Right,
@@ -277,14 +295,29 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
       },
       position: { x, y }
     })
+    step.children[0].children.forEach((block) => {
+      if (filterBlocks.includes(block.__typename)) {
+        edges.push({
+          id: `${step.id}->${block.id}`,
+          source: step.id,
+          target: block.id,
+          markerEnd: {
+            type: MarkerType.Arrow
+          },
+          style: {
+            strokeWidth: 2
+          }
+        })
+      }
+    })
 
     const cardBlock = step?.children.find(
       (child) => child.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (cardBlock != null)
-      processCard({ block: cardBlock, step, steps, x: x + 20, y })
+    if (cardBlock != null) processCard({ block: cardBlock, step, steps, x, y })
     connectBlockToNextBlock({ block: step, step, steps })
   })
+
   return { nodes, edges }
 }
 
@@ -302,9 +335,9 @@ export function JourneyFlow(): ReactElement {
         nodes,
         edges
       )
-      console.log(layoutNodes)
       setNodes(layoutNodes)
       setEdges(layoutEdges)
+      console.log(layoutNodes)
     }
 
     const { nodes, edges } = transformSteps(steps ?? [])
