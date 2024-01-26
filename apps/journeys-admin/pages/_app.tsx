@@ -7,7 +7,7 @@ import Script from 'next/script'
 import { SSRConfig, appWithTranslation, i18n } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement, useEffect, useMemo } from 'react'
+import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 
