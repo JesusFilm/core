@@ -78,6 +78,7 @@ export function CardStyling(): ReactElement {
 
   return (
     <>
+      {/* only display if screen small */}
       <Box sx={{ px: 6, py: 4 }}>
         <Stack spacing={4} direction="row">
           <Box
@@ -105,6 +106,7 @@ export function CardStyling(): ReactElement {
         </Stack>
       </Box>
       <Divider />
+
       <Box>
         <HorizontalSelect
           onChange={handleChange}
