@@ -29,6 +29,8 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import '../public/swiper-pagination-override.css'
 
+initAuth()
+
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
   flags?: { [key: string]: boolean }
@@ -46,7 +48,6 @@ function JourneysAdminApp({
 
   const rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
 
-  initAuth()
   const emotionCache = createEmotionCache({ rtl })
 
   const user =
