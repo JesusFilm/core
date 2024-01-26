@@ -4,7 +4,7 @@ import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
-import { SSRConfig, appWithTranslation } from 'next-i18next'
+import { SSRConfig, appWithTranslation, i18n } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
@@ -28,9 +29,6 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import '../public/swiper-pagination-override.css'
 
-initAuth()
-const clientSideEmotionCache = createEmotionCache({})
-
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
   flags?: { [key: string]: boolean }
@@ -42,10 +40,14 @@ type JourneysAdminAppProps = NextJsAppProps<{
 
 function JourneysAdminApp({
   Component,
-  pageProps,
-  emotionCache = clientSideEmotionCache
+  pageProps
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
+  const rtl = i18n !== null ? getLocaleRTL('ar') : false
+
+  initAuth()
+  const emotionCache = createEmotionCache({ rtl })
 
   const user =
     pageProps.userSerialized != null
@@ -73,7 +75,7 @@ function JourneysAdminApp({
   return (
     <FlagsProvider flags={pageProps.flags}>
       <CacheProvider value={emotionCache}>
-        <ThemeProvider>
+        <ThemeProvider rtl={rtl}>
           <DefaultSeo
             titleTemplate={t('%s | Next Steps')}
             defaultTitle={t('Admin | Next Steps')}
