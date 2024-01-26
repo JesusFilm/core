@@ -19,7 +19,7 @@ import { MenuItem } from '../../../MenuItem'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
-  closeMenu?: () => void
+  handleClick?: () => void
   disabled?: boolean
 }
 
@@ -33,7 +33,7 @@ export const BLOCK_DUPLICATE = gql`
 
 export function DuplicateBlock({
   variant,
-  closeMenu,
+  handleClick,
   disabled = false
 }: DuplicateBlockProps): ReactElement {
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
@@ -62,9 +62,7 @@ export function DuplicateBlock({
         },
         update(cache, { data }) {
           if (data?.blockDuplicate != null) {
-            if (closeMenu != null) {
-              closeMenu()
-            }
+            handleClick?.()
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
