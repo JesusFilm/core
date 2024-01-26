@@ -11,11 +11,10 @@ import { getLocaleRTL } from '@core/shared/ui/rtl'
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
 }> {
-  rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
-
   render(): ReactElement {
+    const rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
     return (
-      <Html lang="en" dir={this.rtl ? 'rtl' : 'ltr'}>
+      <Html lang="en" dir={rtl ? 'rtl' : 'ltr'}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link
