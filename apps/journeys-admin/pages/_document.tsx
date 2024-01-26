@@ -11,7 +11,7 @@ import { getLocaleRTL } from '@core/shared/ui/rtl'
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
 }> {
-  rtl = i18n !== null ? getLocaleRTL('ar') : false
+  rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
 
   render(): ReactElement {
     return (
