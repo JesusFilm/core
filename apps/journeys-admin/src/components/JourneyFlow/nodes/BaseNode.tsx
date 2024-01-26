@@ -218,6 +218,7 @@ export function BaseNode({
           onConnect={onSourceConnect}
           onClick={handleClick}
           style={{
+            left: '80%',
             width: '15px',
             height: '15px',
             background: '#636363'
