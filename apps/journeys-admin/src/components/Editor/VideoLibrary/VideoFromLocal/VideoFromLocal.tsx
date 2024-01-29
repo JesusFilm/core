@@ -43,8 +43,7 @@ export function VideoFromLocal({
 }: VideoFromLocalProps): ReactElement {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [videos, setVideos] = useState<VideoListProps['videos']>()
-  const { loading, data, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
-    notifyOnNetworkStatusChange: true,
+  const { loading, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
     variables: {
       offset: 0,
       limit: 5,
@@ -76,10 +75,26 @@ export function VideoFromLocal({
   const handleFetchMore = async (): Promise<void> => {
     const response = await fetchMore({
       variables: {
-        offset: data?.videos?.length ?? 0
+        offset: videos?.length ?? 0
       }
     })
-    if (response.data?.videos?.length === 0) setHasMore(false)
+    if (response.data?.videos?.length === 0) {
+      setHasMore(false)
+    } else {
+      console.log('Response in fetch More', response.data.videos)
+      setVideos(prevVideos => [
+        ...(prevVideos ?? []),
+        ...response.data.videos.map((video) => ({
+          id: video.id,
+          title: video.title.find(({ primary }) => primary)?.value,
+          description: video.snippet.find(({ primary }) => primary)?.value,
+          image: video.image ?? '',
+          duration: video.variant?.duration,
+          source: VideoBlockSource.internal
+        }))
+      ])
+    }
+
   }
 
   useEffect(() => setHasMore(true), [searchQuery, setHasMore])
