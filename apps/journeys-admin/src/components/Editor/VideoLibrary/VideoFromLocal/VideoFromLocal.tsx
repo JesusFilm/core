@@ -81,7 +81,6 @@ export function VideoFromLocal({
     if (response.data?.videos?.length === 0) {
       setHasMore(false)
     } else {
-      console.log('Response in fetch More', response.data.videos)
       setVideos((prevVideos) => [
         ...(prevVideos ?? []),
         ...response.data.videos.map((video) => ({
