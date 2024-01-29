@@ -97,7 +97,8 @@ export function StepBlockNode({
 
   function handleClick(): void {
     dispatch({ type: 'SetSelectedStepAction', step })
-    swiper.slideTo(ActiveSlide.Canvas)
+    if (swiper.activeIndex !== ActiveSlide.Canvas)
+      swiper.slideTo(ActiveSlide.Canvas)
   }
 
   return (

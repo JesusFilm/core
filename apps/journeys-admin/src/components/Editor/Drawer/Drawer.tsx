@@ -141,7 +141,8 @@ export function Drawer(): ReactElement {
         borderRadius: 0,
         overflow: 'hidden',
         height: '100%',
-        width: '100%'
+        width: '100%',
+        minWidth: 0
       }}
       data-testid="EditorDrawer"
     >
