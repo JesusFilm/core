@@ -1,15 +1,19 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
+import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { EmbedJourney } from './EmbedJourney'
 
 export function DiscoveryJourneys(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const theme = useTheme()
+  const rtl = theme.direction === 'rtl'
   return (
     <Box
       sx={{
@@ -39,7 +43,11 @@ export function DiscoveryJourneys(): ReactElement {
           )}
         </Typography>
         <Box py={6}>
-          <Button size="large" fullWidth endIcon={<ArrowRightIcon />}>
+          <Button
+            size="large"
+            fullWidth
+            endIcon={rtl ? <ArrowLeftIcon /> : <ArrowRightIcon />}
+          >
             {t('Start Here')}
           </Button>
         </Box>
@@ -62,7 +70,11 @@ export function DiscoveryJourneys(): ReactElement {
           </Trans>
         </Typography>
         <Box py={6}>
-          <Button size="large" fullWidth endIcon={<ArrowRightIcon />}>
+          <Button
+            size="large"
+            fullWidth
+            endIcon={rtl ? <ArrowLeftIcon /> : <ArrowRightIcon />}
+          >
             {t('Learn More')}
           </Button>
         </Box>
@@ -83,7 +95,11 @@ export function DiscoveryJourneys(): ReactElement {
           )}
         </Typography>
         <Box py={6}>
-          <Button size="large" fullWidth endIcon={<ArrowRightIcon />}>
+          <Button
+            size="large"
+            fullWidth
+            endIcon={rtl ? <ArrowLeftIcon /> : <ArrowRightIcon />}
+          >
             {t('Request Now')}
           </Button>
         </Box>
