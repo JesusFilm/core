@@ -7,6 +7,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import NoSsr from '@mui/material/NoSsr'
+import { useTheme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -16,6 +17,7 @@ import { ReactElement, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
 
@@ -47,6 +49,7 @@ export function NavigationDrawer({
   selectedPage
 }: NavigationDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const theme = useTheme()
   const [tooltip, setTooltip] = useState<string | undefined>()
 
   function handleClose(): void {
@@ -130,7 +133,11 @@ export function NavigationDrawer({
               }
             }}
           >
-            <ChevronRightIcon />
+            {theme.direction === 'rtl' ? (
+              <ChevronLeftIcon />
+            ) : (
+              <ChevronRightIcon />
+            )}
           </ListItemIcon>
         </ListItemButton>
         <NextLink href="/" passHref legacyBehavior>
