@@ -1,5 +1,6 @@
 import AppBar from '@mui/material/AppBar'
 import IconButton from '@mui/material/IconButton'
+import { useTheme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
@@ -8,6 +9,7 @@ import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
 
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
@@ -26,6 +28,7 @@ export function MainPanelHeader({
 }: MainPanelHeaderProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   const router = useRouter()
+  const theme = useTheme()
 
   return (
     <>
@@ -48,7 +51,11 @@ export function MainPanelHeader({
                 color="inherit"
                 sx={{ mr: 2 }}
               >
-                <ChevronLeftIcon />
+                {theme.direction === 'rtl' ? (
+                  <ChevronRightIcon />
+                ) : (
+                  <ChevronLeftIcon />
+                )}
               </IconButton>
             </Box>
           ) : (
@@ -60,7 +67,11 @@ export function MainPanelHeader({
                   color="inherit"
                   sx={{ mr: 2 }}
                 >
-                  <ChevronLeftIcon />
+                  {theme.direction === 'rtl' ? (
+                    <ChevronRightIcon />
+                  ) : (
+                    <ChevronLeftIcon />
+                  )}
                 </IconButton>
               </NextLink>
             )
