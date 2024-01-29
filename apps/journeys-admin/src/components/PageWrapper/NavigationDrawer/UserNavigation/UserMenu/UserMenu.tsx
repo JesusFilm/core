@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { User } from 'next-firebase-auth'
@@ -36,6 +37,7 @@ export function UserMenu({
   const { t } = useTranslation('apps-journeys-admin')
   const client = useApolloClient()
   const { setActiveTeam } = useTeam()
+  const theme = useTheme()
 
   return (
     <Menu
@@ -44,11 +46,11 @@ export function UserMenu({
       onClose={handleProfileClose}
       anchorOrigin={{
         vertical: 'top',
-        horizontal: 'right'
+        horizontal: theme.direction === 'rtl' ? 'left' : 'right'
       }}
       transformOrigin={{
         vertical: 'top',
-        horizontal: 'left'
+        horizontal: theme.direction === 'rtl' ? 'right' : 'left'
       }}
       data-testid="UserMenu"
     >
