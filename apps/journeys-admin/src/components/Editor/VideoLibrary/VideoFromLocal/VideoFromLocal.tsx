@@ -82,7 +82,7 @@ export function VideoFromLocal({
       setHasMore(false)
     } else {
       console.log('Response in fetch More', response.data.videos)
-      setVideos(prevVideos => [
+      setVideos((prevVideos) => [
         ...(prevVideos ?? []),
         ...response.data.videos.map((video) => ({
           id: video.id,
@@ -94,7 +94,6 @@ export function VideoFromLocal({
         }))
       ])
     }
-
   }
 
   useEffect(() => setHasMore(true), [searchQuery, setHasMore])
