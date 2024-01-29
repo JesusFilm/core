@@ -158,23 +158,23 @@ export function Video({
 
         // iOS blocks videos from calling seeked so loading hangs
         void handleStopLoading()
-        if (autoplay === true) {
-          const onFirstStep = activeBlock?.parentOrder === 0
-          const activeCard = activeBlock?.children[0]?.children
-          if (
-            onFirstStep &&
-            activeCard?.find((child: TreeBlock) => child.id === blockId) != null
-          ) {
-            player.muted(true)
-          } else if (activeStep) {
-            void player.play()?.catch((error) => {
-              if (error.name === 'NotAllowedError') {
-                player.muted(true)
-                void player.play()
-              }
-            })
-          }
-        }
+        // if (autoplay === true) {
+        //   const onFirstStep = activeBlock?.parentOrder === 0
+        //   const activeCard = activeBlock?.children[0]?.children
+        //   if (
+        //     onFirstStep &&
+        //     activeCard?.find((child: TreeBlock) => child.id === blockId) != null
+        //   ) {
+        //     player.muted(true)
+        //   } else if (activeStep) {
+        //     void player.play()?.catch((error) => {
+        //       if (error.name === 'NotAllowedError') {
+        //         player.muted(true)
+        //         void player.play()
+        //       }
+        //     })
+        //   }
+        // }
       }
     }
     const handlePlaying = (): void => {
@@ -249,6 +249,34 @@ export function Video({
       player?.pause()
     }
   }, [selectedBlock, player])
+
+  // Play the video when active
+  useEffect(() => {
+    if (player != null && autoplay === true) {
+      const onFirstStep = activeBlock?.parentOrder === 0
+      const activeCard = activeBlock?.children[0]?.children
+      if (
+        onFirstStep &&
+        activeCard?.find((child: TreeBlock) => child.id === blockId) != null
+      ) {
+        player.muted(true)
+      } else if (activeStep) {
+        void player.play()?.catch((error) => {
+          if (error.name === 'NotAllowedError') {
+            player.muted(true)
+            void player.play()
+          }
+        })
+      }
+    }
+  }, [activeStep, activeBlock, autoplay, blockId, player])
+
+  // Pause video when inactive
+  useEffect(() => {
+    if (player != null && !activeStep) {
+      player.pause()
+    }
+  }, [activeStep, player])
 
   // Set video layout
   let videoFit: CSSProperties['objectFit']
