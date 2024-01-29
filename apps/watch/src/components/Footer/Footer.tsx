@@ -32,12 +32,11 @@ export function Footer(): ReactElement {
           </Stack>
           <Stack direction="row" spacing={4} justifyContent="space-between">
             <Stack direction="row" spacing={10} justifyContent="space-between">
-              <Trans t={t}>
-                <Typography variant="body2">
-                  {t('Copyright © 1995-')}
-                  {new Date().getFullYear()}
-                </Typography>
-              </Trans>
+              <Typography variant="body2">
+                {t('Copyright © 1995-{{date}}', {
+                  date: new Date().getFullYear()
+                })}
+              </Typography>
               <Typography variant="body2">
                 {t('Jesus Film Project®')}
               </Typography>
