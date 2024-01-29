@@ -8,6 +8,7 @@ export interface ApiUserEmailJob {
   userId: string
   subject: string
   body: string
+  text: string
 }
 
 @Injectable()
@@ -24,6 +25,7 @@ export class UserJourneyService {
       {
         userId,
         subject: `Access to edit journey: ${journey.title}`,
+        text: `You have been granted access to edit the journey: ${journey.title}. You can find the journey at: ${url}`,
         body: `<html><body>You have been granted access to edit the journey: ${journey.title}. You can find the journey at: <a href="${url}">${url}</a>.</body></html>`
       },
       {

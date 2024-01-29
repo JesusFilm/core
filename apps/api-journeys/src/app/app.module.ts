@@ -7,13 +7,14 @@ import {
 import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
+import { ScheduleModule } from '@nestjs/schedule'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
-import { ScheduleModule } from '@nestjs/schedule'
 
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { EmailModule } from './modules/email/email.module'
+import { EmailSubscriptionModule } from './modules/emailSubscriptions/emailSubscriptions.module'
 import { EventModule } from './modules/event/event.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
@@ -27,7 +28,6 @@ import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserTeamModule } from './modules/userTeam/userTeam.module'
 import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
-import { EmailSubscriptionModule } from './modules/emailSubscriptions/emailSubscriptions.module'
 
 @Module({
   imports: [
