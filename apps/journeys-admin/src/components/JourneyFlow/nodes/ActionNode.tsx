@@ -66,6 +66,7 @@ export function ActionNode({
   return (
     <BaseNode
       selected={selectedBlock?.id === block.id}
+      isTargetConnectable={false}
       onSourceConnect={onConnect}
       {...props}
     />

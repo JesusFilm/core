@@ -2,13 +2,11 @@ import Box from '@mui/material/Box'
 import findIndex from 'lodash/findIndex'
 import flatMapDeep from 'lodash/flatMapDeep'
 import { ReactElement, useEffect } from 'react'
-import ELK, { ElkNode } from 'elkjs/lib/elk.bundled.js'
 import {
   Controls,
   Edge,
   MarkerType,
   Node,
-  Position,
   ReactFlow,
   useEdgesState,
   useNodesState
@@ -46,25 +44,6 @@ import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
 
 import 'reactflow/dist/style.css'
 
-const mrtreeLayout = {
-  'elk.algorithm': 'mrtree',
-  'elk.direction': 'DOWN',
-  'elk.spacing.nodeNode': '200',
-  'elk.spacing.edgeNode': '50'
-}
-
-const bestLayoutOptions = {
-  'elk.algorithm': 'layered',
-  'elk.direction': 'DOWN',
-  'elk.spacing.nodeNode': '250',
-  'elk.spacing.edgeNode': '125',
-  'elk.layered.spacing.nodeNodeBetweenLayers': '250',
-  'elk.layered.layering.strategy': 'INTERACTIVE',
-  'elk.layered.considerModelOrder.strategy': 'PREFER_EDGES',
-  'elk.layered.crossingMinimization.strategy': 'NONE',
-  'elk.layered.nodePlacement.strategy': 'INTERACTIVE'
-}
-
 type InternalNode =
   | Node<StepBlockNodeData, 'StepBlock'>
   | Node<RadioOptionBlockNodeData, 'RadioOptionBlock'>
@@ -74,67 +53,8 @@ type InternalNode =
   | Node<FormBlockNodeData, 'FormBlock'>
   | Node<VideoBlockNodeData, 'VideoBlock'>
 
-const getElkLayout = async (nodes: Node[], edges: Edge[]) => {
-  const elk = new ELK()
-  const graph: ElkNode = {
-    id: 'root',
-    layoutOptions: {
-      'elk.algorithm': 'layered',
-      'elk.direction': 'DOWN',
-      'elk.spacing.nodeNode': '250',
-      'elk.spacing.edgeNode': '125',
-      'elk.layered.spacing.nodeNodeBetweenLayers': '250',
-      'elk.layered.layering.strategy': 'INTERACTIVE',
-      'elk.layered.considerModelOrder.strategy': 'PREFER_EDGES',
-      'elk.layered.crossingMinimization.strategy': 'NONE',
-      'elk.layered.nodePlacement.strategy': 'INTERACTIVE'
-    },
-    children: nodes.map((node) => ({
-      id: node.id,
-      'elk.alignment': node.type === 'StepBlock' ? 'CENTER' : 'AUTOMATIC'
-    })),
-    edges: edges.map((edge) => ({
-      id: edge.id,
-      sources: [edge.source],
-      targets: [edge.target]
-    }))
-  }
-
-  const layout = await elk.layout(graph)
-  if (!layout || !layout.children) {
-    return {
-      nodes: [],
-      edges: []
-    }
-  }
-
-  return {
-    nodes: layout.children.map((node) => {
-      const initialNode = nodes.find((n) => n.id === node.id)
-      if (!initialNode) {
-        throw new Error('Node not found')
-      }
-      return {
-        ...initialNode,
-        position: {
-          x: node.x,
-          y: node.y
-        }
-      } as Node
-    }),
-    edges: (layout.edges ?? []).map((edge) => {
-      const initialEdge = edges.find((e) => e.id === edge.id)
-      if (!initialEdge) {
-        throw new Error('Edge not found')
-      }
-      return {
-        ...initialEdge,
-        source: edge.sources[0],
-        target: edge.targets[0]
-      } as Edge
-    })
-  }
-}
+const NODE_WIDTH_GAP = 30
+const NODE_HEIGHT_GAP = 120
 
 function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   nodes: InternalNode[]
@@ -194,10 +114,8 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   function processCard({
     block: card,
     step,
-    steps,
-    x,
-    y
-  }: Connection<CardBlock> & { x: number; y: number }): void {
+    steps
+  }: Connection<CardBlock>): void {
     const blocks = flatMapDeep(card.children, (block) => {
       if (card.coverBlockId === block.id) return []
       return [block, block.children]
@@ -211,11 +129,11 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
         | VideoBlock
       >
     >
-    blocks.forEach((block, index) => {
+    blocks.forEach((block) => {
       const node = {
         id: block.id,
         selectable: false,
-        position: { x, y: y + (NODE_HEIGHT + 20) * (index + 1) }
+        position: { x: 0, y: 0 }
       }
       switch (block.__typename) {
         case 'RadioOptionBlock':
@@ -282,39 +200,20 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     })
   }
   steps.forEach((step, index) => {
-    const x = index * (NODE_WIDTH + 100)
-    const y = 0
     nodes.push({
       id: step.id,
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
       type: step.__typename,
       data: {
         ...step,
         steps
       },
-      position: { x, y }
-    })
-    step.children[0].children.forEach((block) => {
-      if (filterBlocks.includes(block.__typename)) {
-        edges.push({
-          id: `${step.id}->${block.id}`,
-          source: step.id,
-          target: block.id,
-          markerEnd: {
-            type: MarkerType.Arrow
-          },
-          style: {
-            strokeWidth: 2
-          }
-        })
-      }
+      position: { x: 0, y: 0 }
     })
 
     const cardBlock = step?.children.find(
       (child) => child.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (cardBlock != null) processCard({ block: cardBlock, step, steps, x, y })
+    if (cardBlock != null) processCard({ block: cardBlock, step, steps })
     connectBlockToNextBlock({ block: step, step, steps })
   })
 
@@ -326,22 +225,61 @@ export function JourneyFlow(): ReactElement {
     state: { steps }
   } = useEditor()
 
-  const [nodes, setNodes] = useNodesState([])
-  const [edges, setEdges] = useEdgesState([])
+  const [nodes, setNodes] = useNodesState<Node[]>([])
+  const [edges, setEdges] = useEdgesState<Edge[]>([])
+
+  const setPositions = (nodes: Node[]): Node[] => {
+    const positions = {
+      x: 0,
+      y: 0
+    }
+    const layerSizes: number[] = []
+    nodes.map((node, index) => {
+      if (node.type === 'StepBlock') {
+        if (index !== 0) {
+          layerSizes.push(positions.x)
+        }
+        positions.x = 0
+      } else {
+        positions.x = positions.x + NODE_WIDTH_GAP
+      }
+    })
+    layerSizes.push(positions.x)
+    positions.x = 0
+    nodes.map((node, index) => {
+      if (node.type === 'StepBlock') {
+        if (index !== 0) {
+          positions.x = 0
+          positions.y = positions.y + NODE_HEIGHT_GAP * 2
+        }
+        node.position = {
+          x: positions.x,
+          y: positions.y
+        }
+        const layerSize = layerSizes.shift() ?? 0
+        positions.x = 75 - (layerSize * 90) / NODE_WIDTH_GAP
+        positions.y = positions.y + NODE_HEIGHT_GAP
+      } else {
+        positions.x = positions.x + NODE_WIDTH_GAP / 2
+        node.position = {
+          x: positions.x,
+          y: positions.y
+        }
+        positions.x = positions.x + NODE_WIDTH + NODE_WIDTH_GAP / 2
+      }
+    })
+    return nodes
+  }
 
   useEffect(() => {
-    const setLayout = async (nodes, edges) => {
-      const { nodes: layoutNodes, edges: layoutEdges } = await getElkLayout(
-        nodes,
-        edges
-      )
+    const setLayout = async (nodes) => {
+      const layoutNodes = setPositions(nodes)
       setNodes(layoutNodes)
-      setEdges(layoutEdges)
-      console.log(layoutNodes)
     }
 
     const { nodes, edges } = transformSteps(steps ?? [])
-    setLayout(nodes, edges)
+    setEdges(edges)
+    setLayout(nodes)
   }, [steps, setNodes, setEdges])
 
   return (
