@@ -57,14 +57,14 @@ export function TermsOfUseDialog({
           Project. All rights not expressly granted are reserved. <br />
           <br />
           PERSONAL USE. Your use of the materials included on this site is for
-          informational purposes only. You agree you will not d publish,
-          transmit, modify, display or create derivative works from or exploit
-          the contents of this site in any way; except that you may print and
-          distribute a page or pages in their entirety, providing the same have
-          not been edited or modified by you in any way or form. You agree to
-          indemnify, defend and hold harmless Jesus Film Project for any and all
-          unauthorized uses you may make of any material on the site. You
-          acknowledge the unauthorized use of the contents could cause
+          informational purposes only. You agree you will not distribute,
+          publish, transmit, modify, display or create derivative works from or
+          exploit the contents of this site in any way; except that you may
+          print and distribute a page or pages in their entirety, providing the
+          same have not been edited or modified by you in any way or form. You
+          agree to indemnify, defend and hold harmless Jesus Film Project for
+          any and all unauthorized uses you may make of any material on the
+          site. You acknowledge the unauthorized use of the contents could cause
           irreparable harm to Jesus Film Project and/or individuals that may be
           associated with Jesus Film Project worldwide, and that in the event of
           an unauthorized use, Jesus Film Project shall be entitled to an
