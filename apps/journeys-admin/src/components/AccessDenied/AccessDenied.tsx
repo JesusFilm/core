@@ -1,3 +1,4 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -5,25 +6,38 @@ import List from '@mui/material/List'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
-import { ReactElement } from 'react'
+import { useRouter } from 'next/router'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import HelpCircleContainedIcon from '@core/shared/ui/icons/HelpCircleContained'
 import Lock1Icon from '@core/shared/ui/icons/Lock1'
 
+import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
+
 import { AccessDeniedListItem } from './AccessDeniedListItem'
 
-interface AccessDeniedProps {
-  handleClick?: () => void
-  requestedAccess?: boolean
-}
-
-export function AccessDenied({
-  handleClick,
-  requestedAccess = false
-}: AccessDeniedProps): ReactElement {
+export const USER_JOURNEY_REQUEST = gql`
+  mutation UserJourneyRequest($journeyId: ID!) {
+    userJourneyRequest(journeyId: $journeyId, idType: databaseId) {
+      id
+    }
+  }
+`
+export function AccessDenied(): ReactElement {
+  const [userJourneyRequest] =
+    useMutation<UserJourneyRequest>(USER_JOURNEY_REQUEST)
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
+  const [requestedAccess, setRequestReceived] = useState(false)
+
+  const handleClick = async (): Promise<void> => {
+    await userJourneyRequest({
+      variables: { journeyId: router.query.journeyId }
+    })
+    setRequestReceived(true)
+  }
 
   return (
     <>

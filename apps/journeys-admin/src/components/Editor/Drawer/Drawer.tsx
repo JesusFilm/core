@@ -2,7 +2,7 @@ import AppBar from '@mui/material/AppBar'
 import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
-import { Theme } from '@mui/material/styles'
+import { Theme, useTheme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -122,6 +122,7 @@ export function Drawer(): ReactElement {
       blockTitle = t('Properties')
       break
   }
+  const { zIndex } = useTheme()
 
   const handleDrawerToggle = (): void => {
     dispatch({
@@ -166,7 +167,8 @@ export function Drawer(): ReactElement {
         open={mobileOpen}
         onClose={handleDrawerToggle}
         sx={{
-          display: { xs: 'block', md: 'none' }
+          display: { xs: 'block', md: 'none' },
+          zIndex: zIndex.modal
         }}
         data-testid="EditorDrawer"
       >
