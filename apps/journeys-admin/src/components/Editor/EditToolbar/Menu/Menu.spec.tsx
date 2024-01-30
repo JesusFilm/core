@@ -327,31 +327,27 @@ describe('EditToolbar Menu', () => {
       children: []
     }
 
-    const result = jest.fn(() => ({
-      data: {
-        blockDuplicate: {
-          id: 'typography0.id',
+    const mockBlockDuplicate = {
+      request: {
+        query: BLOCK_DUPLICATE,
+        variables: {
+          id: selectedBlock.id,
           parentOrder: 1
         }
-      }
-    }))
-
-    const mocks = [
-      {
-        request: {
-          query: BLOCK_DUPLICATE,
-          variables: {
-            id: selectedBlock.id,
+      },
+      result: jest.fn(() => ({
+        data: {
+          blockDuplicate: {
+            id: 'typography0.id',
             parentOrder: 1
           }
-        },
-        result
-      }
-    ]
+        }
+      }))
+    }
 
     const { getByTestId, queryByRole } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={mocks} addTypename={false}>
+        <MockedProvider mocks={[mockBlockDuplicate]}>
           <JourneyProvider
             value={{
               journey: {
@@ -373,7 +369,7 @@ describe('EditToolbar Menu', () => {
     await waitFor(() => expect(queryByRole('menu')).toBeInTheDocument())
     fireEvent.click(getByTestId('JourneysAdminMenuItemDuplicate-Block'))
     await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
-    expect(result).toHaveBeenCalled()
+    await waitFor(() => expect(mockBlockDuplicate.result).toHaveBeenCalled())
   })
 
   it('should open templates dialog', async () => {
