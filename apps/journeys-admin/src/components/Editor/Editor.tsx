@@ -65,17 +65,23 @@ export function Editor({
           journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
         }}
       >
-        {({ activeSlide }) => (
+        {({ dispatch }) => (
           <>
             <EditToolbar />
             <StyledSwiper
               ref={swiperRef}
               slidesPerView="auto"
               allowTouchMove={false}
+              onActiveIndexChange={(swiper) => {
+                dispatch({
+                  type: 'SetActiveSlideAction',
+                  activeSlide: swiper.activeIndex
+                })
+              }}
             >
               <StyledSwiperSlide
                 sx={{
-                  width: 'calc(100% - 492px)'
+                  width: 'calc(100% - 408px)'
                 }}
               >
                 <Box

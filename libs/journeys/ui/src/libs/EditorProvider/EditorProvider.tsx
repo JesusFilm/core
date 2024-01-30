@@ -51,7 +51,7 @@ export interface EditorState {
   drawerChildren?: ReactNode
   drawerMobileOpen: boolean
   activeFab: ActiveFab
-  activeSlide?: ActiveSlide
+  activeSlide: ActiveSlide
   activeTab: ActiveTab
   journeyEditContentComponent: ActiveJourneyEditContent
   smUp?: boolean
@@ -93,14 +93,19 @@ interface SetDrawerMobileOpenAction {
   mobileOpen: boolean
 }
 
-interface SetActiveTabAction {
-  type: 'SetActiveTabAction'
-  activeTab: ActiveTab
-}
-
 interface SetActiveFabAction {
   type: 'SetActiveFabAction'
   activeFab: ActiveFab
+}
+
+interface SetActiveSlideAction {
+  type: 'SetActiveSlideAction'
+  activeSlide: ActiveSlide
+}
+
+interface SetActiveTabAction {
+  type: 'SetActiveTabAction'
+  activeTab: ActiveTab
 }
 
 interface SetActiveJourneyEditContentAction {
@@ -126,8 +131,9 @@ type EditorAction =
   | SetSelectedAttributeIdAction
   | SetDrawerPropsAction
   | SetDrawerMobileOpenAction
-  | SetActiveTabAction
   | SetActiveFabAction
+  | SetActiveSlideAction
+  | SetActiveTabAction
   | SetStepsAction
   | SetActiveJourneyEditContentAction
   | SetSmUpAction
@@ -143,8 +149,7 @@ export const reducer = (
         selectedStep: action.step,
         selectedBlock: action.step,
         selectedComponent: undefined,
-        journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
-        activeSlide: ActiveSlide.Canvas
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
       }
     case 'SetSelectedComponentAction':
       return {
@@ -184,15 +189,20 @@ export const reducer = (
         ...state,
         drawerMobileOpen: action.mobileOpen
       }
-    case 'SetActiveTabAction':
-      return {
-        ...state,
-        activeTab: action.activeTab
-      }
     case 'SetActiveFabAction':
       return {
         ...state,
         activeFab: action.activeFab
+      }
+    case 'SetActiveSlideAction':
+      return {
+        ...state,
+        activeSlide: action.activeSlide
+      }
+    case 'SetActiveTabAction':
+      return {
+        ...state,
+        activeTab: action.activeTab
       }
     case 'SetStepsAction':
       return {
@@ -236,7 +246,12 @@ export const EditorContext = createContext<{
 })
 
 interface EditorProviderProps {
-  children: ((state: EditorState) => ReactNode) | ReactNode
+  children:
+    | ((context: {
+        state: EditorState
+        dispatch: Dispatch<EditorAction>
+      }) => ReactNode)
+    | ReactNode
   initialState?: Partial<EditorState>
 }
 
@@ -285,7 +300,7 @@ export function EditorProvider({
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>
-      {isFunction(children) ? children(state) : children}
+      {isFunction(children) ? children({ state, dispatch }) : children}
     </EditorContext.Provider>
   )
 }

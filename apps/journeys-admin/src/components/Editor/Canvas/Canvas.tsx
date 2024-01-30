@@ -28,6 +28,7 @@ import { InlineEditWrapper } from './InlineEditWrapper'
 import { QuickControls } from './QuickControls'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 const NextCard = dynamic(
   async () =>
@@ -51,7 +52,7 @@ export function Canvas(): ReactElement {
   const selectionRef = useRef(false)
   const router = useRouter()
   const {
-    state: { selectedStep, selectedBlock, selectedComponent },
+    state: { selectedStep, selectedBlock, selectedComponent, activeSlide },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -141,10 +142,21 @@ export function Canvas(): ReactElement {
       }}
       data-testid="EditorCanvas"
       direction="row"
-      spacing={4}
       alignItems="flex-end"
     >
-      <QuickControls />
+      <Box
+        sx={{
+          width: activeSlide === ActiveSlide.Canvas ? 50 : 0,
+          mr: activeSlide === ActiveSlide.Canvas ? 4 : 0,
+          transition: (theme) =>
+            theme.transitions.create(['width', 'margin'], {
+              duration: 150
+            }),
+          overflow: 'hidden'
+        }}
+      >
+        <QuickControls />
+      </Box>
       {selectedStep != null && (
         <TransitionGroup
           component={Box}
@@ -244,7 +256,17 @@ export function Canvas(): ReactElement {
           </CSSTransition>
         </TransitionGroup>
       )}
-      <Box sx={{ height: '100%', width: 50 }} />
+      <Box
+        sx={{
+          width: activeSlide === ActiveSlide.Canvas ? 50 : 0,
+          ml: activeSlide === ActiveSlide.Canvas ? 4 : 0,
+          transition: (theme) =>
+            theme.transitions.create(['width', 'margin'], {
+              duration: 150
+            }),
+          overflow: 'hidden'
+        }}
+      />
     </Stack>
   )
 }
