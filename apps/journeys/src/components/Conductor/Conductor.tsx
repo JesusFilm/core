@@ -185,7 +185,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
         <Stack sx={{ height: '100%' }}>
-          <JourneyRenderer {...stepTheme} />
+          <JourneyRenderer />
 
           <NavigationButton
             variant={rtl ? 'next' : 'previous'}

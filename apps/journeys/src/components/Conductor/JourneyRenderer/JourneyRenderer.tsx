@@ -4,25 +4,11 @@ import { ReactElement } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { StepFields } from '../../../../__generated__/StepFields'
 
-interface JourneyRendererProps {
-  themeName: ThemeName
-  themeMode: ThemeMode
-}
-
-export function JourneyRenderer({
-  themeName,
-  themeMode
-}: JourneyRendererProps): ReactElement {
+export function JourneyRenderer(): ReactElement {
   const { blockHistory, treeBlocks, getNextBlock } = useBlocks()
-  const { journey } = useJourney()
-  const { locale, rtl } = getJourneyRTL(journey)
 
   const getCurrentActiveBlock = (): TreeBlock<StepFields> =>
     blockHistory[blockHistory.length - 1] as TreeBlock<StepFields>
@@ -33,7 +19,7 @@ export function JourneyRenderer({
   const previousBlock = getPreviousBlock()
   const nextBlock = getNextBlock({ activeBlock: currentBlock })
 
-  const isPreRender = (id: string): boolean => {
+  const shouldRender = (id: string): boolean => {
     switch (id) {
       case currentBlock.id:
       case nextBlock?.id:
@@ -45,21 +31,21 @@ export function JourneyRenderer({
   }
 
   return (
-    <ThemeProvider
-      themeName={themeName}
-      themeMode={themeMode}
-      locale={locale}
-      rtl={rtl}
-      nested
-    >
+    <>
       {treeBlocks.map((block) => {
+        const isCurrent = block.id === currentBlock.id
         return (
-          <Fade key={block.id} in={block.id === currentBlock.id}>
-            {isPreRender(block.id) ? (
+          <Fade
+            key={block.id}
+            in={isCurrent}
+            timeout={{ appear: 0, enter: 200, exit: 0 }}
+          >
+            {shouldRender(block.id) ? (
               <Box
                 sx={{
-                  height: block.id === currentBlock.id ? 'inherit' : 0,
-                  width: block.id === currentBlock.id ? 'inherit' : 0
+                  height: isCurrent ? 'inherit' : 'auto',
+                  width: 'inherit',
+                  position: isCurrent ? 'relative' : 'absolute'
                 }}
               >
                 <BlockRenderer block={block} />
@@ -70,6 +56,6 @@ export function JourneyRenderer({
           </Fade>
         )
       })}
-    </ThemeProvider>
+    </>
   )
 }
