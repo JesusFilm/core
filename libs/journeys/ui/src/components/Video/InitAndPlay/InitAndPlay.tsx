@@ -74,13 +74,7 @@ export function InitAndPlay({
         })
       )
     }
-  }, [startAt, endAt, muted, posterBlock])
-
-  useEffect(() => {
-    if (videoRef.current != null) {
-      videoRef.current.pause()
-    }
-  }, [])
+  }, [startAt, endAt, muted, posterBlock, setPlayer, videoRef])
 
   // Initiate video player listeners
   useEffect(() => {
@@ -92,11 +86,9 @@ export function InitAndPlay({
       }
       setLoading(false)
     }
-
     const handleVideoReady = (): void => {
       if (player != null) {
         player.currentTime(startTime)
-
         // iOS blocks videos from calling seeked so loading hangs
         void handleStopLoading()
       }
@@ -105,7 +97,6 @@ export function InitAndPlay({
       handleStopLoading()
       setShowPoster(false)
     }
-
     const handleVideoEnd = (): void => {
       setLoading(false)
       if (player?.isFullscreen() === true && player != null) {
@@ -123,6 +114,7 @@ export function InitAndPlay({
         player.on('ended', handleVideoEnd)
       }
     }
+
     return () => {
       if (player != null) {
         player.off('ready', handleVideoReady)
@@ -139,7 +131,9 @@ export function InitAndPlay({
     autoplay,
     activeBlock,
     blockId,
-    activeStep
+    activeStep,
+    setLoading,
+    setShowPoster
   ])
 
   // player.duration() can change after play
@@ -165,42 +159,41 @@ export function InitAndPlay({
         }
       }
     }
-  }, [endAt, player, selectedBlock, triggerTimes, videoEndTime])
-
-  // Pause video if admin
-  useEffect(() => {
-    if (selectedBlock !== undefined) {
-      player?.pause()
-    }
-  }, [selectedBlock, player])
+  }, [
+    endAt,
+    player,
+    selectedBlock,
+    triggerTimes,
+    videoEndTime,
+    setVideoEndTime
+  ])
 
   // Play the video when active
   useEffect(() => {
-    if (player != null && autoplay === true) {
+    if (player == null || autoplay !== true) return
+
+    if (activeStep) {
       const onFirstStep = activeBlock?.parentOrder === 0
-      const activeCard = activeBlock?.children[0]?.children
-      if (
-        onFirstStep &&
-        activeCard?.find((child: TreeBlock) => child.id === blockId) != null
-      ) {
+      if (onFirstStep) {
         player.muted(true)
-      } else if (activeStep) {
-        void player.play()?.catch((error) => {
-          if (error.name === 'NotAllowedError') {
-            player.muted(true)
-            void player.play()
-          }
-        })
       }
+      // Tries to autoplay, fallback to muted autoplay if not allowed
+      void player.play()?.catch((error) => {
+        if (error.name === 'NotAllowedError') {
+          player.muted(true)
+          void player.play()
+        }
+      })
     }
   }, [activeStep, activeBlock, autoplay, blockId, player])
 
-  // Pause video when inactive
+  // Pause video when inactive or admin
   useEffect(() => {
-    if (player != null && !activeStep) {
+    if (player == null) return
+    if (!activeStep || selectedBlock !== undefined) {
       player.pause()
     }
-  }, [activeStep, player])
+  }, [activeStep, player, selectedBlock])
 
   return <></>
 }
