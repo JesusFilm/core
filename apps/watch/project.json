@@ -163,6 +163,16 @@
         ]
       }
     },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config apps/watch/i18next-parser.config.js"
+          }
+        ]
+      }
+    },
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
