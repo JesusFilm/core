@@ -199,7 +199,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
       }
     })
   }
-  steps.forEach((step, index) => {
+  steps.forEach((step) => {
     nodes.push({
       id: step.id,
       type: step.__typename,
