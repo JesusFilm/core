@@ -4,7 +4,7 @@ import { render } from '@react-email/render'
 
 import { Journey } from '.prisma/api-journeys-client'
 
-import JourneyInviteEmail from '../../emails/JourneyInvite'
+import JourneyInviteEmail from '../../emails/JourneyInvite/JourneyInvite'
 import { UserInviteModule } from '../userInvite/userInvite.module'
 
 import { UserInviteService } from './userInvite.service'

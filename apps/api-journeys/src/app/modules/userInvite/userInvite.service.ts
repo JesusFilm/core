@@ -5,7 +5,7 @@ import { Queue } from 'bullmq'
 
 import { Journey } from '.prisma/api-journeys-client'
 
-import JourneyInviteEmail from '../../emails/JourneyInvite'
+import JourneyInviteEmail from '../../emails/JourneyInvite/JourneyInvite'
 import { EmailJob } from '../email/email.consumer'
 
 @Injectable()
