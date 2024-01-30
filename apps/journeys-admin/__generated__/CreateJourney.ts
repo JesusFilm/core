@@ -102,4 +102,5 @@ export interface CreateJourneyVariables {
   bodyTypographyContent: string;
   captionTypographyContent: string;
   teamId: string;
+  languageId: string;
 }

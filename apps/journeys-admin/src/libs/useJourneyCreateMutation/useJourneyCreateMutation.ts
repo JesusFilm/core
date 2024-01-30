@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { i18n } from 'next-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -20,13 +21,14 @@ export const CREATE_JOURNEY = gql`
     $bodyTypographyContent: String!
     $captionTypographyContent: String!
     $teamId: ID!
+    $languageId: String!
   ) {
     journeyCreate(
       input: {
         id: $journeyId
         title: $title
         description: $description
-        languageId: "529"
+        languageId: $languageId
         themeMode: dark
       }
       teamId: $teamId
@@ -118,6 +120,10 @@ export function useJourneyCreateMutation(): {
   const [createJourney, { loading }] =
     useMutation<CreateJourney>(CREATE_JOURNEY)
   const { activeTeam } = useTeam()
+  const language = i18n?.language
+
+  // TODO: extend to support all needed languages
+  const languageId = language === 'ar' ? '22658' : '529'
 
   return {
     createJourney: async (): Promise<Journey | undefined> => {
@@ -139,7 +145,8 @@ export function useJourneyCreateMutation(): {
             headlineTypographyContent: 'The Journey Is On',
             bodyTypographyContent: '"Go, and lead the people on their way..."',
             captionTypographyContent: 'Deutoronomy 10:11',
-            teamId: activeTeam?.id
+            teamId: activeTeam?.id,
+            languageId
           },
           update(cache, { data }) {
             if (data?.journeyCreate != null) {
