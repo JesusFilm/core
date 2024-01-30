@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
@@ -35,6 +36,7 @@ export function UnsplashCollections({
   onClick
 }: UnsplashCollectionsProps): ReactElement {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const theme = useTheme()
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
@@ -43,17 +45,32 @@ export function UnsplashCollections({
     const node = scrollRef.current
     const handleScroll = (): void => {
       if (node != null) {
-        setShowLeftButton(node.scrollLeft > 0)
-        setShowRightButton(
-          node.scrollLeft < node.scrollWidth - node.clientWidth
-        )
+        if (theme.direction === 'rtl') {
+          setShowRightButton(node.scrollLeft < 0)
+          setShowLeftButton(
+            node.scrollLeft > node.clientWidth - node.scrollWidth
+          )
+        } else {
+          setShowLeftButton(node.scrollLeft > 0)
+          setShowRightButton(
+            node.scrollLeft < node.scrollWidth - node.clientWidth
+          )
+        }
       }
     }
 
     if (node != null) {
-      setShowLeftButton(false)
-      setShowRightButton(node.scrollLeft < node.scrollWidth - node.clientWidth)
-      node.addEventListener('scroll', handleScroll)
+      if (theme.direction === 'rtl') {
+        setShowRightButton(false)
+        setShowLeftButton(node.scrollLeft > node.clientWidth - node.scrollWidth)
+        node.addEventListener('scroll', handleScroll)
+      } else {
+        setShowLeftButton(false)
+        setShowRightButton(
+          node.scrollLeft < node.scrollWidth - node.clientWidth
+        )
+        node.addEventListener('scroll', handleScroll)
+      }
     }
 
     return () => {
@@ -61,7 +78,7 @@ export function UnsplashCollections({
         node.removeEventListener('scroll', handleScroll)
       }
     }
-  }, [])
+  }, [theme.direction])
 
   const scrollLeft = (): void => {
     if (scrollRef.current != null) {
@@ -80,13 +97,21 @@ export function UnsplashCollections({
   }: {
     variant: 'Left' | 'Right'
   }): ReactElement => {
+    const position =
+      (variant === 'Left' && theme.direction === 'ltr') ||
+      (variant === 'Right' && theme.direction === 'rtl')
+        ? 'left'
+        : 'right'
+
+    console.log(position)
+
     return (
       <>
         <Box
           sx={{
             position: 'absolute',
-            left: variant === 'Left' ? 0 : undefined,
-            right: variant === 'Right' ? 0 : undefined,
+            left: position === 'left' ? 0 : undefined,
+            right: position === 'right' ? 0 : undefined,
             top: 0,
             bottom: 0,
             width: '30px',
@@ -106,8 +131,8 @@ export function UnsplashCollections({
           sx={{
             position: 'absolute',
             top: '30%',
-            left: variant === 'Left' ? 0 : undefined,
-            right: variant === 'Right' ? 0 : undefined,
+            left: position === 'left' ? 0 : undefined,
+            right: position === 'right' ? 0 : undefined,
             bgcolor: 'background.paper',
             borderRadius: '50%',
             boxShadow: (theme) => theme.shadows[2],
