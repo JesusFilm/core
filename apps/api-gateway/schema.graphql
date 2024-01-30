@@ -1461,6 +1461,7 @@ type Query
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
   tags: [Tag!]! @join__field(graph: TAGS)
   me: User @join__field(graph: USERS)
+  user(id: ID!): User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
 }
@@ -1564,9 +1565,6 @@ enum SegmindModel
   @join__type(graph: MEDIA)
 {
   sdxl1__0_txt2img @join__enumValue(graph: MEDIA)
-  kandinsky2__2_txt2img @join__enumValue(graph: MEDIA)
-  sd1__5_paragon @join__enumValue(graph: MEDIA)
-  tinysd1__5_txt2img @join__enumValue(graph: MEDIA)
 }
 
 enum Service

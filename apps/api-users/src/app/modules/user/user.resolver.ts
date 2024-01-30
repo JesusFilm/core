@@ -1,6 +1,8 @@
-import { UseGuards } from '@nestjs/common'
+import { ExecutionContext, UseGuards } from '@nestjs/common'
 import {
   Args,
+  Context,
+  GqlExecutionContext,
   Mutation,
   Query,
   ResolveReference,
@@ -23,6 +25,18 @@ export class UserResolver {
   @UseGuards(GqlAuthGuard)
   async me(@CurrentUserId() userId: string): Promise<User> {
     return await this.findOrFetchUser(userId)
+  }
+
+  @Query()
+  async user(
+    @Args('id') id: string,
+    @Context() context: { headers: Record<string, string> }
+  ): Promise<User> {
+    console.log(context.headers['interop-token'])
+    if (context.headers['interop-token'] !== process.env.INTEROP_TOKEN) {
+      throw new GraphQLError('Invalid Interop Token')
+    }
+    return await this.findOrFetchUser(id)
   }
 
   @Mutation()

@@ -1,14 +1,24 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { MailerService } from '@nestjs-modules/mailer'
 import { render } from '@react-email/render'
 import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
+import JourneyInviteEmail from '../../emails/JourneyInvite'
 import TeamInviteEmail from '../../emails/TeamInvite'
 
 AWS.config.update({ region: 'us-east-2' })
+
+const apollo = new ApolloClient({
+  uri: process.env.GATEWAY_URL,
+  cache: new InMemoryCache(),
+  headers: {
+    'interop-token': process.env.INTEROP_TOKEN ?? ''
+  }
+})
 
 export interface SendEmailParams {
   to: string
@@ -19,9 +29,8 @@ export interface SendEmailParams {
 
 export interface JourneyEditInviteJob {
   email: string
-  subject: string
-  body: string
-  text: string
+  journeyTitle: string
+  url: string
 }
 
 export interface TeamInviteJob {
@@ -76,6 +85,50 @@ export class EmailConsumer extends WorkerHost {
       subject: `Invitation to join team: ${job.data.teamName}`,
       text,
       html
+    })
+  }
+
+  async journeyEditInvite(job: Job<JourneyEditInviteJob>): Promise<void> {
+    const { data } = await apollo.query({
+      query: gql`
+        query User($id: ID!) {
+          user(id: $id): {
+            id
+            email
+          }
+        }
+      `
+    })
+    if (data.user == null) {
+      throw new Error('User not found')
+    }
+
+    const html = render(
+      JourneyInviteEmail({
+        email: data.user.email,
+        journeyTitle: job.data.journeyTitle,
+        inviteLink: job.data.url
+      }),
+      {
+        pretty: true
+      }
+    )
+
+    const text = render(
+      JourneyInviteEmail({
+        email: data.user.email,
+        journeyTitle: job.data.journeyTitle,
+        inviteLink: job.data.url
+      }),
+      {
+        plainText: true
+      }
+    )
+    await this.sendEmail({
+      to: data.user.email,
+      subject: `Invitation to edit journey: ${job.data.journeyTitle}`,
+      html,
+      text
     })
   }
 
