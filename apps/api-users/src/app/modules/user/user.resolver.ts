@@ -1,8 +1,7 @@
-import { ExecutionContext, UseGuards } from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
 import {
   Args,
   Context,
-  GqlExecutionContext,
   Mutation,
   Query,
   ResolveReference,
