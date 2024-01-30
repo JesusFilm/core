@@ -25,8 +25,9 @@ import { Properties } from './Properties'
 const StyledSwiper = styled(Swiper)(() => ({
   height: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px)`
 }))
-const StyledSwiperSlide = styled(SwiperSlide)(() => ({
-  width: 'calc(100% - 463px)'
+const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
+  padding: theme.spacing(4),
+  boxSizing: 'border-box'
 }))
 
 interface EditorProps {
@@ -53,10 +54,6 @@ export function Editor({
     swiperRef.current?.swiper.slideTo(0)
   }, [])
 
-  const handleNext = useCallback(() => {
-    swiperRef.current?.swiper.slideTo(2)
-  }, [])
-
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
       <EditorProvider
@@ -74,19 +71,20 @@ export function Editor({
             <StyledSwiper
               ref={swiperRef}
               slidesPerView="auto"
-              centeredSlides
-              centeredSlidesBounds
               allowTouchMove={false}
             >
-              <StyledSwiperSlide>
+              <StyledSwiperSlide
+                sx={{
+                  width: 'calc(100% - 492px)'
+                }}
+              >
                 <Box
                   sx={{
-                    height: 'calc(100% - 32px)',
                     borderRadius: 4,
                     border: (theme) => `1px solid ${theme.palette.divider}`,
                     backgroundSize: '20px 20px',
-                    m: 4,
-                    backgroundColor: '#eff2f5'
+                    backgroundColor: '#eff2f5',
+                    height: '100%'
                   }}
                 >
                   <JourneyFlow />
@@ -94,24 +92,19 @@ export function Editor({
               </StyledSwiperSlide>
               <StyledSwiperSlide
                 sx={{
-                  '& .navigation-prev, & .navigation-next': {
+                  width: 'calc(100% - 120px)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  '& .navigation-prev': {
                     display: 'none'
                   },
-                  '&.swiper-slide-next .card-root': {
-                    left: 0
-                  },
                   '&.swiper-slide-active': {
-                    '& .navigation-prev, & .navigation-next': {
+                    '& .navigation-prev': {
                       display: 'block'
                     },
                     '& .card-root': {
-                      left: '50%',
-                      transform: 'translateX(-50%)'
+                      flexGrow: 1
                     }
-                  },
-                  '&.swiper-slide-prev .card-root': {
-                    left: '100%',
-                    transform: 'translateX(-100%)'
                   }
                 }}
               >
@@ -120,55 +113,29 @@ export function Editor({
                   onClick={handlePrev}
                   sx={{
                     position: 'absolute',
-                    left: -230,
+                    left: -120,
                     top: 0,
                     bottom: 0,
-                    width: 230,
+                    width: 120,
                     zIndex: 2,
                     cursor: 'pointer'
                   }}
                 />
                 <Box
-                  className="navigation-next"
-                  onClick={handleNext}
+                  className="card-root"
                   sx={{
-                    position: 'absolute',
-                    right: -230,
-                    top: 0,
-                    bottom: 0,
-                    width: 230,
-                    zIndex: 2,
-                    cursor: 'pointer'
-                  }}
-                />
-                <Box
-                  sx={{
-                    p: 4,
-                    height: 'calc(100% - 32px)'
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexGrow: 0,
+                    transition: (theme) => theme.transitions.create('flex-grow')
                   }}
                 >
-                  <Box
-                    className="card-root"
-                    sx={{
-                      width: 455,
-                      height: '100%',
-                      position: 'relative',
-                      transition: (theme) =>
-                        theme.transitions.create(['left', 'transform'], {
-                          duration: 300
-                        })
-                    }}
-                  >
-                    <Canvas />
-                  </Box>
+                  <Canvas />
                 </Box>
-              </StyledSwiperSlide>
-              <StyledSwiperSlide>
                 <Box
                   sx={{
-                    p: 4,
-                    height: 'calc(100% - 32px)',
-                    minWidth: 0
+                    width: 327
                   }}
                 >
                   <Drawer />

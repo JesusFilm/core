@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
@@ -120,76 +121,107 @@ export function Canvas(): ReactElement {
       data-testid="EditorCanvas"
       direction="row"
       spacing={4}
-      justifyContent="center"
-      alignItems="center"
-      sx={{ height: '100%', width: '100%' }}
+      alignItems="flex-end"
     >
       <QuickControls />
       {selectedStep != null && (
-        <Box
-          data-testid={`step-${selectedStep.id}`}
+        <TransitionGroup
+          component={Box}
           sx={{
-            height: 'calc(100% - 32px)',
-            width: 'calc(100% - 32px)',
-            maxWidth: 360,
-            maxHeight: 640,
-            display: 'flex',
-            borderRadius: 5,
-            transition: '0.2s outline ease-out 0.1s',
-            outline: (theme) =>
-              selectedStep.id === selectedBlock?.id
-                ? `2px solid ${theme.palette.primary.main}`
-                : `2px solid ${theme.palette.background.default}`,
-            outlineOffset: 4
+            width: 360,
+            height: 640,
+            position: 'relative',
+            '& .card-enter': {
+              opacity: 0
+            },
+            '& .card-enter-active': {
+              opacity: 1
+            },
+            '& .card-enter-done': {
+              opacity: 1
+            },
+            '& .card-exit': {
+              opacity: 1
+            },
+            '& .card-exit-active': {
+              opacity: 0
+            }
           }}
         >
-          <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
-            <ThemeProvider
-              {...getStepTheme(selectedStep, journey)}
-              rtl={rtl}
-              locale={locale}
+          <CSSTransition key={selectedStep.id} timeout={1000} classNames="card">
+            <Box
+              data-testid={`step-${selectedStep.id}`}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+                display: 'flex',
+                borderRadius: 5,
+                // transition: '0.2s outline ease-out 0.1s',
+                transition: (theme) =>
+                  theme.transitions.create(['opacity', 'outline'], {
+                    duration: 500,
+                    delay: 500
+                  }),
+                outline: (theme) =>
+                  selectedStep.id === selectedBlock?.id
+                    ? `2px solid ${theme.palette.primary.main}`
+                    : `2px solid ${theme.palette.background.default}`,
+                outlineOffset: 4
+              }}
             >
-              <Stack
-                justifyContent="center"
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: 5
-                }}
-              >
-                <StepHeader />
-                <BlockRenderer
-                  block={selectedStep}
-                  wrappers={{
-                    Wrapper: SelectableWrapper,
-                    TypographyWrapper: InlineEditWrapper,
-                    ButtonWrapper: InlineEditWrapper,
-                    RadioQuestionWrapper: InlineEditWrapper,
-                    RadioOptionWrapper: InlineEditWrapper,
-                    TextResponseWrapper: InlineEditWrapper,
-                    SignUpWrapper: InlineEditWrapper,
-                    VideoWrapper,
-                    CardWrapper,
-                    FormWrapper
-                  }}
-                />
-                <StepFooter
-                  sx={{
-                    outline:
-                      selectedComponent === 'Footer'
-                        ? '2px solid #C52D3A'
-                        : 'none',
-                    outlineOffset: -4,
-                    borderRadius: 5,
-                    cursor: 'pointer'
-                  }}
-                  onFooterClick={handleFooterClick}
-                />
-              </Stack>
-            </ThemeProvider>
-          </FramePortal>
-        </Box>
+              <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
+                <ThemeProvider
+                  {...getStepTheme(selectedStep, journey)}
+                  rtl={rtl}
+                  locale={locale}
+                >
+                  <Stack
+                    justifyContent="center"
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: 5
+                    }}
+                  >
+                    <StepHeader />
+                    <BlockRenderer
+                      block={selectedStep}
+                      wrappers={{
+                        Wrapper: SelectableWrapper,
+                        TypographyWrapper: InlineEditWrapper,
+                        ButtonWrapper: InlineEditWrapper,
+                        RadioQuestionWrapper: InlineEditWrapper,
+                        RadioOptionWrapper: InlineEditWrapper,
+                        TextResponseWrapper: InlineEditWrapper,
+                        SignUpWrapper: InlineEditWrapper,
+                        VideoWrapper,
+                        CardWrapper,
+                        FormWrapper
+                      }}
+                    />
+                    <StepFooter
+                      sx={{
+                        outline:
+                          selectedComponent === 'Footer'
+                            ? '2px solid #C52D3A'
+                            : 'none',
+                        outlineOffset: -4,
+                        borderRadius: 5,
+                        cursor: 'pointer'
+                      }}
+                      onFooterClick={handleFooterClick}
+                    />
+                  </Stack>
+                </ThemeProvider>
+              </FramePortal>
+            </Box>
+          </CSSTransition>
+        </TransitionGroup>
       )}
+      <Box sx={{ height: '100%', width: 50 }} />
     </Stack>
   )
 }
