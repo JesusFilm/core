@@ -239,9 +239,33 @@ describe('DuplicateBlock', () => {
   })
 
   it('should call handleClick after clicking duplicate', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        blockDuplicate: {
+          id: 'duplicatedId',
+          parentOrder: 1
+        }
+      }
+    }))
+    
     const handleClickMock = jest.fn()
     const { getByRole } = render(
-      <MockedProvider mocks={[]}>
+      // <MockedProvider mocks={[]} >
+      <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: BLOCK_DUPLICATE,
+            variables: {
+              id: step.id,
+              journeyId: 'journeyId',
+              parentOrder: null
+            }
+          },
+          result
+        }
+      ]}
+    >
         <SnackbarProvider>
           <JourneyProvider
             value={{
