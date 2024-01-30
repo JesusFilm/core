@@ -1,38 +1,39 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
 import { Processor, WorkerHost } from '@nestjs/bullmq'
+import { MailerService } from '@nestjs-modules/mailer'
 import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
-
-import { PrismaService } from '../../lib/prisma.service'
 
 AWS.config.update({ region: 'us-east-2' })
 
 export interface EmailJob {
-  userId: string
+  email: string
   subject: string
   body: string
   text: string
 }
-
-@Processor('api-users-email')
+@Processor('api-subscriptions-email')
 export class EmailConsumer extends WorkerHost {
-  constructor(private readonly prismaService: PrismaService) {
+  constructor(private readonly mailerService: MailerService) {
     super()
   }
 
   async process(job: Job<EmailJob>): Promise<void> {
-    const user = await this.prismaService.user.findUnique({
-      where: { id: job.data.userId }
-    })
-    if (user == null) {
-      throw new Error('User not found')
+    try {
+      await this.mailerService.sendMail({
+        to: job.data.email,
+        subject: job.data.subject,
+        text: job.data.text,
+        html: job.data.body
+      })
+    } catch (e) {
+      console.log(e)
     }
-    console.log('message queue job:', job.name)
-    await await new SES()
+    await new SES()
       .sendEmail({
         Source: 'support@nextstep.is',
-        Destination: { ToAddresses: [user.email] },
+        Destination: { ToAddresses: [job.data.email] },
         Message: {
           Subject: {
             Charset: 'UTF-8',
