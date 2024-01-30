@@ -8,6 +8,7 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { LoggerModule } from 'nestjs-pino';
 
+import { BullMQModule } from './modules/bullMQ/bullMQ.module';
 import { ChannelsModule } from './modules/channel/channel.module';
 import { NexusModule } from './modules/nexus/nexus.module';
 import { ResourceModule } from './modules/resource/resource.module';
@@ -46,6 +47,8 @@ import { ResourceModule } from './modules/resource/resource.module';
         level: process.env.NODE_ENV !== 'production' ? 'trace' : 'info',
       },
     }),
+    BullMQModule,
   ],
+  providers: [],
 })
 export class AppModule {}

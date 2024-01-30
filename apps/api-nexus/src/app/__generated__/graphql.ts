@@ -124,6 +124,21 @@ export class GoogleAuthInput {
     url: string;
 }
 
+export class BatchJobBatch {
+    id: string;
+    batchName: string;
+}
+
+export class BatchJobResource {
+    resource: string;
+    channel: string;
+}
+
+export class BatchJobInput {
+    batch: BatchJobBatch;
+    resources: Nullable<BatchJobResource>[];
+}
+
 export class Channel {
     __typename?: 'Channel';
     id: string;
@@ -241,6 +256,8 @@ export abstract class IMutation {
     abstract getGoogleAccessToken(input: GoogleAuthInput): GoogleAuthResponse | Promise<GoogleAuthResponse>;
 
     abstract uploadToYoutube(channelId: string, resourceId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract resourceBatchJob(input: BatchJobInput): Nullable<string> | Promise<Nullable<string>>;
 }
 
 export class Language {

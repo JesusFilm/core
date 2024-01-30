@@ -1,6 +1,7 @@
 import { unlink } from 'fs';
 
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import Bull from 'bull';
 import { google } from 'googleapis';
 import { GraphQLError } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,6 +12,7 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser';
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId';
 
 import {
+  BatchJobInput,
   GoogleAuthInput,
   GoogleAuthResponse,
   ResourceCreateInput,
@@ -22,6 +24,10 @@ import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
 import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
+import {
+  BullMQService,
+  UploadYoutubeTemplateTask,
+} from '../bullMQ/bullMQ.service';
 
 @Resolver('Resource')
 export class ResourceResolver {
@@ -30,11 +36,12 @@ export class ResourceResolver {
     private readonly googleDriveService: GoogleDriveService,
     private readonly cloudFlareService: CloudFlareService,
     private readonly youtubeService: YoutubeService,
+    private readonly bullMQService: BullMQService,
   ) {}
 
   @Query()
   async resources(
-    @CurrentUserId() userId: string,
+    // @CurrentUserId() userId: string,
     @Args('where') where?: ResourceFilter,
   ): Promise<Resource[]> {
     const filter: Prisma.ResourceWhereInput = {};
@@ -48,9 +55,7 @@ export class ResourceResolver {
           filter,
           {
             nexus: {
-              userNexuses: {
-                every: { userId },
-              },
+              userNexuses: {},
             },
           },
         ],
@@ -78,12 +83,49 @@ export class ResourceResolver {
   }
 
   @Mutation()
+  async resourceBatchJob(
+    @Args('input') input: BatchJobInput,
+  ): Promise<Array<Bull.Job<unknown>>> {
+    const batchJob = await this.bullMQService.createBatchJob(
+      {
+        id: input.batch.id,
+        batchName: input.batch.batchName,
+      },
+      await Promise.all(
+        input.resources.map(async (item) => {
+          const channel = await this.prismaService.channel.findUnique({
+            where: { id: item?.channel },
+            include: { youtube: true },
+          });
+          const resource = await this.prismaService.resource.findUnique({
+            where: { id: item?.channel },
+            include: { googleDrive: true },
+          });
+          const ben: UploadYoutubeTemplateTask = {
+            channel: {
+              channelId: channel?.youtube?.channelId ?? 'N/A',
+              refreshToken: channel?.youtube?.refreshToken ?? 'N/A',
+            },
+            resource: {
+              driveId: resource?.googleDrive?.driveId ?? 'N/A',
+              refreshToken: resource?.googleDrive?.refreshToken ?? 'N/A',
+            },
+          };
+          return ben;
+        }),
+      ),
+    );
+
+    return batchJob;
+  }
+
+  @Mutation()
   async resourceCreate(
-    @CurrentUserId() userId: string,
+    // @CurrentUserId() userId: string,
     @Args('input') input: ResourceCreateInput,
   ): Promise<Resource | undefined> {
     const nexus = await this.prismaService.nexus.findUnique({
-      where: { id: input.nexusId, userNexuses: { every: { userId } } },
+      where: { id: input.nexusId },
     });
     if (nexus == null)
       throw new GraphQLError('nexus not found', {
@@ -284,7 +326,7 @@ export class ResourceResolver {
 
     return await this.prismaService.resource.findMany({
       where: {
-        nexusId: nexusId,
+        nexusId,
         nexus: {
           userNexuses: {
             every: { userId },
@@ -445,6 +487,7 @@ export class ResourceResolver {
   private async downloadSpreadsheet(
     spreadsheetId: string,
     accessToken: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
     const sheetsApiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1`;
     const response = await fetch(sheetsApiUrl, {
@@ -485,7 +528,7 @@ export class ResourceResolver {
     };
   }
 
-  async findFile(auth, folderId, fileName) {
+  async findFile(auth, folderId, fileName): Promise<string | null> {
     const drive = google.drive({ version: 'v3', auth });
     const driveResponse = await drive.files.list({
       q: `'${folderId}' in parents and name='${fileName}' and trashed=false`,

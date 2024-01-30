@@ -96,6 +96,7 @@ extend type Mutation {
   resourceFromTemplate(nexusId: String!, tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
+  resourceBatchJob(input: BatchJobInput!): String!
 }
 
 type Nexus
@@ -227,6 +228,21 @@ input ResourceFromSpreadsheetInput {
 input GoogleAuthInput {
   authCode: String!
   url: String!
+}
+
+input BatchJobBatch {
+  id: ID!
+  batchName: String!
+}
+
+input BatchJobResource {
+  resource: ID!
+  channel: ID!
+}
+
+input BatchJobInput {
+  batch: BatchJobBatch!
+  resources: [BatchJobResource]!
 }
 
 scalar _FieldSet
