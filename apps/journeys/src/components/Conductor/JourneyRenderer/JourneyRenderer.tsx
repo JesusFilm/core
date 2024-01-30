@@ -43,8 +43,8 @@ export function JourneyRenderer(): ReactElement {
             {shouldRender(block.id) ? (
               <Box
                 sx={{
-                  height: isCurrent ? 'inherit' : 'auto',
-                  width: 'inherit',
+                  height: isCurrent ? 'inherit' : '-webkit-fill-available;',
+                  width: isCurrent ? 'inherit' : '-webkit-fill-available;',
                   position: isCurrent ? 'relative' : 'absolute'
                 }}
               >
