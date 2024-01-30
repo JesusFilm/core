@@ -23,6 +23,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -183,6 +184,8 @@ export function Icon({ id }: IconProps): ReactElement {
     }
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <FormControl
@@ -218,7 +221,7 @@ export function Icon({ id }: IconProps): ReactElement {
       {iconName !== '' && (
         <Box>
           <Typography variant="subtitle2" sx={{ px: 6 }}>
-            Color
+            {t('Color')}
           </Typography>
           <Color id={id} iconColor={iconBlock.iconColor ?? IconColor.inherit} />
         </Box>

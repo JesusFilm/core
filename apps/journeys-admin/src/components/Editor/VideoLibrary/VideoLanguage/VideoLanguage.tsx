@@ -8,6 +8,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 import {
@@ -41,7 +42,7 @@ export function VideoLanguage({
   const handleApply = (): void => {
     handleClose()
   }
-
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <MuiDrawer
       anchor={smUp ? 'right' : 'bottom'}
@@ -68,7 +69,7 @@ export function VideoLanguage({
             component="div"
             sx={{ flexGrow: 1 }}
           >
-            Available Languages
+            {t('Available Languages')}
           </Typography>
           <IconButton onClick={handleClose} edge="end" aria-label="Close">
             <X2Icon />
@@ -84,7 +85,7 @@ export function VideoLanguage({
         />
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 3 }}>
-        <Button onClick={handleApply}>Apply</Button>
+        <Button onClick={handleApply}>{t('Apply')}</Button>
       </Box>
     </MuiDrawer>
   )
