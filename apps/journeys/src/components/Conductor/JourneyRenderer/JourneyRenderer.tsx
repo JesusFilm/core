@@ -11,15 +11,15 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { StepFields } from '../../../../__generated__/StepFields'
 
-interface CardRendererProps {
+interface JourneyRendererProps {
   themeName: ThemeName
   themeMode: ThemeMode
 }
 
-export function CardRenderer({
+export function JourneyRenderer({
   themeName,
   themeMode
-}: CardRendererProps): ReactElement {
+}: JourneyRendererProps): ReactElement {
   const { blockHistory, treeBlocks, getNextBlock } = useBlocks()
   const { journey } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
@@ -33,6 +33,17 @@ export function CardRenderer({
   const previousBlock = getPreviousBlock()
   const nextBlock = getNextBlock({ activeBlock: currentBlock })
 
+  const isPreRender = (id: string): boolean => {
+    switch (id) {
+      case currentBlock.id:
+      case nextBlock?.id:
+      case previousBlock?.id:
+        return true
+      default:
+        return false
+    }
+  }
+
   return (
     <ThemeProvider
       themeName={themeName}
@@ -44,9 +55,7 @@ export function CardRenderer({
       {treeBlocks.map((block) => {
         return (
           <Fade key={block.id} in={block.id === currentBlock.id}>
-            {block.id === currentBlock.id ||
-            block.id === nextBlock?.id ||
-            block.id === previousBlock?.id ? (
+            {isPreRender(block.id) ? (
               <Box
                 sx={{
                   height: block.id === currentBlock.id ? 'inherit' : 0,

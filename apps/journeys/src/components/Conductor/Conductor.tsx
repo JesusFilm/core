@@ -24,7 +24,7 @@ import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
-import { CardRenderer } from './CardRenderer'
+import { JourneyRenderer } from './JourneyRenderer'
 import { NavigationButton } from './NavigationButton'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
@@ -185,7 +185,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
         <Stack sx={{ height: '100%' }}>
-          <CardRenderer {...stepTheme} />
+          <JourneyRenderer {...stepTheme} />
 
           <NavigationButton
             variant={rtl ? 'next' : 'previous'}
