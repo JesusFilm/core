@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import sortBy from 'lodash/sortBy'
 import { ReactElement, useRef, useState } from 'react'
@@ -34,6 +35,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
   const { query, activeTeam, setActiveTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
   const anchorRef = useRef(null)
+  const theme = useTheme()
   const [open, setOpen] = useState(onboarding ?? false)
 
   const [updateLastActiveTeamId, { client }] =
@@ -96,11 +98,11 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
             MenuProps={{
               anchorOrigin: {
                 vertical: 'bottom',
-                horizontal: 'left'
+                horizontal: `${theme.direction === 'rtl' ? 'right' : 'left'}`
               },
               transformOrigin: {
                 vertical: 'top',
-                horizontal: 'left'
+                horizontal: `${theme.direction === 'rtl' ? 'right' : 'left'}`
               }
             }}
             IconComponent={ChevronDownIcon}
