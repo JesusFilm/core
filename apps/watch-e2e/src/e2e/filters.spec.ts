@@ -11,7 +11,7 @@ Check the URL has correct parameters
 Take a screenshot of just filters list
 */
 test('Filters', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/watch')
 
   // Get and log the current URL
   const url = page.url()

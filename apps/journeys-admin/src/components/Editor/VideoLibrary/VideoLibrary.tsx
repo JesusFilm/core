@@ -11,6 +11,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import MediaStrip1Icon from '@core/shared/ui/icons/MediaStrip1'
@@ -109,7 +110,7 @@ export function VideoLibrary({
     setOpenVideoDetails(false)
     if (closeParent === true) onClose?.()
   }
-
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <Drawer
@@ -141,7 +142,7 @@ export function VideoLibrary({
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Video Library
+              {t('Video Library')}
             </Typography>
             <IconButton
               onClick={onClose}

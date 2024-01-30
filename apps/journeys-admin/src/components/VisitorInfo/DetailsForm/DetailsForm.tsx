@@ -114,6 +114,7 @@ export function DetailsForm({ id }: DetailsFormProps): ReactElement {
                         onChange={handleChange}
                         onBlur={handleBlur}
                       >
+                        {/* eslint-disable-next-line i18next/no-literal-string */}
                         <MenuItem value="">⚪️</MenuItem>
                         <MenuItem value={VisitorStatus.star}>⭐</MenuItem>
                         <MenuItem value={VisitorStatus.prohibited}>🚫</MenuItem>
