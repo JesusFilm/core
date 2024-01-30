@@ -128,7 +128,8 @@ export function Editor({
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexGrow: 0,
-                    transition: (theme) => theme.transitions.create('flex-grow')
+                    transition: (theme) =>
+                      theme.transitions.create('flex-grow', { duration: 300 })
                   }}
                 >
                   <Canvas />

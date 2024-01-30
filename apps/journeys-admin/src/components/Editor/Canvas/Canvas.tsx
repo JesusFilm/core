@@ -169,7 +169,7 @@ export function Canvas(): ReactElement {
             }
           }}
         >
-          <CSSTransition key={selectedStep.id} timeout={1000} classNames="card">
+          <CSSTransition key={selectedStep.id} timeout={300} classNames="card">
             <Box
               data-testid={`step-${selectedStep.id}`}
               sx={{
@@ -180,12 +180,14 @@ export function Canvas(): ReactElement {
                 left: 0,
                 display: 'flex',
                 borderRadius: 5,
-                // transition: '0.2s outline ease-out 0.1s',
                 transition: (theme) =>
-                  theme.transitions.create(['opacity', 'outline'], {
-                    duration: 500,
-                    delay: 500
-                  }),
+                  `${theme.transitions.create('opacity', {
+                    duration: 300
+                  })}, ${theme.transitions.create('outline', {
+                    duration: 200,
+                    delay: 100,
+                    easing: 'ease-out'
+                  })}`,
                 outline: (theme) =>
                   selectedStep.id === selectedBlock?.id
                     ? `2px solid ${theme.palette.primary.main}`
