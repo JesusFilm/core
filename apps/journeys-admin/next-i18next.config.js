@@ -18,27 +18,24 @@ const i18nConfig = {
   i18n: {
     defaultLocale: 'en',
     locales: [
-      'af', // Afrikaans
+      'am', // Amharic
       'ar', // Arabic
-      'de', // German
+      'bn', // Bangla
       'en', // English
       'es', // Spanish
-      'fa', // Persian
+      'fil', // Tagalog
       'fr', // French
-      'he', // Hebrew
       'hi', // Hindi
       'id', // Indonesian
       'ja', // Japanese
-      'ko', // Korean
-      'mi', // Māori
-      'pt', // Portuguese
+      'my', // Burmese
       'ru', // Russian
+      'th', // Thai
       'tr', // Turkish
       'ur', // Urdu
       'vi', // Vietnamese
       'zh' // Chinese
     ]
-    // localeDetection: false
   },
   fallbackLng: {
     default: ['en']
