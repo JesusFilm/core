@@ -103,8 +103,6 @@ export function UnsplashCollections({
         ? 'left'
         : 'right'
 
-    console.log(position)
-
     return (
       <>
         <Box
