@@ -247,25 +247,25 @@ describe('DuplicateBlock', () => {
         }
       }
     }))
-    
+
     const handleClickMock = jest.fn()
     const { getByRole } = render(
       // <MockedProvider mocks={[]} >
       <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: BLOCK_DUPLICATE,
-            variables: {
-              id: step.id,
-              journeyId: 'journeyId',
-              parentOrder: null
-            }
-          },
-          result
-        }
-      ]}
-    >
+        mocks={[
+          {
+            request: {
+              query: BLOCK_DUPLICATE,
+              variables: {
+                id: step.id,
+                journeyId: 'journeyId',
+                parentOrder: null
+              }
+            },
+            result
+          }
+        ]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{
