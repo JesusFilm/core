@@ -12,6 +12,55 @@ directive @extends on OBJECT | INTERFACE
 
 scalar DateTime
 
+type Batch
+  @key(fields: "id")
+{
+  id: ID!
+  resourceId: String!
+  name: String!
+  status: BatchStatus!
+}
+
+enum BatchStatus {
+  pending
+  running
+  completed
+  failed
+  cancelled
+  paused
+  error
+  warning
+  scheduled
+}
+
+input BatchFilter {
+  ids: [ID!]
+  name: String
+  nexusId: String
+  status: BatchStatus
+  limit: Int
+}
+
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  batches(where: BatchFilter): [Batch!]
+  batch(id: ID!): Batch!
+  channels(where: ChannelFilter): [Channel!]
+  channel(id: ID!): Channel!
+  nexuses(where: NexusFilter): [Nexus!]!
+  nexus(id: ID!): Nexus!
+  resources(where: ResourceFilter): [Resource!]
+  resource(id: ID!): Resource!
+}
+
+type Subscription {
+  batchStatusChanged(id: ID!): Batch
+}
+
 type Channel
   @key(fields: "id")
 {
@@ -67,20 +116,6 @@ input ConnectYoutubeChannelInput {
   redirectUri: String!
 }
 
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  channels(where: ChannelFilter): [Channel!]
-  channel(id: ID!): Channel!
-  nexuses(where: NexusFilter): [Nexus!]!
-  nexus(id: ID!): Nexus!
-  resources(where: ResourceFilter): [Resource!]
-  resource(id: ID!): Resource!
-}
-
 extend type Mutation {
   channelCreate(input: ChannelCreateInput!): Channel!
   channelUpdate(id: ID!, input: ChannelUpdateInput!): Channel!
@@ -96,7 +131,7 @@ extend type Mutation {
   resourceFromTemplate(nexusId: String!, tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
-  resourceBatchJob(input: BatchJobInput!): String!
+  resourceBatchJob(input: BatchJobInput!): String
 }
 
 type Nexus
@@ -253,4 +288,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Channel | Nexus | Resource | ResourceLocalization
+union _Entity = Batch | Channel | Nexus | Resource | ResourceLocalization
