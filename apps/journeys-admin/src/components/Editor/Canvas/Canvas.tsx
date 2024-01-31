@@ -149,7 +149,7 @@ export function Canvas(): ReactElement {
       <Box
         sx={{
           width: activeSlide === ActiveSlide.Canvas ? 50 : 0,
-          mr: activeSlide === ActiveSlide.Canvas ? 4 : 0,
+          mr: activeSlide === ActiveSlide.Canvas ? 7 : 0,
           transition: (theme) =>
             theme.transitions.create(['width', 'margin'], {
               duration: 150
@@ -260,20 +260,20 @@ export function Canvas(): ReactElement {
       )}
       <Box
         sx={{
-          width: activeSlide === ActiveSlide.Canvas ? 53 : 0,
+          width: activeSlide === ActiveSlide.Canvas ? 50 : 0,
           ml: activeSlide === ActiveSlide.Canvas ? 7 : 0,
           transition: (theme) =>
             theme.transitions.create(['width', 'margin'], {
               duration: 150
             }),
-          overflow: 'hidden'
+          overflow: 'hidden',
+          alignSelf: 'center'
         }}
       >
         <Card
           variant="outlined"
           sx={{
-            borderRadius: 2,
-            my: '89px'
+            borderRadius: 2
           }}
         >
           <AddBlockToolbar />
