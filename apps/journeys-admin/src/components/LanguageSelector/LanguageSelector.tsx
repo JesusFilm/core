@@ -125,7 +125,7 @@ export function LanguageSelector({
       const path = router.asPath
       await router.push(path, path, { locale })
     },
-    [router, data?.languages]
+    [router, data]
   )
 
   return (
