@@ -74,7 +74,7 @@ export function LanguageSelector({
 
       const path = router.asPath
       await router.push(path, path, { locale })
-      document.dir = dir()
+      document.dir = dir(i18n?.language ?? 'en')
     },
     [router, data, dir]
   )
