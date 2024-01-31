@@ -5,6 +5,7 @@ import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
+import last from 'lodash/last'
 
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
@@ -74,6 +75,8 @@ export function Card({
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
+  const onFirstStep = activeBlock === treeBlocks[0]
+  const onLastStep = activeBlock === last(treeBlocks)
 
   const cardColor =
     backgroundColor != null
@@ -128,6 +131,7 @@ export function Card({
   // places used:
   // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   function handleNextNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
@@ -164,12 +168,12 @@ export function Card({
       }
     })
   }
-
   // should always be called with previousActiveBlock()
   // should match with other handlePreviousNavigationEventCreate functions
   // places used:
   // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   function handlePreviousNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
@@ -208,30 +212,34 @@ export function Card({
       }
     })
   }
-  const handleNavigation = (e: MouseEvent): void => {
-    if (variant === 'admin' || activeBlock == null) return
+  const handleNav = (e: MouseEvent): void => {
+    if (variant === 'admin') return
     const view = e.view as unknown as Window
     if (rtl) {
       const divide = view.innerWidth * 0.66
       if (e.clientX <= divide) {
-        if (!activeBlock?.locked) {
+        if (!activeBlock?.locked && !onLastStep) {
           handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        handlePreviousNavigationEventCreate()
-        previousActiveBlock()
+        if (!onFirstStep) {
+          handlePreviousNavigationEventCreate()
+          previousActiveBlock()
+        }
       }
     } else {
       const divide = view.innerWidth * 0.33
       if (e.clientX >= divide) {
-        if (!activeBlock?.locked) {
+        if (!activeBlock?.locked && !onLastStep) {
           handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        handlePreviousNavigationEventCreate()
-        previousActiveBlock()
+        if (!onFirstStep) {
+          handlePreviousNavigationEventCreate()
+          previousActiveBlock()
+        }
       }
     }
   }
@@ -251,7 +259,7 @@ export function Card({
         transform: 'translateZ(0)' // safari glitch with border radius
       }}
       elevation={3}
-      onClick={handleNavigation}
+      onClick={handleNav}
     >
       {coverBlock != null && !fullscreen ? (
         <ContainedCover

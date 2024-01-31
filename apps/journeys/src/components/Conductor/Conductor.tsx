@@ -26,6 +26,7 @@ import { StepFields } from '../../../__generated__/StepFields'
 
 import { JourneyRenderer } from './JourneyRenderer'
 import { NavigationButton } from './NavigationButton'
+import { SwipeNavigation } from './SwipeNavigation'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -64,37 +65,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
     JOURNEY_VISITOR_UPDATE
   )
-
-  const enableTouchMoveNext = !activeBlock?.locked ?? false
-
-  useEffect(() => {
-    let touchstartX = 0
-    let touchendX = 0
-    const swipeSensitivity = 50
-
-    function checkDirection(): void {
-      if (touchendX + swipeSensitivity < touchstartX && enableTouchMoveNext)
-        nextActiveBlock()
-      if (touchendX - swipeSensitivity > touchstartX) previousActiveBlock()
-    }
-
-    function touchStart(e): void {
-      touchstartX = e.changedTouches[0].screenX
-    }
-
-    function touchEnd(e): void {
-      touchendX = e.changedTouches[0].screenX
-      checkDirection()
-    }
-
-    document.addEventListener('touchstart', touchStart)
-    document.addEventListener('touchend', touchEnd)
-
-    return () => {
-      document.removeEventListener('touchstart', touchStart)
-      document.removeEventListener('touchend', touchEnd)
-    }
-  }, [activeBlock, enableTouchMoveNext])
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
@@ -180,6 +150,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         overflow: 'hidden'
       }}
     >
+      <SwipeNavigation activeBlock={activeBlock} />
       <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
         {showHeaderFooter && router.query.noi == null && (
           <StepHeader sx={{ ...mobileNotchStyling }} />
