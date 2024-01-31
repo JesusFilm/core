@@ -21,7 +21,7 @@ interface DefaultLanguage {
 }
 interface LanguageSelectorProps {
   open: boolean
-  onClose: () => void
+  handleClose: () => void
 }
 
 const credentials = {
@@ -30,7 +30,7 @@ const credentials = {
 
 export function LanguageSelector({
   open,
-  onClose
+  handleClose
 }: LanguageSelectorProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
@@ -84,6 +84,8 @@ export function LanguageSelector({
 
       const path = router.asPath
       await router.push(path, path, { locale })
+
+      handleClose()
     },
     [router, data]
   )
@@ -91,7 +93,7 @@ export function LanguageSelector({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       dialogTitle={{
         title: t('Change Language'),
         closeButton: true

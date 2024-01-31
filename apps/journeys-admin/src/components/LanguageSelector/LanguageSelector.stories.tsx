@@ -157,7 +157,7 @@ export const Default: StoryObj<typeof LanguageSelector> = {
         }
       ]}
     >
-      <LanguageSelector open onClose={jest.fn()} />
+      <LanguageSelector open handleClose={jest.fn()} />
     </MockedProvider>
   )
 }

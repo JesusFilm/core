@@ -100,7 +100,9 @@ export function UserMenu({
           }}
         />
       </Menu>
-      {open && <LanguageSelector open={open} onClose={() => setOpen(false)} />}
+      {open && (
+        <LanguageSelector open={open} handleClose={() => setOpen(false)} />
+      )}
     </>
   )
 }

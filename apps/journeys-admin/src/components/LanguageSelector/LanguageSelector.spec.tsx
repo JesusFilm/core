@@ -41,7 +41,7 @@ describe('LanguageSelector', () => {
           }
         ]}
       >
-        <LanguageSelector open onClose={jest.fn()} />
+        <LanguageSelector open handleClose={jest.fn()} />
       </MockedProvider>
     )
     expect(getByText('Change Language')).toBeInTheDocument()
@@ -190,7 +190,7 @@ describe('LanguageSelector', () => {
           }
         ]}
       >
-        <LanguageSelector open onClose={jest.fn()} />
+        <LanguageSelector open handleClose={jest.fn()} />
       </MockedProvider>
     )
 
@@ -300,7 +300,7 @@ describe('LanguageSelector', () => {
           }
         ]}
       >
-        <LanguageSelector open onClose={jest.fn()} />
+        <LanguageSelector open handleClose={jest.fn()} />
       </MockedProvider>
     )
 
