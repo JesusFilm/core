@@ -42,6 +42,7 @@ import {
 import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
 
 import 'reactflow/dist/style.css'
+import { NODE_WIDTH } from './nodes/BaseNode'
 
 type InternalNode =
   | Node<StepBlockNodeData, 'StepBlock'>
@@ -52,12 +53,27 @@ type InternalNode =
   | Node<FormBlockNodeData, 'FormBlock'>
   | Node<VideoBlockNodeData, 'VideoBlock'>
 
+const NODE_WIDTH_GAP = 30
+const NODE_HEIGHT_GAP = 120
+
+interface Connection<T = BlockFields> {
+  block: TreeBlock<T>
+  step: TreeBlock<StepBlock>
+  steps: Array<TreeBlock<StepBlock>>
+}
+
+interface Layout<T = BlockFields> {
+  block: TreeBlock<T>
+  children: Layout[]
+}
+
 function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   nodes: InternalNode[]
   edges: Edge[]
 } {
   const nodes: InternalNode[] = []
   const edges: Edge[] = []
+  const parentMap = new Map()
 
   const filterBlocks = [
     'RadioOptionBlock',
@@ -68,57 +84,64 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     'VideoBlock'
   ]
 
-  interface Connection<T = BlockFields> {
-    block: TreeBlock<T>
-    step: TreeBlock<StepBlock>
-    steps: Array<TreeBlock<StepBlock>>
-  }
+  function processLayout(steps: Array<TreeBlock<StepBlock>>): Layout[] {
+    const visitedStepIds: string[] = []
+    const layouts: Layout[] = []
 
-  function processLayout(steps: Array<TreeBlock<StepBlock>>): void {
-    const visitedNodes: string[] = []
-    const nodeStack: string[] = []
-
-    const isVisited = (id): boolean => {
-      return visitedNodes.includes(id)
+    function isVisited(id): boolean {
+      return visitedStepIds.includes(id)
     }
 
-    const getStepFromID = (id): TreeBlock<StepBlock> | undefined => {
+    function getStepFromId(id): TreeBlock<StepBlock> | undefined {
       return steps.find((step) => step.id === id)
     }
 
-    const traverseStep = (step: TreeBlock<StepBlock>): void => {
-      if (!isVisited(step.id)) {
-        visitedNodes.push(step.id)
-        if (step.nextBlockId != null && !isVisited(step.nextBlockId)) {
-          nodeStack.push(step.nextBlockId)
-        }
-        const stepChildren = step.children[0].children.filter(
-          (block) => block.__typename === 'ButtonBlock'
-        ) as Array<TreeBlock<ButtonBlock>>
-        stepChildren.reverse().forEach((block) => {
-          if (block.action != null) {
-            if (
-              block.action.__typename === 'NavigateToBlockAction' &&
-              !isVisited(block.action.blockId)
-            ) {
-              nodeStack.push(block.action.blockId)
+    function traverseBlock(layout: Layout): Layout {
+      const { block, children } = layout
+      switch (block.__typename) {
+        case 'StepBlock':
+          if (!isVisited(block.id)) {
+            visitedStepIds.push(block.id)
+            const stepChildren = block.children[0].children.filter(
+              (block) => block.__typename === 'ButtonBlock'
+            ) as Array<TreeBlock<ButtonBlock>>
+            stepChildren.forEach((block) => {
+              if (block.action != null) {
+                if (block.action.__typename === 'NavigateToBlockAction') {
+                  children.push(traverseBlock({ block, children: [] }))
+                }
+              }
+            })
+            if (block.nextBlockId != null && !isVisited(block.nextBlockId)) {
+              const nextStep = getStepFromId(block.nextBlockId)
+              if (nextStep != null)
+                children.push(traverseBlock({ block: nextStep, children: [] }))
             }
           }
-        })
+          break
+        case 'ButtonBlock':
+          if (
+            block.action?.__typename === 'NavigateToBlockAction' &&
+            !isVisited(block.action.blockId)
+          ) {
+            const nextStep = getStepFromId(block.action.blockId)
+            if (nextStep != null)
+              children.push(traverseBlock({ block: nextStep, children: [] }))
+          }
+          break
       }
-      if (nodeStack.length !== 0) {
-        const nextStep = getStepFromID(nodeStack.pop())
-        if (nextStep != null) {
-          traverseStep(nextStep)
-        }
-      }
+      return layout
     }
 
     steps.forEach((step) => {
       if (!isVisited(step.id)) {
-        traverseStep(step)
+        const layout = { block: step, children: [] }
+        layouts.push(layout)
+        traverseBlock(layout)
       }
     })
+
+    return layouts
   }
 
   function connectBlockToNextBlock({ block, step, steps }: Connection): void {
@@ -261,7 +284,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     connectBlockToNextBlock({ block: step, step, steps })
   })
 
-  processLayout(steps)
+  console.log(processLayout(steps))
 
   return { nodes, edges }
 }
@@ -274,9 +297,53 @@ export function JourneyFlow(): ReactElement {
   const [nodes, setNodes] = useNodesState<Node[]>([])
   const [edges, setEdges] = useEdgesState<Edge[]>([])
 
+  function setPositions(nodes: Node[]): Node[] {
+    const positions = {
+      x: 0,
+      y: 0
+    }
+    const layerSizes: number[] = []
+    nodes.map((node, index) => {
+      if (node.type === 'StepBlock') {
+        if (index !== 0) {
+          layerSizes.push(positions.x)
+        }
+        positions.x = 0
+      } else {
+        positions.x = positions.x + NODE_WIDTH_GAP
+      }
+    })
+    layerSizes.push(positions.x)
+    positions.x = 0
+    nodes.map((node, index) => {
+      if (node.type === 'StepBlock') {
+        if (index !== 0) {
+          positions.x = 0
+          positions.y = positions.y + NODE_HEIGHT_GAP * 2
+        }
+        node.position = {
+          x: positions.x,
+          y: positions.y
+        }
+        const layerSize = layerSizes.shift() ?? 0
+        positions.x = 75 - (layerSize * 90) / NODE_WIDTH_GAP
+        positions.y = positions.y + NODE_HEIGHT_GAP
+      } else {
+        positions.x = positions.x + NODE_WIDTH_GAP / 2
+        node.position = {
+          x: positions.x,
+          y: positions.y
+        }
+        positions.x = positions.x + NODE_WIDTH + NODE_WIDTH_GAP / 2
+      }
+    })
+    return nodes
+  }
+
   useEffect(() => {
     const setLayout = async (nodes) => {
-      setNodes(nodes)
+      const layoutNodes = setPositions(nodes)
+      setNodes(layoutNodes)
     }
 
     const { nodes, edges } = transformSteps(steps ?? [])
