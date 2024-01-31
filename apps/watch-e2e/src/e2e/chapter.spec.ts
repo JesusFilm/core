@@ -15,7 +15,7 @@ test('Chapter', async ({ page }) => {
   // Set test time out as it has video
   test.setTimeout(7 * 60 * 1000)
 
-  await page.goto('/')
+  await page.goto('/watch')
 
   // Get and log the current URL
   const url = page.url()
