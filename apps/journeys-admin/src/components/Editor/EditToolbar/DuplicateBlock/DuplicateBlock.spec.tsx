@@ -241,26 +241,26 @@ describe('DuplicateBlock', () => {
 
   it('should call handleClick after clicking duplicate', async () => {
     const mockBlockDuplicate: MockedResponse<BlockDuplicate> = {
-          request: {
-            query: BLOCK_DUPLICATE,
-            variables: {
-              id: step.id,
-              journeyId: 'journeyId',
-              parentOrder: null
-            }
-          },
-          result: {
-            data: {
-              blockDuplicate: [
-                {
-                  __typename: 'TypographyBlock',
-                  id: 'typography0.id'
-                }
-              ]
-            }
-          }
+      request: {
+        query: BLOCK_DUPLICATE,
+        variables: {
+          id: step.id,
+          journeyId: 'journeyId',
+          parentOrder: null
         }
-    
+      },
+      result: {
+        data: {
+          blockDuplicate: [
+            {
+              __typename: 'TypographyBlock',
+              id: 'typography0.id'
+            }
+          ]
+        }
+      }
+    }
+
     const handleClickMock = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[mockBlockDuplicate]}>
@@ -272,7 +272,7 @@ describe('DuplicateBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock: step }}>
-              <DuplicateBlock 
+              <DuplicateBlock
                 variant="list-item"
                 handleClick={handleClickMock}
               />
