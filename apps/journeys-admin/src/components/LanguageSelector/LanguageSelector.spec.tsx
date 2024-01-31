@@ -49,7 +49,7 @@ describe('LanguageSelector', () => {
 
   it('should show languages that are translated fully', async () => {
     jest
-      .spyOn(TranslationStatus.prototype, 'getProjectProgress')
+      .spyOn(TranslationStatus.prototype, 'getFileProgress')
       .mockImplementation(async () => {
         return await Promise.resolve({
           pagination: {
@@ -209,7 +209,7 @@ describe('LanguageSelector', () => {
       asPath: '/'
     } as unknown as NextRouter)
     jest
-      .spyOn(TranslationStatus.prototype, 'getProjectProgress')
+      .spyOn(TranslationStatus.prototype, 'getFileProgress')
       .mockImplementation(async () => {
         return await Promise.resolve({
           pagination: {
