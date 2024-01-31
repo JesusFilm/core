@@ -123,7 +123,7 @@ export function LanguageSelector({
       const locale = language?.bcp47?.slice(0, 2)
 
       const path = router.asPath
-      return await router.push(path, path, { locale })
+      await router.push(path, path, { locale })
     },
     [router, data?.languages]
   )
