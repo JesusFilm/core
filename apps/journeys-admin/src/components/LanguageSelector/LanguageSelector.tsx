@@ -97,14 +97,14 @@ export function LanguageSelector({
         .getProjectProgress(518286)
         .then((crowdinData) => {
           console.log(crowdinData)
-          const availableLanguages = data.languages.filter((l) => {
-            const crowdinId = getCrowdinId(l.id)
+          const availableLanguages = data.languages.filter((language) => {
+            const crowdinId = getCrowdinId(language.id)
             const crowdinLanguageData = crowdinData.data.find(
-              (cl) => cl.data.languageId === crowdinId
+              (crowdinLanguage) => crowdinLanguage.data.languageId === crowdinId
             )
             return (
               // always display English
-              l.id === '529' ||
+              language.id === '529' ||
               crowdinLanguageData?.data.approvalProgress === 100
             )
           })
@@ -117,7 +117,9 @@ export function LanguageSelector({
 
   const handleLocaleSwitch = useCallback(
     async (localeId: string | undefined) => {
-      const language = data?.languages.find((l) => l.id === localeId)
+      const language = data?.languages.find(
+        (language) => language.id === localeId
+      )
       const locale = language?.bcp47?.slice(0, 2)
 
       const path = router.asPath
