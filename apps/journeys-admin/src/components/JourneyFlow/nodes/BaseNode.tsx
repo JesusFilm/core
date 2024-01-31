@@ -1,9 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -45,6 +46,17 @@ export function BaseNode({
     StepAndCardBlockCreate,
     StepAndCardBlockCreateVariables
   >(STEP_AND_CARD_BLOCK_CREATE)
+
+  const [isHovered, setIsHovered] = useState(false)
+
+  const handleMouseEnter = (): void => {
+    setIsHovered(true)
+    console.log('hovered over')
+  }
+
+  const handleMouseLeave = (): void => {
+    setIsHovered(false)
+  }
 
   const handleClick = async (): Promise<void> => {
     if (journey == null) return
@@ -102,89 +114,151 @@ export function BaseNode({
   }
 
   return isTargetConnectable !== false ? (
-    <Card // regular card
-      sx={{
-        borderRadius: 1,
-        outline: '2px solid',
-        outlineColor: (theme) =>
-          selected === true
-            ? theme.palette.primary.main
-            : selected === 'descendant'
-            ? theme.palette.divider
-            : 'transparent',
-        outlineOffset: '5px'
-      }}
+    <Box
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      sx={{ height: '150%', overflow: 'visible' }}
     >
-      <CardContent
+      <Card // regular card
         sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          width: NODE_WIDTH,
-          height: NODE_HEIGHT,
-          gap: 2
+          borderRadius: 1,
+          outline: '2px solid',
+          outlineColor: (theme) =>
+            selected === true
+              ? theme.palette.primary.main
+              : selected === 'descendant'
+              ? theme.palette.divider
+              : 'transparent',
+          outlineOffset: '2px'
         }}
-        onClick={onClick}
       >
-        {icon}
-        <Typography
+        <CardContent
           sx={{
-            display: '-webkit-box',
-            '-webkit-box-orient': 'vertical',
-            '-webkit-line-clamp': '2',
-            overflow: 'hidden'
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            width: NODE_WIDTH,
+            height: NODE_HEIGHT,
+            gap: 2,
+            borderRadius: 1
           }}
+          onClick={onClick}
         >
-          {title}
-        </Typography>
-      </CardContent>
-      <Handle
-        type="target"
-        position={Position.Left}
-        style={{
-          width: 15,
-          height: 15,
-          background: '#636363'
-        }}
-      />
-      <Handle
-        type="target"
-        position={Position.Left}
-        isConnectableStart={false}
-        style={{
-          width: '100%',
-          height: '100%',
-          borderRadius: 0,
-          background: '#636363',
-          opacity: 0
-        }}
-      />
-      {isSourceConnectable !== false && (
+          {icon}
+          <Typography
+            sx={{
+              display: '-webkit-box',
+              '-webkit-box-orient': 'vertical',
+              '-webkit-line-clamp': '2',
+              overflow: 'hidden'
+            }}
+          >
+            {title}
+          </Typography>
+        </CardContent>
         <Handle
-          type="source"
-          position={Position.Right}
-          onConnect={onSourceConnect}
-          onClick={handleClick}
+          type="target"
+          position={Position.Top}
           style={{
-            width: '15px',
-            height: '15px',
-            background: '#636363'
+            width: 7,
+            height: 7,
+            background: 'white',
+            border:
+              selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb ',
+            outline: '1.5px solid white',
+            outlineColor: 'white',
+            cursor: 'pointer'
           }}
         />
-      )}
-    </Card>
+        <Handle
+          type="target"
+          position={Position.Bottom}
+          isConnectableStart={false}
+          style={{
+            overflow: 'visible',
+            width: '100%',
+            height: '100%',
+            borderRadius: 0,
+            background: 'tranparent',
+            opacity: 0
+          }}
+        />
+        {isSourceConnectable !== false && (
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            onConnect={onSourceConnect}
+            onClick={handleClick}
+            style={{
+              width: 7,
+              height: 7,
+              background: 'white',
+              border:
+                selected !== false
+                  ? '2px solid #c52d3aff'
+                  : '2px solid #aaacbb ',
+              outline: '1.5px solid white',
+              outlineColor: 'white',
+              visibility: isHovered ? 'hidden' : 'visible'
+            }}
+          />
+        )}
+        {isHovered && (
+          <Box
+            style={{
+              position: 'absolute',
+              background: 'transparent',
+              borderColor: 'transparent',
+              cursor: 'pointer',
+              margin: 0,
+              padding: 0,
+              width: NODE_WIDTH,
+              height: 18,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+          >
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              onConnect={onSourceConnect}
+              onClick={handleClick}
+              style={{
+                width: NODE_WIDTH / 2,
+                height: 30,
+                background: 'transparent',
+                borderColor: 'transparent',
+                borderRadius: 0,
+                overflow: 'visible'
+              }}
+            />
+            <ArrowDownwardRoundedIcon
+              style={{
+                borderRadius: '50%',
+                color: 'white',
+                fontSize: 'large',
+                padding: 0,
+                marginTop: 5,
+                backgroundColor: '#c52d3aff'
+              }}
+            />
+          </Box>
+        )}
+      </Card>
+    </Box>
   ) : (
     <Box // action label
       sx={{
-        borderRadius: 1,
+        borderRadius: 20,
+        backgroundColor: 'white',
         outline: '2px solid',
         outlineColor: (theme) =>
           selected === true
             ? theme.palette.primary.main
             : selected === 'descendant'
             ? theme.palette.divider
-            : 'transparent',
-        outlineOffset: '5px'
+            : 'lightgrey'
       }}
     >
       <CardContent
@@ -192,9 +266,9 @@ export function BaseNode({
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          width: NODE_WIDTH,
-          height: NODE_HEIGHT,
-          gap: 2
+          width: NODE_WIDTH - 20,
+          height: 'auto',
+          padding: 1
         }}
         onClick={onClick}
       >
@@ -203,25 +277,29 @@ export function BaseNode({
           sx={{
             display: '-webkit-box',
             '-webkit-box-orient': 'vertical',
-            '-webkit-line-clamp': '2',
-            overflow: 'hidden'
+            '-webkit-line-clamp': '1',
+            overflow: 'hidden',
+            fontSize: 'small',
+            paddingLeft: 1
           }}
         >
           {title}
         </Typography>
       </CardContent>
-      {isTargetConnectable && <Handle type="target" position={Position.Left} />}
       {isSourceConnectable !== false && (
         <Handle
           type="source"
-          position={Position.Right}
+          position={Position.Bottom}
           onConnect={onSourceConnect}
           onClick={handleClick}
           style={{
-            left: '80%',
-            width: '15px',
-            height: '15px',
-            background: '#636363'
+            width: 7,
+            height: 7,
+            background: 'white',
+            border:
+              selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb ',
+            outline: '1.5px solid white',
+            outlineColor: 'white'
           }}
         />
       )}

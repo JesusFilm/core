@@ -1,19 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable react-hooks/rules-of-hooks */
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
 import findIndex from 'lodash/findIndex'
 import flatMapDeep from 'lodash/flatMapDeep'
-import { ReactElement, ReactNode, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import {
   Background,
   Controls,
   Edge,
-  Handle,
   MarkerType,
   Node,
   OnConnect,
@@ -46,6 +39,7 @@ import {
 } from '../../../__generated__/StepAndCardBlockCreate'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../CardPreview/CardPreview'
 
+import ButtonEdge from './edges/ButtonEdge'
 import { NODE_HEIGHT, NODE_WIDTH } from './nodes/BaseNode'
 import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
 import { FormBlockNode, FormBlockNodeData } from './nodes/FormBlockNode'
@@ -60,7 +54,6 @@ import {
   TextResponseBlockNodeData
 } from './nodes/TextResponseBlockNode'
 import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
-
 import 'reactflow/dist/style.css'
 
 type InternalNode =
@@ -93,7 +86,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     if (index < 0) return
     if (step.nextBlockId == null && steps[index + 1] != null) {
       edges.push({
-        type: 'smoothstep',
+        type: 'buttonedge',
         id: `${block.id}->${steps[index + 1].id}`,
         source: block.id,
         target: steps[index + 1].id,
@@ -108,7 +101,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     }
     if (step.nextBlockId != null && step.nextBlockId !== step.id) {
       edges.push({
-        type: 'smoothstep',
+        type: 'buttonedge',
         id: `${block.id}->${step.nextBlockId}`,
         source: block.id,
         target: step.nextBlockId,
@@ -205,7 +198,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
       if (block.action != null) {
         if (block.action.__typename === 'NavigateToBlockAction') {
           edges.push({
-            type: 'smoothstep',
+            type: 'bezeir',
             id: `${block.id}->${block.action.blockId}`,
             source: block.id,
             target: block.action.blockId,
@@ -250,17 +243,16 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   return { nodes, edges }
 }
 
-export function JourneyFlow(
-  onSourceConnect?: (
-    params: { target: string } | Parameters<OnConnect>[0]
-  ) => void
-): ReactElement {
+export function JourneyFlow(): ReactElement {
   const {
     state: { steps }
   } = useEditor()
 
   const [nodes, setNodes] = useNodesState([])
   const [edges, setEdges] = useEdgesState([])
+  const edgeTypes = {
+    buttonedge: ButtonEdge
+  }
 
   useEffect(() => {
     const { nodes, edges } = transformSteps(steps ?? [])
@@ -268,45 +260,39 @@ export function JourneyFlow(
     setEdges(edges)
   }, [steps, setNodes, setEdges])
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const onConnectEnd = (params) => {
+  const onConnectEnd = (params): void => {
     const targetNode = params.target
     console.log('connect ended')
     console.log('params', params, '\n\n\ntarget: ', targetNode)
 
     if (targetNode.className === 'react-flow__pane') {
-      console.log('create new node')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      createNewNode(params)
+      console.log('create new node between')
+      void createNewNodeBetween(params)
     }
-    // if (
-    //   targetNode.className ===
-    //   'MuiCardContent-root css-1gw0hyo-MuiCardContent-root'
-    // ) {
-    //   console.log('Attach to node: ')
-    // }
   }
+
   const { journey } = useJourney()
   const [stepAndCardBlockCreate] = useMutation<
     StepAndCardBlockCreate,
     StepAndCardBlockCreateVariables
   >(STEP_AND_CARD_BLOCK_CREATE)
 
-  const createNewNode = async (params): Promise<void> => {
+  const createNewNodeBetween = async (previousStepId): Promise<void> => {
     if (journey == null) return
 
-    const stepId = uuidv4()
-    const cardId = uuidv4()
-    const { data } = await stepAndCardBlockCreate({
+    const newStepId = uuidv4()
+    const newCardId = uuidv4()
+
+    await stepAndCardBlockCreate({
       variables: {
         stepBlockCreateInput: {
-          id: stepId,
+          id: newStepId,
           journeyId: journey.id
         },
         cardBlockCreateInput: {
-          id: cardId,
+          id: newCardId,
           journeyId: journey.id,
-          parentBlockId: stepId,
+          parentBlockId: newStepId,
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base
         }
@@ -316,7 +302,13 @@ export function JourneyFlow(
           cache.modify({
             id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
-              blocks(existingBlockRefs = []) {
+              blocks(existingBlockRefs = [], { readField }) {
+                // Find the index of the previous step
+                const index = existingBlockRefs.findIndex(
+                  (ref) => readField('id', ref) === previousStepId
+                )
+
+                // Insert the new step and card after the previous step
                 const newStepBlockRef = cache.writeFragment({
                   data: data.stepBlockCreate,
                   fragment: gql`
@@ -333,7 +325,12 @@ export function JourneyFlow(
                     }
                   `
                 })
-                return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
+                return [
+                  ...existingBlockRefs.slice(0, index + 1),
+                  newStepBlockRef,
+                  newCardBlockRef,
+                  ...existingBlockRefs.slice(index + 1)
+                ]
               }
             }
           })
@@ -347,6 +344,7 @@ export function JourneyFlow(
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        edgeTypes={edgeTypes}
         onConnectEnd={onConnectEnd}
         fitView
         nodeTypes={{
