@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import findIndex from 'lodash/findIndex'
 import flatMapDeep from 'lodash/flatMapDeep'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import {
   Background,
   Controls,
@@ -250,6 +250,7 @@ export function JourneyFlow(): ReactElement {
 
   const [nodes, setNodes] = useNodesState([])
   const [edges, setEdges] = useEdgesState([])
+  const [previousStepId, setPreviousStepId] = useState()
   const edgeTypes = {
     buttonedge: ButtonEdge
   }
@@ -260,14 +261,16 @@ export function JourneyFlow(): ReactElement {
     setEdges(edges)
   }, [steps, setNodes, setEdges])
 
-  const onConnectEnd = (params): void => {
-    const targetNode = params.target
-    console.log('connect ended')
-    console.log('params', params, '\n\n\ntarget: ', targetNode)
+  const onConnectStart = (_, { nodeId, handleType }): void => {
+    console.log('on connect start', { nodeId, handleType })
+    setPreviousStepId(nodeId)
+    console.log('steps is: ', steps)
+  }
 
-    if (targetNode.className === 'react-flow__pane') {
-      console.log('create new node between')
-      void createNewNodeBetween(params)
+  const onConnectEnd = (event): void => {
+    if (event.target.className === 'react-flow__pane') {
+      console.log('create new node after', previousStepId)
+      void createNewNodeAfter(previousStepId)
     }
   }
 
@@ -277,9 +280,10 @@ export function JourneyFlow(): ReactElement {
     StepAndCardBlockCreateVariables
   >(STEP_AND_CARD_BLOCK_CREATE)
 
-  const createNewNodeBetween = async (previousStepId): Promise<void> => {
+  const createNewNodeAfter = async (previousStepId): Promise<void> => {
     if (journey == null) return
-
+    console.log('PREVstepid: ', previousStepId)
+    console.log('steps: ', steps)
     const newStepId = uuidv4()
     const newCardId = uuidv4()
 
@@ -298,19 +302,22 @@ export function JourneyFlow(): ReactElement {
         }
       },
       update(cache, { data }) {
+        console.log('dataaaa', data)
         if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
           cache.modify({
             id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = [], { readField }) {
-                // Find the index of the previous step
                 const index = existingBlockRefs.findIndex(
                   (ref) => readField('id', ref) === previousStepId
                 )
+                console.log(readField('id'))
 
-                // Insert the new step and card after the previous step
+                console.log('previousStepId is: ', previousStepId)
+
                 const newStepBlockRef = cache.writeFragment({
                   data: data.stepBlockCreate,
+
                   fragment: gql`
                     fragment NewBlock on Block {
                       id
@@ -346,6 +353,7 @@ export function JourneyFlow(): ReactElement {
         edges={edges}
         edgeTypes={edgeTypes}
         onConnectEnd={onConnectEnd}
+        onConnectStart={onConnectStart}
         fitView
         nodeTypes={{
           RadioOptionBlock: RadioOptionBlockNode,
