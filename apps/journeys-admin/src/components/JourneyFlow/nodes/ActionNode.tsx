@@ -63,11 +63,16 @@ export function ActionNode({
     onSourceConnect?.(params)
   }
 
+  function handleClick(): void {
+    console.log(block.id)
+  }
+
   return (
     <BaseNode
       selected={selectedBlock?.id === block.id}
       isTargetConnectable={false}
       onSourceConnect={onConnect}
+      onClick={handleClick}
       {...props}
     />
   )

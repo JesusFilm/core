@@ -51,6 +51,16 @@
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
+    },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config apps/docs/i18next-parser.config.js"
+          }
+        ]
+      }
     }
   },
   "tags": []

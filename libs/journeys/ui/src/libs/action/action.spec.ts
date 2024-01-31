@@ -115,7 +115,7 @@ describe('action', () => {
       )
     })
 
-    it('should handle internal LinkAction', () => {
+    it('should handle internal LinkAction for non http url', () => {
       handleAction(router, {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
@@ -123,6 +123,21 @@ describe('action', () => {
         url: 'fact-or-fiction'
       })
       expect(router.push).toHaveBeenCalledWith('fact-or-fiction')
+    })
+
+    it('should not open new tab for internal links to journeys', () => {
+      window.open = jest.fn()
+
+      handleAction(router, {
+        __typename: 'LinkAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        url: 'https://your.nextstep.is/fact-or-fiction'
+      })
+      expect(router.push).toHaveBeenCalledWith(
+        'https://your.nextstep.is/fact-or-fiction'
+      )
+      expect(window.open).not.toHaveBeenCalled()
     })
   })
 })

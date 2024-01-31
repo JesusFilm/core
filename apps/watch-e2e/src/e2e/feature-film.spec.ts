@@ -26,7 +26,7 @@ test.describe('firefox only', () => {
     // Set test time out as it has video
     test.setTimeout(5 * 60 * 1000)
 
-    await page.goto('/')
+    await page.goto('/watch')
 
     // Get and log the current URL
     console.log('Current URL:', page.url())

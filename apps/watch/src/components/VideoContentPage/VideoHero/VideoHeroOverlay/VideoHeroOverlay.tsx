@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
 
@@ -28,7 +29,7 @@ export function VideoHeroOverlay({
   const { image, imageAlt, title, variant } = useVideo()
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
-
+  const { t } = useTranslation('apps-watch')
   return (
     <Box
       sx={{
@@ -116,7 +117,7 @@ export function VideoHeroOverlay({
                 }}
               >
                 <PlayArrowRounded />
-                Play
+                {t('Play')}
               </Button>
               <Button
                 id="play-button-sm"
@@ -130,7 +131,7 @@ export function VideoHeroOverlay({
                 }}
               >
                 <PlayArrowRounded />
-                Play Video
+                {t('Play Video')}
               </Button>
               <Stack
                 direction="row"
@@ -144,7 +145,9 @@ export function VideoHeroOverlay({
                 <AccessTime sx={{ width: 17, height: 17 }} />
                 {variant !== null && (
                   <Typography variant="body1" sx={{ whiteSpace: 'nowrap' }}>
-                    {secondsToMinutes(variant.duration)} min
+                    {t('{{ duration }} min', {
+                      duration: secondsToMinutes(variant.duration)
+                    })}
                   </Typography>
                 )}
               </Stack>

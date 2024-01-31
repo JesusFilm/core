@@ -3,9 +3,11 @@ import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
+import { useSwiper } from 'swiper/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -68,9 +70,11 @@ export function StepBlockNode({
     | TreeBlock<CardBlock>
     | undefined
   const bgImage = getBackgroundImage(card)
+  const { dispatch } = useEditor()
   const [stepBlockNextBlockUpdate] = useMutation<StepBlockNextBlockUpdate>(
     STEP_BLOCK_NEXT_BLOCK_UPDATE
   )
+  const swiper = useSwiper()
 
   const {
     state: { selectedStep, selectedBlock }
@@ -91,6 +95,12 @@ export function StepBlockNode({
     })
   }
 
+  function handleClick(): void {
+    dispatch({ type: 'SetSelectedStepAction', step })
+    if (swiper.activeIndex !== ActiveSlide.Canvas)
+      swiper.slideTo(ActiveSlide.Canvas)
+  }
+
   return (
     <BaseNode
       selected={
@@ -100,6 +110,7 @@ export function StepBlockNode({
             : 'descendant'
           : false
       }
+      onClick={handleClick}
       onSourceConnect={onConnect}
       icon={
         card?.backgroundColor != null || bgImage != null ? (

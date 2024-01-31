@@ -11,6 +11,7 @@ interface BaseNodeProps {
   isTargetConnectable?: boolean
   isSourceConnectable?: boolean
   onSourceConnect?: OnConnect
+  onClick?: () => void
   icon: ReactNode
   title: string
   selected?: 'descendant' | boolean
@@ -20,6 +21,7 @@ export function BaseNode({
   isTargetConnectable,
   isSourceConnectable,
   onSourceConnect,
+  onClick,
   icon,
   title,
   selected = false
@@ -47,6 +49,7 @@ export function BaseNode({
           height: NODE_HEIGHT,
           gap: 2
         }}
+        onClick={onClick}
       >
         {icon}
         <Typography

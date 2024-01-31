@@ -130,6 +130,7 @@ export function HostSidePanel(): ReactElement {
         open={openSelect}
         withAdminDrawer
         onClose={() => setOpenSelect(false)}
+        selectHostPanel
       >
         {openSelect && !openCreateHost && !openInfo && (
           <>
