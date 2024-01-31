@@ -9,6 +9,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ImageBlockUpdate } from '../../../../../../../../__generated__/ImageBlockUpdate'
+import { ImageSource } from '../../../../../ImageSource'
 
 const ImageBlockEditor = dynamic(
   async () =>
@@ -56,7 +57,8 @@ export function ImageOptions(): ReactElement {
           id: imageBlock.id,
           journeyId: journey.id,
           input: {
-            src: null
+            src: null,
+            alt: ''
           }
         }
       })
@@ -91,10 +93,10 @@ export function ImageOptions(): ReactElement {
   }
 
   return (
-    <ImageBlockEditor
+    <ImageSource
+      selectedBlock={imageBlock}
       onChange={updateImageBlock}
       onDelete={handleImageDelete}
-      selectedBlock={imageBlock}
       loading={loading}
       error={error != null}
     />
