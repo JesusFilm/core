@@ -59,7 +59,7 @@ export function Conditions(): ReactElement {
   }
 
   return (
-    <Box sx={{ p: 4, pl: 6 }} data-testid="Conditions">
+    <Box sx={{ p: 4 }} data-testid="Conditions">
       <Typography
         variant="subtitle2"
         gutterBottom

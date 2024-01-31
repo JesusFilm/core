@@ -67,7 +67,7 @@ export function Cards(): ReactElement {
 
   return (
     <>
-      <Box sx={{ pl: 6, pr: 4, pt: 4 }}>
+      <Box sx={{ px: 4, pt: 4, pb: 3 }}>
         <Typography
           variant="subtitle2"
           sx={{ [theme.breakpoints.down('sm')]: { display: 'none' } }}

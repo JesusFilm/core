@@ -69,7 +69,7 @@ export function CardLayout(): ReactElement {
   }
   return (
     <>
-      <Box sx={{ px: 6, py: 4 }}>
+      <Box sx={{ px: 4, py: 4, display: { xs: 'flex', sm: 'none' } }}>
         <Stack spacing={3} direction="row">
           <Box
             sx={{
@@ -91,11 +91,12 @@ export function CardLayout(): ReactElement {
           </Stack>
         </Stack>
       </Box>
-      <Divider />
+      <Divider sx={{ display: { xs: 'flex', sm: 'none' } }} />
       <Box>
         <HorizontalSelect
           onChange={async (val) => await handleLayoutChange(val === 'true')}
           id={cardBlock?.fullscreen.toString()}
+          sx={{ px: 4, pb: 4, pt: 1 }}
         >
           <Box sx={{ display: 'flex' }} id="true" key="true" data-testid="true">
             <Image

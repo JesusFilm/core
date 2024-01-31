@@ -119,7 +119,7 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
         return (
           <>
             <Step {...selected} />
-            <Divider orientation="vertical" variant="middle" flexItem />
+            {/* <Divider orientation="vertical" variant="middle" flexItem /> */}
             {block != null && (
               <AttributesContent selected={block} step={step} />
             )}

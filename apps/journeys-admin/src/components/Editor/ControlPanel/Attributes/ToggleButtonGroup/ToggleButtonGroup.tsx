@@ -29,11 +29,11 @@ export function ToggleButtonGroup({
 
   return (
     <Stack
-      sx={{ px: 6, py: 4 }}
+      sx={{ px: 4, pb: 4, pt: 0 }}
       data-testid={`ToggleButtonGroup${testId ?? ''}`}
     >
       {label != null ? (
-        <Typography variant="subtitle2" gutterBottom>
+        <Typography variant="subtitle2" sx={{ pb: 4 }}>
           {label}
         </Typography>
       ) : null}

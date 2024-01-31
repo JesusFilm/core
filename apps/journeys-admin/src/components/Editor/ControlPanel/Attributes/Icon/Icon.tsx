@@ -188,7 +188,7 @@ export function Icon({ id }: IconProps): ReactElement {
       <FormControl
         fullWidth
         hiddenLabel
-        sx={{ pt: 4, pb: 6, px: 6 }}
+        sx={{ px: 4, pb: 4, pt: 0 }}
         data-testid="IconSelect"
       >
         <Select
@@ -217,7 +217,7 @@ export function Icon({ id }: IconProps): ReactElement {
 
       {iconName !== '' && (
         <Box>
-          <Typography variant="subtitle2" sx={{ px: 6 }}>
+          <Typography variant="subtitle2" sx={{ px: 4, pb: 4 }}>
             Color
           </Typography>
           <Color id={id} iconColor={iconBlock.iconColor ?? IconColor.inherit} />

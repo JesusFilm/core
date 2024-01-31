@@ -57,7 +57,10 @@ export function Accordion({
       >
         <Stack spacing={3} alignItems="center" direction="row">
           {icon}
-          <Box sx={{ maxWidth: 92, overflow: 'hidden' }}>
+          <Box
+            data-testid="AccordionSummary"
+            sx={{ maxWidth: 92, overflow: 'hidden' }}
+          >
             {name != null && (
               <Typography variant="caption" color="text.secondary" noWrap>
                 {name}
@@ -67,7 +70,7 @@ export function Accordion({
           </Box>
         </Stack>
       </AccordionSummary>
-      <AccordionDetails sx={{ p: 5, pt: 0 }}>{children}</AccordionDetails>
+      <AccordionDetails sx={{ p: 0, pt: 0 }}>{children}</AccordionDetails>
     </MuiAccordion>
   )
 }

@@ -149,7 +149,7 @@ export function BackgroundColor(): ReactElement {
 
   // TODO: Test onChange in E2E
   const hexColorPicker = (
-    <Box sx={{ px: 6, py: 4 }}>
+    <Box sx={{ px: 4, py: 4 }}>
       <HexColorPicker
         data-testid="bgColorPicker"
         color={selectedColor}
@@ -162,7 +162,7 @@ export function BackgroundColor(): ReactElement {
   return (
     <>
       <Stack
-        sx={{ p: 6, py: 4 }}
+        sx={{ px: 4, pb: 4 }}
         spacing={3}
         direction="row"
         data-testid="BackgroundColor"
@@ -214,12 +214,12 @@ export function BackgroundColor(): ReactElement {
       </Box>
       <Box sx={{ [cardTheme.breakpoints.down('sm')]: { display: 'none' } }}>
         <Divider />
-        <Box sx={{ px: 6, pt: 4 }}>
+        <Box sx={{ px: 4, pt: 4 }}>
           <Typography variant="subtitle2">Palette</Typography>
         </Box>
         {palettePicker}
         <Divider />
-        <Box sx={{ px: 6, py: 4 }}>
+        <Box sx={{ px: 4, pt: 4 }}>
           <Typography variant="subtitle2">Custom</Typography>
         </Box>
         {hexColorPicker}
