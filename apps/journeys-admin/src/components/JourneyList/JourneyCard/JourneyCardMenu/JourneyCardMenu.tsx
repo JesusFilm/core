@@ -2,7 +2,7 @@ import { ApolloQueryResult } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import MoreIcon from '@core/shared/ui/icons/More'
 
@@ -120,6 +120,18 @@ export function JourneyCardMenu({
         onClose={handleCloseMenu}
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
+        }}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left'
+        }}
+        // transformOrigin={{
+        //   vertical: 'top',
+        //   horizontal: 'right'
+        // }}
+        transformOrigin={{
+          vertical: 0,
+          horizontal: 140
         }}
         data-testid="JourneyCardMenu"
       >
