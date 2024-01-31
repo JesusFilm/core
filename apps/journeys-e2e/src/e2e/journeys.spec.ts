@@ -26,7 +26,6 @@ test('journeys', async ({ page }) => {
   })
   await page.getByText('Yes, it’s a true story 👍').click()
   // Test Video Screen
-  await page.getByTestId('ConductorNavigationButtonNext').hover()
   await page.getByTestId('ConductorNavigationButtonNext').click()
   // Test Jesus in History screen
   await expect(page.getByText('Jesus in History')).toBeInViewport()
