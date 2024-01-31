@@ -172,7 +172,7 @@
         "parallel": false,
         "commands": [
           "if lsof -Pi :4601 -sTCP:LISTEN -t>/dev/null; then\nkill -9 $(lsof -Pi :4601 -sTCP:LISTEN -t)\nfi",
-          "email dev --dir apps/api-journeys/src/app/emails --port 4601"
+          "email dev --dir apps/api-journeys/src/app/emails/templates --port 4601"
         ]
       }
     }
