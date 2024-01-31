@@ -28,7 +28,10 @@ export function LanguageSelector({
   onClose
 }: LanguageSelectorProps): ReactElement {
   const router = useRouter()
-  const { t } = useTranslation('apps-journeys-admin')
+  const {
+    t,
+    i18n: { dir }
+  } = useTranslation('apps-journeys-admin')
 
   const [languageData, setLanguageData] = useState<Language[]>([])
 
@@ -51,6 +54,7 @@ export function LanguageSelector({
             return (
               // always display English
               language.id === '529' ||
+              language.id === '22658' || // Arabic for rtl testing purposes
               crowdinLanguageData?.data.approvalProgress === 100
             )
           })
@@ -70,8 +74,9 @@ export function LanguageSelector({
 
       const path = router.asPath
       await router.push(path, path, { locale })
+      document.dir = dir()
     },
-    [router, data]
+    [router, data, dir]
   )
 
   const currentLanguage = getLanguageByLocale(i18n?.language ?? '')

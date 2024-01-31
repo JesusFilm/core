@@ -42,17 +42,14 @@ type JourneysAdminAppProps = NextJsAppProps<{
 
 function JourneysAdminApp({
   Component,
-  pageProps
+  pageProps,
+  emotionCache = createEmotionCache({
+    rtl: i18n !== null ? getLocaleRTL(i18n.language) : false
+  })
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
-
-  if (typeof window !== 'undefined') {
-    document.body.setAttribute('dir', `${rtl ? 'rtl' : 'ltr'}`)
-  }
-
-  const emotionCache = createEmotionCache({ rtl })
 
   const user =
     pageProps.userSerialized != null
