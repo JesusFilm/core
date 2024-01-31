@@ -205,6 +205,7 @@ export function BaseNode({
         )}
         {isHovered && (
           <Box
+            className="dragToCreateHitbox"
             style={{
               position: 'absolute',
               background: 'transparent',
