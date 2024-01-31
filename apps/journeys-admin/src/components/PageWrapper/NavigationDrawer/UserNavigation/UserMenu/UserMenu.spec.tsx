@@ -46,6 +46,7 @@ describe('UserMenu', () => {
     )
     expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     expect(getByText('amin@email.com')).toBeInTheDocument()
+    expect(getByText('Language')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Logout' })).toBeInTheDocument()
   })
 
@@ -67,6 +68,7 @@ describe('UserMenu', () => {
           ],
           getJourneyProfile: {
             __typename: 'JourneyProfile',
+            id: 'journeyProfileId',
             lastActiveTeamId: 'teamId'
           }
         }
@@ -110,5 +112,41 @@ describe('UserMenu', () => {
       expect(getByText('Logout successful')).toBeInTheDocument()
     )
     expect(getTeams.result).toHaveBeenCalled()
+  })
+
+  it('should open language selector', async () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserMenu
+            apiUser={{
+              __typename: 'User',
+              id: 'userId',
+              firstName: 'Amin',
+              lastName: 'One',
+              imageUrl: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              superAdmin: false
+            }}
+            profileOpen
+            profileAnchorEl={null}
+            handleProfileClose={handleProfileClose}
+            user={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as User
+            }
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByText('Language'))
+    await waitFor(() =>
+      expect(getByText('Change Language')).toBeInTheDocument()
+    )
   })
 })

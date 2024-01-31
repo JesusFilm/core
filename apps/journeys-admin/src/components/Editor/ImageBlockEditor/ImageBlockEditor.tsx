@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, SyntheticEvent, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
@@ -68,7 +69,7 @@ export function ImageBlockEditor({
 
   function setRoute(param: string): void {
     router.query.param = param
-    void router.push(router)
+    void router.push(router, undefined, { shallow: true })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })
@@ -125,6 +126,8 @@ export function ImageBlockEditor({
     setUnsplashAuthor(unsplashAuthor)
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Box
@@ -155,12 +158,12 @@ export function ImageBlockEditor({
         >
           <Tab
             icon={<Grid1Icon />}
-            label={<Typography variant="subtitle2">Gallery</Typography>}
+            label={<Typography variant="subtitle2">{t('Gallery')}</Typography>}
             {...tabA11yProps('gallery', 0)}
           />
           <Tab
             icon={<Image3Icon />}
-            label={<Typography variant="subtitle2">Custom</Typography>}
+            label={<Typography variant="subtitle2">{t('Custom')}</Typography>}
             {...tabA11yProps('custom', 1)}
           />
           <Tab

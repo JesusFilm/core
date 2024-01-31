@@ -28,6 +28,7 @@ export function DiscoveryJourneys(): ReactElement {
       data-testid="JourneysAdminDiscoveryJourneys"
     >
       <EmbedJourney slug="admin-left">
+        {/* eslint-disable-next-line i18next/no-literal-string */}
         <Typography variant="h1" gutterBottom textAlign="center">
           ⚠️
         </Typography>

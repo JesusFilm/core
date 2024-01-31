@@ -1,10 +1,12 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { FooterLink } from '../FooterLink'
 
 export function FooterLinks(): ReactElement {
+  const { t } = useTranslation('apps-watch')
   return (
     <Stack direction="row" width="100%" spacing={20} data-testid="FooterLinks">
       <Stack direction="column" spacing={4}>
@@ -13,7 +15,7 @@ export function FooterLinks(): ReactElement {
           component="h2"
           sx={{ textTransform: 'uppercase' }}
         >
-          About
+          {t('About')}
         </Typography>
         <FooterLink
           label="About Jesus Film Project"
@@ -31,7 +33,7 @@ export function FooterLinks(): ReactElement {
           component="h2"
           sx={{ textTransform: 'uppercase' }}
         >
-          Section
+          {t('Section')}
         </Typography>
         <FooterLink label="Watch" url="https://www.jesusfilm.org/watch/" />
         <FooterLink
@@ -50,7 +52,7 @@ export function FooterLinks(): ReactElement {
           component="h2"
           sx={{ textTransform: 'uppercase' }}
         >
-          Apps
+          {t('Apps')}
         </Typography>
         <FooterLink
           label="Android"

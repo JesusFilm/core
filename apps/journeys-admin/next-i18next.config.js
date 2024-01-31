@@ -17,7 +17,29 @@ if (isBrowser) {
 const i18nConfig = {
   i18n: {
     defaultLocale: 'en',
-    locales: ['en']
+    locales: [
+      'am', // Amharic
+      'ar', // Arabic
+      'bn', // Bangla
+      'en', // English
+      'es', // Spanish
+      'fr', // French
+      'hi', // Hindi
+      'id', // Indonesian
+      'ja', // Japanese
+      'my', // Burmese
+      'ru-RU', // Russian
+      'th', // Thai
+      'tl-PH', // Tagalog
+      'tr', // Turkish
+      'ur', // Urdu
+      'vi', // Vietnamese
+      'zh-CN', // Chinese, Simplified
+      'zh-TW' // Chinese, Traditional
+    ]
+  },
+  fallbackLng: {
+    default: ['en']
   },
   localePath
 }

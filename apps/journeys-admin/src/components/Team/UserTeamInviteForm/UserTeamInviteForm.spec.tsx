@@ -57,6 +57,7 @@ describe('UserTeamInviteForm', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: 'teamId'
         }
       }

@@ -2,7 +2,7 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
-import { Theme } from '@mui/material/styles'
+import { Theme, useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Toolbar from '@mui/material/Toolbar'
@@ -11,6 +11,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import MediaStrip1Icon from '@core/shared/ui/icons/MediaStrip1'
@@ -66,6 +67,7 @@ export function VideoLibrary({
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const router = useRouter()
+  const { zIndex } = useTheme()
 
   useEffect(() => {
     // opens video details if videoId is not null
@@ -83,7 +85,7 @@ export function VideoLibrary({
 
   function setRoute(param: string): void {
     router.query.param = param
-    void router.push(router)
+    void router.push(router, undefined, { shallow: true })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })
@@ -108,7 +110,7 @@ export function VideoLibrary({
     setOpenVideoDetails(false)
     if (closeParent === true) onClose?.()
   }
-
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <Drawer
@@ -119,6 +121,7 @@ export function VideoLibrary({
         elevation={smUp ? 1 : 0}
         hideBackdrop
         sx={{
+          zIndex: zIndex.modal,
           left: {
             xs: 0,
             sm: 'unset'
@@ -139,7 +142,7 @@ export function VideoLibrary({
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Video Library
+              {t('Video Library')}
             </Typography>
             <IconButton
               onClick={onClose}
