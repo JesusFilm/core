@@ -34,8 +34,17 @@ export function LanguageSelector({
   function getCrowdinId(languageId: string): string {
     let crowdinId = ''
     switch (languageId) {
-      case '1106':
-        crowdinId = 'de'
+      case '1254':
+        crowdinId = 'my'
+        break
+      case '12551':
+        crowdinId = 'fil'
+        break
+      case '13169':
+        crowdinId = 'th'
+        break
+      case '139082':
+        crowdinId = 'bn'
         break
       case '16639':
         crowdinId = 'id'
@@ -55,9 +64,6 @@ export function LanguageSelector({
       case '22658':
         crowdinId = 'ar'
         break
-      case '3804':
-        crowdinId = 'ko'
-        break
       case '3887':
         crowdinId = 'vi'
         break
@@ -67,20 +73,14 @@ export function LanguageSelector({
       case '407':
         crowdinId = 'ur-PK'
         break
+      case '4791':
+        crowdinId = 'am'
+        break
       case '496':
         crowdinId = 'fr'
         break
-      case '584':
-        crowdinId = 'pt-PT'
-        break
       case '6464':
         crowdinId = 'hi'
-        break
-      case '6788':
-        crowdinId = 'fa'
-        break
-      case '6930':
-        crowdinId = 'he'
         break
       case '7083':
         crowdinId = 'ja'
