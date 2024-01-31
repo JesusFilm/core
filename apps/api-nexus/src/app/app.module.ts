@@ -8,6 +8,7 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { LoggerModule } from 'nestjs-pino';
 
+import { BatchModule } from './modules/batch/batch.module';
 import { BullMQModule } from './modules/bullMQ/bullMQ.module';
 import { ChannelsModule } from './modules/channel/channel.module';
 import { NexusModule } from './modules/nexus/nexus.module';
@@ -18,6 +19,7 @@ import { ResourceModule } from './modules/resource/resource.module';
     NexusModule,
     ChannelsModule,
     ResourceModule,
+    BatchModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths:

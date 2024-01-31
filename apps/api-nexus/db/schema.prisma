@@ -18,6 +18,7 @@ model Nexus {
     userNexuses UserNexus[]
     channels    Channel[]
     resources   Resource[]
+    Batch       Batch[]
 }
 
 enum NexusStatus {
@@ -44,6 +45,7 @@ model Channel {
     status    NexusStatus     @default(published)
     createdAt DateTime        @default(now())
     deletedAt DateTime?
+    Batch     Batch[]
 }
 
 model ChannelYoutube {
@@ -58,21 +60,20 @@ model ChannelYoutube {
 }
 
 model Resource {
-    id              String                 @id @default(uuid())
-    cloudflareId    String
-    nexusId         String
-    name            String
-    nexus           Nexus                  @relation(fields: [nexusId], references: [id])
-    status          ResourceStatus         @default(published)
-    createdAt       DateTime               @default(now())
-    updatedAt       DateTime               @updatedAt
-    deletedAt       DateTime?
-    googleDriveLink String?
-    category        String?
-    privacy         PrivacyStatus?
-    sourceType      SourceType
-    localizations   ResourceLocalization[]
-    googleDrive     GoogleDriveResource?
+    id            String                 @id @default(uuid())
+    nexusId       String
+    name          String
+    nexus         Nexus                  @relation(fields: [nexusId], references: [id])
+    status        ResourceStatus         @default(published)
+    createdAt     DateTime               @default(now())
+    updatedAt     DateTime               @updatedAt
+    deletedAt     DateTime?
+    category      String?
+    privacy       PrivacyStatus?
+    sourceType    SourceType
+    localizations ResourceLocalization[]
+    googleDrive   GoogleDriveResource?
+    batches       Batch[]                @relation("BatchResources")
 }
 
 model GoogleDriveResource {
@@ -118,4 +119,27 @@ enum PrivacyStatus {
 model GoogleAccessToken {
     id           String @id @default(uuid())
     refreshToken String
+}
+
+model Batch {
+    id        String      @id @default(uuid())
+    nexusId   String
+    channelId String
+    name      String
+    status    BatchStatus @default(pending)
+    nexus     Nexus       @relation(fields: [nexusId], references: [id])
+    channel   Channel     @relation(fields: [channelId], references: [id])
+    resources Resource[]  @relation("BatchResources")
+}
+
+enum BatchStatus {
+    pending
+    running
+    completed
+    failed
+    cancelled
+    paused
+    error
+    warning
+    scheduled
 }

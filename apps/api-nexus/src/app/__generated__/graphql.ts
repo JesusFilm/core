@@ -8,6 +8,18 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum BatchStatus {
+    pending = "pending",
+    running = "running",
+    completed = "completed",
+    failed = "failed",
+    cancelled = "cancelled",
+    paused = "paused",
+    error = "error",
+    warning = "warning",
+    scheduled = "scheduled"
+}
+
 export enum ChannelStatus {
     deleted = "deleted",
     published = "published"
@@ -37,6 +49,14 @@ export enum ResourceStatus {
     processing = "processing",
     error = "error",
     uploaded = "uploaded"
+}
+
+export class BatchFilter {
+    ids?: Nullable<string[]>;
+    name?: Nullable<string>;
+    nexusId?: Nullable<string>;
+    status?: Nullable<BatchStatus>;
+    limit?: Nullable<number>;
 }
 
 export class ChannelCreateInput {
@@ -124,19 +144,32 @@ export class GoogleAuthInput {
     url: string;
 }
 
-export class BatchJobBatch {
+export class Batch {
+    __typename?: 'Batch';
     id: string;
-    batchName: string;
+    resourceId: string;
+    name: string;
+    status: BatchStatus;
 }
 
-export class BatchJobResource {
-    resource: string;
-    channel: string;
-}
+export abstract class IQuery {
+    __typename?: 'IQuery';
 
-export class BatchJobInput {
-    batch: BatchJobBatch;
-    resources: Nullable<BatchJobResource>[];
+    abstract batches(where?: Nullable<BatchFilter>): Nullable<Batch[]> | Promise<Nullable<Batch[]>>;
+
+    abstract batch(id: string): Batch | Promise<Batch>;
+
+    abstract channels(where?: Nullable<ChannelFilter>): Nullable<Channel[]> | Promise<Nullable<Channel[]>>;
+
+    abstract channel(id: string): Channel | Promise<Channel>;
+
+    abstract nexuses(where?: Nullable<NexusFilter>): Nexus[] | Promise<Nexus[]>;
+
+    abstract nexus(id: string): Nexus | Promise<Nexus>;
+
+    abstract resources(where?: Nullable<ResourceFilter>): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+
+    abstract resource(id: string): Resource | Promise<Resource>;
 }
 
 export class Channel {
@@ -160,22 +193,6 @@ export class ChannelYoutube {
     youtubeId?: Nullable<string>;
     imageUrl?: Nullable<string>;
     refreshToken?: Nullable<string>;
-}
-
-export abstract class IQuery {
-    __typename?: 'IQuery';
-
-    abstract channels(where?: Nullable<ChannelFilter>): Nullable<Channel[]> | Promise<Nullable<Channel[]>>;
-
-    abstract channel(id: string): Channel | Promise<Channel>;
-
-    abstract nexuses(where?: Nullable<NexusFilter>): Nexus[] | Promise<Nexus[]>;
-
-    abstract nexus(id: string): Nexus | Promise<Nexus>;
-
-    abstract resources(where?: Nullable<ResourceFilter>): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
-
-    abstract resource(id: string): Resource | Promise<Resource>;
 }
 
 export class Nexus {
