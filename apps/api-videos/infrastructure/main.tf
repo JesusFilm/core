@@ -13,7 +13,6 @@ module "seed" {
   doppler_token = var.doppler_token
   environment_variables = [
     "ARCLIGHT_API_KEY",
-    "PG_DATABASE_URL",
     "PG_DATABASE_URL_VIDEOS"
   ]
   cpu                     = 1024

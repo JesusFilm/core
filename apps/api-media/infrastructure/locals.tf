@@ -1,7 +1,6 @@
 locals {
   port = 4005
   environment_variables = [
-    "PG_DATABASE_URL",
     "PG_DATABASE_URL_MEDIA",
     "CLOUDFLARE_IMAGES_TOKEN",
     "CLOUDFLARE_ACCOUNT_ID",
