@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { Batch } from '.prisma/api-nexus-client';
 
-import { Channel, Resource } from '../../__generated__/graphql';
+import { Channel } from '../../__generated__/graphql';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
@@ -13,9 +13,7 @@ export class BatchService {
     batchName: string,
     nexusId: string,
     channel: Channel,
-    batchResources: Array<{
-      resource: Resource;
-    }>,
+    resources: Array<{ id: string }>,
   ): Promise<Batch> {
     const batch = await this.prismaService.batch.create({
       data: {
@@ -23,8 +21,8 @@ export class BatchService {
         nexusId,
         channelId: channel.id,
         resources: {
-          connect: batchResources.map((batchResource) => ({
-            id: batchResource.resource.id,
+          connect: resources.map((resource) => ({
+            id: resource.id,
           })),
         },
       },

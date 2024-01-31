@@ -144,6 +144,21 @@ export class GoogleAuthInput {
     url: string;
 }
 
+export class BatchJobBatch {
+    id: string;
+    batchName: string;
+}
+
+export class BatchJobResource {
+    resource: string;
+    channel: string;
+}
+
+export class BatchJobInput {
+    batch: BatchJobBatch;
+    resources: Nullable<BatchJobResource>[];
+}
+
 export class Batch {
     __typename?: 'Batch';
     id: string;
@@ -170,6 +185,12 @@ export abstract class IQuery {
     abstract resources(where?: Nullable<ResourceFilter>): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
 
     abstract resource(id: string): Resource | Promise<Resource>;
+}
+
+export abstract class ISubscription {
+    __typename?: 'ISubscription';
+
+    abstract batchStatusChanged(id: string): Nullable<Batch> | Promise<Nullable<Batch>>;
 }
 
 export class Channel {
