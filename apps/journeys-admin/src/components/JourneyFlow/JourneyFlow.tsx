@@ -73,7 +73,6 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
 } {
   const nodes: InternalNode[] = []
   const edges: Edge[] = []
-  const parentMap = new Map()
 
   const filterBlocks = [
     'RadioOptionBlock',
@@ -284,7 +283,8 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     connectBlockToNextBlock({ block: step, step, steps })
   })
 
-  console.log(processLayout(steps))
+  // TODO
+  const layout = processLayout(steps)
 
   return { nodes, edges }
 }
@@ -297,6 +297,7 @@ export function JourneyFlow(): ReactElement {
   const [nodes, setNodes] = useNodesState<Node[]>([])
   const [edges, setEdges] = useEdgesState<Edge[]>([])
 
+  // Manual position setting
   function setPositions(nodes: Node[]): Node[] {
     const positions = {
       x: 0,
