@@ -14,6 +14,11 @@ import {
 } from '../../libs/languageData/languageData'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 
+interface DefaultLanguage {
+  id: string
+  nativeName?: string
+  localName?: string
+}
 interface LanguageSelectorProps {
   open: boolean
   onClose: () => void
@@ -31,12 +36,21 @@ export function LanguageSelector({
   const { t } = useTranslation('apps-journeys-admin')
 
   const [languageData, setLanguageData] = useState<Language[]>([])
+  const [defaultLanguageValue, setDefaultLanguageValue] =
+    useState<DefaultLanguage>()
 
   const { data, loading } = useLanguagesQuery({
     languageId: '529'
   })
 
   useEffect(() => {
+    const currentLanguage = getLanguageByLocale(i18n?.language ?? '')
+    setDefaultLanguageValue({
+      id: currentLanguage?.id ?? '',
+      nativeName: currentLanguage?.name[0].value,
+      localName: currentLanguage?.name[1]?.value
+    })
+
     const translationStatus = new TranslationStatus(credentials)
 
     if (data !== undefined) {
@@ -73,13 +87,6 @@ export function LanguageSelector({
     },
     [router, data]
   )
-
-  const currentLanguage = getLanguageByLocale(i18n?.language ?? '')
-  const defaultLanguageValue = {
-    id: currentLanguage?.id ?? '',
-    nativeName: currentLanguage?.name[0].value,
-    localName: currentLanguage?.name[1]?.value
-  }
 
   return (
     <Dialog
