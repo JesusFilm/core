@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
+// import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
 import { JourneyInviteEmail } from '../templates/JourneyInvite'
 
 const JourneyInviteEmailDemo: Meta<typeof JourneyInviteEmail> = {
-  ...sharedUiConfig,
+  // ...sharedUiConfig,
   component: JourneyInviteEmail,
   title: 'Api-Journeys/Emails/JourneyInviteEmail'
 }
