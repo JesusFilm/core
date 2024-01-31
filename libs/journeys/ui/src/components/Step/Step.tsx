@@ -42,12 +42,12 @@ export function Step({
 
   const activeBlock = blockHistory[blockHistory.length - 1]
   const heading = getStepHeading(blockId, children, treeBlocks, t)
+  const activeStep = blockId === activeBlock?.id
+  const activeJourneyStep =
+    (variant === 'default' || variant === 'embed') && activeStep
 
   useEffect(() => {
-    if (
-      (variant === 'default' || variant === 'embed') &&
-      isActiveBlockOrDescendant(blockId)
-    ) {
+    if (activeJourneyStep && isActiveBlockOrDescendant(blockId)) {
       const id = uuidv4()
       void stepViewEventCreate({
         variables: { input: { id, blockId, value: heading } }
@@ -65,7 +65,7 @@ export function Step({
 
   return (
     <>
-      {(variant === 'default' || variant === 'embed') &&
+      {activeJourneyStep &&
         (treeBlocks[0]?.id !== blockId ? (
           <NextSeo title={`${heading} (${journey?.title ?? ''})`} />
         ) : (
@@ -76,7 +76,7 @@ export function Step({
           block={block}
           wrappers={wrappers}
           key={block.id}
-          activeStep={blockId === activeBlock?.id}
+          activeStep={activeStep}
         />
       ))}
     </>
