@@ -2,7 +2,7 @@ import { ApolloQueryResult } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import MoreIcon from '@core/shared/ui/icons/More'
 
