@@ -6,6 +6,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -83,6 +84,8 @@ export function BackgroundMedia(): ReactElement {
     }
   }))
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Box sx={{ width: '100%', textAlign: 'center', pt: 6 }}>
@@ -99,7 +102,7 @@ export function BackgroundMedia(): ReactElement {
           >
             <Stack direction="row" spacing="8px">
               <VideoOnIcon />
-              <span>Video</span>
+              <span>{t('Video')}</span>
             </Stack>
           </ToggleButton>
           <ToggleButton
@@ -109,7 +112,7 @@ export function BackgroundMedia(): ReactElement {
           >
             <Stack direction="row" spacing="8px">
               <Image3Icon />
-              <span>Image</span>
+              <span>{t('Image')}</span>
             </Stack>
           </ToggleButton>
         </StyledToggleButtonGroup>

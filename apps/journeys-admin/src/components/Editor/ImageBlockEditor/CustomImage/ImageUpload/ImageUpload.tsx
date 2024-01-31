@@ -7,6 +7,7 @@ import type FormDataType from 'form-data'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+import { useTranslation } from 'react-i18next'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
@@ -90,6 +91,8 @@ export function ImageUpload({
     success === true && selectedBlock?.src != null && loading === false
   const uploadError = error === true || success === false
   const noBorder = uploadSuccess || uploadError || loading === true
+
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Stack
@@ -190,7 +193,7 @@ export function ImageUpload({
           fontSize={14}
           sx={{ color: 'secondary.main' }}
         >
-          Upload file
+          {t('Upload file')}
         </Typography>
       </Button>
     </Stack>
