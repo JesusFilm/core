@@ -11,6 +11,7 @@ import { useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -97,6 +98,7 @@ export function VideoBlockEditorSettings({
     },
     onSubmit: noop
   })
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Box sx={{ px: 4, width: '100%' }} data-testid="VideoBlockEditorSettings">
@@ -111,7 +113,7 @@ export function VideoBlockEditorSettings({
                   : undefined
             }}
           >
-            Timing
+            {t('Timing')}
           </Typography>
           <Stack direction="row" justifyContent="space-around" spacing={3}>
             <TimeField
@@ -173,11 +175,11 @@ export function VideoBlockEditorSettings({
                     : undefined
               }}
             >
-              Aspect ratio
+              {t('Aspect ratio')}
             </Typography>
             {selectedBlock?.source === VideoBlockSource.youTube && (
               <Typography variant="caption" color="action.disabled">
-                This option is not available for YouTube videos
+                {t('This option is not available for YouTube videos')}
               </Typography>
             )}
           </Stack>
@@ -203,7 +205,7 @@ export function VideoBlockEditorSettings({
               }}
               value={ObjectFit.fill}
             >
-              Fill
+              {t('Fill')}
             </ToggleButton>
             <ToggleButton
               sx={{
@@ -213,7 +215,7 @@ export function VideoBlockEditorSettings({
               }}
               value={ObjectFit.fit}
             >
-              Fit
+              {t('Fit')}
             </ToggleButton>
             <ToggleButton
               sx={{
@@ -223,7 +225,7 @@ export function VideoBlockEditorSettings({
               }}
               value={ObjectFit.zoomed}
             >
-              Crop
+              {t('Crop')}
             </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
@@ -239,7 +241,7 @@ export function VideoBlockEditorSettings({
                       : undefined
                 }}
               >
-                Autoplay
+                {t('Autoplay')}
               </Typography>
               <Typography
                 variant="caption"
@@ -250,7 +252,7 @@ export function VideoBlockEditorSettings({
                       : undefined
                 }}
               >
-                Start video automatically when card appears
+                {t('Start video automatically when card appears')}
               </Typography>
             </Stack>
             <Switch
@@ -277,7 +279,7 @@ export function VideoBlockEditorSettings({
                       : undefined
                 }}
               >
-                Muted
+                {t('Muted')}
               </Typography>
               <Typography
                 variant="caption"
@@ -288,7 +290,7 @@ export function VideoBlockEditorSettings({
                       : undefined
                 }}
               >
-                Video always muted on the first card
+                {t('Video always muted on the first card')}
               </Typography>
             </Stack>
             <Switch

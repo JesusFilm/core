@@ -19,6 +19,7 @@ export interface HorizontalSelectProps {
   footer?: ReactNode
   isDragging?: boolean
   testId?: string
+  scrollIntoView?: boolean
 }
 
 export function HorizontalSelect({
@@ -28,12 +29,13 @@ export function HorizontalSelect({
   sx,
   footer,
   isDragging,
-  testId
+  testId,
+  scrollIntoView
 }: HorizontalSelectProps): ReactElement {
   const selectedRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    if (selectedRef?.current != null) {
+    if (selectedRef?.current != null && scrollIntoView === true) {
       selectedRef.current.scrollIntoView({
         behavior: 'smooth',
         inline: 'center'
@@ -59,7 +61,7 @@ export function HorizontalSelect({
           isValidElement(child) && (
             <Box
               key={child.props.id ?? child.props.draggableId}
-              ref={id === child.props.draggableId ? selectedRef : undefined}
+              // ref={id === child.props.draggableId ? selectedRef : undefined}
               sx={{
                 borderRadius: 2,
                 transition: '0.1s outline ease-out',

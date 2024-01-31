@@ -124,6 +124,7 @@ export function CardList({
       footer={showAddButton === true && <AddCardSlide />}
       testId="CardList"
       sx={{ px: 4, pb: 4, pt: 1 }}
+      scrollIntoView
     >
       {showNavigation === true && (
         <NavigationCard
