@@ -1,0 +1,35 @@
+type Batch @key(fields: "id") {
+  id: ID!
+  resourceId: String!
+  name: String!
+  status: BatchStatus!
+}
+
+enum BatchStatus {
+  pending
+  running
+  completed
+  failed
+  cancelled
+  paused
+  error
+  warning
+  scheduled
+}
+
+input BatchFilter {
+  ids: [ID!]
+  name: String
+  nexusId: String
+  status: BatchStatus
+  limit: Int
+}
+
+extend type Query {
+  batches(where: BatchFilter): [Batch!]
+  batch(id: ID!): Batch!
+}
+
+type Subscription {
+  batchStatusChanged(id: ID!): Batch
+}
