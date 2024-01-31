@@ -336,7 +336,7 @@ describe('EditToolbar Menu', () => {
           parentOrder: 1
         }
       },
-      result: {
+      result: jest.fn(() => ({
         data: {
           blockDuplicate: [
             {
@@ -344,9 +344,8 @@ describe('EditToolbar Menu', () => {
               id: 'typography0.id'
             }
           ]
-        }
-      }
-    }
+        }})
+  )}
 
     const { getByTestId, queryByRole } = render(
       <SnackbarProvider>
