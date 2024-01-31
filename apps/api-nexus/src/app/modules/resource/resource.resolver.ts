@@ -21,17 +21,17 @@ import {
   ResourceFromGoogleDriveInput,
   ResourceUpdateInput,
 } from '../../__generated__/graphql';
-import { BatchService } from '../../lib/batch/batchService';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
-import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService';
 import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
 import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
+import { BatchService } from '../batch/batchService';
 import {
   BullMQService,
   UploadYoutubeTemplateTask,
 } from '../bullMQ/bullMQ.service';
+import { GoogleDriveService } from '../google-drive/googleDriveService';
 
 @Resolver('Resource')
 export class ResourceResolver {

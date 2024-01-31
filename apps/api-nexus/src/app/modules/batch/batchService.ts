@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Batch } from '.prisma/api-nexus-client';
 
 import { Channel } from '../../__generated__/graphql';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../../lib/prisma.service';
 
 @Injectable()
 export class BatchService {
