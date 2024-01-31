@@ -23,7 +23,6 @@ const i18nConfig = {
       'bn', // Bangla
       'en', // English
       'es', // Spanish
-      'tl', // Tagalog
       'fr', // French
       'hi', // Hindi
       'id', // Indonesian
@@ -31,6 +30,7 @@ const i18nConfig = {
       'my', // Burmese
       'ru', // Russian
       'th', // Thai
+      'tl', // Tagalog
       'tr', // Turkish
       'ur', // Urdu
       'vi', // Vietnamese
