@@ -39,6 +39,7 @@ export interface TeamInviteJob {
 }
 
 export type ApiJourneysJob = JourneyEditInviteJob | TeamInviteJob
+
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
   constructor(private readonly mailerService: MailerService) {
@@ -91,13 +92,13 @@ export class EmailConsumer extends WorkerHost {
   async journeyEditInvite(job: Job<JourneyEditInviteJob>): Promise<void> {
     const { data } = await apollo.query({
       query: gql`
-        query User($id: ID!) {
-          user(id: $id): {
+        query UserByEmail($email: String!) {
+          userByEmail(email: $email) {
             id
-            email
           }
         }
-      `
+      `,
+      variables: { email: job.data.email }
     })
     if (data.user == null) {
       throw new Error('User not found')
@@ -105,7 +106,7 @@ export class EmailConsumer extends WorkerHost {
 
     const html = render(
       JourneyInviteEmail({
-        email: data.user.email,
+        email: job.data.email,
         journeyTitle: job.data.journeyTitle,
         inviteLink: job.data.url
       }),
@@ -116,7 +117,7 @@ export class EmailConsumer extends WorkerHost {
 
     const text = render(
       JourneyInviteEmail({
-        email: data.user.email,
+        email: job.data.email,
         journeyTitle: job.data.journeyTitle,
         inviteLink: job.data.url
       }),
@@ -125,7 +126,7 @@ export class EmailConsumer extends WorkerHost {
       }
     )
     await this.sendEmail({
-      to: data.user.email,
+      to: job.data.email,
       subject: `Invitation to edit journey: ${job.data.journeyTitle}`,
       html,
       text

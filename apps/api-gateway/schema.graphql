@@ -1462,6 +1462,7 @@ type Query
   tags: [Tag!]! @join__field(graph: TAGS)
   me: User @join__field(graph: USERS)
   user(id: ID!): User @join__field(graph: USERS)
+  userByEmail(email: String!): User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
 }

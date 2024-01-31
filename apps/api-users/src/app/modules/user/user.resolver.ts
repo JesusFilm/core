@@ -30,12 +30,22 @@ export class UserResolver {
   async user(
     @Args('id') id: string,
     @Context() context: { headers: Record<string, string> }
-  ): Promise<User> {
-    console.log(context.headers['interop-token'])
+  ): Promise<User | null> {
     if (context.headers['interop-token'] !== process.env.INTEROP_TOKEN) {
       throw new GraphQLError('Invalid Interop Token')
     }
-    return await this.findOrFetchUser(id)
+    return await this.prismaService.user.findUnique({ where: { id } })
+  }
+
+  @Query()
+  async userByEmail(
+    @Args('email') email: string,
+    @Context() context: { headers: Record<string, string> }
+  ): Promise<User | null> {
+    if (context.headers['interop-token'] !== process.env.INTEROP_TOKEN) {
+      throw new GraphQLError('Invalid Interop Token')
+    }
+    return await this.prismaService.user.findUnique({ where: { email } })
   }
 
   @Mutation()

@@ -10,6 +10,7 @@ type User @key(fields: "id") {
 extend type Query {
   me: User
   user(id: ID!): User
+  userByEmail(email: String!): User
 }
 
 extend type Mutation {
