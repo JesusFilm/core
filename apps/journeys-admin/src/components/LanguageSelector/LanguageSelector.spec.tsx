@@ -19,7 +19,6 @@ describe('LanguageSelector', () => {
     jest
       .spyOn(TranslationStatus.prototype, 'getProjectProgress')
       .mockImplementation(async () => {
-        console.log('mock implementation')
         return await Promise.resolve({
           pagination: {
             offset: 0,
