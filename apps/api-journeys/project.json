@@ -175,6 +175,18 @@
           "email dev --dir apps/api-journeys/src/app/emails/templates --port 4601"
         ]
       }
+    },
+    "demo": {
+      "executor": "@nx/storybook:storybook",
+      "options": {
+        "port": 4400,
+        "configDir": ".storybook"
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
     }
   },
   "tags": []
