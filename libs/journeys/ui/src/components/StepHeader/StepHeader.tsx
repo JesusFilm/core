@@ -14,6 +14,8 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '../../libs/JourneyProvider'
 
+import { PaginationBullets } from './PaginationBullets'
+
 interface StepHeaderProps {
   sx?: SxProps
 }
@@ -46,6 +48,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
         ...sx
       }}
     >
+      <PaginationBullets />
       <IconButton
         id="more-info"
         aria-controls="more-info"
