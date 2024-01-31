@@ -17,7 +17,7 @@ export function ReportsNavigation({
   journeyId,
   selected
 }: ReportsNavigationProps): ReactElement {
-  const { t } = useTranslation('journeys-admin')
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack
       direction="row"
