@@ -96,7 +96,6 @@ export function LanguageSelector({
       translationStatus
         .getFileProgress(518286, 570)
         .then((crowdinData) => {
-          console.log(crowdinData)
           const availableLanguages = data.languages.filter((language) => {
             const crowdinId = getCrowdinId(language.id)
             const crowdinLanguageData = crowdinData.data.find(
@@ -120,7 +119,7 @@ export function LanguageSelector({
       const language = data?.languages.find(
         (language) => language.id === localeId
       )
-      const locale = language?.bcp47?.slice(0, 2)
+      const locale = getCrowdinId(language?.id ?? '')
 
       const path = router.asPath
       await router.push(path, path, { locale })
