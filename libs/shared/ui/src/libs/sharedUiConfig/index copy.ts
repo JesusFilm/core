@@ -1,0 +1,1 @@
+export { sharedUiConfig } from './sharedUiConfig'
