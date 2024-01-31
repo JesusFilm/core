@@ -1,5 +1,6 @@
 import { TranslationStatus } from '@crowdin/crowdin-api-client'
 import { useRouter } from 'next/router'
+import { i18n } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -7,6 +8,10 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
+import {
+  getLanguageById,
+  getLanguageByLocale
+} from '../../libs/languageData/languageData'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 
 interface LanguageSelectorProps {
@@ -31,64 +36,6 @@ export function LanguageSelector({
     languageId: '529'
   })
 
-  function getCrowdinId(languageId: string): string {
-    let crowdinId = ''
-    switch (languageId) {
-      case '1254':
-        crowdinId = 'my'
-        break
-      case '12551':
-        crowdinId = 'tl'
-        break
-      case '13169':
-        crowdinId = 'th'
-        break
-      case '139082':
-        crowdinId = 'bn'
-        break
-      case '16639':
-        crowdinId = 'id'
-        break
-      case '1942':
-        crowdinId = 'tr'
-        break
-      case '21028':
-        crowdinId = 'es-ES'
-        break
-      case '21753':
-        crowdinId = 'zh-TW'
-        break
-      case '21754':
-        crowdinId = 'zh-CN'
-        break
-      case '22658':
-        crowdinId = 'ar'
-        break
-      case '3887':
-        crowdinId = 'vi'
-        break
-      case '3934':
-        crowdinId = 'ru'
-        break
-      case '407':
-        crowdinId = 'ur-PK'
-        break
-      case '4791':
-        crowdinId = 'am'
-        break
-      case '496':
-        crowdinId = 'fr'
-        break
-      case '6464':
-        crowdinId = 'hi'
-        break
-      case '7083':
-        crowdinId = 'ja'
-        break
-    }
-    return crowdinId
-  }
-
   useEffect(() => {
     const translationStatus = new TranslationStatus(credentials)
 
@@ -97,7 +44,7 @@ export function LanguageSelector({
         .getFileProgress(518286, 570)
         .then((crowdinData) => {
           const availableLanguages = data.languages.filter((language) => {
-            const crowdinId = getCrowdinId(language.id)
+            const crowdinId = getLanguageById(language.id)?.crowdinId
             const crowdinLanguageData = crowdinData.data.find(
               (crowdinLanguage) => crowdinLanguage.data.languageId === crowdinId
             )
@@ -119,13 +66,20 @@ export function LanguageSelector({
       const language = data?.languages.find(
         (language) => language.id === localeId
       )
-      const locale = getCrowdinId(language?.id ?? '')
+      const locale = getLanguageById(language?.id ?? '')?.locale
 
       const path = router.asPath
       await router.push(path, path, { locale })
     },
     [router, data]
   )
+
+  const currentLanguage = getLanguageByLocale(i18n?.language ?? '')
+  const defaultLanguageValue = {
+    id: currentLanguage?.id ?? '',
+    nativeName: currentLanguage?.name[0].value,
+    localName: currentLanguage?.name[1]?.value
+  }
 
   return (
     <Dialog
@@ -138,7 +92,7 @@ export function LanguageSelector({
     >
       <LanguageAutocomplete
         onChange={async (value) => await handleLocaleSwitch(value?.id)}
-        // need to add value
+        value={defaultLanguageValue}
         languages={languageData}
         loading={loading}
       />
