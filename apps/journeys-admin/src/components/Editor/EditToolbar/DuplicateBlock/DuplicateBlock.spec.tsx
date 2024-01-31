@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -6,6 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -239,33 +240,30 @@ describe('DuplicateBlock', () => {
   })
 
   it('should call handleClick after clicking duplicate', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        blockDuplicate: {
-          id: 'duplicatedId',
-          parentOrder: 1
+    const mockBlockDuplicate: MockedResponse<BlockDuplicate> = {
+          request: {
+            query: BLOCK_DUPLICATE,
+            variables: {
+              id: step.id,
+              journeyId: 'journeyId',
+              parentOrder: null
+            }
+          },
+          result: {
+            data: {
+              blockDuplicate: [
+                {
+                  __typename: 'TypographyBlock',
+                  id: 'typography0.id'
+                }
+              ]
+            }
+          }
         }
-      }
-    }))
-
+    
     const handleClickMock = jest.fn()
     const { getByRole } = render(
-      // <MockedProvider mocks={[]} >
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: BLOCK_DUPLICATE,
-              variables: {
-                id: step.id,
-                journeyId: 'journeyId',
-                parentOrder: null
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[mockBlockDuplicate]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -274,7 +272,7 @@ describe('DuplicateBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock: step }}>
-              <DuplicateBlock
+              <DuplicateBlock 
                 variant="list-item"
                 handleClick={handleClickMock}
               />

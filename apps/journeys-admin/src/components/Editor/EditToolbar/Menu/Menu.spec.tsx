@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -7,6 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -327,7 +328,7 @@ describe('EditToolbar Menu', () => {
       children: []
     }
 
-    const mockBlockDuplicate = {
+    const mockBlockDuplicate: MockedResponse<BlockDuplicate> = {
       request: {
         query: BLOCK_DUPLICATE,
         variables: {
@@ -335,14 +336,16 @@ describe('EditToolbar Menu', () => {
           parentOrder: 1
         }
       },
-      result: jest.fn(() => ({
+      result: {
         data: {
-          blockDuplicate: {
-            id: 'typography0.id',
-            parentOrder: 1
-          }
+          blockDuplicate: [
+            {
+              __typename: 'TypographyBlock',
+              id: 'typography0.id'
+            }
+          ]
         }
-      }))
+      }
     }
 
     const { getByTestId, queryByRole } = render(
