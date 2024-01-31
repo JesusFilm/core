@@ -81,7 +81,7 @@ export function UserMenu({
         </Stack>
         <Divider />
         <MenuItem
-          label="Language"
+          label={t('Language')}
           icon={<LanguageIcon />}
           onClick={() => setOpen(true)}
         />

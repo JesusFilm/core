@@ -360,6 +360,7 @@
   "You must get permission from the user before impersonating them. Unauthorized access to a user's data may be illegal and punishable by law in some juristictions.": "You must get permission from the user before impersonating them. Unauthorized access to a user's data may be illegal and punishable by law in some juristictions.",
   "Impersonation sessions last one hour. However, you should sign out from their account ASAP.": "Impersonation sessions last one hour. However, you should sign out from their account ASAP.",
   "User Email Address": "User Email Address",
+  "Language": "Language",
   "Logout successful": "Logout successful",
   "New Editing Request": "New Editing Request",
   "New Journey": "New Journey",
