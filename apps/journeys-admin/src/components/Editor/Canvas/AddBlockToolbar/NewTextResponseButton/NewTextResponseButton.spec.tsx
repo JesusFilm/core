@@ -146,7 +146,7 @@ describe('NewTextResponseButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Feedback' }))
+    fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -186,7 +186,7 @@ describe('NewTextResponseButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Feedback' }))
+    fireEvent.click(getByRole('button'))
     await waitFor(() =>
       expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
         { __ref: 'TextResponseBlock:textResponseBlock.id' },

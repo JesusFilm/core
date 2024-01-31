@@ -260,7 +260,7 @@ export function Canvas(): ReactElement {
       )}
       <Box
         sx={{
-          width: activeSlide === ActiveSlide.Canvas ? 48 : 0,
+          width: activeSlide === ActiveSlide.Canvas ? 53 : 0,
           ml: activeSlide === ActiveSlide.Canvas ? 7 : 0,
           transition: (theme) =>
             theme.transitions.create(['width', 'margin'], {
@@ -272,7 +272,6 @@ export function Canvas(): ReactElement {
         <Card
           variant="outlined"
           sx={{
-            width: '48px',
             borderRadius: 2,
             my: '89px'
           }}

@@ -18,7 +18,8 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.common.white
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid rgba(0, 0, 0, 0.1)'
   }
 }))
 
@@ -52,7 +53,7 @@ export function Button({
               {
                 name: 'offset',
                 options: {
-                  offset: [0, -8]
+                  offset: [0, -10]
                 }
               }
             ]
@@ -60,7 +61,7 @@ export function Button({
         }}
       >
         <CardActionArea onClick={handleClick}>
-          <CardContent sx={{ p: 3 }}>{icon}</CardContent>
+          <CardContent sx={{ px: 3.5, py: 3 }}>{icon}</CardContent>
         </CardActionArea>
       </StyledTooltip>
     </Box>
