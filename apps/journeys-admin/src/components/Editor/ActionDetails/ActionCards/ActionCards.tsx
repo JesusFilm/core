@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -26,6 +27,7 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
   const { journey } = useJourney()
   const { dispatch } = useEditor()
   const { rtl } = getJourneyRTL(journey)
+  const { t } = useTranslation('apps-journeys-admin')
 
   function hasAction(block: TreeBlock): boolean {
     if (((block as ButtonBlock).action as LinkAction)?.url === url) return true
@@ -43,10 +45,12 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
     <Stack gap={6} sx={{ mb: 14 }} data-testid="ActionCards">
       <Box>
         <Typography variant="subtitle2" color="secondary.dark">
-          Appears on the cards
+          {t('Appears on the cards')}
         </Typography>
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Once you replace the URL it will apply on each of the following cards:
+          {t(
+            'Once you replace the URL it will apply on each of the following cards:'
+          )}
         </Typography>
       </Box>
       {blocks?.map((block) => (
