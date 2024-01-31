@@ -38,7 +38,7 @@ export function LanguageSelector({
         crowdinId = 'my'
         break
       case '12551':
-        crowdinId = 'fil'
+        crowdinId = 'tl'
         break
       case '13169':
         crowdinId = 'th'
@@ -94,7 +94,7 @@ export function LanguageSelector({
 
     if (data !== undefined) {
       translationStatus
-        .getProjectProgress(518286)
+        .getFileProgress(518286, 570)
         .then((crowdinData) => {
           console.log(crowdinData)
           const availableLanguages = data.languages.filter((language) => {
