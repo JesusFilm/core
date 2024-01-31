@@ -38,7 +38,6 @@ import {
 import { STEP_AND_CARD_BLOCK_CREATE } from '../CardPreview/CardPreview'
 
 import ButtonEdge from './edges/ButtonEdge'
-import { NODE_WIDTH } from './nodes/BaseNode'
 import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
 import { FormBlockNode, FormBlockNodeData } from './nodes/FormBlockNode'
 import {
@@ -52,6 +51,7 @@ import {
   TextResponseBlockNodeData
 } from './nodes/TextResponseBlockNode'
 import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
+import { NODE_HEIGHT, NODE_WIDTH } from './nodes/BaseNode'
 import 'reactflow/dist/style.css'
 
 type InternalNode =
@@ -77,6 +77,16 @@ interface Layout<T = BlockFields> {
   children: Layout[]
 }
 
+type ActionBlock =
+  | TreeBlock<RadioOptionBlock>
+  | TreeBlock<ButtonBlock>
+  | TreeBlock<TextResponseBlock>
+  | TreeBlock<SignUpBlock>
+  | TreeBlock<FormBlock>
+  | TreeBlock<VideoBlock>
+
+const isActionBlock = (block): block is ActionBlock => 'action' in block
+
 function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   nodes: InternalNode[]
   edges: Edge[]
@@ -84,220 +94,301 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   const nodes: InternalNode[] = []
   const edges: Edge[] = []
 
-  const filterBlocks = [
-    'RadioOptionBlock',
-    'ButtonBlock',
-    'TextResponseBlock',
-    'SignUpBlock',
-    'FormBlock',
-    'VideoBlock'
-  ]
+  const blocks: TreeBlock<StepBlock>[][] = []
+  const visitedStepIds: string[] = []
 
-  function processLayout(steps: Array<TreeBlock<StepBlock>>): Layout[] {
-    const visitedStepIds: string[] = []
-    const layouts: Layout[] = []
-
-    function isVisited(id): boolean {
-      return visitedStepIds.includes(id)
-    }
-
-    function getStepFromId(id): TreeBlock<StepBlock> | undefined {
-      return steps.find((step) => step.id === id)
-    }
-
-    function traverseBlock(layout: Layout): Layout {
-      const { block, children } = layout
-      switch (block.__typename) {
-        case 'StepBlock':
-          if (!isVisited(block.id)) {
-            visitedStepIds.push(block.id)
-            const stepChildren = block.children[0].children.filter(
-              (block) => block.__typename === 'ButtonBlock'
-            ) as Array<TreeBlock<ButtonBlock>>
-            stepChildren.forEach((block) => {
-              if (block.action != null) {
-                if (block.action.__typename === 'NavigateToBlockAction') {
-                  children.push(traverseBlock({ block, children: [] }))
-                }
-              }
-            })
-            if (block.nextBlockId != null && !isVisited(block.nextBlockId)) {
-              const nextStep = getStepFromId(block.nextBlockId)
-              if (nextStep != null)
-                children.push(traverseBlock({ block: nextStep, children: [] }))
-            }
-          }
-          break
-        case 'ButtonBlock':
-          if (
-            block.action?.__typename === 'NavigateToBlockAction' &&
-            !isVisited(block.action.blockId)
-          ) {
-            const nextStep = getStepFromId(block.action.blockId)
-            if (nextStep != null)
-              children.push(traverseBlock({ block: nextStep, children: [] }))
-          }
-          break
-      }
-      return layout
-    }
-
-    steps.forEach((step) => {
-      if (!isVisited(step.id)) {
-        const layout = { block: step, children: [] }
-        layouts.push(layout)
-        traverseBlock(layout)
-      }
-    })
-
-    return layouts
+  function getStepFromId(id): TreeBlock<StepBlock> | undefined {
+    if (visitedStepIds.includes(id)) return
+    visitedStepIds.push(id)
+    return steps.find((step) => step.id === id)
   }
 
-  function connectBlockToNextBlock({ block, step, steps }: Connection): void {
+  function getNextStep(
+    step: TreeBlock<StepBlock>
+  ): TreeBlock<StepBlock> | undefined {
     const index = findIndex(steps, (child) => child.id === step.id)
     if (index < 0) return
     if (step.nextBlockId == null && steps[index + 1] != null) {
-      edges.push({
-        type: 'buttonedge',
-        id: `${block.id}->${steps[index + 1].id}`,
-        source: block.id,
-        target: steps[index + 1].id,
-        markerEnd: {
-          type: MarkerType.Arrow
-        },
-        style: {
-          strokeWidth: 2,
-          strokeDasharray: 4
-        }
-      })
+      return getStepFromId(steps[index + 1].id)
     }
     if (step.nextBlockId != null && step.nextBlockId !== step.id) {
-      edges.push({
-        type: 'buttonedge',
-        id: `${block.id}->${step.nextBlockId}`,
-        source: block.id,
-        target: step.nextBlockId,
-        markerEnd: {
-          type: MarkerType.Arrow
-        },
-        style: {
-          strokeWidth: 2,
-          strokeDasharray: 4
-        }
-      })
+      return getStepFromId(step.nextBlockId)
     }
   }
 
-  function processCard({
-    block: card,
-    step,
-    steps
-  }: Connection<CardBlock>): void {
-    const blocks = flatMapDeep(card.children, (block) => {
-      if (card.coverBlockId === block.id) return []
-      return [block, block.children]
-    }).filter((block) => filterBlocks.includes(block.__typename)) as Array<
-      TreeBlock<
-        | RadioOptionBlock
-        | ButtonBlock
-        | TextResponseBlock
-        | SignUpBlock
-        | FormBlock
-        | VideoBlock
-      >
-    >
-    blocks.forEach((block) => {
-      const node = {
-        id: block.id,
-        selectable: false,
-        position: { x: 0, y: 0 }
-      }
-      switch (block.__typename) {
-        case 'RadioOptionBlock':
-          nodes.push({
-            ...node,
-            type: block.__typename,
-            data: block
-          })
-          break
-        case 'ButtonBlock':
-          nodes.push({
-            ...node,
-            type: block.__typename,
-            data: block
-          })
-          break
-        case 'TextResponseBlock':
-          nodes.push({
-            ...node,
-            type: block.__typename,
-            data: block
-          })
-          break
-        case 'SignUpBlock':
-          nodes.push({
-            ...node,
-            type: block.__typename,
-            data: block
-          })
-          break
-        case 'FormBlock':
-          nodes.push({
-            ...node,
-            type: block.__typename,
-            data: block
-          })
-          break
-        case 'VideoBlock':
-          nodes.push({
-            ...node,
-            type: block.__typename,
-            data: block
-          })
-          break
-      }
-      if (block.action != null) {
-        if (block.action.__typename === 'NavigateToBlockAction') {
-          edges.push({
-            type: 'bezeir',
-            id: `${block.id}->${block.action.blockId}`,
-            source: block.id,
-            target: block.action.blockId,
-            markerEnd: {
-              type: MarkerType.Arrow
-            },
-            style: {
-              strokeWidth: 2
-            }
-          })
-        }
-        if (block.action.__typename === 'NavigateAction') {
-          connectBlockToNextBlock({ block, step, steps })
-        }
+  function getDecendantStepsOfStep(
+    step: TreeBlock<StepBlock>
+  ): TreeBlock<StepBlock>[] {
+    const descendants: TreeBlock<StepBlock>[] = []
+    const nextStep = getNextStep(step)
+    if (nextStep != null) descendants.push(nextStep)
+    const children = step.children[0].children.filter(isActionBlock)
+    children.forEach((child) => {
+      if (child.action?.__typename === 'NavigateToBlockAction') {
+        const nextStep = getStepFromId(child.action?.blockId)
+        if (nextStep != null) descendants.push(nextStep)
       }
     })
+    return descendants
   }
 
-  steps.forEach((step) => {
-    nodes.push({
-      id: step.id,
-      type: step.__typename,
-      data: {
-        ...step,
-        steps
-      },
-      position: { x: 0, y: 0 }
+  function processSteps(steps: TreeBlock<StepBlock>[]): void {
+    blocks.push(steps)
+    const descendants = steps.flatMap((step) => {
+      return getDecendantStepsOfStep(step)
     })
+    if (descendants.length > 0) processSteps(descendants)
+  }
 
-    const cardBlock = step?.children.find(
-      (child) => child.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
-    if (cardBlock != null) processCard({ block: cardBlock, step, steps })
-    connectBlockToNextBlock({ block: step, step, steps })
+  const step = getStepFromId(steps[0].id)
+  if (step != null) processSteps([step])
+
+  console.log(blocks)
+  blocks.forEach((steps, index) => {
+    const stepY = index * (NODE_HEIGHT + NODE_HEIGHT_GAP)
+    steps.forEach((step, index) => {
+      const stepX = index * (NODE_WIDTH + NODE_WIDTH_GAP)
+      nodes.push({
+        id: step.id,
+        type: 'StepBlock',
+        data: { ...step, steps },
+        position: { x: stepX, y: stepY }
+      })
+      const blockY = stepY + NODE_HEIGHT + 20
+      step.children[0].children
+        .filter(isActionBlock)
+        .forEach((block, index) => {
+          const blockX = index * (NODE_WIDTH + NODE_WIDTH_GAP)
+          // nodes.push({
+          //   id: block.id,
+          //   type: block.__typename,
+          //   data: block,
+          //   position: { x: blockX, y: blockY }
+          // })
+        })
+    })
   })
+  // function transformStepsToLayouts(
+  //   steps: Array<TreeBlock<StepBlock>>
+  // ): Layout[] {
+  //   const visitedStepIds: string[] = []
+  //   const layouts: Layout[] = []
+
+  //   function isVisited(id): boolean {
+  //     return visitedStepIds.includes(id)
+  //   }
+
+  //   function getStepFromId(id): TreeBlock<StepBlock> | undefined {
+  //     return steps.find((step) => step.id === id)
+  //   }
+
+  //   function traverseBlock(layout: Layout): Layout {
+  //     const { block, children } = layout
+  //     switch (block.__typename) {
+  //       case 'StepBlock':
+  //         if (!isVisited(block.id)) {
+  //           visitedStepIds.push(block.id)
+  //           const actionBlocks = block.children[0].children.filter((block) =>
+  //             filterBlocks.includes(block.__typename)
+  //           ) as ActionBlock[]
+  //           actionBlocks.forEach((block) => {
+  //             children.push(traverseBlock({ block, children: [] }))
+  //           })
+  //           if (block.nextBlockId != null && !isVisited(block.nextBlockId)) {
+  //             const nextStep = getStepFromId(block.nextBlockId)
+  //             if (nextStep != null)
+  //               children.push(traverseBlock({ block: nextStep, children: [] }))
+  //           }
+  //         }
+  //         break
+  //       case 'RadioOptionBlock':
+  //       case 'ButtonBlock':
+  //       case 'TextResponseBlock':
+  //       case 'SignUpBlock':
+  //       case 'FormBlock':
+  //       case 'VideoBlock':
+  //         if (
+  //           block.action?.__typename === 'NavigateToBlockAction' &&
+  //           !isVisited(block.action.blockId)
+  //         ) {
+  //           const nextStep = getStepFromId(block.action.blockId)
+  //           if (nextStep != null)
+  //             children.push(traverseBlock({ block: nextStep, children: [] }))
+  //         }
+  //         break
+  //     }
+  //     return layout
+  //   }
+
+  //   steps.forEach((step) => {
+  //     if (!isVisited(step.id)) {
+  //       const layout = { block: step, children: [] }
+  //       layouts.push(layout)
+  //       traverseBlock(layout)
+  //     }
+  //   })
+
+  //   return layouts
+  // }
+
+  // function connectBlockToNextBlock({ block, step, steps }: Connection): void {
+  //   const index = findIndex(steps, (child) => child.id === step.id)
+  //   if (index < 0) return
+  //   if (step.nextBlockId == null && steps[index + 1] != null) {
+  //     edges.push({
+  //       id: `${block.id}->${steps[index + 1].id}`,
+  //       source: block.id,
+  //       target: steps[index + 1].id,
+  //       markerEnd: {
+  //         type: MarkerType.Arrow
+  //       },
+  //       style: {
+  //         strokeWidth: 2,
+  //         strokeDasharray: 4
+  //       }
+  //     })
+  //   }
+  //   if (step.nextBlockId != null && step.nextBlockId !== step.id) {
+  //     edges.push({
+  //       id: `${block.id}->${step.nextBlockId}`,
+  //       source: block.id,
+  //       target: step.nextBlockId,
+  //       markerEnd: {
+  //         type: MarkerType.Arrow
+  //       },
+  //       style: {
+  //         strokeWidth: 2,
+  //         strokeDasharray: 4
+  //       }
+  //     })
+  //   }
+  // }
+
+  // function processCard({
+  //   block: card,
+  //   step,
+  //   steps
+  // }: Connection<CardBlock>): void {
+  //   const blocks = flatMapDeep(card.children, (block) => {
+  //     if (card.coverBlockId === block.id) return []
+  //     return [block, block.children]
+  //   }).filter((block) =>
+  //     filterBlocks.includes(block.__typename)
+  //   ) as ActionBlock[]
+  //   blocks.forEach((block) => {
+  //     const node = {
+  //       id: block.id,
+  //       selectable: false,
+  //       position: { x: 0, y: 0 }
+  //     }
+  //     switch (block.__typename) {
+  //       case 'RadioOptionBlock':
+  //         nodes.push({
+  //           ...node,
+  //           type: block.__typename,
+  //           data: block
+  //         })
+  //         break
+  //       case 'ButtonBlock':
+  //         nodes.push({
+  //           ...node,
+  //           type: block.__typename,
+  //           data: block
+  //         })
+  //         break
+  //       case 'TextResponseBlock':
+  //         nodes.push({
+  //           ...node,
+  //           type: block.__typename,
+  //           data: block
+  //         })
+  //         break
+  //       case 'SignUpBlock':
+  //         nodes.push({
+  //           ...node,
+  //           type: block.__typename,
+  //           data: block
+  //         })
+  //         break
+  //       case 'FormBlock':
+  //         nodes.push({
+  //           ...node,
+  //           type: block.__typename,
+  //           data: block
+  //         })
+  //         break
+  //       case 'VideoBlock':
+  //         nodes.push({
+  //           ...node,
+  //           type: block.__typename,
+  //           data: block
+  //         })
+  //         break
+  //     }
+  //     if (block.action != null) {
+  //       if (block.action.__typename === 'NavigateToBlockAction') {
+  //         edges.push({
+  //           id: `${block.id}->${block.action.blockId}`,
+  //           source: block.id,
+  //           target: block.action.blockId,
+  //           markerEnd: {
+  //             type: MarkerType.Arrow
+  //           },
+  //           style: {
+  //             strokeWidth: 2
+  //           }
+  //         })
+  //       }
+  //       if (block.action.__typename === 'NavigateAction') {
+  //         connectBlockToNextBlock({ block, step, steps })
+  //       }
+  //     }
+  //   })
+  // }
+
+  // steps.forEach((step) => {
+  //   nodes.push({
+  //     id: step.id,
+  //     type: step.__typename,
+  //     data: {
+  //       ...step,
+  //       steps
+  //     },
+  //     position: { x: 0, y: 0 }
+  //   })
+
+  //   const cardBlock = step?.children.find(
+  //     (child) => child.__typename === 'CardBlock'
+  //   ) as TreeBlock<CardBlock> | undefined
+  //   if (cardBlock != null) processCard({ block: cardBlock, step, steps })
+  //   connectBlockToNextBlock({ block: step, step, steps })
+  // })
 
   // TODO
-  const layout = processLayout(steps)
+  // const layouts = transformStepsToLayouts(steps)
+
+  // function processLayout({ block, children }: Layout, x = 0, y = 0): void {
+  //   const node = {
+  //     id: block.id,
+  //     type: block.__typename,
+  //     selectable: false,
+  //     position: {
+  //       x: x * 200,
+  //       y: y * 400 + 100 * (block.__typename === 'StepBlock' ? 0 : 1)
+  //     },
+  //     data: block
+  //   }
+  //   nodes.push(node)
+  //   children.forEach((child, index) => {
+  //     processLayout(
+  //       child,
+  //       index + x,
+  //       child.block.__typename === 'StepBlock' ? y + 1 : y
+  //     )
+  //   })
+  // }
+
+  // layouts.forEach((layout) => processLayout(layout))
 
   return { nodes, edges }
 }
@@ -307,66 +398,17 @@ export function JourneyFlow(): ReactElement {
     state: { steps }
   } = useEditor()
 
-  const [nodes, setNodes] = useNodesState<Node[]>([])
-  const [edges, setEdges] = useEdgesState<Edge[]>([])
+  const [nodes, setNodes] = useNodesState([])
+  const [edges, setEdges] = useEdgesState([])
   const [previousStepId, setPreviousStepId] = useState()
   const edgeTypes = {
     buttonedge: ButtonEdge
   }
 
-  // Manual position setting
-  function setPositions(nodes: Node[]): Node[] {
-    const positions = {
-      x: 0,
-      y: 0
-    }
-    const layerSizes: number[] = []
-    nodes.map((node, index) => {
-      if (node.type === 'StepBlock') {
-        if (index !== 0) {
-          layerSizes.push(positions.x)
-        }
-        positions.x = 0
-      } else {
-        positions.x = positions.x + NODE_WIDTH_GAP
-      }
-    })
-    layerSizes.push(positions.x)
-    positions.x = 0
-    nodes.map((node, index) => {
-      if (node.type === 'StepBlock') {
-        if (index !== 0) {
-          positions.x = 0
-          positions.y = positions.y + NODE_HEIGHT_GAP * 2
-        }
-        node.position = {
-          x: positions.x,
-          y: positions.y
-        }
-        const layerSize = layerSizes.shift() ?? 0
-        positions.x = 75 - (layerSize * 90) / NODE_WIDTH_GAP
-        positions.y = positions.y + NODE_HEIGHT_GAP
-      } else {
-        positions.x = positions.x + NODE_WIDTH_GAP / 2
-        node.position = {
-          x: positions.x,
-          y: positions.y
-        }
-        positions.x = positions.x + NODE_WIDTH + NODE_WIDTH_GAP / 2
-      }
-    })
-    return nodes
-  }
-
   useEffect(() => {
-    const setLayout = async (nodes) => {
-      const layoutNodes = setPositions(nodes)
-      setNodes(layoutNodes)
-    }
-
     const { nodes, edges } = transformSteps(steps ?? [])
     setEdges(edges)
-    setLayout(nodes)
+    setNodes(nodes)
   }, [steps, setNodes, setEdges])
 
   const onConnectStart = (_, { nodeId, handleType }): void => {
