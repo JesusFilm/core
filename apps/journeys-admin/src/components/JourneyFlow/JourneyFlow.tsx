@@ -9,8 +9,6 @@ import {
   Edge,
   MarkerType,
   Node,
-  OnConnect,
-  Position,
   ReactFlow,
   useEdgesState,
   useNodesState
@@ -40,7 +38,7 @@ import {
 import { STEP_AND_CARD_BLOCK_CREATE } from '../CardPreview/CardPreview'
 
 import ButtonEdge from './edges/ButtonEdge'
-import { NODE_HEIGHT, NODE_WIDTH } from './nodes/BaseNode'
+import { NODE_WIDTH } from './nodes/BaseNode'
 import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
 import { FormBlockNode, FormBlockNodeData } from './nodes/FormBlockNode'
 import {
@@ -55,7 +53,6 @@ import {
 } from './nodes/TextResponseBlockNode'
 import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
 import 'reactflow/dist/style.css'
-import { NODE_WIDTH } from './nodes/BaseNode'
 
 type InternalNode =
   | Node<StepBlockNodeData, 'StepBlock'>
