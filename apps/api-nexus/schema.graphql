@@ -96,6 +96,10 @@ extend type Mutation {
   resourceFromTemplate(nexusId: String!, tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
+<<<<<<< HEAD
+=======
+  resourceBatchJob(input: BatchJobInput!): String!
+>>>>>>> feature/24-03-BK-feat-api-nexus
 }
 
 type Nexus
@@ -227,6 +231,21 @@ input ResourceFromSpreadsheetInput {
 input GoogleAuthInput {
   authCode: String!
   url: String!
+}
+
+input BatchJobBatch {
+  id: ID!
+  batchName: String!
+}
+
+input BatchJobResource {
+  resource: ID!
+  channel: ID!
+}
+
+input BatchJobInput {
+  batch: BatchJobBatch!
+  resources: [BatchJobResource]!
 }
 
 scalar _FieldSet

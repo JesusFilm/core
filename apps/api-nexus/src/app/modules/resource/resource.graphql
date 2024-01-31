@@ -90,6 +90,21 @@ input GoogleAuthInput {
   url: String!
 }
 
+input BatchJobBatch {
+  id: ID!
+  batchName: String!
+}
+
+input BatchJobResource {
+  resource: ID!
+  channel: ID!
+}
+
+input BatchJobInput {
+  batch: BatchJobBatch!
+  resources: [BatchJobResource]!
+}
+
 extend type Query {
   resources(where: ResourceFilter): [Resource!]
   resource(id: ID!): Resource!
@@ -108,4 +123,5 @@ extend type Mutation {
   ): [Resource!]
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
+  resourceBatchJob(input: BatchJobInput!): String
 }

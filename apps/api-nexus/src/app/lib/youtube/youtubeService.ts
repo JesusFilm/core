@@ -2,6 +2,7 @@ import { createReadStream, statSync } from 'fs';
 
 import { Injectable } from '@nestjs/common';
 import { google } from 'googleapis';
+import { OAuth2Client } from 'googleapis-common';
 
 interface Credential {
   client_secret: string;
@@ -21,14 +22,11 @@ export class YoutubeService {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  authorize(token: string) {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { client_secret, client_id, redirect_uris } = this.credential;
+  authorize(token: string): OAuth2Client {
     const oAuth2Client = new google.auth.OAuth2(
-      client_id,
-      client_secret,
-      redirect_uris[0],
+      this.credential.client_id,
+      this.credential.client_secret,
+      this.credential.redirect_uris[0],
     );
     oAuth2Client.setCredentials({
       access_token: token,
@@ -37,12 +35,17 @@ export class YoutubeService {
     return oAuth2Client;
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async uploadVideo(token: string, filePath: string, channelId: string, title: string, description: string) {
+  async uploadVideo(
+    token: string,
+    filePath: string,
+    channelId: string,
+    title: string,
+    description: string,
+  ): Promise<unknown> {
     const service = google.youtube('v3');
     const fileSize = statSync(filePath).size;
 
-    const response = await service.videos.insert(
+    return await service.videos.insert(
       {
         auth: this.authorize(token),
         part: ['id', 'snippet', 'status'],
@@ -68,6 +71,5 @@ export class YoutubeService {
         },
       },
     );
-    console.log(response);
   }
 }

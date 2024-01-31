@@ -5,6 +5,7 @@ import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService';
 import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
+import { BullMQModule } from '../bullMQ/bullMQ.module';
 
 import { ResourceResolver } from './resource.resolver';
 
@@ -17,6 +18,7 @@ import { ResourceResolver } from './resource.resolver';
     GoogleDriveService,
     CloudFlareService,
     YoutubeService,
+    BullMQModule,
   ],
 })
 export class ResourceModule {}

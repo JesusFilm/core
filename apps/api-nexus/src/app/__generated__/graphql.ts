@@ -8,6 +8,18 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum BatchStatus {
+    pending = "pending",
+    running = "running",
+    completed = "completed",
+    failed = "failed",
+    cancelled = "cancelled",
+    paused = "paused",
+    error = "error",
+    warning = "warning",
+    scheduled = "scheduled"
+}
+
 export enum ChannelStatus {
     deleted = "deleted",
     published = "published"
@@ -37,6 +49,14 @@ export enum ResourceStatus {
     processing = "processing",
     error = "error",
     uploaded = "uploaded"
+}
+
+export class BatchFilter {
+    ids?: Nullable<string[]>;
+    name?: Nullable<string>;
+    nexusId?: Nullable<string>;
+    status?: Nullable<BatchStatus>;
+    limit?: Nullable<number>;
 }
 
 export class ChannelCreateInput {
@@ -124,6 +144,55 @@ export class GoogleAuthInput {
     url: string;
 }
 
+export class BatchJobBatch {
+    id: string;
+    batchName: string;
+}
+
+export class BatchJobResource {
+    resource: string;
+    channel: string;
+}
+
+export class BatchJobInput {
+    batch: BatchJobBatch;
+    resources: Nullable<BatchJobResource>[];
+}
+
+export class Batch {
+    __typename?: 'Batch';
+    id: string;
+    resourceId: string;
+    name: string;
+    status: BatchStatus;
+}
+
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract batches(where?: Nullable<BatchFilter>): Nullable<Batch[]> | Promise<Nullable<Batch[]>>;
+
+    abstract batch(id: string): Batch | Promise<Batch>;
+
+    abstract channels(where?: Nullable<ChannelFilter>): Nullable<Channel[]> | Promise<Nullable<Channel[]>>;
+
+    abstract channel(id: string): Channel | Promise<Channel>;
+
+    abstract nexuses(where?: Nullable<NexusFilter>): Nexus[] | Promise<Nexus[]>;
+
+    abstract nexus(id: string): Nexus | Promise<Nexus>;
+
+    abstract resources(where?: Nullable<ResourceFilter>): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+
+    abstract resource(id: string): Resource | Promise<Resource>;
+}
+
+export abstract class ISubscription {
+    __typename?: 'ISubscription';
+
+    abstract batchStatusChanged(id: string): Nullable<Batch> | Promise<Nullable<Batch>>;
+}
+
 export class Channel {
     __typename?: 'Channel';
     id: string;
@@ -145,22 +214,6 @@ export class ChannelYoutube {
     youtubeId?: Nullable<string>;
     imageUrl?: Nullable<string>;
     refreshToken?: Nullable<string>;
-}
-
-export abstract class IQuery {
-    __typename?: 'IQuery';
-
-    abstract channels(where?: Nullable<ChannelFilter>): Nullable<Channel[]> | Promise<Nullable<Channel[]>>;
-
-    abstract channel(id: string): Channel | Promise<Channel>;
-
-    abstract nexuses(where?: Nullable<NexusFilter>): Nexus[] | Promise<Nexus[]>;
-
-    abstract nexus(id: string): Nexus | Promise<Nexus>;
-
-    abstract resources(where?: Nullable<ResourceFilter>): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
-
-    abstract resource(id: string): Resource | Promise<Resource>;
 }
 
 export class Nexus {
@@ -241,6 +294,8 @@ export abstract class IMutation {
     abstract getGoogleAccessToken(input: GoogleAuthInput): GoogleAuthResponse | Promise<GoogleAuthResponse>;
 
     abstract uploadToYoutube(channelId: string, resourceId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract resourceBatchJob(input: BatchJobInput): Nullable<string> | Promise<Nullable<string>>;
 }
 
 export class Language {

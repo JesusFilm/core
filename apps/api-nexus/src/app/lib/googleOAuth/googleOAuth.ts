@@ -61,4 +61,51 @@ export class GoogleOAuthService {
 
     return await response.json();
   }
+
+  async getNewAccessToken(refreshToken: string): Promise<string> {
+    const reqBody = new URLSearchParams({
+      client_id: process.env.GOOGLE_CLIENT_ID ?? '',
+      client_secret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      refresh_token: refreshToken,
+      grant_type: 'refresh_token',
+    });
+
+    const response = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: reqBody,
+    });
+
+    const data = await response.json();
+    return data.access_token;
+  }
+
+  async exchangeAuthCodeForTokens(
+    authCode: string,
+    redirectUri: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const reqBody = new URLSearchParams({
+      code: authCode,
+      client_id: process.env.GOOGLE_CLIENT_ID ?? '',
+      client_secret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      redirect_uri: redirectUri,
+      grant_type: 'authorization_code',
+    });
+
+    const response = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: reqBody,
+    });
+
+    const data = await response.json();
+    return {
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+    };
+  }
 }

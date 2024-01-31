@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { unlink } from 'fs';
 
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { google } from 'googleapis';
+import Bull from 'bull';
 import { GraphQLError } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,25 +11,39 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser';
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId';
 
 import {
+  BatchJobInput,
+  Channel,
   GoogleAuthInput,
   GoogleAuthResponse,
+  PrivacyStatus,
   ResourceCreateInput,
   ResourceFilter,
   ResourceFromGoogleDriveInput,
   ResourceUpdateInput,
 } from '../../__generated__/graphql';
+import { BatchService } from '../../lib/batch/batchService';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
 import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService';
+import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
+import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
+import {
+  BullMQService,
+  UploadYoutubeTemplateTask,
+} from '../bullMQ/bullMQ.service';
 
 @Resolver('Resource')
 export class ResourceResolver {
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly googleOAuthService: GoogleOAuthService,
     private readonly googleDriveService: GoogleDriveService,
     private readonly cloudFlareService: CloudFlareService,
     private readonly youtubeService: YoutubeService,
+    private readonly bullMQService: BullMQService,
+    private readonly googleSheetsService: GoogleSheetsService,
+    private readonly batchService: BatchService,
   ) {}
 
   @Query()
@@ -80,12 +92,49 @@ export class ResourceResolver {
   }
 
   @Mutation()
+  async resourceBatchJob(
+    @Args('input') input: BatchJobInput,
+  ): Promise<Array<Bull.Job<unknown>>> {
+    const batchJob = await this.bullMQService.createBatchJob(
+      {
+        id: input.batch.id,
+        batchName: input.batch.batchName,
+      },
+      await Promise.all(
+        input.resources.map(async (item) => {
+          const channel = await this.prismaService.channel.findUnique({
+            where: { id: item?.channel },
+            include: { youtube: true },
+          });
+          const resource = await this.prismaService.resource.findUnique({
+            where: { id: item?.channel },
+            include: { googleDrive: true },
+          });
+          const ben: UploadYoutubeTemplateTask = {
+            channel: {
+              channelId: channel?.youtube?.channelId ?? 'N/A',
+              refreshToken: channel?.youtube?.refreshToken ?? 'N/A',
+            },
+            resource: {
+              driveId: resource?.googleDrive?.driveId ?? 'N/A',
+              refreshToken: resource?.googleDrive?.refreshToken ?? 'N/A',
+            },
+          };
+          return ben;
+        }),
+      ),
+    );
+
+    return batchJob;
+  }
+
+  @Mutation()
   async resourceCreate(
-    @CurrentUserId() userId: string,
+    // @CurrentUserId() userId: string,
     @Args('input') input: ResourceCreateInput,
   ): Promise<Resource | undefined> {
     const nexus = await this.prismaService.nexus.findUnique({
-      where: { id: input.nexusId, userNexuses: { every: { userId } } },
+      where: { id: input.nexusId },
     });
     if (nexus == null)
       throw new GraphQLError('nexus not found', {
@@ -95,7 +144,6 @@ export class ResourceResolver {
     const resource = await this.prismaService.resource.create({
       data: {
         ...input,
-        cloudflareId: 'cloudflareId',
         nexusId: nexus.id,
         id: uuidv4(),
         sourceType: 'other',
@@ -178,7 +226,6 @@ export class ResourceResolver {
       const resource = await this.prismaService.resource.create({
         data: {
           id: uuidv4(),
-          cloudflareId: 'cloudflareId',
           name: driveFile.name,
           nexusId: nexus.id,
           status: 'published',
@@ -233,34 +280,65 @@ export class ResourceResolver {
       throw new Error('Invalid tokenId');
     }
 
-    const accessToken = await this.getNewAccessToken(
-      googleAccessToken.refreshToken,
-    );
-
-    const rows = await this.handleGoogleDriveOperations(
+    const rows = await this.googleDriveService.handleGoogleDriveOperations(
       tokenId,
       spreadsheetId,
       drivefolderId,
     );
 
+    const batchResources: Array<{ resource: Resource; channel?: Channel }> = [];
+
     for (const row of rows) {
-      const { fileId, filename, title, description, keywords, category } = row;
-      let cloudflareId: string | null = null;
+      const resource = await this.prismaService.resource.create({
+        data: {
+          id: uuidv4(),
+          name: row.filename ?? '',
+          nexusId: nexus.id,
+          status: 'processing',
+          sourceType: 'template',
+          createdAt: new Date(),
+          category: row.category,
+          privacy: row.privacy as PrivacyStatus,
+          localizations: {
+            create: {
+              title: row.title ?? '',
+              description: row.description ?? '',
+              keywords: row.keywords ?? '',
+              language: row.spoken_language ?? '',
+            },
+          },
+          googleDrive: {
+            create: {
+              mimeType: row.driveFile?.mimeType ?? '',
+              driveId: row.driveFile?.id ?? '',
+              refreshToken: googleAccessToken.refreshToken,
+            },
+          },
+        },
+      });
+      batchResources.push({
+        resource,
+        channel: (row.channel as Channel) ?? undefined,
+      });
+    }
 
-      if (fileId !== null) {
-        const fileUrl = this.googleDriveService.getFileUrl(fileId);
-        await this.googleDriveService.setFilePermission({
-          fileId,
-          accessToken,
-        });
+    const channels = Array.from(
+      new Set(batchResources.map((item) => item.channel)),
+    );
 
-        const res = await this.cloudFlareService.uploadToCloudflareByUrl(
-          fileUrl,
-          filename,
-          'ben',
+    for (const channel of channels) {
+      const resources = batchResources
+        .filter((item) => {
+          return item.channel?.id === channel?.id;
+        })
+        .map((item) => item.resource);
+      if (channel !== null && resources.length > 0) {
+        await this.batchService.createBatch(
+          uuidv4(),
+          nexusId,
+          channel as Channel,
+          resources,
         );
-        console.log('CLOUD FLARE', res?.result?.uid ?? '');
-        cloudflareId = res?.result?.uid ?? '';
       }
 
       // await this.cloudFlareService.makeVideoPublic(res?.result?.uid ?? '');
@@ -288,17 +366,7 @@ export class ResourceResolver {
       });
     }
 
-    return await this.prismaService.resource.findMany({
-      where: {
-        nexusId,
-        nexus: {
-          userNexuses: {
-            every: { userId },
-          },
-        },
-      },
-      include: { localizations: true },
-    });
+    return batchResources.map((item) => item.resource);
   }
 
   @Mutation()
@@ -307,13 +375,11 @@ export class ResourceResolver {
     @CurrentUser() user: User,
     @Args('input') input: GoogleAuthInput,
   ): Promise<GoogleAuthResponse> {
-    const { accessToken, refreshToken } = await this.exchangeAuthCodeForTokens(
-      input.authCode,
-      input.url,
-      process.env.GOOGLE_CLIENT_ID ?? '',
-      process.env.GOOGLE_CLIENT_SECRET ?? '',
-    );
-
+    const { accessToken, refreshToken } =
+      await this.googleOAuthService.exchangeAuthCodeForTokens(
+        input.authCode,
+        input.url,
+      );
     const tokenRecord = await this.prismaService.googleAccessToken.create({
       data: {
         refreshToken,
@@ -325,207 +391,4 @@ export class ResourceResolver {
       accessToken,
     };
   }
-
-  @Mutation()
-  async uploadToYoutube(
-    @CurrentUserId() userId: string,
-    @CurrentUser() user: User,
-    @Args('channelId') channelId: string,
-    @Args('resourceId') resourceId: string,
-  ): Promise<boolean> {
-    const resource = await this.prismaService.resource.findUnique({
-      where: { id: resourceId },
-      include: { localizations: true },
-    });
-
-    const filePath = await this.cloudFlareService.downloadFile(
-      resource?.cloudflareId ?? '',
-      resource?.id ?? '',
-    );
-    console.log('filePath', filePath);
-
-    const channel = await this.prismaService.channel.findUnique({
-      where: { id: channelId },
-      include: { youtube: true },
-    });
-
-    const accessToken = await this.getNewAccessToken(
-      channel?.youtube?.refreshToken ?? '',
-    );
-
-    await this.youtubeService.uploadVideo(
-      accessToken,
-      filePath,
-      channel?.youtube?.youtubeId ?? '',
-      resource?.localizations?.[0]?.title ?? 'Nexus Video Title',
-      resource?.localizations?.[0]?.description ?? 'Nexus Video Description',
-    );
-
-    unlink(filePath, (err) => {
-      if (err !== null) {
-        console.error('Error deleting file:', err);
-        return;
-      }
-      console.log('File deleted successfully');
-    });
-
-    return true;
-  }
-
-  private async handleGoogleDriveOperations(
-    tokenId: string,
-    spreadsheetId: string,
-    drivefolderId: string,
-  ): Promise<SpreadsheetRow[]> {
-    const googleAccessToken =
-      await this.prismaService.googleAccessToken.findUnique({
-        where: { id: tokenId },
-      });
-
-    if (googleAccessToken === null) {
-      throw new Error('Invalid tokenId');
-    }
-
-    const accessToken = await this.getNewAccessToken(
-      googleAccessToken.refreshToken,
-    );
-
-    const spreadsheetData = await this.downloadSpreadsheet(
-      spreadsheetId,
-      accessToken,
-    );
-
-    const spreadsheetRows: SpreadsheetRow[] = [];
-
-    for (const [
-      filename,
-      channel,
-      custom_id,
-      add_asset_labels,
-      title,
-      description,
-      keywords,
-      spoken_language,
-      caption_file,
-      caption_language,
-      category,
-      privacy,
-      notify_subscribers,
-      start_time,
-      end_time,
-      custom_thumbnail,
-      ownership,
-      block_outside_ownership,
-      usage_policy,
-      enable_content_id,
-      reference_exclusions,
-      match_policy,
-      ad_types,
-      ad_break_times,
-      playlist_id,
-      is_made_for_kids,
-      is_enabled_for_shorts_remix,
-    ] of spreadsheetData) {
-      const fileId = await this.findFile(
-        this.youtubeService.authorize(accessToken),
-        drivefolderId,
-        filename,
-      );
-      console.log('driveFile', fileId);
-      const row: SpreadsheetRow = {
-        fileId,
-        filename,
-        title,
-        description,
-        keywords,
-        category,
-        privacy,
-      };
-      spreadsheetRows.push(row);
-    }
-    return spreadsheetRows.slice(1);
-  }
-
-  private async getNewAccessToken(refreshToken: string): Promise<string> {
-    const refreshTokenUrl = 'https://oauth2.googleapis.com/token';
-
-    const response = await fetch(refreshTokenUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        client_id: process.env.GOOGLE_CLIENT_ID ?? '',
-        client_secret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-        refresh_token: refreshToken,
-        grant_type: 'refresh_token',
-      }),
-    });
-
-    const data = await response.json();
-    return data.access_token;
-  }
-
-  private async downloadSpreadsheet(
-    spreadsheetId: string,
-    accessToken: string,
-  ): Promise<any> {
-    const sheetsApiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1`;
-    const response = await fetch(sheetsApiUrl, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const data = await response.json();
-    return data.values;
-  }
-
-  private async exchangeAuthCodeForTokens(
-    authCode: string,
-    redirectUri: string,
-    clientId: string,
-    clientSecret: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    const tokenExchangeUrl = 'https://oauth2.googleapis.com/token';
-    const response = await fetch(tokenExchangeUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        code: authCode,
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: redirectUri,
-        grant_type: 'authorization_code',
-      }),
-    });
-
-    const data = await response.json();
-    return {
-      accessToken: data.access_token,
-      refreshToken: data.refresh_token,
-    };
-  }
-
-  async findFile(auth, folderId, fileName): Promise<string | null> {
-    const drive = google.drive({ version: 'v3', auth });
-    const driveResponse = await drive.files.list({
-      q: `'${folderId}' in parents and name='${fileName}' and trashed=false`,
-      fields: 'files(id, name)',
-    });
-
-    return driveResponse?.data?.files?.[0]?.id ?? null;
-  }
-}
-
-interface SpreadsheetRow {
-  fileId: string | null;
-  filename: string;
-  title: string;
-  description: string;
-  keywords: string;
-  category: string;
-  privacy: string;
 }
