@@ -1,20 +1,25 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import findIndex from 'lodash/findIndex'
 import flatMapDeep from 'lodash/flatMapDeep'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import {
   Background,
   Controls,
   Edge,
   MarkerType,
   Node,
+  OnConnect,
+  Position,
   ReactFlow,
   useEdgesState,
   useNodesState
 } from 'reactflow'
+import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields } from '../../../__generated__/BlockFields'
 import {
@@ -27,7 +32,15 @@ import {
   GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import {
+  StepAndCardBlockCreate,
+  StepAndCardBlockCreateVariables
+} from '../../../__generated__/StepAndCardBlockCreate'
+import { STEP_AND_CARD_BLOCK_CREATE } from '../CardPreview/CardPreview'
 
+import ButtonEdge from './edges/ButtonEdge'
+import { NODE_HEIGHT, NODE_WIDTH } from './nodes/BaseNode'
 import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
 import { FormBlockNode, FormBlockNodeData } from './nodes/FormBlockNode'
 import {
@@ -41,7 +54,6 @@ import {
   TextResponseBlockNodeData
 } from './nodes/TextResponseBlockNode'
 import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
-
 import 'reactflow/dist/style.css'
 import { NODE_WIDTH } from './nodes/BaseNode'
 
@@ -149,6 +161,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     if (index < 0) return
     if (step.nextBlockId == null && steps[index + 1] != null) {
       edges.push({
+        type: 'buttonedge',
         id: `${block.id}->${steps[index + 1].id}`,
         source: block.id,
         target: steps[index + 1].id,
@@ -163,6 +176,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     }
     if (step.nextBlockId != null && step.nextBlockId !== step.id) {
       edges.push({
+        type: 'buttonedge',
         id: `${block.id}->${step.nextBlockId}`,
         source: block.id,
         target: step.nextBlockId,
@@ -248,6 +262,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
       if (block.action != null) {
         if (block.action.__typename === 'NavigateToBlockAction') {
           edges.push({
+            type: 'bezeir',
             id: `${block.id}->${block.action.blockId}`,
             source: block.id,
             target: block.action.blockId,
@@ -297,6 +312,10 @@ export function JourneyFlow(): ReactElement {
 
   const [nodes, setNodes] = useNodesState<Node[]>([])
   const [edges, setEdges] = useEdgesState<Edge[]>([])
+  const [previousStepId, setPreviousStepId] = useState()
+  const edgeTypes = {
+    buttonedge: ButtonEdge
+  }
 
   // Manual position setting
   function setPositions(nodes: Node[]): Node[] {
@@ -353,11 +372,99 @@ export function JourneyFlow(): ReactElement {
     setLayout(nodes)
   }, [steps, setNodes, setEdges])
 
+  const onConnectStart = (_, { nodeId, handleType }): void => {
+    console.log('on connect start', { nodeId, handleType })
+    setPreviousStepId(nodeId)
+    console.log('steps is: ', steps)
+  }
+
+  const onConnectEnd = (event): void => {
+    if (event.target.className === 'react-flow__pane') {
+      console.log('create new node after', previousStepId)
+      void createNewNodeAfter(previousStepId)
+    }
+  }
+
+  const { journey } = useJourney()
+  const [stepAndCardBlockCreate] = useMutation<
+    StepAndCardBlockCreate,
+    StepAndCardBlockCreateVariables
+  >(STEP_AND_CARD_BLOCK_CREATE)
+
+  const createNewNodeAfter = async (previousStepId): Promise<void> => {
+    if (journey == null) return
+    console.log('PREVstepid: ', previousStepId)
+    console.log('steps: ', steps)
+    const newStepId = uuidv4()
+    const newCardId = uuidv4()
+
+    await stepAndCardBlockCreate({
+      variables: {
+        stepBlockCreateInput: {
+          id: newStepId,
+          journeyId: journey.id
+        },
+        cardBlockCreateInput: {
+          id: newCardId,
+          journeyId: journey.id,
+          parentBlockId: newStepId,
+          themeMode: ThemeMode.dark,
+          themeName: ThemeName.base
+        }
+      },
+      update(cache, { data }) {
+        console.log('dataaaa', data)
+        if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
+          cache.modify({
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
+            fields: {
+              blocks(existingBlockRefs = [], { readField }) {
+                const index = existingBlockRefs.findIndex(
+                  (ref) => readField('id', ref) === previousStepId
+                )
+                console.log(readField('id'))
+
+                console.log('previousStepId is: ', previousStepId)
+
+                const newStepBlockRef = cache.writeFragment({
+                  data: data.stepBlockCreate,
+
+                  fragment: gql`
+                    fragment NewBlock on Block {
+                      id
+                    }
+                  `
+                })
+                const newCardBlockRef = cache.writeFragment({
+                  data: data.cardBlockCreate,
+                  fragment: gql`
+                    fragment NewBlock on Block {
+                      id
+                    }
+                  `
+                })
+                return [
+                  ...existingBlockRefs.slice(0, index + 1),
+                  newStepBlockRef,
+                  newCardBlockRef,
+                  ...existingBlockRefs.slice(index + 1)
+                ]
+              }
+            }
+          })
+        }
+      }
+    })
+  }
+
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        edgeTypes={edgeTypes}
+        onConnectEnd={onConnectEnd}
+        onConnectStart={onConnectStart}
         fitView
         nodeTypes={{
           RadioOptionBlock: RadioOptionBlockNode,
