@@ -257,6 +257,8 @@ describe('LanguageSelector', () => {
         })
       })
 
+    const mockHandleClose = jest.fn()
+
     const { getByText, getByRole } = render(
       <MockedProvider
         mocks={[
@@ -300,12 +302,13 @@ describe('LanguageSelector', () => {
           }
         ]}
       >
-        <LanguageSelector open handleClose={jest.fn()} />
+        <LanguageSelector open handleClose={mockHandleClose} />
       </MockedProvider>
     )
 
     fireEvent.click(getByRole('button', { name: 'Open' }))
     await waitFor(() => fireEvent.click(getByText('Arabic, Modern Standard')))
     expect(push).toHaveBeenCalledWith('/', '/', { locale: 'ar' })
+    expect(mockHandleClose).toHaveBeenCalled()
   })
 })
