@@ -12,6 +12,7 @@ module "seed" {
   name          = "${local.service_config.name}-seed"
   doppler_token = var.doppler_token
   environment_variables = [
+    "PG_DATABASE_URL",
     "PG_DATABASE_URL_JOURNEYS"
   ]
   task_execution_role_arn = var.ecs_config.task_execution_role_arn
