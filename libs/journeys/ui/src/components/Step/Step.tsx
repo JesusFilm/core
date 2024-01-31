@@ -61,7 +61,7 @@ export function Step({
         }
       })
     }
-  }, [blockId, stepViewEventCreate, variant, heading])
+  }, [blockId, stepViewEventCreate, variant, heading, activeJourneyStep])
 
   return (
     <>

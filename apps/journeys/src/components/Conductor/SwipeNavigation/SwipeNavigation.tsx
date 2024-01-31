@@ -1,20 +1,21 @@
-import { ReactElement, useEffect } from 'react'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { StepFields } from '../../../../__generated__/StepFields'
-import { v4 as uuidv4 } from 'uuid'
-import TagManager from 'react-gtm-module'
-import { getStepHeading } from '@core/journeys/ui/getStepHeading'
-import { useBlocks } from '@core/journeys/ui/block'
 import { useMutation } from '@apollo/client'
 import last from 'lodash/last'
-import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousEventCreate'
-import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { ReactElement, useEffect } from 'react'
+import TagManager from 'react-gtm-module'
+import { useTranslation } from 'react-i18next'
+import { v4 as uuidv4 } from 'uuid'
+
+import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
-import { useTranslation } from 'react-i18next'
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { StepFields } from '../../../../__generated__/StepFields'
+import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
+import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousEventCreate'
 
 interface SwipeNavigationProps {
   activeBlock: TreeBlock<StepFields>
