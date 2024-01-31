@@ -26,12 +26,12 @@ import {
 import { TestEditorState } from '../../../libs/TestEditorState'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
 
-import { BUTTON_BLOCK_CREATE } from './BlocksTab/NewButtonButton/NewButtonButton'
-import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
-import { RADIO_QUESTION_BLOCK_CREATE } from './BlocksTab/NewRadioQuestionButton/NewRadioQuestionButton'
-import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/NewSignUpButton/NewSignUpButton'
-import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
-import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
+import { BUTTON_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewButtonButton/NewButtonButton'
+import { IMAGE_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewImageButton/NewImageButton'
+import { RADIO_QUESTION_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewRadioQuestionButton/NewRadioQuestionButton'
+import { SIGN_UP_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewSignUpButton/NewSignUpButton'
+import { TYPOGRAPHY_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewTypographyButton/NewTypographyButton'
+import { VIDEO_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewVideoButton/NewVideoButton'
 
 import { ControlPanel } from '.'
 

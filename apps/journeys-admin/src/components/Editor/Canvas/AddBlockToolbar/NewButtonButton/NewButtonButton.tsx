@@ -20,7 +20,7 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../__generated__/globalTypes'
-import { Button } from '../../Button'
+import { Button } from '../../../ControlPanel/Button'
 
 export const BUTTON_BLOCK_CREATE = gql`
   ${BUTTON_FIELDS}

@@ -9,7 +9,7 @@ import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { VideoBlockCreate } from '../../../../../../__generated__/VideoBlockCreate'
-import { Button } from '../../Button'
+import { Button } from '../../../ControlPanel/Button'
 
 export const VIDEO_BLOCK_CREATE = gql`
   ${VIDEO_FIELDS}

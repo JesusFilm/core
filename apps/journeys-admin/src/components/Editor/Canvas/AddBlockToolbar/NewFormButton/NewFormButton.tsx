@@ -13,7 +13,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
 
 import { FormBlockCreate } from '../../../../../../__generated__/FormBlockCreate'
-import { Button } from '../../Button'
+import { Button } from '../../../ControlPanel/Button'
 
 export const FORM_BLOCK_CREATE = gql`
   ${FORM_FIELDS}

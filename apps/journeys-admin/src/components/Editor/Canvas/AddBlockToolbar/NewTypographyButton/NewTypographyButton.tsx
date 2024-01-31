@@ -2,29 +2,34 @@ import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
-import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
+import {
+  ActiveFab,
+  ActiveTab,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Image3Icon from '@core/shared/ui/icons/Image3'
+import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
+import Type3Icon from '@core/shared/ui/icons/Type3'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
-import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
-import { Button } from '../../Button'
+import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
+import { Button } from '../../../ControlPanel/Button'
 
-export const IMAGE_BLOCK_CREATE = gql`
-  ${IMAGE_FIELDS}
-  mutation ImageBlockCreate($input: ImageBlockCreateInput!) {
-    imageBlockCreate(input: $input) {
+export const TYPOGRAPHY_BLOCK_CREATE = gql`
+  ${TYPOGRAPHY_FIELDS}
+  mutation TypographyBlockCreate($input: TypographyBlockCreateInput!) {
+    typographyBlockCreate(input: $input) {
       id
       parentBlockId
-      parentOrder
-      ...ImageFields
+      ...TypographyFields
     }
   }
 `
 
-export function NewImageButton(): ReactElement {
-  const [imageBlockCreate] = useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
+export function NewTypographyButton(): ReactElement {
+  const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
+    TYPOGRAPHY_BLOCK_CREATE
+  )
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -35,24 +40,27 @@ export function NewImageButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (card != null && journey != null) {
-      const { data } = await imageBlockCreate({
+    const checkTypography = card?.children.map((block) =>
+      block.children.find((child) => child.__typename === 'TypographyBlock')
+    )
+    if (card != null && checkTypography !== undefined && journey != null) {
+      const { data } = await typographyBlockCreate({
         variables: {
           input: {
             journeyId: journey.id,
             parentBlockId: card.id,
-            src: null,
-            alt: 'Default Image Icon'
+            content: '',
+            variant: checkTypography.length > 0 ? 'body2' : 'h1'
           }
         },
         update(cache, { data }) {
-          if (data?.imageBlockCreate != null) {
+          if (data?.typographyBlockCreate != null) {
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newBlockRef = cache.writeFragment({
-                    data: data.imageBlockCreate,
+                    data: data.typographyBlockCreate,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
@@ -66,14 +74,18 @@ export function NewImageButton(): ReactElement {
           }
         }
       })
-      if (data?.imageBlockCreate != null) {
+      if (data?.typographyBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.imageBlockCreate.id
+          id: data.typographyBlockCreate.id
         })
         dispatch({
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Properties
+        })
+        dispatch({
+          type: 'SetActiveFabAction',
+          activeFab: ActiveFab.Save
         })
       }
     }
@@ -81,10 +93,10 @@ export function NewImageButton(): ReactElement {
 
   return (
     <Button
-      icon={<Image3Icon />}
-      value="Image"
+      icon={<Type3Icon />}
+      value="Text"
       onClick={handleClick}
-      testId="NewImageButton"
+      testId="NewTypographyButton"
     />
   )
 }

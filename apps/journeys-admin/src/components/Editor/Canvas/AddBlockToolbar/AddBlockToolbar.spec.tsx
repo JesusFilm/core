@@ -3,14 +3,14 @@ import { render } from '@testing-library/react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-import { BlocksTab } from '.'
+import { AddBlockToolbar } from '.'
 
-describe('BlocksTab', () => {
+describe('AddBlockToolbar', () => {
   it('contains all blocks', () => {
     const { getByText } = render(
       <MockedProvider>
         <FlagsProvider flags={{ formiumForm: true }}>
-          <BlocksTab />
+          <AddBlockToolbar />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -27,7 +27,7 @@ describe('BlocksTab', () => {
   it('contains correct bottom text', () => {
     const { getByText } = render(
       <MockedProvider>
-        <BlocksTab />
+        <AddBlockToolbar />
       </MockedProvider>
     )
     expect(getByText('Select a Block to Insert')).toBeInTheDocument()

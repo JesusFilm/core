@@ -14,8 +14,9 @@ import { NewSignUpButton } from './NewSignUpButton'
 import { NewTextResponseButton } from './NewTextResponseButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
+import AddIcon from '@mui/icons-material/Add'
 
-export function BlocksTab(): ReactElement {
+export function AddBlockToolbar(): ReactElement {
   const { formiumForm } = useFlags()
 
   const { t } = useTranslation('apps-journeys-admin')
@@ -23,14 +24,14 @@ export function BlocksTab(): ReactElement {
   return (
     <>
       <Stack
-        direction="row"
-        spacing={4}
+        data-testid="AddBlockToolbar"
         sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
+          display: 'flex'
         }}
       >
+        <AddIcon sx={{ my: 3 }} />
         <NewTypographyButton />
         <NewImageButton />
         <NewVideoButton />
@@ -40,16 +41,6 @@ export function BlocksTab(): ReactElement {
         <NewButtonButton />
         {formiumForm && <NewFormButton />}
       </Stack>
-      <Box
-        sx={{
-          py: 4.25,
-          borderTop: (theme) => `1px solid ${theme.palette.divider}`
-        }}
-      >
-        <MuiTypography align="center">
-          {t('Select a Block to Insert')}
-        </MuiTypography>
-      </Box>
     </>
   )
 }

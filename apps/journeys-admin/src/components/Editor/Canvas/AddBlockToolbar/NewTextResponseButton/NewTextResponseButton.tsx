@@ -6,40 +6,48 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { SIGN_UP_FIELDS } from '@core/journeys/ui/SignUp/signUpFields'
-import Mail2Icon from '@core/shared/ui/icons/Mail2'
+import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
+import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
-import { SignUpBlockCreate } from '../../../../../../__generated__/SignUpBlockCreate'
-import { Button } from '../../Button'
+import { TextResponseBlockCreate } from '../../../../../../__generated__/TextResponseBlockCreate'
+import { Button } from '../../../ControlPanel/Button'
 
-export const SIGN_UP_BLOCK_CREATE = gql`
-  ${SIGN_UP_FIELDS}
+export const TEXT_RESPONSE_BLOCK_CREATE = gql`
+  ${TEXT_RESPONSE_FIELDS}
   ${ICON_FIELDS}
-  mutation SignUpBlockCreate(
-    $input: SignUpBlockCreateInput!
+  mutation TextResponseBlockCreate(
+    $input: TextResponseBlockCreateInput!
     $iconBlockCreateInput: IconBlockCreateInput!
     $id: ID!
     $journeyId: ID!
-    $updateInput: SignUpBlockUpdateInput!
+    $updateInput: TextResponseBlockUpdateInput!
   ) {
-    signUpBlockCreate(input: $input) {
+    textResponseBlockCreate(input: $input) {
       id
+      parentBlockId
+      parentOrder
+      ...TextResponseFields
     }
     submitIcon: iconBlockCreate(input: $iconBlockCreateInput) {
       id
       parentBlockId
       ...IconFields
     }
-    signUpBlockUpdate(id: $id, journeyId: $journeyId, input: $updateInput) {
-      ...SignUpFields
+    textResponseBlockUpdate(
+      id: $id
+      journeyId: $journeyId
+      input: $updateInput
+    ) {
+      ...TextResponseFields
     }
   }
 `
 
-export function NewSignUpButton(): ReactElement {
-  const [signUpBlockCreate] =
-    useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
+export function NewTextResponseButton(): ReactElement {
+  const [textResponseBlockCreate] = useMutation<TextResponseBlockCreate>(
+    TEXT_RESPONSE_BLOCK_CREATE
+  )
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -48,21 +56,23 @@ export function NewSignUpButton(): ReactElement {
 
   const handleClick = async (): Promise<void> => {
     const id = uuidv4()
-    const submitId = uuidv4()
+    const submitIconId = uuidv4()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
+
     if (card != null && journey != null) {
-      const { data } = await signUpBlockCreate({
+      const { data } = await textResponseBlockCreate({
         variables: {
           input: {
             id,
             journeyId: journey.id,
             parentBlockId: card.id,
+            label: 'Your answer here',
             submitLabel: 'Submit'
           },
           iconBlockCreateInput: {
-            id: submitId,
+            id: submitIconId,
             journeyId: journey.id,
             parentBlockId: id,
             name: null
@@ -70,11 +80,11 @@ export function NewSignUpButton(): ReactElement {
           id,
           journeyId: journey.id,
           updateInput: {
-            submitIconId: submitId
+            submitIconId
           }
         },
         update(cache, { data }) {
-          if (data?.signUpBlockUpdate != null) {
+          if (data?.textResponseBlockUpdate != null) {
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
@@ -87,14 +97,16 @@ export function NewSignUpButton(): ReactElement {
                       }
                     `
                   })
+
                   const newBlockRef = cache.writeFragment({
-                    data: data.signUpBlockUpdate,
+                    data: data.textResponseBlockUpdate,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
                       }
                     `
                   })
+
                   return [
                     ...existingBlockRefs,
                     newBlockRef,
@@ -106,10 +118,11 @@ export function NewSignUpButton(): ReactElement {
           }
         }
       })
-      if (data?.signUpBlockUpdate != null) {
+
+      if (data?.textResponseBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.signUpBlockCreate.id
+          id: data.textResponseBlockCreate.id
         })
         dispatch({
           type: 'SetActiveTabAction',
@@ -118,13 +131,12 @@ export function NewSignUpButton(): ReactElement {
       }
     }
   }
-
   return (
     <Button
-      icon={<Mail2Icon />}
-      value="Subscribe"
+      icon={<TextInput1Icon />}
+      value="Feedback"
       onClick={handleClick}
-      testId="NewSignUpButton"
+      testId="NewTextResponseButton"
     />
   )
 }

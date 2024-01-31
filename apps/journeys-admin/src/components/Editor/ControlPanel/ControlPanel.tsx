@@ -36,12 +36,12 @@ const Attributes = dynamic(
     ).then((mod) => mod.Attributes),
   { ssr: false }
 )
-const BlocksTab = dynamic(
+const AddBlockToolbar = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/BlocksTab" */
-      './BlocksTab'
-    ).then((mod) => mod.BlocksTab),
+      /* webpackChunkName: "Editor/ControlPanel/AddBlockToolbar" */
+      '../Canvas/AddBlockToolbar'
+    ).then((mod) => mod.AddBlockToolbar),
   { ssr: false }
 )
 const CardTemplateDrawer = dynamic(
@@ -302,7 +302,7 @@ export function ControlPanel(): ReactElement {
           index={2}
           unmountUntilVisible
         >
-          <BlocksTab />
+          <AddBlockToolbar />
         </TabPanel>
       </Stack>
     </Stack>

@@ -29,6 +29,9 @@ import { QuickControls } from './QuickControls'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import Typography from '@mui/material/Typography'
+import { AddBlockToolbar } from './AddBlockToolbar'
+import Card from '@mui/material/Card'
 
 const NextCard = dynamic(
   async () =>
@@ -258,8 +261,8 @@ export function Canvas(): ReactElement {
       )}
       <Box
         sx={{
-          width: activeSlide === ActiveSlide.Canvas ? 50 : 0,
-          ml: activeSlide === ActiveSlide.Canvas ? 4 : 0,
+          width: activeSlide === ActiveSlide.Canvas ? 48 : 0,
+          ml: activeSlide === ActiveSlide.Canvas ? 7 : 0,
           transition: (theme) =>
             theme.transitions.create(['width', 'margin'], {
               duration: 150
@@ -267,7 +270,15 @@ export function Canvas(): ReactElement {
           overflow: 'hidden'
         }}
       >
-        {/* ADD BLOCK COMPONENT GOES HERE */}
+        <Card
+          variant="outlined"
+          sx={{
+            width: '48px',
+            borderRadius: 2
+          }}
+        >
+          <AddBlockToolbar />
+        </Card>
       </Box>
     </Stack>
   )
