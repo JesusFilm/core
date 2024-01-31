@@ -23,7 +23,7 @@ const i18nConfig = {
       'bn', // Bangla
       'en', // English
       'es', // Spanish
-      'fil', // Tagalog
+      'tl', // Tagalog
       'fr', // French
       'hi', // Hindi
       'id', // Indonesian
@@ -34,7 +34,8 @@ const i18nConfig = {
       'tr', // Turkish
       'ur', // Urdu
       'vi', // Vietnamese
-      'zh' // Chinese
+      'zh-CN', // Chinese, Simplified
+      'zh-TW' // Chinese, Traditional
     ]
   },
   fallbackLng: {
