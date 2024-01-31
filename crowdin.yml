@@ -10,7 +10,7 @@
   [
     {
       'source': '/libs/locales/en/*.json',
-      'translation': '/libs/locales/%two_letters_code%/%original_file_name%',
+      'translation': '/libs/locales/%locale%/%original_file_name%',
       'type': 'i18next_json'
     }
   ]
