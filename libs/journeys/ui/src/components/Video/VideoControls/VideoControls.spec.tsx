@@ -244,7 +244,7 @@ describe('VideoControls', () => {
     it('maximises the entire card on fullscreen icon click', async () => {
       const { getByRole } = render(
         <MockedProvider>
-          <div className="step swiper-slide-active">
+          <div className="step active-card">
             <div className="card MuiPaper-root">
               <VideoControls player={player} startAt={0} endAt={10} />
             </div>

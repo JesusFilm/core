@@ -75,6 +75,7 @@ export interface VideoEventsProps {
   videoId: string
   startAt: number | null
   endAt: number | null
+  activeStep: boolean
 }
 
 export function VideoEvents({
@@ -84,7 +85,8 @@ export function VideoEvents({
   source,
   videoId,
   startAt,
-  endAt
+  endAt,
+  activeStep
 }: VideoEventsProps): ReactElement {
   const [videoStartEventCreate, { called: calledStart }] =
     useMutation<VideoStartEventCreate>(VIDEO_START_EVENT_CREATE)
@@ -126,6 +128,7 @@ export function VideoEvents({
       const id = uuidv4()
       const currentTime = player.currentTime() ?? 0
       if (currentTime >= start) {
+        // console.log('PLAY')
         void videoPlayEventCreate({
           variables: {
             input: {
@@ -166,6 +169,7 @@ export function VideoEvents({
   // PAUSE event
   useEffect(() => {
     function pauseListener(): void {
+      // console.log('PAUSE')
       const id = uuidv4()
       const currentPosition = player.currentTime()
       void videoPauseEventCreate({
@@ -210,6 +214,7 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime()
       if (player.isFullscreen() ?? false) {
+        // console.log('EXPAND')
         void videoExpandEventCreate({
           variables: {
             input: {
@@ -252,6 +257,7 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!(player.isFullscreen() ?? false)) {
+        // console.log('COLLAPSE')
         void videoCollapseEventCreate({
           variables: {
             input: {
@@ -294,6 +300,7 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!calledStart && currentPosition >= start) {
+        // console.log('START')
         void videoStartEventCreate({
           variables: {
             input: {
@@ -338,6 +345,7 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!called25 && currentPosition >= position25) {
+        // console.log('25')
         void videoProgressEventCreate25({
           variables: {
             input: {
@@ -384,6 +392,7 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!called50 && currentPosition >= position50) {
+        // console.log('50')
         void videoProgressEventCreate50({
           variables: {
             input: {
@@ -430,6 +439,7 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!called75 && currentPosition >= position75) {
+        // console.log('75')
         void videoProgressEventCreate75({
           variables: {
             input: {
@@ -477,6 +487,7 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!calledComplete && currentPosition >= end) {
+        // console.log('COMPLETE')
         void videoCompleteEventCreate({
           variables: {
             input: {

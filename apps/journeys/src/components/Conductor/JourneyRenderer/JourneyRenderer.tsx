@@ -42,6 +42,7 @@ export function JourneyRenderer(): ReactElement {
           >
             {shouldRender(block.id) ? (
               <Box
+                className={isCurrent ? 'active-card' : ''}
                 sx={{
                   height: isCurrent ? 'inherit' : '-webkit-fill-available;',
                   width: isCurrent ? 'inherit' : '-webkit-fill-available;',

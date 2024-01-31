@@ -43,7 +43,6 @@ export function VideoControls({
   endAt,
   isYoutube = false,
   loading = false,
-  autoplay = false,
   muted: mute = false
 }: VideoControlProps): ReactElement {
   const [playing, setPlaying] = useState(false)
@@ -225,7 +224,7 @@ export function VideoControls({
     } else {
       if (fscreen.fullscreenEnabled) {
         const activeCard = document.querySelectorAll(
-          '.swiper-slide-active .MuiPaper-root'
+          '.active-card .MuiBox-root'
         )[0]
         if (activeCard != null) {
           void fscreen.requestFullscreen(activeCard)
