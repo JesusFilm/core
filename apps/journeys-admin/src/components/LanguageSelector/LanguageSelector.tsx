@@ -13,6 +13,7 @@ import {
   getLanguageByLocale
 } from '../../libs/languageData/languageData'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
+import { Button, Typography } from '@mui/material'
 
 interface DefaultLanguage {
   id: string
@@ -36,8 +37,9 @@ export function LanguageSelector({
   const { t } = useTranslation('apps-journeys-admin')
 
   const [languageData, setLanguageData] = useState<Language[]>([])
-  const [defaultLanguageValue, setDefaultLanguageValue] =
-    useState<DefaultLanguage>()
+  const [currentLanguage, setCurrentLanguage] = useState<DefaultLanguage>()
+  const [prevLanguageId, setPrevLanguageId] = useState('')
+  const [confirmLanguageChange, setConfirmLanguageChange] = useState(false)
 
   const { data, loading } = useLanguagesQuery({
     languageId: '529'
@@ -45,7 +47,7 @@ export function LanguageSelector({
 
   useEffect(() => {
     const currentLanguage = getLanguageByLocale(i18n?.language ?? '')
-    setDefaultLanguageValue({
+    setCurrentLanguage({
       id: currentLanguage?.id ?? '',
       nativeName: currentLanguage?.name[0].value,
       localName: currentLanguage?.name[1]?.value
@@ -77,6 +79,7 @@ export function LanguageSelector({
 
   const handleLocaleSwitch = useCallback(
     async (localeId: string | undefined) => {
+      setPrevLanguageId(currentLanguage?.id ?? '')
       const language = data?.languages.find(
         (language) => language.id === localeId
       )
@@ -85,26 +88,52 @@ export function LanguageSelector({
       const path = router.asPath
       await router.push(path, path, { locale })
 
-      handleClose()
+      setConfirmLanguageChange(true)
     },
     [router, data]
   )
 
+  async function revertToPreviousLanguage() {
+    await handleLocaleSwitch(prevLanguageId)
+    handleClose()
+  }
+
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      dialogTitle={{
-        title: t('Change Language'),
-        closeButton: true
-      }}
-    >
-      <LanguageAutocomplete
-        onChange={async (value) => await handleLocaleSwitch(value?.id)}
-        value={defaultLanguageValue}
-        languages={languageData}
-        loading={loading}
-      />
-    </Dialog>
+    <>
+      {confirmLanguageChange ? (
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Confirm Language Change'),
+            closeButton: true
+          }}
+        >
+          <Typography>
+            {t('Are you sure you want to change language?')}
+          </Typography>
+          <Button onClick={() => handleClose()}>{t('Yes')}</Button>
+          <Button onClick={async () => await revertToPreviousLanguage()}>
+            {t('No')}
+          </Button>
+        </Dialog>
+      ) : (
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Change Language'),
+            closeButton: true
+          }}
+        >
+          <LanguageAutocomplete
+            onChange={async (value) => await handleLocaleSwitch(value?.id)}
+            value={currentLanguage}
+            languages={languageData}
+            loading={loading}
+          />
+        </Dialog>
+      )}
+    </>
   )
 }
