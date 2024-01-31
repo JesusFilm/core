@@ -183,7 +183,7 @@ const languages = [
     bcp47: 'ru',
     id: '3934',
     iso3: 'rus',
-    locale: 'ru',
+    locale: 'ru-RU',
     crowdinId: 'ru',
     name: [
       {
@@ -217,7 +217,7 @@ const languages = [
     bcp47: 'fil',
     id: '12551',
     iso3: 'tgl',
-    locale: 'tl',
+    locale: 'tl-PH',
     crowdinId: 'tl',
     name: [
       {

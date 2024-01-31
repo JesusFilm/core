@@ -28,9 +28,9 @@ const i18nConfig = {
       'id', // Indonesian
       'ja', // Japanese
       'my', // Burmese
-      'ru', // Russian
+      'ru-RU', // Russian
       'th', // Thai
-      'tl', // Tagalog
+      'tl-PH', // Tagalog
       'tr', // Turkish
       'ur', // Urdu
       'vi', // Vietnamese
