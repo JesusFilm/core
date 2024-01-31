@@ -169,18 +169,20 @@ export function Video({
         setVideoEndTime={setVideoEndTime}
       />
 
-      {player != null && eventVideoTitle != null && eventVideoId != null && (
-        <VideoEvents
-          player={player}
-          blockId={blockId}
-          videoTitle={eventVideoTitle}
-          source={source}
-          videoId={eventVideoId}
-          startAt={startAt}
-          endAt={endAt}
-          activeStep={activeStep}
-        />
-      )}
+      {activeStep &&
+        player != null &&
+        eventVideoTitle != null &&
+        eventVideoId != null && (
+          <VideoEvents
+            player={player}
+            blockId={blockId}
+            videoTitle={eventVideoTitle}
+            source={source}
+            videoId={eventVideoId}
+            startAt={startAt}
+            endAt={videoEndTime}
+          />
+        )}
 
       {videoId != null ? (
         <>
