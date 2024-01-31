@@ -1,9 +1,11 @@
-import styled from '@emotion/styled'
 import Box from '@mui/material/Box'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import { styled } from '@mui/material/styles'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface ButtonProps {
   icon: ReactElement
@@ -12,12 +14,22 @@ interface ButtonProps {
   testId?: string
 }
 
+const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.white
+  }
+}))
+
 export function Button({
   icon,
   value,
   onClick,
   testId
 }: ButtonProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const handleClick = (): void => {
     onClick?.()
   }
@@ -27,8 +39,12 @@ export function Button({
       onMouseDown={(e) => e.preventDefault()}
       data-testid={`JourneysAdminButton${testId ?? ''}`}
     >
-      <Tooltip
-        title={value}
+      <StyledTooltip
+        title={
+          <Typography variant="caption" color="#30313D">
+            {t(value)}
+          </Typography>
+        }
         placement="right"
         slotProps={{
           popper: {
@@ -36,7 +52,7 @@ export function Button({
               {
                 name: 'offset',
                 options: {
-                  offset: [0, -4]
+                  offset: [0, -8]
                 }
               }
             ]
@@ -44,9 +60,9 @@ export function Button({
         }}
       >
         <CardActionArea onClick={handleClick}>
-          <CardContent sx={{ py: 3 }}>{icon}</CardContent>
+          <CardContent sx={{ p: 3 }}>{icon}</CardContent>
         </CardActionArea>
-      </Tooltip>
+      </StyledTooltip>
     </Box>
   )
 }

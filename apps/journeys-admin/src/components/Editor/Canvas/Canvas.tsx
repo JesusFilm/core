@@ -29,7 +29,6 @@ import { QuickControls } from './QuickControls'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import Typography from '@mui/material/Typography'
 import { AddBlockToolbar } from './AddBlockToolbar'
 import Card from '@mui/material/Card'
 
@@ -274,7 +273,8 @@ export function Canvas(): ReactElement {
           variant="outlined"
           sx={{
             width: '48px',
-            borderRadius: 2
+            borderRadius: 2,
+            my: '89px'
           }}
         >
           <AddBlockToolbar />
