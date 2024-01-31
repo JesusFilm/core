@@ -149,21 +149,24 @@ export const reducer = (
         selectedStep: action.step,
         selectedBlock: action.step,
         selectedComponent: undefined,
-        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
+        activeSlide: ActiveSlide.Canvas
       }
     case 'SetSelectedComponentAction':
       return {
         ...state,
         selectedComponent: action.component,
         selectedBlock: undefined,
-        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
+        activeSlide: ActiveSlide.Canvas
       }
     case 'SetSelectedBlockAction':
       return {
         ...state,
         selectedBlock: action.block,
         selectedComponent: undefined,
-        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
+        activeSlide: ActiveSlide.Canvas
       }
     case 'SetSelectedBlockByIdAction':
       return {

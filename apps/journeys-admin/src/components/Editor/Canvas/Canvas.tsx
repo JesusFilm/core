@@ -266,7 +266,9 @@ export function Canvas(): ReactElement {
             }),
           overflow: 'hidden'
         }}
-      />
+      >
+        {/* ADD BLOCK COMPONENT GOES HERE */}
+      </Box>
     </Stack>
   )
 }
