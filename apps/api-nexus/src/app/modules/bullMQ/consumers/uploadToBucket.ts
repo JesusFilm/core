@@ -2,7 +2,7 @@ import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 
 import { BucketService } from '../../../lib/bucket/bucketService';
-import { GoogleDriveService } from '../../../lib/googleAPI/googleDriveService';
+import { GoogleDriveService } from '../../google-drive/googleDriveService';
 import { UploadToBucketTask } from '../bullMQ.service';
 
 @Processor('nexus-bucket')

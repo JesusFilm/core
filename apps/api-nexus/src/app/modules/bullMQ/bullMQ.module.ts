@@ -3,7 +3,12 @@ import { Global, Module, Provider } from '@nestjs/common';
 import { FlowProducer } from 'bullmq';
 
 import { BucketService } from '../../lib/bucket/bucketService';
-import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService';
+import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
+import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
+import { PrismaService } from '../../lib/prisma.service';
+import { YoutubeService } from '../../lib/youtube/youtubeService';
+import { GoogleDriveModule } from '../google-drive/googleDrive.module';
+import { GoogleDriveService } from '../google-drive/googleDriveService';
 
 import { BullMQService } from './bullMQ.service';
 import { UploadToBucket } from './consumers/uploadToBucket';
@@ -41,6 +46,7 @@ export const FlowProducerProvider: Provider = {
         name: 'nexus-bucket',
       },
     ),
+    GoogleDriveModule,
   ],
   providers: [
     FlowProducerProvider,
@@ -48,7 +54,11 @@ export const FlowProducerProvider: Provider = {
     UploadToBucket,
     UploadToYoutube,
     GoogleDriveService,
+    GoogleOAuthService,
+    GoogleSheetsService,
+    YoutubeService,
     BucketService,
+    PrismaService,
   ],
   exports: [BullMQService],
 })

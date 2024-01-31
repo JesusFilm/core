@@ -8,11 +8,10 @@ import { OAuth2Client } from 'googleapis-common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Channel } from '../../__generated__/graphql';
-import { GoogleOAuthService } from '../googleOAuth/googleOAuth';
-import { PrismaService } from '../prisma.service';
-import { YoutubeService } from '../youtube/youtubeService';
-
-import { GoogleSheetsService } from './googleSheetsService';
+import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
+import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
+import { PrismaService } from '../../lib/prisma.service';
+import { YoutubeService } from '../../lib/youtube/youtubeService';
 
 interface FileRequest {
   fileId: string;
@@ -45,7 +44,6 @@ export class GoogleDriveService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly googleOAuthService: GoogleOAuthService,
-    private readonly googleDriveService: GoogleDriveService,
     private readonly youtubeService: YoutubeService,
     private readonly googleSheetsService: GoogleSheetsService,
   ) {
@@ -194,7 +192,7 @@ export class GoogleDriveService {
 
     for (const spreadsheetRow of spreadsheetRows) {
       spreadsheetRow.driveFile =
-        (await this.googleDriveService.findFile(
+        (await this.findFile(
           this.youtubeService.authorize(accessToken),
           drivefolderId,
           spreadsheetRow.filename ?? '',

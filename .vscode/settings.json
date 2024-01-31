@@ -95,5 +95,6 @@
   "typescript.preferences.importModuleSpecifier": "project-relative",
   "javascript.preferences.importModuleSpecifier": "project-relative",
   "prettier.prettierPath": "./node_modules/prettier",
-  "remote.localPortHost": "allInterfaces"
+  "remote.localPortHost": "allInterfaces",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
