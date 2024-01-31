@@ -12,6 +12,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ComponentProps, ReactElement, SyntheticEvent, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import FacebookLogo from '@core/shared/ui/icons/FacebookLogo'
@@ -31,6 +32,8 @@ export function ShareDialog({
   const [value, setValue] = useState(0)
   const theme = useTheme()
   const router = useRouter()
+
+  const { t } = useTranslation('apps-watch')
 
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
     setValue(newValue)
@@ -91,7 +94,7 @@ export function ShareDialog({
         onClick={handleShareLinkClick}
         sx={{ alignSelf: 'flex-end' }}
       >
-        Copy Link
+        {t('Copy Link')}
       </Button>
     </Stack>
   )
@@ -195,7 +198,7 @@ export function ShareDialog({
                     onClick={handleEmbedCodeClick}
                     sx={{ alignSelf: 'flex-end' }}
                   >
-                    Copy Code
+                    {t('Copy Code')}
                   </Button>
                 </Stack>
               </TabPanel>
