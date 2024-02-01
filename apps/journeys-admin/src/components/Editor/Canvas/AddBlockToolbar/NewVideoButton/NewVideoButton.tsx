@@ -20,7 +20,13 @@ export const VIDEO_BLOCK_CREATE = gql`
   }
 `
 
-export function NewVideoButton(): ReactElement {
+interface NewVideoButtonProps {
+  disabled: boolean
+}
+
+export function NewVideoButton({
+  disabled
+}: NewVideoButtonProps): ReactElement {
   const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
@@ -32,6 +38,7 @@ export function NewVideoButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
+
     if (card != null && journey != null) {
       const { data } = await videoBlockCreate({
         variables: {
@@ -83,6 +90,7 @@ export function NewVideoButton(): ReactElement {
       value="Video"
       onClick={handleClick}
       testId="NewVideoButton"
+      disabled={disabled}
     />
   )
 }

@@ -296,14 +296,14 @@ export function ControlPanel(): ReactElement {
             <Attributes selected={selected} step={selectedStep} />
           )}
         </TabPanel>
-        <TabPanel
+        {/* <TabPanel
           name="control-panel"
           value={activeTab}
           index={2}
           unmountUntilVisible
         >
           <AddBlockToolbar />
-        </TabPanel>
+        </TabPanel> */}
       </Stack>
     </Stack>
   )

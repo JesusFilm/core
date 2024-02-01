@@ -12,6 +12,7 @@ interface ButtonProps {
   value: string
   onClick?: () => void
   testId?: string
+  disabled?: boolean
 }
 
 const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -27,7 +28,8 @@ export function Button({
   icon,
   value,
   onClick,
-  testId
+  testId,
+  disabled = false
 }: ButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -60,8 +62,16 @@ export function Button({
           }
         }}
       >
-        <CardActionArea onClick={handleClick}>
-          <CardContent sx={{ px: 3.5, py: 3 }}>{icon}</CardContent>
+        <CardActionArea onClick={handleClick} disabled={disabled}>
+          <CardContent
+            sx={{
+              px: 3.5,
+              py: 3,
+              color: disabled ? 'secondary.light' : 'secondary.dark'
+            }}
+          >
+            {icon}
+          </CardContent>
         </CardActionArea>
       </StyledTooltip>
     </Box>

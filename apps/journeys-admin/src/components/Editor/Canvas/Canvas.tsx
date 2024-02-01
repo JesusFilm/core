@@ -32,6 +32,9 @@ import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { AddBlockToolbar } from './AddBlockToolbar'
 import Card from '@mui/material/Card'
 
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
+import { TreeBlock } from '@core/journeys/ui/block'
+
 const NextCard = dynamic(
   async () =>
     await import(
@@ -134,6 +137,10 @@ export function Canvas(): ReactElement {
       setBeaconPageViewed('Step Footer')
     })
   }
+
+  const cardBlock = selectedStep?.children.find(
+    (block) => block.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
 
   return (
     <Stack
@@ -276,7 +283,7 @@ export function Canvas(): ReactElement {
             borderRadius: 2
           }}
         >
-          <AddBlockToolbar />
+          <AddBlockToolbar selectedCard={cardBlock} />
         </Card>
       </Box>
     </Stack>
