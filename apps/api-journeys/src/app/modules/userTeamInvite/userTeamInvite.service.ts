@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
 import { Team } from '.prisma/api-journeys-client'
-
 import { User } from '@core/nest/common/firebaseClient'
 
 import { TeamInviteJob } from '../email/email.consumer'
