@@ -9,17 +9,21 @@ import { ResourceFromGoogleDriveInput, ResourceStatus } from "./globalTypes";
 // GraphQL mutation operation: ResourceFromGoogleDrive
 // ====================================================
 
-export interface ResourceFromGoogleDrive_resourceFromGoogleDrive_googleDrive {
-  __typename: "GoogleDriveResource";
+export interface ResourceFromGoogleDrive_resourceFromGoogleDrive_localizations {
+  __typename: "ResourceLocalization";
+  id: string;
+  keywords: string;
+  language: string;
+  resourceId: string;
   title: string;
-  driveId: string;
+  description: string;
 }
 
 export interface ResourceFromGoogleDrive_resourceFromGoogleDrive {
   __typename: "Resource";
   id: string;
   name: string;
-  googleDrive: ResourceFromGoogleDrive_resourceFromGoogleDrive_googleDrive | null;
+  localizations: (ResourceFromGoogleDrive_resourceFromGoogleDrive_localizations | null)[];
   status: ResourceStatus;
 }
 

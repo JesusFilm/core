@@ -8,13 +8,12 @@
 // ====================================================
 
 export interface Nexuses_nexuses {
-    __typename: "Nexus";
-    id: string;
-    name: string;
-    description: string | null;
-  }
-  
-  export interface Nexuses {
-    nexuses: Nexuses_nexuses[];
-  }
-  
+  __typename: "Nexus";
+  id: string;
+  name: string;
+  description: string | null;
+}
+
+export interface Nexuses {
+  nexuses: Nexuses_nexuses[];
+}

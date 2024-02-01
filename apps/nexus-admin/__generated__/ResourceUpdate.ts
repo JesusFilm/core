@@ -3,23 +3,27 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ResourceStatus, ResourceUpdateInput } from "./globalTypes";
+import { ResourceUpdateInput, ResourceStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ResourceUpdate
 // ====================================================
 
-export interface ResourceUpdate_resourceUpdate_googleDrive {
-  __typename: "GoogleDriveResource";
+export interface ResourceUpdate_resourceUpdate_localizations {
+  __typename: "ResourceLocalization";
+  id: string;
+  keywords: string;
+  language: string;
+  resourceId: string;
   title: string;
-  driveId: string;
+  description: string;
 }
 
 export interface ResourceUpdate_resourceUpdate {
   __typename: "Resource";
   id: string;
   name: string;
-  googleDrive: ResourceUpdate_resourceUpdate_googleDrive | null;
+  localizations: (ResourceUpdate_resourceUpdate_localizations | null)[];
   status: ResourceStatus;
 }
 

@@ -8,8 +8,9 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useGoogleLogin } from '@react-oauth/google'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
@@ -76,8 +77,8 @@ const ImportYouTubeTemplatePage: FC = () => {
   )
   const nexusId =
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
-
   const router = useRouter()
+  const { enqueueSnackbar } = useSnackbar()
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
@@ -162,7 +163,11 @@ const ImportYouTubeTemplatePage: FC = () => {
         drivefolderId: selectedVideosDirectory?.id
       },
       onCompleted: () => {
-        router.push('/resources')
+        enqueueSnackbar('Resource Uploaded', {
+          variant: 'success',
+          preventDuplicate: true
+        })
+        void router.push('/resources')
       },
       refetchQueries: [GET_RESOURCES]
     })

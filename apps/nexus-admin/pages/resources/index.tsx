@@ -3,6 +3,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/navigation'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import {
@@ -112,6 +113,7 @@ const ResourcesPage: FC = () => {
   const isSSRMode = typeof window !== 'undefined'
   const nexusId = isSSRMode ? localStorage.getItem('nexusId') : ''
   const router = useRouter()
+  const { enqueueSnackbar } = useSnackbar()
 
   const { data, loading } = useQuery<Resources>(GET_RESOURCES, {
     variables: {
@@ -207,6 +209,12 @@ const ResourcesPage: FC = () => {
           nexusId
         }
       },
+      onCompleted: () => {
+        enqueueSnackbar('Resources Loaded', {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      },
       refetchQueries: [GET_RESOURCES]
     })
   }
@@ -260,6 +268,10 @@ const ResourcesPage: FC = () => {
             },
             onCompleted: () => {
               setOpenUpdateResourceModal(false)
+              enqueueSnackbar('Resource Updated', {
+                variant: 'success',
+                preventDuplicate: true
+              })
             },
             refetchQueries: [GET_RESOURCES]
           })
@@ -276,6 +288,10 @@ const ResourcesPage: FC = () => {
             },
             onCompleted: () => {
               setDeleteResourceModal(false)
+              enqueueSnackbar('Resource Deleted', {
+                variant: 'success',
+                preventDuplicate: true
+              })
             },
             refetchQueries: [GET_RESOURCES]
           })

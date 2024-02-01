@@ -180,6 +180,10 @@ const ChannelsPage: FC = () => {
             },
             onCompleted: () => {
               setOpenUpdateChannelModal(false)
+              enqueueSnackbar('Channel Updated', {
+                variant: 'success',
+                preventDuplicate: true
+              })
             },
             refetchQueries: [GET_CHANNELS]
           })

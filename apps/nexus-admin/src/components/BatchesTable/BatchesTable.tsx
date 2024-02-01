@@ -4,24 +4,12 @@ import Paper from '@mui/material/Paper'
 import { DataGrid } from '@mui/x-data-grid'
 import { FC, useState } from 'react'
 
+import { Batches_batches } from '../../../__generated__/Batches'
+
 import { BatchesTableHeader } from './BatchesTableHeader'
 
-interface Batch {
-  id: string
-  name: string
-  status: string
-  channel: {
-    name: string
-    platform: string
-    youtube: {
-      imageUrl: string
-      title: string
-    }
-  }
-}
-
 interface BatchesTableProps {
-  data: Batch[] | []
+  data: Batches_batches[] | []
   loading: boolean
 }
 
@@ -46,7 +34,10 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
       renderCell: ({ row }) => (
         <Chip
           avatar={
-            <Avatar>{row.channel?.youtube?.title?.toUpperCase()?.[0]}</Avatar>
+            <Avatar
+              src={row.channel?.youtube?.imageUrl}
+              alt={row.channel?.youtube?.title}
+            />
           }
           label={row.channel?.youtube?.title}
         />

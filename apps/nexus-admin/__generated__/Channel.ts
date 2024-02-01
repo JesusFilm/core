@@ -8,17 +8,16 @@
 // ====================================================
 
 export interface Channel_channel {
-    __typename: "Channel";
-    id: string;
-    name: string;
-    platform: string | null;
-  }
-  
-  export interface Channel {
-    channel: Channel_channel;
-  }
-  
-  export interface ChannelVariables {
-    channelID: string;
-  }
-  
+  __typename: "Channel";
+  id: string;
+  name: string;
+  platform: string | null;
+}
+
+export interface Channel {
+  channel: Channel_channel;
+}
+
+export interface ChannelVariables {
+  channelID: string;
+}

@@ -8,15 +8,14 @@
 // ====================================================
 
 export interface ResourceDelete_resourceDelete {
-    __typename: "Resource";
-    id: string;
-  }
-  
-  export interface ResourceDelete {
-    resourceDelete: ResourceDelete_resourceDelete;
-  }
-  
-  export interface ResourceDeleteVariables {
-    resourceId: string;
-  }
-  
+  __typename: "Resource";
+  id: string;
+}
+
+export interface ResourceDelete {
+  resourceDelete: ResourceDelete_resourceDelete;
+}
+
+export interface ResourceDeleteVariables {
+  resourceId: string;
+}

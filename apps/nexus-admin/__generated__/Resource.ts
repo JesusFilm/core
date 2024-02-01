@@ -9,17 +9,21 @@ import { ResourceStatus } from "./globalTypes";
 // GraphQL query operation: Resource
 // ====================================================
 
-export interface Resource_resource_googleDrive {
-  __typename: "GoogleDriveResource";
+export interface Resource_resource_localizations {
+  __typename: "ResourceLocalization";
+  id: string;
+  keywords: string;
+  language: string;
+  resourceId: string;
   title: string;
-  driveId: string;
+  description: string;
 }
 
 export interface Resource_resource {
   __typename: "Resource";
   id: string;
   name: string;
-  googleDrive: Resource_resource_googleDrive | null;
+  localizations: (Resource_resource_localizations | null)[];
   status: ResourceStatus;
 }
 

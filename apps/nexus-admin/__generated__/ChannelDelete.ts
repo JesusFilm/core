@@ -8,17 +8,16 @@
 // ====================================================
 
 export interface ChannelDelete_channelDelete {
-    __typename: "Channel";
-    id: string;
-    name: string;
-    platform: string | null;
-  }
-  
-  export interface ChannelDelete {
-    channelDelete: ChannelDelete_channelDelete;
-  }
-  
-  export interface ChannelDeleteVariables {
-    channelId: string;
-  }
-  
+  __typename: "Channel";
+  id: string;
+  name: string;
+  platform: string | null;
+}
+
+export interface ChannelDelete {
+  channelDelete: ChannelDelete_channelDelete;
+}
+
+export interface ChannelDeleteVariables {
+  channelId: string;
+}
