@@ -12,10 +12,8 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { steps } from '../data'
 
-import {
-  NAVIGATE_TO_BLOCK_ACTION_UPDATE,
-  NavigateToBlockAction
-} from './NavigateToBlockAction'
+import { NavigateToBlockAction } from './NavigateToBlockAction'
+import { NAVIGATE_TO_BLOCK_ACTION_UPDATE } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation/useNavigateToBlockActionUpdateMutation'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
