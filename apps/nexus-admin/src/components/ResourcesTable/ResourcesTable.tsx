@@ -55,7 +55,6 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
     title: true,
     description: true,
     keywords: true,
-    upload: true,
     action: true
   }
   const [columnsVisibility, setColumnsVisibility] = useState(
@@ -69,7 +68,6 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
       title: true,
       description: true,
       keywords: true,
-      upload: true,
       action: true
     })
 
@@ -82,21 +80,20 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
   const resetColumnsVisibility = () =>
     setColumnsVisibility(defaultColumnsVisibility)
 
-  const { data: channelsData } = useQuery<Channels>(GET_CHANNELS, {
-    variables: {
-      where: {
-        status: 'published',
-        nexusId
-      }
-    }
-  })
+  const statusColor = {
+    published: 'success',
+    error: 'error',
+    uploaded: 'info'
+  }
 
   const columns = [
     {
       field: 'status',
       headerName: 'Status',
       flex: 1,
-      renderCell: () => <Chip label="Success" color="success" />
+      renderCell: ({ row }) => (
+        <Chip label={row.status} color={statusColor[row.status]} />
+      )
     },
     { field: 'name', headerName: 'Filename', flex: 1 },
     {
@@ -121,27 +118,6 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
       flex: 2,
       renderCell: ({ row }) => (
         <Chip label={row.localizations?.[0]?.keywords} variant="outlined" />
-      )
-    },
-    {
-      field: 'upload',
-      headerName: 'Upload',
-      flex: 1,
-      renderCell: ({ row }) => (
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => {
-            void uploadToYoutube({
-              variables: {
-                channelId: channelsData?.channels?.[0]?.id,
-                resourceId: row.id
-              }
-            })
-          }}
-        >
-          Upload to Youtube
-        </Button>
       )
     },
     {
