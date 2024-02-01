@@ -28,8 +28,9 @@ export const JourneyInviteEmail = ({
   const previewText = `Invitation to edit journey: ${journeyTitle}`
 
   return (
-    <Html>
-      <Head />
+    // <Html>
+    // <Head />
+    <>
       <Preview>{previewText}</Preview>
       <Tailwind>
         <Body className="bg-white my-auto mx-auto font-sans px-2">
@@ -67,7 +68,8 @@ export const JourneyInviteEmail = ({
           </Container>
         </Body>
       </Tailwind>
-    </Html>
+    </>
+    // </Html>
   )
 }
 
