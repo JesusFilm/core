@@ -254,6 +254,8 @@ type ChatButton
 {
   id: ID!
   link: String
+  code: String
+  type: ChatButtonType
   platform: ChatPlatform
 }
 
@@ -261,13 +263,24 @@ input ChatButtonCreateInput
   @join__type(graph: JOURNEYS)
 {
   link: String
+  code: String
+  type: ChatButtonType
   platform: ChatPlatform
+}
+
+enum ChatButtonType
+  @join__type(graph: JOURNEYS)
+{
+  link @join__enumValue(graph: JOURNEYS)
+  code @join__enumValue(graph: JOURNEYS)
 }
 
 input ChatButtonUpdateInput
   @join__type(graph: JOURNEYS)
 {
   link: String
+  code: String
+  type: ChatButtonType
   platform: ChatPlatform
 }
 

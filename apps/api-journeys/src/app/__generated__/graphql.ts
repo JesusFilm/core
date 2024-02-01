@@ -131,6 +131,11 @@ export enum VideoBlockObjectFit {
     zoomed = "zoomed"
 }
 
+export enum ChatButtonType {
+    link = "link",
+    code = "code"
+}
+
 export enum ChatPlatform {
     facebook = "facebook",
     telegram = "telegram",
@@ -454,11 +459,15 @@ export class VideoBlockUpdateInput {
 
 export class ChatButtonCreateInput {
     link?: Nullable<string>;
+    code?: Nullable<string>;
+    type?: Nullable<ChatButtonType>;
     platform?: Nullable<ChatPlatform>;
 }
 
 export class ChatButtonUpdateInput {
     link?: Nullable<string>;
+    code?: Nullable<string>;
+    type?: Nullable<ChatButtonType>;
     platform?: Nullable<ChatPlatform>;
 }
 
@@ -1037,6 +1046,8 @@ export class ChatButton {
     __typename?: 'ChatButton';
     id: string;
     link?: Nullable<string>;
+    code?: Nullable<string>;
+    type?: Nullable<ChatButtonType>;
     platform?: Nullable<ChatPlatform>;
 }
 
