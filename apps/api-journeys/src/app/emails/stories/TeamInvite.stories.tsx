@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
 import { TeamInviteEmail } from '../templates/TeamInvite'
+import { apiJourneysConfig } from '../../lib/apiJourneysConfig/apiJourneysConfig'
 
 const TeamInviteEmailDemo: Meta<typeof TeamInviteEmail> = {
-  ...sharedUiConfig,
+  ...apiJourneysConfig,
   component: TeamInviteEmail,
   title: 'Api-Journeys/Emails/TeamInviteEmail'
 }
