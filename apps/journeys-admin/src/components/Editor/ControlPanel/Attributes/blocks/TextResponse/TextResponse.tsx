@@ -55,7 +55,7 @@ export function TextResponse({
         name={t('Action')}
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
-          'None'
+          t('None')
         }
         description={t('Form Submission')}
         onClick={() => {
@@ -74,7 +74,7 @@ export function TextResponse({
         name={t('Button Icon')}
         value={
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
-          'None'
+          t('None')
         }
         description={t('Button Icon')}
         onClick={() => {

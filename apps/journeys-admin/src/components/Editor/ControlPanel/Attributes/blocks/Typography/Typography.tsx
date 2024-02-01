@@ -58,7 +58,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
         id={`${id}-typography-color`}
         icon={<ColorDisplayIcon color={color} />}
         name={t('Color')}
-        value={capitalize(color?.toString() ?? 'primary')}
+        value={capitalize(color?.toString() ?? t('primary'))}
         description={t('Text Color')}
         onClick={() => {
           dispatch({
@@ -74,7 +74,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
         id={`${id}-typography-alignment`}
         icon={<AlignLeftIcon />}
         name={t('Text Alignment')}
-        value={capitalize(align?.toString() ?? 'Left')}
+        value={capitalize(align?.toString() ?? t('Left'))}
         description={t('Text Alignment')}
         onClick={() => {
           dispatch({

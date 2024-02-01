@@ -44,7 +44,7 @@ export function SignUp({
         name={t('Action')}
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
-          'None'
+          t('None')
         }
         description={t('Form Submission')}
         onClick={() => {
@@ -63,7 +63,7 @@ export function SignUp({
         name={t('Button Icon')}
         value={
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
-          'None'
+          t('None')
         }
         description={t('Button Icon')}
         onClick={() => {

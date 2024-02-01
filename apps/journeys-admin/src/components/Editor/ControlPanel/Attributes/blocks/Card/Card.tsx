@@ -156,7 +156,7 @@ export function Card({
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
           name={t('Background')}
-          value="None"
+          value={t('None')}
           description={t('Background Media')}
           onClick={() => handleBackgroundMediaClick('background-video')}
         />
@@ -164,13 +164,13 @@ export function Card({
       <Attribute
         icon={<PaletteIcon />}
         id={`${id}-theme-mode`}
-        name="Style"
+        name={t('Style')}
         value={
           themeMode == null
-            ? 'Default'
+            ? t('Default')
             : themeMode === ThemeMode.light
-            ? 'Light'
-            : 'Dark'
+            ? t('Light')
+            : t('Dark')
         }
         description={t('Card Styling')}
         onClick={() => {
@@ -186,7 +186,7 @@ export function Card({
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-fullscreen`}
         name={t('Layout')}
-        value={fullscreen ? 'Expanded' : 'Contained'}
+        value={fullscreen ? t('Expanded') : t('Contained')}
         description={t('Content Appearance')}
         onClick={() => {
           dispatch({

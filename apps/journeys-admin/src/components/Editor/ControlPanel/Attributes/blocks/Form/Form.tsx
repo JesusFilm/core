@@ -35,7 +35,7 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
         id={`${id}-form-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={selectedAction?.label ?? 'None'}
+        value={selectedAction?.label ?? t('None')}
         description={t('Action')}
         onClick={() => {
           dispatch({

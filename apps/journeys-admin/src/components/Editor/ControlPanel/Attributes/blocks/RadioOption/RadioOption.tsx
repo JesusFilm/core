@@ -36,7 +36,7 @@ export function RadioOption({
         name={t('Action')}
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
-          'None'
+          t('None')
         }
         description={t('Action')}
         onClick={() => {

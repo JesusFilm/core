@@ -159,7 +159,7 @@ export function NewButtonButton(): ReactElement {
   return (
     <Button
       icon={<Cursor6Icon />}
-      value="Button"
+      value={t('Button')}
       onClick={handleClick}
       testId="NewButton"
     />

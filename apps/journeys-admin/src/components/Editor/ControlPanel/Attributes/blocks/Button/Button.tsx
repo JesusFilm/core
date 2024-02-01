@@ -66,7 +66,7 @@ export function Button({
         id={`${id}-button-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={selectedAction?.label ?? 'None'}
+        value={selectedAction?.label ?? t('None')}
         description={t('Action')}
         onClick={() => {
           dispatch({
@@ -132,7 +132,7 @@ export function Button({
         name={t('Leading Icon')}
         value={
           icons.find(({ value }) => value === startIcon?.iconName)?.label ??
-          'None'
+          t('None')
         }
         description={t('Leading Icon')}
         onClick={() => {
@@ -151,7 +151,7 @@ export function Button({
         name={t('Trailing Icon')}
         value={
           icons.find(({ value }) => value === endIcon?.iconName)?.label ??
-          'None'
+          t('None')
         }
         description={t('Trailing Icon')}
         onClick={() => {

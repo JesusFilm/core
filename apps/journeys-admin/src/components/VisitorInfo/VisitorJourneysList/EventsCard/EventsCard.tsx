@@ -14,12 +14,14 @@ import { EventVariant, JourneyWithEvents, transformEvents } from '../utils'
 import { CompactEvent } from './CompactEvent'
 import { GenericEvent } from './GenericEvent'
 import { TimelineEvent } from './TimelineEvent'
+import { useTranslation } from 'react-i18next'
 
 interface EventsCardProps {
   journey: JourneyWithEvents
 }
 
 export function EventsCard({ journey }: EventsCardProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [open, setOpen] = useState(false)
 
   function handleOpen(): void {
@@ -104,7 +106,7 @@ export function EventsCard({ journey }: EventsCardProps): ReactElement {
                   timelineItem.event.__typename === 'JourneyViewEvent' && (
                     <GenericEvent
                       icon={<AlertCircleIcon />}
-                      value="User left journey with no actions"
+                      value={t('User left journey with no actions')}
                     />
                   )}
                 <TimelineEvent

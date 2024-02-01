@@ -47,7 +47,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
         id={`${id}-video-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={selectedAction?.label ?? 'None'}
+        value={selectedAction?.label ?? t('None')}
         description={t('Action')}
         onClick={() => {
           dispatch({

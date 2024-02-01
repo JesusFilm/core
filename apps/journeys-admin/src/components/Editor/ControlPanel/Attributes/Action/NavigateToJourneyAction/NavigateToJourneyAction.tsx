@@ -12,6 +12,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { GetJourneyNames } from '../../../../../../../__generated__/GetJourneyNames'
 import { NavigateToJourneyActionUpdate } from '../../../../../../../__generated__/NavigateToJourneyActionUpdate'
+import { useTranslation } from 'react-i18next'
 
 export const GET_JOURNEY_NAMES = gql`
   query GetJourneyNames {
@@ -43,6 +44,7 @@ export const NAVIGATE_TO_JOURNEY_ACTION_UPDATE = gql`
 `
 
 export function NavigateToJourneyAction(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
   const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
@@ -103,7 +105,7 @@ export function NavigateToJourneyAction(): ReactElement {
         IconComponent={ChevronDownIcon}
         inputProps={{ 'aria-label': 'journey' }}
       >
-        <MenuItem value="">Select the Journey...</MenuItem>
+        <MenuItem value="">{t('Select the Journey...')}</MenuItem>
         {data?.journeys?.map(({ title, id }) => (
           <MenuItem key={`button-navigate-journey-${id}`} value={id}>
             {title}
