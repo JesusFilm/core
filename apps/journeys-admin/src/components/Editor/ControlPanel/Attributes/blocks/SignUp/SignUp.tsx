@@ -10,6 +10,7 @@ import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Action, actions } from '../../Action/Action'
 import { Attribute } from '../../Attribute'
 import { Icon, icons } from '../../Icon'
+import { useTranslation } from 'react-i18next'
 
 export function SignUp({
   id,
@@ -17,6 +18,7 @@ export function SignUp({
   submitIconId,
   children
 }: TreeBlock<SignUpBlock>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
   const submitIcon = children.find(
     (block) => block.id === submitIconId
@@ -29,7 +31,7 @@ export function SignUp({
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Form Submission',
+      title: t('Form Submission'),
       children: <Action />
     })
   }, [dispatch, id])
@@ -39,16 +41,16 @@ export function SignUp({
       <Attribute
         id={`${id}-signup-action`}
         icon={<LinkIcon />}
-        name="Action"
+        name={t('Action')}
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
           'None'
         }
-        description="Form Submission"
+        description={t('Form Submission')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Form Submission',
+            title: t('Form Submission'),
             mobileOpen: true,
             children: <Action />
           })
@@ -58,16 +60,16 @@ export function SignUp({
       <Attribute
         id={`${id}-signup-icon`}
         icon={<InformationCircleContained />}
-        name="Button Icon"
+        name={t('Button Icon')}
         value={
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
           'None'
         }
-        description="Button Icon"
+        description={t('Button Icon')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Button Icon',
+            title: t('Button Icon'),
             mobileOpen: true,
             children: <Icon id={submitIcon.id} />
           })

@@ -21,6 +21,7 @@ import {
   ButtonVariant
 } from '../../../../../../__generated__/globalTypes'
 import { Button } from '../../Button'
+import { useTranslation } from 'react-i18next'
 
 export const BUTTON_BLOCK_CREATE = gql`
   ${BUTTON_FIELDS}
@@ -49,6 +50,7 @@ export const BUTTON_BLOCK_CREATE = gql`
 `
 
 export function NewButtonButton(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [buttonBlockCreate] =
     useMutation<ButtonBlockCreate>(BUTTON_BLOCK_CREATE)
   const { journey } = useJourney()
@@ -71,7 +73,7 @@ export function NewButtonButton(): ReactElement {
             id,
             journeyId: journey.id,
             parentBlockId: card.id,
-            label: '',
+            label: t(''),
             variant: ButtonVariant.contained,
             color: ButtonColor.primary,
             size: ButtonSize.medium

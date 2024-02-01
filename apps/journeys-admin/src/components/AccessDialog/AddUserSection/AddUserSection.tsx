@@ -96,12 +96,12 @@ export function AddUserSection({
         >
           <MenuItem
             icon={<EmailIcon fontSize="small" />}
-            label="Email"
+            label={t('Email')}
             onClick={() => handleMenuItemClick('Email')}
           />
           <MenuItem
             icon={<LinkIcon fontSize="small" />}
-            label="Link"
+            label={t('Link')}
             onClick={() => handleMenuItemClick('Link')}
           />
         </Menu>

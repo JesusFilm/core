@@ -9,6 +9,7 @@ import { ButtonBlockUpdateSize } from '../../../../../../../../__generated__/But
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ButtonSize } from '../../../../../../../../__generated__/globalTypes'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { useTranslation } from 'react-i18next'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateSize(
@@ -24,6 +25,7 @@ export const BUTTON_BLOCK_UPDATE = gql`
 `
 
 export function Size(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateSize>(BUTTON_BLOCK_UPDATE)
 
@@ -55,15 +57,15 @@ export function Size(): ReactElement {
   const options = [
     {
       value: ButtonSize.small,
-      label: 'Small'
+      label: t('Small')
     },
     {
       value: ButtonSize.medium,
-      label: 'Medium'
+      label: t('Medium')
     },
     {
       value: ButtonSize.large,
-      label: 'Large'
+      label: t('Large')
     }
   ]
 

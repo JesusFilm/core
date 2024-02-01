@@ -9,6 +9,7 @@ import { ButtonBlockUpdateVariant } from '../../../../../../../../__generated__/
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { useTranslation } from 'react-i18next'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateVariant(
@@ -24,6 +25,7 @@ export const BUTTON_BLOCK_UPDATE = gql`
 `
 
 export function Variant(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateVariant>(BUTTON_BLOCK_UPDATE)
 
@@ -55,11 +57,11 @@ export function Variant(): ReactElement {
   const options = [
     {
       value: ButtonVariant.contained,
-      label: 'Contained'
+      label: t('Contained')
     },
     {
       value: ButtonVariant.text,
-      label: 'Text'
+      label: t('Text')
     }
   ]
 

@@ -10,6 +10,7 @@ import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../.
 import { ButtonColor } from '../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { useTranslation } from 'react-i18next'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateColor(
@@ -25,6 +26,7 @@ export const BUTTON_BLOCK_UPDATE = gql`
 `
 
 export function Color(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateColor>(BUTTON_BLOCK_UPDATE)
 
@@ -56,17 +58,17 @@ export function Color(): ReactElement {
   const options = [
     {
       value: ButtonColor.primary,
-      label: 'Primary',
+      label: t('Primary'),
       icon: <ColorDisplayIcon color={ButtonColor.primary} />
     },
     {
       value: ButtonColor.secondary,
-      label: 'Secondary',
+      label: t('Secondary'),
       icon: <ColorDisplayIcon color={ButtonColor.secondary} />
     },
     {
       value: ButtonColor.error,
-      label: 'Error',
+      label: t('Error'),
       icon: <ColorDisplayIcon color={ButtonColor.error} />
     }
   ]

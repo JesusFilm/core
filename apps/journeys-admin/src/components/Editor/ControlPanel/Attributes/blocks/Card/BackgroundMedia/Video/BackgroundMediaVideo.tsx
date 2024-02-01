@@ -26,6 +26,7 @@ import {
 import { VideoBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate'
 import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
+import { useTranslation } from 'react-i18next'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
   mutation BlockDeleteForBackgroundVideo(
@@ -69,6 +70,7 @@ interface BackgroundMediaVideoProps {
 export function BackgroundMediaVideo({
   cardBlock
 }: BackgroundMediaVideoProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const coverBlock =
     (cardBlock?.children.find(
       (child) => child.id === cardBlock?.coverBlockId
@@ -172,7 +174,7 @@ export function BackgroundMediaVideo({
       } else {
         await updateVideoBlock(block)
       }
-      enqueueSnackbar('Video Updated', {
+      enqueueSnackbar(t('Video Updated'), {
         variant: 'success',
         preventDuplicate: true
       })

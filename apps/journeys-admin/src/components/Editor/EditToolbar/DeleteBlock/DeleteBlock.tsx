@@ -88,11 +88,11 @@ export function DeleteBlock({
     handleCloseDialog()
 
     deletedBlockType !== 'StepBlock'
-      ? enqueueSnackbar('Block Deleted', {
+      ? enqueueSnackbar(t('Block Deleted'), {
           variant: 'success',
           preventDuplicate: true
         })
-      : enqueueSnackbar('Card Deleted', {
+      : enqueueSnackbar(t('Card Deleted'), {
           variant: 'success',
           preventDuplicate: true
         })
@@ -105,11 +105,11 @@ export function DeleteBlock({
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
-        dialogTitle={{ title: 'Delete Card?' }}
+        dialogTitle={{ title: t('Delete Card?') }}
         dialogAction={{
           onSubmit: handleDeleteBlock,
-          submitLabel: 'Delete',
-          closeLabel: 'Cancel'
+          submitLabel: t('Delete'),
+          closeLabel: t('Cancel')
         }}
       >
         <Typography>
@@ -130,7 +130,7 @@ export function DeleteBlock({
         </IconButton>
       ) : (
         <MenuItem
-          label={`Delete ${label}`}
+          label={t(`Delete ${label}`)}
           icon={<Trash2Icon />}
           disabled={disableAction}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}

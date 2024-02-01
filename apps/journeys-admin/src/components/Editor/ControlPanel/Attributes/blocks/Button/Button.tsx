@@ -23,6 +23,7 @@ import { Icon, icons } from '../../Icon'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
+import { useTranslation } from 'react-i18next'
 
 export function Button({
   id,
@@ -34,6 +35,7 @@ export function Button({
   action,
   children
 }: TreeBlock<ButtonBlock>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
 
   const startIcon = children.find(
@@ -53,7 +55,7 @@ export function Button({
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Action',
+      title: t('Action'),
       children: <Action />
     })
   }, [dispatch, id])
@@ -63,13 +65,13 @@ export function Button({
       <Attribute
         id={`${id}-button-action`}
         icon={<LinkIcon />}
-        name="Action"
+        name={t('Action')}
         value={selectedAction?.label ?? 'None'}
-        description="Action"
+        description={t('Action')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Action',
+            title: t('Action'),
             mobileOpen: true,
             children: <Action />
           })
@@ -79,13 +81,13 @@ export function Button({
       <Attribute
         id={`${id}-button-color`}
         icon={<ColorDisplayIcon color={buttonColor} />}
-        name="Color"
+        name={t('Color')}
         value={capitalize(buttonColor?.toString() ?? ButtonColor.primary)}
-        description="Background Color"
+        description={t('Background Color')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Button Color',
+            title: t('Button Color'),
             mobileOpen: true,
             children: <Color />
           })
@@ -95,13 +97,13 @@ export function Button({
       <Attribute
         id={`${id}-button-size`}
         icon={<SpaceHorizontalIcon />}
-        name="Button Size"
+        name={t('Button Size')}
         value={capitalize(size?.toString() ?? ButtonSize.medium)}
-        description="Button Size"
+        description={t('Button Size')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Button Size',
+            title: t('Button Size'),
             mobileOpen: true,
             children: <Size />
           })
@@ -111,13 +113,13 @@ export function Button({
       <Attribute
         id={`${id}-button-variant`}
         icon={<TransformIcon />}
-        name="Variant"
+        name={t('Variant')}
         value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
-        description="Button Variant"
+        description={t('Button Variant')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Button Variant ',
+            title: t('Button Variant'),
             mobileOpen: true,
             children: <Variant />
           })
@@ -127,16 +129,16 @@ export function Button({
       <Attribute
         id={`${id}-button-leading-icon`}
         icon={<AlertCircleIcon />}
-        name="Leading Icon"
+        name={t('Leading Icon')}
         value={
           icons.find(({ value }) => value === startIcon?.iconName)?.label ??
           'None'
         }
-        description="Leading Icon"
+        description={t('Leading Icon')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Leading Icon ',
+            title: t('Leading Icon'),
             mobileOpen: true,
             children: <Icon id={startIcon.id} />
           })
@@ -146,16 +148,16 @@ export function Button({
       <Attribute
         id={`${id}-button-trailing-icon`}
         icon={<AlertCircleIcon />}
-        name="Trailing Icon"
+        name={t('Trailing Icon')}
         value={
           icons.find(({ value }) => value === endIcon?.iconName)?.label ??
           'None'
         }
-        description="Trailing Icon"
+        description={t('Trailing Icon')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Trailing Icon ',
+            title: t('Trailing Icon'),
             mobileOpen: true,
             children: <Icon id={endIcon.id} />
           })

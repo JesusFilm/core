@@ -8,6 +8,7 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneySeoDescriptionUpdate } from '../../../../../../__generated__/JourneySeoDescriptionUpdate'
+import { useTranslation } from 'react-i18next'
 
 export const JOURNEY_SEO_DESCRIPTION_UPDATE = gql`
   mutation JourneySeoDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -19,6 +20,7 @@ export const JOURNEY_SEO_DESCRIPTION_UPDATE = gql`
 `
 
 export function DescriptionEdit(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySeoDescriptionUpdate>(
     JOURNEY_SEO_DESCRIPTION_UPDATE
   )
@@ -53,7 +55,7 @@ export function DescriptionEdit(): ReactElement {
       : null
 
   const seoDescriptionSchema = object().shape({
-    seoDescription: string().max(180, 'Character limit reached') // 180 characters just a few more words than 18 on average
+    seoDescription: string().max(180, t('Character limit reached')) // 180 characters just a few more words than 18 on average
   })
 
   return (
@@ -70,7 +72,7 @@ export function DescriptionEdit(): ReactElement {
                 id="seoDescription"
                 name="seoDescription"
                 variant="filled"
-                label="Description"
+                label={t('Description')}
                 fullWidth
                 multiline
                 maxRows={5}
@@ -82,7 +84,7 @@ export function DescriptionEdit(): ReactElement {
                 helperText={
                   errors.seoDescription != null
                     ? (errors.seoDescription as string)
-                    : 'Recommended length: up to 18 words'
+                    : t('Recommended length: up to 18 words')
                 }
                 onChange={handleChange}
                 onBlur={(e) => {
@@ -100,10 +102,10 @@ export function DescriptionEdit(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label="Description"
+          label={t('Description')}
           fullWidth
           disabled
-          helperText="Recommended length: up to 18 words"
+          helperText={t('Recommended length: up to 18 words')}
           sx={{
             pb: 6
           }}

@@ -17,6 +17,7 @@ import { PageWrapper } from '../PageWrapper'
 
 import { Canvas } from './Canvas'
 import { Properties } from './Properties'
+import { useTranslation } from 'react-i18next'
 
 const ActionsTable = dynamic(
   async () =>
@@ -62,6 +63,7 @@ export function Editor({
   view,
   PageWrapperProps
 }: EditorProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -78,7 +80,7 @@ export function Editor({
         initialState={{
           steps,
           selectedStep,
-          drawerTitle: 'Properties',
+          drawerTitle: t('Properties'),
           drawerChildren: <Properties isPublisher={false} />,
           journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
         }}

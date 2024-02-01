@@ -14,6 +14,7 @@ import { ActionFields_LinkAction as LinkAction } from '../../../../../__generate
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generated__/BlockFields'
 import { MultipleLinkActionUpdate } from '../../../../../__generated__/MultipleLinkActionUpdate'
 import { TextFieldForm } from '../../../TextFieldForm'
+import { useTranslation } from 'react-i18next'
 
 export const MULTIPLE_LINK_ACTION_UPDATE = gql`
   mutation MultipleLinkActionUpdate(
@@ -39,6 +40,7 @@ export function ActionEditor({
   goalLabel,
   setSelectedAction
 }: ActionEditorProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
   const blocks = (journey?.blocks ?? [])
@@ -68,8 +70,8 @@ export function ActionEditor({
 
   const linkActionSchema = object({
     link: string()
-      .test('valid-url', 'Invalid URL', checkURL)
-      .required('Required')
+      .test('valid-url', t('Invalid URL'), checkURL)
+      .required(t('Required'))
   })
 
   async function handleSubmit(src: string): Promise<void> {
@@ -121,7 +123,7 @@ export function ActionEditor({
     <Box sx={{ pt: 6 }} data-testid="ActionEditor">
       <TextFieldForm
         id="link"
-        label="Navigate to"
+        label={t('Navigate to')}
         initialValue={url}
         validationSchema={linkActionSchema}
         onSubmit={handleSubmit}

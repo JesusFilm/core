@@ -21,6 +21,7 @@ import {
 } from '../../../../../../../__generated__/GetJourney'
 import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 import { Attribute } from '../../Attribute'
+import { useTranslation } from 'react-i18next'
 
 const BackgroundColor = dynamic(
   async () =>
@@ -63,6 +64,7 @@ export function Card({
   coverBlockId,
   children
 }: TreeBlock<CardBlock>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { dispatch } = useEditor()
   const { journey } = useJourney()
@@ -84,7 +86,7 @@ export function Card({
   const handleBackgroundMediaClick = (param: string): void => {
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Background Media',
+      title: t('Background Media'),
       mobileOpen: true,
       children: <BackgroundMedia />
     })
@@ -114,13 +116,13 @@ export function Card({
             />
           </Paper>
         }
-        name="Color"
+        name={t('Color')}
         value={selectedCardColor.toUpperCase()}
-        description="Background Color"
+        description={t('Background Color')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Background Color Properties',
+            title: t('Background Color Properties'),
             mobileOpen: true,
             children: <BackgroundColor />
           })
@@ -130,12 +132,12 @@ export function Card({
         <Attribute
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
-          name="Background"
+          name={t('Background')}
           value={coverBlock.src.substring(
             coverBlock.src.lastIndexOf('/') + 1,
             coverBlock.src.length
           )}
-          description="Background Image"
+          description={t('Background Image')}
           onClick={() => handleBackgroundMediaClick('background-image')}
         />
       )}
@@ -143,9 +145,9 @@ export function Card({
         <Attribute
           id={`${id}-cover-block`}
           icon={<VideoOnIcon />}
-          name="Background"
+          name={t('Background')}
           value={coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''}
-          description="Background Video"
+          description={t('Background Video')}
           onClick={() => handleBackgroundMediaClick('background-video')}
         />
       )}
@@ -153,9 +155,9 @@ export function Card({
         <Attribute
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
-          name="Background"
+          name={t('Background')}
           value="None"
-          description="Background Media"
+          description={t('Background Media')}
           onClick={() => handleBackgroundMediaClick('background-video')}
         />
       )}
@@ -170,11 +172,11 @@ export function Card({
             ? 'Light'
             : 'Dark'
         }
-        description="Card Styling"
+        description={t('Card Styling')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Card Style Property',
+            title: t('Card Style Property'),
             mobileOpen: true,
             children: <CardStyling />
           })
@@ -183,13 +185,13 @@ export function Card({
       <Attribute
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-fullscreen`}
-        name="Layout"
+        name={t('Layout')}
         value={fullscreen ? 'Expanded' : 'Contained'}
-        description="Content Appearance"
+        description={t('Content Appearance')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Card Layout Property',
+            title: t('Card Layout Property'),
             mobileOpen: true,
             children: <CardLayout />
           })

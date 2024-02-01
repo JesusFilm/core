@@ -11,6 +11,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/GetJourney'
 import { TextResponseHintUpdate } from '../../../../../../../../../__generated__/TextResponseHintUpdate'
+import { useTranslation } from 'react-i18next'
 
 export const TEXT_RESPONSE_HINT_UPDATE = gql`
   mutation TextResponseHintUpdate(
@@ -26,6 +27,7 @@ export const TEXT_RESPONSE_HINT_UPDATE = gql`
 `
 
 export function Hint(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [textResponseHintUpdate] = useMutation<TextResponseHintUpdate>(
     TEXT_RESPONSE_HINT_UPDATE
   )
@@ -73,7 +75,7 @@ export function Hint(): ReactElement {
                 id="textResponseHint"
                 name="textResponseHint"
                 variant="filled"
-                label="Hint"
+                label={t('Hint')}
                 fullWidth
                 value={values.textResponseHint}
                 inputProps={{ maxLength: 250 }}
@@ -89,7 +91,7 @@ export function Hint(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label="Hint"
+          label={t('Hint')}
           fullWidth
           disabled
           sx={{

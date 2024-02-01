@@ -8,6 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyDescUpdate } from '../../../../../../__generated__/JourneyDescUpdate'
+import { useTranslation } from 'react-i18next'
 
 export const JOURNEY_DESC_UPDATE = gql`
   mutation JourneyDescUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -27,6 +28,7 @@ export function DescriptionDialog({
   open,
   onClose
 }: DescriptionDialogProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
@@ -55,7 +57,7 @@ export function DescriptionDialog({
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
-            'Field update failed. Reload the page or try again.',
+            t('Field update failed. Reload the page or try again.'),
             {
               variant: 'error',
               preventDuplicate: true
@@ -92,10 +94,10 @@ export function DescriptionDialog({
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: 'Edit Description' }}
+              dialogTitle={{ title: t('Edit Description') }}
               dialogAction={{
                 onSubmit: handleSubmit,
-                closeLabel: 'Cancel'
+                closeLabel: t('Cancel')
               }}
               testId="DescriptionDialog"
             >

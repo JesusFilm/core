@@ -5,6 +5,7 @@ import MinusCircleContainedIcon from '@core/shared/ui/icons/MinusCircleContained
 
 import { UserTeamDelete } from '../../../../../__generated__/UserTeamDelete'
 import { MenuItem } from '../../../MenuItem'
+import { useTranslation } from 'react-i18next'
 
 export const USER_TEAM_DELETE = gql`
   mutation UserTeamDelete($id: ID!) {
@@ -25,6 +26,7 @@ export function UserTeamDeleteMenuItem({
   onClick,
   disabled
 }: UserTeamDeleteMenuItemProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [userTeamDelete, { loading }] = useMutation<UserTeamDelete>(
     USER_TEAM_DELETE,
     {
@@ -49,7 +51,7 @@ export function UserTeamDeleteMenuItem({
 
   return (
     <MenuItem
-      label="Remove"
+      label={t('Remove')}
       icon={<MinusCircleContainedIcon />}
       onClick={handleClick}
       disabled={disabled === true || loading}

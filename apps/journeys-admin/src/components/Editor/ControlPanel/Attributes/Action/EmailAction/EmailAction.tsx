@@ -11,6 +11,7 @@ import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { TextFieldForm } from '../../../../../TextFieldForm'
+import { useTranslation } from 'react-i18next'
 
 export const EMAIL_ACTION_UPDATE = gql`
   mutation EmailActionUpdate(
@@ -26,6 +27,7 @@ export const EMAIL_ACTION_UPDATE = gql`
 `
 
 export function EmailAction(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
   const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
@@ -41,8 +43,8 @@ export function EmailAction(): ReactElement {
 
   const emailActionSchema = object({
     email: string()
-      .required('Invalid Email')
-      .email('Email must be a valid email')
+      .required(t('Invalid Email'))
+      .email(t('Email must be a valid email'))
   })
 
   async function handleSubmit(src: string): Promise<void> {
@@ -77,7 +79,7 @@ export function EmailAction(): ReactElement {
     <Box sx={{ pt: 8 }} data-testid="EmailAction">
       <TextFieldForm
         id="email"
-        label="Paste Email here..."
+        label={t('Paste Email here...')}
         initialValue={emailAction?.email}
         validationSchema={emailActionSchema}
         onSubmit={handleSubmit}

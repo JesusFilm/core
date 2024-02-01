@@ -10,6 +10,7 @@ import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
 import { MenuItem } from '../../../../../MenuItem'
+import { useTranslation } from 'react-i18next'
 
 export const JOURNEY_ARCHIVE = gql`
   mutation JourneyArchive($ids: [ID!]!) {
@@ -44,6 +45,7 @@ export function ArchiveJourney({
   handleClose,
   refetch
 }: ArchiveJourneyProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const previousStatus = published
     ? JourneyStatus.published
     : JourneyStatus.draft
@@ -82,13 +84,13 @@ export function ArchiveJourney({
     try {
       if (status !== JourneyStatus.archived) {
         await archiveJourney()
-        enqueueSnackbar('Journey Archived', {
+        enqueueSnackbar(t('Journey Archived'), {
           variant: 'success',
           preventDuplicate: true
         })
       } else {
         await unarchiveJourney()
-        enqueueSnackbar('Journey Unarchived', {
+        enqueueSnackbar(t('Journey Unarchived'), {
           variant: 'success',
           preventDuplicate: true
         })
@@ -107,14 +109,14 @@ export function ArchiveJourney({
     <>
       {status !== JourneyStatus.archived ? (
         <MenuItem
-          label="Archive"
+          label={t('Archive')}
           icon={<FolderUp1Icon color="secondary" />}
           onClick={handleClick}
           testId="Archive"
         />
       ) : (
         <MenuItem
-          label="Unarchive"
+          label={t('Unarchive')}
           icon={<FolderDown1Icon color="secondary" />}
           onClick={handleClick}
           testId="Unarchive"

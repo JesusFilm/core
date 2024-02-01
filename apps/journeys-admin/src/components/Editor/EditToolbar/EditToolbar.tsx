@@ -14,8 +14,10 @@ import { Analytics } from './Analytics'
 import { DeleteBlock } from './DeleteBlock'
 import { DuplicateBlock } from './DuplicateBlock'
 import { Menu } from './Menu'
+import { useTranslation } from 'react-i18next'
 
 export function EditToolbar(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { state } = useEditor()
 
@@ -31,7 +33,7 @@ export function EditToolbar(): ReactElement {
           <Analytics journey={journey} variant="button" />
           <Chip
             icon={<EyeOpenIcon />}
-            label="Preview"
+            label={t('Preview')}
             component="a"
             href={`/api/preview?slug=${journey.slug}`}
             target="_blank"

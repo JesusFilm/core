@@ -9,6 +9,7 @@ import { IconBlockColorUpdate } from '../../../../../../../__generated__/IconBlo
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../ToggleButtonGroup'
+import { useTranslation } from 'react-i18next'
 
 export const ICON_BLOCK_COLOR_UPDATE = gql`
   mutation IconBlockColorUpdate(
@@ -26,6 +27,7 @@ export const ICON_BLOCK_COLOR_UPDATE = gql`
 interface ColorProps extends Pick<TreeBlock<IconFields>, 'id' | 'iconColor'> {}
 
 export function Color({ id, iconColor }: ColorProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [iconBlockColorUpdate] = useMutation<IconBlockColorUpdate>(
     ICON_BLOCK_COLOR_UPDATE
   )
@@ -55,22 +57,22 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
   const options = [
     {
       value: IconColor.inherit,
-      label: 'Default',
+      label: t('Default'),
       icon: <ColorDisplayIcon color={IconColor.inherit} />
     },
     {
       value: IconColor.primary,
-      label: 'Primary',
+      label: t('Primary'),
       icon: <ColorDisplayIcon color={IconColor.primary} />
     },
     {
       value: IconColor.secondary,
-      label: 'Secondary',
+      label: t('Secondary'),
       icon: <ColorDisplayIcon color={IconColor.secondary} />
     },
     {
       value: IconColor.error,
-      label: 'Error',
+      label: t('Error'),
       icon: <ColorDisplayIcon color={IconColor.error} />
     }
   ]

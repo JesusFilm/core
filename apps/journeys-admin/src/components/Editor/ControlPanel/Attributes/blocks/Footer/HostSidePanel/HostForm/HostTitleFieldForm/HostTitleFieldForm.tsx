@@ -8,6 +8,7 @@ import { CreateHost } from '../../../../../../../../../../__generated__/CreateHo
 import { UpdateJourneyHost } from '../../../../../../../../../../__generated__/UpdateJourneyHost'
 import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
+import { useTranslation } from 'react-i18next'
 
 export const CREATE_HOST = gql`
   mutation CreateHost($teamId: ID!, $input: HostCreateInput!) {
@@ -36,6 +37,7 @@ interface HostTitleFieldFormProps {
 export function HostTitleFieldForm({
   empty = false
 }: HostTitleFieldFormProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [hostCreate] = useMutation<CreateHost>(CREATE_HOST)
   const [journeyHostUpdate] =
     useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
@@ -86,7 +88,7 @@ export function HostTitleFieldForm({
   return (
     <TextFieldForm
       id="hostTitle"
-      label="Host Name"
+      label={t('Host Name')}
       initialValue={empty ? '' : host?.title}
       validationSchema={titleSchema}
       onSubmit={handleSubmit}

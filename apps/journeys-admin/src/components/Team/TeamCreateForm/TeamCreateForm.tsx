@@ -27,7 +27,7 @@ export function TeamCreateForm({
     title: string()
       .required(t('Team Name must be at least one character.'))
       .max(40, t('Max {{ count }} Characters', { count: 40 }))
-      .matches(/^(?!\s+$).*/g, 'This field cannot contain only blankspaces'),
+      .matches(/^(?!\s+$).*/g, t('This field cannot contain only blankspaces')),
     publicTitle: string().max(
       40,
       t('Max {{ count }} Characters', { count: 40 })
@@ -46,7 +46,7 @@ export function TeamCreateForm({
       })
       enqueueSnackbar(
         t('{{ teamName }} created.', {
-          teamName: data?.teamCreate.title ?? 'Team'
+          teamName: data?.teamCreate.title ?? t('Team')
         }),
         {
           variant: 'success',
@@ -73,7 +73,7 @@ export function TeamCreateForm({
       })
     }
   }
-  const initialValues: TeamCreateInput = { title: '' }
+  const initialValues: TeamCreateInput = { title: t('') }
 
   return (
     <Formik

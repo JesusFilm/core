@@ -9,6 +9,7 @@ import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
 import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../../../MenuItem'
+import { useTranslation } from 'react-i18next'
 
 export const REMOVE_USER_JOURNEY = gql`
   mutation RemoveUserJourney($id: ID!) {
@@ -28,6 +29,7 @@ export const CREATE_TEMPLATE = gql`
 `
 
 export function CreateTemplateMenuItem(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
 
@@ -92,7 +94,7 @@ export function CreateTemplateMenuItem(): ReactElement {
 
   return (
     <MenuItem
-      label="Create Template"
+      label={t('Create Template')}
       icon={<Bag5Icon />}
       onClick={handleCreateTemplate}
       testId="CreateTemplate"

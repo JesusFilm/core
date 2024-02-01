@@ -12,6 +12,7 @@ import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/glo
 import { UpdateVideoBlockNextStep } from '../../../../../../../../__generated__/UpdateVideoBlockNextStep'
 import { VideoBlockUpdate } from '../../../../../../../../__generated__/VideoBlockUpdate'
 import { VideoBlockEditor } from '../../../../../VideoBlockEditor'
+import { useTranslation } from 'react-i18next'
 
 export const VIDEO_BLOCK_UPDATE = gql`
   ${VIDEO_FIELDS}
@@ -44,6 +45,7 @@ export const UPDATE_VIDEO_BLOCK_NEXT_STEP = gql`
 `
 
 export function VideoOptions(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedStep, selectedBlock }
   } = useEditor()
@@ -95,7 +97,7 @@ export function VideoOptions(): ReactElement {
         }
       })
       await updateDefaultNextStep()
-      enqueueSnackbar('Video Updated', {
+      enqueueSnackbar(t('Video Updated'), {
         variant: 'success',
         preventDuplicate: true
       })

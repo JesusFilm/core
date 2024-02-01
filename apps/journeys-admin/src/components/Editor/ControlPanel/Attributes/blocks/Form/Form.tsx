@@ -24,7 +24,7 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Action',
+      title: t('Action'),
       children: <Action />
     })
   }, [dispatch, id])

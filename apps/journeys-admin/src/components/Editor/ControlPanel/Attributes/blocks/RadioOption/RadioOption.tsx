@@ -7,11 +7,13 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
 import { Action, actions } from '../../Action/Action'
 import { Attribute } from '../../Attribute'
+import { useTranslation } from 'react-i18next'
 
 export function RadioOption({
   id,
   action
 }: TreeBlock<RadioOptionBlock>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export function RadioOption({
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Action',
+      title: t('Action'),
       children: <Action />
     })
   }, [dispatch, id])
@@ -31,16 +33,16 @@ export function RadioOption({
       <Attribute
         id={`${id}-radio-option-action`}
         icon={<LinkIcon />}
-        name="Action"
+        name={t('Action')}
         value={
           actions.find((act) => act.value === action?.__typename)?.label ??
           'None'
         }
-        description="Action"
+        description={t('Action')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Action',
+            title: t('Action'),
             mobileOpen: true,
             children: <Action />
           })

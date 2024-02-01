@@ -14,10 +14,12 @@ import { Attribute } from '../../Attribute'
 import { Align } from './Align'
 import { Color } from './Color'
 import { Variant } from './Variant'
+import { useTranslation } from 'react-i18next'
 
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   const { id, align, color, variant } = block
 
+  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Text Variant',
+      title: t('Text Variant'),
       children: <Variant />
     })
   }, [dispatch, id])
@@ -37,15 +39,15 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       <Attribute
         id={`${id}-typography-variant`}
         icon={<Type2Icon />}
-        name="Text Variant"
+        name={t('Text Variant')}
         value={capitalize(
           lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
         )}
-        description="Text Variant"
+        description={t('Text Variant')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Text Variant',
+            title: t('Text Variant'),
             mobileOpen: true,
             children: <Variant />
           })
@@ -55,13 +57,13 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       <Attribute
         id={`${id}-typography-color`}
         icon={<ColorDisplayIcon color={color} />}
-        name="Color"
+        name={t('Color')}
         value={capitalize(color?.toString() ?? 'primary')}
-        description="Text Color"
+        description={t('Text Color')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Text Color',
+            title: t('Text Color'),
             mobileOpen: true,
             children: <Color />
           })
@@ -71,13 +73,13 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       <Attribute
         id={`${id}-typography-alignment`}
         icon={<AlignLeftIcon />}
-        name="Text Alignment"
+        name={t('Text Alignment')}
         value={capitalize(align?.toString() ?? 'Left')}
-        description="Text Alignment"
+        description={t('Text Alignment')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Text Alignment',
+            title: t('Text Alignment'),
             mobileOpen: true,
             children: <Align />
           })

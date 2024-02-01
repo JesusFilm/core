@@ -7,6 +7,7 @@ import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
 
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
 import { MenuItem } from '../../../MenuItem/MenuItem'
+import { useTranslation } from 'react-i18next'
 
 interface AnalyticsProps {
   variant: 'button' | 'list-item'
@@ -14,6 +15,8 @@ interface AnalyticsProps {
 }
 
 export function Analytics({ journey, variant }: AnalyticsProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <NextLink
       href={`/journeys/${journey.id}/reports`}
@@ -23,7 +26,7 @@ export function Analytics({ journey, variant }: AnalyticsProps): ReactElement {
     >
       {variant === 'button' ? (
         <Tooltip
-          title="Analytics"
+          title={t('Analytics')}
           arrow
           sx={{
             display: {
@@ -37,7 +40,7 @@ export function Analytics({ journey, variant }: AnalyticsProps): ReactElement {
           </IconButton>
         </Tooltip>
       ) : (
-        <MenuItem label="Analytics" icon={<BarChartSquare3Icon />} />
+        <MenuItem label={t('Analytics')} icon={<BarChartSquare3Icon />} />
       )}
     </NextLink>
   )

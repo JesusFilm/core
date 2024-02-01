@@ -6,6 +6,7 @@ import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { MenuItem } from '../../../../MenuItem'
+import { useTranslation } from 'react-i18next'
 
 const LanguageDialog = dynamic(
   async () =>
@@ -22,6 +23,7 @@ interface LanguageMenuItemProps {
 export function LanguageMenuItem({
   onClose
 }: LanguageMenuItemProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [showLanguageDialog, setShowLanguageDialog] = useState<
     boolean | undefined
@@ -48,7 +50,7 @@ export function LanguageMenuItem({
   return (
     <>
       <MenuItem
-        label="Language"
+        label={t('Language')}
         icon={<Globe1Icon />}
         onClick={handleUpdateLanguage}
         testId="Language"

@@ -12,6 +12,7 @@ import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '..
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateAlign } from '../../../../../../../../__generated__/TypographyBlockUpdateAlign'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { useTranslation } from 'react-i18next'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
   mutation TypographyBlockUpdateAlign(
@@ -27,6 +28,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
 `
 
 export function Align(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateAlign>(
     TYPOGRAPHY_BLOCK_UPDATE_ALIGN
   )
@@ -39,17 +41,17 @@ export function Align(): ReactElement {
   const options = [
     {
       value: TypographyAlign.left,
-      label: 'Left',
+      label: t('Left'),
       icon: <AlignLeftIcon />
     },
     {
       value: TypographyAlign.center,
-      label: 'Center',
+      label: t('Center'),
       icon: <AlignCenterIcon />
     },
     {
       value: TypographyAlign.right,
-      label: 'Right',
+      label: t('Right'),
       icon: <AlignRightIcon />
     }
   ]

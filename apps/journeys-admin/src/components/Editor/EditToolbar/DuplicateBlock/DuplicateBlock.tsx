@@ -16,6 +16,7 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../../../../__generated__/BlockFields'
 import { MenuItem } from '../../../MenuItem'
+import { useTranslation } from 'react-i18next'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
@@ -34,6 +35,7 @@ export function DuplicateBlock({
   variant,
   disabled = false
 }: DuplicateBlockProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
 
   const {
@@ -115,7 +117,7 @@ export function DuplicateBlock({
         }
       }
     }
-    enqueueSnackbar(`${blockLabel} Duplicated`, {
+    enqueueSnackbar(t(`${blockLabel} Duplicated`), {
       variant: 'success',
       preventDuplicate: true
     })
@@ -135,7 +137,7 @@ export function DuplicateBlock({
         </IconButton>
       ) : (
         <MenuItem
-          label={`Duplicate ${blockLabel}`}
+          label={t(`Duplicate ${blockLabel}`)}
           icon={<CopyLeftIcon color="inherit" />}
           disabled={disableAction}
           onClick={handleDuplicateBlock}

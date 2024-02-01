@@ -41,7 +41,7 @@ export function TeamUpdateDialog({
     title: string()
       .required(t('Team Name must be at least one character.'))
       .max(40, t('Max {{ count }} Characters', { count: 40 }))
-      .matches(/^(?!\s+$).*/g, 'This field cannot contain only blankspaces'),
+      .matches(/^(?!\s+$).*/g, t('This field cannot contain only blankspaces')),
     publicTitle: string().max(
       40,
       t('Max {{ count }} Characters', { count: 40 })
@@ -128,9 +128,9 @@ export function TeamUpdateDialog({
                 helperText={
                   errors.title !== undefined
                     ? (errors.title as string)
-                    : 'Private: Visible only to your team'
+                    : t('Private: Visible only to your team')
                 }
-                label="Team Name"
+                label={t('Team Name')}
               />
               <TextField
                 id="publicTitle"
@@ -143,9 +143,9 @@ export function TeamUpdateDialog({
                 helperText={
                   errors.publicTitle !== undefined
                     ? (errors.publicTitle as string)
-                    : 'Public: Anyone can view it'
+                    : t('Public: Anyone can view it')
                 }
-                label="Legal Name"
+                label={t('Legal Name')}
                 placeholder={values.title}
               />
 
