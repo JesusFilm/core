@@ -3,6 +3,7 @@ import { Job } from 'bull';
 
 import { BucketService } from '../../../lib/bucket/bucketService';
 import { GoogleOAuthService } from '../../../lib/googleOAuth/googleOAuth';
+import { PrismaService } from '../../../lib/prisma.service';
 import { YoutubeService } from '../../../lib/youtube/youtubeService';
 import { GoogleDriveService } from '../../google-drive/googleDriveService';
 import { UploadToBucketToYoutube } from '../bullMQ.service';
@@ -14,6 +15,7 @@ export class UploadToBucket {
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly bucketService: BucketService,
     private readonly youtubeService: YoutubeService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   @Process('process')
@@ -26,8 +28,8 @@ export class UploadToBucket {
     );
     const filePath = await this.googleDriveService.downloadDriveFile(
       { fileId: job.data.resource.driveId, accessToken: driveToken },
-      async (progress) => {
-        await job.progress(progress / 2);
+      async (downloadProgress) => {
+        await job.progress(downloadProgress / 2);
         return await Promise.resolve();
       },
     );
@@ -38,6 +40,7 @@ export class UploadToBucket {
       async (progress) => {
         progress = 49 + progress / 2;
         await job.progress(progress);
+        return await Promise.resolve();
       },
     );
     const youtubeToken = await this.googleOAuthService.getNewAccessToken(
@@ -52,6 +55,10 @@ export class UploadToBucket {
     //   description: 'test',
     // });
     console.log('bucketFile', bucketFile);
+    await this.prismaService.resource.update({
+      data: { status: 'uploaded' },
+      where: { id: job.data.resource.driveId },
+    });
     await job.progress(100);
     console.log('UploadToBucketToYoutube Job: ', job.id, 'completed');
     return job.returnvalue;

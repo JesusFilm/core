@@ -29,10 +29,12 @@ export interface UploadYoutubeTemplateTask {
 export interface UploadToBucketToYoutube {
   batchId: string;
   resource: {
+    id: string;
     driveId: string;
     refreshToken: string;
   };
   channel: {
+    id: string;
     channelId: string;
     refreshToken: string;
   };
@@ -62,10 +64,12 @@ export class BullMQService {
         data: {
           batchId: batch.id,
           resource: {
+            id: item.googleDrive?.id ?? '',
             driveId: item.googleDrive?.driveId ?? '',
             refreshToken: item.googleDrive?.refreshToken ?? '',
           },
           channel: {
+            id: batch.channel?.id ?? '',
             channelId: batch.channel?.youtube?.youtubeId ?? '',
             refreshToken: batch.channel?.youtube?.refreshToken ?? '',
           },

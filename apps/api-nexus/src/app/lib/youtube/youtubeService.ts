@@ -35,13 +35,16 @@ export class YoutubeService {
     return oAuth2Client;
   }
 
-  async uploadVideo(youtubeData: {
-    token: string;
-    filePath: string;
-    channelId: string;
-    title: string;
-    description: string;
-  }): Promise<unknown> {
+  async uploadVideo(
+    youtubeData: {
+      token: string;
+      filePath: string;
+      channelId: string;
+      title: string;
+      description: string;
+    },
+    progressCallback?: (progress: number) => Promise<void>,
+  ): Promise<unknown> {
     const service = google.youtube('v3');
     const fileSize = statSync(youtubeData.filePath).size;
 
@@ -65,9 +68,13 @@ export class YoutubeService {
         },
       },
       {
-        onUploadProgress: (evt) => {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        onUploadProgress: async (evt) => {
           const progress = (evt.bytesRead / fileSize) * 100;
           console.log(`${Math.round(progress)}% complete`);
+          if (progressCallback != null) {
+            await progressCallback(progress);
+          }
         },
       },
     );
