@@ -8,7 +8,7 @@ import CardContent from '@mui/material/CardContent'
 import Fab from '@mui/material/Fab'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
 
@@ -46,7 +46,7 @@ export function Index() {
 
   const redirectToDashboard = (nexusId: string): void => {
     localStorage.setItem('nexusId', nexusId)
-    router.push('/channels')
+    void router.push('/channels')
   }
 
   return (
