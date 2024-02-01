@@ -35,7 +35,6 @@ describe('UserTeamService', () => {
         title: 'Team Title'
       } as unknown as Team
       const email = 'tav@example.com'
-      const expectedSubject = `Invitation to join team: ${team.title}`
       const sender = {
         firstName: 'Johnathan',
         lastName: 'Joeronimo',
@@ -43,39 +42,14 @@ describe('UserTeamService', () => {
           'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
       }
 
-      const expectedBody = render(
-        TeamInviteEmail({
-          teamName: team.title,
-          email,
-          inviteLink: `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`,
-          sender
-        }),
-        {
-          pretty: true
-        }
-      )
-
-      const expectedText = render(
-        TeamInviteEmail({
-          teamName: team.title,
-          email,
-          inviteLink: `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`,
-          sender
-        }),
-        {
-          plainText: true
-        }
-      )
-
       await service.sendEmail(team, email, sender)
 
       expect(emailQueue.add).toHaveBeenCalledWith(
-        'email',
+        'team-invite',
         {
           email,
-          subject: expectedSubject,
-          body: expectedBody,
-          text: expectedText
+          teamName: team.title,
+          sender
         },
         {
           removeOnComplete: true,
