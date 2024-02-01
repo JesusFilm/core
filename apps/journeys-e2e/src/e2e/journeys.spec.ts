@@ -11,7 +11,9 @@ test('journeys', async ({ page }) => {
   await expect(page).toHaveURL(/.*fact-or-fiction/)
   // Test Fact or Fiction screen
   await expect(
-    page.getByRole('heading', { name: 'Fact or Fiction' })
+    page
+      .getByRole('heading', { name: 'Fact or Fiction' })
+      .and(page.getByTestId('JourneysTypography'))
   ).toBeInViewport()
   await page.getByRole('button', { name: 'Explore Now' }).click()
   // Test Video Screen
