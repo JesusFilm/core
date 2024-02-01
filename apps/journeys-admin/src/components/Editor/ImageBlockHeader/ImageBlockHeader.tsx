@@ -13,6 +13,7 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import type { UnsplashAuthor } from '../ImageBlockEditor/UnsplashGallery'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
+import { useTranslation } from 'react-i18next'
 
 interface ImageBlockHeaderProps {
   selectedBlock: ImageBlock | null
@@ -35,6 +36,8 @@ export function ImageBlockHeader({
   unsplashAuthor,
   Icon
 }: ImageBlockHeaderProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Stack
       data-testid="ImageBlockHeader"
@@ -66,14 +69,14 @@ export function ImageBlockHeader({
           <Stack>
             <Typography variant="subtitle2" color="text.secondary">
               {loading
-                ? 'Image is uploading...'
+                ? t('Image is uploading...')
                 : selectedBlock?.src != null
-                ? 'Selected Image'
+                ? t('Selected Image')
                 : showAdd
-                ? 'Select Image'
+                ? t('Select Image')
                 : error === true
-                ? 'Upload failed'
-                : 'No Image Selected'}
+                ? t('Upload failed')
+                : t('No Image Selected')}
             </Typography>
             {unsplashAuthor != null &&
             selectedBlock?.src != null &&

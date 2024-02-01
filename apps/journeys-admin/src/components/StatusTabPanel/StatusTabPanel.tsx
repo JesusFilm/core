@@ -16,6 +16,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import type { JourneyListEvent } from '../JourneyList/JourneyList'
 import { JourneyListMenu } from '../JourneyList/JourneyListMenu'
 import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
+import { useTranslation } from 'react-i18next'
 
 export interface StatusTabPanelProps {
   activeList: ReactElement
@@ -40,21 +41,22 @@ export function StatusTabPanel({
   setSortOrder,
   sortOrder
 }: StatusTabPanelProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const journeyStatusTabs: StatusOptions[] = [
     {
       queryParam: 'active',
-      displayValue: 'Active',
+      displayValue: t('Active'),
       tabIndex: 0
     },
     {
       queryParam: 'archived',
-      displayValue: 'Archived',
+      displayValue: t('Archived'),
       tabIndex: 1
     },
     {
       queryParam: 'trashed',
-      displayValue: 'Trash',
+      displayValue: t('Trash'),
       tabIndex: 2
     }
   ]

@@ -47,7 +47,7 @@ export function HostTitleFieldForm({
   const host = journey?.host
 
   const titleSchema = object({
-    hostTitle: string().required('Please enter a host name')
+    hostTitle: string().required(t('Please enter a host name'))
   })
 
   async function handleSubmit(value: string): Promise<void> {
