@@ -1,12 +1,13 @@
+import { Test, TestingModule } from '@nestjs/testing'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Job } from 'bullmq'
+import { mockDeep } from 'jest-mock-extended'
+
 import {
   EmailConsumer,
   JourneyEditInviteJob,
   TeamInviteJob
 } from './email.consumer'
-import { Test, TestingModule } from '@nestjs/testing'
-import { mockDeep } from 'jest-mock-extended'
 
 const sendEmailMock = jest.fn().mockReturnValue({ promise: jest.fn() })
 // Mock the SES sendEmail method
@@ -75,7 +76,7 @@ describe('EmailConsumer', () => {
     emailConsumer = module.get<EmailConsumer>(EmailConsumer)
     mailerService.sendMail = jest
       .fn()
-      .mockImplementation(() => Promise.resolve())
+      .mockImplementation(async () => await Promise.resolve())
   })
 
   afterEach(() => {
@@ -86,7 +87,7 @@ describe('EmailConsumer', () => {
     it('should handle team-invite', async () => {
       emailConsumer.teamInviteEmail = jest
         .fn()
-        .mockImplementationOnce(() => Promise.resolve())
+        .mockImplementationOnce(async () => await Promise.resolve())
       await emailConsumer.process(teamInviteJob)
       expect(emailConsumer.teamInviteEmail).toHaveBeenCalledWith(teamInviteJob)
     })
@@ -94,7 +95,7 @@ describe('EmailConsumer', () => {
     it('should handle journey-edit-invite', async () => {
       emailConsumer.journeyEditInvite = jest
         .fn()
-        .mockImplementationOnce(() => Promise.resolve())
+        .mockImplementationOnce(async () => await Promise.resolve())
       await emailConsumer.process(journeyEditJob)
       expect(emailConsumer.journeyEditInvite).toHaveBeenCalledWith(
         journeyEditJob
@@ -105,10 +106,12 @@ describe('EmailConsumer', () => {
   describe('teamInviteEmail', () => {
     it('should send an email', async () => {
       let args = {}
-      emailConsumer.sendEmail = jest.fn().mockImplementation((callArgs) => {
-        args = callArgs
-        Promise.resolve()
-      })
+      emailConsumer.sendEmail = jest
+        .fn()
+        .mockImplementation(async (callArgs) => {
+          args = callArgs
+          await Promise.resolve()
+        })
       await emailConsumer.teamInviteEmail(teamInviteJob)
       expect(emailConsumer.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -123,10 +126,12 @@ describe('EmailConsumer', () => {
   describe('journeyEditInvite', () => {
     it('should send an email', async () => {
       let args = {}
-      emailConsumer.sendEmail = jest.fn().mockImplementation((callArgs) => {
-        args = callArgs
-        Promise.resolve()
-      })
+      emailConsumer.sendEmail = jest
+        .fn()
+        .mockImplementation(async (callArgs) => {
+          args = callArgs
+          await Promise.resolve()
+        })
       await emailConsumer.journeyEditInvite(journeyEditJob)
       expect(emailConsumer.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
