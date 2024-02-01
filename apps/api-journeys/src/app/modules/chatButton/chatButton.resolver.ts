@@ -4,6 +4,7 @@ import { ChatButton } from '.prisma/api-journeys-client'
 
 import {
   ChatButtonCreateInput,
+  ChatButtonType,
   ChatButtonUpdateInput
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -25,7 +26,8 @@ export class ChatButtonResolver {
       return await this.prismaService.chatButton.create({
         data: {
           journeyId,
-          ...input
+          ...input,
+          type: input.type || ChatButtonType.link
         }
       })
     } else {
@@ -47,7 +49,8 @@ export class ChatButtonResolver {
       },
       data: {
         journeyId,
-        ...input
+        ...input,
+        type: input.type || ChatButtonType.link
       }
     })
   }
