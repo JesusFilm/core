@@ -52,7 +52,8 @@ describe('UserJourneyService', () => {
         {
           userId,
           subject: expectedSubject,
-          body: expectedBody
+          body: expectedBody,
+          text: 'You have been granted access to edit the journey: Journey Title. You can find the journey at: /journeys/journeyId'
         },
         {
           removeOnComplete: true,
