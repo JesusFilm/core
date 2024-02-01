@@ -70,11 +70,12 @@ export function StepBlockNode({
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
 
   const {
-    state: { selectedStep }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { journey } = useJourney()
 
-  async function onConnect(params): Promise<void> {
+  async function handleConnect(params): Promise<void> {
     if (journey == null) return
 
     await stepBlockNextBlockUpdate({
@@ -95,10 +96,15 @@ export function StepBlockNode({
     })
   }
 
+  function handleClick() {
+    dispatch({ type: 'SetSelectedStepAction', step })
+  }
+
   return (
     <BaseNode
       selected={selectedStep?.id === step.id}
-      onSourceConnect={onConnect}
+      onSourceConnect={handleConnect}
+      onClick={handleClick}
       icon={
         card?.backgroundColor != null || bgImage != null ? (
           <Box
