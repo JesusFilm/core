@@ -1,7 +1,7 @@
-import { gql, useQuery, useSubscription } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 
 import { BatchesTable } from '../../src/components/BatchesTable'
 import { MainLayout } from '../../src/components/MainLayout'
@@ -10,20 +10,12 @@ const GET_BATCHES = gql`
   query Batches($where: BatchFilter) {
     batches(where: $where) {
       id
-      resourceId
       name
       status
-    }
-  }
-`
-
-const BATCHES_SUBSCRIPTION = gql`
-  subscription BatchStatusChanged($id: string) {
-    batchStatusChanged(id: $id) {
-      id
-      resourceId
-      name
-      status
+      channel {
+        name
+        platform
+      }
     }
   }
 `
@@ -31,6 +23,7 @@ const BATCHES_SUBSCRIPTION = gql`
 const BatchesPage: FC = () => {
   const nexusId =
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
+  const [batches, setBatches] = useState([])
 
   const { data, loading } = useQuery(GET_BATCHES, {
     variables: {
@@ -40,11 +33,11 @@ const BatchesPage: FC = () => {
     }
   })
 
-  const { data: statusData } = useSubscription(BATCHES_SUBSCRIPTION, {
-    variables: {
-      id: '1'
+  useEffect(() => {
+    if (data) {
+      setBatches(data?.batches)
     }
-  })
+  }, [data])
 
   return (
     <MainLayout title="Batch Jobs">
@@ -53,7 +46,7 @@ const BatchesPage: FC = () => {
           pt: 4
         }}
       >
-        <BatchesTable loading={loading} data={data} />
+        <BatchesTable loading={loading} data={batches} />
       </Stack>
     </MainLayout>
   )

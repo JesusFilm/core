@@ -116,7 +116,6 @@ const ResourcesPage: FC = () => {
   const { data, loading } = useQuery<Resources>(GET_RESOURCES, {
     variables: {
       where: {
-        status: 'published',
         nexusId
       }
     }
