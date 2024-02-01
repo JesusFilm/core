@@ -1,6 +1,6 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
-import { ApolloClient, InMemoryCache } from '@apollo/client'
+// import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { MailerService } from '@nestjs-modules/mailer'
 import { render } from '@react-email/render'
