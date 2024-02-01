@@ -4,8 +4,9 @@ import { Queue } from 'bullmq'
 
 import { Team } from '.prisma/api-journeys-client'
 
-import { TeamInviteJob } from '../email/email.consumer'
 import { User } from '@core/nest/common/firebaseClient'
+
+import { TeamInviteJob } from '../email/email.consumer'
 
 @Injectable()
 export class UserTeamInviteService {

@@ -1,10 +1,8 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import { render } from '@react-email/render'
 
 import { Team } from '.prisma/api-journeys-client'
 
-import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
 import { UserTeamInviteModule } from '../userTeamInvite/userTeamInvite.module'
 
 import { UserTeamInviteService } from './userTeamInvite.service'

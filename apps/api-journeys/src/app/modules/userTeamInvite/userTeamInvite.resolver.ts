@@ -3,11 +3,12 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
+import omit from 'lodash/omit'
+
 import { Prisma, UserTeamInvite } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import {
   UserTeamInviteCreateInput,
@@ -18,7 +19,6 @@ import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserTeamInviteService } from './userTeamInvite.service'
-import omit from 'lodash/omit'
 
 @Resolver('userTeamInvite')
 export class UserTeamInviteResolver {

@@ -39,36 +39,15 @@ describe('UserTeamService', () => {
       }`
       const email = 'tav@example.com'
       const expectedSubject = `Invitation to edit journey: ${journey.title}`
-      const expectedBody = render(
-        JourneyInviteEmail({
-          email,
-          journeyTitle: journey.title,
-          inviteLink: url
-        }),
-        {
-          pretty: true
-        }
-      )
-      const expectedText = render(
-        JourneyInviteEmail({
-          email,
-          journeyTitle: journey.title,
-          inviteLink: url
-        }),
-        {
-          plainText: true
-        }
-      )
 
       await service.sendEmail(journey, email)
 
       expect(emailQueue.add).toHaveBeenCalledWith(
-        'email',
+        'journey-edit-invite',
         {
           email,
-          subject: expectedSubject,
-          body: expectedBody,
-          text: expectedText
+          url: '/journeys/journeyId',
+          journeyTitle: 'Journey Title'
         },
         {
           removeOnComplete: true,

@@ -7,10 +7,10 @@ import { render } from '@react-email/render'
 import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
+import { User } from '@core/nest/common/firebaseClient'
+
 import { JourneyInviteEmail } from '../../emails/templates/JourneyInvite'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
-
-import { User } from '@core/nest/common/firebaseClient'
 
 AWS.config.update({ region: 'us-east-2' })
 
@@ -105,9 +105,10 @@ export class EmailConsumer extends WorkerHost {
       `,
       variables: { email: job.data.email }
     })
-    if (data.user == null) {
-      throw new Error('User not found')
-    }
+    // TODO: use this to check if user is subscribed to this type of email notification
+    // if (data.user == null) {
+    //   throw new Error('User not found')
+    // }
 
     const html = render(
       JourneyInviteEmail({
