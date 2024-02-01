@@ -1732,6 +1732,8 @@ describe('JourneyResolver', () => {
         link: 'm.me/user',
         platform: 'facebook',
         journeyId: 'journeyId',
+        code: null,
+        type: 'link',
         updatedAt: new Date()
       }
       prismaService.chatButton.findMany.mockResolvedValueOnce([chatButton])

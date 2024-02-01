@@ -12,6 +12,8 @@ describe('ChatButtonResolver', () => {
     journeyId: 'journeyId',
     id: '1',
     link: 'm.me./user',
+    code: null,
+    type: ChatButtonType.link,
     platform: 'facebook'
   }
 
@@ -19,6 +21,8 @@ describe('ChatButtonResolver', () => {
     journeyId: 'journeyId',
     id: '2',
     link: 'm.me./user2',
+    code: null,
+    type: ChatButtonType.link,
     platform: 'facebook'
   }
 
@@ -95,6 +99,8 @@ describe('ChatButtonResolver', () => {
         id: '1',
         journeyId: 'journeyId',
         link: 'm.me/username',
+        code: null,
+        type: ChatButtonType.link,
         platform: 'viber'
       }
     ])
