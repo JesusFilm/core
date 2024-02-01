@@ -66,7 +66,9 @@ const ImportYouTubeTemplatePage: FC = () => {
     useState<CallbackDoc | null>(null)
   const [openPicker] = useDrivePicker()
   const [getGoogleAccessToken] = useMutation(GET_GOOGLE_ACCESS_TOKEN)
-  const [getResourceFromTemplate] = useMutation(GET_RESOUCE_FROM_TEMPLATE)
+  const [getResourceFromTemplate, { loading }] = useMutation(
+    GET_RESOUCE_FROM_TEMPLATE
+  )
   const [googleAccessToken, setGoogleAccessToken] = useState('')
   const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
   const [resourceType, setResourceType] = useState<'file' | 'directory' | ''>(
@@ -238,7 +240,11 @@ const ImportYouTubeTemplatePage: FC = () => {
             justifyContent="flex-end"
             spacing={4}
           >
-            <Button sx={{ alignSelf: 'flex-end' }} onClick={router.back}>
+            <Button
+              sx={{ alignSelf: 'flex-end' }}
+              disabled={loading}
+              onClick={router.back}
+            >
               Cancel
             </Button>
             <Button
@@ -246,7 +252,8 @@ const ImportYouTubeTemplatePage: FC = () => {
               sx={{ alignSelf: 'flex-end' }}
               disabled={
                 selectedTemplateFile === null ||
-                selectedVideosDirectory === null
+                selectedVideosDirectory === null ||
+                loading
               }
               onClick={uploadYoutubeTemplate}
             >
