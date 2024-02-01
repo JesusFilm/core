@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/client'
+import PlayCircleFilledWhiteRoundedIcon from '@mui/icons-material/PlayCircleFilledWhiteRounded'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -117,14 +118,30 @@ export function StepBlockNode({
             sx={{
               height: '100%',
               flexShrink: 0,
-              width: 24,
-              borderRadius: 1,
+              width: 50,
+              left: 0,
+              borderRadius: 0,
               bgcolor: card?.backgroundColor,
               backgroundImage: bgImage != null ? `url(${bgImage})` : undefined,
               backgroundSize: 'cover',
-              backgroundPosition: 'center center'
+              backgroundPosition: 'center center',
+              dispaly: 'flex',
+              alignContent: 'center',
+              justifyContent: 'center'
             }}
-          />
+          >
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ff9736'
+              }}
+            >
+              <PlayCircleFilledWhiteRoundedIcon />
+            </Box>
+          </Box>
         ) : (
           <FlexAlignBottom1Icon />
         )

@@ -16,6 +16,7 @@ import {
   StepAndCardBlockCreateVariables
 } from '../../../../__generated__/StepAndCardBlockCreate'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
+import React from 'react'
 
 export const NODE_WIDTH = 150
 export const NODE_HEIGHT = 80
@@ -135,26 +136,42 @@ export function BaseNode({
         <CardContent
           sx={{
             display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
             width: NODE_WIDTH,
             height: NODE_HEIGHT,
-            gap: 2,
-            borderRadius: 1
+            margin: 0,
+            padding: 0
           }}
           onClick={onClick}
         >
           {icon}
-          <Typography
+
+          <Box
             sx={{
-              display: '-webkit-box',
-              '-webkit-box-orient': 'vertical',
-              '-webkit-line-clamp': '2',
-              overflow: 'hidden'
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              width: NODE_WIDTH,
+              height: NODE_HEIGHT,
+              gap: 2,
+              borderRadius: 1,
+              paddingLeft: 2
             }}
           >
-            {title}
-          </Typography>
+            <Typography
+              sx={{
+                display: '-webkit-box',
+                '-webkit-box-orient': 'vertical',
+                '-webkit-line-clamp': '2',
+                overflow: 'hidden',
+                fontWeight: 'bold',
+                fontSize: 'small',
+                maxHeight: '3rem',
+                lineHeight: '1rem'
+              }}
+            >
+              {title}
+            </Typography>
+          </Box>
         </CardContent>
         <Handle
           type="target"
