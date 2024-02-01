@@ -102,6 +102,7 @@ export function Slider(): ReactElement {
             alignItems: 'center',
             justifyContent: 'center',
             flexGrow: 0,
+            flexShrink: 0,
             transition: (theme) =>
               theme.transitions.create('flex-grow', { duration: 300 })
           }}
