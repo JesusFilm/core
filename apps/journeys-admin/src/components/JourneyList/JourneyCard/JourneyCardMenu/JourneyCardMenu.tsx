@@ -131,7 +131,7 @@ export function JourneyCardMenu({
         // }}
         transformOrigin={{
           vertical: 0,
-          horizontal: 140
+          horizontal: 147.8
         }}
         data-testid="JourneyCardMenu"
       >
