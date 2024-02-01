@@ -1,10 +1,8 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import { render } from '@react-email/render'
 
 import { Journey } from '.prisma/api-journeys-client'
 
-import { JourneyInviteEmail } from '../../emails/templates/JourneyInvite'
 import { UserInviteModule } from '../userInvite/userInvite.module'
 
 import { UserInviteService } from './userInvite.service'
@@ -38,7 +36,6 @@ describe('UserTeamService', () => {
         journey.id
       }`
       const email = 'tav@example.com'
-      const expectedSubject = `Invitation to edit journey: ${journey.title}`
 
       await service.sendEmail(journey, email)
 
@@ -46,7 +43,7 @@ describe('UserTeamService', () => {
         'journey-edit-invite',
         {
           email,
-          url: '/journeys/journeyId',
+          url,
           journeyTitle: 'Journey Title'
         },
         {
