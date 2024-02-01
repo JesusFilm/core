@@ -12,6 +12,7 @@ import Mail2Icon from '@core/shared/ui/icons/Mail2'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { SignUpBlockCreate } from '../../../../../../__generated__/SignUpBlockCreate'
 import { Button } from '../../Button'
+import { useTranslation } from 'react-i18next'
 
 export const SIGN_UP_BLOCK_CREATE = gql`
   ${SIGN_UP_FIELDS}
@@ -38,6 +39,7 @@ export const SIGN_UP_BLOCK_CREATE = gql`
 `
 
 export function NewSignUpButton(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [signUpBlockCreate] =
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
   const { journey } = useJourney()
@@ -59,7 +61,7 @@ export function NewSignUpButton(): ReactElement {
             id,
             journeyId: journey.id,
             parentBlockId: card.id,
-            submitLabel: 'Submit'
+            submitLabel: t('Submit')
           },
           iconBlockCreateInput: {
             id: submitId,
@@ -122,7 +124,7 @@ export function NewSignUpButton(): ReactElement {
   return (
     <Button
       icon={<Mail2Icon />}
-      value="Subscribe"
+      value={t('Subscribe')}
       onClick={handleClick}
       testId="NewSignUpButton"
     />

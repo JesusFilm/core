@@ -12,6 +12,7 @@ import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { TextResponseBlockCreate } from '../../../../../../__generated__/TextResponseBlockCreate'
 import { Button } from '../../Button'
+import { useTranslation } from 'react-i18next'
 
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}
@@ -45,6 +46,7 @@ export const TEXT_RESPONSE_BLOCK_CREATE = gql`
 `
 
 export function NewTextResponseButton(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [textResponseBlockCreate] = useMutation<TextResponseBlockCreate>(
     TEXT_RESPONSE_BLOCK_CREATE
   )
@@ -68,8 +70,8 @@ export function NewTextResponseButton(): ReactElement {
             id,
             journeyId: journey.id,
             parentBlockId: card.id,
-            label: 'Your answer here',
-            submitLabel: 'Submit'
+            label: t('Your answer here'),
+            submitLabel: t('Submit')
           },
           iconBlockCreateInput: {
             id: submitIconId,
@@ -134,7 +136,7 @@ export function NewTextResponseButton(): ReactElement {
   return (
     <Button
       icon={<TextInput1Icon />}
-      value="Feedback"
+      value={t('Feedback')}
       onClick={handleClick}
       testId="NewTextResponseButton"
     />

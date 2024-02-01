@@ -12,6 +12,7 @@ import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
 import { Button } from '../../Button'
+import { useTranslation } from 'react-i18next'
 
 export const RADIO_QUESTION_BLOCK_CREATE = gql`
   ${RADIO_QUESTION_FIELDS}
@@ -43,6 +44,7 @@ export const RADIO_QUESTION_BLOCK_CREATE = gql`
 `
 
 export function NewRadioQuestionButton(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
@@ -69,12 +71,12 @@ export function NewRadioQuestionButton(): ReactElement {
           radioOptionBlockCreateInput1: {
             journeyId: journey.id,
             parentBlockId: id,
-            label: 'Option 1'
+            label: t('Option 1')
           },
           radioOptionBlockCreateInput2: {
             journeyId: journey.id,
             parentBlockId: id,
-            label: 'Option 2'
+            label: t('Option 2')
           }
         },
         update(cache, { data }) {
@@ -135,7 +137,7 @@ export function NewRadioQuestionButton(): ReactElement {
   return (
     <Button
       icon={<CheckContainedIcon />}
-      value="Poll"
+      value={t('Poll')}
       onClick={handleClick}
       testId="NewRadioQuestionButton"
     />
