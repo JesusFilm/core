@@ -5,6 +5,7 @@ import ButtonGroup from '@mui/material/ButtonGroup'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -90,6 +91,8 @@ export function MoveBlock({
   const lastBlockIndex =
     parentBlock != null ? parentBlock.children.length - 1 : 0
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Box data-testid="MoveBlock">
       <ButtonGroup
@@ -123,7 +126,7 @@ export function MoveBlock({
           component="div"
           sx={{ pt: 1 }}
         >
-          Move Up or Down
+          {t('Move Up or Down')}
         </Typography>
       </Box>
     </Box>

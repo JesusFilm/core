@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
@@ -17,6 +18,8 @@ export function NavigateAction(): ReactElement {
   const nextStep =
     steps?.find((step) => step.id === selectedStep?.nextBlockId) ??
     getNextStep(selectedStep, steps)
+
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>
@@ -43,7 +46,7 @@ export function NavigateAction(): ReactElement {
       >
         <InformationCircleContainedIcon />
         <Typography variant="caption">
-          Default Next Step defined in the current card settings.
+          {t('Default Next Step defined in the current card settings.')}
         </Typography>
       </Stack>
     </>

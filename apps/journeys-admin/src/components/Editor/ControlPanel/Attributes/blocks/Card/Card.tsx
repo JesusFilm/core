@@ -80,7 +80,7 @@ export function Card({
 
   return (
     <>
-      <Attribute
+      {/* <Attribute
         id={`${id}-background-color`}
         icon={
           <Paper sx={{ borderRadius: 1000, flexShrink: 0 }}>
@@ -145,7 +145,7 @@ export function Card({
         >
           <BackgroundMedia />
         </Attribute>
-      )}
+      )} */}
       <Attribute
         icon={<PaletteIcon />}
         id={`${id}-theme-mode`}

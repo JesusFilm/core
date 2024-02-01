@@ -7,14 +7,7 @@ import { MoveBlock } from './MoveBlock'
 
 export function QuickControls(): ReactElement {
   return (
-    <Stack
-      justifyContent="flex-end"
-      spacing={4}
-      sx={{
-        height: 'calc(100% - 32px)',
-        maxHeight: 640
-      }}
-    >
+    <Stack spacing={4}>
       <MoveBlock />
       <DuplicateBlock variant="button" />
       <DeleteBlock variant="button" />

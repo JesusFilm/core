@@ -65,7 +65,7 @@ export function AIPrompt({
               disabled={!isValid || isSubmitting || loading}
               variant="outlined"
             >
-              Prompt
+              {t('Prompt')}
             </Button>
           </Form>
         )}

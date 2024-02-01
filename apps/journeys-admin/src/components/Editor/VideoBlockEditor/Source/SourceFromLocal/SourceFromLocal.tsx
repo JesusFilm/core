@@ -15,6 +15,9 @@ export const GET_VIDEO_VARIANT_LANGUAGES = gql`
   query GetVideoVariantLanguages($id: ID!) {
     video(id: $id) {
       id
+      variant {
+        id
+      }
       variantLanguages {
         id
         name(languageId: "529", primary: true) {

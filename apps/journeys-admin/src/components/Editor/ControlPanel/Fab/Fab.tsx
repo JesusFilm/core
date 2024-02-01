@@ -1,6 +1,7 @@
 import MuiFab from '@mui/material/Fab'
 import Zoom from '@mui/material/Zoom'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
@@ -27,6 +28,8 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Zoom in={visible} unmountOnExit data-testid="Fab">
       {activeFab === ActiveFab.Add ? (
@@ -38,7 +41,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
           disabled={disabled}
         >
           <Plus2Icon sx={{ mr: 3 }} />
-          Add
+          {t('Add')}
         </MuiFab>
       ) : activeFab === ActiveFab.Edit ? (
         <MuiFab
@@ -49,7 +52,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
           disabled={disabled}
         >
           <Edit2Icon sx={{ mr: 3 }} />
-          Edit
+          {t('Edit')}
         </MuiFab>
       ) : (
         <MuiFab
@@ -60,7 +63,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
           disabled={disabled}
         >
           <CheckContainedIcon sx={{ mr: 3 }} />
-          Done
+          {t('Done')}
         </MuiFab>
       )}
     </Zoom>

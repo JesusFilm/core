@@ -21,7 +21,7 @@ export interface Actions {
 }
 
 export function ActionsTable(): ReactElement {
-  const { t } = useTranslation('journeys-admin')
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
   function countUrls(journey: Journey | undefined): Actions[] {
