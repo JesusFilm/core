@@ -1,4 +1,4 @@
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import Box from '@mui/material/Box'
 import React, { ReactElement } from 'react'
 import {
@@ -59,19 +59,18 @@ export default function CustomEdge({
             onClick={onEdgeClick}
             style={{
               borderRadius: '50%',
-              background: '#3aa74a',
+              background: 'white',
               borderColor: 'transparent',
               cursor: 'pointer',
               margin: 0,
               padding: 0,
-              width: 18,
-              height: 18
+              display: 'flex',
+              alignItems: 'center'
             }}
           >
-            <AddRoundedIcon
-              style={{
-                borderRadius: '50%',
-                color: 'white',
+            <AddCircleRoundedIcon
+              sx={{
+                color: '#3aa74a',
                 fontSize: 'large',
                 padding: 0,
                 margin: 0

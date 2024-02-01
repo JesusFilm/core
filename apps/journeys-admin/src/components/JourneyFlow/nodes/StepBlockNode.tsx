@@ -23,6 +23,7 @@ import { StepBlockNextBlockUpdate } from '../../../../__generated__/StepBlockNex
 import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../Editor/ControlPanel/Attributes/blocks/Step/NextCard/Cards'
 
 import { BaseNode } from './BaseNode'
+import { monitorEventLoopDelay } from 'perf_hooks'
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
@@ -102,6 +103,13 @@ export function StepBlockNode({
       swiper.slideTo(ActiveSlide.Canvas)
   }
 
+  function hasVideoBlock(children): boolean {
+    if (!children || children.length === 0) {
+      return false
+    }
+
+    return true
+  }
   return (
     <BaseNode
       selected={
@@ -137,7 +145,10 @@ export function StepBlockNode({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#ff9736'
+                color:
+                  steps[0].children[0].children[0].__typename === 'VideoBlock'
+                    ? '#ff9736'
+                    : 'red'
               }}
             >
               <PlayCircleFilledWhiteRoundedIcon />
