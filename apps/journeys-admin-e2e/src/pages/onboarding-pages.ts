@@ -41,27 +41,17 @@ export class OnboardingPages {
   }
 
   async fillOnboardingForm(teamName: string, legalName: string): Promise<void> {
+    // Answer to NS - Stage question
     await this.page.locator('input[name="nsStage"]').click()
     await this.page.locator('input[name="nsStage"]').fill('NS - Stage - Answer')
-    await this.page.locator('#ZtEx_m-Hg').click()
-    await this.page.locator('#ZtEx_m-Hg').fill('Question-edit answer')
+    // Agree to terms
     await this.page.getByRole('button', { name: 'Next' }).click()
 
-    await this.page.click('textarea#lWcpw1ey7[name="onboarding"]')
-    await this.page.fill(
-      'textarea#lWcpw1ey7[name="onboarding"]',
-      'onboarding long question - answer'
-    )
-
-    await this.page.getByRole('button', { name: 'Next' }).click()
-    await this.page.check('input[type="radio"][value="Option 1"]')
-    await this.page.getByRole('button', { name: 'Next' }).click()
-    await this.page.check('input[type="checkbox"][value="Option 1"]')
-    await this.page.check('input[type="checkbox"][value="Option 2"]')
-    await this.page.getByRole('button', { name: 'Next' }).click()
+    // Enter team name
     await this.page.click('input[type="text"][id="title"]')
     await this.page.fill('input[type="text"][id="title"]', teamName)
 
+    // Enter legal name
     await this.page.click('input[type="text"][id="publicTitle"]')
     await this.page.fill('input[type="text"][id="publicTitle"]', legalName)
 
