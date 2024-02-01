@@ -15,7 +15,7 @@ import {
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
 } from '../../../../__generated__/StepAndCardBlockCreate'
-import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
+import { useStepAndCardBlockCreateMutation } from '../../../libs/useStepAndCardBlockCreateMutation'
 
 export const ACTION_NODE_WIDTH = 125
 export const ACTION_NODE_HEIGHT = 28
@@ -52,16 +52,11 @@ export function BaseNode({
   variant = 'step'
 }: BaseNodeProps): ReactElement {
   const { journey } = useJourney()
-  const [stepAndCardBlockCreate] = useMutation<
-    StepAndCardBlockCreate,
-    StepAndCardBlockCreateVariables
-  >(STEP_AND_CARD_BLOCK_CREATE)
-
+  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
   const [isHovered, setIsHovered] = useState(false)
 
   const handleMouseEnter = (): void => {
     setIsHovered(true)
-    console.log('hovered over')
   }
 
   const handleMouseLeave = (): void => {
@@ -85,34 +80,6 @@ export function BaseNode({
           parentBlockId: stepId,
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base
-        }
-      },
-      update(cache, { data }) {
-        if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journey.id }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const newStepBlockRef = cache.writeFragment({
-                  data: data.stepBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                const newCardBlockRef = cache.writeFragment({
-                  data: data.cardBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
-              }
-            }
-          })
         }
       }
     })
