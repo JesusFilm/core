@@ -190,10 +190,12 @@ export function ActionsListView({
                         {goalLabel(url)}
                       </Typography>
                     </Stack>
-                    <Trans t={t} values={count}>
+                    <Trans t={t} count={count}>
                       <Typography variant="body2" color="secondary.light">
                         Appears on{' '}
-                        <span style={{ fontWeight: 'bold' }}>{count}</span>{' '}
+                        <span style={{ fontWeight: 'bold' }}>
+                          {'{{ count }}'}
+                        </span>{' '}
                         {count > 1 ? 'cards' : 'card'}
                       </Typography>
                     </Trans>
