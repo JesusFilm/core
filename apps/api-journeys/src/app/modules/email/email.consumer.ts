@@ -1,6 +1,6 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { MailerService } from '@nestjs-modules/mailer'
 import { render } from '@react-email/render'
@@ -14,13 +14,13 @@ import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
 
 AWS.config.update({ region: 'us-east-2' })
 
-const apollo = new ApolloClient({
-  uri: process.env.GATEWAY_URL,
-  cache: new InMemoryCache(),
-  headers: {
-    'interop-token': process.env.INTEROP_TOKEN ?? ''
-  }
-})
+// const apollo = new ApolloClient({
+//   uri: process.env.GATEWAY_URL,
+//   cache: new InMemoryCache(),
+//   headers: {
+//     'interop-token': process.env.INTEROP_TOKEN ?? ''
+//   }
+// })
 
 export interface SendEmailParams {
   to: string

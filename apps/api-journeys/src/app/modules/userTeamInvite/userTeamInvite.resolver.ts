@@ -2,7 +2,6 @@ import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-
 import omit from 'lodash/omit'
 
 import { Prisma, UserTeamInvite } from '.prisma/api-journeys-client'
