@@ -135,14 +135,17 @@ export class ChannelResolver {
       grant_type: 'authorization_code',
       redirect_uri: input.redirectUri,
     });
+
     const youtubeChannels = await this.googleYoutube.getChannels({
       accessToken: authResponse.access_token,
     });
 
+    console.log('youtubeChannels', youtubeChannels);
+
     const channel = await this.prismaService.channel.findUnique({
       where: {
         id: input.channelId,
-        // nexus: { userNexuses: { every: { userId } } },
+        nexus: { userNexuses: { every: { userId } } },
       },
     });
     if (channel == null) {

@@ -28,10 +28,11 @@ export class BucketService {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     bucketFile.on('httpUploadProgress', async (progress) => {
+      const percentage = (progress.loaded / progress.total) * 100;
       if (progressCallback != null) {
-        await progressCallback(progress.loaded / progress.total);
+        await progressCallback(percentage);
       }
-      console.log(`Uploaded ${progress.loaded} of ${progress.total} bytes`);
+      console.log(`Uploading: ${percentage} %`);
     });
     return await bucketFile.promise();
   }

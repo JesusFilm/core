@@ -1,6 +1,7 @@
 type Batch @key(fields: "id") {
   id: ID!
-  resourceId: String!
+  nexusId: String!
+  channelId: String!
   name: String!
   status: BatchStatus!
 }

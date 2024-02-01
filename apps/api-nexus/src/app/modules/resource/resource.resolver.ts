@@ -1,7 +1,4 @@
-import { unlink } from 'fs';
-
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import Bull from 'bull';
 import { GraphQLError } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,7 +8,6 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser';
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId';
 
 import {
-  BatchJobInput,
   Channel,
   GoogleAuthInput,
   GoogleAuthResponse,
@@ -26,11 +22,7 @@ import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
 import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
-import { BatchService } from '../batch/batchService';
-import {
-  BullMQService,
-  UploadYoutubeTemplateTask,
-} from '../bullMQ/bullMQ.service';
+import { BullMQService } from '../bullMQ/bullMQ.service';
 import { GoogleDriveService } from '../google-drive/googleDriveService';
 
 @Resolver('Resource')
@@ -43,7 +35,6 @@ export class ResourceResolver {
     private readonly youtubeService: YoutubeService,
     private readonly bullMQService: BullMQService,
     private readonly googleSheetsService: GoogleSheetsService,
-    private readonly batchService: BatchService,
   ) {}
 
   @Query()
@@ -89,43 +80,6 @@ export class ResourceResolver {
       },
     });
     return resource;
-  }
-
-  @Mutation()
-  async resourceBatchJob(
-    @Args('input') input: BatchJobInput,
-  ): Promise<Array<Bull.Job<unknown>>> {
-    const batchJob = await this.bullMQService.createBatchJob(
-      {
-        id: input.batch.id,
-        batchName: input.batch.batchName,
-      },
-      await Promise.all(
-        input.resources.map(async (item) => {
-          const channel = await this.prismaService.channel.findUnique({
-            where: { id: item?.channel },
-            include: { youtube: true },
-          });
-          const resource = await this.prismaService.resource.findUnique({
-            where: { id: item?.channel },
-            include: { googleDrive: true },
-          });
-          const ben: UploadYoutubeTemplateTask = {
-            channel: {
-              channelId: channel?.youtube?.channelId ?? 'N/A',
-              refreshToken: channel?.youtube?.refreshToken ?? 'N/A',
-            },
-            resource: {
-              driveId: resource?.googleDrive?.driveId ?? 'N/A',
-              refreshToken: resource?.googleDrive?.refreshToken ?? 'N/A',
-            },
-          };
-          return ben;
-        }),
-      ),
-    );
-
-    return batchJob;
   }
 
   @Mutation()
@@ -254,12 +208,12 @@ export class ResourceResolver {
   @Mutation()
   async resourceFromTemplate(
     @CurrentUserId() userId: string,
-    @CurrentUser() user: User,
     @Args('nexusId') nexusId: string,
     @Args('tokenId') tokenId: string,
     @Args('spreadsheetId') spreadsheetId: string,
     @Args('drivefolderId') drivefolderId: string,
   ): Promise<Resource[]> {
+    console.log('Resource From Template . . .');
     const nexus = await this.prismaService.nexus.findUnique({
       where: {
         id: nexusId,
@@ -279,12 +233,13 @@ export class ResourceResolver {
     if (googleAccessToken === null) {
       throw new Error('Invalid tokenId');
     }
-
+    console.log('Downloading Template . . .');
     const rows = await this.googleDriveService.handleGoogleDriveOperations(
       tokenId,
       spreadsheetId,
       drivefolderId,
     );
+    console.log('Total Data', rows.length);
 
     const batchResources: Array<{ resource: Resource; channel?: Channel }> = [];
 
@@ -294,7 +249,7 @@ export class ResourceResolver {
           id: uuidv4(),
           name: row.filename ?? '',
           nexusId: nexus.id,
-          status: 'processing',
+          status: row.channelData?.id !== null ? 'processing' : 'published',
           sourceType: 'template',
           createdAt: new Date(),
           category: row.category,
@@ -316,54 +271,36 @@ export class ResourceResolver {
           },
         },
       });
-      batchResources.push({
-        resource,
-        channel: (row.channel as Channel) ?? undefined,
-      });
+      if (row.channelData?.id !== undefined) {
+        batchResources.push({ resource, channel: row.channelData });
+      }
     }
 
-    const channels = Array.from(
-      new Set(batchResources.map((item) => item.channel)),
-    );
+    const channels = batchResources
+      .filter((item, index, self) => {
+        return (
+          index === self.findIndex((t) => t.channel?.id === item.channel?.id) &&
+          item.channel !== undefined
+        );
+      })
+      .map((item) => item.channel);
+
+    console.log('Batches', channels.length);
 
     for (const channel of channels) {
+      if (channel === undefined) continue;
       const resources = batchResources
         .filter((item) => {
-          return item.channel?.id === channel?.id;
+          return item.channel?.id === channel.id;
         })
         .map((item) => item.resource);
-      if (channel !== null && resources.length > 0) {
-        await this.batchService.createBatch(
-          uuidv4(),
-          nexusId,
-          channel as Channel,
-          resources,
-        );
-      }
-
-      // await this.cloudFlareService.makeVideoPublic(res?.result?.uid ?? '');
-
-      await this.prismaService.resource.create({
-        data: {
-          id: uuidv4(),
-          cloudflareId,
-          name: filename,
-          nexusId: nexus.id,
-          status: 'published',
-          sourceType: 'template',
-          createdAt: new Date(),
-          category,
-          privacy: 'public',
-          localizations: {
-            create: {
-              title,
-              description,
-              keywords,
-              language: 'en',
-            },
-          },
-        },
-      });
+      console.log('Batche Count: ', resources.length);
+      await this.bullMQService.createBatch(
+        uuidv4(),
+        nexusId,
+        channel,
+        resources,
+      );
     }
 
     return batchResources.map((item) => item.resource);

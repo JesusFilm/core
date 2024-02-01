@@ -35,33 +35,33 @@ export class YoutubeService {
     return oAuth2Client;
   }
 
-  async uploadVideo(
-    token: string,
-    filePath: string,
-    channelId: string,
-    title: string,
-    description: string,
-  ): Promise<unknown> {
+  async uploadVideo(youtubeData: {
+    token: string;
+    filePath: string;
+    channelId: string;
+    title: string;
+    description: string;
+  }): Promise<unknown> {
     const service = google.youtube('v3');
-    const fileSize = statSync(filePath).size;
+    const fileSize = statSync(youtubeData.filePath).size;
 
     return await service.videos.insert(
       {
-        auth: this.authorize(token),
+        auth: this.authorize(youtubeData.token),
         part: ['id', 'snippet', 'status'],
         notifySubscribers: false,
         requestBody: {
           snippet: {
-            title,
-            description,
-            channelId,
+            title: youtubeData.title,
+            description: youtubeData.description,
+            channelId: youtubeData.channelId,
           },
           status: {
             privacyStatus: 'private',
           },
         },
         media: {
-          body: createReadStream(filePath),
+          body: createReadStream(youtubeData.filePath),
         },
       },
       {

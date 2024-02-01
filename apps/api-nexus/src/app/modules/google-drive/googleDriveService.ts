@@ -28,7 +28,8 @@ interface FileResponse {
 
 interface SpreadsheetRow {
   driveFile?: drive_v3.Schema$File;
-  channel?: Channel | string | undefined;
+  channel?: string;
+  channelData?: Channel;
   filename?: string;
   title?: string;
   description?: string;
@@ -81,12 +82,14 @@ export class GoogleDriveService {
   }
 
   async downloadDriveFile(
-    fileId: string,
-    accessToken: string,
+    data: { fileId: string; accessToken: string },
     progressCallback?: (progress: number) => Promise<void>,
   ): Promise<string> {
-    await this.setFilePermission({ fileId, accessToken });
-    const fileUrl = this.getFileUrl(fileId);
+    await this.setFilePermission({
+      fileId: data.fileId,
+      accessToken: data.accessToken,
+    });
+    const fileUrl = this.getFileUrl(data.fileId);
     const response = await axios({
       method: 'get',
       url: fileUrl,
@@ -132,10 +135,23 @@ export class GoogleDriveService {
     const drive = google.drive({ version: 'v3', auth });
     const driveResponse = await drive.files.list({
       q: `'${folderId}' in parents and name='${fileName}' and trashed=false`,
-      fields: 'files(id, name, thumbnailLink, mimeType, kind)',
+      fields: 'files(id, name, mimeType, kind)',
     });
 
     return driveResponse.data.files?.[0] ?? null;
+  }
+
+  async findFiles(
+    auth: OAuth2Client,
+    folderId: string,
+  ): Promise<drive_v3.Schema$File[] | undefined> {
+    const drive = google.drive({ version: 'v3', auth });
+    const driveResponse = await drive.files.list({
+      q: `'${folderId}' in parents and trashed=false`,
+      fields: 'files(id, name, mimeType, kind)',
+    });
+
+    return driveResponse.data.files;
   }
 
   async handleGoogleDriveOperations(
@@ -152,29 +168,25 @@ export class GoogleDriveService {
       throw new Error('Invalid tokenId');
     }
 
+    console.log('googleAccessToken');
     const accessToken = await this.googleOAuthService.getNewAccessToken(
       googleAccessToken.refreshToken,
     );
 
-    // const firstSheetName = await this.getFirstSheetName(spreadsheetId, accessToken);
-
-    // const spreadsheetData = await this.downloadSpreadsheet(
-    //   spreadsheetId,
-    //   firstSheetName
-    //   accessToken,
-    // );
-
+    console.log('getFirstSheetName');
     const firstSheetName = await this.googleSheetsService.getFirstSheetName(
       spreadsheetId,
       accessToken,
     );
 
+    console.log('downloadSpreadsheet');
     const spreadsheetData = await this.googleSheetsService.downloadSpreadsheet(
       spreadsheetId,
       firstSheetName,
       accessToken,
     );
 
+    console.log('Prepare spreadsheetRows');
     let spreadsheetRows: SpreadsheetRow[] = [];
 
     if (spreadsheetData.length > 0) {
@@ -190,19 +202,22 @@ export class GoogleDriveService {
       });
     }
 
-    for (const spreadsheetRow of spreadsheetRows) {
-      spreadsheetRow.driveFile =
-        (await this.findFile(
-          this.youtubeService.authorize(accessToken),
-          drivefolderId,
-          spreadsheetRow.filename ?? '',
-        )) ?? undefined;
+    console.log('Authorize');
+    const authClient = this.youtubeService.authorize(accessToken);
 
-      // spreadsheetRow.channel = await this.prismaService.channel.findUnique({
-      //   where: {
-      //     id: '0',
-      //   },
-      // });
+    console.log('Find Files');
+    const files = await this.findFiles(authClient, drivefolderId);
+
+    console.log('Authorize spreadsheetRows');
+    for (const spreadsheetRow of spreadsheetRows) {
+      spreadsheetRow.driveFile = files?.find((file) => {
+        return file.name === spreadsheetRow.filename;
+      });
+      console.log('spreadsheetRow.driveFile', spreadsheetRow.driveFile);
+      spreadsheetRow.channelData = (await this.prismaService.channel.findFirst({
+        where: { youtube: { youtubeId: spreadsheetRow.channel as string } },
+        include: { youtube: true },
+      })) as Channel | undefined;
     }
 
     return spreadsheetRows;

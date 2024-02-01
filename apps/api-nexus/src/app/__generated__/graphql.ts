@@ -162,7 +162,8 @@ export class BatchJobInput {
 export class Batch {
     __typename?: 'Batch';
     id: string;
-    resourceId: string;
+    nexusId: string;
+    channelId: string;
     name: string;
     status: BatchStatus;
 }
@@ -236,7 +237,7 @@ export class Resource {
     createdAt: DateTime;
     updatedAt?: Nullable<DateTime>;
     deletedAt?: Nullable<DateTime>;
-    googleDriveLink: string;
+    googleDriveLink?: Nullable<string>;
     category: string;
     privacy: PrivacyStatus;
     sourceType: SourceType;
