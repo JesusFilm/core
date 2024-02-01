@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { ChatPlatform } from '../../__generated__/graphql'
+import { ChatButtonType, ChatPlatform } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { ChatButtonResolver } from './chatButton.resolver'
@@ -34,10 +34,14 @@ describe('ChatButtonResolver', () => {
   it('should create a new ChatButton', async () => {
     prismaService.chatButton.create = jest
       .fn()
-      .mockReturnValue([{ journeyId: 'journeyId', id: '1' }])
+      .mockReturnValue([
+        { journeyId: 'journeyId', id: '1', type: ChatButtonType.link }
+      ])
 
     const result = await resolver.chatButtonCreate('journeyId', {})
-    expect(result).toEqual([{ id: '1', journeyId: 'journeyId' }])
+    expect(result).toEqual([
+      { id: '1', journeyId: 'journeyId', type: ChatButtonType.link }
+    ])
   })
 
   it('should create a new custom ChatButton', async () => {
@@ -45,7 +49,8 @@ describe('ChatButtonResolver', () => {
       {
         journeyId: 'journeyId',
         id: '1',
-        input: { platform: ChatPlatform.custom }
+        platform: ChatPlatform.custom,
+        type: ChatButtonType.link
       }
     ])
 
@@ -54,7 +59,8 @@ describe('ChatButtonResolver', () => {
       {
         id: '1',
         journeyId: 'journeyId',
-        input: { platform: ChatPlatform.custom }
+        platform: ChatPlatform.custom,
+        type: ChatButtonType.link
       }
     ])
   })
