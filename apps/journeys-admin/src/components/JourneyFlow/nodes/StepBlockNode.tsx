@@ -4,11 +4,9 @@ import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
-import { useSwiper } from 'swiper/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -19,11 +17,10 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import { StepBlockNextBlockUpdate } from '../../../../__generated__/StepBlockNextBlockUpdate'
-import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../Editor/ControlPanel/Attributes/blocks/Step/NextCard/Cards'
 
 import { BaseNode } from './BaseNode'
 import { filter } from 'lodash'
+import { useStepBlockNextBlockUpdateMutation } from '../../../libs/useStepBlockNextBlockUpdateMutation'
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
@@ -72,18 +69,15 @@ export function StepBlockNode({
     | TreeBlock<CardBlock>
     | undefined
   const bgImage = getBackgroundImage(card)
-  const { dispatch } = useEditor()
-  const [stepBlockNextBlockUpdate] = useMutation<StepBlockNextBlockUpdate>(
-    STEP_BLOCK_NEXT_BLOCK_UPDATE
-  )
-  const swiper = useSwiper()
+  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
 
   const {
-    state: { selectedStep, selectedBlock }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { journey } = useJourney()
 
-  async function onConnect(params): Promise<void> {
+  async function handleConnect(params): Promise<void> {
     if (journey == null) return
 
     await stepBlockNextBlockUpdate({
@@ -93,14 +87,19 @@ export function StepBlockNode({
         input: {
           nextBlockId: params.target
         }
+      },
+      optimisticResponse: {
+        stepBlockUpdate: {
+          id: params.source,
+          __typename: 'StepBlock',
+          nextBlockId: params.target
+        }
       }
     })
   }
 
-  function handleClick(): void {
+  function handleClick() {
     dispatch({ type: 'SetSelectedStepAction', step })
-    if (swiper.activeIndex !== ActiveSlide.Canvas)
-      swiper.slideTo(ActiveSlide.Canvas)
   }
 
   function hasVideoBlock(step): boolean {
@@ -113,15 +112,9 @@ export function StepBlockNode({
 
   return (
     <BaseNode
-      selected={
-        selectedStep?.id === step.id
-          ? selectedBlock?.id === step.id
-            ? true
-            : 'descendant'
-          : false
-      }
+      selected={selectedStep?.id === step.id}
+      onSourceConnect={handleConnect}
       onClick={handleClick}
-      onSourceConnect={onConnect}
       icon={
         card?.backgroundColor != null || bgImage != null ? (
           <Box

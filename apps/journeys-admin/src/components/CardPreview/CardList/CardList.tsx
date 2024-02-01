@@ -123,6 +123,7 @@ export function CardList({
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
       testId="CardList"
+      scrollIntoView
     >
       {showNavigation === true && (
         <NavigationCard

@@ -16,9 +16,8 @@ import {
   StepAndCardBlockCreateVariables
 } from '../../../__generated__/StepAndCardBlockCreate'
 
-import { STEP_AND_CARD_BLOCK_CREATE } from './CardPreview'
-
 import { CardPreview } from '.'
+import { STEP_AND_CARD_BLOCK_CREATE } from '../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 jest.mock('uuid', () => ({
   __esModule: true,

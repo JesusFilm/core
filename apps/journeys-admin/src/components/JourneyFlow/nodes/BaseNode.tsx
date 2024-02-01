@@ -15,11 +15,18 @@ import {
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
 } from '../../../../__generated__/StepAndCardBlockCreate'
-import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
-import React from 'react'
+import { useStepAndCardBlockCreateMutation } from '../../../libs/useStepAndCardBlockCreateMutation'
 
-export const NODE_WIDTH = 150
-export const NODE_HEIGHT = 80
+export const ACTION_NODE_WIDTH = 125
+export const ACTION_NODE_HEIGHT = 28
+export const ACTION_NODE_WIDTH_GAP = 11
+export const ACTION_NODE_HEIGHT_GAP = 8
+
+export const STEP_NODE_WIDTH = 150
+export const STEP_NODE_HEIGHT = 80
+export const STEP_NODE_WIDTH_GAP = 200
+export const STEP_NODE_HEIGHT_GAP =
+  ACTION_NODE_HEIGHT + ACTION_NODE_HEIGHT_GAP + 43
 
 interface BaseNodeProps {
   isTargetConnectable?: boolean
@@ -31,6 +38,7 @@ interface BaseNodeProps {
   icon: ReactNode
   title: string
   selected?: 'descendant' | boolean
+  variant?: 'step' | 'action'
 }
 
 export function BaseNode({
@@ -40,19 +48,15 @@ export function BaseNode({
   onClick,
   icon,
   title,
-  selected = false
+  selected = false,
+  variant = 'step'
 }: BaseNodeProps): ReactElement {
   const { journey } = useJourney()
-  const [stepAndCardBlockCreate] = useMutation<
-    StepAndCardBlockCreate,
-    StepAndCardBlockCreateVariables
-  >(STEP_AND_CARD_BLOCK_CREATE)
-
+  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
   const [isHovered, setIsHovered] = useState(false)
 
   const handleMouseEnter = (): void => {
     setIsHovered(true)
-    console.log('hovered over')
   }
 
   const handleMouseLeave = (): void => {
@@ -77,34 +81,6 @@ export function BaseNode({
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base
         }
-      },
-      update(cache, { data }) {
-        if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journey.id }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const newStepBlockRef = cache.writeFragment({
-                  data: data.stepBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                const newCardBlockRef = cache.writeFragment({
-                  data: data.cardBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
-              }
-            }
-          })
-        }
       }
     })
     if (data?.stepBlockCreate != null) {
@@ -114,213 +90,193 @@ export function BaseNode({
     }
   }
 
-  return isTargetConnectable !== false ? (
-    <Box
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      sx={{ height: '150%', overflow: 'visible' }}
-    >
-      <Card // regular card
-        sx={{
-          borderRadius: 1,
-          outline: '2px solid',
-          outlineColor: (theme) =>
-            selected === true
-              ? theme.palette.primary.main
-              : selected === 'descendant'
-              ? theme.palette.divider
-              : 'transparent',
-          outlineOffset: '2px'
-        }}
-      >
-        <CardContent
+  switch (variant) {
+    case 'step':
+      return (
+        <Box
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          sx={{ height: '150%', overflow: 'visible' }}
+        >
+          <Card // regular card
+            sx={{
+              borderRadius: 1,
+              outline: '2px solid',
+              outlineColor: (theme) =>
+                selected === true
+                  ? theme.palette.primary.main
+                  : selected === 'descendant'
+                  ? theme.palette.divider
+                  : 'transparent',
+              outlineOffset: '2px'
+            }}
+          >
+            <CardContent
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                width: STEP_NODE_WIDTH,
+                height: STEP_NODE_HEIGHT,
+                gap: 2,
+                borderRadius: 1
+              }}
+              onClick={onClick}
+            >
+              {icon}
+              <Typography
+                sx={{
+                  display: '-webkit-box',
+                  '-webkit-box-orient': 'vertical',
+                  '-webkit-line-clamp': '2',
+                  overflow: 'hidden'
+                }}
+              >
+                {title}
+              </Typography>
+            </CardContent>
+            <Handle
+              type="target"
+              position={Position.Top}
+              style={{
+                width: 7,
+                height: 7,
+                background: 'white',
+                border:
+                  selected !== false
+                    ? '2px solid #c52d3aff'
+                    : '2px solid #aaacbb ',
+                outline: '1.5px solid white',
+                outlineColor: 'white',
+                cursor: 'pointer'
+              }}
+            />
+            <Handle
+              type="target"
+              position={Position.Bottom}
+              isConnectableStart={false}
+              style={{
+                overflow: 'visible',
+                width: '100%',
+                height: '100%',
+                borderRadius: 0,
+                background: 'tranparent',
+                opacity: 0
+              }}
+            />
+            {isSourceConnectable !== false && (
+              <Handle
+                type="source"
+                position={Position.Bottom}
+                onConnect={onSourceConnect}
+                onClick={handleClick}
+                style={{
+                  width: 7,
+                  height: 7,
+                  background: 'white',
+                  border:
+                    selected !== false
+                      ? '2px solid #c52d3aff'
+                      : '2px solid #aaacbb ',
+                  outline: '1.5px solid white',
+                  outlineColor: 'white',
+                  visibility: isHovered ? 'hidden' : 'visible'
+                }}
+              />
+            )}
+            {isHovered && (
+              <Box
+                className="dragToCreateHitbox"
+                style={{
+                  position: 'absolute',
+                  background: 'transparent',
+                  borderColor: 'transparent',
+                  cursor: 'pointer',
+                  margin: 0,
+                  padding: 0,
+                  width: STEP_NODE_WIDTH,
+                  height: 18,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center'
+                }}
+              >
+                <Handle
+                  type="source"
+                  position={Position.Bottom}
+                  onConnect={onSourceConnect}
+                  onClick={handleClick}
+                  style={{
+                    width: STEP_NODE_WIDTH / 2,
+                    height: 30,
+                    background: 'transparent',
+                    borderColor: 'transparent',
+                    borderRadius: 0,
+                    overflow: 'visible'
+                  }}
+                />
+                <ArrowDownwardRoundedIcon
+                  style={{
+                    borderRadius: '50%',
+                    color: 'white',
+                    fontSize: 'large',
+                    padding: 0,
+                    marginTop: 5,
+                    backgroundColor: '#c52d3aff'
+                  }}
+                />
+              </Box>
+            )}
+          </Card>
+        </Box>
+      )
+    case 'action':
+      return (
+        <Box
           sx={{
-            display: 'flex',
-            width: NODE_WIDTH,
-            height: NODE_HEIGHT,
-            margin: 0,
-            padding: 0
+            borderRadius: 20,
+            outline: (theme) => `2px solid ${theme.palette.divider}`,
+            backgroundColor: '#eff2f5',
+            width: ACTION_NODE_WIDTH,
+            height: ACTION_NODE_HEIGHT,
+            py: 1,
+            px: 4
           }}
           onClick={onClick}
         >
-          {icon}
-
-          <Box
+          <Typography
             sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: NODE_WIDTH,
-              height: NODE_HEIGHT,
-              gap: 2,
-              borderRadius: 1,
-              paddingLeft: 2
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              textAlign: 'center',
+              fontWeight: 'bold',
+              fontSize: 10
             }}
+            variant="body2"
           >
-            <Typography
-              sx={{
-                display: '-webkit-box',
-                '-webkit-box-orient': 'vertical',
-                '-webkit-line-clamp': '2',
-                overflow: 'hidden',
-                fontWeight: 'bold',
-                fontSize: 'small',
-                maxHeight: '3rem',
-                lineHeight: '1rem'
-              }}
-            >
-              {title}
-            </Typography>
-          </Box>
-        </CardContent>
-        <Handle
-          type="target"
-          position={Position.Top}
-          style={{
-            width: 7,
-            height: 7,
-            background: 'white',
-            border:
-              selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb ',
-            outline: '1.5px solid white',
-            outlineColor: 'white',
-            cursor: 'pointer'
-          }}
-        />
-        <Handle
-          type="target"
-          position={Position.Bottom}
-          isConnectableStart={false}
-          style={{
-            overflow: 'visible',
-            width: '100%',
-            height: '100%',
-            borderRadius: 0,
-            background: 'tranparent',
-            opacity: 0
-          }}
-        />
-        {isSourceConnectable !== false && (
-          <Handle
-            type="source"
-            position={Position.Bottom}
-            onConnect={onSourceConnect}
-            onClick={handleClick}
-            style={{
-              width: 7,
-              height: 7,
-              background: 'white',
-              border:
-                selected !== false
-                  ? '2px solid #c52d3aff'
-                  : '2px solid #aaacbb ',
-              outline: '1.5px solid white',
-              outlineColor: 'white',
-              visibility: isHovered ? 'hidden' : 'visible'
-            }}
-          />
-        )}
-        {isHovered && (
-          <Box
-            className="dragToCreateHitbox"
-            style={{
-              position: 'absolute',
-              background: 'transparent',
-              borderColor: 'transparent',
-              cursor: 'pointer',
-              margin: 0,
-              padding: 0,
-              width: NODE_WIDTH,
-              height: 18,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}
-          >
+            {title}
+          </Typography>
+          {isSourceConnectable !== false && (
             <Handle
               type="source"
               position={Position.Bottom}
               onConnect={onSourceConnect}
               onClick={handleClick}
               style={{
-                width: NODE_WIDTH / 2,
-                height: 30,
-                background: 'transparent',
-                borderColor: 'transparent',
-                borderRadius: 0,
-                overflow: 'visible'
+                width: 7,
+                height: 7,
+                background: 'white',
+                border:
+                  selected !== false
+                    ? '2px solid #c52d3aff'
+                    : '2px solid #aaacbb ',
+                outline: '1.5px solid white',
+                outlineColor: 'white'
               }}
             />
-            <ArrowDownwardRoundedIcon
-              style={{
-                borderRadius: '50%',
-                color: 'white',
-                fontSize: 'large',
-                padding: 0,
-                marginTop: 5,
-                backgroundColor: '#c52d3aff'
-              }}
-            />
-          </Box>
-        )}
-      </Card>
-    </Box>
-  ) : (
-    <Box // action label
-      sx={{
-        borderRadius: 20,
-        backgroundColor: 'white',
-        outline: '2px solid',
-        outlineColor: (theme) =>
-          selected === true
-            ? theme.palette.primary.main
-            : selected === 'descendant'
-            ? theme.palette.divider
-            : 'lightgrey'
-      }}
-    >
-      <CardContent
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          width: NODE_WIDTH - 20,
-          height: 'auto',
-          padding: 1
-        }}
-        onClick={onClick}
-      >
-        {icon}
-        <Typography
-          sx={{
-            display: '-webkit-box',
-            '-webkit-box-orient': 'vertical',
-            '-webkit-line-clamp': '1',
-            overflow: 'hidden',
-            fontSize: 'small',
-            paddingLeft: 1
-          }}
-        >
-          {title}
-        </Typography>
-      </CardContent>
-      {isSourceConnectable !== false && (
-        <Handle
-          type="source"
-          position={Position.Bottom}
-          onConnect={onSourceConnect}
-          onClick={handleClick}
-          style={{
-            width: 7,
-            height: 7,
-            background: 'white',
-            border:
-              selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb ',
-            outline: '1.5px solid white',
-            outlineColor: 'white'
-          }}
-        />
-      )}
-    </Box>
-  )
+          )}
+        </Box>
+      )
+  }
 }
