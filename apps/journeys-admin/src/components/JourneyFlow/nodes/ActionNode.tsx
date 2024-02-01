@@ -73,6 +73,7 @@ export function ActionNode({
       isTargetConnectable={false}
       onSourceConnect={onConnect}
       onClick={handleClick}
+      variant="action"
       {...props}
     />
   )
