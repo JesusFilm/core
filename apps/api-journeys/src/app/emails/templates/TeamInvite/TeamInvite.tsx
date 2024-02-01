@@ -18,7 +18,6 @@ import { ReactElement } from 'react'
 
 import EmailLogo from '../EmailLogo/EmailLogo'
 import { User } from '@core/nest/common/firebaseClient'
-import { Avatar } from '@mui/material'
 
 interface TeamInviteEmailProps {
   email?: string
