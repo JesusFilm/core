@@ -1,0 +1,23 @@
+type EmailPreferences {
+  id: ID!
+  userEmail: String!
+  teamInvites: Boolean!
+  journeyNotifications: Boolean!
+  thirdCategory: Boolean!
+}
+
+type Query {
+  emailPreferences: [EmailPreferences]
+  emailPreference(id: ID!, idType: String!): EmailPreferences
+}
+
+input EmailPreferencesUpdateInput {
+  id: ID!
+  journeyNotifications: Boolean!
+  teamInvites: Boolean!
+  thirdCategory: Boolean!
+}
+
+type Mutation {
+  updateEmailPreferences(input: EmailPreferencesUpdateInput!): EmailPreferences
+}
