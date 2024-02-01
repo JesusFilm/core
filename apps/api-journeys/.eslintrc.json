@@ -18,5 +18,8 @@
       "files": ["*.js", "*.jsx"],
       "rules": {}
     }
-  ]
+  ],
+  "rules": {
+    "i18next/no-literal-string": "off"
+  }
 }
