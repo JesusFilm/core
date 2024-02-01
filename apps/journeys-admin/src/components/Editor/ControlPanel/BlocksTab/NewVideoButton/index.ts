@@ -1,1 +1,0 @@
-export { NewVideoButton } from './NewVideoButton'

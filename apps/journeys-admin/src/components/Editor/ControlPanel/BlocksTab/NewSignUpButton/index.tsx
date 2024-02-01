@@ -1,1 +1,0 @@
-export { NewSignUpButton } from './NewSignUpButton'

@@ -1,1 +1,0 @@
-export { NewImageButton } from './NewImageButton'
