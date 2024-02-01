@@ -22,6 +22,10 @@ export abstract class IQuery {
     __typename?: 'IQuery';
 
     abstract me(): Nullable<User> | Promise<Nullable<User>>;
+
+    abstract user(id: string): Nullable<User> | Promise<Nullable<User>>;
+
+    abstract userByEmail(email: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export class Translation {

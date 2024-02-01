@@ -1,51 +1,27 @@
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
-import { render } from '@react-email/render'
 import { Queue } from 'bullmq'
 
 import { Journey } from '.prisma/api-journeys-client'
 
-import JourneyInviteEmail from '../../emails/JourneyInvite'
-import { EmailJob } from '../email/email.consumer'
+import { JourneyEditInviteJob } from '../email/email.consumer'
 
 @Injectable()
 export class UserInviteService {
   constructor(
     @InjectQueue('api-journeys-email')
-    private readonly emailQueue: Queue<EmailJob>
+    private readonly emailQueue: Queue<JourneyEditInviteJob>
   ) {}
 
   async sendEmail(journey: Journey, email: string): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
-    const html = render(
-      JourneyInviteEmail({
-        email,
-        journeyTitle: journey.title,
-        inviteLink: url
-      }),
-      {
-        pretty: true
-      }
-    )
-
-    const text = render(
-      JourneyInviteEmail({
-        email,
-        journeyTitle: journey.title,
-        inviteLink: url
-      }),
-      {
-        plainText: true
-      }
-    )
 
     await this.emailQueue.add(
-      'email',
+      'journey-edit-invite',
       {
         email,
-        subject: `Invitation to edit journey: ${journey.title}`,
-        text,
-        body: html
+        url,
+        journeyTitle: journey.title
       },
       {
         removeOnComplete: true,
