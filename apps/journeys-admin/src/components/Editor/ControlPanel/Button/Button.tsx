@@ -67,7 +67,7 @@ export function Button({
             sx={{
               px: 3.5,
               py: 3,
-              color: disabled ? 'secondary.light' : 'secondary.dark'
+              color: disabled ? 'secondary.light' : 'auto'
             }}
           >
             {icon}

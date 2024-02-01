@@ -43,7 +43,7 @@ export function AddBlockToolbar({
           alignItems: 'center',
           display: 'flex',
           pointerEvents: hasVideoBlock ? 'none' : 'auto',
-          color: hasVideoBlock ? 'secondary.light' : 'secondary.dark'
+          color: hasVideoBlock ? 'secondary.light' : 'auto'
         }}
       >
         <AddIcon sx={{ m: 3 }} />
