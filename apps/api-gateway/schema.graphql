@@ -384,6 +384,25 @@ input EmailActionInput
   email: String!
 }
 
+type EmailPreferences
+  @join__type(graph: USERS)
+{
+  id: ID!
+  userEmail: String!
+  teamInvites: Boolean!
+  journeyNotifications: Boolean!
+  thirdCategory: Boolean!
+}
+
+input EmailPreferencesUpdateInput
+  @join__type(graph: USERS)
+{
+  id: ID!
+  journeyNotifications: Boolean!
+  teamInvites: Boolean!
+  thirdCategory: Boolean!
+}
+
 interface Event
   @join__type(graph: JOURNEYS)
 {
@@ -1288,6 +1307,7 @@ type Mutation
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
+  updateEmailPreferences(input: EmailPreferencesUpdateInput!): EmailPreferences @join__field(graph: USERS)
   userImpersonate(email: String!): String @join__field(graph: USERS)
 }
 
@@ -1460,6 +1480,8 @@ type Query
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
   tags: [Tag!]! @join__field(graph: TAGS)
+  emailPreferences: [EmailPreferences] @join__field(graph: USERS)
+  emailPreference(id: ID!, idType: String!): EmailPreferences @join__field(graph: USERS)
   me: User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
