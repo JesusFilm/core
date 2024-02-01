@@ -4,8 +4,7 @@ import { Queue } from 'bullmq'
 
 import { Team } from '.prisma/api-journeys-client'
 
-import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
-import { EmailJob } from '../email/email.consumer'
+import { TeamInviteJob } from '../email/email.consumer'
 
 @Injectable()
 export class UserTeamInviteService {
