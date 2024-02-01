@@ -44,7 +44,6 @@ export class ResourceResolver {
   ): Promise<Resource[]> {
     const filter: Prisma.ResourceWhereInput = {};
     if (where?.ids != null) filter.id = { in: where?.ids };
-    filter.status = where?.status ?? 'published';
     filter.nexusId = where?.nexusId ?? undefined;
 
     const resources = await this.prismaService.resource.findMany({
@@ -58,8 +57,12 @@ export class ResourceResolver {
               },
             },
           },
+          {
+            NOT: { status: 'deleted' },
+          },
         ],
       },
+      orderBy: { createdAt: 'desc' },
       include: { localizations: true },
       take: where?.limit ?? undefined,
     });

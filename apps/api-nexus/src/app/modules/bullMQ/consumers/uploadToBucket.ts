@@ -56,7 +56,7 @@ export class UploadToBucket {
     // });
     console.log('bucketFile', bucketFile);
     await this.prismaService.resource.update({
-      data: { status: 'uploaded' },
+      data: { status: 'published' },
       where: { id: job.data.resource.driveId },
     });
     await job.progress(100);
