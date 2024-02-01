@@ -6,18 +6,19 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Link,
   Preview,
   Row,
   Section,
-  Img,
   Text
 } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
-import EmailLogo from '../EmailLogo/EmailLogo'
 import { User } from '@core/nest/common/firebaseClient'
+
+import EmailLogo from '../EmailLogo/EmailLogo'
 
 interface TeamInviteEmailProps {
   email?: string
