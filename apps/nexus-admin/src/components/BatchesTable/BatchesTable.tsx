@@ -10,6 +10,14 @@ interface Batch {
   id: string
   name: string
   status: string
+  channel: {
+    name: string
+    platform: string
+    youtube: {
+      imageUrl: string
+      title: string
+    }
+  }
 }
 
 interface BatchesTableProps {
@@ -37,8 +45,10 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
       flex: 1,
       renderCell: ({ row }) => (
         <Chip
-          avatar={<Avatar>{row.channel?.name?.toUpperCase()?.[0]}</Avatar>}
-          label={row.channel?.name}
+          avatar={
+            <Avatar>{row.channel?.youtube?.title?.toUpperCase()?.[0]}</Avatar>
+          }
+          label={row.channel?.youtube?.title}
         />
       ),
       sortable: false

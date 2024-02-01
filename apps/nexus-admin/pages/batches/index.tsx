@@ -15,6 +15,10 @@ const GET_BATCHES = gql`
       channel {
         name
         platform
+        youtube {
+          imageUrl
+          title
+        }
       }
     }
   }
