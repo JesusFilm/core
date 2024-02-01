@@ -1,6 +1,13 @@
+enum ChatButtonType {
+  link
+  code
+}
+
 type ChatButton {
   id: ID!
   link: String
+  code: String
+  type: ChatButtonType
   platform: ChatPlatform
 }
 
@@ -24,11 +31,15 @@ extend type Journey {
 
 input ChatButtonCreateInput {
   link: String
+  code: String
+  type: ChatButtonType
   platform: ChatPlatform
 }
 
 input ChatButtonUpdateInput {
   link: String
+  code: String
+  type: ChatButtonType
   platform: ChatPlatform
 }
 

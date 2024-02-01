@@ -1129,9 +1129,16 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
+enum ChatButtonType {
+  link
+  code
+}
+
 type ChatButton {
   id: ID!
   link: String
+  code: String
+  type: ChatButtonType
   platform: ChatPlatform
 }
 
@@ -1151,11 +1158,15 @@ enum ChatPlatform {
 
 input ChatButtonCreateInput {
   link: String
+  code: String
+  type: ChatButtonType
   platform: ChatPlatform
 }
 
 input ChatButtonUpdateInput {
   link: String
+  code: String
+  type: ChatButtonType
   platform: ChatPlatform
 }
 
