@@ -31,12 +31,15 @@ export function AddBlockToolbar({
         selectedCard?.coverBlockId !== block.id
     ) != null
 
+  const hasChildBlock = selectedCard?.children?.some(
+    (block) => block.id !== selectedCard.coverBlockId
+  )
+
   return (
     <>
       <Stack
         data-testid="AddBlockToolbar"
         sx={{
-          justifyContent: 'space-evenly',
           alignItems: 'center',
           display: 'flex',
           pointerEvents: hasVideoBlock ? 'none' : 'auto',
@@ -46,11 +49,7 @@ export function AddBlockToolbar({
         <AddIcon sx={{ m: 3 }} />
         <NewTypographyButton />
         <NewImageButton />
-        <NewVideoButton
-          disabled={selectedCard?.children?.some(
-            (block) => block.id !== selectedCard.coverBlockId
-          )}
-        />
+        <NewVideoButton disabled={hasChildBlock} />
         <NewRadioQuestionButton />
         <NewTextResponseButton />
         <NewSignUpButton />
