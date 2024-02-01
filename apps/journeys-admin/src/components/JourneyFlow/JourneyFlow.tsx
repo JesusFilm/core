@@ -9,6 +9,8 @@ import {
   Edge,
   MarkerType,
   Node,
+  OnConnectEnd,
+  OnConnectStart,
   ReactFlow,
   useEdgesState,
   useNodesState
@@ -32,11 +34,6 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
-import {
-  StepAndCardBlockCreate,
-  StepAndCardBlockCreateVariables
-} from '../../../__generated__/StepAndCardBlockCreate'
-import { STEP_AND_CARD_BLOCK_CREATE } from '../CardPreview/CardPreview'
 
 import ButtonEdge from './edges/ButtonEdge'
 import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
@@ -62,6 +59,9 @@ import {
   STEP_NODE_WIDTH_GAP
 } from './nodes/BaseNode'
 import 'reactflow/dist/style.css'
+import { useStepAndCardBlockCreateMutation } from '../../libs/useStepAndCardBlockCreateMutation'
+import { useStepBlockNextBlockUpdateMutation } from '../../libs/useStepBlockNextBlockUpdateMutation'
+import { useNavigateToBlockActionUpdateMutation } from '../../libs/useNavigateToBlockActionUpdateMutation'
 
 type InternalNode =
   | Node<StepBlockNodeData, 'StepBlock'>
@@ -287,7 +287,7 @@ export function JourneyFlow(): ReactElement {
 
   const [nodes, setNodes] = useNodesState([])
   const [edges, setEdges] = useEdgesState([])
-  const [previousStepId, setPreviousStepId] = useState()
+  const [previousNodeId, setPreviousNodeId] = useState<string | null>(null)
   const edgeTypes = {
     smart: SmartBezierEdge
   }
@@ -298,29 +298,28 @@ export function JourneyFlow(): ReactElement {
     setNodes(nodes)
   }, [steps, setNodes, setEdges])
 
-  const onConnectStart = (_, { nodeId, handleType }): void => {
-    console.log('on connect start', { nodeId, handleType })
-    setPreviousStepId(nodeId)
-    console.log('steps is: ', steps)
+  const onConnectStart: OnConnectStart = (_, { nodeId }) => {
+    setPreviousNodeId(nodeId)
   }
 
-  const onConnectEnd = (event): void => {
-    if (event.target.className === 'react-flow__pane') {
-      console.log('create new node after', previousStepId)
-      void createNewNodeAfter(previousStepId)
+  const onConnectEnd: OnConnectEnd = (event) => {
+    if (
+      (event.target as HTMLElement | undefined)?.className ===
+        'react-flow__pane' &&
+      previousNodeId != null
+    ) {
+      const nodeData = nodes.find((node) => node.id === previousNodeId)?.data
+      void createNewStepAndConnectBlock(nodeData)
     }
   }
 
   const { journey } = useJourney()
-  const [stepAndCardBlockCreate] = useMutation<
-    StepAndCardBlockCreate,
-    StepAndCardBlockCreateVariables
-  >(STEP_AND_CARD_BLOCK_CREATE)
+  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
+  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
+  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
 
-  const createNewNodeAfter = async (previousStepId): Promise<void> => {
-    if (journey == null) return
-    console.log('PREVstepid: ', previousStepId)
-    console.log('steps: ', steps)
+  async function createNewStepAndConnectBlock(block?: TreeBlock) {
+    if (journey == null || block == null) return
     const newStepId = uuidv4()
     const newCardId = uuidv4()
 
@@ -337,50 +336,28 @@ export function JourneyFlow(): ReactElement {
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base
         }
-      },
-      update(cache, { data }) {
-        console.log('dataaaa', data)
-        if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journey.id }),
-            fields: {
-              blocks(existingBlockRefs = [], { readField }) {
-                const index = existingBlockRefs.findIndex(
-                  (ref) => readField('id', ref) === previousStepId
-                )
-                console.log(readField('id'))
-
-                console.log('previousStepId is: ', previousStepId)
-
-                const newStepBlockRef = cache.writeFragment({
-                  data: data.stepBlockCreate,
-
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                const newCardBlockRef = cache.writeFragment({
-                  data: data.cardBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [
-                  ...existingBlockRefs.slice(0, index + 1),
-                  newStepBlockRef,
-                  newCardBlockRef,
-                  ...existingBlockRefs.slice(index + 1)
-                ]
-              }
-            }
-          })
-        }
       }
     })
+    if (block.__typename === 'StepBlock') {
+      await stepBlockNextBlockUpdate({
+        variables: {
+          id: block.id,
+          journeyId: journey.id,
+          input: {
+            nextBlockId: newStepId
+          }
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            id: block.id,
+            __typename: 'StepBlock',
+            nextBlockId: newStepId
+          }
+        }
+      })
+    } else if (isActionBlock(block)) {
+      await navigateToBlockActionUpdate(block, newStepId)
+    }
   }
 
   return (

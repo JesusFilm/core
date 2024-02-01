@@ -16,10 +16,9 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import { StepBlockNextBlockUpdate } from '../../../../__generated__/StepBlockNextBlockUpdate'
-import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../Editor/ControlPanel/Attributes/blocks/Step/NextCard/Cards'
 
 import { BaseNode } from './BaseNode'
+import { useStepBlockNextBlockUpdateMutation } from '../../../libs/useStepBlockNextBlockUpdateMutation'
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
@@ -68,12 +67,10 @@ export function StepBlockNode({
     | TreeBlock<CardBlock>
     | undefined
   const bgImage = getBackgroundImage(card)
-  const [stepBlockNextBlockUpdate] = useMutation<StepBlockNextBlockUpdate>(
-    STEP_BLOCK_NEXT_BLOCK_UPDATE
-  )
+  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
 
   const {
-    state: { selectedStep, selectedBlock }
+    state: { selectedStep }
   } = useEditor()
   const { journey } = useJourney()
 
@@ -85,6 +82,13 @@ export function StepBlockNode({
         id: params.source,
         journeyId: journey.id,
         input: {
+          nextBlockId: params.target
+        }
+      },
+      optimisticResponse: {
+        stepBlockUpdate: {
+          id: params.source,
+          __typename: 'StepBlock',
           nextBlockId: params.target
         }
       }
