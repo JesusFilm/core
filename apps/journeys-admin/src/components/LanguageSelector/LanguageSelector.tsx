@@ -5,15 +5,15 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+import {
+  LanguageAutocomplete,
+  LanguageOption
+} from '@core/shared/ui/LanguageAutocomplete'
+import { Button, Typography } from '@mui/material'
 
 import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
-import {
-  getLanguageById,
-  getLanguageByLocale
-} from '../../libs/languageData/languageData'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
-import { Button, Typography } from '@mui/material'
+import { getLocaleLanguage } from './utils/getLocaleLanguage'
 
 interface DefaultLanguage {
   id: string
@@ -25,10 +25,6 @@ interface LanguageSelectorProps {
   handleClose: () => void
 }
 
-const credentials = {
-  token: process.env.NEXT_PUBLIC_CROWDIN_ACCESS_TOKEN ?? ''
-}
-
 export function LanguageSelector({
   open,
   handleClose
@@ -37,32 +33,42 @@ export function LanguageSelector({
   const { t } = useTranslation('apps-journeys-admin')
 
   const [languageData, setLanguageData] = useState<Language[]>([])
-  const [currentLanguage, setCurrentLanguage] = useState<DefaultLanguage>()
-  const [prevLanguageId, setPrevLanguageId] = useState('')
+  const [currentLanguage, setCurrentLanguage] = useState<LanguageOption>()
+  const [prevLanguageId, setPrevLanguageId] = useState<string>()
   const [confirmLanguageChange, setConfirmLanguageChange] = useState(false)
 
   const { data, loading } = useLanguagesQuery({
     languageId: '529'
   })
 
+  function getCurrentLanguage(): LanguageOption {
+    const currentLocale = getLocaleLanguage('locale', i18n?.language ?? '')
+    const language = data?.languages.find(
+      (language) => language.id === currentLocale?.id
+    )
+    return {
+      id: language?.id ?? '',
+      nativeName: language?.name.find(({ primary }) => primary)?.value,
+      localName: language?.name.find(({ primary }) => !primary)?.value
+    }
+  }
+
   useEffect(() => {
-    const currentLanguage = getLanguageByLocale(i18n?.language ?? '')
-    setCurrentLanguage({
-      id: currentLanguage?.id ?? '',
-      nativeName: currentLanguage?.name[0].value,
-      localName: currentLanguage?.name[1]?.value
+    const translationStatus = new TranslationStatus({
+      token: process.env.NEXT_PUBLIC_CROWDIN_ACCESS_TOKEN ?? ''
     })
 
-    const translationStatus = new TranslationStatus(credentials)
+    if (data != null) {
+      setCurrentLanguage(getCurrentLanguage())
 
-    if (data !== undefined) {
       translationStatus
         .getFileProgress(518286, 570)
         .then((crowdinData) => {
           const availableLanguages = data.languages.filter((language) => {
-            const crowdinId = getLanguageById(language.id)?.crowdinId
+            const crowdinLocale = getLocaleLanguage('id', language.id)?.locale
             const crowdinLanguageData = crowdinData.data.find(
-              (crowdinLanguage) => crowdinLanguage.data.languageId === crowdinId
+              (crowdinLanguage) =>
+                crowdinLanguage.data.language.locale === crowdinLocale
             )
             return (
               // always display English
@@ -78,23 +84,25 @@ export function LanguageSelector({
   }, [data])
 
   const handleLocaleSwitch = useCallback(
-    async (localeId: string | undefined) => {
-      setPrevLanguageId(currentLanguage?.id ?? '')
+    (localeId: string | undefined) => {
+      if (currentLanguage != null) setPrevLanguageId(currentLanguage.id)
+
       const language = data?.languages.find(
         (language) => language.id === localeId
       )
-      const locale = getLanguageById(language?.id ?? '')?.locale
+
+      const locale = getLocaleLanguage('id', language?.id ?? '')?.locale
 
       const path = router.asPath
-      await router.push(path, path, { locale })
+      void router.push(path, path, { locale })
 
       setConfirmLanguageChange(true)
     },
-    [router, data]
+    [router, data, currentLanguage]
   )
 
-  async function revertToPreviousLanguage() {
-    await handleLocaleSwitch(prevLanguageId)
+  function revertToPreviousLanguage() {
+    handleLocaleSwitch(prevLanguageId)
     handleClose()
   }
 
@@ -113,9 +121,7 @@ export function LanguageSelector({
             {t('Are you sure you want to change language?')}
           </Typography>
           <Button onClick={() => handleClose()}>{t('Yes')}</Button>
-          <Button onClick={async () => await revertToPreviousLanguage()}>
-            {t('No')}
-          </Button>
+          <Button onClick={() => revertToPreviousLanguage()}>{t('No')}</Button>
         </Dialog>
       ) : (
         <Dialog
@@ -127,8 +133,12 @@ export function LanguageSelector({
           }}
         >
           <LanguageAutocomplete
-            onChange={async (value) => await handleLocaleSwitch(value?.id)}
-            value={currentLanguage}
+            onChange={(value) => handleLocaleSwitch(value?.id)}
+            value={
+              currentLanguage != null
+                ? currentLanguage
+                : { id: '', nativeName: '', localName: '' }
+            }
             languages={languageData}
             loading={loading}
           />

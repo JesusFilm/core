@@ -18,22 +18,22 @@ const i18nConfig = {
   i18n: {
     defaultLocale: 'en',
     locales: [
-      'am', // Amharic
-      'ar', // Arabic
-      'bn', // Bangla
+      'am-ET', // Amharic
+      'ar-SA', // Arabic
+      'bn-BD', // Bangla
       'en', // English
-      'es', // Spanish
-      'fr', // French
-      'hi', // Hindi
-      'id', // Indonesian
-      'ja', // Japanese
-      'my', // Burmese
+      'es-ES', // Spanish
+      'fr-FR', // French
+      'hi-IN', // Hindi
+      'id-ID', // Indonesian
+      'ja-JP', // Japanese
+      'my-MM', // Burmese
       'ru-RU', // Russian
-      'th', // Thai
+      'th-TH', // Thai
       'tl-PH', // Tagalog
-      'tr', // Turkish
-      'ur', // Urdu
-      'vi', // Vietnamese
+      'tr-TR', // Turkish
+      'ur-PK', // Urdu (Pakistan)
+      'vi-VN', // Vietnamese
       'zh-CN', // Chinese, Simplified
       'zh-TW' // Chinese, Traditional
     ]
