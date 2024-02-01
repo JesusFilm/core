@@ -14,11 +14,10 @@ import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
+import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Analytics } from './Analytics'
 import { Menu } from './Menu'
-
-export const EDIT_TOOLBAR_HEIGHT = 86
 
 export function EditToolbar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

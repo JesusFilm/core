@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
-import { Theme } from '@mui/material/styles'
+import { Theme, useTheme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -17,8 +17,7 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetLanguages_languages as Language } from '../../../../../__generated__/GetLanguages'
-
-export const DRAWER_WIDTH = 328
+import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../../constants'
 
 interface VideoLanguageProps {
   open?: boolean
@@ -38,7 +37,6 @@ export function VideoLanguage({
   loading
 }: VideoLanguageProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
   const handleApply = (): void => {
     handleClose()
   }
@@ -49,15 +47,32 @@ export function VideoLanguage({
       variant="temporary"
       open={open}
       onClose={handleClose}
-      elevation={smUp ? 1 : undefined}
+      elevation={smUp ? 1 : 0}
       hideBackdrop={smUp}
       sx={{
         zIndex: (theme) => theme.zIndex.modal,
-        '& .MuiDrawer-paper': {
-          boxSizing: { sm: 'border-box' },
-          width: { sm: DRAWER_WIDTH },
-          height: '100%'
-        }
+        left: {
+          xs: 0,
+          sm: 'unset'
+        },
+        '& .MuiDrawer-paper': smUp
+          ? {
+              height: (theme) =>
+                `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px - ${theme.spacing(
+                  8 // drawn from margin for top and bottom (4 + 4)
+                )})`,
+              width: DRAWER_WIDTH,
+              top: EDIT_TOOLBAR_HEIGHT,
+              display: 'flex',
+              m: 4,
+              ml: 0
+            }
+          : {
+              boxSizing: 'border-box',
+              width: '100%',
+              height: '100%',
+              display: 'flex'
+            }
       }}
       data-testid="VideoLanguage"
     >

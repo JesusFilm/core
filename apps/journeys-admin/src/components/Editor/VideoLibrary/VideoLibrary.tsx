@@ -23,6 +23,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
+import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { VideoFromLocal } from './VideoFromLocal'
 
@@ -49,7 +50,6 @@ const VideoFromYouTube = dynamic(
   { ssr: false }
 )
 
-export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
   open: boolean
   onClose?: () => void
@@ -126,12 +126,24 @@ export function VideoLibrary({
             xs: 0,
             sm: 'unset'
           },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: smUp ? DRAWER_WIDTH : '100%',
-            height: '100%',
-            display: 'flex'
-          }
+          '& .MuiDrawer-paper': smUp
+            ? {
+                height: (theme) =>
+                  `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px - ${theme.spacing(
+                    8 // drawn from margin for top and bottom (4 + 4)
+                  )})`,
+                width: DRAWER_WIDTH,
+                top: EDIT_TOOLBAR_HEIGHT,
+                display: 'flex',
+                m: 4,
+                ml: 0
+              }
+            : {
+                boxSizing: 'border-box',
+                width: '100%',
+                height: '100%',
+                display: 'flex'
+              }
         }}
       >
         <AppBar position="static" color="default">
@@ -190,7 +202,7 @@ export function VideoLibrary({
           name="video-from-local"
           value={activeTab}
           index={0}
-          sx={{ flexGrow: 1, overflow: 'scroll' }}
+          sx={{ flexGrow: 1, overflow: 'auto' }}
         >
           <VideoFromLocal onSelect={onSelect} />
         </TabPanel>
@@ -198,7 +210,7 @@ export function VideoLibrary({
           name="video-from-youtube"
           value={activeTab}
           index={1}
-          sx={{ flexGrow: 1, overflow: 'scroll' }}
+          sx={{ flexGrow: 1, overflow: 'auto' }}
           unmountUntilVisible
         >
           <VideoFromYouTube onSelect={onSelect} />
@@ -207,7 +219,7 @@ export function VideoLibrary({
           name="video-from-cloudflare"
           value={activeTab}
           index={2}
-          sx={{ flexGrow: 1, overflow: 'scroll' }}
+          sx={{ flexGrow: 1, overflow: 'auto' }}
           unmountUntilVisible
         >
           <VideoFromCloudflare onSelect={onSelect} />
