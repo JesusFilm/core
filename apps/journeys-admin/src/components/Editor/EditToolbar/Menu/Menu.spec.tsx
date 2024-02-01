@@ -14,6 +14,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
+import { BLOCK_DUPLICATE } from '../DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
 
@@ -311,6 +312,68 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+  })
+
+  it('should close the menu upon clicking duplicating from menu', async () => {
+    const selectedBlock: TreeBlock<TypographyBlock> = {
+      id: 'typography0.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: 'card1.id',
+      parentOrder: 0,
+      content: 'Title',
+      variant: null,
+      color: null,
+      align: null,
+      children: []
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        blockDuplicate: {
+          id: 'typography0.id',
+          parentOrder: 1
+        }
+      }
+    }))
+
+    const mocks = [
+      {
+        request: {
+          query: BLOCK_DUPLICATE,
+          variables: {
+            id: selectedBlock.id,
+            parentOrder: 1
+          }
+        },
+        result
+      }
+    ]
+
+    const { getByTestId, queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <JourneyProvider
+            value={{
+              journey: {
+                status: JourneyStatus.draft,
+                tags: []
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock }}>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(queryByRole('menu')).not.toBeInTheDocument()
+    fireEvent.click(getByTestId('MoreIcon'))
+    await waitFor(() => expect(queryByRole('menu')).toBeInTheDocument())
+    fireEvent.click(getByTestId('JourneysAdminMenuItemDuplicate-Block'))
+    await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
+    expect(result).toHaveBeenCalled()
   })
 
   it('should open templates dialog', async () => {
