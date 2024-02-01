@@ -1,15 +1,13 @@
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
 import TranslateOutlinedIcon from '@mui/icons-material/TranslateOutlined'
-import {
-  Avatar,
-  Badge,
-  Divider,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography
-} from '@mui/material'
+import Avatar from '@mui/material/Avatar'
+import Badge from '@mui/material/Badge'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useUser } from 'next-firebase-auth'
 import { FC, MouseEvent, useState } from 'react'
 

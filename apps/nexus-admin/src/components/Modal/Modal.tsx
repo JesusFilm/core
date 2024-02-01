@@ -1,4 +1,7 @@
-import { Modal as MuiModal, Stack, Typography } from '@mui/material'
+// eslint-disable-next-line import/no-named-default
+import { default as MuiModal } from '@mui/material/Modal'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { FC, ReactNode } from 'react'
 
 interface ModalProps {

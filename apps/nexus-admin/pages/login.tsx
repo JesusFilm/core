@@ -1,10 +1,11 @@
 import { AuthAction, withUser } from 'next-firebase-auth'
+import { FC } from 'react'
 
 import { AuthLayout } from '../src/components/AuthLayout'
 import { Loader } from '../src/components/Loader'
 import { Login } from '../src/components/Login/Login'
 
-const LoginPage = () => {
+const LoginPage: FC = () => {
   return (
     <AuthLayout>
       <Login />

@@ -1,17 +1,15 @@
 import { gql, useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Fab,
-  Stack,
-  Typography
-} from '@mui/material'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import Fab from '@mui/material/Fab'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/navigation'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
 
 import { Nexuses, Nexuses_nexuses } from '../__generated__/Nexuses'
@@ -46,7 +44,7 @@ export function Index() {
     return <Loader />
   }
 
-  const redirectToDashboard = (nexusId: string) => {
+  const redirectToDashboard = (nexusId: string): void => {
     localStorage.setItem('nexusId', nexusId)
     router.push('/channels')
   }
@@ -87,7 +85,8 @@ export function Index() {
         </Box>
       ) : (
         <Typography>
-          You currently don't have nexus apps. Please start by creating one.
+          You currently don&apos;t have nexus apps. Please start by creating
+          one.
         </Typography>
       )}
       <Fab color="primary" onClick={() => setOpenCreateNexusModal(true)}>

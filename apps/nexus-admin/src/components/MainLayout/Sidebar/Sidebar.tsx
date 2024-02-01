@@ -3,18 +3,16 @@ import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks'
 import ListIcon from '@mui/icons-material/List'
-import {
-  Divider,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Stack,
-  Typography
-} from '@mui/material'
+import Divider from '@mui/material/Divider'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FC, ReactElement, useState } from 'react'
@@ -60,11 +58,11 @@ export const Sidebar: FC = () => {
     {
       id: 3,
       name: 'Batch Jobs',
-      slug: '/jobs',
+      slug: '/batches',
       icon: (
         <ListIcon
           sx={{
-            color: pathname.includes('/jobs') ? 'primary.main' : '#fff'
+            color: pathname.includes('/batches') ? 'primary.main' : '#fff'
           }}
         />
       )

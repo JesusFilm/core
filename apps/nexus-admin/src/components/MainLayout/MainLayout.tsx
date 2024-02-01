@@ -1,4 +1,5 @@
-import { Box, Stack } from '@mui/material'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { FC, ReactNode } from 'react'
 
 import { Header } from './Header'

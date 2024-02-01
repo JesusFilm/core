@@ -2,15 +2,13 @@ import { gql, useMutation } from '@apollo/client'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import {
-  Avatar,
-  Chip,
-  IconButton,
-  Paper,
-  Popover,
-  Stack,
-  Typography
-} from '@mui/material'
+import Avatar from '@mui/material/Avatar'
+import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
+import Paper from '@mui/material/Paper'
+import Popover from '@mui/material/Popover'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { DataGrid, GridCellParams } from '@mui/x-data-grid'
 import { useGoogleLogin } from '@react-oauth/google'
 import { FC, useState } from 'react'

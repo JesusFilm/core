@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material'
+import Stack from '@mui/material/Stack'
 import { FC, ReactNode } from 'react'
 
 import { AuthNavBar } from './AuthNavBar'

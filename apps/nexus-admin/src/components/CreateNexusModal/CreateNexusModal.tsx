@@ -1,5 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
-import { Button, Stack, TextField } from '@mui/material'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import { useFormik } from 'formik'
 import { FC } from 'react'
 import { object, string } from 'yup'
@@ -40,7 +42,7 @@ export const CreateNexusModal: FC<CreateNexusModalProps> = ({
     },
     validationSchema: nexusValidationSchema,
     onSubmit: (values) => {
-      nexusCreate({
+      void nexusCreate({
         variables: {
           input: values
         },

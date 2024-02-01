@@ -1,7 +1,8 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { Button, Stack } from '@mui/material'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/navigation'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import {
@@ -122,7 +123,7 @@ const ResourcesPage: FC = () => {
   })
 
   const { data: resourceData } = useQuery<Resource>(GET_RESOURCE, {
-    skip: !resourceId,
+    skip: resourceId !== '',
     variables: {
       resourceId,
       nexusId
@@ -145,7 +146,7 @@ const ResourcesPage: FC = () => {
   const [resourceUpdate] = useMutation<ResourceUpdate>(RESOURCE_UPDATE)
   const [resourceDelete] = useMutation<ResourceDelete>(RESOURCE_DELETE)
 
-  const openGooglePicker = async () => {
+  const openGooglePicker = async (): Promise<void> => {
     // eslint-disable-next-line import/dynamic-import-chunkname
     const gapi = await import('gapi-script').then((module) => module.gapi)
 
@@ -161,7 +162,7 @@ const ResourcesPage: FC = () => {
             clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
             developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
             viewId: 'DOCS_VIDEOS',
-            token: tokenInfo ? tokenInfo.access_token : '',
+            token: tokenInfo !== undefined ? tokenInfo.access_token : '',
             showUploadView: true,
             showUploadFolders: true,
             supportDrives: true,
@@ -178,11 +179,9 @@ const ResourcesPage: FC = () => {
               }
 
               if (data.action === 'picked') {
-                if (!tokenInfo) {
+                if (tokenInfo !== undefined) {
                   tokenInfo = gapi.auth.getToken()
                 }
-
-                console.log(data)
 
                 const fileIds: string[] = []
 
@@ -200,7 +199,7 @@ const ResourcesPage: FC = () => {
   const loadResourceFromGoogleDrive = (
     fileIds: string[],
     accessToken: string
-  ) => {
+  ): void => {
     void resourceLoad({
       variables: {
         input: {

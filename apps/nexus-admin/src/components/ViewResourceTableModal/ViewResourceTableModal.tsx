@@ -1,11 +1,10 @@
-import {
-  Button,
-  Checkbox,
-  Divider,
-  FormControlLabel,
-  Stack
-} from '@mui/material'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import Divider from '@mui/material/Divider'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Stack from '@mui/material/Stack'
 import { FC } from 'react'
+
 import { Modal } from '../Modal'
 
 interface ViewResourceTableModalProps {
@@ -43,7 +42,7 @@ export const ViewResourceTableModal: FC<ViewResourceTableModalProps> = ({
           control={
             <Checkbox
               checked={Object.values(columnsVisibility ?? {}).every(
-                (isColumnToggled) => isColumnToggled === true
+                (isColumnToggled) => isColumnToggled
               )}
             />
           }

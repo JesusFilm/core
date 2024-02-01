@@ -2,6 +2,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 
 import { Channel, Channel_channel } from '../../__generated__/Channel'
@@ -84,6 +85,7 @@ const ChannelsPage: FC = () => {
   const nexusId =
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
   const [channel, setChannel] = useState<Channel_channel | null>(null)
+  const { enqueueSnackbar } = useSnackbar()
 
   const { data, loading } = useQuery<Channels>(GET_CHANNELS, {
     variables: {
@@ -157,6 +159,10 @@ const ChannelsPage: FC = () => {
             },
             onCompleted: () => {
               setOpenCreateChannelModal(false)
+              enqueueSnackbar('Channel Created', {
+                variant: 'success',
+                preventDuplicate: true
+              })
             },
             refetchQueries: [GET_CHANNELS]
           })
@@ -190,6 +196,10 @@ const ChannelsPage: FC = () => {
             },
             onCompleted: () => {
               setDeleteChannelModal(false)
+              enqueueSnackbar('Channel Deleted', {
+                variant: 'success',
+                preventDuplicate: true
+              })
             },
             refetchQueries: [GET_CHANNELS]
           })

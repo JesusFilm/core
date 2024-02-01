@@ -1,5 +1,7 @@
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import { Button, Stack, Typography } from '@mui/material'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { FC } from 'react'
 
 interface ResourcesTableHeaderProps {
@@ -17,14 +19,16 @@ export const ResourcesTableHeader: FC<ResourcesTableHeaderProps> = ({
       spacing={2}
     >
       <Typography variant="h5">Resources</Typography>
-      <Typography variant="subtitle3">Additional description if required</Typography>
+      <Typography variant="subtitle3">
+        Additional description if required
+      </Typography>
       <Stack alignItems="flex-end">
         <Button
-            startIcon={<VisibilityOutlinedIcon />}
-            color="secondary"
-            onClick={onTableView}
-          >
-            Table View
+          startIcon={<VisibilityOutlinedIcon />}
+          color="secondary"
+          onClick={onTableView}
+        >
+          Table View
         </Button>
       </Stack>
     </Stack>
