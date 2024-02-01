@@ -16,6 +16,7 @@ const Template: StoryObj<typeof TeamInviteEmail> = {
       teamName={args.teamName}
       inviteLink="www.runescape.com"
       sender={args.sender}
+      story
     />
   )
 }

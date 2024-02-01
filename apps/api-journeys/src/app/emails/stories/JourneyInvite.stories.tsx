@@ -15,6 +15,7 @@ const Template: StoryObj<typeof JourneyInviteEmail> = {
       email={args.email}
       journeyTitle={args.journeyTitle}
       inviteLink="www.runescape.com"
+      story
     />
   )
 }

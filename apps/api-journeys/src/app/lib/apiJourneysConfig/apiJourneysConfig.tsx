@@ -11,7 +11,7 @@ export const apiJourneysConfig = {
   decorators: [
     (Story: Parameters<Decorator>[0]) => (
       <SnackbarProvider>
-        <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+        <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.dark}>
           <Story />
         </ThemeProvider>
       </SnackbarProvider>
