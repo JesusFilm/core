@@ -21,3 +21,11 @@ model User {
   createdAt  DateTime @default(now())
   superAdmin Boolean  @default(false)
 }
+
+model EmailPreferences {
+  id                   String  @id @default(uuid())
+  userEmail            String
+  teamInvites          Boolean @default(true)
+  journeyNotifications Boolean @default(true)
+  thirdCategory        Boolean @default(true)
+}
