@@ -26,38 +26,50 @@ export class UploadToBucket {
     const driveToken = await this.googleOAuthService.getNewAccessToken(
       job.data.resource.refreshToken,
     );
+    console.log('Downloading: ', job.data.resource.driveId);
     const filePath = await this.googleDriveService.downloadDriveFile(
       { fileId: job.data.resource.driveId, accessToken: driveToken },
       async (downloadProgress) => {
-        await job.progress(downloadProgress / 2);
+        await job.progress(downloadProgress / 3);
         return await Promise.resolve();
       },
     );
     console.log('filePath', filePath);
     const bucketFile = await this.bucketService.uploadFile(
       filePath,
-      'jf-nexus',
+      'dev-api-media-core',
       async (progress) => {
-        progress = 49 + progress / 2;
+        progress = 33 + progress / 3;
         await job.progress(progress);
         return await Promise.resolve();
       },
     );
+    console.log('bucketFile', bucketFile);
     const youtubeToken = await this.googleOAuthService.getNewAccessToken(
       job.data.resource.refreshToken,
     );
     console.log('youtubeToken', youtubeToken);
-    // await this.youtubeService.uploadVideo({
-    //   token: youtubeToken,
-    //   filePath,
-    //   channelId: job.data.channel.channelId,
-    //   title: 'test',
-    //   description: 'test',
-    // });
-    console.log('bucketFile', bucketFile);
+    await this.youtubeService.uploadVideo(
+      {
+        token: youtubeToken,
+        filePath,
+        channelId: job.data.channel.channelId,
+        title: 'test',
+        description: 'test',
+      },
+      async (progress) => {
+        progress = 66 + progress / 3;
+        await job.progress(progress);
+        return await Promise.resolve();
+      },
+    );
     await this.prismaService.resource.update({
-      data: { status: 'published' },
-      where: { id: job.data.resource.driveId },
+      where: {
+        id: job.data.resource.id,
+      },
+      data: {
+        status: 'published',
+      },
     });
     await job.progress(100);
     console.log('UploadToBucketToYoutube Job: ', job.id, 'completed');

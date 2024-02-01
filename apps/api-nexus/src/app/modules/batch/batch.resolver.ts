@@ -36,7 +36,7 @@ export class BatchResolver {
           },
         ],
       },
-      include: { channel: true, resources: true },
+      include: { channel: { include: { youtube: true } }, resources: true },
       take: where?.limit ?? undefined,
     });
 

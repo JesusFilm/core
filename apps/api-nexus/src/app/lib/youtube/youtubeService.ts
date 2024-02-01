@@ -71,7 +71,7 @@ export class YoutubeService {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         onUploadProgress: async (evt) => {
           const progress = (evt.bytesRead / fileSize) * 100;
-          console.log(`${Math.round(progress)}% complete`);
+          console.log(`Youtube Upload: ${Math.round(progress)}%`);
           if (progressCallback != null) {
             await progressCallback(progress);
           }

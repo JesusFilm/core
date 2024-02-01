@@ -64,7 +64,7 @@ export class BullMQService {
         data: {
           batchId: batch.id,
           resource: {
-            id: item.googleDrive?.id ?? '',
+            id: item.id ?? '',
             driveId: item.googleDrive?.driveId ?? '',
             refreshToken: item.googleDrive?.refreshToken ?? '',
           },

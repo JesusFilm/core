@@ -130,6 +130,7 @@ model Batch {
     nexus     Nexus       @relation(fields: [nexusId], references: [id])
     channel   Channel     @relation(fields: [channelId], references: [id])
     resources Resource[]  @relation("BatchResources")
+    createdAt DateTime    @default(now())
 }
 
 enum BatchStatus {
