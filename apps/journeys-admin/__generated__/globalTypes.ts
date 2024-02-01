@@ -33,6 +33,11 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ChatButtonType {
+  code = "code",
+  link = "link",
+}
+
 export enum ChatPlatform {
   custom = "custom",
   facebook = "facebook",
@@ -278,11 +283,15 @@ export interface CardBlockUpdateInput {
 
 export interface ChatButtonCreateInput {
   link?: string | null;
+  code?: string | null;
+  type?: ChatButtonType | null;
   platform?: ChatPlatform | null;
 }
 
 export interface ChatButtonUpdateInput {
   link?: string | null;
+  code?: string | null;
+  type?: ChatButtonType | null;
   platform?: ChatPlatform | null;
 }
 
