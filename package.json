@@ -61,6 +61,7 @@
     "@next/bundle-analyzer": "^13.5.6",
     "@prisma/client": "^5.2.0",
     "@storybook/core-server": "7.6.6",
+    "@tisoap/react-flow-smart-edge": "^3.0.0",
     "adal-node": "^0.2.3",
     "blurhash": "^2.0.5",
     "cache-manager": "^5.2.3",

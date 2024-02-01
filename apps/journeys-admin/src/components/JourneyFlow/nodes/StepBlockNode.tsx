@@ -93,13 +93,7 @@ export function StepBlockNode({
 
   return (
     <BaseNode
-      selected={
-        selectedStep?.id === step.id
-          ? selectedBlock?.id === step.id
-            ? true
-            : 'descendant'
-          : false
-      }
+      selected={selectedStep?.id === step.id}
       onSourceConnect={onConnect}
       icon={
         card?.backgroundColor != null || bgImage != null ? (
