@@ -42,20 +42,6 @@ const GET_RESOUCE_FROM_TEMPLATE = gql`
       drivefolderId: $drivefolderId
     ) {
       id
-      nexusId
-      name
-      status
-      createdAt
-      updatedAt
-      deletedAt
-      googleDriveLink
-      category
-      privacy
-      sourceType
-      localizations {
-        id
-        title
-      }
     }
   }
 `
