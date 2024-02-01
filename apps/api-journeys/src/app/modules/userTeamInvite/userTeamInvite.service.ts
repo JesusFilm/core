@@ -4,6 +4,8 @@ import { Queue } from 'bullmq'
 
 import { Team } from '.prisma/api-journeys-client'
 
+import { User } from '@core/nest/common/firebaseClient'
+
 import { TeamInviteJob } from '../email/email.consumer'
 
 @Injectable()
@@ -13,12 +15,17 @@ export class UserTeamInviteService {
     private readonly emailQueue: Queue<TeamInviteJob>
   ) {}
 
-  async sendEmail(team: Team, email: string): Promise<void> {
+  async sendEmail(
+    team: Team,
+    email: string,
+    sender: Omit<User, 'id' | 'email'>
+  ): Promise<void> {
     await this.emailQueue.add(
       'team-invite',
       {
         teamName: team.title,
-        email
+        email,
+        sender
       },
       {
         removeOnComplete: true,

@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { MailerService } from '@nestjs-modules/mailer'
 import { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
+import { mockDeep } from 'jest-mock-extended'
 
 import { User } from '.prisma/api-users-client'
 
@@ -10,12 +12,17 @@ import { EmailConsumer, EmailJob } from './email.consumer'
 
 describe('EmailConsumer', () => {
   let emailConsumer: EmailConsumer
+  let mailerService: MailerService
   let prismaService: PrismaService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EmailConsumer,
+        {
+          provide: MailerService,
+          useValue: mockDeep<MailerService>()
+        },
         {
           provide: PrismaService,
           useValue: {
@@ -29,6 +36,7 @@ describe('EmailConsumer', () => {
 
     emailConsumer = module.get<EmailConsumer>(EmailConsumer)
     prismaService = module.get<PrismaService>(PrismaService)
+    mailerService = module.get<MailerService>(MailerService)
   })
 
   it.skip('should send email successfully', async () => {

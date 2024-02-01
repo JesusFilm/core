@@ -1,24 +1,26 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { MailerService } from '@nestjs-modules/mailer'
 import { render } from '@react-email/render'
 import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
-import JourneyInviteEmail from '../../emails/JourneyInvite'
-import TeamInviteEmail from '../../emails/TeamInvite'
+import { User } from '@core/nest/common/firebaseClient'
+
+import { JourneyInviteEmail } from '../../emails/templates/JourneyInvite'
+import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
 
 AWS.config.update({ region: 'us-east-2' })
 
-const apollo = new ApolloClient({
-  uri: process.env.GATEWAY_URL,
-  cache: new InMemoryCache(),
-  headers: {
-    'interop-token': process.env.INTEROP_TOKEN ?? ''
-  }
-})
+// const apollo = new ApolloClient({
+//   uri: process.env.GATEWAY_URL,
+//   cache: new InMemoryCache(),
+//   headers: {
+//     'interop-token': process.env.INTEROP_TOKEN ?? ''
+//   }
+// })
 
 export interface SendEmailParams {
   to: string
@@ -36,6 +38,7 @@ export interface JourneyEditInviteJob {
 export interface TeamInviteJob {
   teamName: string
   email: string
+  sender: Omit<User, 'id' | 'email'>
 }
 
 export type ApiJourneysJob = JourneyEditInviteJob | TeamInviteJob
@@ -63,7 +66,8 @@ export class EmailConsumer extends WorkerHost {
       TeamInviteEmail({
         teamName: job.data.teamName,
         email: job.data.email,
-        inviteLink: url
+        inviteLink: url,
+        sender: job.data.sender
       }),
       {
         pretty: true
@@ -74,7 +78,8 @@ export class EmailConsumer extends WorkerHost {
       TeamInviteEmail({
         teamName: job.data.teamName,
         email: job.data.email,
-        inviteLink: url
+        inviteLink: url,
+        sender: job.data.sender
       }),
       {
         plainText: true
@@ -90,19 +95,22 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async journeyEditInvite(job: Job<JourneyEditInviteJob>): Promise<void> {
-    const { data } = await apollo.query({
-      query: gql`
-        query UserByEmail($email: String!) {
-          userByEmail(email: $email) {
-            id
-          }
-        }
-      `,
-      variables: { email: job.data.email }
-    })
-    if (data.user == null) {
-      throw new Error('User not found')
-    }
+    // TODO: use this to check if user is subscribed to this type of email notification
+
+    // const { data } = await apollo.query({
+    //   query: gql`
+    //     query UserByEmail($email: String!) {
+    //       userByEmail(email: $email) {
+    //         id
+    //       }
+    //     }
+    //   `,
+    //   variables: { email: job.data.email }
+    // })
+
+    // if (data.user == null) {
+    //   throw new Error('User not found')
+    // }
 
     const html = render(
       JourneyInviteEmail({

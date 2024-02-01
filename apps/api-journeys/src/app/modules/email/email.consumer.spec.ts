@@ -45,7 +45,12 @@ const teamInviteJob: Job<TeamInviteJob, unknown, string> = {
   name: 'team-invite',
   data: {
     teamName: 'test-team',
-    email: 'abc@example.com'
+    email: 'abc@example.com',
+    sender: {
+      firstName: 'Joe',
+      lastName: 'Ron-Imo',
+      imageUrl: undefined
+    }
   }
 } as unknown as Job<TeamInviteJob, unknown, string>
 
@@ -143,7 +148,7 @@ describe('EmailConsumer', () => {
     })
   })
 
-  describe('endEmail', () => {
+  describe('sendEmail', () => {
     const email = {
       to: 'text@example.com',
       subject: 'Test Subject',
@@ -152,7 +157,8 @@ describe('EmailConsumer', () => {
     }
 
     it('should send email using mailerService when SMTP_URL is defined', async () => {
-      process.env.SMTP_URL = 'smtp://example.com'
+      process.env.SMTP_URL = 'smtp://example.com' // from now on the env var is test
+
       const sendMailSpy = jest.spyOn(mailerService, 'sendMail')
       await emailConsumer.sendEmail(email)
 
@@ -162,11 +168,15 @@ describe('EmailConsumer', () => {
         text: email.text,
         html: email.html
       })
-
-      process.env.SMTP_URL = undefined
     })
 
     it('should process the email job', async () => {
+      const OLD_ENV = process.env
+      process.env = {
+        ...OLD_ENV,
+        SMTP_URL: undefined
+      }
+
       await emailConsumer.sendEmail(email)
 
       expect(sendEmailMock).toHaveBeenCalledWith({
@@ -189,6 +199,7 @@ describe('EmailConsumer', () => {
           }
         }
       })
+      process.env = OLD_ENV
     })
   })
 })

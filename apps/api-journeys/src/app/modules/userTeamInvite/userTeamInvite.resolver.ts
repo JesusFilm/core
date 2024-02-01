@@ -2,12 +2,12 @@ import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 
 import { Prisma, UserTeamInvite } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import {
   UserTeamInviteCreateInput,
@@ -44,7 +44,7 @@ export class UserTeamInviteResolver {
   @UseGuards(AppCaslGuard)
   async userTeamInviteCreate(
     @CaslAbility() ability: AppAbility,
-    @CurrentUserId() senderId: string,
+    @CurrentUser() sender: User,
     @Args('teamId') teamId: string,
     @Args('input') input: UserTeamInviteCreateInput
   ): Promise<UserTeamInvite> {
@@ -58,11 +58,11 @@ export class UserTeamInviteResolver {
         },
         create: {
           email: input.email,
-          senderId,
+          senderId: sender.id,
           team: { connect: { id: teamId } }
         },
         update: {
-          senderId,
+          senderId: sender.id,
           acceptedAt: null,
           receipientId: null,
           removedAt: null
@@ -81,7 +81,8 @@ export class UserTeamInviteResolver {
         })
       await this.userTeamInviteService.sendEmail(
         userTeamInvite.team,
-        input.email
+        input.email,
+        omit(sender, ['id', 'email'])
       )
       return userTeamInvite
     })
