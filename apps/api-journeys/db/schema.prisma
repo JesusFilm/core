@@ -8,6 +8,11 @@ datasource db {
   url      = env("PG_DATABASE_URL_JOURNEYS")
 }
 
+enum ChatButtonType {
+  link
+  code
+}
+
 enum ChatPlatform {
   facebook
   telegram
@@ -73,12 +78,14 @@ enum VideoBlockSource {
 }
 
 model ChatButton {
-  id        String        @id @default(uuid())
+  id        String          @id @default(uuid())
   journeyId String
   link      String?
-  updatedAt DateTime      @default(now()) @updatedAt
+  code      String?
+  type      ChatButtonType? @default(link)
+  updatedAt DateTime        @default(now()) @updatedAt
   platform  ChatPlatform?
-  journey   Journey       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  journey   Journey         @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
 }
