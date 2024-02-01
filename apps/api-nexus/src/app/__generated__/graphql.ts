@@ -164,6 +164,8 @@ export class Batch {
     id: string;
     nexusId: string;
     channelId: string;
+    channel?: Nullable<Channel>;
+    resources?: Nullable<Nullable<Resource>[]>;
     name: string;
     status: BatchStatus;
 }

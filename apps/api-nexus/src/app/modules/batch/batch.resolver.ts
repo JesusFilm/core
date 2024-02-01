@@ -36,6 +36,7 @@ export class BatchResolver {
           },
         ],
       },
+      include: { channel: true, resources: true },
       take: where?.limit ?? undefined,
     });
 

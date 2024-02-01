@@ -16,7 +16,10 @@ type Batch
   @key(fields: "id")
 {
   id: ID!
-  resourceId: String!
+  nexusId: String!
+  channelId: String!
+  channel: Channel
+  resources: [Resource]
   name: String!
   status: BatchStatus!
 }
@@ -131,10 +134,7 @@ extend type Mutation {
   resourceFromTemplate(nexusId: String!, tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
-<<<<<<< HEAD
-=======
   resourceBatchJob(input: BatchJobInput!): String
->>>>>>> feature/24-03-BK-feat-api-nexus
 }
 
 type Nexus

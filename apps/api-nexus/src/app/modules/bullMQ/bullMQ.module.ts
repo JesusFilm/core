@@ -1,6 +1,5 @@
 import { BullModule } from '@nestjs/bull';
-import { Global, Module, Provider } from '@nestjs/common';
-import { FlowProducer } from 'bullmq';
+import { Global, Module } from '@nestjs/common';
 
 import { BucketService } from '../../lib/bucket/bucketService';
 import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
@@ -14,24 +13,12 @@ import { BullMQService } from './bullMQ.service';
 import { UploadToBucket } from './consumers/uploadToBucket';
 import { UploadToYoutube } from './consumers/uploadToYoutube';
 
-export const FlowProducerProvider: Provider = {
-  provide: 'FlowProducer',
-  useFactory: () => {
-    return new FlowProducer({
-      connection: {
-        host: 'redis',
-        port: 6379,
-      },
-    });
-  },
-};
-
 @Global()
 @Module({
   imports: [
     BullModule.forRoot({
       redis: {
-        host: 'redis',
+        host: process.env.REDIS_HOST,
         port: 6379,
       },
     }),
@@ -49,7 +36,6 @@ export const FlowProducerProvider: Provider = {
     GoogleDriveModule,
   ],
   providers: [
-    FlowProducerProvider,
     BullMQService,
     UploadToBucket,
     UploadToYoutube,
