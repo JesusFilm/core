@@ -63,14 +63,14 @@ export class UploadToBucket {
         return await Promise.resolve();
       },
     );
-    await this.prismaService.resource.update({
-      where: {
-        id: job.data.resource.id,
-      },
-      data: {
-        status: 'published',
-      },
-    });
+    // await this.prismaService.resource.update({
+    //   where: {
+    //     id: job.data.resource.id,
+    //   },
+    //   data: {
+    //     status: 'published',
+    //   },
+    // });
     await job.progress(100);
     console.log('UploadToBucketToYoutube Job: ', job.id, 'completed');
     return job.returnvalue;
