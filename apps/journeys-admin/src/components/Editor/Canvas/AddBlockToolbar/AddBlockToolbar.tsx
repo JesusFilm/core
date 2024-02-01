@@ -46,7 +46,11 @@ export function AddBlockToolbar({
         <AddIcon sx={{ m: 3 }} />
         <NewTypographyButton />
         <NewImageButton />
-        <NewVideoButton disabled={selectedCard?.children?.length > 0} />
+        <NewVideoButton
+          disabled={selectedCard?.children?.some(
+            (block) => block.id !== selectedCard.coverBlockId
+          )}
+        />
         <NewRadioQuestionButton />
         <NewTextResponseButton />
         <NewSignUpButton />
