@@ -14,7 +14,7 @@ const Template: StoryObj<typeof TeamInviteEmail> = {
     <TeamInviteEmail
       email={args.email}
       teamName={args.teamName}
-      inviteLink="www.runescape.com"
+      inviteLink="https://admin.nextstep.is/"
       sender={args.sender}
       story
     />
@@ -25,8 +25,6 @@ export const Default = {
   ...Template,
   args: {
     sender: {
-      __typename: 'User',
-      id: '1',
       firstName: 'Joe',
       lastName: 'Joeronimo',
       imageUrl: 'https://bit.ly/3Gth4Yf'
