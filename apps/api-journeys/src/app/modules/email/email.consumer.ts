@@ -7,8 +7,10 @@ import { render } from '@react-email/render'
 import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
-import JourneyInviteEmail from '../../emails/JourneyInvite'
-import TeamInviteEmail from '../../emails/TeamInvite'
+import { JourneyInviteEmail } from '../../emails/templates/JourneyInvite'
+import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
+
+import { User } from '@core/nest/common/firebaseClient'
 
 AWS.config.update({ region: 'us-east-2' })
 
@@ -36,6 +38,7 @@ export interface JourneyEditInviteJob {
 export interface TeamInviteJob {
   teamName: string
   email: string
+  sender: Omit<User, 'id' | 'email'>
 }
 
 export type ApiJourneysJob = JourneyEditInviteJob | TeamInviteJob
@@ -63,7 +66,8 @@ export class EmailConsumer extends WorkerHost {
       TeamInviteEmail({
         teamName: job.data.teamName,
         email: job.data.email,
-        inviteLink: url
+        inviteLink: url,
+        sender: job.data.sender
       }),
       {
         pretty: true
@@ -74,7 +78,8 @@ export class EmailConsumer extends WorkerHost {
       TeamInviteEmail({
         teamName: job.data.teamName,
         email: job.data.email,
-        inviteLink: url
+        inviteLink: url,
+        sender: job.data.sender
       }),
       {
         plainText: true

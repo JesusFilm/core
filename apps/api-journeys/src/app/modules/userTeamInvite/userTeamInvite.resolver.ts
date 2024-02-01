@@ -18,6 +18,7 @@ import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserTeamInviteService } from './userTeamInvite.service'
+import omit from 'lodash/omit'
 
 @Resolver('userTeamInvite')
 export class UserTeamInviteResolver {
@@ -44,7 +45,7 @@ export class UserTeamInviteResolver {
   @UseGuards(AppCaslGuard)
   async userTeamInviteCreate(
     @CaslAbility() ability: AppAbility,
-    @CurrentUserId() senderId: string,
+    @CurrentUser() sender: User,
     @Args('teamId') teamId: string,
     @Args('input') input: UserTeamInviteCreateInput
   ): Promise<UserTeamInvite> {
@@ -58,11 +59,11 @@ export class UserTeamInviteResolver {
         },
         create: {
           email: input.email,
-          senderId,
+          senderId: sender.id,
           team: { connect: { id: teamId } }
         },
         update: {
-          senderId,
+          senderId: sender.id,
           acceptedAt: null,
           receipientId: null,
           removedAt: null
@@ -81,7 +82,8 @@ export class UserTeamInviteResolver {
         })
       await this.userTeamInviteService.sendEmail(
         userTeamInvite.team,
-        input.email
+        input.email,
+        omit(sender, ['id', 'email'])
       )
       return userTeamInvite
     })
