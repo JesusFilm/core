@@ -11,6 +11,7 @@ import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 
 import { EmailModule } from './modules/email/email.module'
+import { EmailPreferencesModule } from './modules/emailPreferences/emailPreferences.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { UserModule } from './modules/user/user.module'
 
@@ -18,6 +19,7 @@ import { UserModule } from './modules/user/user.module'
   imports: [
     NestHealthModule,
     EmailModule,
+    EmailPreferencesModule,
     UserModule,
     BullModule.forRoot({
       connection: {
