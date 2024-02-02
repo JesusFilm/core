@@ -6,12 +6,12 @@ import { Meta, StoryObj } from '@storybook/react'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 
-import { LanguageSelector } from './LanguageSelector'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
-const LanguageSelectorStory: Meta<typeof LanguageSelector> = {
+const LanguageSwitcherStory: Meta<typeof LanguageSwitcher> = {
   ...simpleComponentConfig,
-  component: LanguageSelector,
-  title: 'Journeys-Admin/LanguageSelector'
+  component: LanguageSwitcher,
+  title: 'Journeys-Admin/LanguageSwitcher'
 }
 
 jest
@@ -99,7 +99,7 @@ jest
     })
   })
 
-export const Default: StoryObj<typeof LanguageSelector> = {
+export const Default: StoryObj<typeof LanguageSwitcher> = {
   render: () => (
     <MockedProvider
       mocks={[
@@ -157,8 +157,8 @@ export const Default: StoryObj<typeof LanguageSelector> = {
         }
       ]}
     >
-      <LanguageSelector open handleClose={jest.fn()} />
+      <LanguageSwitcher open handleClose={jest.fn()} />
     </MockedProvider>
   )
 }
-export default LanguageSelectorStory
+export default LanguageSwitcherStory

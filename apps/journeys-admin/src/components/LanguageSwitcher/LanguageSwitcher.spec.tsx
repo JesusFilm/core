@@ -6,7 +6,7 @@ import { i18n } from 'next-i18next'
 
 import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 
-import { LanguageSelector } from './LanguageSelector'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -22,7 +22,7 @@ jest.mock('next-i18next', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-describe('LanguageSelector', () => {
+describe('LanguageSwitcher', () => {
   it('should render language selector', () => {
     jest
       .spyOn(TranslationStatus.prototype, 'getProjectProgress')
@@ -49,7 +49,7 @@ describe('LanguageSelector', () => {
           }
         ]}
       >
-        <LanguageSelector open handleClose={jest.fn()} />
+        <LanguageSwitcher open handleClose={jest.fn()} />
       </MockedProvider>
     )
     expect(getByText('Change Language')).toBeInTheDocument()
@@ -198,7 +198,7 @@ describe('LanguageSelector', () => {
           }
         ]}
       >
-        <LanguageSelector open handleClose={jest.fn()} />
+        <LanguageSwitcher open handleClose={jest.fn()} />
       </MockedProvider>
     )
 
@@ -310,7 +310,7 @@ describe('LanguageSelector', () => {
           }
         ]}
       >
-        <LanguageSelector open handleClose={mockHandleClose} />
+        <LanguageSwitcher open handleClose={mockHandleClose} />
       </MockedProvider>
     )
 
@@ -422,7 +422,7 @@ describe('LanguageSelector', () => {
           }
         ]}
       >
-        <LanguageSelector open handleClose={mockHandleClose} />
+        <LanguageSwitcher open handleClose={mockHandleClose} />
       </MockedProvider>
     )
 

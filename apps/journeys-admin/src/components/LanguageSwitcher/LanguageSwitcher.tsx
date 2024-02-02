@@ -13,22 +13,22 @@ import { Button, Typography } from '@mui/material'
 
 import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
-import { getLocaleLanguage } from './utils/getLocaleLanguage'
+import { getLocaleLanguage } from '../../libs/getLocaleLanguage'
 
 interface DefaultLanguage {
   id: string
   nativeName?: string
   localName?: string
 }
-interface LanguageSelectorProps {
+interface LanguageSwitcherProps {
   open: boolean
   handleClose: () => void
 }
 
-export function LanguageSelector({
+export function LanguageSwitcher({
   open,
   handleClose
-}: LanguageSelectorProps): ReactElement {
+}: LanguageSwitcherProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
 

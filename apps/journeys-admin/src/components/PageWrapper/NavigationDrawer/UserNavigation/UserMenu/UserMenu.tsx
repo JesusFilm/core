@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next'
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
 
 import { GetMe_me as ApiUser } from '../../../../../../__generated__/GetMe'
-import { LanguageSelector } from '../../../../LanguageSelector'
+import { LanguageSwitcher } from '../../../../LanguageSwitcher'
 import { MenuItem } from '../../../../MenuItem'
 import { useTeam } from '../../../../Team/TeamProvider'
 
@@ -101,7 +101,7 @@ export function UserMenu({
         />
       </Menu>
       {open && (
-        <LanguageSelector open={open} handleClose={() => setOpen(false)} />
+        <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
       )}
     </>
   )
