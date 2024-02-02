@@ -7,6 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -327,7 +328,7 @@ describe('EditToolbar Menu', () => {
       children: []
     }
 
-    const mockBlockDuplicate: MockedResponse = {
+    const mockBlockDuplicate: MockedResponse<BlockDuplicate> = {
       request: {
         query: BLOCK_DUPLICATE,
         variables: {
@@ -339,8 +340,8 @@ describe('EditToolbar Menu', () => {
         data: {
           blockDuplicate: [
             {
-              id: 'typography0.id',
-              parentOrder: 1
+              __typename: 'TypographyBlock',
+              id: 'typography0.id'
             }
           ]
         }
