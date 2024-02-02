@@ -5,12 +5,12 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { treeBlocksVar } from '@core/journeys/ui/block'
 import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
+import { ThemeMode } from '@core/shared/ui/themes'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../__generated__/GetJourney'
 import { basic } from '../../libs/testData/storyData'
 
 import { EmbeddedPreview } from './EmbeddedPreview'
-import { ThemeMode } from '@core/shared/ui/themes'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
