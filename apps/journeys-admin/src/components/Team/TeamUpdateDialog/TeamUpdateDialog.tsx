@@ -61,10 +61,15 @@ export function TeamUpdateDialog({
       })
       handleClose(resetForm)()
 
-      enqueueSnackbar(t(`${data?.teamUpdate.title ?? 'Team'} updated.`), {
-        variant: 'success',
-        preventDuplicate: true
-      })
+      enqueueSnackbar(
+        data?.teamUpdate.title
+          ? t('{{ data }} updated.', { data: data.teamUpdate.title })
+          : t('Team updated.'),
+        {
+          variant: 'success',
+          preventDuplicate: true
+        }
+      )
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {

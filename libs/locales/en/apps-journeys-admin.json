@@ -546,6 +546,8 @@
   "More journeys here": "More journeys here",
   "Journeys are grouped by teams. You can switch between teams by using this dropdown.": "Journeys are grouped by teams. You can switch between teams by using this dropdown.",
   "Dismiss": "Dismiss",
+  "{{ data }} updated.": "{{ data }} updated.",
+  "Team updated.": "Team updated.",
   "Failed to update the team. Reload the page or try again.": "Failed to update the team. Reload the page or try again.",
   "Change Team Name": "Change Team Name",
   "Save": "Save",
