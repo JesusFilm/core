@@ -135,35 +135,50 @@ export const Opened = {
 export const WithContent = {
   ...Template,
   args: {
-    blocks: imageBlocks
+    blocks: imageBlocks,
+    themeMode: ThemeMode.light,
+    rtl: false,
+    locale: 'locale'
   }
 }
 
 export const WithVideo = {
   ...Template,
   args: {
-    blocks: videoBlocks
+    blocks: videoBlocks,
+    themeMode: ThemeMode.light,
+    rtl: false,
+    locale: 'locale'
   }
 }
 
 export const WithVideoNoPoster = {
   ...Template,
   args: {
-    blocks: videoBlocksNoPoster
+    blocks: videoBlocksNoPoster,
+    themeMode: ThemeMode.light,
+    rtl: false,
+    locale: 'locale'
   }
 }
 
 export const WithVideoNoVideo = {
   ...Template,
   args: {
-    blocks: videoBlocksNoVideo
+    blocks: videoBlocksNoVideo,
+    themeMode: ThemeMode.light,
+    rtl: false,
+    locale: 'locale'
   }
 }
 
 export const WithVideoLoop = {
   ...Template,
   args: {
-    blocks: videoLoop
+    blocks: videoLoop,
+    themeMode: ThemeMode.light,
+    rtl: false,
+    locale: 'locale'
   },
   parameters: {
     chromatic: { disableSnapshot: true }
