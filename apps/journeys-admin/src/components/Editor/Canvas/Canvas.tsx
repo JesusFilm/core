@@ -128,7 +128,7 @@ export function Canvas(): ReactElement {
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: 'hosted-by'
+      id: undefined
     })
 
     router.query.param = 'step-footer'

@@ -111,6 +111,11 @@ export function Drawer(): ReactElement {
     default:
       blockTitle = title
   }
+  switch (selectedComponent) {
+    case 'Footer':
+      blockTitle = t('Footer Properties')
+      break
+  }
   switch (journeyEditContentComponent) {
     case ActiveJourneyEditContent.SocialPreview:
       blockTitle = t('Social Share Preview')

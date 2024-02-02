@@ -1,1 +1,1 @@
-export { EditToolbar, EDIT_TOOLBAR_HEIGHT } from './EditToolbar'
+export { EditToolbar } from './EditToolbar'

@@ -21,6 +21,7 @@ export function PaletteColorPicker({
       onChange={onChange}
       id={selectedColor}
       testId="PaletteColorPicker"
+      sx={{ p: 4 }}
     >
       {colors.map((color) => {
         return (
