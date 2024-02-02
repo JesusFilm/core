@@ -328,15 +328,6 @@ describe('EditToolbar Menu', () => {
       children: []
     }
 
-    // const result = jest.fn(() => ({
-    //   data: {
-    //     blockDuplicate: {
-    //       id: 'typography0.id',
-    //       parentOrder: 1
-    //     }
-    //   }
-    // }))
-
     const mockBlockDuplicate: MockedResponse = {
       request: {
         query: BLOCK_DUPLICATE,
