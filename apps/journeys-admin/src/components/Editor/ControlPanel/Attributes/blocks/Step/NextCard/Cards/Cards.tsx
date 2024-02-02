@@ -9,8 +9,8 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
-import { CardPreview, OnSelectProps } from '../../../../../../../CardPreview'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { CardPreview, OnSelectProps } from '../../../../../../../CardPreview'
 
 export function Cards(): ReactElement {
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
@@ -54,7 +54,7 @@ export function Cards(): ReactElement {
 
   return (
     <>
-      <Box sx={{ pl: 6, pr: 4, pt: 4 }}>
+      <Box sx={{ p: 4, pb: 3 }}>
         <Typography
           variant="subtitle2"
           sx={{ [theme.breakpoints.down('sm')]: { display: 'none' } }}

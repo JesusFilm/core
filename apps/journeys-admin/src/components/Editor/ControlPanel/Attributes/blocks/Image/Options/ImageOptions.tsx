@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import dynamic from 'next/dynamic'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -9,14 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ImageBlockUpdate } from '../../../../../../../../__generated__/ImageBlockUpdate'
-
-const ImageBlockEditor = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/ImageBlockEditor/ImageBlockEditor" */ '../../../../../ImageBlockEditor'
-    ).then((mod) => mod.ImageBlockEditor),
-  { ssr: false }
-)
+import { ImageSource } from '../../../../../ImageSource'
 
 export const IMAGE_BLOCK_UPDATE = gql`
   mutation ImageBlockUpdate(
@@ -56,7 +48,8 @@ export function ImageOptions(): ReactElement {
           id: imageBlock.id,
           journeyId: journey.id,
           input: {
-            src: null
+            src: null,
+            alt: ''
           }
         }
       })
@@ -91,10 +84,10 @@ export function ImageOptions(): ReactElement {
   }
 
   return (
-    <ImageBlockEditor
+    <ImageSource
+      selectedBlock={imageBlock}
       onChange={updateImageBlock}
       onDelete={handleImageDelete}
-      selectedBlock={imageBlock}
       loading={loading}
       error={error != null}
     />

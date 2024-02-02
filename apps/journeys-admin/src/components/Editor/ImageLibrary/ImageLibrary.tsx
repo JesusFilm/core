@@ -12,9 +12,8 @@ import { Dialog as SharedUiDialog } from '@core/shared/ui/Dialog'
 import X2Icon from '@core/shared/ui/icons/X2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { ImageBlockEditor } from '../ImageBlockEditor'
-
-export const DRAWER_WIDTH = 328
 
 interface DrawerOrDialogProps {
   children: ReactNode
@@ -45,12 +44,24 @@ function Drawer({
           xs: 0,
           sm: 'unset'
         },
-        '& .MuiDrawer-paper': {
-          boxSizing: 'border-box',
-          width: smUp ? DRAWER_WIDTH : '100%',
-          height: '100%',
-          display: 'flex'
-        }
+        '& .MuiDrawer-paper': smUp
+          ? {
+              height: (theme) =>
+                `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px - ${theme.spacing(
+                  8 // drawn from margin for top and bottom (4 + 4)
+                )})`,
+              width: DRAWER_WIDTH,
+              top: EDIT_TOOLBAR_HEIGHT,
+              display: 'flex',
+              m: 4,
+              ml: 0
+            }
+          : {
+              boxSizing: 'border-box',
+              width: '100%',
+              height: '100%',
+              display: 'flex'
+            }
       }}
       data-testid="ImageLibrary"
     >

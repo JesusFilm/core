@@ -1,16 +1,16 @@
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
-import { EDIT_TOOLBAR_HEIGHT } from '../EditToolbar'
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
-import { JourneyFlow } from '../../JourneyFlow'
+import { ReactElement, useEffect, useRef } from 'react'
+import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
+
 import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { Swiper, SwiperClass, SwiperRef, SwiperSlide } from 'swiper/react'
 
+import { JourneyFlow } from '../../JourneyFlow'
 import { Canvas } from '../Canvas'
+import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Drawer } from '../Drawer'
 
 const StyledSwiper = styled(Swiper)(() => ({
@@ -28,7 +28,7 @@ export function Slider(): ReactElement {
     dispatch
   } = useEditor()
 
-  function handlePrev() {
+  function handlePrev(): void {
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: ActiveSlide.JourneyFlow
@@ -109,7 +109,7 @@ export function Slider(): ReactElement {
         </Box>
         <Box
           sx={{
-            width: 327
+            width: DRAWER_WIDTH
           }}
         >
           <Drawer />
