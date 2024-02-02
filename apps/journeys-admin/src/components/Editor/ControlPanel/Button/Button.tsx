@@ -62,17 +62,19 @@ export function Button({
           }
         }}
       >
-        <CardActionArea onClick={handleClick} disabled={disabled}>
-          <CardContent
-            sx={{
-              px: 3.5,
-              py: 3,
-              color: disabled ? 'secondary.light' : 'auto'
-            }}
-          >
-            {icon}
-          </CardContent>
-        </CardActionArea>
+        <Box>
+          <CardActionArea onClick={handleClick} disabled={disabled}>
+            <CardContent
+              sx={{
+                px: 3.5,
+                py: 3,
+                color: disabled ? 'secondary.light' : 'auto'
+              }}
+            >
+              {icon}
+            </CardContent>
+          </CardActionArea>
+        </Box>
       </StyledTooltip>
     </Box>
   )
