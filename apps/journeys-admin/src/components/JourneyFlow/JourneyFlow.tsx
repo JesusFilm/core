@@ -284,7 +284,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   nodes.push({
     type: 'SocialPreview',
     id: 'fhiweofheoi',
-    position: { x: -165, y: -200 },
+    position: { x: -165, y: -195 },
     data: { __typename: 'SocialPreview' }
   })
 

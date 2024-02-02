@@ -39,7 +39,6 @@ export function SocialPreviewNode(): ReactElement {
               sx={{
                 height: 168,
                 width: 130.5,
-                border: '0.38px solid #DEDFE0',
                 borderRadius: '9px',
                 display: 'block',
                 px: 1.5
@@ -78,16 +77,7 @@ export function SocialPreviewNode(): ReactElement {
                   borderRadius="4.5px"
                 />
               </Stack>
-              <CardMedia
-                sx={{
-                  px: 0,
-                  pt: 0,
-                  width: 118.5,
-                  height: 90,
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}
-              >
+              <CardMedia>
                 {journey?.primaryImageBlock?.src == null ? (
                   <Box
                     data-testid="social-preview-post-empty"
@@ -158,7 +148,6 @@ export function SocialPreviewNode(): ReactElement {
                   <ShareIcon sx={{ fontSize: 9 }} />
                 </Stack>
               </CardContent>
-              <CardActionArea />
             </Card>
           )}
         </Stack>
