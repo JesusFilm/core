@@ -29,7 +29,7 @@ export function ToggleButtonGroup({
 
   return (
     <Stack
-      sx={{ px: 4, pb: 4, pt: 0 }}
+      sx={{ p: 4, pt: 0 }}
       data-testid={`ToggleButtonGroup${testId ?? ''}`}
     >
       {label != null ? (

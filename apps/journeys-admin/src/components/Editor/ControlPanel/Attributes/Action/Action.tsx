@@ -172,7 +172,7 @@ export function Action(): ReactElement {
 
   return (
     <>
-      <Stack sx={{ px: 4, pb: 4, pt: 0 }} data-testid="Action">
+      <Stack sx={{ p: 4, pt: 0 }} data-testid="Action">
         <FormControl variant="filled">
           <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
             {t('Navigate to:')}

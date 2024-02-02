@@ -46,7 +46,7 @@ export function Credentials(): ReactElement {
   })
 
   return (
-    <Stack spacing={6} sx={{ px: 4, pb: 4, pt: 0 }}>
+    <Stack spacing={6} sx={{ p: 4, pt: 0 }}>
       <ApiTokenTextField
         id={selectedBlock?.id}
         apiTokenExists={data?.block?.apiTokenExists}

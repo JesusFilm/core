@@ -80,7 +80,7 @@ export function CardStyling(): ReactElement {
 
   return (
     <>
-      <Box sx={{ px: 4, py: 4, display: { xs: 'flex', sm: 'none' } }}>
+      <Box sx={{ p: 4, display: { xs: 'flex', sm: 'none' } }}>
         <Stack spacing={4} direction="row">
           <Box
             sx={{
@@ -106,7 +106,7 @@ export function CardStyling(): ReactElement {
           </Stack>
         </Stack>
       </Box>
-      <Divider sx={{ display: { xs: 'flex', sm: 'none' } }} />
+      <Divider sx={{ mb: 4, display: { xs: 'flex', sm: 'none' } }} />
       <Box>
         <HorizontalSelect
           onChange={handleChange}
