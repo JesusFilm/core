@@ -108,7 +108,6 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v1
 
