@@ -1,4 +1,4 @@
-import Stack from '@mui/material/Stack'
+import Card from '@mui/material/Card'
 import { ReactElement } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -36,26 +36,27 @@ export function AddBlockToolbar({
   )
 
   return (
-    <>
-      <Stack
-        data-testid="AddBlockToolbar"
-        sx={{
-          alignItems: 'center',
-          display: 'flex',
-          pointerEvents: hasVideoBlock ? 'none' : 'auto',
-          color: hasVideoBlock ? 'secondary.light' : 'auto'
-        }}
-      >
-        <AddIcon sx={{ m: 3 }} />
-        <NewTypographyButton />
-        <NewImageButton />
-        <NewVideoButton disabled={hasChildBlock} />
-        <NewRadioQuestionButton />
-        <NewTextResponseButton />
-        <NewSignUpButton />
-        <NewButtonButton />
-        {formiumForm && <NewFormButton />}
-      </Stack>
-    </>
+    <Card
+      variant="outlined"
+      data-testid="AddBlockToolbar"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: 2,
+        alignItems: 'center',
+        pointerEvents: hasVideoBlock ? 'none' : 'auto',
+        color: hasVideoBlock ? 'secondary.light' : 'auto'
+      }}
+    >
+      <AddIcon sx={{ m: 3 }} />
+      <NewTypographyButton />
+      <NewImageButton />
+      <NewVideoButton disabled={hasChildBlock} />
+      <NewRadioQuestionButton />
+      <NewTextResponseButton />
+      <NewSignUpButton />
+      <NewButtonButton />
+      {formiumForm && <NewFormButton />}
+    </Card>
   )
 }

@@ -169,7 +169,7 @@ export function Canvas(): ReactElement {
         <Box
           sx={{
             width: { xs: 50, sm: activeSlide === ActiveSlide.Canvas ? 50 : 0 },
-            mr: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 4 : 0 },
+            mr: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 7 : 0 },
             transition: (theme) =>
               theme.transitions.create(['width', 'margin'], {
                 duration: 150
