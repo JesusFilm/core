@@ -12,10 +12,25 @@ export class LandingPage {
 
   async goToAdminUrl(): Promise<void> {
     await this.page.goto('/')
+    // Wait for two seconds as the landing page showing 'Sign in with email' button second time
+    // even after clicking the 'Sign in with email' button
+    // eslint-disable-next-line
+    await this.page.waitForTimeout(2000)
   }
 
   async clickSignInWithEmail(): Promise<void> {
     await this.page.locator('button[data-provider-id="password"]').click()
+
+    // If the email input is not visible, click the 'Sign in with email' button again
+    // as sometimes landing page load was still in flight even after clicking the button
+    // and landing page is loading again even after clicking the button
+    if (
+      !(await this.page
+        .locator('input[name="email"]')
+        .isVisible({ timeout: 8000 }))
+    ) {
+      await this.page.locator('button[data-provider-id="password"]').click()
+    }
   }
 
   async signInWithEmailVisible(): Promise<void> {
