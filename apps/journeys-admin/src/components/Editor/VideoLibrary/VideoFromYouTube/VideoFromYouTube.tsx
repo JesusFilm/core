@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import reduce from 'lodash/reduce'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import useSWRInfinite from 'swr/infinite'
 
 import {
@@ -86,6 +87,7 @@ export function VideoFromYouTube({
   onSelect
 }: VideoFromYouTubeProps): ReactElement {
   const [url, setUrl] = useState<string>('')
+  const { t } = useTranslation('apps-journeys-admin')
   const { data, error, size, setSize } = useSWRInfinite<Data>(
     (_pageIndex, previousPageData?: Data) => {
       const YOUTUBE_ID_REGEX =
@@ -125,9 +127,9 @@ export function VideoFromYouTube({
         {videos.length > 1 && (
           <Box sx={{ pb: 4, px: 6 }}>
             <Typography variant="overline" color="primary">
-              YouTube
+              {t('YouTube')}
             </Typography>
-            <Typography variant="h6">Featured Videos</Typography>
+            <Typography variant="h6">{t('Featured Videos')}</Typography>
           </Box>
         )}
         <VideoList

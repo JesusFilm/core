@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -52,6 +53,7 @@ export function CardStyling(): ReactElement {
     CARD_BLOCK_THEME_MODE_UPDATE
   )
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
     if (journey != null && cardBlock != null) {
@@ -96,11 +98,11 @@ export function CardStyling(): ReactElement {
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">
-              {cardBlock?.themeMode == null && 'Default'}
-              {cardBlock?.themeMode === ThemeMode.light && 'Light'}
-              {cardBlock?.themeMode === ThemeMode.dark && 'Dark'}
+              {cardBlock?.themeMode == null && t('Default')}
+              {cardBlock?.themeMode === ThemeMode.light && t('Light')}
+              {cardBlock?.themeMode === ThemeMode.dark && t('Dark')}
             </Typography>
-            <Typography variant="caption">Card Style</Typography>
+            <Typography variant="caption">{t('Card Style')}</Typography>
           </Stack>
         </Stack>
       </Box>

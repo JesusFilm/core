@@ -53,13 +53,17 @@ describe('LanguageMenuItem', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled())
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'languages' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'languages' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })

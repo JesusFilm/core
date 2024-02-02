@@ -1,4 +1,5 @@
 import Button from '@mui/material/Button'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
@@ -7,30 +8,29 @@ import { useTranslation } from 'react-i18next'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
-import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
-import { useTeam } from '../../Team/TeamProvider'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
 }
 
+const DynamicCopyToTeamDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CopyToTeamDialog" */
+      '../../Team/CopyToTeamDialog'
+    ).then((mod) => mod.CopyToTeamDialog)
+)
+
 export function CreateJourneyButton({
   signedIn = false
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { query } = useTeam()
+
   const router = useRouter()
   const { journey } = useJourney()
-  const [openTeamDialog, setOpenTeamDialog] = useState(false)
+  const [openTeamDialog, setOpenTeamDialog] = useState<boolean | undefined>()
   const [loadingJourney, setLoadingJourney] = useState(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
-
-  useEffect(() => {
-    if (!signedIn) {
-      // Prefetch the dashboard page
-      void router.prefetch('/users/sign-in')
-    }
-  }, [signedIn, router])
 
   const handleCreateJourney = useCallback(
     async (teamId: string): Promise<void> => {
@@ -68,32 +68,33 @@ export function CreateJourneyButton({
     if (signedIn) {
       setOpenTeamDialog(true)
     } else {
-      void router
-        .push(
-          {
-            pathname: '/users/sign-in',
-            query: {
-              redirect: `${
-                window.location.origin + router.asPath
-              }?createNew=true`
-            }
-          },
-          undefined,
-          {
-            shallow: true
+      const url = window.location.origin + router.asPath
+      void router.push(
+        {
+          pathname: '/users/sign-in',
+          query: {
+            redirect: url.includes('createNew')
+              ? url
+              : `${window.location.origin + router.asPath}?createNew=true`
           }
-        )
-        .then(() => {
-          setOpenTeamDialog(true)
-        })
+        },
+        undefined,
+        {
+          shallow: true
+        }
+      )
     }
   }
 
   useEffect(() => {
-    if (router.query.createNew === 'true') {
+    if (!signedIn) {
+      // Prefetch the dashboard page
+      void router.prefetch('/users/sign-in')
+    }
+    if (router.query.createNew === 'true' && signedIn) {
       setOpenTeamDialog(true)
     }
-  }, [router, query, handleCreateJourney])
+  }, [signedIn, router, handleCreateJourney])
 
   return (
     <>
@@ -106,14 +107,16 @@ export function CreateJourneyButton({
       >
         {t('Use This Template')}
       </Button>
-      <CopyToTeamDialog
-        submitLabel="Add"
-        title="Add Journey to Team"
-        open={openTeamDialog}
-        loading={loadingJourney}
-        onClose={() => setOpenTeamDialog(false)}
-        submitAction={handleCreateJourney}
-      />
+      {openTeamDialog != null && (
+        <DynamicCopyToTeamDialog
+          submitLabel="Add"
+          title="Add Journey to Team"
+          open={openTeamDialog}
+          loading={loadingJourney}
+          onClose={() => setOpenTeamDialog(false)}
+          submitAction={handleCreateJourney}
+        />
+      )}
     </>
   )
 }

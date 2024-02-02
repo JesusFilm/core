@@ -19,6 +19,7 @@ export default async function Handler(
       }
     })
 
+    // this should match apps/journeys-admin/src/components/Editor/Properties/JourneyLink/EmbedJourneyDialog/EmbedJourneyDialog.tsx
     const providerUrl = `https://${
       process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
     }`
@@ -29,7 +30,8 @@ export default async function Handler(
       type: 'rich',
       version: '1.0',
       // oembed rich type required fields
-      html: `<div style="position:relative;width:100%;overflow:hidden;padding-top:150%"><iframe id="ns-iframe" src="${embedUrl}" style="position:absolute;top:0;left:0;bottom:0;right:0;width:100%;height:100%;border:none" allow="fullscreen; autoplay"></iframe></div><script>window.addEventListener("message",e=>{if("${providerUrl}"===e.origin){let t=document.getElementById("ns-iframe");!0===e.data?(t.style.position="fixed",t.style.zIndex="999999999999999999999"):(t.style.position="absolute",t.style.zIndex="auto")}});</script>`,
+      // Self-closing iframe tag breaks embed on WordPress
+      html: `<iframe src="${embedUrl}" style="border: 0" allow="fullscreen; autoplay" allowfullscreen></iframe>`,
       width: 375,
       height: 500,
       // oembed optional fields

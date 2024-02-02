@@ -10,11 +10,13 @@ export function getStepTheme(
   journey?: Pick<JourneyFields, 'themeName' | 'themeMode'>
 ): { themeName: ThemeName; themeMode: ThemeMode } {
   const cardFromStep =
-    block.children.length > 0 && block.children[0].__typename === 'CardBlock'
+    block?.children != null &&
+    block.children.length > 0 &&
+    block.children[0].__typename === 'CardBlock'
       ? block.children[0]
       : undefined
 
-  const card = block.__typename === 'StepBlock' ? cardFromStep : block
+  const card = block?.__typename === 'StepBlock' ? cardFromStep : block
 
   return {
     themeName: card?.themeName ?? journey?.themeName ?? ThemeName.base,

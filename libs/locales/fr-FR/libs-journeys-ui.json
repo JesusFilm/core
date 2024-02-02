@@ -1,0 +1,22 @@
+{
+  "Form": "Formulaire",
+  "Name must be 2 characters or more": "Le nom doit comporter 2 caractères ou plus",
+  "Name must be 50 characters or less": "Le nom doit comporter 50 caractères ou moins",
+  "Required": "Exigée",
+  "Please enter a valid email address": "Saisis une adresse électronique valide",
+  "Name": "Nom",
+  "Email": "Courriel",
+  "Submit": "Soumettre",
+  "Journey": "Voyage",
+  "Copied to clipboard": "Copié dans le presse-papiers",
+  "Share": "Partager",
+  "Copy Link": "Copier le lien",
+  "Facebook": "Facebook",
+  "Twitter": "Twitter",
+  "Report this content": "Signaler ce contenu",
+  "Terms & Conditions": "Conditions générales",
+  "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "Toutes les données personnelles identifiables enregistrées sur ce site seront traitées par journey creator : \"{{ teamTitle }}\".",
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Untitled": "Sans titre",
+  "Step {{number}}": "Étape {{number}}"
+}

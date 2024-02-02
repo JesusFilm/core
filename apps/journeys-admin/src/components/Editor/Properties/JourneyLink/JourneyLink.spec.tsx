@@ -54,13 +54,17 @@ describe('JourneyLink', () => {
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'edit-url' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'edit-url' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 
@@ -92,13 +96,17 @@ describe('JourneyLink', () => {
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'embed-journey' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'embed-journey' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })

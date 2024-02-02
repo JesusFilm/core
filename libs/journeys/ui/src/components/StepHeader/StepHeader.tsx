@@ -6,7 +6,7 @@ import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { MouseEvent, ReactElement, useState } from 'react'
@@ -20,6 +20,7 @@ interface StepHeaderProps {
 
 export function StepHeader({ sx }: StepHeaderProps): ReactElement {
   const { journey, variant } = useJourney()
+  const theme = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -53,7 +54,14 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
         sx={{ mx: 2, mt: 1 }}
         onClick={handleClick}
       >
-        <InfoOutlinedIcon sx={{ color: 'white' }} />
+        <InfoOutlinedIcon
+          sx={{
+            color: theme.palette.primary.main,
+            [theme.breakpoints.up('lg')]: {
+              color: theme.palette.common.white
+            }
+          }}
+        />
       </IconButton>
       <Menu
         id="basic-menu"
