@@ -117,7 +117,7 @@ export function DuplicateBlock({
         }
       }
     }
-    enqueueSnackbar(t(`${blockLabel} Duplicated`), {
+    enqueueSnackbar(t('{{ blockLabel }} Duplicated', { blockLabel }), {
       variant: 'success',
       preventDuplicate: true
     })
@@ -137,7 +137,7 @@ export function DuplicateBlock({
         </IconButton>
       ) : (
         <MenuItem
-          label={t(`Duplicate ${blockLabel}`)}
+          label={t('Duplicate {{ blockLabel }}', { blockLabel })}
           icon={<CopyLeftIcon color="inherit" />}
           disabled={disableAction}
           onClick={handleDuplicateBlock}

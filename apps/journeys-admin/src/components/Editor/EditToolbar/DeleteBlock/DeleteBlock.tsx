@@ -36,6 +36,7 @@ export function DeleteBlock({
   closeMenu,
   disabled = false
 }: DeleteBlockProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -98,8 +99,6 @@ export function DeleteBlock({
         })
   }
 
-  const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <>
       <Dialog
@@ -130,7 +129,7 @@ export function DeleteBlock({
         </IconButton>
       ) : (
         <MenuItem
-          label={t(`Delete ${label}`)}
+          label={t('Delete {{ label }}', { label })}
           icon={<Trash2Icon />}
           disabled={disableAction}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}

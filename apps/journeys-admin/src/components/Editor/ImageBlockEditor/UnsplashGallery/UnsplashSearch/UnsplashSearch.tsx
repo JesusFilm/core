@@ -4,6 +4,7 @@ import { Form, Formik } from 'formik'
 import { ReactElement } from 'react'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'
+import { useTranslation } from 'react-i18next'
 
 interface UnsplashSearchProps {
   handleSubmit: (value?: string | null) => void
@@ -14,6 +15,7 @@ export function UnsplashSearch({
   handleSubmit,
   value
 }: UnsplashSearchProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Formik
       initialValues={{
@@ -31,7 +33,7 @@ export function UnsplashSearch({
             name="src"
             variant="filled"
             hiddenLabel
-            placeholder="Search by keyword"
+            placeholder={t('Search by keyword')}
             value={values.src}
             onChange={handleChange}
             fullWidth

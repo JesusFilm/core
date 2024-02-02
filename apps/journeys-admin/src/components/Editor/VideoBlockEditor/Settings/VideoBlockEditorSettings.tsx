@@ -72,9 +72,8 @@ export function VideoBlockEditorSettings({
         convertedStartAt > selectedBlock?.duration - 3
       ) {
         errors.startAt = t(
-          `Start time has to be at least 3 seconds less than video duration ${secondsToTimeFormat(
-            selectedBlock?.duration
-          )}`
+          'Start time has to be at least 3 seconds less than video duration {{ time }}',
+          { time: secondsToTimeFormat(selectedBlock?.duration) }
         )
         enqueueSnackbar(errors.startAt, {
           variant: 'error',
@@ -85,9 +84,8 @@ export function VideoBlockEditorSettings({
         convertedEndAt > selectedBlock?.duration
       ) {
         errors.endAt = t(
-          `End time has to be no more than video duration ${secondsToTimeFormat(
-            selectedBlock?.duration
-          )}`
+          'End time has to be no more than video duration {{ time }}',
+          { time: secondsToTimeFormat(selectedBlock?.duration) }
         )
         enqueueSnackbar(errors.endAt, {
           variant: 'error',

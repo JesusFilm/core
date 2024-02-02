@@ -40,12 +40,9 @@ export function TeamUpdateDialog({
   const teamSchema = object({
     title: string()
       .required(t('Team Name must be at least one character.'))
-      .max(40, t('Max {{ count }} Characters', { count: 40 }))
+      .max(40, t('Max 40 Characters'))
       .matches(/^(?!\s+$).*/g, t('This field cannot contain only blankspaces')),
-    publicTitle: string().max(
-      40,
-      t('Max {{ count }} Characters', { count: 40 })
-    )
+    publicTitle: string().max(40, t('Max 40 Characters'))
   })
 
   async function handleSubmit(
@@ -63,7 +60,7 @@ export function TeamUpdateDialog({
 
       enqueueSnackbar(
         data?.teamUpdate.title
-          ? t('{{ data }} updated.', { data: data.teamUpdate.title })
+          ? t('{{ teamName }} updated.', { teamName: data.teamUpdate.title })
           : t('Team updated.'),
         {
           variant: 'success',

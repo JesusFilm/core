@@ -18,6 +18,7 @@ import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
 import { RemoveUser } from './RemoveUser'
+import { useTranslation } from 'react-i18next'
 
 interface UserItem {
   id: string
@@ -41,6 +42,7 @@ export function UserListItem({
   currentUser,
   journeyId: journeyIdFromParent
 }: UserListItemProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
   const { id, role, displayName, email, imageUrl, journeyId } =
@@ -123,7 +125,7 @@ export function UserListItem({
               typography: 'body2'
             }}
           >
-            {isInvite ? 'Pending' : menuLabel}
+            {isInvite ? t('Pending') : menuLabel}
           </Button>
         }
         data-testid="UserListItem"
