@@ -20,10 +20,16 @@ import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
+  themeMode: ThemeMode
+  rtl: boolean
+  locale: string
 }
 
 export function EmbeddedPreview({
-  blocks
+  blocks,
+  themeMode,
+  rtl,
+  locale
 }: EmbeddedPreviewProps): ReactElement {
   const { journey, variant } = useJourney()
 
@@ -130,7 +136,10 @@ export function EmbeddedPreview({
         />
         <ThemeProvider
           themeName={ThemeName.journeyUi}
-          themeMode={ThemeMode.dark}
+          themeMode={themeMode}
+          rtl={rtl}
+          locale={locale}
+          nested
         >
           <StepFooter />
         </ThemeProvider>
