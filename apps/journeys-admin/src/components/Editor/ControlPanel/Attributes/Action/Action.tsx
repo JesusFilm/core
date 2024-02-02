@@ -29,6 +29,7 @@ import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { getNextStep } from './utils/getNextStep'
+import i18next from 'i18next'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
   mutation NavigateActionUpdate(
@@ -49,26 +50,30 @@ export const ACTION_DELETE = gql`
     }
   }
 `
+i18next.init({
+  defaultNS: 'apps-journeys-admin',
+  fallbackLng: 'en'
+})
 export const actions = [
   {
     value: 'none',
-    label: 'None'
+    label: i18next.t('None')
   },
   {
     value: 'NavigateAction',
-    label: 'Next Step'
+    label: i18next.t('Next Step')
   },
   {
     value: 'NavigateToBlockAction',
-    label: 'Selected Card'
+    label: i18next.t('Selected Card')
   },
   {
     value: 'LinkAction',
-    label: 'URL/Website'
+    label: i18next.t('URL/Website')
   },
   {
     value: 'EmailAction',
-    label: 'Email'
+    label: i18next.t('Email')
   }
 ]
 
@@ -192,7 +197,7 @@ export function Action(): ReactElement {
                     nextStep == null && action.value === 'NavigateAction'
                   }
                 >
-                  {action.label}
+                  {t(action.label)}
                 </MenuItem>
               )
             })}

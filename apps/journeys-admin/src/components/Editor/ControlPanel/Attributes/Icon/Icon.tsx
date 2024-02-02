@@ -38,88 +38,97 @@ import { IconBlockNameUpdate } from '../../../../../../__generated__/IconBlockNa
 import { IconFields } from '../../../../../../__generated__/IconFields'
 
 import { Color } from './Color'
+import i18next from 'i18next'
 
+i18next.init({
+  defaultNS: 'apps-journeys-admin',
+  fallbackLng: 'en'
+})
 // icons is equivalent to IconName from global types"
 export const icons = [
   {
     value: IconName.ArrowForwardRounded,
-    label: 'Arrow Right',
+    label: i18next.t('Arrow Right'),
     display: <ArrowForwardRounded />
   },
   {
     value: IconName.ArrowBackRounded,
-    label: 'Arrow Left',
+    label: i18next.t('Arrow Left'),
     display: <ArrowBackRounded />
   },
   {
     value: IconName.BeenhereRounded,
-    label: 'Been Here',
+    label: i18next.t('Been Here'),
     display: <BeenhereRounded />
   },
   {
     value: IconName.ChatBubbleOutlineRounded,
-    label: 'Chat Bubble',
+    label: i18next.t('Chat Bubble'),
     display: <ChatBubbleOutlineRounded />
   },
   {
     value: IconName.CheckCircleRounded,
-    label: 'Check Circle',
+    label: i18next.t('Check Circle'),
     display: <CheckCircleRounded />
   },
   {
     value: IconName.ChevronRightRounded,
-    label: 'Chevron Right',
+    label: i18next.t('Chevron Right'),
     display: <ChevronRightRounded />
   },
   {
     value: IconName.ChevronLeftRounded,
-    label: 'Chevron Left',
+    label: i18next.t('Chevron Left'),
     display: <ChevronLeftRounded />
   },
   {
     value: IconName.ContactSupportRounded,
-    label: 'Contact Support',
+    label: i18next.t('Contact Support'),
     display: <ContactSupportRounded />
   },
   {
     value: IconName.FormatQuoteRounded,
-    label: 'Format Quote',
+    label: i18next.t('Format Quote'),
     display: <FormatQuoteRounded />
   },
   {
     value: IconName.LiveTvRounded,
-    label: 'Live Tv',
+    label: i18next.t('Live Tv'),
     display: <LiveTvRounded />
   },
   {
     value: IconName.LockOpenRounded,
-    label: 'Lock Open',
+    label: i18next.t('Lock Open'),
     display: <LockOpenRounded />
   },
   {
     value: IconName.MenuBookRounded,
-    label: 'Menu Book',
+    label: i18next.t('Menu Book'),
     display: <MenuBookRounded />
   },
   {
     value: IconName.PlayArrowRounded,
-    label: 'Play Arrow',
+    label: i18next.t('Play Arrow'),
     display: <PlayArrowRounded />
   },
   {
     value: IconName.RadioButtonUncheckedRounded,
-    label: 'Radio Button Uncheked',
+    label: i18next.t('Radio Button Uncheked'),
     display: <RadioButtonUncheckedRounded />
   },
-  { value: IconName.SendRounded, label: 'Send', display: <SendRounded /> },
+  {
+    value: IconName.SendRounded,
+    label: i18next.t('Send'),
+    display: <SendRounded />
+  },
   {
     value: IconName.SubscriptionsRounded,
-    label: 'Subscription',
+    label: i18next.t('Subscription'),
     display: <SubscriptionsRounded />
   },
   {
     value: IconName.TranslateRounded,
-    label: 'Translate',
+    label: i18next.t('Translate'),
     display: <TranslateRounded />
   }
 ]
@@ -210,7 +219,7 @@ export function Icon({ id }: IconProps): ReactElement {
               <MenuItem key={`button-icon-name-${value}`} value={value}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   {display}
-                  <Typography sx={{ pl: 3 }}>{label}</Typography>
+                  <Typography sx={{ pl: 3 }}>{t(label)}</Typography>
                 </Box>
               </MenuItem>
             )

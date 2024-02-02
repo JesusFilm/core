@@ -108,10 +108,10 @@ export function ActionEditor({
 
   let icon: ReactNode
   switch (goalLabel?.(url)) {
-    case 'Start a Conversation':
+    case t('Start a Conversation'):
       icon = <MessageChat1Icon sx={{ color: 'secondary.light' }} />
       break
-    case 'Link to Bible':
+    case t('Link to Bible'):
       icon = <BibleIcon sx={{ color: 'secondary.light' }} />
       break
     default:
