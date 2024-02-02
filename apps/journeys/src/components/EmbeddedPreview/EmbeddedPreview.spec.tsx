@@ -10,6 +10,7 @@ import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '..
 import { basic } from '../../libs/testData/storyData'
 
 import { EmbeddedPreview } from './EmbeddedPreview'
+import { ThemeMode } from '@core/shared/ui/themes'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -69,7 +70,12 @@ describe('EmbeddedPreview', () => {
         ]}
       >
         <SnackbarProvider>
-          <EmbeddedPreview blocks={basic} />
+          <EmbeddedPreview
+            blocks={basic}
+            themeMode={ThemeMode.light}
+            rtl={false}
+            locale="locale"
+          />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -109,7 +115,12 @@ describe('EmbeddedPreview', () => {
         ]}
       >
         <SnackbarProvider>
-          <EmbeddedPreview blocks={basic} />
+          <EmbeddedPreview
+            blocks={basic}
+            themeMode={ThemeMode.light}
+            rtl={false}
+            locale="locale"
+          />
         </SnackbarProvider>
       </MockedProvider>
     )
