@@ -100,7 +100,7 @@ export function BaseNode({
         >
           <Card // regular card
             sx={{
-              borderRadius: 1,
+              borderRadius: 2,
               outline: '2px solid',
               outlineColor: (theme) =>
                 selected === true
@@ -119,17 +119,21 @@ export function BaseNode({
                 width: STEP_NODE_WIDTH,
                 height: STEP_NODE_HEIGHT,
                 gap: 2,
+                margin: 0,
+                padding: 0,
                 borderRadius: 1
               }}
               onClick={onClick}
             >
               {icon}
+
               <Typography
                 sx={{
                   display: '-webkit-box',
                   '-webkit-box-orient': 'vertical',
                   '-webkit-line-clamp': '2',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  padding: 1
                 }}
               >
                 {title}

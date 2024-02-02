@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/client'
-import PlayCircleFilledWhiteRoundedIcon from '@mui/icons-material/PlayCircleFilledWhiteRounded'
+import PlayCircleFilledRoundedIcon from '@mui/icons-material/PlayCircleFilledRounded'
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -21,6 +22,7 @@ import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { BaseNode } from './BaseNode'
 import { filter } from 'lodash'
 import { useStepBlockNextBlockUpdateMutation } from '../../../libs/useStepBlockNextBlockUpdateMutation'
+import CircleRounded from '@mui/icons-material/CircleRounded'
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
@@ -103,8 +105,6 @@ export function StepBlockNode({
   }
 
   function hasVideoBlock(step): boolean {
-    console.log('step ------->>> ', step)
-
     return step.children[0].children.some(
       (child) => child.__typename == 'VideoBlock'
     )
@@ -123,27 +123,35 @@ export function StepBlockNode({
               flexShrink: 0,
               width: 50,
               left: 0,
+              margin: 0,
               borderRadius: 0,
               bgcolor: card?.backgroundColor,
               backgroundImage: bgImage != null ? `url(${bgImage})` : undefined,
               backgroundSize: 'cover',
               backgroundPosition: 'center center',
-              dispaly: 'flex',
-              alignContent: 'center',
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center'
             }}
           >
             <Box
               sx={{
-                height: '100%',
+                borderRadius: 20,
+                height: '30%',
+                width: '40%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#ff9736',
+                color: '#e07a1b',
+                background: 'white',
                 opacity: hasVideoBlock(steps[step.parentOrder ?? -1]) ? 1 : 0
               }}
             >
-              <PlayCircleFilledWhiteRoundedIcon />
+              <PlayCircleFilledRoundedIcon fontSize="large" />
+              <PlayArrowRoundedIcon
+                sx={{ position: 'absolute', height: '30px', width: '1px' }}
+                fontSize="medium"
+              />
             </Box>
           </Box>
         ) : (
