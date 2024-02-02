@@ -111,14 +111,20 @@ const Template: StoryObj<typeof EmbeddedPreview> = {
 export const Default = {
   ...Template,
   args: {
-    blocks: basic
+    blocks: basic,
+    themeMode: ThemeMode.light,
+    rtl: false,
+    locale: 'locale'
   }
 }
 
 export const Opened = {
   ...Template,
   args: {
-    blocks: imageBlocks
+    blocks: imageBlocks,
+    themeMode: ThemeMode.light,
+    rtl: false,
+    locale: 'locale'
   },
   play: async () => {
     await waitFor(
