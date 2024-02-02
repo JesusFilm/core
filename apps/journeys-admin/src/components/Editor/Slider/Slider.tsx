@@ -83,7 +83,6 @@ export function Slider(): ReactElement {
       >
         <Box
           className="navigation-prev"
-          onMouseMove={handlePrev}
           onClick={handlePrev}
           sx={{
             position: 'absolute',
