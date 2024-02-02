@@ -177,7 +177,7 @@ export function ImageBlockEditor({
         name="gallery"
         value={tabValue}
         index={0}
-        sx={{ flexGrow: 1, overflow: 'scroll' }}
+        sx={{ flexGrow: 1, overflow: 'auto' }}
       >
         {tabValue === 0 && <UnsplashGallery onChange={handleUnsplashChange} />}
       </TabPanel>
@@ -185,7 +185,7 @@ export function ImageBlockEditor({
         name="custom"
         value={tabValue}
         index={1}
-        sx={{ flexGrow: 1, overflow: 'scroll' }}
+        sx={{ flexGrow: 1, overflow: 'auto' }}
       >
         {tabValue === 1 && (
           <CustomImage
@@ -201,7 +201,7 @@ export function ImageBlockEditor({
         name="generative"
         value={tabValue}
         index={2}
-        sx={{ flexGrow: 1, overflow: 'scroll' }}
+        sx={{ flexGrow: 1, overflow: 'auto' }}
       >
         {tabValue === 2 && (
           <AIGallery

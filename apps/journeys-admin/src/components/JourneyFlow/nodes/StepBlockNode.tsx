@@ -16,10 +16,9 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import { StepBlockNextBlockUpdate } from '../../../../__generated__/StepBlockNextBlockUpdate'
-import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../Editor/ControlPanel/Attributes/blocks/Step/NextCard/Cards'
 
 import { BaseNode } from './BaseNode'
+import { useStepBlockNextBlockUpdateMutation } from '../../../libs/useStepBlockNextBlockUpdateMutation'
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
@@ -68,16 +67,15 @@ export function StepBlockNode({
     | TreeBlock<CardBlock>
     | undefined
   const bgImage = getBackgroundImage(card)
-  const [stepBlockNextBlockUpdate] = useMutation<StepBlockNextBlockUpdate>(
-    STEP_BLOCK_NEXT_BLOCK_UPDATE
-  )
+  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
 
   const {
-    state: { selectedStep, selectedBlock }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { journey } = useJourney()
 
-  async function onConnect(params): Promise<void> {
+  async function handleConnect(params): Promise<void> {
     if (journey == null) return
 
     await stepBlockNextBlockUpdate({
@@ -87,14 +85,26 @@ export function StepBlockNode({
         input: {
           nextBlockId: params.target
         }
+      },
+      optimisticResponse: {
+        stepBlockUpdate: {
+          id: params.source,
+          __typename: 'StepBlock',
+          nextBlockId: params.target
+        }
       }
     })
+  }
+
+  function handleClick() {
+    dispatch({ type: 'SetSelectedStepAction', step })
   }
 
   return (
     <BaseNode
       selected={selectedStep?.id === step.id}
-      onSourceConnect={onConnect}
+      onSourceConnect={handleConnect}
+      onClick={handleClick}
       icon={
         card?.backgroundColor != null || bgImage != null ? (
           <Box

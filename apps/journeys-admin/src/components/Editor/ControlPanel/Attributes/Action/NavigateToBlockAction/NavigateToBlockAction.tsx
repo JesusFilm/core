@@ -9,25 +9,8 @@ import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
-import { NavigateToBlockActionUpdate } from '../../../../../../../__generated__/NavigateToBlockActionUpdate'
 import { CardPreview, OnSelectProps } from '../../../../../CardPreview'
-
-export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
-  mutation NavigateToBlockActionUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: NavigateToBlockActionInput!
-  ) {
-    blockUpdateNavigateToBlockAction(
-      id: $id
-      journeyId: $journeyId
-      input: $input
-    ) {
-      gtmEventName
-      blockId
-    }
-  }
-`
+import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 
 export function NavigateToBlockAction(): ReactElement {
   const {
@@ -39,8 +22,7 @@ export function NavigateToBlockAction(): ReactElement {
     | TreeBlock<VideoBlock>
     | undefined
 
-  const [navigateToBlockActionUpdate] =
-    useMutation<NavigateToBlockActionUpdate>(NAVIGATE_TO_BLOCK_ACTION_UPDATE)
+  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
 
   const currentActionStep =
     steps?.find(
@@ -51,27 +33,7 @@ export function NavigateToBlockAction(): ReactElement {
 
   async function handleSelectStep({ step }: OnSelectProps): Promise<void> {
     if (currentBlock != null && journey != null && step != null) {
-      const { id, __typename: typeName } = currentBlock
-      await navigateToBlockActionUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: { blockId: step.id }
-        },
-        update(cache, { data }) {
-          if (data?.blockUpdateNavigateToBlockAction != null) {
-            cache.modify({
-              id: cache.identify({
-                __typename: typeName,
-                id
-              }),
-              fields: {
-                action: () => data.blockUpdateNavigateToBlockAction
-              }
-            })
-          }
-        }
-      })
+      await navigateToBlockActionUpdate(currentBlock, step.id)
     }
   }
 

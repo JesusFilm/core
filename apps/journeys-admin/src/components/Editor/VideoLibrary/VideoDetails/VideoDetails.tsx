@@ -24,11 +24,10 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
+import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../../constants'
 import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
-
-export const DRAWER_WIDTH = 328
 
 export interface VideoDetailsProps {
   open: boolean
@@ -129,11 +128,24 @@ export function VideoDetails({
             xs: 0,
             sm: 'unset'
           },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: smUp ? DRAWER_WIDTH : '100%',
-            height: '100%'
-          }
+          '& .MuiDrawer-paper': smUp
+            ? {
+                height: (theme) =>
+                  `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px - ${theme.spacing(
+                    8 // drawn from margin for top and bottom (4 + 4)
+                  )})`,
+                width: DRAWER_WIDTH,
+                top: EDIT_TOOLBAR_HEIGHT,
+                display: 'flex',
+                m: 4,
+                ml: 0
+              }
+            : {
+                boxSizing: 'border-box',
+                width: '100%',
+                height: '100%',
+                display: 'flex'
+              }
         }}
         data-testid="VideoDetails"
       >

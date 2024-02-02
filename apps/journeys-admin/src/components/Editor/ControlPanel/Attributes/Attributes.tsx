@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import MuiTypography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
@@ -119,7 +118,6 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
         return (
           <>
             <Step {...selected} />
-            <Divider orientation="vertical" variant="middle" flexItem />
             {block != null && (
               <AttributesContent selected={block} step={step} />
             )}

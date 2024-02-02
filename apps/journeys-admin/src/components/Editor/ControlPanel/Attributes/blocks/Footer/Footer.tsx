@@ -58,7 +58,7 @@ export function Footer(): ReactElement {
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: 'hosted-by'
+      id: undefined
     })
     dispatch({
       type: 'SetDrawerPropsAction',

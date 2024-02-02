@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -9,27 +8,12 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
+import { useStepBlockNextBlockUpdateMutation } from '../../../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { CardPreview, OnSelectProps } from '../../../../../../../CardPreview'
 
-export const STEP_BLOCK_NEXT_BLOCK_UPDATE = gql`
-  mutation StepBlockNextBlockUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: StepBlockUpdateInput!
-  ) {
-    stepBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-      id
-      nextBlockId
-    }
-  }
-`
-
 export function Cards(): ReactElement {
-  const [stepBlockNextBlockUpdate] = useMutation<StepBlockNextBlockUpdate>(
-    STEP_BLOCK_NEXT_BLOCK_UPDATE
-  )
+  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const {
     state: { steps, selectedBlock }
   } = useEditor()
@@ -70,7 +54,7 @@ export function Cards(): ReactElement {
 
   return (
     <>
-      <Box sx={{ pl: 6, pr: 4, pt: 4 }}>
+      <Box sx={{ p: 4, pb: 3 }}>
         <Typography
           variant="subtitle2"
           sx={{ [theme.breakpoints.down('sm')]: { display: 'none' } }}

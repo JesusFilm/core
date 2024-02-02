@@ -101,7 +101,7 @@ export function VideoBlockEditorSettings({
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Box sx={{ px: 6, width: '100%' }} data-testid="VideoBlockEditorSettings">
+    <Box sx={{ px: 4, width: '100%' }} data-testid="VideoBlockEditorSettings">
       <Stack direction="column" spacing={6}>
         <Stack direction="column" spacing={2}>
           <Typography
