@@ -69,7 +69,6 @@ export function Credentials(): ReactElement {
         direction="row"
         alignItems="center"
         spacing={3}
-        // sx={{ pt: 8 }}
         color="text.secondary"
       >
         <InformationCircleContainedIcon />
