@@ -2,7 +2,6 @@ import { expect } from '@playwright/test'
 import { Page } from 'playwright-core'
 
 import { isVisible } from '../framework/actions'
-import { time } from 'console'
 
 export class LandingPage {
   readonly page: Page
@@ -13,14 +12,10 @@ export class LandingPage {
 
   async goToAdminUrl(): Promise<void> {
     await this.page.goto('/')
-
-    // Wait for the landing page to load fully otherwise 'Sign in with email' button coming twice
-    await this.page.waitForResponse((response) => {
-      return (
-        /api-gateway.*.jesusfilm.org/.test(response.url()) &&
-        response.status() === 200
-      )
-    })
+    // Wait for two seconds as the landing page showing 'Sign in with email' button second time 
+    // even after clicking the 'Sign in with email' button
+    // eslint-disable-next-line
+    await this.page.waitForTimeout(2000)
   }
 
   async clickSignInWithEmail(): Promise<void> {
