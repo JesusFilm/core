@@ -13,7 +13,7 @@ import Type3Icon from '@core/shared/ui/icons/Type3'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
-import { Button } from '../../../ControlPanel/Button'
+import { Button } from '../Button'
 
 export const TYPOGRAPHY_BLOCK_CREATE = gql`
   ${TYPOGRAPHY_FIELDS}

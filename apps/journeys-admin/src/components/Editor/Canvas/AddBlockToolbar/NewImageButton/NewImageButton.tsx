@@ -9,7 +9,7 @@ import Image3Icon from '@core/shared/ui/icons/Image3'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
-import { Button } from '../../../ControlPanel/Button'
+import { Button } from '../Button'
 
 export const IMAGE_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
