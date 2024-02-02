@@ -12,7 +12,6 @@ import { EmailConsumer, EmailJob } from './email.consumer'
 
 describe('EmailConsumer', () => {
   let emailConsumer: EmailConsumer
-  let mailerService: MailerService
   let prismaService: PrismaService
 
   beforeEach(async () => {
@@ -36,7 +35,6 @@ describe('EmailConsumer', () => {
 
     emailConsumer = module.get<EmailConsumer>(EmailConsumer)
     prismaService = module.get<PrismaService>(PrismaService)
-    mailerService = module.get<MailerService>(MailerService)
   })
 
   it.skip('should send email successfully', async () => {
