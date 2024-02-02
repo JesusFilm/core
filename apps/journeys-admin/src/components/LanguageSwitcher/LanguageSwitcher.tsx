@@ -101,7 +101,7 @@ export function LanguageSwitcher({
       return (
         // always display English
         language.id === '529' ||
-        crowdinLanguageData?.data.approvalProgress === 100
+        crowdinLanguageData?.data.translationProgress === 100
       )
     })
   }
