@@ -38,7 +38,7 @@ interface BaseNodeProps {
   icon: ReactNode
   title: string
   selected?: 'descendant' | boolean
-  variant?: 'step' | 'action'
+  variant?: 'step' | 'action' | 'social'
 }
 
 export function BaseNode({
@@ -311,5 +311,7 @@ export function BaseNode({
           )}
         </Box>
       )
+    case 'social':
+      return <>{icon}</>
   }
 }

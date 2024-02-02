@@ -7,7 +7,6 @@ import {
   Background,
   Controls,
   Edge,
-  MarkerType,
   Node,
   ReactFlow,
   useEdgesState,
@@ -62,6 +61,10 @@ import {
   STEP_NODE_WIDTH_GAP
 } from './nodes/BaseNode'
 import 'reactflow/dist/style.css'
+import {
+  SocialPreviewNode,
+  SocialPreviewNodeData
+} from './nodes/SocialPreviewNode'
 
 type InternalNode =
   | Node<StepBlockNodeData, 'StepBlock'>
@@ -71,6 +74,7 @@ type InternalNode =
   | Node<SignUpBlockNodeData, 'SignUpBlock'>
   | Node<FormBlockNodeData, 'FormBlock'>
   | Node<VideoBlockNodeData, 'VideoBlock'>
+  | Node<SocialPreviewNodeData, 'SocialPreview'>
 
 interface Connection<T = BlockFields> {
   block: TreeBlock<T>
@@ -277,6 +281,13 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     })
   })
 
+  nodes.push({
+    type: 'SocialPreview',
+    id: 'fhiweofheoi',
+    position: { x: -165, y: -200 },
+    data: { __typename: 'SocialPreview' }
+  })
+
   return { nodes, edges }
 }
 
@@ -296,6 +307,7 @@ export function JourneyFlow(): ReactElement {
     const { nodes, edges } = transformSteps(steps ?? [])
     setEdges(edges)
     setNodes(nodes)
+    console.log(nodes)
   }, [steps, setNodes, setEdges])
 
   const onConnectStart = (_, { nodeId, handleType }): void => {
@@ -399,7 +411,8 @@ export function JourneyFlow(): ReactElement {
           TextResponseBlock: TextResponseBlockNode,
           SignUpBlock: SignUpBlockNode,
           FormBlock: FormBlockNode,
-          VideoBlock: VideoBlockNode
+          VideoBlock: VideoBlockNode,
+          SocialPreview: SocialPreviewNode
         }}
         proOptions={{ hideAttribution: true }}
       >
