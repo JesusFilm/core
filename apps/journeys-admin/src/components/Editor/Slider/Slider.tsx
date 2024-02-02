@@ -43,7 +43,14 @@ export function Slider(): ReactElement {
   function handlePrev(): void {
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.JourneyFlow
+      activeSlide: activeSlide - 1
+    })
+  }
+
+  function handleNext(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: activeSlide + 1
     })
   }
 
@@ -63,6 +70,40 @@ export function Slider(): ReactElement {
       breakpoints={swiperBreakpoints}
       allowTouchMove={false}
     >
+      <Box
+        slot="container-start"
+        onClick={handlePrev}
+        sx={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          right: 0,
+          height: activeSlide == ActiveSlide.Drawer ? '20%' : '10%',
+          zIndex: 2,
+          cursor: 'pointer',
+          display: {
+            xs: activeSlide > ActiveSlide.JourneyFlow ? 'block' : 'none',
+            sm: 'none'
+          }
+        }}
+      />
+      <Box
+        slot="container-end"
+        onClick={handleNext}
+        sx={{
+          position: 'absolute',
+          left: 0,
+          bottom: 0,
+          right: 0,
+          height: activeSlide == ActiveSlide.JourneyFlow ? '20%' : '10%',
+          zIndex: 2,
+          cursor: 'pointer',
+          display: {
+            xs: activeSlide < ActiveSlide.Drawer ? 'block' : 'none',
+            sm: 'none'
+          }
+        }}
+      />
       <StyledSwiperSlide
         sx={{
           width: { xs: '100%', sm: 'calc(100% - 408px)' },
@@ -94,15 +135,16 @@ export function Slider(): ReactElement {
           onClick={handlePrev}
           sx={{
             position: 'absolute',
-            left: { xs: 0, sm: -120 },
-            top: { xs: '-20%', sm: 0 },
-            bottom: { xs: 'initial', sm: 0 },
-            right: { xs: 0, sm: 'initial' },
-            width: { sm: 120 },
-            height: { xs: '20%', sm: 'auto' },
+            left: -120,
+            top: 0,
+            bottom: 0,
+            width: 120,
             zIndex: 2,
             cursor: 'pointer',
-            display: activeSlide === ActiveSlide.Canvas ? 'block' : 'none'
+            display: {
+              xs: 'none',
+              sm: activeSlide === ActiveSlide.Canvas ? 'block' : 'none'
+            }
           }}
         />
         <Canvas />
