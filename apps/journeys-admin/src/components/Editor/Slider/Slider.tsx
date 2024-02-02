@@ -1,14 +1,15 @@
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { EDIT_TOOLBAR_HEIGHT } from '../EditToolbar'
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import { JourneyFlow } from '../../JourneyFlow'
 import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { Swiper, SwiperClass, SwiperRef, SwiperSlide } from 'swiper/react'
+import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
+import { useTheme } from '@mui/material/styles'
+import { SwiperOptions } from 'swiper/types'
 
 import { Canvas } from '../Canvas'
 import { Drawer } from '../Drawer'
@@ -22,11 +23,23 @@ const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
 }))
 
 export function Slider(): ReactElement {
+  const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
     state: { activeSlide },
     dispatch
   } = useEditor()
+
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      direction: 'vertical',
+      centeredSlides: true,
+      centeredSlidesBounds: true
+    },
+    [breakpoints.values.sm]: {
+      direction: 'horizontal'
+    }
+  }
 
   function handlePrev() {
     dispatch({
@@ -45,10 +58,16 @@ export function Slider(): ReactElement {
   }, [activeSlide])
 
   return (
-    <StyledSwiper ref={swiperRef} slidesPerView="auto" allowTouchMove={false}>
+    <StyledSwiper
+      ref={swiperRef}
+      slidesPerView="auto"
+      breakpoints={swiperBreakpoints}
+      allowTouchMove={false}
+    >
       <StyledSwiperSlide
         sx={{
-          width: 'calc(100% - 408px)'
+          width: { xs: '100%', sm: 'calc(100% - 408px)' },
+          height: { xs: '80%', sm: '100%' }
         }}
       >
         <Box
@@ -65,55 +84,40 @@ export function Slider(): ReactElement {
       </StyledSwiperSlide>
       <StyledSwiperSlide
         sx={{
-          width: 'calc(100% - 120px)',
+          width: { xs: '100%', sm: 'calc(100% - 120px - 360px)' },
+          height: { xs: '80%', sm: '100%' },
           display: 'flex',
           justifyContent: 'space-between',
-          '& .navigation-prev': {
-            display: 'none'
-          },
-          '&.swiper-slide-active': {
-            '& .navigation-prev': {
-              display: 'block'
-            },
-            '& .card-root': {
-              flexGrow: 1
-            }
-          }
+          position: 'relative'
         }}
       >
         <Box
-          className="navigation-prev"
           onClick={handlePrev}
           sx={{
             position: 'absolute',
-            left: -120,
-            top: 0,
-            bottom: 0,
-            width: 120,
+            left: { xs: 0, sm: -120 },
+            top: { xs: '-20%', sm: 0 },
+            bottom: { xs: 'initial', sm: 0 },
+            right: { xs: 0, sm: 'initial' },
+            width: { sm: 120 },
+            height: { xs: '20%', sm: 'auto' },
             zIndex: 2,
-            cursor: 'pointer'
+            cursor: 'pointer',
+            display: activeSlide === ActiveSlide.Canvas ? 'block' : 'none'
           }}
         />
-        <Box
-          className="card-root"
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexGrow: 0,
-            transition: (theme) =>
-              theme.transitions.create('flex-grow', { duration: 300 })
-          }}
-        >
-          <Canvas />
-        </Box>
-        <Box
-          sx={{
-            width: 327
-          }}
-        >
-          <Drawer />
-        </Box>
+        <Canvas />
+      </StyledSwiperSlide>
+      <StyledSwiperSlide
+        sx={{
+          width: {
+            xs: '100%',
+            sm: 360 // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
+          },
+          height: { xs: '80%', sm: '100%' }
+        }}
+      >
+        <Drawer />
       </StyledSwiperSlide>
     </StyledSwiper>
   )
