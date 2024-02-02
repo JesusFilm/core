@@ -29,6 +29,11 @@ import { QuickControls } from './QuickControls'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { AddBlockToolbar } from './AddBlockToolbar'
+import Card from '@mui/material/Card'
+
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 const NextCard = dynamic(
   async () =>
@@ -123,7 +128,7 @@ export function Canvas(): ReactElement {
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: 'hosted-by'
+      id: undefined
     })
 
     router.query.param = 'step-footer'
@@ -132,6 +137,10 @@ export function Canvas(): ReactElement {
       setBeaconPageViewed('Step Footer')
     })
   }
+
+  const cardBlock = selectedStep?.children.find(
+    (block) => block.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
 
   return (
     <Stack
@@ -284,15 +293,16 @@ export function Canvas(): ReactElement {
         <Box
           sx={{
             width: { xs: 50, sm: activeSlide === ActiveSlide.Canvas ? 50 : 0 },
-            ml: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 4 : 0 },
+            ml: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 7 : 0 },
             transition: (theme) =>
               theme.transitions.create(['width', 'margin'], {
                 duration: 150
               }),
-            overflow: 'hidden'
+            overflow: 'hidden',
+            alignSelf: 'center'
           }}
         >
-          {/* ADD BLOCK COMPONENT GOES HERE */}
+          <AddBlockToolbar selectedCard={cardBlock} />
         </Box>
       </Stack>
     </Stack>

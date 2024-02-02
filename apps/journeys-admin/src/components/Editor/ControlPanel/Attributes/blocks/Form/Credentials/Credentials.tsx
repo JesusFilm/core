@@ -46,7 +46,7 @@ export function Credentials(): ReactElement {
   })
 
   return (
-    <Stack spacing={6} sx={{ px: 6, py: 4 }}>
+    <Stack spacing={6} sx={{ p: 4, pt: 0 }}>
       <ApiTokenTextField
         id={selectedBlock?.id}
         apiTokenExists={data?.block?.apiTokenExists}
@@ -69,7 +69,6 @@ export function Credentials(): ReactElement {
         direction="row"
         alignItems="center"
         spacing={3}
-        sx={{ pt: 8 }}
         color="text.secondary"
       >
         <InformationCircleContainedIcon />

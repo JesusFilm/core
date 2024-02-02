@@ -7,7 +7,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { Accordion } from '../../Accordion'
-import { Button } from '../../Button'
+import { Button } from '../../../Canvas/AddBlockToolbar/Button'
 
 interface AttributeProps {
   id: string

@@ -36,14 +36,6 @@ const Attributes = dynamic(
     ).then((mod) => mod.Attributes),
   { ssr: false }
 )
-const BlocksTab = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/ControlPanel/BlocksTab" */
-      './BlocksTab'
-    ).then((mod) => mod.BlocksTab),
-  { ssr: false }
-)
 const CardTemplateDrawer = dynamic(
   async () =>
     await import(
@@ -295,14 +287,6 @@ export function ControlPanel(): ReactElement {
           {selected !== 'none' && selectedStep !== undefined && (
             <Attributes selected={selected} step={selectedStep} />
           )}
-        </TabPanel>
-        <TabPanel
-          name="control-panel"
-          value={activeTab}
-          index={2}
-          unmountUntilVisible
-        >
-          <BlocksTab />
         </TabPanel>
       </Stack>
     </Stack>

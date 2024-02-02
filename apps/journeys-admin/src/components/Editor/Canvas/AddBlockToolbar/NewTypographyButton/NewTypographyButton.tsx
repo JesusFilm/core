@@ -2,26 +2,34 @@ import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveFab,
+  ActiveTab,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
-import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
+import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
+import Type3Icon from '@core/shared/ui/icons/Type3'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
-import { VideoBlockCreate } from '../../../../../../__generated__/VideoBlockCreate'
-import { Button } from '../../Button'
+import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
+import { Button } from '../Button'
 
-export const VIDEO_BLOCK_CREATE = gql`
-  ${VIDEO_FIELDS}
-  mutation VideoBlockCreate($input: VideoBlockCreateInput!) {
-    videoBlockCreate(input: $input) {
-      ...VideoFields
+export const TYPOGRAPHY_BLOCK_CREATE = gql`
+  ${TYPOGRAPHY_FIELDS}
+  mutation TypographyBlockCreate($input: TypographyBlockCreateInput!) {
+    typographyBlockCreate(input: $input) {
+      id
+      parentBlockId
+      ...TypographyFields
     }
   }
 `
 
-export function NewVideoButton(): ReactElement {
-  const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
+export function NewTypographyButton(): ReactElement {
+  const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
+    TYPOGRAPHY_BLOCK_CREATE
+  )
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -32,25 +40,27 @@ export function NewVideoButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (card != null && journey != null) {
-      const { data } = await videoBlockCreate({
+    const checkTypography = card?.children.map((block) =>
+      block.children.find((child) => child.__typename === 'TypographyBlock')
+    )
+    if (card != null && checkTypography !== undefined && journey != null) {
+      const { data } = await typographyBlockCreate({
         variables: {
           input: {
             journeyId: journey.id,
             parentBlockId: card.id,
-            autoplay: true,
-            muted: false,
-            fullsize: true
+            content: '',
+            variant: checkTypography.length > 0 ? 'body2' : 'h1'
           }
         },
         update(cache, { data }) {
-          if (data?.videoBlockCreate != null) {
+          if (data?.typographyBlockCreate != null) {
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newBlockRef = cache.writeFragment({
-                    data: data.videoBlockCreate,
+                    data: data.typographyBlockCreate,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
@@ -64,14 +74,18 @@ export function NewVideoButton(): ReactElement {
           }
         }
       })
-      if (data?.videoBlockCreate != null) {
+      if (data?.typographyBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.videoBlockCreate.id
+          id: data.typographyBlockCreate.id
         })
         dispatch({
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Properties
+        })
+        dispatch({
+          type: 'SetActiveFabAction',
+          activeFab: ActiveFab.Save
         })
       }
     }
@@ -79,10 +93,10 @@ export function NewVideoButton(): ReactElement {
 
   return (
     <Button
-      icon={<VideoOnIcon />}
-      value="Video"
+      icon={<Type3Icon />}
+      value="Text"
       onClick={handleClick}
-      testId="NewVideoButton"
+      testId="NewTypographyButton"
     />
   )
 }
