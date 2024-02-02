@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 export async function getEmail(): Promise<string> {
   const email = process.env.PLAYWRIGHT_EMAIL?.toString()
 
