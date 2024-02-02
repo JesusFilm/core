@@ -63,7 +63,7 @@ const step: TreeBlock = {
   ]
 }
 
-export const Default: StoryObj<typeof MoveBlock> = {
+export const Complete: StoryObj<typeof MoveBlock> = {
   render: () => {
     return (
       <MockedProvider>

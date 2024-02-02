@@ -1,6 +1,6 @@
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import Box from '@mui/material/Box'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import {
   BaseEdge,
   EdgeLabelRenderer,

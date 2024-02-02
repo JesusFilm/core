@@ -1,6 +1,4 @@
-import { useMutation } from '@apollo/client'
 import PlayCircleFilledRoundedIcon from '@mui/icons-material/PlayCircleFilledRounded'
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -11,6 +9,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
+import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -18,11 +17,9 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import { useStepBlockNextBlockUpdateMutation } from '../../../libs/useStepBlockNextBlockUpdateMutation'
 
 import { BaseNode } from './BaseNode'
-import { filter } from 'lodash'
-import { useStepBlockNextBlockUpdateMutation } from '../../../libs/useStepBlockNextBlockUpdateMutation'
-import CircleRounded from '@mui/icons-material/CircleRounded'
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
@@ -62,6 +59,103 @@ function getBackgroundImage(card?: TreeBlock<CardBlock>): string | undefined {
   return bgImage
 }
 
+function getIconAndColorForBlockType(blockType: string): {
+  icon: React.ReactNode
+  color: string
+} {
+  switch (blockType) {
+    case 'VideoBlock':
+      return {
+        icon: (
+          <Box>
+            <PlayCircleFilledRoundedIcon
+              fontSize="large"
+              sx={{ marginTop: 1 }}
+            />
+          </Box>
+        ),
+        color: '#e07a1b'
+      }
+
+    case 'TextResponseBlock':
+      return {
+        icon: (
+          <Box
+            sx={{
+              borderRadius: 20,
+              height: 30,
+              width: 30,
+              display: 'flex',
+              position: 'absolute',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(to bottom, #b849ec, #9415d1)'
+            }}
+          >
+            {' '}
+          </Box>
+        ),
+        color: '#ae2eea'
+      }
+    case 'RadioOptionBlock':
+      return {
+        icon: <TextInput1Icon fontSize="large" />,
+        color: 'green'
+      }
+    case 'ButtonBlock':
+      return {
+        icon: (
+          <Box
+            sx={{
+              borderRadius: 20,
+              height: 30,
+              width: 30,
+              display: 'flex',
+              position: 'absolute',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(to bottom, #73acf0, #1873de)'
+            }}
+          >
+            {' '}
+          </Box>
+        ),
+        color: '#368ff9'
+      }
+    case 'FormBlock':
+      return {
+        icon: (
+          <Box
+            sx={{
+              borderRadius: 20,
+              height: 30,
+              width: 30,
+              display: 'flex',
+              position: 'absolute',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(to bottom, #24c5c5, #03a3a3)'
+            }}
+          >
+            {' '}
+          </Box>
+        ),
+        color: '#ae2eea'
+      }
+    default:
+      return {
+        icon: <FlexAlignBottom1Icon fontSize="large" />,
+        color: 'red'
+      }
+  }
+}
+
+function hasBlockOfType(step, blockType): boolean {
+  return step.children[0].children.some(
+    (child) => child.__typename === blockType
+  )
+}
+
 export function StepBlockNode({
   data: { steps, ...step }
 }: NodeProps<StepBlockNodeData>): ReactElement {
@@ -72,7 +166,7 @@ export function StepBlockNode({
     | undefined
   const bgImage = getBackgroundImage(card)
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-
+  console.log(steps)
   const {
     state: { selectedStep },
     dispatch
@@ -100,15 +194,21 @@ export function StepBlockNode({
     })
   }
 
-  function handleClick() {
+  function handleClick(): void {
     dispatch({ type: 'SetSelectedStepAction', step })
   }
 
-  function hasVideoBlock(step): boolean {
-    return step.children[0].children.some(
-      (child) => child.__typename == 'VideoBlock'
-    )
-  }
+  const blockType = hasBlockOfType(step, 'VideoBlock')
+    ? 'VideoBlock'
+    : hasBlockOfType(step, 'TextResponseBlock')
+    ? 'TextResponseBlock'
+    : hasBlockOfType(step, 'FormBlock')
+    ? 'FormBlock'
+    : hasBlockOfType(step, 'ButtonBlock')
+    ? 'ButtonBlock'
+    : 'DefaultBlock'
+
+  const { icon, color } = getIconAndColorForBlockType(blockType)
 
   return (
     <BaseNode
@@ -142,16 +242,17 @@ export function StepBlockNode({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#e07a1b',
+                color,
                 background: 'white',
-                opacity: hasVideoBlock(steps[step.parentOrder ?? -1]) ? 1 : 0
+                opacity: hasBlockOfType(
+                  steps[step.parentOrder ?? -1],
+                  blockType
+                )
+                  ? 1
+                  : 0
               }}
             >
-              <PlayCircleFilledRoundedIcon fontSize="large" />
-              <PlayArrowRoundedIcon
-                sx={{ position: 'absolute', height: '30px', width: '1px' }}
-                fontSize="medium"
-              />
+              {icon}
             </Box>
           </Box>
         ) : (
