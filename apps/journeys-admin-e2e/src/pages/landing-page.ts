@@ -12,7 +12,7 @@ export class LandingPage {
 
   async goToAdminUrl(): Promise<void> {
     await this.page.goto('/')
-    // Wait for two seconds as the landing page showing 'Sign in with email' button second time 
+    // Wait for two seconds as the landing page showing 'Sign in with email' button second time
     // even after clicking the 'Sign in with email' button
     // eslint-disable-next-line
     await this.page.waitForTimeout(2000)
