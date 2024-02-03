@@ -47,9 +47,9 @@ describe('UserJourneyService', () => {
         'journey-request-approved',
         {
           userId,
-          journeyTitle: journey.title
+          journeyTitle: journey.title,
           sender: user,
-          url: "/journeys/journeyId"
+          url: '/journeys/journeyId'
         },
         {
           removeOnComplete: true,
