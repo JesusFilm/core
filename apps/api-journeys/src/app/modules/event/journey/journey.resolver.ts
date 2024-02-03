@@ -34,15 +34,21 @@ export class JourneyViewEventResolver {
     const journey = await this.prismaService.journey.findUnique({
       where: { id: input.journeyId }
     })
-    if (journey == null) {
+    if (journey == null)
       throw new GraphQLError('Journey does not exist', {
         extensions: { code: 'NOT_FOUND' }
       })
+
+    const visitorAndJourneyVisitor =
+      await this.visitorService.getByUserIdAndJourneyId(userId, input.journeyId)
+
+    if (visitorAndJourneyVisitor == null) {
+      throw new GraphQLError('Visitor does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
-    const { visitor } = await this.visitorService.getByUserIdAndJourneyId(
-      userId,
-      input.journeyId
-    )
+
+    const { visitor } = visitorAndJourneyVisitor
 
     const promises = [
       this.eventService.save({
