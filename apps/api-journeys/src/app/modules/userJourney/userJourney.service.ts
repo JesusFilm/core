@@ -4,6 +4,7 @@ import { Queue } from 'bullmq'
 
 import { Journey } from '.prisma/api-journeys-client'
 import { User } from '@core/nest/common/firebaseClient'
+
 import { JourneyRequestApproved } from '../email/email.consumer'
 
 @Injectable()
