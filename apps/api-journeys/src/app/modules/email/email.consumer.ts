@@ -9,8 +9,8 @@ import { Job } from 'bullmq'
 
 import { User } from '@core/nest/common/firebaseClient'
 
-import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
+import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
 
 AWS.config.update({ region: 'us-east-2' })
 

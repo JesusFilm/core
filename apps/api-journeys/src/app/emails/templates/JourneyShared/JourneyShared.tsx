@@ -83,13 +83,13 @@ export const JourneySharedEmail = ({
               className="bg-[#C52D3A] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
               href={inviteLink}
             >
-              {`View Journey`}
+              View Journey
             </Button>
           </Section>
           <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-['Open Sans]">
             {`Don’t want to receive these emails, `}
             <Link
-              href={`https://admin.nextstep.is/`}
+              href="https://admin.nextstep.is/"
               className="text-[#9E2630] no-underline"
             >
               Unsubscribe

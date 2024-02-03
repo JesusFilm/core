@@ -113,6 +113,7 @@ describe('UserJourneyResolver', () => {
       firstName: 'John',
       email: 'jsmith@example.com'
     }
+
     it('updates a UserJourney to editor status', async () => {
       prismaService.userJourney.findUnique.mockResolvedValueOnce(
         userJourneyWithJourneyOwner
