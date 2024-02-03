@@ -2,6 +2,7 @@ import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 
 import {
   Prisma,
@@ -46,7 +47,7 @@ export class UserInviteResolver {
   @UseGuards(AppCaslGuard)
   async userInviteCreate(
     @CaslAbility() ability: AppAbility,
-    @CurrentUserId() senderId: string,
+    @CurrentUser() sender: User,
     @Args('journeyId') journeyId: string,
     @Args('input') input: UserInviteCreateInput
   ): Promise<UserInvite> {
@@ -55,11 +56,11 @@ export class UserInviteResolver {
         where: { journeyId_email: { journeyId, email: input.email } },
         create: {
           journey: { connect: { id: journeyId } },
-          senderId,
+          senderId: sender.id,
           email: input.email
         },
         update: {
-          senderId,
+          senderId: sender.id,
           acceptedAt: null,
           removedAt: null
         },
@@ -78,7 +79,11 @@ export class UserInviteResolver {
         throw new GraphQLError('user is not allowed to create userInvite', {
           extensions: { code: 'FORBIDDEN' }
         })
-      await this.userInviteService.sendEmail(userInvite.journey, input.email)
+      await this.userInviteService.sendEmail(
+        userInvite.journey,
+        input.email,
+        omit(sender, ['id', 'email'])
+      )
       return userInvite
     })
   }

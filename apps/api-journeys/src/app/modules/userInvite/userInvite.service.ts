@@ -4,6 +4,7 @@ import { Queue } from 'bullmq'
 
 import { Journey } from '.prisma/api-journeys-client'
 
+import { User } from '@core/nest/common/firebaseClient'
 import { JourneyEditInviteJob } from '../email/email.consumer'
 
 @Injectable()
@@ -13,7 +14,11 @@ export class UserInviteService {
     private readonly emailQueue: Queue<JourneyEditInviteJob>
   ) {}
 
-  async sendEmail(journey: Journey, email: string): Promise<void> {
+  async sendEmail(
+    journey: Journey,
+    email: string,
+    sender: Omit<User, 'id' | 'email'>
+  ): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
 
     await this.emailQueue.add(
@@ -21,7 +26,8 @@ export class UserInviteService {
       {
         email,
         url,
-        journeyTitle: journey.title
+        journeyTitle: journey.title,
+        sender
       },
       {
         removeOnComplete: true,

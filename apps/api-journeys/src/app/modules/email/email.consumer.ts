@@ -9,7 +9,6 @@ import { Job } from 'bullmq'
 
 import { User } from '@core/nest/common/firebaseClient'
 
-import { JourneyInviteEmail } from '../../emails/templates/JourneyInvite'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 
@@ -34,6 +33,7 @@ export interface JourneyEditInviteJob {
   email: string
   journeyTitle: string
   url: string
+  sender: Omit<User, 'id' | 'email'>
 }
 
 export interface JourneyRequestApproved {
@@ -61,7 +61,6 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async process(job: Job<ApiJourneysJob>): Promise<void> {
-    console.log(job.name)
     switch (job.name) {
       case 'team-invite':
         await this.teamInviteEmail(job as Job<TeamInviteJob>)
@@ -177,8 +176,8 @@ export class EmailConsumer extends WorkerHost {
     // }
 
     const html = render(
-      JourneyInviteEmail({
-        email: job.data.email,
+      JourneySharedEmail({
+        sender: job.data.sender,
         journeyTitle: job.data.journeyTitle,
         inviteLink: job.data.url
       }),
@@ -188,10 +187,10 @@ export class EmailConsumer extends WorkerHost {
     )
 
     const text = render(
-      JourneyInviteEmail({
-        email: job.data.email,
+      JourneySharedEmail({
         journeyTitle: job.data.journeyTitle,
-        inviteLink: job.data.url
+        inviteLink: job.data.url,
+        sender: job.data.sender
       }),
       {
         plainText: true
@@ -199,7 +198,7 @@ export class EmailConsumer extends WorkerHost {
     )
     await this.sendEmail({
       to: job.data.email,
-      subject: `Invitation to edit journey: ${job.data.journeyTitle}`,
+      subject: `${job.data.journeyTitle} has been shared with you`,
       html,
       text
     })

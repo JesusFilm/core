@@ -35,16 +35,23 @@ describe('UserTeamService', () => {
       const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${
         journey.id
       }`
+
+      const user = {
+        firstName: 'Joe',
+        lastName: 'Smith'
+      }
+
       const email = 'tav@example.com'
 
-      await service.sendEmail(journey, email)
+      await service.sendEmail(journey, email, user)
 
       expect(emailQueue.add).toHaveBeenCalledWith(
         'journey-edit-invite',
         {
           email,
           url,
-          journeyTitle: 'Journey Title'
+          journeyTitle: 'Journey Title',
+          sender: user
         },
         {
           removeOnComplete: true,

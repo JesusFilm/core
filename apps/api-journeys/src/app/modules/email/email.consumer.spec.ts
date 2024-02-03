@@ -75,7 +75,12 @@ const journeyEditJob: Job<JourneyEditInviteJob, unknown, string> = {
   data: {
     email: 'abc@example.com',
     journeyTitle: 'test-journey',
-    url: 'http://example.com'
+    url: 'http://example.com',
+    sender: {
+      firstName: 'Joe',
+      lastName: 'Ron-Imo',
+      imageUrl: undefined
+    }
   }
 } as unknown as Job<JourneyEditInviteJob, unknown, string>
 
@@ -187,7 +192,7 @@ describe('EmailConsumer', () => {
       expect(emailConsumer.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: teamInviteJob.data.email,
-        subject: 'Invitation to edit journey: test-journey',
+        subject: 'test-journey has been shared with you',
         html: expect.any(String),
         text: expect.any(String)
       })
