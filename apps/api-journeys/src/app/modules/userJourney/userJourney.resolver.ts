@@ -9,6 +9,7 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 
 import {
   Journey,
@@ -18,12 +19,14 @@ import {
 } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserJourneyService } from './userJourney.service'
+import { User } from '@core/nest/common/firebaseClient'
 
 @Resolver('UserJourney')
 export class UserJourneyResolver {
@@ -75,6 +78,7 @@ export class UserJourneyResolver {
   @UseGuards(AppCaslGuard)
   async userJourneyApprove(
     @CaslAbility() ability: AppAbility,
+    @CurrentUser() user: User,
     @Args('id') id: string
   ): Promise<UserJourney> {
     const userJourney = await this.prismaService.userJourney.findUnique({
@@ -102,9 +106,10 @@ export class UserJourneyResolver {
       where: { id },
       data: { role: UserJourneyRole.editor }
     })
-    await this.userJourneyService.sendEmail(
+    await this.userJourneyService.sendJourneyApproveEmail(
       userJourney.journey,
-      userJourney.userId
+      userJourney.userId,
+      omit(user, ['id', 'email'])
     )
     return retVal
   }

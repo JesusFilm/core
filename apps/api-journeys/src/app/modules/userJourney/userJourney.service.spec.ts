@@ -19,14 +19,14 @@ describe('UserJourneyService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [UserJourneyModule]
     })
-      .overrideProvider(getQueueToken('api-users-email'))
+      .overrideProvider(getQueueToken('api-journeys-email'))
       .useValue(emailQueue)
       .compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)
   })
 
-  describe('sendEmail', () => {
+  describe('sendJourneyApproveEmail', () => {
     it('should send an email with the correct subject and body', async () => {
       // Arrange
       const journey = {
@@ -34,26 +34,22 @@ describe('UserJourneyService', () => {
         title: 'Journey Title'
       } as unknown as Journey
       const userId = 'userId'
-      const expectedSubject = `Access to edit journey: ${journey.title}`
-      const expectedBody = `<html><body>You have been granted access to edit the journey: ${
-        journey.title
-      }. You can find the journey at: <a href="${
-        process.env.JOURNEYS_ADMIN_URL ?? ''
-      }/journeys/${journey.id}">${
-        process.env.JOURNEYS_ADMIN_URL ?? ''
-      }/journeys/${journey.id}</a>.</body></html>`
-
+      const user = {
+        userId: 'senderUserId',
+        firstName: 'John',
+        lastName: 'Smith'
+      }
       // Act
-      await service.sendEmail(journey, userId)
+      await service.sendJourneyApproveEmail(journey, userId, user)
 
       // Assert
       expect(emailQueue.add).toHaveBeenCalledWith(
-        'email',
+        'journey-request-approved',
         {
           userId,
-          subject: expectedSubject,
-          body: expectedBody,
-          text: 'You have been granted access to edit the journey: Journey Title. You can find the journey at: /journeys/journeyId'
+          journeyTitle: journey.title
+          sender: user,
+          url: "/journeys/journeyId"
         },
         {
           removeOnComplete: true,

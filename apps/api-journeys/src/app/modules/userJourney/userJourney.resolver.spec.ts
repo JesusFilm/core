@@ -37,7 +37,7 @@ describe('UserJourneyResolver', () => {
   const userJourneyService = {
     provide: UserJourneyService,
     useFactory: () => ({
-      sendEmail: jest.fn().mockResolvedValue(null)
+      sendJourneyApproveEmail: jest.fn().mockResolvedValue(null)
     })
   }
 
@@ -108,11 +108,16 @@ describe('UserJourneyResolver', () => {
   })
 
   describe('userJourneyApprove', () => {
+    const user = {
+      id: 'userId',
+      firstName: 'John',
+      email: 'jsmith@example.com'
+    }
     it('updates a UserJourney to editor status', async () => {
       prismaService.userJourney.findUnique.mockResolvedValueOnce(
         userJourneyWithJourneyOwner
       )
-      await resolver.userJourneyApprove(ability, 'userJourneyId')
+      await resolver.userJourneyApprove(ability, user, 'userJourneyId')
       expect(prismaService.userJourney.update).toHaveBeenCalledWith({
         where: { id: 'userJourneyId' },
         data: { role: UserJourneyRole.editor }
@@ -122,14 +127,14 @@ describe('UserJourneyResolver', () => {
     it('throws error if not found', async () => {
       prismaService.userJourney.findUnique.mockResolvedValueOnce(null)
       await expect(
-        resolver.userJourneyApprove(ability, 'userJourneyId')
+        resolver.userJourneyApprove(ability, user, 'userJourneyId')
       ).rejects.toThrow('userJourney not found')
     })
 
     it('throws error if not authorized', async () => {
       prismaService.userJourney.findUnique.mockResolvedValueOnce(userJourney)
       await expect(
-        resolver.userJourneyApprove(ability, 'userJourneyId')
+        resolver.userJourneyApprove(ability, user, 'userJourneyId')
       ).rejects.toThrow('user is not allowed to update userJourney')
     })
   })

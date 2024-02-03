@@ -1,6 +1,6 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
-// import { ApolloClient, InMemoryCache } from '@apollo/client'
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { MailerService } from '@nestjs-modules/mailer'
 import { render } from '@react-email/render'
@@ -11,16 +11,17 @@ import { User } from '@core/nest/common/firebaseClient'
 
 import { JourneyInviteEmail } from '../../emails/templates/JourneyInvite'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
+import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 
 AWS.config.update({ region: 'us-east-2' })
 
-// const apollo = new ApolloClient({
-//   uri: process.env.GATEWAY_URL,
-//   cache: new InMemoryCache(),
-//   headers: {
-//     'interop-token': process.env.INTEROP_TOKEN ?? ''
-//   }
-// })
+const apollo = new ApolloClient({
+  uri: process.env.GATEWAY_URL,
+  cache: new InMemoryCache(),
+  headers: {
+    'interop-token': process.env.INTEROP_TOKEN ?? ''
+  }
+})
 
 export interface SendEmailParams {
   to: string
@@ -35,13 +36,23 @@ export interface JourneyEditInviteJob {
   url: string
 }
 
+export interface JourneyRequestApproved {
+  userId: string
+  journeyTitle: string
+  url: string
+  sender: Omit<User, 'id' | 'email'>
+}
+
 export interface TeamInviteJob {
   teamName: string
   email: string
   sender: Omit<User, 'id' | 'email'>
 }
 
-export type ApiJourneysJob = JourneyEditInviteJob | TeamInviteJob
+export type ApiJourneysJob =
+  | JourneyEditInviteJob
+  | TeamInviteJob
+  | JourneyRequestApproved
 
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
@@ -50,12 +61,16 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async process(job: Job<ApiJourneysJob>): Promise<void> {
+    console.log(job.name)
     switch (job.name) {
       case 'team-invite':
         await this.teamInviteEmail(job as Job<TeamInviteJob>)
         break
       case 'journey-edit-invite':
         await this.journeyEditInvite(job as Job<JourneyEditInviteJob>)
+        break
+      case 'journey-request-approved':
+        await this.journeyRequestApproved(job as Job<JourneyRequestApproved>)
         break
     }
   }
@@ -91,6 +106,55 @@ export class EmailConsumer extends WorkerHost {
       subject: `Invitation to join team: ${job.data.teamName}`,
       text,
       html
+    })
+  }
+
+  async journeyRequestApproved(
+    job: Job<JourneyRequestApproved>
+  ): Promise<void> {
+    // TODO: use this users call to check if user is subscribed to this type of email notification
+    const { data } = await apollo.query({
+      query: gql`
+        query User($userId: ID!) {
+          user(id: $userId) {
+            id
+            email
+          }
+        }
+      `,
+      variables: { userId: job.data.userId }
+    })
+
+    if (data.user == null) {
+      throw new Error('User not found')
+    }
+
+    const html = render(
+      JourneySharedEmail({
+        journeyTitle: job.data.journeyTitle,
+        inviteLink: job.data.url,
+        sender: job.data.sender
+      }),
+      {
+        pretty: true
+      }
+    )
+
+    const text = render(
+      JourneySharedEmail({
+        journeyTitle: job.data.journeyTitle,
+        inviteLink: job.data.url,
+        sender: job.data.sender
+      }),
+      {
+        plainText: true
+      }
+    )
+    await this.sendEmail({
+      to: data.user.email,
+      subject: `${job.data.journeyTitle} has been shared with you`,
+      html,
+      text
     })
   }
 

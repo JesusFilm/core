@@ -6,6 +6,7 @@ import { mockDeep } from 'jest-mock-extended'
 import {
   EmailConsumer,
   JourneyEditInviteJob,
+  JourneyRequestApproved,
   TeamInviteJob
 } from './email.consumer'
 
@@ -30,7 +31,8 @@ jest.mock('@apollo/client', () => {
         query: jest.fn().mockResolvedValue({
           data: {
             user: {
-              id: 'userid'
+              id: 'userid',
+              email: 'jsmith@exmaple.com'
             }
           }
         })
@@ -53,6 +55,20 @@ const teamInviteJob: Job<TeamInviteJob, unknown, string> = {
     }
   }
 } as unknown as Job<TeamInviteJob, unknown, string>
+
+const journeyRequestApproved: Job<JourneyRequestApproved, unknown, string> = {
+  name: 'journey-request-approved',
+  data: {
+    userId: 'userId',
+    journeyTitle: 'Why Jesus?',
+    url: 'http://example.com/journey/journeyId',
+    sender: {
+      firstName: 'Joe',
+      lastName: 'Ron-Imo',
+      imageUrl: undefined
+    }
+  }
+} as unknown as Job<JourneyRequestApproved, unknown, string>
 
 const journeyEditJob: Job<JourneyEditInviteJob, unknown, string> = {
   name: 'journey-edit-invite',
@@ -97,6 +113,16 @@ describe('EmailConsumer', () => {
       expect(emailConsumer.teamInviteEmail).toHaveBeenCalledWith(teamInviteJob)
     })
 
+    it('should handle journey-request-approved', async () => {
+      emailConsumer.journeyRequestApproved = jest
+        .fn()
+        .mockImplementationOnce(async () => await Promise.resolve())
+      await emailConsumer.process(journeyRequestApproved)
+      expect(emailConsumer.journeyRequestApproved).toHaveBeenCalledWith(
+        journeyRequestApproved
+      )
+    })
+
     it('should handle journey-edit-invite', async () => {
       emailConsumer.journeyEditInvite = jest
         .fn()
@@ -122,6 +148,26 @@ describe('EmailConsumer', () => {
       expect(args).toEqual({
         to: teamInviteJob.data.email,
         subject: 'Invitation to join team: test-team',
+        html: expect.any(String),
+        text: expect.any(String)
+      })
+    })
+  })
+
+  describe('journeyRequestApproved', () => {
+    it('should send an email', async () => {
+      let args = {}
+      emailConsumer.sendEmail = jest
+        .fn()
+        .mockImplementation(async (callArgs) => {
+          args = callArgs
+          await Promise.resolve()
+        })
+      await emailConsumer.journeyRequestApproved(journeyRequestApproved)
+      expect(emailConsumer.sendEmail).toHaveBeenCalled()
+      expect(args).toEqual({
+        to: 'jsmith@exmaple.com',
+        subject: 'Why Jesus? has been shared with you',
         html: expect.any(String),
         text: expect.any(String)
       })
