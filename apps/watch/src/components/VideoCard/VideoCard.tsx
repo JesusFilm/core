@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
@@ -72,6 +73,7 @@ export function VideoCard({
   )
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
+  const { t } = useTranslation('apps-watch')
   return (
     <NextLink href={href} passHref legacyBehavior>
       <Link
@@ -226,7 +228,7 @@ export function VideoCard({
                   {active === true ? (
                     <>
                       <PlayArrow sx={{ fontSize: '1rem' }} />
-                      <Typography>Playing now</Typography>
+                      <Typography>{t('Playing now')}</Typography>
                     </>
                   ) : (
                     <>

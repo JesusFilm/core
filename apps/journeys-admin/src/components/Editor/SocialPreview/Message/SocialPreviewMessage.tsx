@@ -5,6 +5,7 @@ import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
@@ -76,6 +77,7 @@ export function MessageBubble({
 }
 export function SocialPreviewMessage(): ReactElement {
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box
       width={256}
@@ -85,7 +87,7 @@ export function SocialPreviewMessage(): ReactElement {
     >
       <Stack direction="column" justifyContent="start">
         <Typography variant="caption" pb={4} textAlign="center">
-          Messaging App View
+          {t('Messaging App View')}
         </Typography>
         <Box>
           <MessageBubble width={200} height={40} direction="left" />
@@ -159,6 +161,7 @@ export function SocialPreviewMessage(): ReactElement {
                     lineHeight="12px"
                     mt={1}
                     color="#C52D3A"
+                    // eslint-disable-next-line i18next/no-literal-string
                   >
                     https://your.nextstep.is/{journey.slug}
                   </Typography>

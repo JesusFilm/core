@@ -1,5 +1,6 @@
 import Button from '@mui/material/Button'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface ClearAllProps {
   handleClearAll?: () => void
@@ -8,6 +9,7 @@ interface ClearAllProps {
 export const ClearAllButton = ({
   handleClearAll
 }: ClearAllProps): ReactElement => {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Button
       variant="outlined"
@@ -20,7 +22,7 @@ export const ClearAllButton = ({
       }}
       data-testid="ClearAllButton"
     >
-      Clear all
+      {t('Clear all')}
     </Button>
   )
 }

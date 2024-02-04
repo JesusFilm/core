@@ -1,0 +1,22 @@
+{
+  "Form": "Form",
+  "Name must be 2 characters or more": "İsim 2 karakter veya daha fazla olmalıdır",
+  "Name must be 50 characters or less": "İsim 50 karakter veya daha az olmalıdır",
+  "Required": "Gerekli",
+  "Please enter a valid email address": "Lütfen geçerli bir e-posta adresi girin",
+  "Name": "İsim",
+  "Email": "E-posta",
+  "Submit": "Gönder",
+  "Journey": "Yolculuk",
+  "Copied to clipboard": "Panoya kopyalandı",
+  "Share": "Paylaş",
+  "Copy Link": "Bağlantıyı Kopyala",
+  "Facebook": "Facebook",
+  "Twitter": "Twitter",
+  "Report this content": "Bu içeriği bildir",
+  "Terms & Conditions": "Şartlar ve Koşullar",
+  "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "Bu web sitesinde kayıtlı tüm kişisel tanımlanabilir veriler, yolculuk yaratıcısı tarafından işlenecektir: \"{{ teamTitle }}\".",
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Untitled": "İsimsiz",
+  "Step {{number}}": "Adım {{number}}"
+}

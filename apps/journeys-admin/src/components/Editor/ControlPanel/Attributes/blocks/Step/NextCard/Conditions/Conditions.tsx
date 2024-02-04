@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -58,6 +59,8 @@ export function Conditions(): ReactElement {
     })
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Box sx={{ p: 4, pl: 6 }} data-testid="Conditions">
       <Typography
@@ -65,7 +68,7 @@ export function Conditions(): ReactElement {
         gutterBottom
         sx={{ [theme.breakpoints.down('sm')]: { display: 'none' }, mb: 4 }}
       >
-        Conditions
+        {t('Conditions')}
       </Typography>
       <ToggleOption
         heading="Lock the next step"
@@ -76,8 +79,9 @@ export function Conditions(): ReactElement {
         <Box display="flex" alignItems="center" color="text.secondary">
           <InformationCircleContainedIcon sx={{ mr: 4 }} />
           <Typography variant="caption">
-            User can&apos;t skip interaction on the current card, like watching
-            video or interacting with questions.
+            {t(
+              "User can't skip interaction on the current card, like watching video or interacting with questions."
+            )}
           </Typography>
         </Box>
       </ToggleOption>

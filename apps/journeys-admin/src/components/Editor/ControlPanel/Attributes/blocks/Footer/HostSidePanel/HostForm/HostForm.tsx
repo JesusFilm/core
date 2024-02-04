@@ -63,6 +63,7 @@ export function HostForm({ onClear, onClose }: HostFormProps): ReactElement {
     <SidePanel
       title={t('Hosted By')}
       withAdminDrawer
+      selectHostPanel
       onClose={host == null ? onClose : undefined}
     >
       <SidePanelContainer>
