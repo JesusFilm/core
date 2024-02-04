@@ -8,9 +8,14 @@ import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
 import { User } from '@core/nest/common/firebaseClient'
+import {
+  Journey as JourneyWithUserJourney,
+  UserJourneyRole
+} from '../../__generated__/graphql'
 
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
+import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessRequest'
 
 AWS.config.update({ region: 'us-east-2' })
 
@@ -43,6 +48,12 @@ export interface JourneyRequestApproved {
   sender: Omit<User, 'id' | 'email'>
 }
 
+export interface JourneyAccessRequest {
+  journey: JourneyWithUserJourney
+  url: string
+  sender: Omit<User, 'id' | 'email'>
+}
+
 export interface TeamInviteJob {
   teamName: string
   email: string
@@ -53,6 +64,7 @@ export type ApiJourneysJob =
   | JourneyEditInviteJob
   | TeamInviteJob
   | JourneyRequestApproved
+  | JourneyAccessRequest
 
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
@@ -70,6 +82,9 @@ export class EmailConsumer extends WorkerHost {
         break
       case 'journey-request-approved':
         await this.journeyRequestApproved(job as Job<JourneyRequestApproved>)
+        break
+      case 'journey-request-access':
+        await this.journeyAccessRequest(job as Job<JourneyAccessRequest>)
         break
     }
   }
@@ -105,6 +120,61 @@ export class EmailConsumer extends WorkerHost {
       subject: `Invitation to join team: ${job.data.teamName}`,
       text,
       html
+    })
+  }
+
+  async journeyAccessRequest(job: Job<JourneyAccessRequest>): Promise<void> {
+    const recipientUserId = job.data.journey.userJourneys?.find(
+      (userJourney) => {
+        if (userJourney.role === UserJourneyRole.owner)
+          return userJourney.userId
+      }
+    )?.userId
+
+    console.log(recipientUserId)
+
+    // TODO: use this users call to check if user is subscribed to this type of email notification
+    const { data } = await apollo.query({
+      query: gql`
+        query User($userId: ID!) {
+          user(id: $userId) {
+            id
+            email
+          }
+        }
+      `,
+      variables: { userId: recipientUserId }
+    })
+
+    if (data.user == null) {
+      throw new Error('User not found')
+    }
+    const html = render(
+      JourneyAccessRequestEmail({
+        journeyTitle: job.data.journey.title,
+        inviteLink: job.data.url,
+        sender: job.data.sender
+      }),
+      {
+        pretty: true
+      }
+    )
+    const text = render(
+      JourneyAccessRequestEmail({
+        journeyTitle: job.data.journey.title,
+        inviteLink: job.data.url,
+        sender: job.data.sender
+      }),
+      {
+        plainText: true
+      }
+    )
+
+    await this.sendEmail({
+      to: data.user.email,
+      subject: `${job.data.sender.firstName} Requests access to a journey`,
+      html,
+      text
     })
   }
 
