@@ -118,6 +118,17 @@ describe('JourneyViewEventResolver', () => {
           )
       ).rejects.toThrow('Journey does not exist')
     })
+
+    it('should throw error if visitor doesnt exist', async () => {
+      await expect(
+        async () =>
+          await resolver.journeyViewEventCreate(
+            'anotherUser.id',
+            userAgent,
+            input
+          )
+      ).rejects.toThrow('Visitor does not exist')
+    })
   })
 
   describe('language', () => {
