@@ -8,14 +8,14 @@ import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
 import { User } from '@core/nest/common/firebaseClient'
+
 import {
   Journey as JourneyWithUserJourney,
   UserJourneyRole
 } from '../../__generated__/graphql'
-
+import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessRequest'
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
-import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessRequest'
 
 AWS.config.update({ region: 'us-east-2' })
 
@@ -125,10 +125,7 @@ export class EmailConsumer extends WorkerHost {
 
   async journeyAccessRequest(job: Job<JourneyAccessRequest>): Promise<void> {
     const recipientUserId = job.data.journey.userJourneys?.find(
-      (userJourney) => {
-        if (userJourney.role === UserJourneyRole.owner)
-          return userJourney.userId
-      }
+      (userJourney) => userJourney.role === UserJourneyRole.owner
     )?.userId
 
     // TODO: use this users call to check if user is subscribed to this type of email notification

@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
 import { Journey } from '.prisma/api-journeys-client'
-import { Journey as JourneyWithUserJourney } from '../../__generated__/graphql'
 import { User } from '@core/nest/common/firebaseClient'
 
+import { Journey as JourneyWithUserJourney } from '../../__generated__/graphql'
 import {
   JourneyAccessRequest,
   JourneyRequestApproved
@@ -29,7 +29,7 @@ export class UserJourneyService {
     await this.emailQueue.add(
       'journey-access-request',
       {
-        journey: journey,
+        journey,
         url,
         sender: user
       },

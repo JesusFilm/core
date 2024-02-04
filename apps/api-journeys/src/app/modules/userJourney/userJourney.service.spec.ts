@@ -2,8 +2,8 @@ import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { Journey } from '.prisma/api-journeys-client'
-import { Journey as JourneyWithUserJourney } from '../../__generated__/graphql'
 
+import { Journey as JourneyWithUserJourney } from '../../__generated__/graphql'
 import { UserJourneyModule } from '../userJourney/userJourney.module'
 
 import { UserJourneyService } from './userJourney.service'
@@ -61,6 +61,7 @@ describe('UserJourneyService', () => {
       )
     })
   })
+
   describe('sendJourneyAccessRequest', () => {
     it('should send an email with the correct subject and body', async () => {
       // Arrange
@@ -81,7 +82,7 @@ describe('UserJourneyService', () => {
       expect(emailQueue.add).toHaveBeenCalledWith(
         'journey-access-request',
         {
-          journey: journey,
+          journey,
           url: '/journeys/journeyId',
           sender: user
         },

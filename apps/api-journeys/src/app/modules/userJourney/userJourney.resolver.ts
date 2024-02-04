@@ -17,12 +17,12 @@ import {
   UserJourney,
   UserJourneyRole
 } from '.prisma/api-journeys-client'
-import { Journey as JourneyWithUserJourney } from '../../__generated__/graphql'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
+import { Journey as JourneyWithUserJourney } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'

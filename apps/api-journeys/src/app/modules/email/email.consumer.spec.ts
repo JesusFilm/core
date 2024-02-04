@@ -3,6 +3,10 @@ import { MailerService } from '@nestjs-modules/mailer'
 import { Job } from 'bullmq'
 import { mockDeep } from 'jest-mock-extended'
 
+import { UserJourney } from '.prisma/api-journeys-client'
+
+import { UserJourneyRole } from '../../__generated__/graphql'
+
 import {
   EmailConsumer,
   JourneyAccessRequest,
@@ -10,8 +14,6 @@ import {
   JourneyRequestApproved,
   TeamInviteJob
 } from './email.consumer'
-import { UserJourney } from '.prisma/api-journeys-client'
-import { UserJourneyRole } from '../../__generated__/graphql'
 
 const sendEmailMock = jest.fn().mockReturnValue({ promise: jest.fn() })
 // Mock the SES sendEmail method
@@ -197,7 +199,7 @@ describe('EmailConsumer', () => {
     })
   })
 
-  describe('journeyRequestApproved', () => {
+  describe('journeyAccessRequest', () => {
     it('should send an email', async () => {
       let args = {}
       emailConsumer.sendEmail = jest
