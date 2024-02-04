@@ -37,8 +37,10 @@ export function JourneyCardInfo({
   const usersRequestingAccess =
     inviteRequested != null
       ? inviteRequested.length === 1
-        ? `${inviteRequested.length} ${t('user')}`
-        : `${inviteRequested.length} ${t('users')}`
+        ? t('1 user')
+        : t('{{ numberOfUsers }} users', {
+            numberOfUsers: inviteRequested.length
+          })
       : ''
 
   return (

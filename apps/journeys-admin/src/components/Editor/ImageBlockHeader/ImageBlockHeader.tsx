@@ -101,7 +101,10 @@ export function ImageBlockHeader({
                 }
                 color="text.secondary"
               >
-                {`${selectedBlock?.width} x ${selectedBlock?.height} pixels`}
+                {t('{{ width }} x {{ height }} pixels', {
+                  width: selectedBlock?.width,
+                  height: selectedBlock?.height
+                })}
               </Typography>
             )}
           </Stack>
