@@ -34,7 +34,7 @@ export class UserResolver {
     if (context.headers['interop-token'] !== process.env.INTEROP_TOKEN) {
       throw new GraphQLError('Invalid Interop Token')
     }
-    return await this.prismaService.user.findUnique({ where: { id } })
+    return await this.prismaService.user.findUnique({ where: { userId: id } })
   }
 
   @Query()

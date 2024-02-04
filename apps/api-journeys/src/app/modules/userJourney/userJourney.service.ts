@@ -3,31 +3,31 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
 import { Journey } from '.prisma/api-journeys-client'
+import { User } from '@core/nest/common/firebaseClient'
 
-export interface ApiUserEmailJob {
-  userId: string
-  subject: string
-  text: string
-  body: string
-}
+import { JourneyRequestApproved } from '../email/email.consumer'
 
 @Injectable()
 export class UserJourneyService {
   constructor(
-    @InjectQueue('api-users-email')
-    private readonly emailQueue: Queue<ApiUserEmailJob>
+    @InjectQueue('api-journeys-email')
+    private readonly emailQueue: Queue<JourneyRequestApproved>
   ) {}
 
-  async sendEmail(journey: Journey, userId: string): Promise<void> {
+  async sendJourneyApproveEmail(
+    journey: Journey,
+    userId: string,
+    user: Omit<User, 'id' | 'email'>
+  ): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
 
     await this.emailQueue.add(
-      'email',
+      'journey-request-approved',
       {
         userId,
-        subject: `Access to edit journey: ${journey.title}`,
-        text: `You have been granted access to edit the journey: ${journey.title}. You can find the journey at: ${url}`,
-        body: `<html><body>You have been granted access to edit the journey: ${journey.title}. You can find the journey at: <a href="${url}">${url}</a>.</body></html>`
+        url,
+        journeyTitle: journey.title,
+        sender: user
       },
       {
         removeOnComplete: true,
