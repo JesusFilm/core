@@ -34,10 +34,10 @@ export function RadioOption({
         id={`${id}-radio-option-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={
+        value={t(
           actions.find((act) => act.value === action?.__typename)?.label ??
-          t('None')
-        }
+            'None'
+        )}
         description={t('Action')}
         onClick={() => {
           dispatch({

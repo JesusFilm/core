@@ -9,6 +9,7 @@ import { RadioOptionBlockUpdateContent } from '../../../../../../__generated__/R
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside'
+import { useTranslation } from 'react-i18next'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
@@ -29,6 +30,7 @@ export function RadioOptionEdit({
   label,
   ...radioOptionProps
 }: RadioOptionEditProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [radioOptionBlockUpdate] = useMutation<RadioOptionBlockUpdateContent>(
     RADIO_OPTION_BLOCK_UPDATE_CONTENT
   )
@@ -67,7 +69,7 @@ export function RadioOptionEdit({
       autoFocus
       onBlur={handleSaveBlock}
       value={value}
-      placeholder="Type your text here..."
+      placeholder={t('Type your text here...')}
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}

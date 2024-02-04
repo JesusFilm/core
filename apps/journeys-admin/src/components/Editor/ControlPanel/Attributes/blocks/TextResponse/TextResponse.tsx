@@ -35,7 +35,7 @@ export function TextResponse({
         id={`${id}-text-field-options`}
         icon={<TextInput1Icon />}
         name={t('Feedback')}
-        value={label}
+        value={t(label)}
         description={t('Feedback Properties')}
         onClick={(): void =>
           dispatch({
@@ -53,10 +53,10 @@ export function TextResponse({
         id={`${id}-text-field-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={
+        value={t(
           actions.find((act) => act.value === action?.__typename)?.label ??
-          t('None')
-        }
+            'None'
+        )}
         description={t('Form Submission')}
         onClick={() => {
           dispatch({
@@ -72,10 +72,10 @@ export function TextResponse({
         id={`${id}-text-field-icon`}
         icon={<InformationCircleContainedIcon />}
         name={t('Button Icon')}
-        value={
+        value={t(
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
-          t('None')
-        }
+            'None'
+        )}
         description={t('Button Icon')}
         onClick={() => {
           dispatch({

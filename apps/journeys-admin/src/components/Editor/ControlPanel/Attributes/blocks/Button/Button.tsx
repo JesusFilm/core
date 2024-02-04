@@ -66,7 +66,7 @@ export function Button({
         id={`${id}-button-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={selectedAction?.label ?? t('None')}
+        value={t(selectedAction?.label ?? 'None')}
         description={t('Action')}
         onClick={() => {
           dispatch({
@@ -82,7 +82,7 @@ export function Button({
         id={`${id}-button-color`}
         icon={<ColorDisplayIcon color={buttonColor} />}
         name={t('Color')}
-        value={capitalize(buttonColor?.toString() ?? ButtonColor.primary)}
+        value={t(capitalize(buttonColor?.toString() ?? ButtonColor.primary))}
         description={t('Background Color')}
         onClick={() => {
           dispatch({
@@ -98,7 +98,7 @@ export function Button({
         id={`${id}-button-size`}
         icon={<SpaceHorizontalIcon />}
         name={t('Button Size')}
-        value={capitalize(size?.toString() ?? ButtonSize.medium)}
+        value={t(capitalize(size?.toString() ?? ButtonSize.medium))}
         description={t('Button Size')}
         onClick={() => {
           dispatch({
@@ -114,7 +114,9 @@ export function Button({
         id={`${id}-button-variant`}
         icon={<TransformIcon />}
         name={t('Variant')}
-        value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
+        value={t(
+          capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)
+        )}
         description={t('Button Variant')}
         onClick={() => {
           dispatch({
@@ -130,10 +132,10 @@ export function Button({
         id={`${id}-button-leading-icon`}
         icon={<AlertCircleIcon />}
         name={t('Leading Icon')}
-        value={
+        value={t(
           icons.find(({ value }) => value === startIcon?.iconName)?.label ??
-          t('None')
-        }
+            'None'
+        )}
         description={t('Leading Icon')}
         onClick={() => {
           dispatch({
@@ -149,10 +151,10 @@ export function Button({
         id={`${id}-button-trailing-icon`}
         icon={<AlertCircleIcon />}
         name={t('Trailing Icon')}
-        value={
+        value={t(
           icons.find(({ value }) => value === endIcon?.iconName)?.label ??
-          t('None')
-        }
+            'None'
+        )}
         description={t('Trailing Icon')}
         onClick={() => {
           dispatch({

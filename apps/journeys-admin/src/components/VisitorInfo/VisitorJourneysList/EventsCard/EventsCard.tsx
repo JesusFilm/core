@@ -84,8 +84,12 @@ export function EventsCard({ journey }: EventsCardProps): ReactElement {
                     handleClick={handleOpen}
                     value={
                       timelineItem.length === 1
-                        ? `${timelineItem.length} more event`
-                        : `${timelineItem.length} more events`
+                        ? t('{{ length }} more event', {
+                            length: timelineItem.length
+                          })
+                        : t('{{ length }} more events', {
+                            length: timelineItem.length
+                          })
                     }
                   />
                 </Collapse>
