@@ -5,10 +5,13 @@ import { mockDeep } from 'jest-mock-extended'
 
 import {
   EmailConsumer,
+  JourneyAccessRequest,
   JourneyEditInviteJob,
   JourneyRequestApproved,
   TeamInviteJob
 } from './email.consumer'
+import { UserJourney } from '.prisma/api-journeys-client'
+import { UserJourneyRole } from '../../__generated__/graphql'
 
 const sendEmailMock = jest.fn().mockReturnValue({ promise: jest.fn() })
 // Mock the SES sendEmail method
@@ -70,12 +73,37 @@ const journeyRequestApproved: Job<JourneyRequestApproved, unknown, string> = {
   }
 } as unknown as Job<JourneyRequestApproved, unknown, string>
 
+const journeyAccessRequest: Job<JourneyAccessRequest, unknown, string> = {
+  name: 'journey-access-request',
+  data: {
+    userId: 'userId',
+    journey: {
+      id: 'journeyId',
+      title: 'Journey Title',
+      userJourneys: [
+        {
+          id: 'userJourneyId',
+          userId: 'userId2',
+          journeyId: 'journeyId',
+          role: UserJourneyRole.owner
+        }
+      ] as UserJourney[]
+    },
+    url: 'http://example.com/journey/journeyId',
+    sender: {
+      firstName: 'Joe',
+      lastName: 'Ron-Imo',
+      imageUrl: undefined
+    }
+  }
+} as unknown as Job<JourneyAccessRequest, unknown, string>
+
 const journeyEditJob: Job<JourneyEditInviteJob, unknown, string> = {
   name: 'journey-edit-invite',
   data: {
-    email: 'abc@example.com',
+    email: 'jsmith@example.com',
     journeyTitle: 'test-journey',
-    url: 'http://example.com',
+    url: 'http://example.com/journey/journeyId',
     sender: {
       firstName: 'Joe',
       lastName: 'Ron-Imo',
@@ -137,6 +165,16 @@ describe('EmailConsumer', () => {
         journeyEditJob
       )
     })
+
+    it('should handle journey-access-request', async () => {
+      emailConsumer.journeyAccessRequest = jest
+        .fn()
+        .mockImplementationOnce(async () => await Promise.resolve())
+      await emailConsumer.process(journeyAccessRequest)
+      expect(emailConsumer.journeyAccessRequest).toHaveBeenCalledWith(
+        journeyAccessRequest
+      )
+    })
   })
 
   describe('teamInviteEmail', () => {
@@ -153,6 +191,26 @@ describe('EmailConsumer', () => {
       expect(args).toEqual({
         to: teamInviteJob.data.email,
         subject: 'Invitation to join team: test-team',
+        html: expect.any(String),
+        text: expect.any(String)
+      })
+    })
+  })
+
+  describe('journeyRequestApproved', () => {
+    it('should send an email', async () => {
+      let args = {}
+      emailConsumer.sendEmail = jest
+        .fn()
+        .mockImplementation(async (callArgs) => {
+          args = callArgs
+          await Promise.resolve()
+        })
+      await emailConsumer.journeyAccessRequest(journeyAccessRequest)
+      expect(emailConsumer.sendEmail).toHaveBeenCalled()
+      expect(args).toEqual({
+        to: 'jsmith@exmaple.com',
+        subject: 'Joe requests access to a journey',
         html: expect.any(String),
         text: expect.any(String)
       })
@@ -191,7 +249,7 @@ describe('EmailConsumer', () => {
       await emailConsumer.journeyEditInvite(journeyEditJob)
       expect(emailConsumer.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
-        to: teamInviteJob.data.email,
+        to: journeyEditJob.data.email,
         subject: 'test-journey has been shared with you',
         html: expect.any(String),
         text: expect.any(String)

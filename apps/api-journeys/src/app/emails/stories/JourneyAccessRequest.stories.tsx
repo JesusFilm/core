@@ -32,4 +32,4 @@ export const Default = {
   }
 }
 
-export default JourneyAccessRequestEmail
+export default JourneyAccessRequestEmailDemo

@@ -27,7 +27,7 @@ export class UserJourneyService {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
 
     await this.emailQueue.add(
-      'journey-request-access',
+      'journey-access-request',
       {
         journey: journey,
         url,

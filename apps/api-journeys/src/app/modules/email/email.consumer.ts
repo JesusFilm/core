@@ -83,7 +83,7 @@ export class EmailConsumer extends WorkerHost {
       case 'journey-request-approved':
         await this.journeyRequestApproved(job as Job<JourneyRequestApproved>)
         break
-      case 'journey-request-access':
+      case 'journey-access-request':
         await this.journeyAccessRequest(job as Job<JourneyAccessRequest>)
         break
     }
@@ -131,8 +131,6 @@ export class EmailConsumer extends WorkerHost {
       }
     )?.userId
 
-    console.log(recipientUserId)
-
     // TODO: use this users call to check if user is subscribed to this type of email notification
     const { data } = await apollo.query({
       query: gql`
@@ -172,7 +170,7 @@ export class EmailConsumer extends WorkerHost {
 
     await this.sendEmail({
       to: data.user.email,
-      subject: `${job.data.sender.firstName} Requests access to a journey`,
+      subject: `${job.data.sender.firstName} requests access to a journey`,
       html,
       text
     })

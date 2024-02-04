@@ -77,7 +77,6 @@ export class UserJourneyResolver {
           extensions: { code: 'FORBIDDEN' }
         })
 
-      console.log(userJourney)
       await this.userJourneyService.sendJourneyAccessRequest(
         userJourney.journey as unknown as JourneyWithUserJourney,
         omit(user, ['id', 'email'])
