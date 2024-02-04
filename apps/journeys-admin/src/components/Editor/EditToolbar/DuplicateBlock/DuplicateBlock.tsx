@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
+  handleClick?: () => void
   disabled?: boolean
 }
 
@@ -33,6 +34,7 @@ export const BLOCK_DUPLICATE = gql`
 
 export function DuplicateBlock({
   variant,
+  handleClick,
   disabled = false
 }: DuplicateBlockProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -62,6 +64,7 @@ export function DuplicateBlock({
         },
         update(cache, { data }) {
           if (data?.blockDuplicate != null) {
+            handleClick?.()
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {

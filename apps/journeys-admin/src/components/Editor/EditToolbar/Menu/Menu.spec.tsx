@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -7,6 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -14,6 +15,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
+import { BLOCK_DUPLICATE } from '../DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
 
@@ -311,6 +313,66 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+  })
+
+  it('should close the menu upon clicking duplicating from menu', async () => {
+    const selectedBlock: TreeBlock<TypographyBlock> = {
+      id: 'typography0.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: 'card1.id',
+      parentOrder: 0,
+      content: 'Title',
+      variant: null,
+      color: null,
+      align: null,
+      children: []
+    }
+
+    const mockBlockDuplicate: MockedResponse<BlockDuplicate> = {
+      request: {
+        query: BLOCK_DUPLICATE,
+        variables: {
+          id: selectedBlock.id,
+          parentOrder: 1
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          blockDuplicate: [
+            {
+              __typename: 'TypographyBlock',
+              id: 'typography0.id'
+            }
+          ]
+        }
+      }))
+    }
+
+    const { getByTestId, queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[mockBlockDuplicate]} addTypename={false}>
+          <JourneyProvider
+            value={{
+              journey: {
+                status: JourneyStatus.draft,
+                tags: []
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock }}>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(queryByRole('menu')).not.toBeInTheDocument()
+    fireEvent.click(getByTestId('MoreIcon'))
+    await waitFor(() => expect(queryByRole('menu')).toBeInTheDocument())
+    fireEvent.click(getByTestId('JourneysAdminMenuItemDuplicate-Block'))
+    await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
+    expect(mockBlockDuplicate.result).toHaveBeenCalled()
   })
 
   it('should open templates dialog', async () => {
