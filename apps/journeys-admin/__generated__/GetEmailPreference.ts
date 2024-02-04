@@ -9,9 +9,9 @@
 
 export interface GetEmailPreference_emailPreference {
   __typename: "EmailPreferences";
+  journeyNotifications: boolean;
   teamInvites: boolean;
   thirdCategory: boolean;
-  journeyNotifications: boolean;
 }
 
 export interface GetEmailPreference {
