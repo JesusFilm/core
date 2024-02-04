@@ -86,7 +86,7 @@ export function AddUserSection({
           }}
           onClick={handleClick}
         >
-          <Typography variant="body2">{selectedInviteMethod}</Typography>
+          <Typography variant="body2">{t(selectedInviteMethod)}</Typography>
         </Button>
         <Menu
           id="menu"
