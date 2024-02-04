@@ -47,6 +47,7 @@ type User
   email: String!
   imageUrl: String
   superAdmin: Boolean
+  emailPreferences: EmailPreferences
 }
 
 extend type Language
