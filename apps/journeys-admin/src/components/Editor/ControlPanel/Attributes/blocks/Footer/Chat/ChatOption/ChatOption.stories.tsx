@@ -6,6 +6,7 @@ import { ChatPlatform } from '../../../../../../../../../__generated__/globalTyp
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 
 import { ChatOption } from '.'
+import { ChatButtonType } from 'libs/journeys/ui/__generated__/globalTypes'
 
 const ChatOptionStory: Meta<typeof ChatOption> = {
   ...simpleComponentConfig,
@@ -29,6 +30,8 @@ export const Default = {
       __typename: 'ChatButton',
       id: 'chatButton1.id',
       link: 'https://example.com',
+      code: '<!-- facebook chat widget -->',
+      type: ChatButtonType.link,
       platform: ChatPlatform.facebook
     },
     platform: ChatPlatform.facebook,
@@ -89,6 +92,15 @@ export const Disabled = {
     ...Default.args,
     title: 'Disabled Option',
     disableSelection: true
+  }
+}
+
+export const TypeToggle = {
+  ...Template,
+  args: {
+    ...Default.args,
+    title: 'Button Type',
+    enableTypeToggle: true
   }
 }
 
