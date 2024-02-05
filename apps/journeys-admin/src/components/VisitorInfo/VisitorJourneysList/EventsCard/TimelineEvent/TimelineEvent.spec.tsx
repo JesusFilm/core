@@ -21,15 +21,7 @@ import {
 } from '../../utils/data'
 
 import { TimelineEvent } from '.'
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
+import '../../../../../../test/i18n'
 
 describe('TimelineEvent', () => {
   it('shows journeyViewEvent', () => {
