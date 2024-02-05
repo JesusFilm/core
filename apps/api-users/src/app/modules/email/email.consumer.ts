@@ -9,11 +9,10 @@ import { PrismaService } from '../../lib/prisma.service'
 
 AWS.config.update({ region: 'us-east-2' })
 
-export interface EmailJob {
-  userId: string
-  subject: string
-  text: string
-  body: string
+export interface VerifyUserJob {
+  userid: string
+  email: string
+  token: string
 }
 
 @Processor('api-users-email')
@@ -25,7 +24,9 @@ export class EmailConsumer extends WorkerHost {
     super()
   }
 
-  async process(job: Job<EmailJob>): Promise<void> {
+  async process(job: Job<VerifyUserJob>): Promise<void> {
+    if (job.name === 'verifyUser') {
+    }
     const user = await this.prismaService.user.findUnique({
       where: { userId: job.data.userId }
     })

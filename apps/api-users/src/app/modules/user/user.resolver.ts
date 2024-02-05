@@ -15,9 +15,14 @@ import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
 import { PrismaService } from '../../lib/prisma.service'
 
+import { UserService } from './user.service'
+
 @Resolver('User')
 export class UserResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly userService: UserService
+  ) {}
 
   @Query()
   @UseGuards(GqlAuthGuard)
@@ -93,7 +98,8 @@ export class UserResolver {
       emailVerified
     }
 
-    if (!emailVerified) {
+    if (!emailVerified && email != null) {
+      await this.userService.verifyUser(userId, email)
     }
 
     // this function can run in parallel as such it is possible for multiple
