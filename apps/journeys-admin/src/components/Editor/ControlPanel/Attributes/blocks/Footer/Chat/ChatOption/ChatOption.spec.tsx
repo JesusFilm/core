@@ -3,9 +3,10 @@ import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
-import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { ChatOption } from '.'
+import { ChatButtonType } from 'libs/journeys/ui/__generated__/globalTypes'
+import { JourneyFields_chatButtons as ChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 describe('ChatOption', () => {
   it('should show accordion summary and details', () => {
@@ -16,7 +17,6 @@ describe('ChatOption', () => {
         link: 'https://example.com',
         platform: ChatPlatform.facebook
       } as unknown as ChatButton,
-      platform: ChatPlatform.facebook,
       active: true,
       helperInfo: 'helper info',
       journeyId: 'journeyId',
@@ -41,9 +41,10 @@ describe('ChatOption', () => {
       chatButton: {
         id: 'chatButton.id',
         link: 'https://example.com',
+        code: null,
+        type: ChatButtonType.link,
         platform: ChatPlatform.whatsApp
       } as unknown as ChatButton,
-      platform: ChatPlatform.whatsApp,
       active: true,
       helperInfo: 'helper info',
       journeyId: 'journeyId',
@@ -71,9 +72,10 @@ describe('ChatOption', () => {
       chatButton: {
         id: 'chatButton.id',
         link: 'https://example.com',
+        code: null,
+        type: ChatButtonType.link,
         platform: ChatPlatform.tikTok
       } as unknown as ChatButton,
-      platform: ChatPlatform.tikTok,
       active: true,
       helperInfo: 'helper info',
       journeyId: 'journeyId',
@@ -117,5 +119,48 @@ describe('ChatOption', () => {
     fireEvent.click(getByRole('button', { name: 'title' }))
     fireEvent.click(getByRole('checkbox'))
     expect(getByRole('textbox')).toBeInTheDocument()
+  })
+
+  it('should control button type toggle', () => {
+    const props = {
+      title: 'title',
+      chatButton: {
+        id: 'chatButton.id',
+        link: 'https://example.com',
+        code: 'm.me/1234567890',
+        type: ChatButtonType.link,
+        platform: ChatPlatform.facebook
+      } as unknown as ChatButton,
+      platform: ChatPlatform.facebook,
+      active: true,
+      helperInfo: 'helper info',
+      journeyId: 'journeyId',
+      disableSelection: false,
+      enableTypeToggle: true
+    }
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ChatOption {...props} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'title' }))
+
+    const linkButton = getByRole('button', { name: 'link' })
+    const codeButton = getByRole('button', { name: 'code' })
+
+    expect(getByRole('group')).toBeInTheDocument()
+    expect(linkButton).toHaveAttribute('aria-pressed', 'true')
+    expect(codeButton).toHaveAttribute('aria-pressed', 'false')
+    expect(getByRole('textbox')).toHaveValue('https://example.com')
+
+    fireEvent.click(codeButton)
+
+    expect(linkButton).toHaveAttribute('aria-pressed', 'false')
+    expect(codeButton).toHaveAttribute('aria-pressed', 'true')
+    expect(getByRole('textbox')).toHaveValue('m.me/1234567890')
   })
 })
