@@ -87,7 +87,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
               spacing={5}
             >
               <Typography>{t('Fill this card with content')}</Typography>
-              <Trans>
+              <Trans t={t}>
                 <Button
                   variant="contained"
                   size="large"
