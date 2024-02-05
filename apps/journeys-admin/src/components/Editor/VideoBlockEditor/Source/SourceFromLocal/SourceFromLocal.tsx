@@ -10,6 +10,7 @@ import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages } from '../../../../../../__generated__/GetVideoVariantLanguages'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
+import { useTranslation } from 'react-i18next'
 
 export const GET_VIDEO_VARIANT_LANGUAGES = gql`
   query GetVideoVariantLanguages($id: ID!) {
@@ -33,6 +34,7 @@ interface SourceFromLocalProps {
 export function SourceFromLocal({
   selectedBlock
 }: SourceFromLocalProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetVideoVariantLanguages>(
     GET_VIDEO_VARIANT_LANGUAGES,
     {
@@ -57,7 +59,10 @@ export function SourceFromLocal({
       nativeLanguage != null &&
       nativeLanguage !== language
     )
-      language = `${language} (${nativeLanguage})`
+      language = t('{{ language }} ({{ nativeLanguage }})', {
+        language,
+        nativeLanguage
+      })
     setLanguage(language)
   }, [data?.video?.variantLanguages, selectedBlock?.videoVariantLanguageId])
 

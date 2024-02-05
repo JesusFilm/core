@@ -43,7 +43,10 @@ export function TemplateListItem({
   const displayLanguage =
     nativeLanguage === localLanguage || localLanguage == null
       ? nativeLanguage
-      : `${nativeLanguage} (${localLanguage})`
+      : t('{{ nativeLanguage }} ({{ localLanguage }})', {
+          nativeLanguage,
+          localLanguage
+        })
 
   const date =
     journey != null
