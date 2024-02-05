@@ -41,6 +41,7 @@ export function Chat(): ReactElement {
         active={facebook != null}
         journeyId={journey?.id}
         disableSelection={maxSelection}
+        enableTypeToggle
       />
       <ChatOption
         chatButton={whatsApp}
