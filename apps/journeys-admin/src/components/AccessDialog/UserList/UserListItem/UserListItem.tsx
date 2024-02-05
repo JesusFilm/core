@@ -70,11 +70,11 @@ export function UserListItem({
   const menuLabel = useMemo((): string => {
     switch (role) {
       case UserJourneyRole.inviteRequested:
-        return 'Manage'
+        return t('Manage')
       case UserJourneyRole.owner:
-        return 'Owner'
+        return t('Owner')
       default:
-        return 'Editor'
+        return t('Editor')
     }
   }, [role])
 

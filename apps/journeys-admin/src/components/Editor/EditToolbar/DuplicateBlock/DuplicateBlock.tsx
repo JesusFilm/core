@@ -46,8 +46,7 @@ export function DuplicateBlock({
   } = useEditor()
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
-  const blockLabel =
-    selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const blockType = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const disableAction = selectedBlock == null || disabled
 
   const handleDuplicateBlock = async (): Promise<void> => {
@@ -120,31 +119,38 @@ export function DuplicateBlock({
         }
       }
     }
-    enqueueSnackbar(t('{{ blockLabel }} Duplicated', { blockLabel }), {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    enqueueSnackbar(
+      t('{{ blockLabel }} Duplicated', {
+        blockLabel: blockType === 'Card' ? t('Card') : t('Block')
+      }),
+      {
+        variant: 'success',
+        preventDuplicate: true
+      }
+    )
   }
 
   return (
     <>
       {variant === 'button' ? (
         <IconButton
-          id={`duplicate-${blockLabel}-actions`}
-          aria-label={`Duplicate ${blockLabel} Actions`}
+          id={`duplicate-${blockType}-actions`}
+          aria-label={`Duplicate ${blockType} Actions`}
           disabled={disableAction}
           onClick={handleDuplicateBlock}
-          data-testId={`Duplicate-${blockLabel}`}
+          data-testId={`Duplicate-${blockType}`}
         >
           <CopyLeftIcon />
         </IconButton>
       ) : (
         <MenuItem
-          label={t('Duplicate {{ blockLabel }}', { blockLabel })}
+          label={t('Duplicate {{ blockLabel }}', {
+            blockLabel: blockType === 'Card' ? t('Card') : t('Block')
+          })}
           icon={<CopyLeftIcon color="inherit" />}
           disabled={disableAction}
           onClick={handleDuplicateBlock}
-          testId={`Duplicate-${blockLabel}`}
+          testId={`Duplicate-${blockType}`}
         />
       )}
     </>

@@ -10,6 +10,7 @@ import MessageText1Icon from '@core/shared/ui/icons/MessageText1'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 import { GetVisitorForDetails } from '../../../../__generated__/GetVisitorForDetails'
+import { useTranslation } from 'react-i18next'
 
 export const GET_VISITOR_FOR_DETAILS = gql`
   query GetVisitorForDetails($id: ID!) {
@@ -31,6 +32,7 @@ interface VisitorDetailsProps {
 }
 
 export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetVisitorForDetails>(GET_VISITOR_FOR_DETAILS, {
     variables: { id }
   })
@@ -85,7 +87,9 @@ export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
           sx={{ display: { xs: 'none', md: 'flex' } }}
         >
           <UserProfile2Icon />
-          <Typography>{`#${data?.visitor.id.slice(-12)}`}</Typography>
+          <Typography>
+            {t('#{{ id }}', { id: data?.visitor.id.slice(-12) })}
+          </Typography>
         </Stack>
       )}
     </Stack>

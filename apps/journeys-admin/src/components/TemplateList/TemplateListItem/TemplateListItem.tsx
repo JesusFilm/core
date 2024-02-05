@@ -23,6 +23,7 @@ import {
 } from '../../../../__generated__/GetAdminJourneys'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from '../../JourneyList/JourneyCard/JourneyCardMenu'
+import { useTranslation } from 'react-i18next'
 
 export interface TemplateListItemProps {
   journey?: AdminJourney | Journey
@@ -33,6 +34,7 @@ export function TemplateListItem({
   journey,
   refetch
 }: TemplateListItemProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const nativeLanguage =
     journey?.language.name.find(({ primary }) => primary)?.value ?? ''
   const localLanguage = journey?.language.name.find(
@@ -130,7 +132,9 @@ export function TemplateListItem({
                   >
                     {date}
                     {journey?.description != null
-                      ? ` - ${journey.description}`
+                      ? t(' - {{ description }}', {
+                          description: journey.description
+                        })
                       : ''}
                   </Typography>
                 </>
