@@ -34,7 +34,7 @@ export function LanguageSwitcher({
   const { t, i18n } = useTranslation('apps-journeys-admin')
 
   const placeholderLanguage = { id: '', nativeName: '', localName: '' }
-  const [languageData, setLanguageData] = useState<Language[]>([])
+  const [languages, setLanguages] = useState<Language[]>([])
   const [languageState, setLanguageState] = useState<languageState>({
     confirmLanguageChange: false,
     prevLanguageId: undefined
@@ -91,14 +91,14 @@ export function LanguageSwitcher({
   function filterAvailableLanguages(languages, crowdinData): Language[] {
     return languages.filter((language) => {
       const crowdinLocale = getLocaleLanguage('id', language.id)?.locale
-      const crowdinLanguageData = crowdinData.data.find(
+      const crowdinLanguages = crowdinData.data.find(
         (crowdinLanguage) =>
           crowdinLanguage.data.language.locale === crowdinLocale
       )
       return (
         // always display English
         language.id === '529' ||
-        crowdinLanguageData?.data.translationProgress === 100
+        crowdinLanguages?.data.translationProgress === 100
       )
     })
   }
@@ -116,7 +116,7 @@ export function LanguageSwitcher({
             data.languages,
             crowdinData
           )
-          setLanguageData(availableLanguages)
+          setLanguages(availableLanguages)
         })
         .catch((error) => console.error(error))
     }
@@ -140,7 +140,7 @@ export function LanguageSwitcher({
             value={
               currentLanguage != null ? currentLanguage : placeholderLanguage
             }
-            languages={languageData}
+            languages={languages}
             loading={loading}
           />
           {languageState.confirmLanguageChange && (
