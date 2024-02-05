@@ -19,6 +19,9 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName } from '@core/shared/ui/themes'
+
+// Used to resolve dynamic viewport height on Safari
 
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
