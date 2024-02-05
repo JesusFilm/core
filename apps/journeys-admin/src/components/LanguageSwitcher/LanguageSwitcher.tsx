@@ -1,4 +1,7 @@
 import { TranslationStatus } from '@crowdin/crowdin-api-client'
+import Alert from '@mui/material/Alert'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,13 +11,10 @@ import {
   LanguageAutocomplete,
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
-import Button from '@mui/material/Button'
-import Alert from '@mui/material/Alert'
-import Stack from '@mui/material/Stack'
 
 import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
-import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { getLocaleLanguage } from '../../libs/getLocaleLanguage'
+import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 
 interface languageState {
   confirmLanguageChange: boolean
@@ -74,7 +74,7 @@ export function LanguageSwitcher({
     [router, data, currentLanguage]
   )
 
-  function handleCancelLanguageChange() {
+  function handleCancelLanguageChange(): void {
     const { prevLanguageId } = languageState
     handleLocaleSwitch(prevLanguageId)
     handleClose()
@@ -88,14 +88,11 @@ export function LanguageSwitcher({
     return prevLanguage ?? i18n.language
   }
 
-  function filterAvailableLanguages(
-    languages: Language[],
-    crowdinData: any
-  ): Language[] {
+  function filterAvailableLanguages(languages, crowdinData): Language[] {
     return languages.filter((language) => {
       const crowdinLocale = getLocaleLanguage('id', language.id)?.locale
       const crowdinLanguageData = crowdinData.data.find(
-        (crowdinLanguage: any) =>
+        (crowdinLanguage) =>
           crowdinLanguage.data.language.locale === crowdinLocale
       )
       return (

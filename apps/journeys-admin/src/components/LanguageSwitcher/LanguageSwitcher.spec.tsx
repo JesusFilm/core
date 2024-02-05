@@ -1,8 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { TranslationStatus } from '@crowdin/crowdin-api-client'
+import {
+  ResponseObject,
+  TranslationStatus,
+  TranslationStatusModel
+} from '@crowdin/crowdin-api-client'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { i18n } from 'next-i18next'
 
 import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 
@@ -23,39 +26,146 @@ jest.mock('next-i18next', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('LanguageSwitcher', () => {
-  it('should render language selector', () => {
-    jest
-      .spyOn(TranslationStatus.prototype, 'getProjectProgress')
-      .mockImplementation(async () => {
-        return await Promise.resolve({
-          pagination: {
-            offset: 0,
-            limit: 25
-          },
-          data: []
-        })
-      })
+  const handleClose = jest.fn()
 
-    const result = jest.fn()
-
-    const { getByText } = render(
-      <MockedProvider
-        mocks={[
+  const languagesMock = {
+    request: {
+      query: GET_LANGUAGES,
+      variables: {
+        languageId: '529'
+      }
+    },
+    result: {
+      data: {
+        languages: [
           {
-            request: {
-              query: GET_LANGUAGES
-            },
-            result
+            id: '22658',
+            name: [
+              {
+                primary: true,
+                value: 'اللغة العربية'
+              },
+              {
+                primary: false,
+                value: 'Arabic, Modern Standard'
+              }
+            ]
+          },
+          {
+            id: '529',
+            name: [
+              {
+                primary: true,
+                value: 'English'
+              }
+            ]
           }
-        ]}
-      >
-        <LanguageSwitcher open handleClose={jest.fn()} />
-      </MockedProvider>
-    )
-    expect(getByText('Change Language')).toBeInTheDocument()
-  })
+        ]
+      }
+    }
+  }
 
-  it('should show languages that are translated fully', async () => {
+  const languagesMockWithFrench = {
+    ...languagesMock,
+    resut: {
+      data: {
+        languages: [
+          ...languagesMock.result.data.languages,
+          {
+            id: '496',
+            name: [
+              {
+                primary: true,
+                value: 'Français'
+              },
+              {
+                primary: false,
+                value: 'French'
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+
+  const arabicTranslations: ResponseObject<TranslationStatusModel.LanguageProgress> =
+    {
+      data: {
+        approvalProgress: 100,
+        words: {
+          approved: 1,
+          preTranslateAppliedTo: 0,
+          total: 1,
+          translated: 1
+        },
+        phrases: {
+          approved: 1,
+          preTranslateAppliedTo: 0,
+          total: 1,
+          translated: 1
+        },
+        translationProgress: 100,
+        languageId: 'ar',
+        eTag: '',
+        language: {
+          twoLettersCode: '',
+          androidCode: '',
+          dialectOf: '',
+          editorCode: '',
+          id: '',
+          locale: 'ar-SA',
+          name: 'Arabic',
+          osxCode: '',
+          osxLocale: 'ar',
+          pluralCategoryNames: [],
+          pluralExamples: [],
+          pluralRules: '',
+          textDirection: 'rtl',
+          threeLettersCode: ''
+        }
+      }
+    }
+
+  const frenchTranslations: ResponseObject<TranslationStatusModel.LanguageProgress> =
+    {
+      data: {
+        approvalProgress: 0,
+        words: {
+          approved: 0,
+          preTranslateAppliedTo: 0,
+          total: 1,
+          translated: 0
+        },
+        phrases: {
+          approved: 0,
+          preTranslateAppliedTo: 0,
+          total: 1,
+          translated: 0
+        },
+        translationProgress: 0,
+        languageId: 'fr',
+        eTag: '',
+        language: {
+          twoLettersCode: '',
+          androidCode: '',
+          dialectOf: '',
+          editorCode: '',
+          id: '',
+          locale: 'fr-FR',
+          name: 'French',
+          osxCode: '',
+          osxLocale: 'fr',
+          pluralCategoryNames: [],
+          pluralExamples: [],
+          pluralRules: '',
+          textDirection: 'ltr',
+          threeLettersCode: ''
+        }
+      }
+    }
+
+  it('should display language switcher along with fully translated languages', async () => {
     jest
       .spyOn(TranslationStatus.prototype, 'getFileProgress')
       .mockImplementation(async () => {
@@ -64,150 +174,24 @@ describe('LanguageSwitcher', () => {
             offset: 0,
             limit: 25
           },
-          data: [
-            {
-              data: {
-                approvalProgress: 100,
-                words: {
-                  approved: 1,
-                  preTranslateAppliedTo: 0,
-                  total: 1,
-                  translated: 1
-                },
-                phrases: {
-                  approved: 1,
-                  preTranslateAppliedTo: 0,
-                  total: 1,
-                  translated: 1
-                },
-                translationProgress: 100,
-                languageId: 'ar',
-                eTag: '',
-                language: {
-                  twoLettersCode: '',
-                  androidCode: '',
-                  dialectOf: '',
-                  editorCode: '',
-                  id: '',
-                  locale: '',
-                  name: 'Arabic',
-                  osxCode: '',
-                  osxLocale: 'ar',
-                  pluralCategoryNames: [],
-                  pluralExamples: [],
-                  pluralRules: '',
-                  textDirection: 'rtl',
-                  threeLettersCode: ''
-                }
-              }
-            },
-            {
-              data: {
-                approvalProgress: 0,
-                words: {
-                  approved: 0,
-                  preTranslateAppliedTo: 0,
-                  total: 1,
-                  translated: 0
-                },
-                phrases: {
-                  approved: 0,
-                  preTranslateAppliedTo: 0,
-                  total: 1,
-                  translated: 0
-                },
-                translationProgress: 0,
-                languageId: 'fr',
-                eTag: '',
-                language: {
-                  twoLettersCode: '',
-                  androidCode: '',
-                  dialectOf: '',
-                  editorCode: '',
-                  id: '',
-                  locale: '',
-                  name: 'French',
-                  osxCode: '',
-                  osxLocale: 'fr',
-                  pluralCategoryNames: [],
-                  pluralExamples: [],
-                  pluralRules: '',
-                  textDirection: 'ltr',
-                  threeLettersCode: ''
-                }
-              }
-            }
-          ]
+          data: [arabicTranslations, frenchTranslations]
         })
       })
 
     const { getByText, getByRole, queryByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LANGUAGES,
-              variables: {
-                languageId: '529'
-              }
-            },
-            result: {
-              data: {
-                languages: [
-                  {
-                    id: '22658',
-                    bcp47: 'ar',
-                    name: [
-                      {
-                        primary: true,
-                        value: ' اللغة العربية'
-                      },
-                      {
-                        primary: false,
-                        value: 'Arabic, Modern Standard'
-                      }
-                    ]
-                  },
-                  {
-                    id: '529',
-                    bcp47: 'en',
-                    name: [
-                      {
-                        primary: true,
-                        value: 'English'
-                      }
-                    ]
-                  },
-                  {
-                    id: '496',
-                    bcp47: 'fr',
-                    name: [
-                      {
-                        primary: true,
-                        value: 'Français'
-                      },
-                      {
-                        primary: false,
-                        value: 'French'
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }
-        ]}
-      >
-        <LanguageSwitcher open handleClose={jest.fn()} />
+      <MockedProvider mocks={[languagesMockWithFrench]}>
+        <LanguageSwitcher open handleClose={handleClose} />
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Open' }))
+    expect(getByText('Change Language')).toBeInTheDocument()
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     await waitFor(() =>
       expect(getByText('Arabic, Modern Standard')).toBeInTheDocument()
     )
     expect(getByText('English')).toBeInTheDocument()
-    expect(queryByText('French')).toBeNull()
+    expect(queryByText('Français')).not.toBeInTheDocument()
   })
 
   it('should translate page when new language selected', async () => {
@@ -224,102 +208,20 @@ describe('LanguageSwitcher', () => {
             offset: 0,
             limit: 25
           },
-          data: [
-            {
-              data: {
-                approvalProgress: 100,
-                words: {
-                  approved: 1,
-                  preTranslateAppliedTo: 0,
-                  total: 1,
-                  translated: 1
-                },
-                phrases: {
-                  approved: 1,
-                  preTranslateAppliedTo: 0,
-                  total: 1,
-                  translated: 1
-                },
-                translationProgress: 100,
-                languageId: 'ar',
-                eTag: '',
-                language: {
-                  twoLettersCode: '',
-                  androidCode: '',
-                  dialectOf: '',
-                  editorCode: '',
-                  id: '',
-                  locale: '',
-                  name: 'Arabic',
-                  osxCode: '',
-                  osxLocale: 'ar',
-                  pluralCategoryNames: [],
-                  pluralExamples: [],
-                  pluralRules: '',
-                  textDirection: 'rtl',
-                  threeLettersCode: ''
-                }
-              }
-            }
-          ]
+          data: [arabicTranslations]
         })
       })
 
-    const mockHandleClose = jest.fn()
-
     const { getByText, getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LANGUAGES,
-              variables: {
-                languageId: '529'
-              }
-            },
-            result: {
-              data: {
-                languages: [
-                  {
-                    id: '22658',
-                    bcp47: 'ar',
-                    name: [
-                      {
-                        primary: true,
-                        value: ' اللغة العربية'
-                      },
-                      {
-                        primary: false,
-                        value: 'Arabic, Modern Standard'
-                      }
-                    ]
-                  },
-                  {
-                    id: '529',
-                    bcp47: 'en',
-                    name: [
-                      {
-                        primary: true,
-                        value: 'English'
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }
-        ]}
-      >
-        <LanguageSwitcher open handleClose={mockHandleClose} />
+      <MockedProvider mocks={[languagesMock]}>
+        <LanguageSwitcher open handleClose={handleClose} />
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Open' }))
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     await waitFor(() => fireEvent.click(getByText('Arabic, Modern Standard')))
-    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'ar' })
-    expect(getByText('Confirm Language Change')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Yes' }))
-    expect(mockHandleClose).toHaveBeenCalled()
+    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'ar-SA' })
   })
 
   it('should revert back to previous language', async () => {
@@ -336,102 +238,24 @@ describe('LanguageSwitcher', () => {
             offset: 0,
             limit: 25
           },
-          data: [
-            {
-              data: {
-                approvalProgress: 100,
-                words: {
-                  approved: 1,
-                  preTranslateAppliedTo: 0,
-                  total: 1,
-                  translated: 1
-                },
-                phrases: {
-                  approved: 1,
-                  preTranslateAppliedTo: 0,
-                  total: 1,
-                  translated: 1
-                },
-                translationProgress: 100,
-                languageId: 'ar',
-                eTag: '',
-                language: {
-                  twoLettersCode: '',
-                  androidCode: '',
-                  dialectOf: '',
-                  editorCode: '',
-                  id: '',
-                  locale: '',
-                  name: 'Arabic',
-                  osxCode: '',
-                  osxLocale: 'ar',
-                  pluralCategoryNames: [],
-                  pluralExamples: [],
-                  pluralRules: '',
-                  textDirection: 'rtl',
-                  threeLettersCode: ''
-                }
-              }
-            }
-          ]
+          data: [arabicTranslations]
         })
       })
 
-    const mockHandleClose = jest.fn()
-
     const { getByText, getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LANGUAGES,
-              variables: {
-                languageId: '529'
-              }
-            },
-            result: {
-              data: {
-                languages: [
-                  {
-                    id: '22658',
-                    bcp47: 'ar',
-                    name: [
-                      {
-                        primary: true,
-                        value: ' اللغة العربية'
-                      },
-                      {
-                        primary: false,
-                        value: 'Arabic, Modern Standard'
-                      }
-                    ]
-                  },
-                  {
-                    id: '529',
-                    bcp47: 'en',
-                    name: [
-                      {
-                        primary: true,
-                        value: 'English'
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }
-        ]}
-      >
-        <LanguageSwitcher open handleClose={mockHandleClose} />
+      <MockedProvider mocks={[languagesMock]}>
+        <LanguageSwitcher open handleClose={handleClose} />
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Open' }))
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     await waitFor(() => fireEvent.click(getByText('Arabic, Modern Standard')))
-    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'ar' })
-    expect(getByText('Confirm Language Change')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'No' }))
+    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'ar-SA' })
+    expect(
+      getByText('Are you sure you want to change language?')
+    ).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Revert' }))
     expect(push).toHaveBeenCalledWith('/', '/', { locale: 'en' })
-    await waitFor(() => expect(mockHandleClose).toHaveBeenCalled())
   })
 })
