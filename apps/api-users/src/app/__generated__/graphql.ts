@@ -50,6 +50,7 @@ export class User {
     email: string;
     imageUrl?: Nullable<string>;
     superAdmin?: Nullable<boolean>;
+    emailPreferences?: Nullable<EmailPreferences>;
 }
 
 export class Translation {
