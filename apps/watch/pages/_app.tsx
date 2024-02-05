@@ -4,6 +4,7 @@ import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
+import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
@@ -12,6 +13,7 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import i18nConfig from '../next-i18next.config'
 import { useApolloClient } from '../src/libs/apolloClient'
 
 import 'swiper/css'
@@ -25,7 +27,7 @@ type WatchAppProps = NextJsAppProps & {
   emotionCache?: EmotionCache
 }
 
-export default function WatchApp({
+function WatchApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
@@ -108,3 +110,5 @@ export default function WatchApp({
     </ApolloProvider>
   )
 }
+
+export default appWithTranslation(WatchApp, i18nConfig)

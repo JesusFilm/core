@@ -115,6 +115,13 @@ describe('UserInviteResolver', () => {
       email: 'brian.smith@example.com'
     }
 
+    const user = {
+      id: 'userId',
+      firstName: 'Joe',
+      lastName: 'Smith',
+      email: 'jsmith@example.com'
+    }
+
     it('creates a user team invite', async () => {
       prismaService.$transaction.mockImplementationOnce(
         async (cb) => await cb(prismaService)
@@ -122,7 +129,7 @@ describe('UserInviteResolver', () => {
       prismaService.userInvite.upsert.mockResolvedValueOnce(
         userInviteWithUserTeam
       )
-      await resolver.userInviteCreate(ability, 'userId', 'journeyId', input)
+      await resolver.userInviteCreate(ability, user, 'journeyId', input)
       expect(prismaService.userInvite.upsert).toHaveBeenCalledWith({
         where: {
           journeyId_email: {
@@ -159,7 +166,7 @@ describe('UserInviteResolver', () => {
       )
       prismaService.userInvite.upsert.mockResolvedValueOnce(userInvite)
       await expect(
-        resolver.userInviteCreate(ability, 'userId', 'journeyId', input)
+        resolver.userInviteCreate(ability, user, 'journeyId', input)
       ).rejects.toThrow('user is not allowed to create userInvite')
     })
   })

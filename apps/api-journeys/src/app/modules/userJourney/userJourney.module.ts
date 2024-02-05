@@ -13,7 +13,7 @@ import { UserJourneyService } from './userJourney.service'
 @Module({
   imports: [
     CaslAuthModule.register(AppCaslFactory),
-    BullModule.registerQueue({ name: 'api-users-email' })
+    BullModule.registerQueue({ name: 'api-journeys-email' })
   ],
   providers: [UserJourneyResolver, PrismaService, UserJourneyService],
   exports: []

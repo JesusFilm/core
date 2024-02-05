@@ -3,6 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -97,6 +98,8 @@ export function DeleteBlock({
         })
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Dialog
@@ -110,7 +113,7 @@ export function DeleteBlock({
         }}
       >
         <Typography>
-          Are you sure you would like to delete this card?
+          {t('Are you sure you would like to delete this card?')}
         </Typography>
       </Dialog>
       {variant === 'button' ? (

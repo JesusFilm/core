@@ -10,6 +10,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -67,6 +68,7 @@ export function VideoDetails({
     BLOCK_DELETE_FOR_COVER_IMAGE
   )
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
 
   let Details: (
     props: Pick<VideoDetailsProps, 'id' | 'open' | 'onSelect'>
@@ -111,6 +113,7 @@ export function VideoDetails({
       source: VideoBlockSource.internal
     })
   }
+
   return (
     <>
       <Drawer
@@ -142,7 +145,7 @@ export function VideoDetails({
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Video Details
+              {t('Video Details')}
             </Typography>
             <IconButton
               onClick={() => onClose(false)}
@@ -170,7 +173,7 @@ export function VideoDetails({
                 size="small"
                 onClick={() => onClose(false)}
               >
-                Change Video
+                {t('Change Video')}
               </Button>
               <IconButton
                 onClick={handleClearVideo}

@@ -11,7 +11,9 @@ test('journeys', async ({ page }) => {
   await expect(page).toHaveURL(/.*fact-or-fiction/)
   // Test Fact or Fiction screen
   await expect(
-    page.getByRole('heading', { name: 'Fact or Fiction' })
+    page
+      .getByRole('heading', { name: 'Fact or Fiction' })
+      .and(page.getByTestId('JourneysTypography'))
   ).toBeInViewport()
   await page.getByRole('button', { name: 'Explore Now' }).click()
   // Test Video Screen
@@ -26,6 +28,7 @@ test('journeys', async ({ page }) => {
   })
   await page.getByText('Yes, it’s a true story 👍').click()
   // Test Video Screen
+  await page.getByTestId('JourneysVideoControls').click()
   await page.getByTestId('ConductorNavigationButtonNext').click()
   // Test Jesus in History screen
   await expect(page.getByText('Jesus in History')).toBeInViewport()

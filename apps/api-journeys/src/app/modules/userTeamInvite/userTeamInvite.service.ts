@@ -1,43 +1,30 @@
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
-import { render } from '@react-email/render'
 import { Queue } from 'bullmq'
 
 import { Team } from '.prisma/api-journeys-client'
+import { User } from '@core/nest/common/firebaseClient'
 
-import TeamInviteEmail from '../../emails/TeamInvite'
-import { EmailJob } from '../email/email.consumer'
+import { TeamInviteJob } from '../email/email.consumer'
 
 @Injectable()
 export class UserTeamInviteService {
   constructor(
     @InjectQueue('api-journeys-email')
-    private readonly emailQueue: Queue<EmailJob>
+    private readonly emailQueue: Queue<TeamInviteJob>
   ) {}
 
-  async sendEmail(team: Team, email: string): Promise<void> {
-    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
-    const html = render(
-      TeamInviteEmail({ teamName: team.title, email, inviteLink: url }),
-      {
-        pretty: true
-      }
-    )
-
-    const text = render(
-      TeamInviteEmail({ teamName: team.title, email, inviteLink: url }),
-      {
-        plainText: true
-      }
-    )
-
+  async sendEmail(
+    team: Team,
+    email: string,
+    sender: Omit<User, 'id' | 'email'>
+  ): Promise<void> {
     await this.emailQueue.add(
-      'email',
+      'team-invite',
       {
+        teamName: team.title,
         email,
-        subject: `Invitation to join team: ${team.title}`,
-        body: html,
-        text
+        sender
       },
       {
         removeOnComplete: true,

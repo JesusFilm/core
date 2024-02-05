@@ -2,11 +2,11 @@ locals {
   port = 4002
   environment_variables = [
     "GOOGLE_APPLICATION_JSON",
-    "PG_DATABASE_URL",
     "PG_DATABASE_URL_USERS",
     "REDIS_URL",
     "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY"
+    "AWS_SECRET_ACCESS_KEY",
+    "INTEROP_TOKEN"
   ]
   service_config = {
     name           = "api-users"

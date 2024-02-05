@@ -1,6 +1,7 @@
 import { UseGuards } from '@nestjs/common'
 import {
   Args,
+  Context,
   Mutation,
   Query,
   ResolveReference,
@@ -28,6 +29,28 @@ export class UserResolver {
   @UseGuards(GqlAuthGuard)
   async me(@CurrentUserId() userId: string): Promise<User> {
     return await this.findOrFetchUser(userId)
+  }
+
+  @Query()
+  async user(
+    @Args('id') id: string,
+    @Context() context: { headers: Record<string, string> }
+  ): Promise<User | null> {
+    if (context.headers['interop-token'] !== process.env.INTEROP_TOKEN) {
+      throw new GraphQLError('Invalid Interop Token')
+    }
+    return await this.prismaService.user.findUnique({ where: { userId: id } })
+  }
+
+  @Query()
+  async userByEmail(
+    @Args('email') email: string,
+    @Context() context: { headers: Record<string, string> }
+  ): Promise<User | null> {
+    if (context.headers['interop-token'] !== process.env.INTEROP_TOKEN) {
+      throw new GraphQLError('Invalid Interop Token')
+    }
+    return await this.prismaService.user.findUnique({ where: { email } })
   }
 
   @Mutation()

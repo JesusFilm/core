@@ -1,7 +1,6 @@
 locals {
   port = 4004
   environment_variables = [
-    "PG_DATABASE_URL",
     "PG_DATABASE_URL_VIDEOS",
     "ARCLIGHT_API_KEY",
     "ARCLIGHT_V3_URL",

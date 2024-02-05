@@ -2,7 +2,6 @@ locals {
   port = 4001
   environment_variables = [
     "FIREBASE_API_KEY",
-    "PG_DATABASE_URL",
     "PG_DATABASE_URL_JOURNEYS",
     "PLAYWRIGHT_USER_ID",
     "POWER_BI_CLIENT_ID",
@@ -19,7 +18,9 @@ locals {
     "JOURNEYS_ADMIN_URL",
     "REDIS_URL",
     "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY"
+    "AWS_SECRET_ACCESS_KEY",
+    "INTEROP_TOKEN",
+    "GATEWAY_URL"
   ]
   service_config = {
     name           = "api-journeys"
