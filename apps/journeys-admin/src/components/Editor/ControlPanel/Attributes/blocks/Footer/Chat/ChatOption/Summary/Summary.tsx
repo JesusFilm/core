@@ -8,9 +8,9 @@ import { useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonCreate } from '../../../../../../../../../../__generated__/JourneyChatButtonCreate'
 import { JourneyChatButtonRemove } from '../../../../../../../../../../__generated__/JourneyChatButtonRemove'
+import { ChatButtonState } from '../ChatOption'
 
 export const JOURNEY_CHAT_BUTTON_CREATE = gql`
   mutation JourneyChatButtonCreate(
@@ -38,10 +38,9 @@ interface SummaryProps {
   active: boolean
   disableSelection: boolean
   journeyId?: string
-  currentLink: string
-  currentPlatform: ChatPlatform
   chatButtonId?: string
   openAccordion: () => void
+  buttonState: ChatButtonState
 }
 
 export function Summary({
@@ -49,10 +48,9 @@ export function Summary({
   active,
   disableSelection,
   journeyId,
-  currentLink,
-  currentPlatform,
   chatButtonId,
-  openAccordion
+  openAccordion,
+  buttonState
 }: SummaryProps): ReactElement {
   const [journeyChatButtonCreate, { loading: createLoading }] =
     useMutation<JourneyChatButtonCreate>(JOURNEY_CHAT_BUTTON_CREATE)
@@ -72,10 +70,7 @@ export function Summary({
         await journeyChatButtonCreate({
           variables: {
             journeyId,
-            input: {
-              link: currentLink,
-              platform: currentPlatform
-            }
+            input: buttonState
           },
           update(cache, { data }) {
             if (data?.chatButtonCreate != null) {
@@ -148,7 +143,7 @@ export function Summary({
       data-testid="ChatOptionSummary"
     >
       <Checkbox
-        data-testid={`checkbox-${currentPlatform as string}`}
+        data-testid={`checkbox-${buttonState.platform as string}`}
         checked={active}
         size="small"
         sx={{ p: 1, mr: 1 }}

@@ -1,11 +1,19 @@
 import Accordion from '@mui/material/Accordion'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
-import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
+import { JourneyFields_chatButtons as ChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { Details } from './Details'
 import { Summary } from './Summary'
+import { ChatButtonType } from 'libs/journeys/ui/__generated__/globalTypes'
+
+export type ChatButtonState = {
+  type: string
+  link: string
+  code: string | null
+  platform: ChatPlatform
+}
 
 interface ChatOptionProps {
   title: string
@@ -16,6 +24,7 @@ interface ChatOptionProps {
   journeyId?: string
   disableSelection: boolean
   enableIconSelect?: boolean
+  enableTypeToggle?: boolean
 }
 export function ChatOption({
   title,
@@ -25,12 +34,15 @@ export function ChatOption({
   helperInfo,
   journeyId,
   disableSelection,
-  enableIconSelect = false
+  enableIconSelect = false,
+  enableTypeToggle = false
 }: ChatOptionProps): ReactElement {
-  const [currentLink, setCurrentLink] = useState(chatButton?.link ?? '')
-  const [currentPlatform, setCurrentPlatform] = useState(
-    platform ?? chatButton?.platform ?? ChatPlatform.custom
-  )
+  const [buttonState, setButtonState] = useState<ChatButtonState>({
+    type: chatButton?.type ?? ChatButtonType.link,
+    link: chatButton?.link ?? '',
+    code: chatButton?.code ?? '',
+    platform: platform ?? chatButton?.platform ?? ChatPlatform.custom
+  })
   const [expanded, setExpanded] = useState(false)
   function handleChange(): void {
     setExpanded(!expanded)
@@ -57,20 +69,18 @@ export function ChatOption({
         active={active}
         disableSelection={disableSelection}
         journeyId={journeyId}
-        currentLink={currentLink}
-        currentPlatform={currentPlatform}
+        buttonState={buttonState}
         chatButtonId={chatButton?.id}
         openAccordion={() => setExpanded(true)}
       />
       <Details
         journeyId={journeyId}
         chatButtonId={chatButton?.id}
-        currentPlatform={currentPlatform}
-        currentLink={currentLink}
-        setCurrentPlatform={setCurrentPlatform}
-        setCurrentLink={setCurrentLink}
         helperInfo={helperInfo}
         enableIconSelect={enableIconSelect}
+        enableTypeToggle={enableTypeToggle}
+        buttonState={buttonState}
+        setButtonState={setButtonState}
       />
     </Accordion>
   )

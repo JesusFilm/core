@@ -14,6 +14,8 @@ type FieldProps = Pick<
   | 'sx'
   | 'type'
   | 'onFocus'
+  | 'multiline'
+  | 'rows'
 >
 
 interface TextFieldFormProps extends FieldProps {

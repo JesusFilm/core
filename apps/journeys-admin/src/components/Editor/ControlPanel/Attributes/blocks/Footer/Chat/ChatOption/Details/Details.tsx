@@ -6,7 +6,7 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { Dispatch, MouseEvent, ReactElement, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -23,6 +23,29 @@ import { ChatPlatform } from '../../../../../../../../../../__generated__/global
 import { JourneyChatButtonUpdate } from '../../../../../../../../../../__generated__/JourneyChatButtonUpdate'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
+import {
+  ToggleButton,
+  ToggleButtonGroup as MuiToggleButtonGroup
+} from '@mui/material'
+import { styled } from '@mui/material/styles'
+import { ChatButtonState } from '../ChatOption'
+
+const ToggleButtonGroup = styled(MuiToggleButtonGroup)(({ theme }) => ({
+  '& .MuiToggleButtonGroup-grouped': {
+    width: '100%',
+    paddingLeft: 30,
+    paddingRight: 30,
+    paddingTop: 12,
+    paddingBottom: 12,
+    borderRadius: 8,
+    backgroundColor: theme.palette[0],
+    '&.Mui-selected': {
+      backgroundColor: theme.palette[100],
+      color: theme.palette.error.main
+    }
+  }
+}))
+
 export const JOURNEY_CHAT_BUTTON_UPDATE = gql`
   mutation JourneyChatButtonUpdate(
     $chatButtonUpdateId: ID!
@@ -36,6 +59,8 @@ export const JOURNEY_CHAT_BUTTON_UPDATE = gql`
     ) {
       id
       link
+      code
+      type
       platform
     }
   }
@@ -44,12 +69,11 @@ export const JOURNEY_CHAT_BUTTON_UPDATE = gql`
 interface DetailsProps {
   journeyId?: string
   chatButtonId?: string
-  currentPlatform: ChatPlatform
-  currentLink: string
-  setCurrentPlatform: (value: ChatPlatform) => void
-  setCurrentLink: (value: string) => void
   helperInfo?: string
   enableIconSelect: boolean
+  enableTypeToggle: boolean
+  buttonState: ChatButtonState
+  setButtonState: Dispatch<SetStateAction<ChatButtonState>>
 }
 
 interface ChatPlatformOptions {
@@ -61,12 +85,11 @@ interface ChatPlatformOptions {
 export function Details({
   journeyId,
   chatButtonId,
-  currentPlatform,
-  currentLink,
-  setCurrentPlatform,
-  setCurrentLink,
   helperInfo,
-  enableIconSelect
+  enableIconSelect,
+  enableTypeToggle,
+  buttonState,
+  setButtonState
 }: DetailsProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
@@ -117,26 +140,9 @@ export function Details({
     }
   ]
 
-  async function handleUpdate(
-    type: 'link' | 'platform',
-    value?: string
-  ): Promise<void> {
-    let input
-    if (type === 'link') {
-      input = {
-        link: value,
-        platform: currentPlatform
-      }
-      setCurrentLink(value ?? '')
-    } else {
-      input = {
-        link: currentLink,
-        platform: value as ChatPlatform
-      }
-      setCurrentPlatform(value as ChatPlatform)
-    }
-
+  const sendUpdate = async (input) => {
     if (chatButtonId == null) return
+
     const { data } = await journeyChatButtonUpdate({
       variables: {
         chatButtonUpdateId: chatButtonId,
@@ -160,6 +166,39 @@ export function Details({
     }
   }
 
+  const handlePlatformChange = (value: ChatPlatform): void => {
+    setButtonState((prev) => ({ ...prev, platform: value }))
+
+    sendUpdate({
+      ...buttonState,
+      type: 'link',
+      platform: value
+    })
+  }
+
+  const handleSubmit = (value?: string): void => {
+    setButtonState((prev) => ({ ...prev, [buttonState.type]: value }))
+
+    sendUpdate({
+      ...buttonState,
+      [buttonState.type]: value,
+      platform: buttonState.platform
+    })
+  }
+
+  const handleTypeChange = (
+    e: MouseEvent<HTMLElement>,
+    type: string | null
+  ): void => {
+    if (type !== null) {
+      setButtonState((prev) => ({
+        ...prev,
+        [type]: prev[type] || '',
+        type
+      }))
+    }
+  }
+
   return (
     <AccordionDetails sx={{ px: 6 }} data-testid="ChatOptionDetails">
       <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
@@ -167,10 +206,10 @@ export function Details({
           <FormControl variant="filled" fullWidth hiddenLabel>
             <Select
               labelId="icon-select"
-              value={currentPlatform}
+              value={buttonState.platform}
               displayEmpty
-              onChange={async (event) =>
-                await handleUpdate('platform', event.target.value)
+              onChange={(event) =>
+                handlePlatformChange(event.target.value as ChatPlatform)
               }
               IconComponent={ChevronDownIcon}
             >
@@ -186,11 +225,33 @@ export function Details({
           </FormControl>
         )}
 
+        {enableTypeToggle && (
+          <ToggleButtonGroup
+            value={buttonState.type}
+            exclusive
+            onChange={handleTypeChange}
+            aria-label="chat-button-type"
+          >
+            <ToggleButton name="link" value="link" aria-label="link">
+              Link
+            </ToggleButton>
+            <ToggleButton name="code" value="code" aria-label="code">
+              Code
+            </ToggleButton>
+          </ToggleButtonGroup>
+        )}
+
         <TextFieldForm
-          id={currentPlatform as string}
-          label={t('Paste URL here')}
-          initialValue={currentLink}
-          onSubmit={async (value) => await handleUpdate('link', value)}
+          id={buttonState.platform as string}
+          label={
+            buttonState.type === 'code'
+              ? t('Paste code here')
+              : t('Paste URL here')
+          }
+          initialValue={buttonState[buttonState.type]}
+          onSubmit={(value) => handleSubmit(value)}
+          multiline={buttonState.type === 'code'}
+          rows={4}
         />
 
         {helperInfo != null && (
