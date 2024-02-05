@@ -4,8 +4,7 @@ import Stack from '@mui/material/Stack'
 import { ReactElement, useEffect, useRef } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
-
-import { StepFields } from '../../../../../../../apps/journeys/__generated__/StepFields'
+import { StepFields } from '../../Step/__generated__/StepFields'
 
 export function PaginationBullets(): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
