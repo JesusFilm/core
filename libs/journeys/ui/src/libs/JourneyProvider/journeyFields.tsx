@@ -59,6 +59,8 @@ export const JOURNEY_FIELDS = gql`
     chatButtons {
       id
       link
+      code
+      type
       platform
     }
     host {

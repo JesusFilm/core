@@ -33,6 +33,11 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ChatButtonType {
+  code = "code",
+  link = "link",
+}
+
 export enum ChatPlatform {
   custom = "custom",
   facebook = "facebook",
