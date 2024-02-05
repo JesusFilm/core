@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -10,7 +11,6 @@ import { TypographyColor } from '../../../../../../../../__generated__/globalTyp
 import { TypographyBlockUpdateColor } from '../../../../../../../../__generated__/TypographyBlockUpdateColor'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
-import { useTranslation } from 'react-i18next'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
   mutation TypographyBlockUpdateColor(

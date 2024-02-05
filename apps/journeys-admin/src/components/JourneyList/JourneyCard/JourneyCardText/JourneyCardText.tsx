@@ -5,10 +5,10 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyCardVariant } from '../journeyCardVariant'
-import { useTranslation } from 'react-i18next'
 
 interface JourneyCardTextProps {
   journey: Journey

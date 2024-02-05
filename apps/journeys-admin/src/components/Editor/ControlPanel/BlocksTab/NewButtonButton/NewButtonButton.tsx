@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -21,7 +22,6 @@ import {
   ButtonVariant
 } from '../../../../../../__generated__/globalTypes'
 import { Button } from '../../Button'
-import { useTranslation } from 'react-i18next'
 
 export const BUTTON_BLOCK_CREATE = gql`
   ${BUTTON_FIELDS}

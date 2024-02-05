@@ -3,6 +3,7 @@ import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -12,7 +13,6 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { GetJourneyNames } from '../../../../../../../__generated__/GetJourneyNames'
 import { NavigateToJourneyActionUpdate } from '../../../../../../../__generated__/NavigateToJourneyActionUpdate'
-import { useTranslation } from 'react-i18next'
 
 export const GET_JOURNEY_NAMES = gql`
   query GetJourneyNames {

@@ -10,6 +10,7 @@ import type {
   DraggableStateSnapshot,
   DroppableProvided
 } from 'react-beautiful-dnd'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -39,7 +40,6 @@ import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
 
 import { CardWrapper } from './CardWrapper'
-import { useTranslation } from 'react-i18next'
 
 const Draggable = dynamic(
   async () =>

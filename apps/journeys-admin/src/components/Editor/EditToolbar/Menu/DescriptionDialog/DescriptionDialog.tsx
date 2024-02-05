@@ -3,12 +3,12 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { JourneyDescUpdate } from '../../../../../../__generated__/JourneyDescUpdate'
-import { useTranslation } from 'react-i18next'
 
 export const JOURNEY_DESC_UPDATE = gql`
   mutation JourneyDescUpdate($id: ID!, $input: JourneyUpdateInput!) {

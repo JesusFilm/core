@@ -10,13 +10,13 @@ import {
   SyntheticEvent,
   useState
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import type { JourneyListEvent } from '../JourneyList/JourneyList'
 import { JourneyListMenu } from '../JourneyList/JourneyListMenu'
 import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
-import { useTranslation } from 'react-i18next'
 
 export interface StatusTabPanelProps {
   activeList: ReactElement

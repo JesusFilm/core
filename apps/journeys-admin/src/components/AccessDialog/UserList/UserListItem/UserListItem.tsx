@@ -8,6 +8,7 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import compact from 'lodash/compact'
 import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -18,7 +19,6 @@ import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
 import { RemoveUser } from './RemoveUser'
-import { useTranslation } from 'react-i18next'
 
 interface UserItem {
   id: string

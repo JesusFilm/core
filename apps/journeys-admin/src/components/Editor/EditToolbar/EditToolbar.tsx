@@ -2,6 +2,7 @@ import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   ActiveJourneyEditContent,
@@ -14,7 +15,6 @@ import { Analytics } from './Analytics'
 import { DeleteBlock } from './DeleteBlock'
 import { DuplicateBlock } from './DuplicateBlock'
 import { Menu } from './Menu'
-import { useTranslation } from 'react-i18next'
 
 export function EditToolbar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

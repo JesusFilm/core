@@ -4,13 +4,13 @@ import { useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { Cards } from './Cards'
 import { Conditions } from './Conditions'
 import { SelectedCard } from './SelectedCard'
-import { useTranslation } from 'react-i18next'
 
 export function NextCard(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

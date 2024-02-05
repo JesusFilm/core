@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -11,7 +12,6 @@ import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { TextFieldForm } from '../../../../../TextFieldForm'
-import { useTranslation } from 'react-i18next'
 
 export const EMAIL_ACTION_UPDATE = gql`
   mutation EmailActionUpdate(

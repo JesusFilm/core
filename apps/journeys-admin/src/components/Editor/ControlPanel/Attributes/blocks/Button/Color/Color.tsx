@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -10,7 +11,6 @@ import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../.
 import { ButtonColor } from '../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
-import { useTranslation } from 'react-i18next'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateColor(

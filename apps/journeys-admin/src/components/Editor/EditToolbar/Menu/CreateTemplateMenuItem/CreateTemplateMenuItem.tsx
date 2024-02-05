@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
@@ -9,7 +10,6 @@ import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
 import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../../../MenuItem'
-import { useTranslation } from 'react-i18next'
 
 export const REMOVE_USER_JOURNEY = gql`
   mutation RemoveUserJourney($id: ID!) {

@@ -1,11 +1,11 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import MinusCircleContainedIcon from '@core/shared/ui/icons/MinusCircleContained'
 
 import { UserTeamDelete } from '../../../../../__generated__/UserTeamDelete'
 import { MenuItem } from '../../../MenuItem'
-import { useTranslation } from 'react-i18next'
 
 export const USER_TEAM_DELETE = gql`
   mutation UserTeamDelete($id: ID!) {

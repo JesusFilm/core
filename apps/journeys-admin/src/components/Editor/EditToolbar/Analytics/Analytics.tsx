@@ -2,12 +2,12 @@ import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
 
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
 import { MenuItem } from '../../../MenuItem/MenuItem'
-import { useTranslation } from 'react-i18next'
 
 interface AnalyticsProps {
   variant: 'button' | 'list-item'

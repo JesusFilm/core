@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -10,7 +11,6 @@ import Image3Icon from '@core/shared/ui/icons/Image3'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
 import { Button } from '../../Button'
-import { useTranslation } from 'react-i18next'
 
 export const IMAGE_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}

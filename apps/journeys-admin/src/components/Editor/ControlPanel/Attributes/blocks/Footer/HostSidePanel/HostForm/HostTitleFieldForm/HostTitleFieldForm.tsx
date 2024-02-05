@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -8,7 +9,6 @@ import { CreateHost } from '../../../../../../../../../../__generated__/CreateHo
 import { UpdateJourneyHost } from '../../../../../../../../../../__generated__/UpdateJourneyHost'
 import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
-import { useTranslation } from 'react-i18next'
 
 export const CREATE_HOST = gql`
   mutation CreateHost($teamId: ID!, $input: HostCreateInput!) {

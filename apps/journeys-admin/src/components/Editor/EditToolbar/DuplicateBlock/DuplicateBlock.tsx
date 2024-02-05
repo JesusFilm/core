@@ -3,6 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import last from 'lodash/last'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -16,7 +17,6 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../../../../__generated__/BlockFields'
 import { MenuItem } from '../../../MenuItem'
-import { useTranslation } from 'react-i18next'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'

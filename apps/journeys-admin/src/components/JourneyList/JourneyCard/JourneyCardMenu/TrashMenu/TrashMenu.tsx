@@ -1,10 +1,10 @@
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import FileShredIcon from '@core/shared/ui/icons/FileShred'
 
 import { MenuItem } from '../../../../MenuItem'
-import { useTranslation } from 'react-i18next'
 
 interface TrashMenuProps {
   setOpenRestoreDialog: () => void

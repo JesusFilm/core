@@ -2,6 +2,7 @@ import { ApolloQueryResult } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
@@ -15,7 +16,6 @@ import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTe
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
-import { useTranslation } from 'react-i18next'
 
 interface DefaultMenuProps {
   id: string

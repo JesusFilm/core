@@ -3,12 +3,12 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneySeoTitleUpdate } from '../../../../../../__generated__/JourneySeoTitleUpdate'
-import { useTranslation } from 'react-i18next'
 
 export const JOURNEY_SEO_TITLE_UPDATE = gql`
   mutation JourneySeoTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {

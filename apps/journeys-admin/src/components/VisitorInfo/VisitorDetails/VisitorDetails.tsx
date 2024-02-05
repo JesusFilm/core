@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
 import Marker2Icon from '@core/shared/ui/icons/Marker2'
@@ -10,7 +11,6 @@ import MessageText1Icon from '@core/shared/ui/icons/MessageText1'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 import { GetVisitorForDetails } from '../../../../__generated__/GetVisitorForDetails'
-import { useTranslation } from 'react-i18next'
 
 export const GET_VISITOR_FOR_DETAILS = gql`
   query GetVisitorForDetails($id: ID!) {

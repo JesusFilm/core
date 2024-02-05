@@ -1,10 +1,10 @@
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
-import { useTranslation } from 'react-i18next'
 
 interface HostLocationFieldFormProps {
   empty?: boolean

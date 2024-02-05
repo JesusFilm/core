@@ -6,10 +6,10 @@ import { useSnackbar } from 'notistack'
 import { models } from 'powerbi-client'
 import { EmbedProps, PowerBIEmbed } from 'powerbi-client-react'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { GetAdminJourneysReport } from '../../../../__generated__/GetAdminJourneysReport'
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
-import { useTranslation } from 'react-i18next'
 
 export const GET_ADMIN_JOURNEYS_REPORT = gql`
   query GetAdminJourneysReport($reportType: JourneysReportType!) {

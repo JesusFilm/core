@@ -22,6 +22,7 @@ import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
+import i18next from 'i18next'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -38,7 +39,6 @@ import { IconBlockNameUpdate } from '../../../../../../__generated__/IconBlockNa
 import { IconFields } from '../../../../../../__generated__/IconFields'
 
 import { Color } from './Color'
-import i18next from 'i18next'
 
 i18next.init({
   defaultNS: 'apps-journeys-admin',

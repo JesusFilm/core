@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
@@ -14,7 +15,6 @@ import { EventVariant, JourneyWithEvents, transformEvents } from '../utils'
 import { CompactEvent } from './CompactEvent'
 import { GenericEvent } from './GenericEvent'
 import { TimelineEvent } from './TimelineEvent'
-import { useTranslation } from 'react-i18next'
 
 interface EventsCardProps {
   journey: JourneyWithEvents

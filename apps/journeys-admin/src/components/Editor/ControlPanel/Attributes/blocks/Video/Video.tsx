@@ -1,4 +1,5 @@
 import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -10,7 +11,6 @@ import { Action, actions } from '../../Action/Action'
 import { Attribute } from '../../Attribute'
 
 import { VideoOptions } from './Options/VideoOptions'
-import { useTranslation } from 'react-i18next'
 
 export function Video(block: TreeBlock<VideoBlock>): ReactElement {
   const { id, videoId } = block

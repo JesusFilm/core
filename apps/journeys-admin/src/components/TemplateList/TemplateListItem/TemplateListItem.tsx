@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
@@ -23,7 +24,6 @@ import {
 } from '../../../../__generated__/GetAdminJourneys'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from '../../JourneyList/JourneyCard/JourneyCardMenu'
-import { useTranslation } from 'react-i18next'
 
 export interface TemplateListItemProps {
   journey?: AdminJourney | Journey

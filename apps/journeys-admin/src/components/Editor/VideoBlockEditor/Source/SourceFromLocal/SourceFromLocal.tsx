@@ -2,6 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -10,7 +11,6 @@ import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages } from '../../../../../../__generated__/GetVideoVariantLanguages'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
-import { useTranslation } from 'react-i18next'
 
 export const GET_VIDEO_VARIANT_LANGUAGES = gql`
   query GetVideoVariantLanguages($id: ID!) {

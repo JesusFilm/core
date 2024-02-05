@@ -1,5 +1,6 @@
 import capitalize from 'lodash/capitalize'
 import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -23,7 +24,6 @@ import { Icon, icons } from '../../Icon'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
-import { useTranslation } from 'react-i18next'
 
 export function Button({
   id,

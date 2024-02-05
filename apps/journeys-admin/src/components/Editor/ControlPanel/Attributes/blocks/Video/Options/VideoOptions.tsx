@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -12,7 +13,6 @@ import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/glo
 import { UpdateVideoBlockNextStep } from '../../../../../../../../__generated__/UpdateVideoBlockNextStep'
 import { VideoBlockUpdate } from '../../../../../../../../__generated__/VideoBlockUpdate'
 import { VideoBlockEditor } from '../../../../../VideoBlockEditor'
-import { useTranslation } from 'react-i18next'
 
 export const VIDEO_BLOCK_UPDATE = gql`
   ${VIDEO_FIELDS}

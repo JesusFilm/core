@@ -6,6 +6,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Skeleton from '@mui/material/Skeleton'
 import { Fragment, ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
@@ -13,7 +14,6 @@ import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 
 import { VideoListItem } from './VideoListItem'
 import { VideoListItemProps } from './VideoListItem/VideoListItem'
-import { useTranslation } from 'react-i18next'
 
 export interface VideoListProps {
   onSelect: (block: VideoBlockUpdateInput) => void

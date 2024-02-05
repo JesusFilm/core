@@ -1,9 +1,9 @@
 import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
-import { useTranslation } from 'react-i18next'
 
 export interface ManageAccessAvatarProps {
   diameter: number

@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { init, t } from 'i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -29,7 +30,6 @@ import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { getNextStep } from './utils/getNextStep'
-import i18next from 'i18next'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
   mutation NavigateActionUpdate(
@@ -50,30 +50,30 @@ export const ACTION_DELETE = gql`
     }
   }
 `
-i18next.init({
+init({
   defaultNS: 'apps-journeys-admin',
   fallbackLng: 'en'
 })
 export const actions = [
   {
     value: 'none',
-    label: i18next.t('None')
+    label: t('None')
   },
   {
     value: 'NavigateAction',
-    label: i18next.t('Next Step')
+    label: t('Next Step')
   },
   {
     value: 'NavigateToBlockAction',
-    label: i18next.t('Selected Card')
+    label: t('Selected Card')
   },
   {
     value: 'LinkAction',
-    label: i18next.t('URL/Website')
+    label: t('URL/Website')
   },
   {
     value: 'EmailAction',
-    label: i18next.t('Email')
+    label: t('Email')
   }
 ]
 

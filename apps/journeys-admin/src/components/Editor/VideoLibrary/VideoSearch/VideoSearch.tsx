@@ -3,10 +3,10 @@ import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import debounce from 'lodash/debounce'
 import { ChangeEvent, ReactElement, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import LinkIcon from '@core/shared/ui/icons/Link'
 import Search1Icon from '@core/shared/ui/icons/Search1'
-import { useTranslation } from 'react-i18next'
 
 interface VideoSearchProps {
   label?: string

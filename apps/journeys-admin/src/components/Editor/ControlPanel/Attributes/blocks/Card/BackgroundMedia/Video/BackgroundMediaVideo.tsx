@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -26,7 +27,6 @@ import {
 import { VideoBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate'
 import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
-import { useTranslation } from 'react-i18next'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
   mutation BlockDeleteForBackgroundVideo(

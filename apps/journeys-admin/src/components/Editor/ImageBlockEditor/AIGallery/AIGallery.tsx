@@ -2,12 +2,12 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { CreateAiImage } from '../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../__generated__/globalTypes'
 
 import { AIPrompt } from './AIPrompt'
-import { useTranslation } from 'react-i18next'
 
 export const CREATE_AI_IMAGE = gql`
   mutation CreateAiImage($prompt: String!, $model: SegmindModel!) {

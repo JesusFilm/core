@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -9,7 +10,6 @@ import { IconBlockColorUpdate } from '../../../../../../../__generated__/IconBlo
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../ToggleButtonGroup'
-import { useTranslation } from 'react-i18next'
 
 export const ICON_BLOCK_COLOR_UPDATE = gql`
   mutation IconBlockColorUpdate(

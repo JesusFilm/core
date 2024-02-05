@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -12,7 +13,6 @@ import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '..
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateAlign } from '../../../../../../../../__generated__/TypographyBlockUpdateAlign'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
-import { useTranslation } from 'react-i18next'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
   mutation TypographyBlockUpdateAlign(

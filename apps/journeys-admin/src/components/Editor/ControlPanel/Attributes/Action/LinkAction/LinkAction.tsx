@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -12,7 +13,6 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
 import { TextFieldForm } from '../../../../../TextFieldForm'
-import { useTranslation } from 'react-i18next'
 
 export const LINK_ACTION_UPDATE = gql`
   mutation LinkActionUpdate(

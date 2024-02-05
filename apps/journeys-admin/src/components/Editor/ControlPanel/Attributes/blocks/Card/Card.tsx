@@ -3,6 +3,7 @@ import Paper from '@mui/material/Paper'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -21,7 +22,6 @@ import {
 } from '../../../../../../../__generated__/GetJourney'
 import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 import { Attribute } from '../../Attribute'
-import { useTranslation } from 'react-i18next'
 
 const BackgroundColor = dynamic(
   async () =>

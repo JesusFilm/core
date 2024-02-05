@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -9,7 +10,6 @@ import { ButtonBlockUpdateSize } from '../../../../../../../../__generated__/But
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ButtonSize } from '../../../../../../../../__generated__/globalTypes'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
-import { useTranslation } from 'react-i18next'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateSize(

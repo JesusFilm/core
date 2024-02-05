@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -13,7 +14,6 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import type { UnsplashAuthor } from '../ImageBlockEditor/UnsplashGallery'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
-import { useTranslation } from 'react-i18next'
 
 interface ImageBlockHeaderProps {
   selectedBlock: ImageBlock | null

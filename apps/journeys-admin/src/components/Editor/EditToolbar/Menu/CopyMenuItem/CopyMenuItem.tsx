@@ -1,11 +1,11 @@
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import LingAngledIcon from '@core/shared/ui/icons/LinkAngled'
 
 import { JourneyFields as Journey } from '../../../../../../__generated__/JourneyFields'
 import { MenuItem } from '../../../../MenuItem'
-import { useTranslation } from 'react-i18next'
 
 interface CopyMenuItemProps {
   journey: Journey

@@ -2,6 +2,7 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/system/createTheme'
 import dynamic from 'next/dynamic'
 import { ComponentProps, ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -17,7 +18,6 @@ import { PageWrapper } from '../PageWrapper'
 
 import { Canvas } from './Canvas'
 import { Properties } from './Properties'
-import { useTranslation } from 'react-i18next'
 
 const ActionsTable = dynamic(
   async () =>

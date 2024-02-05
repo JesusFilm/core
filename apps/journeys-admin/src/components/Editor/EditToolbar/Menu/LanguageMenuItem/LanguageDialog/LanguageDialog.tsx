@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -9,7 +10,6 @@ import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { JourneyLanguageUpdate } from '../../../../../../../__generated__/JourneyLanguageUpdate'
 import { useLanguagesQuery } from '../../../../../../libs/useLanguagesQuery'
-import { useTranslation } from 'react-i18next'
 
 export const JOURNEY_LANGUAGE_UPDATE = gql`
   mutation JourneyLanguageUpdate($id: ID!, $input: JourneyUpdateInput!) {
