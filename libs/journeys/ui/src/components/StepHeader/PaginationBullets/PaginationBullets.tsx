@@ -78,7 +78,7 @@ export function PaginationBullets(): ReactElement {
             return (
               <CircleIcon
                 key={block.id}
-                sx={{ height: '10px', width: '10px' }}
+                sx={{ height: '10px', width: '10px', color: 'primary.main' }}
                 ref={activeCardRef}
               />
             )
@@ -87,13 +87,14 @@ export function PaginationBullets(): ReactElement {
             <CircleIcon
               key={block.id}
               sx={{
+                color: 'primary.dark',
                 height: isAdjacentBlock(block)
-                  ? '6px'
+                  ? '7px'
                   : isSecondBlock(block)
                   ? '4px'
                   : '4px',
                 width: isAdjacentBlock(block)
-                  ? '6px'
+                  ? '7px'
                   : isSecondBlock(block)
                   ? '4px'
                   : '4px'
@@ -105,7 +106,7 @@ export function PaginationBullets(): ReactElement {
           sx={{ height: '6px', width: '6px', visibility: 'hidden' }}
         />
         <CircleIcon
-          sx={{ height: '4px', width: '4px', visibility: 'hidden' }}
+          sx={{ height: '3px', width: '3px', visibility: 'hidden' }}
         />
       </Stack>
     </Box>
