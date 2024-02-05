@@ -134,7 +134,7 @@ describe('TeamUpdateDialog', () => {
       target: { value: '12345678901234567890123456789012345678901' }
     })
     await waitFor(() =>
-      expect(getByText('Max {{ count }} Characters')).toBeInTheDocument()
+      expect(getByText('Max 40 Characters')).toBeInTheDocument()
     )
     fireEvent.change(getAllByRole('textbox')[0], {
       target: { value: 'Team Title' }
@@ -162,7 +162,7 @@ describe('TeamUpdateDialog', () => {
       target: { value: '12345678901234567890123456789012345678901' }
     })
     await waitFor(() =>
-      expect(getByText('Max {{ count }} Characters')).toBeInTheDocument()
+      expect(getByText('Max 40 Characters')).toBeInTheDocument()
     )
   })
 })
