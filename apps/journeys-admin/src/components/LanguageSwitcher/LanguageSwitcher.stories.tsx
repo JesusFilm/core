@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { TranslationStatus } from '@crowdin/crowdin-api-client'
 import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 
@@ -13,91 +12,6 @@ const LanguageSwitcherStory: Meta<typeof LanguageSwitcher> = {
   component: LanguageSwitcher,
   title: 'Journeys-Admin/LanguageSwitcher'
 }
-
-jest
-  .spyOn(TranslationStatus.prototype, 'getProjectProgress')
-  .mockImplementation(async () => {
-    return await Promise.resolve({
-      pagination: {
-        offset: 0,
-        limit: 25
-      },
-      data: [
-        {
-          data: {
-            approvalProgress: 100,
-            words: {
-              approved: 1,
-              preTranslateAppliedTo: 0,
-              total: 1,
-              translated: 1
-            },
-            phrases: {
-              approved: 1,
-              preTranslateAppliedTo: 0,
-              total: 1,
-              translated: 1
-            },
-            translationProgress: 100,
-            languageId: 'ar',
-            eTag: '',
-            language: {
-              twoLettersCode: '',
-              androidCode: '',
-              dialectOf: '',
-              editorCode: '',
-              id: '',
-              locale: '',
-              name: 'Arabic',
-              osxCode: '',
-              osxLocale: 'ar',
-              pluralCategoryNames: [],
-              pluralExamples: [],
-              pluralRules: '',
-              textDirection: 'rtl',
-              threeLettersCode: ''
-            }
-          }
-        },
-        {
-          data: {
-            approvalProgress: 100,
-            words: {
-              approved: 1,
-              preTranslateAppliedTo: 0,
-              total: 1,
-              translated: 1
-            },
-            phrases: {
-              approved: 1,
-              preTranslateAppliedTo: 0,
-              total: 1,
-              translated: 1
-            },
-            translationProgress: 0,
-            languageId: 'fr',
-            eTag: '',
-            language: {
-              twoLettersCode: '',
-              androidCode: '',
-              dialectOf: '',
-              editorCode: '',
-              id: '',
-              locale: '',
-              name: 'French',
-              osxCode: '',
-              osxLocale: 'fr',
-              pluralCategoryNames: [],
-              pluralExamples: [],
-              pluralRules: '',
-              textDirection: 'ltr',
-              threeLettersCode: ''
-            }
-          }
-        }
-      ]
-    })
-  })
 
 export const Default: StoryObj<typeof LanguageSwitcher> = {
   render: () => (
