@@ -1,23 +1,13 @@
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
 import { EmailService } from '@core/nest/common/emailService'
-import { User } from '@core/nest/common/firebaseClient'
 
-import { VerifyEmailEmail } from '../../emails/EmailVerify'
-
-const apollo = new ApolloClient({
-  uri: process.env.GATEWAY_URL,
-  cache: new InMemoryCache(),
-  headers: {
-    'interop-token': process.env.INTEROP_TOKEN ?? ''
-  }
-})
+import { EmailVerifyEmail } from '../../emails/templates/EmailVerify/EmailVerify'
 
 export interface VerifyUserJob {
-  userid: string
+  userId: string
   email: string
   token: string
 }
@@ -39,13 +29,14 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async verifyUser(job: Job<VerifyUserJob>): Promise<void> {
-    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
+    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/validateEmail?token=${
+      job.data.token
+    }&email=${job.data.email}`
+
     const html = render(
-      VerifyEmailEmail({
-        teamName: job.data.teamName,
+      EmailVerifyEmail({
         email: job.data.email,
-        inviteLink: url,
-        sender: job.data.sender
+        inviteLink: url
       }),
       {
         pretty: true
@@ -53,11 +44,9 @@ export class EmailConsumer extends WorkerHost {
     )
 
     const text = render(
-      VerifyEmailEmail({
-        teamName: job.data.teamName,
+      EmailVerifyEmail({
         email: job.data.email,
-        inviteLink: url,
-        sender: job.data.sender
+        inviteLink: url
       }),
       {
         plainText: true
@@ -66,7 +55,7 @@ export class EmailConsumer extends WorkerHost {
 
     await this.emailService.sendEmail({
       to: job.data.email,
-      subject: `Invitation to join team: ${job.data.teamName}`,
+      subject: 'Verify your email address on Next Steps',
       text,
       html
     })
