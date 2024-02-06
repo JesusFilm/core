@@ -7,6 +7,7 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import { useTheme } from '@mui/material/styles'
@@ -73,6 +74,40 @@ export function Slider(): ReactElement {
       breakpoints={swiperBreakpoints}
       allowTouchMove={false}
     >
+      <Box
+        slot="container-start"
+        onClick={handlePrev}
+        sx={{
+          position: 'absolute',
+          left: activeSlide > ActiveSlide.JourneyFlow ? 0 : -120,
+          top: 0,
+          bottom: 0,
+          width: 120,
+          zIndex: 2,
+          cursor: 'pointer',
+          display: {
+            xs: 'none',
+            sm: 'flex'
+          },
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: (theme) => theme.transitions.create('left')
+        }}
+      >
+        <IconButton
+          sx={{
+            backgroundColor: 'background.paper',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'divider',
+            '&:hover': {
+              backgroundColor: 'background.paper'
+            }
+          }}
+        >
+          <ChevronLeftIcon />
+        </IconButton>
+      </Box>
       <Box
         slot="container-start"
         onClick={handlePrev}
@@ -168,22 +203,6 @@ export function Slider(): ReactElement {
           position: 'relative'
         }}
       >
-        <Box
-          onClick={handlePrev}
-          sx={{
-            position: 'absolute',
-            left: -120,
-            top: 0,
-            bottom: 0,
-            width: 120,
-            zIndex: 2,
-            cursor: 'pointer',
-            display: {
-              xs: 'none',
-              sm: activeSlide === ActiveSlide.Canvas ? 'block' : 'none'
-            }
-          }}
-        />
         <Canvas />
       </StyledSwiperSlide>
       <StyledSwiperSlide
