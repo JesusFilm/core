@@ -40,7 +40,8 @@ const BatchesPage: FC = () => {
       where: {
         nexusId
       }
-    }
+    },
+    pollInterval: 2000
   })
 
   useEffect(() => {
