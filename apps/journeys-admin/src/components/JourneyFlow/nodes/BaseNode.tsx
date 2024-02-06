@@ -16,7 +16,7 @@ import { useStepAndCardBlockCreateMutation } from '../../../libs/useStepAndCardB
 export const ACTION_NODE_WIDTH = 125
 export const ACTION_NODE_HEIGHT = 28
 export const ACTION_NODE_WIDTH_GAP = 11
-export const ACTION_NODE_HEIGHT_GAP = 8
+export const ACTION_NODE_HEIGHT_GAP = 16
 
 export const STEP_NODE_WIDTH = 150
 export const STEP_NODE_HEIGHT = 80
@@ -104,7 +104,7 @@ export function BaseNode({
                   : selected === 'descendant'
                   ? theme.palette.divider
                   : 'transparent',
-              outlineOffset: '2px'
+              outlineOffset: '5px'
             }}
           >
             <CardContent
@@ -140,13 +140,13 @@ export function BaseNode({
               position={Position.Top}
               style={{
                 width: 7.5,
-                height: 7,
+                height: 7.5,
                 background: 'white',
                 border:
                   selected !== false
                     ? '2px solid #c52d3aff'
                     : '2px solid #aaacbb ',
-                outline: '1.5px solid white',
+                outline: '1px solid white',
                 outlineColor: 'white',
                 cursor: 'pointer'
               }}
@@ -164,26 +164,24 @@ export function BaseNode({
                 opacity: 0
               }}
             />
-            {isSourceConnectable !== false && (
-              <Handle
-                type="source"
-                position={Position.Bottom}
-                onConnect={onSourceConnect}
-                onClick={handleClick}
-                style={{
-                  width: 7,
-                  height: 7,
-                  background: 'white',
-                  border:
-                    selected !== false
-                      ? '2px solid #c52d3aff'
-                      : '2px solid #aaacbb ',
-                  outline: '1.5px solid white',
-                  outlineColor: 'white',
-                  visibility: isHovered ? 'hidden' : 'visible'
-                }}
-              />
-            )}
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              onConnect={onSourceConnect}
+              onClick={handleClick}
+              style={{
+                width: 7.5,
+                height: 7.5,
+                background: 'white',
+                border:
+                  selected !== false
+                    ? '2px solid #c52d3aff'
+                    : '2px solid #aaacbb ',
+                outline: '1px solid white',
+                outlineColor: 'white',
+                visibility: isHovered ? 'hidden' : 'visible'
+              }}
+            />
             {isHovered && (
               <Box
                 className="dragToCreateHitbox"
@@ -192,10 +190,10 @@ export function BaseNode({
                   background: 'transparent',
                   borderColor: 'transparent',
                   cursor: 'pointer',
-                  margin: 0,
+                  marginTop: selected === true ? 5 : 0,
                   padding: 0,
                   width: STEP_NODE_WIDTH,
-                  height: 18,
+                  height: 28,
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center'
@@ -264,8 +262,8 @@ export function BaseNode({
               onConnect={onSourceConnect}
               onClick={handleClick}
               style={{
-                width: 7,
-                height: 7,
+                width: 7.5,
+                height: 7.5,
                 background: 'white',
                 border:
                   selected !== false

@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import { SmartBezierEdge } from '@tisoap/react-flow-smart-edge'
 import findIndex from 'lodash/findIndex'
 import flatMapDeep from 'lodash/flatMapDeep'
 import { ReactElement, useEffect, useState } from 'react'
@@ -17,7 +18,6 @@ import {
 } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
-import { SmartBezierEdge } from '@tisoap/react-flow-smart-edge'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -34,8 +34,21 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import 'reactflow/dist/style.css'
+import { useNavigateToBlockActionUpdateMutation } from '../../libs/useNavigateToBlockActionUpdateMutation'
+import { useStepAndCardBlockCreateMutation } from '../../libs/useStepAndCardBlockCreateMutation'
+import { useStepBlockNextBlockUpdateMutation } from '../../libs/useStepBlockNextBlockUpdateMutation'
 
 import ButtonEdge from './edges/ButtonEdge'
+import {
+  ACTION_NODE_HEIGHT_GAP,
+  ACTION_NODE_WIDTH,
+  ACTION_NODE_WIDTH_GAP,
+  STEP_NODE_HEIGHT,
+  STEP_NODE_HEIGHT_GAP,
+  STEP_NODE_WIDTH,
+  STEP_NODE_WIDTH_GAP
+} from './nodes/BaseNode'
 import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
 import { FormBlockNode, FormBlockNodeData } from './nodes/FormBlockNode'
 import {
@@ -49,19 +62,6 @@ import {
   TextResponseBlockNodeData
 } from './nodes/TextResponseBlockNode'
 import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
-import {
-  ACTION_NODE_HEIGHT_GAP,
-  ACTION_NODE_WIDTH,
-  ACTION_NODE_WIDTH_GAP,
-  STEP_NODE_HEIGHT,
-  STEP_NODE_HEIGHT_GAP,
-  STEP_NODE_WIDTH,
-  STEP_NODE_WIDTH_GAP
-} from './nodes/BaseNode'
-import 'reactflow/dist/style.css'
-import { useStepAndCardBlockCreateMutation } from '../../libs/useStepAndCardBlockCreateMutation'
-import { useStepBlockNextBlockUpdateMutation } from '../../libs/useStepBlockNextBlockUpdateMutation'
-import { useNavigateToBlockActionUpdateMutation } from '../../libs/useNavigateToBlockActionUpdateMutation'
 
 type InternalNode =
   | Node<StepBlockNodeData, 'StepBlock'>
@@ -95,7 +95,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   const nodes: InternalNode[] = []
   const edges: Edge[] = []
 
-  const blocks: TreeBlock<StepBlock>[][] = []
+  const blocks: Array<Array<TreeBlock<StepBlock>>> = []
   const visitedStepIds: string[] = []
 
   function getStepFromId(id): TreeBlock<StepBlock> | undefined {
@@ -154,8 +154,8 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
 
   function getDecendantStepsOfStep(
     step: TreeBlock<StepBlock>
-  ): TreeBlock<StepBlock>[] {
-    const descendants: TreeBlock<StepBlock>[] = []
+  ): Array<TreeBlock<StepBlock>> {
+    const descendants: Array<TreeBlock<StepBlock>> = []
     const nextStep = getNextStep(step)
     if (nextStep != null) descendants.push(nextStep)
     const children = step.children[0].children.filter(isActionBlock)
@@ -168,7 +168,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     return descendants
   }
 
-  function processSteps(steps: TreeBlock<StepBlock>[]): void {
+  function processSteps(steps: Array<TreeBlock<StepBlock>>): void {
     blocks.push(steps)
     const descendants = steps.flatMap((step) => {
       return getDecendantStepsOfStep(step)

@@ -163,10 +163,10 @@ function getIconAndColorForBlockType(blockType: string): {
               alignItems: 'center',
               justifyContent: 'center',
               background: 'linear-gradient(to bottom, #b849ec, #9415d1)',
-              fontSize: 'default'
+              color: 'white'
             }}
           >
-            {' '}
+            <TextInput1Icon fontSize="small" />
           </Box>
         )
       }
