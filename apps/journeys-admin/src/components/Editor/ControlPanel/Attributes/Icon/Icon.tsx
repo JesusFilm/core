@@ -22,7 +22,7 @@ import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
-import { t } from 'i18next'
+import { init, t } from 'i18next'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -39,6 +39,8 @@ import { IconBlockNameUpdate } from '../../../../../../__generated__/IconBlockNa
 import { IconFields } from '../../../../../../__generated__/IconFields'
 
 import { Color } from './Color'
+
+void init({ defaultNS: 'apps-journeys-admin', fallbackLng: 'en' })
 
 // icons is equivalent to IconName from global types"
 export const icons = [
