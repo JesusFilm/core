@@ -13,7 +13,6 @@ import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import X2Icon from '@core/shared/ui/icons/X2'
 
 import { CardTemplateDrawer } from '../CardTemplateDrawer'
 import { Attributes } from '../ControlPanel/Attributes'
@@ -21,14 +20,9 @@ import { Attributes } from '../ControlPanel/Attributes'
 interface DrawerContentProps {
   title?: string
   children?: ReactNode
-  handleDrawerToggle: () => void
 }
 
-function DrawerContent({
-  title,
-  children,
-  handleDrawerToggle
-}: DrawerContentProps): ReactElement {
+function DrawerContent({ title, children }: DrawerContentProps): ReactElement {
   return (
     <>
       <AppBar position="static" color="default">
@@ -42,13 +36,6 @@ function DrawerContent({
           >
             {title}
           </Typography>
-          <IconButton
-            onClick={handleDrawerToggle}
-            sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
-            edge="end"
-          >
-            <X2Icon />
-          </IconButton>
         </Toolbar>
       </AppBar>
       {children}
@@ -127,16 +114,8 @@ export function Drawer(): ReactElement {
       blockTitle = t('Properties')
       break
   }
-  const { zIndex } = useTheme()
 
-  const handleDrawerToggle = (): void => {
-    dispatch({
-      type: 'SetDrawerMobileOpenAction',
-      mobileOpen: !mobileOpen
-    })
-  }
-
-  return smUp ? (
+  return (
     <Paper
       elevation={0}
       sx={{
@@ -152,7 +131,7 @@ export function Drawer(): ReactElement {
       }}
       data-testid="EditorDrawer"
     >
-      <DrawerContent title={blockTitle} handleDrawerToggle={handleDrawerToggle}>
+      <DrawerContent title={blockTitle}>
         {journeyEditContentComponent === ActiveJourneyEditContent.Canvas
           ? selected !== 'none' &&
             selectedStep !== undefined &&
@@ -164,23 +143,5 @@ export function Drawer(): ReactElement {
           : children}
       </DrawerContent>
     </Paper>
-  ) : (
-    <>
-      <MuiDrawer
-        anchor="bottom"
-        variant="temporary"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        sx={{
-          display: { xs: 'block', md: 'none' },
-          zIndex: zIndex.modal
-        }}
-        data-testid="EditorDrawer"
-      >
-        <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
-          {children}
-        </DrawerContent>
-      </MuiDrawer>
-    </>
   )
 }
