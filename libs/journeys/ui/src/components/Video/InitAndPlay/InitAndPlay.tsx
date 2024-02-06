@@ -1,11 +1,9 @@
-import { Box, Typography } from '@mui/material'
 import {
   Dispatch,
   ReactElement,
   RefObject,
   SetStateAction,
-  useEffect,
-  useState
+  useEffect
 } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -54,7 +52,6 @@ export function InitAndPlay({
 }: InitAndPlayProps): ReactElement {
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
-  const [error, setError] = useState('default')
 
   // Initiate video player
   useEffect(() => {
@@ -184,8 +181,8 @@ export function InitAndPlay({
       void player.play()?.catch((error) => {
         // if (error.name === 'NotAllowedError') {
         // }
-        setError(error)
         player.muted(true)
+        console.log(error)
       })
       void player.play()
     }
@@ -199,17 +196,5 @@ export function InitAndPlay({
     }
   }, [activeStep, player, selectedBlock])
 
-  return (
-    <Box
-      sx={{
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        border: '1px solid red',
-        zIndex: 9999
-      }}
-    >
-      <Typography>{error}</Typography>
-    </Box>
-  )
+  return <></>
 }
