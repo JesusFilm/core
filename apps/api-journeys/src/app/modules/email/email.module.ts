@@ -2,6 +2,8 @@ import { BullModule } from '@nestjs/bullmq'
 import { Global, Module } from '@nestjs/common'
 import { MailerModule } from '@nestjs-modules/mailer'
 
+import { EmailService } from '@core/nest/common/emailService'
+
 import { EmailConsumer } from './email.consumer'
 
 @Global()
@@ -15,7 +17,7 @@ import { EmailConsumer } from './email.consumer'
       }
     })
   ],
-  providers: [EmailConsumer],
+  providers: [EmailConsumer, EmailService],
   exports: []
 })
 export class EmailModule {}
