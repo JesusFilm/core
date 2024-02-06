@@ -37,7 +37,7 @@ describe('TimelineEvent', () => {
       <TimelineEvent timelineItem={chatOpenedEvent} />
     )
     expect(getByText('Chat Opened:')).toBeInTheDocument()
-    expect(getByText('{{messagePlatform}}')).toBeInTheDocument()
+    expect(getByText('Facebook')).toBeInTheDocument()
     expect(getByText('Nov 2, 3:20 AM')).toBeInTheDocument()
   })
 
