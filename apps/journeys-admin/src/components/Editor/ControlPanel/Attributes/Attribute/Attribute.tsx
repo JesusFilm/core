@@ -1,5 +1,3 @@
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
 
@@ -7,7 +5,6 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { Accordion } from '../../Accordion'
-import { Button } from '../../../Canvas/AddBlockToolbar/Button'
 
 interface AttributeProps {
   id: string
@@ -29,7 +26,6 @@ export function Attribute({
   children,
   ...props
 }: AttributeProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const router = useRouter()
   const {
     state: { selectedAttributeId },
@@ -53,7 +49,7 @@ export function Attribute({
     }
   }
 
-  return smUp ? (
+  return (
     <Accordion
       {...props}
       expanded={id === selectedAttributeId}
@@ -62,12 +58,5 @@ export function Attribute({
     >
       {children}
     </Accordion>
-  ) : (
-    <Button
-      {...props}
-      selected={id === selectedAttributeId}
-      onClick={handleClick}
-      testId={testId ?? 'Attribute'}
-    />
   )
 }

@@ -1,11 +1,7 @@
 import AppBar from '@mui/material/AppBar'
-import MuiDrawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
-import { Theme, useTheme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -44,12 +40,10 @@ function DrawerContent({ title, children }: DrawerContentProps): ReactElement {
 }
 
 export function Drawer(): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
     state: {
       drawerTitle: title,
       drawerChildren: children,
-      drawerMobileOpen: mobileOpen,
       selectedComponent,
       selectedBlock,
       selectedStep,

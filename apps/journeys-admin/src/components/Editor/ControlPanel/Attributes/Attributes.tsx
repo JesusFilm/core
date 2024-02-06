@@ -3,7 +3,6 @@ import Stack from '@mui/material/Stack'
 import MuiTypography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -150,56 +149,9 @@ interface AttributesProps {
 }
 
 export function Attributes({ selected, step }: AttributesProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
-  // Map typename to labels when we have translation keys
-  const blockLabel =
-    typeof selected === 'string'
-      ? t(selected)
-      : selected.__typename === 'StepBlock'
-      ? t('Card')
-      : selected.__typename === 'SignUpBlock'
-      ? t('Subscribe')
-      : selected.__typename === 'TextResponseBlock'
-      ? t('Feedback')
-      : selected.__typename === 'RadioQuestionBlock'
-      ? t('Poll')
-      : selected.__typename === 'RadioOptionBlock'
-      ? t('Poll Option')
-      : selected.__typename.replace('Block', '')
   return (
-    <>
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6,
-          display: { xs: 'flex', sm: 'none' }
-        }}
-      >
-        <AttributesContent selected={selected} step={step} />
-      </Stack>
-      <Box
-        sx={{
-          py: 4.25,
-          borderTop: (theme) => `1px solid ${theme.palette.divider}`,
-          display: { xs: 'block', sm: 'none' }
-        }}
-      >
-        <MuiTypography align="center">
-          {t('Editing {{block}} Properties', { block: blockLabel })}
-        </MuiTypography>
-      </Box>
-      <Stack
-        sx={{
-          display: { xs: 'none', sm: 'flex' },
-          overflow: 'auto'
-        }}
-      >
-        <AttributesContent selected={selected} step={step} />
-      </Stack>
-    </>
+    <Stack sx={{ overflow: 'auto' }}>
+      <AttributesContent selected={selected} step={step} />
+    </Stack>
   )
 }
