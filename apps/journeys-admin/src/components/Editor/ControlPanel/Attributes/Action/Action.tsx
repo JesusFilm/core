@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { init, t } from 'i18next'
+import { t } from 'i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -50,10 +50,7 @@ export const ACTION_DELETE = gql`
     }
   }
 `
-init({
-  defaultNS: 'apps-journeys-admin',
-  fallbackLng: 'en'
-})
+
 export const actions = [
   {
     value: 'none',

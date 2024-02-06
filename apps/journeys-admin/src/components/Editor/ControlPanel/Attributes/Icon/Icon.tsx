@@ -22,7 +22,7 @@ import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
-import i18next from 'i18next'
+import { t } from 'i18next'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -40,95 +40,91 @@ import { IconFields } from '../../../../../../__generated__/IconFields'
 
 import { Color } from './Color'
 
-i18next.init({
-  defaultNS: 'apps-journeys-admin',
-  fallbackLng: 'en'
-})
 // icons is equivalent to IconName from global types"
 export const icons = [
   {
     value: IconName.ArrowForwardRounded,
-    label: i18next.t('Arrow Right'),
+    label: t('Arrow Right'),
     display: <ArrowForwardRounded />
   },
   {
     value: IconName.ArrowBackRounded,
-    label: i18next.t('Arrow Left'),
+    label: t('Arrow Left'),
     display: <ArrowBackRounded />
   },
   {
     value: IconName.BeenhereRounded,
-    label: i18next.t('Been Here'),
+    label: t('Been Here'),
     display: <BeenhereRounded />
   },
   {
     value: IconName.ChatBubbleOutlineRounded,
-    label: i18next.t('Chat Bubble'),
+    label: t('Chat Bubble'),
     display: <ChatBubbleOutlineRounded />
   },
   {
     value: IconName.CheckCircleRounded,
-    label: i18next.t('Check Circle'),
+    label: t('Check Circle'),
     display: <CheckCircleRounded />
   },
   {
     value: IconName.ChevronRightRounded,
-    label: i18next.t('Chevron Right'),
+    label: t('Chevron Right'),
     display: <ChevronRightRounded />
   },
   {
     value: IconName.ChevronLeftRounded,
-    label: i18next.t('Chevron Left'),
+    label: t('Chevron Left'),
     display: <ChevronLeftRounded />
   },
   {
     value: IconName.ContactSupportRounded,
-    label: i18next.t('Contact Support'),
+    label: t('Contact Support'),
     display: <ContactSupportRounded />
   },
   {
     value: IconName.FormatQuoteRounded,
-    label: i18next.t('Format Quote'),
+    label: t('Format Quote'),
     display: <FormatQuoteRounded />
   },
   {
     value: IconName.LiveTvRounded,
-    label: i18next.t('Live Tv'),
+    label: t('Live Tv'),
     display: <LiveTvRounded />
   },
   {
     value: IconName.LockOpenRounded,
-    label: i18next.t('Lock Open'),
+    label: t('Lock Open'),
     display: <LockOpenRounded />
   },
   {
     value: IconName.MenuBookRounded,
-    label: i18next.t('Menu Book'),
+    label: t('Menu Book'),
     display: <MenuBookRounded />
   },
   {
     value: IconName.PlayArrowRounded,
-    label: i18next.t('Play Arrow'),
+    label: t('Play Arrow'),
     display: <PlayArrowRounded />
   },
   {
     value: IconName.RadioButtonUncheckedRounded,
-    label: i18next.t('Radio Button Uncheked'),
+    label: t('Radio Button Uncheked'),
     display: <RadioButtonUncheckedRounded />
   },
   {
     value: IconName.SendRounded,
-    label: i18next.t('Send'),
+    label: t('Send'),
     display: <SendRounded />
   },
   {
     value: IconName.SubscriptionsRounded,
-    label: i18next.t('Subscription'),
+    label: t('Subscription'),
     display: <SubscriptionsRounded />
   },
   {
     value: IconName.TranslateRounded,
-    label: i18next.t('Translate'),
+    label: t('Translate'),
     display: <TranslateRounded />
   }
 ]
