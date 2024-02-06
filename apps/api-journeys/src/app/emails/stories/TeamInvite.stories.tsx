@@ -26,7 +26,7 @@ export const Default = {
   args: {
     sender: {
       firstName: 'Joe',
-      lastName: 'Joeronimo',
+      lastName: 'Ro-Nimo',
       imageUrl: 'https://bit.ly/3Gth4Yf'
     },
     email: 'joeronimo@example.com',
