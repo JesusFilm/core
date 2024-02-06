@@ -15,6 +15,7 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName } from '@core/shared/ui/themes'
 
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
@@ -136,23 +137,31 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const stepTheme = getStepTheme(activeBlock, journey)
 
   return (
-    <Stack
-      data-testid="Conductor"
-      sx={{
-        justifyContent: 'center',
-        height: viewportHeight ?? '100vh',
-        background: theme.palette.grey[900],
-        p: { lg: 6 },
-        overflow: 'hidden'
-      }}
+    <ThemeProvider
+      themeName={ThemeName.journeyUi}
+      themeMode={stepTheme.themeMode}
+      locale={locale}
+      rtl={rtl}
+      nested
     >
-      <SwipeNavigation activeBlock={activeBlock} />
-      <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+      <Stack
+        data-testid="Conductor"
+        sx={{
+          justifyContent: 'center',
+          height: viewportHeight ?? '100vh',
+          background: theme.palette.grey[900],
+          p: { lg: 6 },
+          overflow: 'hidden'
+        }}
+      >
+        <SwipeNavigation activeBlock={activeBlock} />
         {showHeaderFooter && router.query.noi == null && (
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
         <Stack sx={{ height: '100%' }}>
-          <JourneyRenderer />
+          <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+            <JourneyRenderer />
+          </ThemeProvider>
 
           <NavigationButton
             variant={rtl ? 'next' : 'previous'}
@@ -169,7 +178,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             ...mobileNotchStyling
           }}
         />
-      </ThemeProvider>
-    </Stack>
+      </Stack>
+    </ThemeProvider>
   )
 }
