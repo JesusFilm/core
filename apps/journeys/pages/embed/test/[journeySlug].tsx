@@ -59,23 +59,12 @@ export function IFrameTest(): ReactElement {
                 {t('Get me out of here!')}
               </Button>
             </NextLink>
-            <Box sx={{ flexGrow: 1, width: '100%' }}>
-              <div
-                style={{
-                  position: 'relative',
-                  width: '100%',
-                  height: '100%',
-                  overflow: 'hidden'
-                }}
-              >
-                <iframe
-                  src={`/embed/${query.journeySlug?.toString() ?? ''}`}
-                  style={{ border: 0 }}
-                  allow="fullscreen; autoplay"
-                  allowFullScreen
-                />
-              </div>
-            </Box>
+            <iframe
+              src={`/embed/${query.journeySlug?.toString() ?? ''}`}
+              style={{ border: 0, width: 360, height: 640 }}
+              allow="fullscreen; autoplay"
+              allowFullScreen
+            />
           </Stack>
         </Container>
       </Box>
