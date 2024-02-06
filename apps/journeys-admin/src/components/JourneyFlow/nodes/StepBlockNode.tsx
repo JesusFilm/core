@@ -1,4 +1,3 @@
-import PlayCircleFilledRoundedIcon from '@mui/icons-material/PlayCircleFilledRounded'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,7 +7,9 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
+import Play3Icon from '@core/shared/ui/icons/Play3'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import {
@@ -61,20 +62,27 @@ function getBackgroundImage(card?: TreeBlock<CardBlock>): string | undefined {
 
 function getIconAndColorForBlockType(blockType: string): {
   icon: React.ReactNode
-  color: string
 } {
   switch (blockType) {
     case 'VideoBlock':
       return {
         icon: (
-          <Box>
-            <PlayCircleFilledRoundedIcon
-              fontSize="large"
-              sx={{ marginTop: 1 }}
-            />
+          <Box
+            sx={{
+              borderRadius: 20,
+              height: 30,
+              width: 30,
+              display: 'flex',
+              position: 'absolute',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(to bottom, #f89f4c, #de7818)',
+              color: 'white'
+            }}
+          >
+            <Play3Icon fontSize="small" />
           </Box>
-        ),
-        color: '#e07a1b'
+        )
       }
 
     case 'TextResponseBlock':
@@ -89,18 +97,17 @@ function getIconAndColorForBlockType(blockType: string): {
               position: 'absolute',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'linear-gradient(to bottom, #b849ec, #9415d1)'
+              background: 'linear-gradient(to bottom, #b849ec, #9415d1)',
+              color: 'white'
             }}
           >
-            {' '}
+            <TextInput1Icon fontSize="small" />
           </Box>
-        ),
-        color: '#ae2eea'
+        )
       }
     case 'RadioOptionBlock':
       return {
-        icon: <TextInput1Icon fontSize="large" />,
-        color: 'green'
+        icon: <TextInput1Icon fontSize="large" />
       }
     case 'ButtonBlock':
       return {
@@ -114,15 +121,15 @@ function getIconAndColorForBlockType(blockType: string): {
               position: 'absolute',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'linear-gradient(to bottom, #73acf0, #1873de)'
+              background: 'linear-gradient(to bottom, #73acf0, #1873de)',
+              color: 'white'
             }}
           >
             {' '}
           </Box>
-        ),
-        color: '#368ff9'
+        )
       }
-    case 'FormBlock':
+    case 'TypographyBlock':
       return {
         icon: (
           <Box
@@ -134,18 +141,39 @@ function getIconAndColorForBlockType(blockType: string): {
               position: 'absolute',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'linear-gradient(to bottom, #24c5c5, #03a3a3)'
+              background: 'linear-gradient(to bottom, #24c5c5, #03a3a3)',
+              color: 'white'
+            }}
+          >
+            <AlignCenterIcon fontSize="small" />
+          </Box>
+        )
+      }
+
+    case 'RadioQuestionBlock':
+      return {
+        icon: (
+          <Box
+            sx={{
+              borderRadius: 20,
+              height: 30,
+              width: 30,
+              display: 'flex',
+              position: 'absolute',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(to bottom, #b849ec, #9415d1)',
+              fontSize: 'default'
             }}
           >
             {' '}
           </Box>
-        ),
-        color: '#ae2eea'
+        )
       }
+
     default:
       return {
-        icon: <FlexAlignBottom1Icon fontSize="large" />,
-        color: 'red'
+        icon: <FlexAlignBottom1Icon fontSize="large" />
       }
   }
 }
@@ -202,14 +230,16 @@ export function StepBlockNode({
     ? 'VideoBlock'
     : hasBlockOfType(step, 'TextResponseBlock')
     ? 'TextResponseBlock'
-    : hasBlockOfType(step, 'FormBlock')
-    ? 'FormBlock'
     : hasBlockOfType(step, 'ButtonBlock')
     ? 'ButtonBlock'
+    : hasBlockOfType(step, 'RadioQuestionBlock')
+    ? 'RadioQuestionBlock'
+    : hasBlockOfType(step, 'TypographyBlock')
+    ? 'TypographyBlock'
     : 'DefaultBlock'
 
-  const { icon, color } = getIconAndColorForBlockType(blockType)
-
+  const { icon } = getIconAndColorForBlockType(blockType)
+  console.log(steps)
   return (
     <BaseNode
       selected={selectedStep?.id === step.id}
@@ -242,7 +272,6 @@ export function StepBlockNode({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color,
                 background: 'white',
                 opacity: hasBlockOfType(
                   steps[step.parentOrder ?? -1],
@@ -256,7 +285,7 @@ export function StepBlockNode({
             </Box>
           </Box>
         ) : (
-          <FlexAlignBottom1Icon />
+          '' // <FlexAlignBottom1Icon />
         )
       }
       title={title}

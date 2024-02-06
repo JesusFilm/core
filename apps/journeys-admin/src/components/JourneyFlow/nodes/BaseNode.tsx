@@ -94,7 +94,7 @@ export function BaseNode({
           onMouseLeave={handleMouseLeave}
           sx={{ height: '150%', overflow: 'visible' }}
         >
-          <Card // regular card
+          <Card
             sx={{
               borderRadius: 2,
               outline: '2px solid',
@@ -132,14 +132,14 @@ export function BaseNode({
                   padding: 1
                 }}
               >
-                {title}
+                {title.startsWith('Step ') ? '' : title}
               </Typography>
             </CardContent>
             <Handle
               type="target"
               position={Position.Top}
               style={{
-                width: 7,
+                width: 7.5,
                 height: 7,
                 background: 'white',
                 border:
