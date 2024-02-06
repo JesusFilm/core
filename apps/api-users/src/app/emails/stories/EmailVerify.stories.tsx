@@ -1,21 +1,19 @@
 import { Meta, StoryObj } from '@storybook/react'
 
 import { apiUsersConfig } from '../../lib/apiUsersConfig/apiUsersConfig'
-import { TeamInviteEmail } from '../templates/TeamInvite'
+import { EmailVerifyEmail } from '../templates/EmailVerify'
 
-const TeamInviteEmailDemo: Meta<typeof TeamInviteEmail> = {
+const EmailVerifyEmailDemo: Meta<typeof EmailVerifyEmail> = {
   ...apiUsersConfig,
-  component: TeamInviteEmail,
-  title: 'Api-Journeys/Emails/TeamInviteEmail'
+  component: EmailVerifyEmail,
+  title: 'Api-Users/Emails/EmailVerifyEmail'
 }
 
-const Template: StoryObj<typeof TeamInviteEmail> = {
+const Template: StoryObj<typeof EmailVerifyEmail> = {
   render: ({ ...args }) => (
-    <TeamInviteEmail
+    <EmailVerifyEmail
       email={args.email}
-      teamName={args.teamName}
       inviteLink="https://admin.nextstep.is/"
-      sender={args.sender}
       story
     />
   )
@@ -24,14 +22,8 @@ const Template: StoryObj<typeof TeamInviteEmail> = {
 export const Default = {
   ...Template,
   args: {
-    sender: {
-      firstName: 'Joe',
-      lastName: 'Joeronimo',
-      imageUrl: 'https://bit.ly/3Gth4Yf'
-    },
-    email: 'joeronimo@example.com',
-    teamName: 'JFP Sol'
+    email: 'joeronimo@example.com'
   }
 }
 
-export default TeamInviteEmailDemo
+export default EmailVerifyEmailDemo

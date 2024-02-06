@@ -17,6 +17,7 @@ import { ReactElement } from 'react'
 interface VerifyEmailProps {
   email: string
   inviteLink: string
+  story?: boolean
 }
 
 export const EmailVerifyEmail = ({

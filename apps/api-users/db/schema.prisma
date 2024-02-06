@@ -20,5 +20,5 @@ model User {
   imageUrl      String?
   createdAt     DateTime @default(now())
   superAdmin    Boolean  @default(false)
-  emailVerified Boolean  @default(false)
+  emailVerified Boolean  @default(true)
 }

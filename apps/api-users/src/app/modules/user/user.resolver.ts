@@ -140,8 +140,19 @@ export class UserResolver {
   @Mutation()
   async validateEmail(
     @Args('token') token: string,
-    @CurrentUserId() userId: string
+    @Args('email') email: string
   ): Promise<boolean> {
-    return await this.userService.validateEmail(userId, token)
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email
+      }
+    })
+    if (user == null)
+      throw new GraphQLError('User not found', { extensions: { code: '404' } })
+
+    const validateEmail = await this.userService.validateEmail(user, token)
+    if (!validateEmail)
+      throw new GraphQLError('Invalid token', { extensions: { code: '403' } })
+    return true
   }
 }
