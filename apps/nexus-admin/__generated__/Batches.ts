@@ -22,12 +22,21 @@ export interface Batches_batches_channel {
   youtube: Batches_batches_channel_youtube | null;
 }
 
+export interface Batches_batches_resources {
+  __typename: "BatchResource";
+  isCompleted: boolean | null;
+  error: string | null;
+  percent: number | null;
+}
+
 export interface Batches_batches {
   __typename: "Batch";
   id: string;
   name: string;
   status: BatchStatus;
+  averagePercent: number | null;
   channel: Batches_batches_channel | null;
+  resources: (Batches_batches_resources | null)[] | null;
 }
 
 export interface Batches {
