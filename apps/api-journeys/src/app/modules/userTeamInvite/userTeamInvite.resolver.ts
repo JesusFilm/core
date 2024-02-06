@@ -177,11 +177,9 @@ export class UserTeamInviteResolver {
       })
     ])
 
-    console.log(omit(redeemedUserTeamInvite, ['team']))
-    console.log('redeem user invite', redeemedUserTeamInvite)
     await this.userTeamInviteService.sendTeamInviteAcceptedEmail(
       redeemedUserTeamInvite.team,
-      user
+      omit(user, ['id', 'email'])
     )
     return omit(redeemedUserTeamInvite, ['team'])
   }

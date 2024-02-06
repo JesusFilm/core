@@ -41,7 +41,7 @@ export class UserTeamInviteService {
 
   async sendTeamInviteAcceptedEmail(
     team: TeamWithUserTeam,
-    user: User
+    sender: Omit<User, 'id' | 'email'>
   ): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
 
@@ -49,7 +49,7 @@ export class UserTeamInviteService {
       'team-invite-accepted',
       {
         team,
-        sender: user,
+        sender,
         url
       },
       {

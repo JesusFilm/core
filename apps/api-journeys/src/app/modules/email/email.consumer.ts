@@ -70,7 +70,7 @@ export type TeamWithUserTeam = Prisma.TeamGetPayload<{
 }>
 export interface TeamInviteAccepted {
   team: TeamWithUserTeam
-  sender: User
+  sender: Omit<User, 'id' | 'email'>
   url: string
 }
 
@@ -346,7 +346,6 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async sendEmail({ to, subject, text, html }: SendEmailParams): Promise<void> {
-    console.log('send Email called')
     const SMTP_URL = process.env.SMTP_URL ?? null
     if (SMTP_URL != null) {
       try {

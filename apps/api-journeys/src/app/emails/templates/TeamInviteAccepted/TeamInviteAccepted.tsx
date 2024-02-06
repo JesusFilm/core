@@ -37,7 +37,7 @@ export const TeamInviteAcceptedEmail = ({
   sender,
   story = false
 }: TeamInviteAcceptedEmailProps): ReactElement => {
-  const previewText = `Join ${teamName} on Next Steps`
+  const previewText = `${sender.firstName} has been added to your team`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
       <>
