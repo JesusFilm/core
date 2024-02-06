@@ -19,41 +19,44 @@ export function JourneyRenderer(): ReactElement {
   const previousBlock = getPreviousBlock()
   const nextBlock = getNextBlock({ activeBlock: currentBlock })
 
-  const shouldRender = (id: string): boolean => {
-    switch (id) {
-      case currentBlock.id:
-      case nextBlock?.id:
-      case previousBlock?.id:
-        return true
-      default:
-        return false
-    }
-  }
-
   return (
     <>
       {treeBlocks.map((block) => {
+        let height, width, position
         const isCurrent = block.id === currentBlock.id
+        const isPreRender =
+          block.id === nextBlock?.id || block.id === previousBlock?.id
+
+        if (isCurrent) {
+          height = 'inherit'
+          width = 'inherit'
+          position = 'relative'
+        } else if (isPreRender) {
+          height = '-webkit-fill-available;'
+          width = '-webkit-fill-available;'
+          position = 'absolute'
+        } else {
+          height = 0
+          width = 0
+          position = 'none'
+        }
+
         return (
           <Fade
             key={block.id}
             in={isCurrent}
             timeout={{ appear: 0, enter: 200, exit: 0 }}
           >
-            {shouldRender(block.id) ? (
-              <Box
-                className={isCurrent ? 'active-card' : ''}
-                sx={{
-                  height: isCurrent ? 'inherit' : '-webkit-fill-available;',
-                  width: isCurrent ? 'inherit' : '-webkit-fill-available;',
-                  position: isCurrent ? 'relative' : 'absolute'
-                }}
-              >
-                <BlockRenderer block={block} />
-              </Box>
-            ) : (
-              <></>
-            )}
+            <Box
+              className={isCurrent ? 'active-card' : ''}
+              sx={{
+                height,
+                width,
+                position
+              }}
+            >
+              <BlockRenderer block={block} />
+            </Box>
           </Fade>
         )
       })}
