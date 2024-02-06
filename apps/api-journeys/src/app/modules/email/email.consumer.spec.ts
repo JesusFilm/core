@@ -179,6 +179,16 @@ describe('EmailConsumer', () => {
       expect(emailConsumer.teamInviteEmail).toHaveBeenCalledWith(teamInviteJob)
     })
 
+    it('should handle team-invite-accepted', async () => {
+      emailConsumer.teamInviteAcceptedEmail = jest
+        .fn()
+        .mockImplementationOnce(async () => await Promise.resolve())
+      await emailConsumer.process(teamInviteAccepted)
+      expect(emailConsumer.teamInviteAcceptedEmail).toHaveBeenCalledWith(
+        teamInviteAccepted
+      )
+    })
+
     it('should handle journey-request-approved', async () => {
       emailConsumer.journeyRequestApproved = jest
         .fn()
