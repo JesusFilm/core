@@ -84,7 +84,6 @@ export function EmbeddedPreview({
     <Box
       data-testid="clickable-card-embed"
       sx={{
-        p: 8,
         flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
