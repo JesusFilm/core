@@ -19,7 +19,7 @@ interface VerifyEmailProps {
   inviteLink: string
 }
 
-export const VerifyEmailEmail = ({
+export const EmailVerifyEmail = ({
   email,
   inviteLink
 }: VerifyEmailProps): ReactElement => {
@@ -69,9 +69,9 @@ export const VerifyEmailEmail = ({
   )
 }
 
-VerifyEmailEmail.PreviewProps = {
+EmailVerifyEmail.PreviewProps = {
   email: 'james@example.com',
   inviteLink: 'https://admin.nextstep.is/'
 } satisfies VerifyEmailProps
 
-export default VerifyEmailEmail
+export default EmailVerifyEmail

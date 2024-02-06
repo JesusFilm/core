@@ -30,6 +30,9 @@ const storiesForProject = {
   ],
   'api-journeys': [
     '../apps/api-journeys/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+  ],
+  'api-users': [
+    '../apps/api-users/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
@@ -41,7 +44,8 @@ const stories = [
   ...storiesForProject['watch'],
   ...storiesForProject['shared-ui'],
   ...storiesForProject['shared-ui-dynamic'],
-  ...storiesForProject['api-journeys']
+  ...storiesForProject['api-journeys'],
+  ...storiesForProject['api-users']
 ]
 
 module.exports = {
