@@ -3,9 +3,11 @@ type Batch @key(fields: "id") {
   nexusId: String!
   channelId: String!
   channel: Channel
-  resources: [Resource]
+  resources: [BatchResource]
   name: String!
   status: BatchStatus!
+  averagePercent: Float
+
 }
 
 enum BatchStatus {
@@ -18,6 +20,15 @@ enum BatchStatus {
   error
   warning
   scheduled
+}
+
+type BatchResource @key(fields: "id") {
+  id: ID!
+  batchId: String!
+  resourceId: String!
+  isCompleted: Boolean
+  error: String
+  percent: Float
 }
 
 input BatchFilter {

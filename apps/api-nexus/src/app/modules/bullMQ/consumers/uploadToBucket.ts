@@ -49,20 +49,20 @@ export class UploadToBucket {
       job.data.resource.refreshToken,
     );
     console.log('youtubeToken', youtubeToken);
-    await this.youtubeService.uploadVideo(
-      {
-        token: youtubeToken,
-        filePath,
-        channelId: job.data.channel.channelId,
-        title: 'test',
-        description: 'test',
-      },
-      async (progress) => {
-        progress = 66 + progress / 3;
-        await job.progress(progress);
-        return await Promise.resolve();
-      },
-    );
+    // await this.youtubeService.uploadVideo(
+    //   {
+    //     token: youtubeToken,
+    //     filePath,
+    //     channelId: job.data.channel.channelId,
+    //     title: 'test',
+    //     description: 'test',
+    //   },
+    //   async (progress) => {
+    //     progress = 66 + progress / 3;
+    //     await job.progress(progress);
+    //     return await Promise.resolve();
+    //   },
+    // );
     // await this.prismaService.resource.update({
     //   where: {
     //     id: job.data.resource.id,

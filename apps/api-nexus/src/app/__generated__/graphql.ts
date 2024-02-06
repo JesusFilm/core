@@ -165,9 +165,20 @@ export class Batch {
     nexusId: string;
     channelId: string;
     channel?: Nullable<Channel>;
-    resources?: Nullable<Nullable<Resource>[]>;
+    resources?: Nullable<Nullable<BatchResource>[]>;
     name: string;
     status: BatchStatus;
+    averagePercent?: Nullable<number>;
+}
+
+export class BatchResource {
+    __typename?: 'BatchResource';
+    id: string;
+    batchId: string;
+    resourceId: string;
+    isCompleted?: Nullable<boolean>;
+    error?: Nullable<string>;
+    percent?: Nullable<number>;
 }
 
 export abstract class IQuery {

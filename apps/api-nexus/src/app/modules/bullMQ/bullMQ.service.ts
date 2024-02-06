@@ -53,12 +53,15 @@ export class BullMQService {
         id: batchJobId,
       },
       include: {
-        resources: { include: { googleDrive: true } },
+        resources: {
+          include: { resource: { include: { googleDrive: true } } },
+        },
         channel: { include: { youtube: true } },
       },
     });
 
-    const jobs = batch?.resources.map((item) => {
+    const jobs = batch?.resources.map((batchResource) => {
+      const item = batchResource.resource;
       return {
         name: 'process',
         data: {
@@ -90,13 +93,23 @@ export class BullMQService {
         name: batchName,
         nexusId,
         channelId: channel.id,
-        resources: {
-          connect: resources.map((resource) => ({
-            id: resource.id,
-          })),
-        },
+        // resources: {
+        //   create: resources.map((resource) => ({
+        //     resourceId: resource.id,
+        //   })),
+        // },
       },
     });
+
+    await this.prismaService.batchResource.createMany({
+      data: resources.map((resource) => {
+        return {
+          batchId: batch.id,
+          resourceId: resource.id,
+        };
+      }),
+    });
+
     await this.createBatchJob(batch.id);
 
     return batch as Batch;

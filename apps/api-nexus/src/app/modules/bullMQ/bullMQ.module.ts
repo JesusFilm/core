@@ -12,6 +12,7 @@ import { GoogleDriveService } from '../google-drive/googleDriveService';
 import { BullMQService } from './bullMQ.service';
 import { UploadToBucket } from './consumers/uploadToBucket';
 import { UploadToYoutube } from './consumers/uploadToYoutube';
+import { NexusJobListener } from './listener/jobListener';
 
 @Global()
 @Module({
@@ -45,6 +46,8 @@ import { UploadToYoutube } from './consumers/uploadToYoutube';
     YoutubeService,
     BucketService,
     PrismaService,
+    NexusJobListener
+    
   ],
   exports: [BullMQService],
 })
