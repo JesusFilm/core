@@ -49,7 +49,7 @@ export function RadioQuestionEdit({
         input: {
           journeyId: journey.id,
           parentBlockId: id,
-          label: t('')
+          label: ''
         }
       },
       update(cache, { data }) {

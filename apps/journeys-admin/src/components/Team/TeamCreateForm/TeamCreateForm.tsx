@@ -42,7 +42,7 @@ export function TeamCreateForm({
         variables: { input }
       })
       enqueueSnackbar(
-        data?.teamCreate.title
+        data !== null && data !== undefined && data?.teamCreate.title !== ''
           ? t('{{ teamName }} created.', {
               teamName: data.teamCreate.title
             })
@@ -72,7 +72,7 @@ export function TeamCreateForm({
       })
     }
   }
-  const initialValues: TeamCreateInput = { title: t('') }
+  const initialValues: TeamCreateInput = { title: '' }
 
   return (
     <Formik

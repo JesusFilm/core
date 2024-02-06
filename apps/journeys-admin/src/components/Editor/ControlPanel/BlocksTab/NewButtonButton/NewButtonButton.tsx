@@ -73,7 +73,7 @@ export function NewButtonButton(): ReactElement {
             id,
             journeyId: journey.id,
             parentBlockId: card.id,
-            label: t(''),
+            label: '',
             variant: ButtonVariant.contained,
             color: ButtonColor.primary,
             size: ButtonSize.medium
