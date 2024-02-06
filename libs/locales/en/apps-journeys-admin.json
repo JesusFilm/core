@@ -588,9 +588,9 @@
   "Save": "Save",
   "Only a manager can invite new members to the team": "Only a manager can invite new members to the team",
   "No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.": "No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}} {{secondLanguage}}</2>": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}} {{secondLanguage}}</2>",
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}} {{secondLanguage}}</2>": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}, {{secondLanguage}}</2>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_one": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>",
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{count}} languages</2>",
   "Topics, holidays, felt needs, collections": "Topics, holidays, felt needs, collections",
   "Audience": "Audience",
   "Genre": "Genre",
@@ -621,9 +621,9 @@
   "Use This Template": "Use This Template",
   "Add Journey to Team": "Add Journey to Team",
   "Use this template to make it your journey": "Use this template to make it your journey",
-  "{{count}} Cards_one": "{{count}} Cards",
+  "{{count}} Cards_one": "{{count}} Card",
   "{{count}} Cards_other": "{{count}} Cards",
-  "{{count}} Videos_one": "{{count}} Videos",
+  "{{count}} Videos_one": "{{count}} Video",
   "{{count}} Videos_other": "{{count}} Videos",
   "Related Templates": "Related Templates",
   "Before You Start": "Before You Start",
@@ -659,5 +659,6 @@
   "ID": "ID",
   "Last Active": "Last Active",
   "User Data": "User Data",
-  "Polls": "Polls"
+  "Polls": "Polls",
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
 }
