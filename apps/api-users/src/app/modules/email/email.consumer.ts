@@ -1,13 +1,20 @@
-// code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
-
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
-import { MailerService } from '@nestjs-modules/mailer'
-import AWS, { SES } from 'aws-sdk'
+import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
-import { PrismaService } from '../../lib/prisma.service'
+import { EmailService } from '@core/nest/common/emailService'
+import { User } from '@core/nest/common/firebaseClient'
 
-AWS.config.update({ region: 'us-east-2' })
+import { VerifyEmailEmail } from '../../emails/EmailVerify'
+
+const apollo = new ApolloClient({
+  uri: process.env.GATEWAY_URL,
+  cache: new InMemoryCache(),
+  headers: {
+    'interop-token': process.env.INTEROP_TOKEN ?? ''
+  }
+})
 
 export interface VerifyUserJob {
   userid: string
@@ -15,52 +22,53 @@ export interface VerifyUserJob {
   token: string
 }
 
+export type ApiUsersJob = VerifyUserJob
+
 @Processor('api-users-email')
 export class EmailConsumer extends WorkerHost {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly mailerService: MailerService
-  ) {
+  constructor(private readonly emailService: EmailService) {
     super()
   }
 
-  async process(job: Job<VerifyUserJob>): Promise<void> {
-    if (job.name === 'verifyUser') {
+  async process(job: Job<ApiUsersJob>): Promise<void> {
+    switch (job.name) {
+      case 'verifyUser':
+        await this.verifyUser(job)
+        break
     }
-    const user = await this.prismaService.user.findUnique({
-      where: { userId: job.data.userId }
-    })
-    if (user == null) {
-      throw new Error('User not found')
-    }
-    try {
-      await this.mailerService.sendMail({
-        to: user?.email,
-        subject: job.data.subject,
-        text: job.data.text,
-        html: job.data.body
-      })
-    } catch (e) {
-      console.log(e)
-    }
+  }
 
-    await await new SES()
-      .sendEmail({
-        Source: 'support@nextstep.is',
-        Destination: { ToAddresses: [user.email] },
-        Message: {
-          Subject: {
-            Charset: 'UTF-8',
-            Data: job.data.subject
-          },
-          Body: {
-            Html: {
-              Charset: 'UTF-8',
-              Data: job.data.body
-            }
-          }
-        }
-      })
-      .promise()
+  async verifyUser(job: Job<VerifyUserJob>): Promise<void> {
+    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
+    const html = render(
+      VerifyEmailEmail({
+        teamName: job.data.teamName,
+        email: job.data.email,
+        inviteLink: url,
+        sender: job.data.sender
+      }),
+      {
+        pretty: true
+      }
+    )
+
+    const text = render(
+      VerifyEmailEmail({
+        teamName: job.data.teamName,
+        email: job.data.email,
+        inviteLink: url,
+        sender: job.data.sender
+      }),
+      {
+        plainText: true
+      }
+    )
+
+    await this.emailService.sendEmail({
+      to: job.data.email,
+      subject: `Invitation to join team: ${job.data.teamName}`,
+      text,
+      html
+    })
   }
 }

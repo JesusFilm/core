@@ -2,17 +2,14 @@
 
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
-import { MailerService } from '@nestjs-modules/mailer'
 import { render } from '@react-email/render'
-import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
+import { EmailService } from '@core/nest/common/emailService'
 import { User } from '@core/nest/common/firebaseClient'
 
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
-
-AWS.config.update({ region: 'us-east-2' })
 
 const apollo = new ApolloClient({
   uri: process.env.GATEWAY_URL,
@@ -21,13 +18,6 @@ const apollo = new ApolloClient({
     'interop-token': process.env.INTEROP_TOKEN ?? ''
   }
 })
-
-export interface SendEmailParams {
-  to: string
-  subject: string
-  html: string
-  text: string
-}
 
 export interface JourneyEditInviteJob {
   email: string
@@ -56,7 +46,7 @@ export type ApiJourneysJob =
 
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
-  constructor(private readonly mailerService: MailerService) {
+  constructor(private readonly emailService: EmailService) {
     super()
   }
 
@@ -100,7 +90,7 @@ export class EmailConsumer extends WorkerHost {
       }
     )
 
-    await this.sendEmail({
+    await this.emailService.sendEmail({
       to: job.data.email,
       subject: `Invitation to join team: ${job.data.teamName}`,
       text,
@@ -149,7 +139,7 @@ export class EmailConsumer extends WorkerHost {
         plainText: true
       }
     )
-    await this.sendEmail({
+    await this.emailService.sendEmail({
       to: data.user.email,
       subject: `${job.data.journeyTitle} has been shared with you`,
       html,
@@ -196,50 +186,11 @@ export class EmailConsumer extends WorkerHost {
         plainText: true
       }
     )
-    await this.sendEmail({
+    await this.emailService.sendEmail({
       to: job.data.email,
       subject: `${job.data.journeyTitle} has been shared with you`,
       html,
       text
     })
-  }
-
-  async sendEmail({ to, subject, text, html }: SendEmailParams): Promise<void> {
-    const SMTP_URL = process.env.SMTP_URL ?? null
-    if (SMTP_URL != null) {
-      try {
-        await this.mailerService.sendMail({
-          to,
-          subject,
-          text,
-          html
-        })
-      } catch (e) {
-        console.log(e)
-      }
-    } else {
-      await new SES({ region: 'us-east-2' })
-        .sendEmail({
-          Source: 'support@nextstep.is',
-          Destination: { ToAddresses: [to] },
-          Message: {
-            Subject: {
-              Charset: 'UTF-8',
-              Data: subject
-            },
-            Body: {
-              Html: {
-                Charset: 'UTF-8',
-                Data: html
-              },
-              Text: {
-                Charset: 'UTF-8',
-                Data: text
-              }
-            }
-          }
-        })
-        .promise()
-    }
   }
 }

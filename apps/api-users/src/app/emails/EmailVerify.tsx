@@ -19,7 +19,7 @@ interface VerifyEmailProps {
   inviteLink: string
 }
 
-export const TeamInviteEmail = ({
+export const VerifyEmailEmail = ({
   email,
   inviteLink
 }: VerifyEmailProps): ReactElement => {
@@ -69,10 +69,9 @@ export const TeamInviteEmail = ({
   )
 }
 
-TeamInviteEmail.PreviewProps = {
+VerifyEmailEmail.PreviewProps = {
   email: 'james@example.com',
-  teamName: 'JFP Sol Team',
   inviteLink: 'https://admin.nextstep.is/'
-} satisfies TeamInviteEmailProps
+} satisfies VerifyEmailProps
 
-export default TeamInviteEmail
+export default VerifyEmailEmail
