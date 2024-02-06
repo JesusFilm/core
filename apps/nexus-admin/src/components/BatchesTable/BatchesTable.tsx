@@ -4,14 +4,12 @@ import Paper from '@mui/material/Paper'
 import { DataGrid } from '@mui/x-data-grid'
 import { FC, useState } from 'react'
 
+import Box from '@mui/material/Box'
+import CircularProgress, {
+  CircularProgressProps
+} from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
 import { Batches_batches } from '../../../__generated__/Batches'
-
-import {
-  Box,
-  CircularProgress,
-  CircularProgressProps,
-  Typography
-} from '@mui/material'
 import { BatchesTableHeader } from './BatchesTableHeader'
 
 interface BatchesTableProps {
@@ -62,7 +60,7 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
       sortable: false,
       renderCell: ({ row }) => {
         const totalResources = row.resources?.length
-        const totalCompleteResources = row.resources?.map(
+        const totalCompleteResources = row.resources?.filter(
           (resource) => resource.isCompleted
         ).length
 
