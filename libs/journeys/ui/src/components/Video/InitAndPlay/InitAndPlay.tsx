@@ -1,9 +1,11 @@
+import { Box, Typography } from '@mui/material'
 import {
   Dispatch,
   ReactElement,
   RefObject,
   SetStateAction,
-  useEffect
+  useEffect,
+  useState
 } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -52,6 +54,7 @@ export function InitAndPlay({
 }: InitAndPlayProps): ReactElement {
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
+  const [error, setError] = useState('default')
 
   // Initiate video player
   useEffect(() => {
@@ -178,13 +181,13 @@ export function InitAndPlay({
         player.muted(true)
       }
       // Tries to autoplay, fallback to muted autoplay if not allowed
-      void player.play()?.catch((error): void => {
+      void player.play()?.catch((error) => {
         // if (error.name === 'NotAllowedError') {
         // }
-        console.log(error)
+        setError(error)
         player.muted(true)
-        void player.play()
       })
+      void player.play()
     }
   }, [activeStep, activeBlock, autoplay, blockId, player])
 
@@ -196,5 +199,17 @@ export function InitAndPlay({
     }
   }, [activeStep, player, selectedBlock])
 
-  return <></>
+  return (
+    <Box
+      sx={{
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        border: '1px solid red',
+        zIndex: 9999
+      }}
+    >
+      <Typography>{error}</Typography>
+    </Box>
+  )
 }
