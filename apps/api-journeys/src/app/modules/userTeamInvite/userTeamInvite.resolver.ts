@@ -10,6 +10,7 @@ import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 
 import {
+  Team,
   UserTeamInviteCreateInput,
   UserTeamRole
 } from '../../__generated__/graphql'
@@ -79,8 +80,8 @@ export class UserTeamInviteResolver {
         throw new GraphQLError('user is not allowed to create userTeamInvite', {
           extensions: { code: 'FORBIDDEN' }
         })
-      await this.userTeamInviteService.sendEmail(
-        userTeamInvite.team,
+      await this.userTeamInviteService.sendTeamInviteEmail(
+        userTeamInvite.team as unknown as Team,
         input.email,
         omit(sender, ['id', 'email'])
       )
@@ -133,7 +134,7 @@ export class UserTeamInviteResolver {
     const redeemedUserTeamInvites = await Promise.all(
       userTeamInvites.map(
         async (userTeamInvite) =>
-          await this.redeemUserTeamInvite(userTeamInvite, user.id)
+          await this.redeemUserTeamInvite(userTeamInvite, user)
       )
     )
     return redeemedUserTeamInvites
@@ -141,19 +142,19 @@ export class UserTeamInviteResolver {
 
   private async redeemUserTeamInvite(
     userTeamInvite: UserTeamInvite,
-    userId: string
+    user: User
   ): Promise<UserTeamInvite> {
     const [, redeemedUserTeamInvite] = await this.prismaService.$transaction([
       this.prismaService.userTeam.upsert({
         where: {
           teamId_userId: {
             teamId: userTeamInvite.teamId,
-            userId
+            userId: user.id
           }
         },
         create: {
           team: { connect: { id: userTeamInvite.teamId } },
-          userId,
+          userId: user.id,
           role: UserTeamRole.member
         },
         update: {
@@ -166,10 +167,22 @@ export class UserTeamInviteResolver {
         },
         data: {
           acceptedAt: new Date(),
-          receipientId: userId
+          receipientId: user.id
+        },
+        include: {
+          team: {
+            include: { userTeams: true }
+          }
         }
       })
     ])
-    return redeemedUserTeamInvite
+
+    console.log(omit(redeemedUserTeamInvite, ['team']))
+    console.log('redeem user invite', redeemedUserTeamInvite)
+    await this.userTeamInviteService.sendTeamInviteAcceptedEmail(
+      redeemedUserTeamInvite.team,
+      user
+    )
+    return omit(redeemedUserTeamInvite, ['team'])
   }
 }

@@ -7,15 +7,18 @@ import { render } from '@react-email/render'
 import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
+import { Prisma } from '.prisma/api-journeys-client'
 import { User } from '@core/nest/common/firebaseClient'
 
 import {
   Journey as JourneyWithUserJourney,
-  UserJourneyRole
+  UserJourneyRole,
+  UserTeamRole
 } from '../../__generated__/graphql'
 import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessRequest'
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
+import { TeamInviteAcceptedEmail } from '../../emails/templates/TeamInviteAccepted'
 
 AWS.config.update({ region: 'us-east-2' })
 
@@ -60,11 +63,23 @@ export interface TeamInviteJob {
   sender: Omit<User, 'id' | 'email'>
 }
 
+export type TeamWithUserTeam = Prisma.TeamGetPayload<{
+  include: {
+    userTeams: true
+  }
+}>
+export interface TeamInviteAccepted {
+  team: TeamWithUserTeam
+  sender: User
+  url: string
+}
+
 export type ApiJourneysJob =
   | JourneyEditInviteJob
   | TeamInviteJob
   | JourneyRequestApproved
   | JourneyAccessRequest
+  | TeamInviteAccepted
 
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
@@ -76,6 +91,9 @@ export class EmailConsumer extends WorkerHost {
     switch (job.name) {
       case 'team-invite':
         await this.teamInviteEmail(job as Job<TeamInviteJob>)
+        break
+      case 'team-invite-accepted':
+        await this.teamInviteAcceptedEmail(job as Job<TeamInviteAccepted>)
         break
       case 'journey-edit-invite':
         await this.journeyEditInvite(job as Job<JourneyEditInviteJob>)
@@ -123,12 +141,70 @@ export class EmailConsumer extends WorkerHost {
     })
   }
 
+  async teamInviteAcceptedEmail(job: Job<TeamInviteAccepted>): Promise<void> {
+    const receipientUserTeams = job.data.team.userTeams.filter(
+      (userTeam) => userTeam.role === UserTeamRole.manager
+    )
+
+    const receipientEmails = await Promise.all(
+      receipientUserTeams.map(async (userTeam) => {
+        const { data } = await apollo.query({
+          query: gql`
+            query User($userId: ID!) {
+              user(id: $userId) {
+                id
+                email
+              }
+            }
+          `,
+          variables: { userId: userTeam.userId }
+        })
+        return data
+      })
+    )
+
+    if (receipientEmails == null || receipientEmails.length === 0) {
+      throw new Error('Team Managers not found')
+    }
+
+    for (const recipient of receipientEmails) {
+      const html = render(
+        TeamInviteAcceptedEmail({
+          teamName: job.data.team.title,
+          inviteLink: job.data.url,
+          sender: job.data.sender
+        }),
+        {
+          pretty: true
+        }
+      )
+
+      const text = render(
+        TeamInviteAcceptedEmail({
+          teamName: job.data.team.title,
+          inviteLink: job.data.url,
+          sender: job.data.sender
+        }),
+        {
+          plainText: true
+        }
+      )
+
+      await this.sendEmail({
+        to: recipient.user.email,
+        subject: `Invitation to join team: ${job.data.team.title}`,
+        text,
+        html
+      })
+    }
+  }
+
   async journeyAccessRequest(job: Job<JourneyAccessRequest>): Promise<void> {
     const recipientUserId = job.data.journey.userJourneys?.find(
       (userJourney) => userJourney.role === UserJourneyRole.owner
     )?.userId
 
-    // TODO: use this users call to check if user is subscribed to this type of email notification
+    // TODO: u se this users call to check if user is subscribed to this type of email notification
     const { data } = await apollo.query({
       query: gql`
         query User($userId: ID!) {
@@ -176,7 +252,7 @@ export class EmailConsumer extends WorkerHost {
   async journeyRequestApproved(
     job: Job<JourneyRequestApproved>
   ): Promise<void> {
-    // TODO: use this users call to check if user is subscribed to this type of email notification
+    // TODO: u se this users call to check if user is subscribed to this type of email notification
     const { data } = await apollo.query({
       query: gql`
         query User($userId: ID!) {
@@ -223,20 +299,20 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async journeyEditInvite(job: Job<JourneyEditInviteJob>): Promise<void> {
-    // TODO: use this to check if user is subscribed to this type of email notification
+    // TODO: u se this to check if user is subscribed to this type of email notification
 
     // const { data } = await apollo.query({
-    //   query: gql`
-    //     query UserByEmail($email: String!) {
-    //       userByEmail(email: $email) {
+    //   query : gql`
+    //     que ry UserByEmail($email: String!) {
+    //       u serByEmail(email: $email) {
     //         id
     //       }
     //     }
     //   `,
-    //   variables: { email: job.data.email }
+    //   varia bles: { email: job.data.email }
     // })
 
-    // if (data.user == null) {
+    // if (dat a.user == null) {
     //   throw new Error('User not found')
     // }
 
@@ -270,6 +346,7 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async sendEmail({ to, subject, text, html }: SendEmailParams): Promise<void> {
+    console.log('send Email called')
     const SMTP_URL = process.env.SMTP_URL ?? null
     if (SMTP_URL != null) {
       try {
