@@ -2,34 +2,32 @@ import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveFab,
-  ActiveTab,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
-import Type3Icon from '@core/shared/ui/icons/Type3'
+import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
+import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
-import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
-import { Button } from '../../Button'
+import { VideoBlockCreate } from '../../../../../../__generated__/VideoBlockCreate'
+import { Button } from '../Button'
 
-export const TYPOGRAPHY_BLOCK_CREATE = gql`
-  ${TYPOGRAPHY_FIELDS}
-  mutation TypographyBlockCreate($input: TypographyBlockCreateInput!) {
-    typographyBlockCreate(input: $input) {
-      id
-      parentBlockId
-      ...TypographyFields
+export const VIDEO_BLOCK_CREATE = gql`
+  ${VIDEO_FIELDS}
+  mutation VideoBlockCreate($input: VideoBlockCreateInput!) {
+    videoBlockCreate(input: $input) {
+      ...VideoFields
     }
   }
 `
 
-export function NewTypographyButton(): ReactElement {
-  const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
-    TYPOGRAPHY_BLOCK_CREATE
-  )
+interface NewVideoButtonProps {
+  disabled: boolean
+}
+
+export function NewVideoButton({
+  disabled
+}: NewVideoButtonProps): ReactElement {
+  const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -40,27 +38,26 @@ export function NewTypographyButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    const checkTypography = card?.children.map((block) =>
-      block.children.find((child) => child.__typename === 'TypographyBlock')
-    )
-    if (card != null && checkTypography !== undefined && journey != null) {
-      const { data } = await typographyBlockCreate({
+
+    if (card != null && journey != null) {
+      const { data } = await videoBlockCreate({
         variables: {
           input: {
             journeyId: journey.id,
             parentBlockId: card.id,
-            content: '',
-            variant: checkTypography.length > 0 ? 'body2' : 'h1'
+            autoplay: true,
+            muted: false,
+            fullsize: true
           }
         },
         update(cache, { data }) {
-          if (data?.typographyBlockCreate != null) {
+          if (data?.videoBlockCreate != null) {
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newBlockRef = cache.writeFragment({
-                    data: data.typographyBlockCreate,
+                    data: data.videoBlockCreate,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
@@ -74,18 +71,14 @@ export function NewTypographyButton(): ReactElement {
           }
         }
       })
-      if (data?.typographyBlockCreate != null) {
+      if (data?.videoBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.typographyBlockCreate.id
+          id: data.videoBlockCreate.id
         })
         dispatch({
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Properties
-        })
-        dispatch({
-          type: 'SetActiveFabAction',
-          activeFab: ActiveFab.Save
         })
       }
     }
@@ -93,10 +86,11 @@ export function NewTypographyButton(): ReactElement {
 
   return (
     <Button
-      icon={<Type3Icon />}
-      value="Text"
+      icon={<VideoOnIcon />}
+      value="Video"
       onClick={handleClick}
-      testId="NewTypographyButton"
+      testId="NewVideoButton"
+      disabled={disabled}
     />
   )
 }
