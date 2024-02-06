@@ -56,6 +56,12 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
       sortable: false
     },
     {
+      field: 'averagePercent',
+      headerName: 'Progress',
+      flex: 1,
+      sortable: false
+    },
+    {
       field: 'createdAt',
       headerName: 'Created at',
       flex: 1,

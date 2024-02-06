@@ -12,6 +12,7 @@ const GET_BATCHES = gql`
       id
       name
       status
+      averagePercent
       channel {
         name
         platform
@@ -19,6 +20,11 @@ const GET_BATCHES = gql`
           imageUrl
           title
         }
+      }
+      resources {
+        isCompleted
+        error
+        percent
       }
     }
   }
