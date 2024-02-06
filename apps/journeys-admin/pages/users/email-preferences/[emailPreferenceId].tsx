@@ -1,17 +1,18 @@
-import { gql, useQuery, useMutation } from '@apollo/client'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Typography from '@mui/material/Typography'
-import Grid from '@mui/material/Grid'
-import { useRouter } from 'next/router'
-import Switch from '@mui/material/Switch'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import { ReactElement, useState, useEffect } from 'react'
-import AlignCenter from '@core/shared/ui/icons/AlignCenter'
+import Grid from '@mui/material/Grid'
+import Switch from '@mui/material/Switch'
+import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
+import { ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
 
 const GET_EMAIL_PREFERENCES = gql`
   query GetEmailPreference($emailPreferenceId: ID!, $idType: String!) {
     emailPreference(id: $emailPreferenceId, idType: $idType) {
+      userEmail
       journeyNotifications
       teamInvites
       thirdCategory
@@ -30,7 +31,8 @@ const UPDATE_EMAIL_PREFERENCES = gql`
   }
 `
 
-type EmailPreferences = {
+interface EmailPreferences {
+  userEmail: string
   journeyNotifications: boolean
   teamInvites: boolean
   thirdCategory: boolean
@@ -38,9 +40,11 @@ type EmailPreferences = {
 function EmailPreferencesPage(): ReactElement {
   const router = useRouter()
   const { emailPreferenceId } = router.query
+  const { t } = useTranslation('apps-journeys-admin')
 
-  const { data, refetch } = useQuery(GET_EMAIL_PREFERENCES, {
-    variables: { emailPreferenceId: emailPreferenceId, idType: 'id' }
+
+  const { data } = useQuery(GET_EMAIL_PREFERENCES, {
+    variables: { emailPreferenceId, idType: 'id' }
   })
   const [updateEmailPreferences] = useMutation(UPDATE_EMAIL_PREFERENCES)
 
@@ -49,26 +53,26 @@ function EmailPreferencesPage(): ReactElement {
   const [loading, setLoading] = useState(false) // Add loading state
 
   useEffect(() => {
-    if (data && data.emailPreference) {
+    if (data != null && data?.emailPreference != null) {
       console.log(data.emailPreference) 
-      setEmailPreferences(data.emailPreference)
+      setEmailPreferences((data as { emailPreference: EmailPreferences }).emailPreference)
     }
   }, [data])
 
   const handlePreferenceChange = async (
     preference: keyof EmailPreferences
   ): Promise<void> => {
-    if (emailPreferences) {
+    if (emailPreferences !== null) {
       const updatedPreferences: EmailPreferences = {
         ...emailPreferences,
-        [preference]: !emailPreferences[preference]
+        [preference]: emailPreferences[preference]
       }
       setEmailPreferences(updatedPreferences)
     }
   }
 
   const handleSubmit = async (): Promise<void> => {
-    if (emailPreferences) {
+    if (emailPreferences !== null) {
       const { journeyNotifications, teamInvites, thirdCategory } = emailPreferences;
       setLoading(true) // Set loading state to true
       await updateEmailPreferences({
@@ -86,8 +90,9 @@ function EmailPreferencesPage(): ReactElement {
   }
 
   const handleUnsubscribeAll = async (): Promise<void> => {
-    if (emailPreferences) {
+    if (emailPreferences != null) {
       const updatedPreferences: EmailPreferences = {
+        userEmail: emailPreferences.userEmail,
         journeyNotifications: false,
         teamInvites: false,
         thirdCategory: false
@@ -109,51 +114,51 @@ function EmailPreferencesPage(): ReactElement {
         align="center"
         sx={{ marginBottom: 5, marginTop: 5 }}
       >
-        Email Preferences
+        {t('Email Preferences')}
       </Typography>
 
-      {emailPreferences && (
+      {emailPreferences !== null && (
         <Grid container spacing={12}>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">Journey Notifications</Typography>
+            <Typography variant="h5">{t('Journey Notifications')}</Typography>
             <Typography variant="body2">
-              Description for Journey Notifications
+              {t('Description for Journey Notifications')}
             </Typography>
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
               checked={emailPreferences.journeyNotifications}
-              onChange={() => handlePreferenceChange('journeyNotifications')}
+              onChange={async () => await handlePreferenceChange('journeyNotifications')}
               name="journeyNotifications"
               inputProps={{ 'aria-label': 'Journey Notifications' }}
             />
           </Grid>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">Team Invites</Typography>
+            <Typography variant="h5">{t('Team Invites')}</Typography>
             <Typography variant="body2">
-              This is a description for Team Invites. This is a description for
+              {t(`This is a description for Team Invites. This is a description for
               Team Invites. This is a description for Team Invites. This is a
-              description for Team Invites.
+              description for Team Invites.`)}
             </Typography>
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
               checked={emailPreferences.teamInvites}
-              onChange={() => handlePreferenceChange('teamInvites')}
+              onChange={async () => await handlePreferenceChange('teamInvites')}
               name="teamInvites"
               inputProps={{ 'aria-label': 'Team Invites' }}
             />
           </Grid>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">Third Category</Typography>
+            <Typography variant="h5">{t('Third Category')}</Typography>
             <Typography variant="body2">
-              Description for Third Category
+              {t('Description for Third Category')}
             </Typography>
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
               checked={emailPreferences.thirdCategory}
-              onChange={() => handlePreferenceChange('thirdCategory')}
+              onChange={async () => await handlePreferenceChange('thirdCategory')}
               name="thirdCategory"
               inputProps={{ 'aria-label': 'Third Category' }}
             />
@@ -168,7 +173,7 @@ function EmailPreferencesPage(): ReactElement {
                 marginBottom: 5
               }}
             >
-              Unsubscribe All
+              {t('Unsubscribe All')}
             </Button>
             <Button
               variant="contained"
