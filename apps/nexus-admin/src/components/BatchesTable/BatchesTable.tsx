@@ -6,6 +6,12 @@ import { FC, useState } from 'react'
 
 import { Batches_batches } from '../../../__generated__/Batches'
 
+import {
+  Box,
+  CircularProgress,
+  CircularProgressProps,
+  Typography
+} from '@mui/material'
 import { BatchesTableHeader } from './BatchesTableHeader'
 
 interface BatchesTableProps {
@@ -67,7 +73,10 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
       field: 'averagePercent',
       headerName: 'Progress',
       flex: 1,
-      sortable: false
+      sortable: false,
+      renderCell: ({ row }) => {
+        return <CircularProgressWithLabel value={row.averagePercent} />
+      }
     },
     {
       field: 'createdAt',
@@ -105,5 +114,33 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
         }}
       />
     </Paper>
+  )
+}
+
+const CircularProgressWithLabel = (
+  props: CircularProgressProps & { value: number }
+) => {
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress variant="determinate" {...props} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          color="text.secondary"
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
   )
 }
