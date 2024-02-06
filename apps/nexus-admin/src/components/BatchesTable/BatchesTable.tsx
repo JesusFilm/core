@@ -53,7 +53,15 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
       field: 'status',
       headerName: 'Status',
       flex: 1,
-      sortable: false
+      sortable: false,
+      renderCell: ({ row }) => {
+        const totalResources = row.resources?.length
+        const totalCompleteResources = row.resources?.map(
+          (resource) => resource.isCompleted
+        ).length
+
+        return <>{`${totalCompleteResources} / ${totalResources}`}</>
+      }
     },
     {
       field: 'averagePercent',
