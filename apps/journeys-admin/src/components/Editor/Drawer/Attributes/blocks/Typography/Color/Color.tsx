@@ -8,7 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
 import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateColor } from '../../../../../../../../__generated__/TypographyBlockUpdateColor'
-import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
+import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`

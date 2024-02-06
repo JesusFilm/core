@@ -8,7 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ButtonBlockUpdateColor } from '../../../../../../../../__generated__/ButtonBlockUpdateColor'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ButtonColor } from '../../../../../../../../__generated__/globalTypes'
-import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
+import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`

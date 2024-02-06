@@ -15,7 +15,7 @@ import { SwiperOptions } from 'swiper/types'
 import { JourneyFlow } from '../../JourneyFlow'
 import { Canvas } from '../Canvas'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
-import { Drawer } from '../Drawer'
+import { Attributes } from '../Drawer/Attributes'
 
 const StyledSwiper = styled(Swiper)(() => ({
   height: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px)`
@@ -214,7 +214,7 @@ export function Slider(): ReactElement {
           height: { xs: '90%', sm: '100%' }
         }}
       >
-        <Drawer />
+        <Attributes />
       </StyledSwiperSlide>
     </StyledSwiper>
   )

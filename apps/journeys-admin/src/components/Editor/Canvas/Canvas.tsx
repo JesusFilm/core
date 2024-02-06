@@ -38,7 +38,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 const NextCard = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "NextCard" */ '../ControlPanel/Attributes/blocks/Step/NextCard'
+      /* webpackChunkName: "NextCard" */ '../Drawer/Attributes/blocks/Step/NextCard'
     ).then((mod) => mod.NextCard),
   { ssr: false }
 )
@@ -46,7 +46,7 @@ const NextCard = dynamic(
 const HostSidePanel = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "HostSidePanel" */ '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
+      /* webpackChunkName: "HostSidePanel" */ '../Drawer/Attributes/blocks/Footer/HostSidePanel'
     ).then((mod) => mod.HostSidePanel),
   { ssr: false }
 )

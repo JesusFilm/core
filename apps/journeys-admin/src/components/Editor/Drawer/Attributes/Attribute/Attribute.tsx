@@ -4,7 +4,7 @@ import { ReactElement, ReactNode } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
-import { Accordion } from '../../Accordion'
+import { Accordion } from '../Accordion'
 
 interface AttributeProps {
   id: string

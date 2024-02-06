@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
 
 import { Accordion } from '.'
 
