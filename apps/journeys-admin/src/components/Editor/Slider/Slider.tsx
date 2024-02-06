@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import { ReactElement, useEffect, useRef } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
@@ -6,6 +7,8 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import { useTheme } from '@mui/material/styles'
 import { SwiperOptions } from 'swiper/types'
 import { JourneyFlow } from '../../JourneyFlow'
@@ -76,38 +79,72 @@ export function Slider(): ReactElement {
         sx={{
           position: 'absolute',
           left: 0,
-          top: 0,
+          top: activeSlide > ActiveSlide.JourneyFlow ? 0 : '-10%',
           right: 0,
-          height: activeSlide == ActiveSlide.Drawer ? '20%' : '10%',
+          height: '10%',
           zIndex: 2,
           cursor: 'pointer',
           display: {
-            xs: activeSlide > ActiveSlide.JourneyFlow ? 'block' : 'none',
+            xs: 'flex',
             sm: 'none'
-          }
+          },
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: (theme) => theme.transitions.create('top')
         }}
-      />
+      >
+        <IconButton
+          sx={{
+            backgroundColor: 'background.paper',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'divider',
+            '&:hover': {
+              backgroundColor: 'background.paper'
+            }
+          }}
+        >
+          <ChevronUpIcon />
+        </IconButton>
+      </Box>
       <Box
         slot="container-end"
         onClick={handleNext}
         sx={{
           position: 'absolute',
           left: 0,
-          bottom: 0,
+          bottom: activeSlide < ActiveSlide.Drawer ? 0 : '-10%',
           right: 0,
-          height: activeSlide == ActiveSlide.JourneyFlow ? '20%' : '10%',
+          height: '10%',
           zIndex: 2,
           cursor: 'pointer',
           display: {
-            xs: activeSlide < ActiveSlide.Drawer ? 'block' : 'none',
+            xs: 'flex',
             sm: 'none'
-          }
+          },
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: (theme) => theme.transitions.create('bottom')
         }}
-      />
+      >
+        <IconButton
+          sx={{
+            backgroundColor: 'background.paper',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'divider',
+            '&:hover': {
+              backgroundColor: 'background.paper'
+            }
+          }}
+        >
+          <ChevronDownIcon />
+        </IconButton>
+      </Box>
       <StyledSwiperSlide
         sx={{
           width: { xs: '100%', sm: 'calc(100% - 408px)' },
-          height: { xs: '80%', sm: '100%' }
+          height: { xs: '90%', sm: '100%' }
         }}
       >
         <Box
@@ -155,7 +192,7 @@ export function Slider(): ReactElement {
             xs: '100%',
             sm: DRAWER_WIDTH + parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
           }),
-          height: { xs: '80%', sm: '100%' }
+          height: { xs: '90%', sm: '100%' }
         }}
       >
         <Drawer />
