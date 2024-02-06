@@ -136,4 +136,12 @@ export class UserResolver {
       update: data
     })
   }
+
+  @Mutation()
+  async validateEmail(
+    @Args('token') token: string,
+    @CurrentUserId() userId: string
+  ): Promise<boolean> {
+    return await this.userService.validateEmail(userId, token)
+  }
 }
