@@ -163,7 +163,7 @@ const ResourcesPage: FC = () => {
             clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
             developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
             viewId: 'DOCS_VIDEOS',
-            token: tokenInfo !== undefined ? tokenInfo.access_token : '',
+            token: tokenInfo !== null ? tokenInfo.access_token : '',
             showUploadView: true,
             showUploadFolders: true,
             supportDrives: true,
@@ -180,7 +180,7 @@ const ResourcesPage: FC = () => {
               }
 
               if (data.action === 'picked') {
-                if (tokenInfo !== undefined) {
+                if (tokenInfo === null) {
                   tokenInfo = gapi.auth.getToken()
                 }
 

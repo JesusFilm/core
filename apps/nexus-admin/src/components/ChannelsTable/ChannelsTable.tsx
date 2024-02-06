@@ -77,7 +77,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
       headerName: 'Thumbnail',
       flex: 1,
       renderCell: ({ row }: GridCellParams) => {
-        return row.youtube?.imageUrl ? (
+        return row.youtube?.imageUrl !== '' ? (
           <Avatar src={row.youtube?.imageUrl} alt={row.name} />
         ) : null
       }
