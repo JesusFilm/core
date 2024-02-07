@@ -16,10 +16,12 @@ import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import File5Icon from '@core/shared/ui/icons/File5'
 import MoreIcon from '@core/shared/ui/icons/More'
 import SettingsIcon from '@core/shared/ui/icons/Settings'
+import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
+import { AccessDialog } from '../../../AccessDialog'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../../Canvas/QuickControls/DeleteBlock'
 import { DuplicateBlock } from '../../Canvas/QuickControls/DuplicateBlock'
@@ -73,6 +75,9 @@ export function Menu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
+  const [accessDialogOpen, setAccessDialogOpen] = useState<
+    boolean | undefined
+  >()
   const [titleDialogOpen, setTitleDialogOpen] = useState<boolean | undefined>()
   const [descriptionDialogOpen, setDescriptionDialogOpen] = useState<
     boolean | undefined
@@ -88,6 +93,16 @@ export function Menu(): ReactElement {
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })
+  }
+
+  function handleOpenAccessDialog(): void {
+    setRoute('access')
+    setAccessDialogOpen(true)
+    setAnchorEl(null)
+  }
+  function handleCloseAccessDialog(): void {
+    setAccessDialogOpen(false)
+    setAnchorEl(null)
   }
 
   function handleShowMenu(event: React.MouseEvent<HTMLButtonElement>): void {
@@ -164,6 +179,11 @@ export function Menu(): ReactElement {
           disabled={selectedBlock?.__typename === 'VideoBlock'}
         />
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
+        <MenuItem
+          label={t('Manage Access')}
+          icon={<UsersProfiles2 />}
+          onClick={handleOpenAccessDialog}
+        />
         <Divider />
         {journey?.template === true && (
           <MenuItem
@@ -200,6 +220,13 @@ export function Menu(): ReactElement {
             <CopyMenuItem journey={journey} onClose={handleCloseMenu} />
           )}
       </MuiMenu>
+      {journey?.id != null && accessDialogOpen != null && (
+        <AccessDialog
+          journeyId={journey?.id}
+          open={accessDialogOpen}
+          onClose={() => setAccessDialogOpen(false)}
+        />
+      )}
       {titleDialogOpen != null && (
         <TitleDialog open={titleDialogOpen} onClose={handleCloseTitleDialog} />
       )}
