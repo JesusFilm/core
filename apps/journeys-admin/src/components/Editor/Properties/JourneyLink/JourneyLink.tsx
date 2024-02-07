@@ -41,7 +41,7 @@ export function JourneyLink({
 
   return (
     <>
-      <Stack direction="column">
+      <Stack direction="column" spacing={4}>
         {smUp && (
           <Typography variant="subtitle2" gutterBottom>
             {isMenu ? t('Share This Journey') : t('Journey URL')}
@@ -67,7 +67,8 @@ export function JourneyLink({
               : undefined
           }
         />
-        <Stack direction="row" spacing={6} sx={{ pt: 2 }}>
+        {/* <Stack direction="row" spacing={6} sx={{ pt: 2 }}> */}
+        <Stack direction="row" spacing={6}>
           <Button
             onClick={() => {
               setShowSlugDialog(true)

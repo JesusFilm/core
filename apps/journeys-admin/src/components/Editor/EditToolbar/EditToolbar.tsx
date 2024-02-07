@@ -3,8 +3,6 @@ import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import MuiMenu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
@@ -13,8 +11,8 @@ import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
-import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
@@ -167,16 +165,9 @@ export function EditToolbar(): ReactElement {
           >
             <PlayArrowOutlinedIcon />
           </IconButton>
-          <MuiMenu
-            id="share-journey-menu"
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleCloseMenu}
-          >
-            <MenuItem>
-              <JourneyLink isMenu />
-            </MenuItem>
-          </MuiMenu>
+          <Dialog open={Boolean(anchorEl)} onClose={handleCloseMenu}>
+            <JourneyLink isMenu />
+          </Dialog>
         </>
       )}
       <Menu />
