@@ -150,7 +150,10 @@ export function Slider(): ReactElement {
         sx={{
           position: 'absolute',
           left: 0,
-          bottom: activeSlide < ActiveSlide.Drawer ? 0 : -75,
+          bottom:
+            activeSlide < ActiveSlide.Drawer
+              ? 'env(safe-area-inset-bottom)'
+              : -75,
           right: 0,
           height: 75,
           zIndex: 2,
