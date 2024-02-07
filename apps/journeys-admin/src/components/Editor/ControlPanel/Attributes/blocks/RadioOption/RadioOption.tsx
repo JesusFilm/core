@@ -26,7 +26,7 @@ export function RadioOption({
       title: t('Action'),
       children: <Action />
     })
-  }, [dispatch, id])
+  }, [dispatch, id, t])
 
   return (
     <>

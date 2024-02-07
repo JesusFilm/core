@@ -59,7 +59,7 @@ export function TeamUpdateDialog({
       handleClose(resetForm)()
 
       enqueueSnackbar(
-        data?.teamUpdate.title
+        data !== null && data !== undefined && data?.teamUpdate.title !== ''
           ? t('{{ teamName }} updated.', { teamName: data.teamUpdate.title })
           : t('Team updated.'),
         {

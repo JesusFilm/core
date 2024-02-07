@@ -34,7 +34,7 @@ export function SignUp({
       title: t('Form Submission'),
       children: <Action />
     })
-  }, [dispatch, id])
+  }, [dispatch, id, t])
 
   return (
     <>

@@ -64,7 +64,7 @@ export function SourceFromLocal({
         nativeLanguage
       })
     setLanguage(language)
-  }, [data?.video?.variantLanguages, selectedBlock?.videoVariantLanguageId])
+  }, [data?.video?.variantLanguages, selectedBlock?.videoVariantLanguageId, t])
 
   return (
     <>

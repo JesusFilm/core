@@ -76,7 +76,7 @@ export function UserListItem({
       default:
         return t('Editor')
     }
-  }, [role])
+  }, [role, t])
 
   const disableAction = useMemo((): boolean => {
     if (listItem.__typename === 'UserInvite') return false

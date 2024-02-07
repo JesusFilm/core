@@ -39,7 +39,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
       title: t('Video'),
       children: <VideoOptions />
     })
-  }, [id, videoId, dispatch])
+  }, [id, videoId, dispatch, t])
 
   return (
     <>

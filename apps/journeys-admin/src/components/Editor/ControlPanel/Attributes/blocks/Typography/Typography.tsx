@@ -32,7 +32,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       title: t('Text Variant'),
       children: <Variant />
     })
-  }, [dispatch, id])
+  }, [dispatch, id, t])
 
   return (
     <>

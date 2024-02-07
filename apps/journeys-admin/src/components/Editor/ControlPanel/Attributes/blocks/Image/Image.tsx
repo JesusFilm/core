@@ -42,7 +42,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
       mobileOpen: true,
       children: <ImageOptions />
     })
-  }, [dispatch, id])
+  }, [dispatch, id, t])
 
   return (
     <>
