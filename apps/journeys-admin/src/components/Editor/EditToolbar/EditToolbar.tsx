@@ -8,12 +8,17 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
+import { ActionDetails } from '../ActionDetails'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Analytics } from './Analytics'
@@ -22,6 +27,20 @@ import { Menu } from './Menu'
 export function EditToolbar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { dispatch } = useEditor()
+
+  function handleGoalsClick(): void {
+    dispatch({
+      type: 'SetJourneyEditContentAction',
+      component: ActiveJourneyEditContent.Action
+    })
+    // dispatch({
+    //   type: 'SetDrawerPropsAction',
+    //   mobileOpen: true,
+    //   title: t('Information'),
+    //   children: <ActionDetails />
+    // })
+  }
 
   return (
     <Stack
@@ -98,6 +117,7 @@ export function EditToolbar(): ReactElement {
               {journey.description}
             </Typography>
           </Stack>
+          <Button onClick={handleGoalsClick}>{t('Goals')}</Button>
           <Button
             variant="contained"
             component="a"

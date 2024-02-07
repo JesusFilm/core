@@ -3,15 +3,16 @@ import Stack from '@mui/material/Stack'
 import MuiTypography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+
+import { Drawer } from '..'
 import { CardTemplateDrawer } from '../../CardTemplateDrawer'
-import { useTranslation } from 'react-i18next'
-import { Drawer } from '../../Drawer'
 
 const Footer = dynamic(
   async () =>
