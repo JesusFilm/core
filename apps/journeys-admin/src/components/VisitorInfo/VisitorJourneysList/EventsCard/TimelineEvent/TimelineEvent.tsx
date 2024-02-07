@@ -94,7 +94,7 @@ export function TimelineEvent({
       break
     case 'RadioQuestionSubmissionEvent':
       icon = <CheckContainedIcon />
-      activity = t('Poll:')
+      activity = `${t('Poll')}:`
       label = event.label
       variant = EventVariant.featured
       break
