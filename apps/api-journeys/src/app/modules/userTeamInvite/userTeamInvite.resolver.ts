@@ -137,6 +137,7 @@ export class UserTeamInviteResolver {
           await this.redeemUserTeamInvite(userTeamInvite, user)
       )
     )
+
     return redeemedUserTeamInvites
   }
 
@@ -181,6 +182,6 @@ export class UserTeamInviteResolver {
       redeemedUserTeamInvite.team,
       omit(user, ['id', 'email'])
     )
-    return omit(redeemedUserTeamInvite, ['team'])
+    return redeemedUserTeamInvite
   }
 }
