@@ -29,28 +29,21 @@ export const UPDATE_JOURNEY_HOST = gql`
   }
 `
 
-interface HostTitleFieldFormProps {
-  empty?: boolean
-}
-
-export function HostTitleFieldForm({
-  empty = false
-}: HostTitleFieldFormProps): ReactElement {
+export function HostTitleFieldForm(): ReactElement {
   const [hostCreate] = useMutation<CreateHost>(CREATE_HOST)
   const [journeyHostUpdate] =
     useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
 
   const { updateHost } = useHostUpdateMutation()
   const { journey } = useJourney()
-  const host = journey?.host
 
   const titleSchema = object({
     hostTitle: string().required('Please enter a host name')
   })
 
   async function handleSubmit(value: string): Promise<void> {
-    if (host != null) {
-      const { id, teamId } = host
+    if (journey?.host != null) {
+      const { id, teamId } = journey.host
       await updateHost({ id, teamId, input: { title: value } })
     } else if (journey?.team != null) {
       const { data } = await hostCreate({
@@ -87,7 +80,7 @@ export function HostTitleFieldForm({
     <TextFieldForm
       id="hostTitle"
       label="Host Name"
-      initialValue={empty ? '' : host?.title}
+      initialValue={journey?.host == null ? '' : journey.host.title}
       validationSchema={titleSchema}
       onSubmit={handleSubmit}
       data-testid="HostTitleFieldForm"

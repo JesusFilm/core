@@ -5,22 +5,13 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
-interface HostLocationFieldFormProps {
-  empty?: boolean
-  disabled?: boolean
-}
-
-export function HostLocationFieldForm({
-  empty = false,
-  disabled
-}: HostLocationFieldFormProps): ReactElement {
+export function HostLocationFieldForm(): ReactElement {
   const { updateHost } = useHostUpdateMutation()
   const { journey } = useJourney()
-  const host = journey?.host
 
   async function handleSubmit(value: string): Promise<void> {
-    if (host != null) {
-      const { id, teamId } = host
+    if (journey?.host != null) {
+      const { id, teamId } = journey.host
       await updateHost({ id, teamId, input: { location: value } })
     }
   }
@@ -29,8 +20,10 @@ export function HostLocationFieldForm({
     <TextFieldForm
       id="hostLocation"
       label="Location"
-      disabled={disabled}
-      initialValue={empty ? undefined : host?.location ?? ''}
+      disabled={journey?.host == null}
+      initialValue={
+        journey?.host == null ? undefined : journey.host.location ?? ''
+      }
       onSubmit={handleSubmit}
       data-testid="HostLocationFieldForm"
     />

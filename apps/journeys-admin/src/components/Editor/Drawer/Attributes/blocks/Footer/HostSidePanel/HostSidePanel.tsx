@@ -22,6 +22,7 @@ import { SidePanelContainer } from '../../../../../../PageWrapper/SidePanelConta
 
 import { HostForm } from './HostForm'
 import { HostList } from './HostList'
+import { Drawer } from '../../../../Drawer'
 
 export const GET_ALL_TEAM_HOSTS = gql`
   query Hosts($teamId: ID!) {
@@ -75,9 +76,7 @@ export function HostSidePanel(): ReactElement {
   const [openInfo, setOpenInfo] = useState(false)
 
   useEffect(() => {
-    if (team != null) {
-      void refetch({ teamId: team.id })
-    }
+    if (team != null) void refetch({ teamId: team.id })
   }, [team, refetch])
 
   const handleClear = async (): Promise<void> => {
@@ -95,113 +94,82 @@ export function HostSidePanel(): ReactElement {
   return (
     <>
       {/* DefaultHostPanel - no host */}
-      <SidePanel title={t('Hosted By')} open withAdminDrawer>
-        {!openSelect && (selectedHost == null || !userInTeam) && (
-          <>
-            <SidePanelContainer border={!userInTeam}>
-              <ContainedIconButton
-                label={t('Select a Host')}
-                disabled={!userInTeam}
-                thumbnailIcon={<UserProfiles2Icon />}
-                onClick={() => setOpenSelect(true)}
-              />
-            </SidePanelContainer>
-            {!userInTeam && team != null && (
-              <SidePanelContainer>
-                <Stack direction="row" alignItems="center" gap={3}>
-                  <AlertCircleIcon />
-                  <Typography variant="subtitle2">
-                    {data?.userTeams.length === 0
-                      ? t('Cannot edit hosts for this old journey')
-                      : `${t('Only')} ${team.title} ${t(
-                          'members can edit this'
-                        )}`}
-                  </Typography>
-                </Stack>
-              </SidePanelContainer>
-            )}
-          </>
-        )}
-      </SidePanel>
-
-      {/* SelectHostPanel */}
-      <SidePanel
-        title={t('Select a Host')}
-        open={openSelect}
-        withAdminDrawer
-        onClose={() => setOpenSelect(false)}
-        selectHostPanel
-      >
-        {openSelect && !openCreateHost && !openInfo && (
-          <>
-            <SidePanelContainer border={false}>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Stack direction="row" alignItems="center">
-                  <Typography variant="subtitle2">{t('Authors')}</Typography>
-                  <IconButton
-                    data-testid="info"
-                    onClick={() => setOpenInfo(true)}
-                  >
-                    <InformationCircleContainedIcon />
-                  </IconButton>
-                </Stack>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => setOpenCreateHost(true)}
-                >
-                  {t('Create New')}
-                </Button>
-              </Stack>
-            </SidePanelContainer>
-            <HostList
-              hosts={teamHosts?.hosts ?? []}
-              onItemClick={handleSelectHost}
-            />
-          </>
-        )}
-      </SidePanel>
-
-      {/* InfoPanel */}
-      <SidePanel
-        title={t('Information')}
-        open={openInfo}
-        withAdminDrawer
-        onClose={() => setOpenInfo(false)}
-      >
-        {openInfo && (
-          <SidePanelContainer border={false}>
-            <Stack direction="row" alignItems="center" gap={3} sx={{ mb: 4 }}>
-              <UserProfileCircleIcon />
+      {!openSelect && (selectedHost == null || !userInTeam) && (
+        <>
+          <ContainedIconButton
+            label={t('Select a Host')}
+            disabled={!userInTeam}
+            thumbnailIcon={<UserProfiles2Icon />}
+            onClick={() => setOpenSelect(true)}
+          />
+          {!userInTeam && team != null && (
+            <Stack direction="row" alignItems="center" gap={3}>
+              <AlertCircleIcon />
               <Typography variant="subtitle2">
-                {t('Why does your journey need a host?')}
+                {data?.userTeams.length === 0
+                  ? t('Cannot edit hosts for this old journey')
+                  : `${t('Only')} ${team.title} ${t('members can edit this')}`}
               </Typography>
             </Stack>
-            <Typography gutterBottom color="secondary.light">
-              {t(
-                'A great way to add personality to your content is to include both male and female journey creators. Diverse creators, especially with a local feel, are more likely to engage users in conversation.'
-              )}
-            </Typography>
-            <Typography color="secondary.light">
-              {t(
-                'In countries with security concerns, it is advisable to create fake personas for your own safety.'
-              )}
-            </Typography>
-          </SidePanelContainer>
-        )}
-      </SidePanel>
-
-      {/* Create / EditHostPanel */}
-      {userInTeam && (openCreateHost || selectedHost != null) && (
-        <HostForm
-          onClear={handleClear}
-          onClose={() => setOpenCreateHost(false)}
-        />
+          )}
+        </>
       )}
+      <Drawer
+        title={t('Select a Host')}
+        open={openSelect}
+        onClose={() => setOpenSelect(false)}
+      >
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Stack direction="row" alignItems="center">
+            <Typography variant="subtitle2">{t('Hosts')}</Typography>
+            <IconButton data-testid="info" onClick={() => setOpenInfo(true)}>
+              <InformationCircleContainedIcon />
+            </IconButton>
+          </Stack>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setOpenCreateHost(true)}
+          >
+            {t('Create New')}
+          </Button>
+        </Stack>
+        <HostList
+          hosts={teamHosts?.hosts ?? []}
+          onItemClick={handleSelectHost}
+        />
+      </Drawer>
+      <Drawer
+        title={t('Information')}
+        open={openInfo}
+        onClose={() => setOpenInfo(false)}
+      >
+        <Stack direction="row" alignItems="center" gap={3} sx={{ mb: 4 }}>
+          <UserProfileCircleIcon />
+          <Typography variant="subtitle2">
+            {t('Why does your journey need a host?')}
+          </Typography>
+        </Stack>
+        <Typography gutterBottom color="secondary.light">
+          {t(
+            'A great way to add personality to your content is to include both male and female journey creators. Diverse creators, especially with a local feel, are more likely to engage users in conversation.'
+          )}
+        </Typography>
+        <Typography color="secondary.light">
+          {t(
+            'In countries with security concerns, it is advisable to create fake personas for your own safety.'
+          )}
+        </Typography>
+      </Drawer>
+      <HostForm
+        onClear={handleClear}
+        open={openCreateHost}
+        onClose={() => setOpenCreateHost(false)}
+      />
     </>
   )
 }

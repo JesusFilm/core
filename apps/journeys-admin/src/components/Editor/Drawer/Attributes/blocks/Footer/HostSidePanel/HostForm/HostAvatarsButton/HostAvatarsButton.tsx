@@ -19,25 +19,14 @@ const ImageLibrary = dynamic(
   { ssr: false }
 )
 
-interface HostAvatarsButtonProps {
-  disabled?: boolean
-}
-
-export function HostAvatarsButton({
-  disabled = false
-}: HostAvatarsButtonProps): ReactElement {
+export function HostAvatarsButton(): ReactElement {
   const [open, setOpen] = useState<boolean | undefined>()
   const { journey } = useJourney()
-  const [host, setHost] = useState(journey?.host ?? undefined)
   const { updateHost } = useHostUpdateMutation()
   const [avatarNumber, setAvatarNumber] = useState<number>(1)
 
-  useEffect(() => {
-    setHost(journey?.host ?? undefined)
-  }, [journey])
-
   function handleOpen(avatar: 1 | 2): void {
-    if (!disabled) {
+    if (journey?.host != null) {
       setOpen(true)
       setAvatarNumber(avatar)
     }
@@ -48,8 +37,8 @@ export function HostAvatarsButton({
   }
 
   async function handleChange(avatarImage: ImageBlock): Promise<void> {
-    if (host != null) {
-      const { id, teamId } = host
+    if (journey?.host != null) {
+      const { id, teamId } = journey.host
       await updateHost({
         id,
         teamId,
@@ -59,8 +48,8 @@ export function HostAvatarsButton({
   }
 
   async function handleDelete(): Promise<void> {
-    if (host != null) {
-      const { id, teamId, src2 } = host
+    if (journey?.host != null) {
+      const { id, teamId, src2 } = journey?.host
       const input =
         avatarNumber === 1 ? { src1: src2, src2: null } : { src2: null }
 
@@ -68,8 +57,8 @@ export function HostAvatarsButton({
     }
   }
 
-  const hasAvatar1 = host?.src1 != null || host?.src2 != null
-  const hasAvatar2 = host?.src1 != null && host?.src2 != null
+  const hasAvatar1 = journey?.host?.src1 != null || journey?.host?.src2 != null
+  const hasAvatar2 = journey?.host?.src1 != null && journey?.host?.src2 != null
   const noAvatarStyles = {
     width: '52px',
     height: '52px'
@@ -100,7 +89,7 @@ export function HostAvatarsButton({
           data-testid="avatar1"
           alt="avatar1"
           onClick={() => handleOpen(1)}
-          src={host?.src1 ?? host?.src2 ?? undefined}
+          src={journey?.host?.src1 ?? journey?.host?.src2 ?? undefined}
           sx={
             !hasAvatar1
               ? {
@@ -110,13 +99,15 @@ export function HostAvatarsButton({
               : avatarStyles
           }
         >
-          {host?.src1 == null && host?.src2 == null && <UserProfile2Icon />}
+          {journey?.host?.src1 == null && journey?.host?.src2 == null && (
+            <UserProfile2Icon />
+          )}
         </Avatar>
         <Avatar
           data-testid="avatar2"
           alt="avatar2"
           onClick={() => handleOpen(2)}
-          src={hasAvatar2 ? host?.src2 ?? undefined : undefined}
+          src={hasAvatar2 ? journey?.host?.src2 ?? undefined : undefined}
           sx={
             !hasAvatar2
               ? {
@@ -126,7 +117,9 @@ export function HostAvatarsButton({
               : avatarStyles
           }
         >
-          {(host?.src1 == null || host?.src2 == null) && <Plus2Icon />}
+          {(journey?.host?.src1 == null || journey?.host?.src2 == null) && (
+            <Plus2Icon />
+          )}
         </Avatar>
       </AvatarGroup>
       {open != null && (
@@ -136,11 +129,11 @@ export function HostAvatarsButton({
           onChange={handleChange}
           onDelete={handleDelete}
           selectedBlock={
-            host != null
+            journey?.host != null
               ? {
                   id: `avatar${avatarNumber}`,
                   __typename: 'ImageBlock',
-                  src: host[`src${avatarNumber}`],
+                  src: journey.host[`src${avatarNumber}`],
                   alt: `host avatar ${avatarNumber}`,
                   width: 52,
                   height: 52,
