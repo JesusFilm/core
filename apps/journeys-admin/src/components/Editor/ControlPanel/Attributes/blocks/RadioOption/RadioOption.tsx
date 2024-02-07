@@ -15,6 +15,7 @@ export function RadioOption({
 }: TreeBlock<RadioOptionBlock>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
+  const selectedAction = actions.find((act) => act.value === action?.__typename)
 
   useEffect(() => {
     dispatch({
@@ -34,10 +35,7 @@ export function RadioOption({
         id={`${id}-radio-option-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={t(
-          actions.find((act) => act.value === action?.__typename)?.label ??
-            'None'
-        )}
+        value={t(selectedAction?.label ?? 'None')}
         description={t('Action')}
         onClick={() => {
           dispatch({

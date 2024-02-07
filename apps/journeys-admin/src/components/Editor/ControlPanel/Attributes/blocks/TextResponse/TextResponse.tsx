@@ -25,6 +25,7 @@ export function TextResponse({
 }: TreeBlock<TextResponseBlock>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
+  const selectedAction = actions.find((act) => act.value === action?.__typename)
   const submitIcon = children.find(
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
@@ -53,10 +54,7 @@ export function TextResponse({
         id={`${id}-text-field-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={t(
-          actions.find((act) => act.value === action?.__typename)?.label ??
-            'None'
-        )}
+        value={t(selectedAction?.label ?? 'None')}
         description={t('Form Submission')}
         onClick={() => {
           dispatch({

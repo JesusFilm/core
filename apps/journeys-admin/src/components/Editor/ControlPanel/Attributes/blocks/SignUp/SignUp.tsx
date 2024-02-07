@@ -20,6 +20,7 @@ export function SignUp({
 }: TreeBlock<SignUpBlock>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
+  const selectedAction = actions.find((act) => act.value === action?.__typename)
   const submitIcon = children.find(
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
@@ -42,10 +43,7 @@ export function SignUp({
         id={`${id}-signup-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={t(
-          actions.find((act) => act.value === action?.__typename)?.label ??
-            'None'
-        )}
+        value={t(selectedAction?.label ?? 'None')}
         description={t('Form Submission')}
         onClick={() => {
           dispatch({
