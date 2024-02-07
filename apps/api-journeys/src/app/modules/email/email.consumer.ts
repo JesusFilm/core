@@ -299,20 +299,20 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async journeyEditInvite(job: Job<JourneyEditInviteJob>): Promise<void> {
-    // TODO: u se this to check if user is subscribed to this type of email notification
+    // TODO: use this to check if user is subscribed to this type of email notification
 
     // const { data } = await apollo.query({
-    //   query : gql`
-    //     que ry UserByEmail($email: String!) {
-    //       u serByEmail(email: $email) {
+    //   query: gql`
+    //     query UserByEmail($email: String!) {
+    //       userByEmail(email: $email) {
     //         id
     //       }
     //     }
     //   `,
-    //   varia bles: { email: job.data.email }
+    //   variables: { email: job.data.email }
     // })
 
-    // if (dat a.user == null) {
+    // if (data.user == null) {
     //   throw new Error('User not found')
     // }
 
