@@ -1,10 +1,10 @@
-import Circle from '../../../../../../shared/ui/src/components/icons/Circle'
-
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
-import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
+import Circle from '@core/shared/ui/icons/Circle'
+
+import { TreeBlock, useBlocks } from '../../../libs/block'
 import { StepFields } from '../../Step/__generated__/StepFields'
 
 export function PaginationBullets(): ReactElement {
