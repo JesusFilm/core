@@ -16,6 +16,7 @@ export class User {
     email: string;
     imageUrl?: Nullable<string>;
     superAdmin?: Nullable<boolean>;
+    emailVerified?: Nullable<boolean>;
 }
 
 export abstract class IQuery {

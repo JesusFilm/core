@@ -2150,6 +2150,7 @@ type User
   email: String! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   superAdmin: Boolean @join__field(graph: USERS)
+  emailVerified: Boolean @join__field(graph: USERS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""
