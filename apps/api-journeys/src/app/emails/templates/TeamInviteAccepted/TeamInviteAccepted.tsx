@@ -20,8 +20,7 @@ import { User } from '@core/nest/common/firebaseClient'
 
 import EmailLogo from '../EmailLogo/EmailLogo'
 
-interface TeamInviteEmailProps {
-  email?: string
+interface TeamInviteAcceptedEmailProps {
   teamName?: string
   inviteLink?: string
   sender: Omit<User, 'id' | 'email'>
@@ -32,14 +31,13 @@ interface WrapperProps {
   children: ReactElement
 }
 
-export const TeamInviteEmail = ({
-  email,
+export const TeamInviteAcceptedEmail = ({
   teamName,
   inviteLink,
   sender,
   story = false
-}: TeamInviteEmailProps): ReactElement => {
-  const previewText = `Join ${teamName} on Next Steps`
+}: TeamInviteAcceptedEmailProps): ReactElement => {
+  const previewText = `${sender.firstName} has been added to your team`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
       <>
@@ -78,21 +76,17 @@ export const TeamInviteEmail = ({
         </Container>
         <Container className="bg-[#EFEFEF] mx-auto px-[60px] py-[48px] max-w-[600px] flex justify-center items-center">
           <Heading className="text-black text-[24px] font-normal p-0 my-[30px] mx-0">
-            Join <strong>{teamName}</strong> on <strong>Next Steps</strong>
+            {`${sender.firstName} was added to your team ${teamName}`}
           </Heading>
           <Text className="text-black text-[14px] leading-[24px]">
-            Hello {email},
-          </Text>
-          <Text className="text-black text-[14px] leading-[24px]">
-            {'You have been invited to join: '}
-            <strong>{teamName}</strong> on <strong>Next Steps</strong>.
+            {`If this is in error, please go to ${teamName} team manage dashboard to remove them`}
           </Text>
           <Section className="text-center mt-[32px] mb-[32px]">
             <Button
               className="bg-[#C52D3A] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
               href={inviteLink}
             >
-              Join the team
+              View Team
             </Button>
           </Section>
           <Text className="text-black text-[14px] leading-[24px]">
@@ -142,16 +136,15 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
   )
 }
 
-TeamInviteEmail.PreviewProps = {
-  email: 'james@example.com',
+TeamInviteAcceptedEmail.PreviewProps = {
   teamName: 'JFP Sol Team',
   inviteLink: 'https://admin.nextstep.is/',
   sender: {
-    firstName: 'Johnathan',
-    lastName: 'Joeronimo',
+    firstName: 'Joe',
+    lastName: 'Ro-Nimo',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   }
-} satisfies TeamInviteEmailProps
+} satisfies TeamInviteAcceptedEmailProps
 
-export default TeamInviteEmail
+export default TeamInviteAcceptedEmail

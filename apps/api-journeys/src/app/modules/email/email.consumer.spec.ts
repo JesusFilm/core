@@ -5,13 +5,14 @@ import { mockDeep } from 'jest-mock-extended'
 
 import { UserJourney } from '.prisma/api-journeys-client'
 
-import { UserJourneyRole } from '../../__generated__/graphql'
+import { UserJourneyRole, UserTeamRole } from '../../__generated__/graphql'
 
 import {
   EmailConsumer,
   JourneyAccessRequest,
   JourneyEditInviteJob,
   JourneyRequestApproved,
+  TeamInviteAccepted,
   TeamInviteJob
 } from './email.consumer'
 
@@ -60,6 +61,36 @@ const teamInviteJob: Job<TeamInviteJob, unknown, string> = {
     }
   }
 } as unknown as Job<TeamInviteJob, unknown, string>
+
+const teamInviteAccepted: Job<TeamInviteAccepted, unknown, string> = {
+  name: 'team-invite-accepted',
+  data: {
+    team: {
+      id: 'teamId',
+      title: 'Team Title',
+      userTeams: [
+        {
+          id: 'userTeamId',
+          teamId: 'teamId',
+          userId: 'userId',
+          role: UserTeamRole.manager
+        },
+        {
+          id: 'userTeamId2',
+          teamId: 'teamId',
+          userId: 'userId2',
+          role: UserTeamRole.manager
+        }
+      ]
+    },
+    sender: {
+      firstName: 'Joe',
+      lastName: 'Ron-Imo',
+      imageUrl: undefined
+    },
+    url: 'http://example.com/'
+  }
+} as unknown as Job<TeamInviteAccepted, unknown, string>
 
 const journeyRequestApproved: Job<JourneyRequestApproved, unknown, string> = {
   name: 'journey-request-approved',
@@ -148,6 +179,16 @@ describe('EmailConsumer', () => {
       expect(emailConsumer.teamInviteEmail).toHaveBeenCalledWith(teamInviteJob)
     })
 
+    it('should handle team-invite-accepted', async () => {
+      emailConsumer.teamInviteAcceptedEmail = jest
+        .fn()
+        .mockImplementationOnce(async () => await Promise.resolve())
+      await emailConsumer.process(teamInviteAccepted)
+      expect(emailConsumer.teamInviteAcceptedEmail).toHaveBeenCalledWith(
+        teamInviteAccepted
+      )
+    })
+
     it('should handle journey-request-approved', async () => {
       emailConsumer.journeyRequestApproved = jest
         .fn()
@@ -193,6 +234,26 @@ describe('EmailConsumer', () => {
       expect(args).toEqual({
         to: teamInviteJob.data.email,
         subject: 'Invitation to join team: test-team',
+        html: expect.any(String),
+        text: expect.any(String)
+      })
+    })
+  })
+
+  describe('teamInviteAcceptedEmail', () => {
+    it('should send an email', async () => {
+      let args = {}
+      emailConsumer.sendEmail = jest
+        .fn()
+        .mockImplementation(async (callArgs) => {
+          args = callArgs
+          await Promise.resolve()
+        })
+      await emailConsumer.teamInviteAcceptedEmail(teamInviteAccepted)
+      expect(emailConsumer.sendEmail).toHaveBeenCalledTimes(2)
+      expect(args).toEqual({
+        to: 'jsmith@exmaple.com',
+        subject: 'Invitation to join team: Team Title',
         html: expect.any(String),
         text: expect.any(String)
       })
