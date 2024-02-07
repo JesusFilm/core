@@ -7,7 +7,7 @@ type Batch @key(fields: "id") {
   name: String!
   status: BatchStatus!
   averagePercent: Float
-
+  createdAt: DateTime!
 }
 
 enum BatchStatus {

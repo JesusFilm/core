@@ -114,7 +114,6 @@ export class GoogleDriveService {
       if (progressCallback != null) {
         await progressCallback(Number(percentage));
       }
-      console.log(`${fileName} Downloaded: ${percentage}%`);
     });
     response.data.pipe(writer);
     return await new Promise((resolve, reject) => {

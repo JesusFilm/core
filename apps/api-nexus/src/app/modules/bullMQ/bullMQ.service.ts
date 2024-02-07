@@ -32,6 +32,8 @@ export interface UploadToBucketToYoutube {
     id: string;
     driveId: string;
     refreshToken: string;
+    title: string;
+    description: string;
   };
   channel: {
     id: string;
@@ -54,22 +56,27 @@ export class BullMQService {
       },
       include: {
         resources: {
-          include: { resource: { include: { googleDrive: true } } },
+          include: {
+            resource: { include: { googleDrive: true, localizations: true } },
+          },
         },
         channel: { include: { youtube: true } },
       },
     });
 
     const jobs = batch?.resources.map((batchResource) => {
-      const item = batchResource.resource;
       return {
         name: 'process',
         data: {
           batchId: batch.id,
           resource: {
-            id: item.id ?? '',
-            driveId: item.googleDrive?.driveId ?? '',
-            refreshToken: item.googleDrive?.refreshToken ?? '',
+            id: batchResource.resource.id ?? '',
+            driveId: batchResource.resource.googleDrive?.driveId ?? '',
+            refreshToken:
+              batchResource.resource?.googleDrive?.refreshToken ?? '',
+            title: batchResource?.resource?.localizations[0]?.title ?? '',
+            description:
+              batchResource?.resource?.localizations[0]?.description ?? '',
           },
           channel: {
             id: batch.channel?.id ?? '',
@@ -93,11 +100,6 @@ export class BullMQService {
         name: batchName,
         nexusId,
         channelId: channel.id,
-        // resources: {
-        //   create: resources.map((resource) => ({
-        //     resourceId: resource.id,
-        //   })),
-        // },
       },
     });
 

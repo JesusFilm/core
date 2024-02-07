@@ -1,85 +1,73 @@
-// import {
-//   OnQueueEvent,
-//   QueueEventsHost,
-//   QueueEventsListener,
-// } from '@nestjs/bullmq';
-
-// @QueueEventsListener('nexus-bucket')
-// export class NexusJobListener extends QueueEventsHost {
-//   @OnQueueEvent('completed')
-//   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-//   onCompleted({
-//     jobId,
-//   }: {
-//     jobId: string;
-//     returnvalue: string;
-//     prev?: string;
-//   }) {
-//     console.log('jobId completed', jobId)
-//   }
-
-//   @OnQueueEvent('progress')
-//   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-//   onProgress({ jobId, data }: { jobId: string; data: number | object }) {
-//     console.log('jobId progress', jobId)
-//     console.log('data progress', data)
-//     return null;
-//   }
-// }
-
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Job, Queue } from 'bull';
 
 import { PrismaService } from '../../../lib/prisma.service';
+import { UploadToBucketToYoutube } from '../bullMQ.service';
 
 @Injectable()
 export class NexusJobListener implements OnModuleInit {
   constructor(
-    @InjectQueue('nexus-bucket') private readonly audioQueue: Queue,
+    @InjectQueue('nexus-bucket') private readonly uploadQueue: Queue,
     private readonly prismaService: PrismaService,
   ) {}
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  onModuleInit() {
+  onModuleInit(): void {
     this.listenToProgressEvents();
+    this.listenToCompletedEvents();
+    this.listenToFailedEvents();
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  private listenToProgressEvents() {
-    this.audioQueue.on('progress', async (job: Job, progress: number) => {
-      // console.log('jobId progress', job);
-      console.log('data progress', progress);
+  private listenToProgressEvents(): void {
+    this.uploadQueue.on(
+      'progress',
+      async (job: Job<UploadToBucketToYoutube>, progress: number) => {
+        // console.log('Job Progress:', job.id, progress);
+        void Promise.all([
+          await this.prismaService.batchResource.updateMany({
+            data: {
+              percent: progress,
+            },
+            where: {
+              batchId: job.data.batchId,
+              resourceId: job.data.resource.id,
+            },
+          }),
+        ]);
+      },
+    );
+  }
 
-      Promise.all([
-        await this.prismaService.batchResource.updateMany({
-          data: {
-            percent: progress,
-          },
-          where: {
-            batchId: job.data.batchId,
-            resourceId: job.data.resource.id,
-          },
-        }),
-      ]);
-    });
-    this.audioQueue.on('completed', async (job: Job) => {
-      Promise.all([
-        await this.prismaService.batchResource.updateMany({
-          data: {
-            isCompleted: true,
-            percent: 100,
-          },
-          where: {
-            batchId: job.data.batchId,
-            resourceId: job.data.resource.id,
-          },
-        }),
-      ]);
-    });
+  private listenToCompletedEvents(): void {
+    this.uploadQueue.on(
+      'completed',
+      async (job: Job<UploadToBucketToYoutube>) => {
+        console.log('Job completed: ', job.id);
+        void Promise.all([
+          await this.prismaService.batchResource.updateMany({
+            data: {
+              isCompleted: true,
+              percent: 100,
+            },
+            where: {
+              batchId: job.data.batchId,
+              resourceId: job.data.resource.id,
+            },
+          }),
+          await this.prismaService.resource.update({
+            data: { status: 'published' },
+            where: { id: job.data.resource.id },
+          }),
+        ]);
+      },
+    );
+  }
 
-    this.audioQueue.on('failed', async (job: Job) => {
-      Promise.all([
+  private listenToFailedEvents(): void {
+    this.uploadQueue.on('failed', async (job: Job<UploadToBucketToYoutube>) => {
+      console.log('Job failed', job.id);
+      void Promise.all([
         await this.prismaService.batchResource.updateMany({
           data: {
             isCompleted: false,
@@ -89,6 +77,10 @@ export class NexusJobListener implements OnModuleInit {
             batchId: job.data.batchId,
             resourceId: job.data.resource.id,
           },
+        }),
+        await this.prismaService.resource.update({
+          data: { status: 'error' },
+          where: { id: job.data.resource.id },
         }),
       ]);
     });

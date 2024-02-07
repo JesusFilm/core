@@ -44,7 +44,8 @@ export class BatchResolver {
         },
         resources: true,
       },
-      take: where?.limit ?? undefined,
+      orderBy: { createdAt: 'desc' },
+      take: where?.limit ?? 100,
     });
 
     const batchesWithAverage = batches.map((batch) => {

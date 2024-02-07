@@ -26,7 +26,6 @@ export class ChannelResolver {
   @Query()
   async channels(@Args('where') where?: ChannelFilter): Promise<Channel[]> {
     const filter: Prisma.ChannelWhereInput = {};
-    if (where?.ids != null) filter.id = { in: where?.ids };
     filter.status = where?.status ?? 'published';
     filter.nexusId = where?.nexusId ?? undefined;
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { createReadStream, statSync } from 'fs';
 
 import { Injectable } from '@nestjs/common';
@@ -18,7 +19,7 @@ export class YoutubeService {
     this.credential = {
       client_secret: process.env.CLIENT_SECRET ?? '',
       client_id: process.env.CLIENT_ID ?? '',
-      redirect_uris: ['https://localhost:5357'],
+      redirect_uris: ['https://localhost:4200'],
     };
   }
 
@@ -68,10 +69,8 @@ export class YoutubeService {
         },
       },
       {
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         onUploadProgress: async (evt) => {
           const progress = (evt.bytesRead / fileSize) * 100;
-          console.log(`Youtube Upload: ${Math.round(progress)}%`);
           if (progressCallback != null) {
             await progressCallback(progress);
           }
