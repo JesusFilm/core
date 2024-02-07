@@ -1,18 +1,23 @@
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import { ReactElement, useEffect, useRef } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
-
 import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
-
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
+import { useTheme } from '@mui/material/styles'
+import { SwiperOptions } from 'swiper/types'
 import { JourneyFlow } from '../../JourneyFlow'
 import { Canvas } from '../Canvas'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Drawer } from '../Drawer'
 import { SocialPreview } from '../SocialPreview'
+import { Attributes } from '../Drawer/Attributes'
 
 const StyledSwiper = styled(Swiper)(() => ({
   height: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px)`
@@ -23,16 +28,35 @@ const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
 }))
 
 export function Slider(): ReactElement {
+  const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
     state: { activeSlide, journeyEditContentComponent },
     dispatch
   } = useEditor()
 
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      direction: 'vertical',
+      centeredSlides: true,
+      centeredSlidesBounds: true
+    },
+    [breakpoints.values.sm]: {
+      direction: 'horizontal'
+    }
+  }
+
   function handlePrev(): void {
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.JourneyFlow
+      activeSlide: activeSlide - 1
+    })
+  }
+
+  function handleNext(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: activeSlide + 1
     })
   }
 
@@ -46,10 +70,118 @@ export function Slider(): ReactElement {
   }, [activeSlide])
 
   return (
-    <StyledSwiper ref={swiperRef} slidesPerView="auto" allowTouchMove={false}>
+    <StyledSwiper
+      ref={swiperRef}
+      slidesPerView="auto"
+      breakpoints={swiperBreakpoints}
+      allowTouchMove={false}
+    >
+      <Box
+        slot="container-start"
+        onClick={handlePrev}
+        sx={{
+          position: 'absolute',
+          left: activeSlide > ActiveSlide.JourneyFlow ? 0 : -120,
+          top: 0,
+          bottom: 0,
+          width: 120,
+          zIndex: 2,
+          cursor: 'pointer',
+          display: {
+            xs: 'none',
+            sm: 'flex'
+          },
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: (theme) => theme.transitions.create('left')
+        }}
+      >
+        <IconButton
+          sx={{
+            backgroundColor: 'background.paper',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'divider',
+            '&:hover': {
+              backgroundColor: 'background.paper'
+            }
+          }}
+        >
+          <ChevronLeftIcon />
+        </IconButton>
+      </Box>
+      <Box
+        slot="container-start"
+        onClick={handlePrev}
+        sx={{
+          position: 'absolute',
+          left: 0,
+          top: activeSlide > ActiveSlide.JourneyFlow ? 0 : '-10%',
+          right: 0,
+          height: '10%',
+          zIndex: 2,
+          cursor: 'pointer',
+          display: {
+            xs: 'flex',
+            sm: 'none'
+          },
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: (theme) => theme.transitions.create('top')
+        }}
+      >
+        <IconButton
+          sx={{
+            backgroundColor: 'background.paper',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'divider',
+            '&:hover': {
+              backgroundColor: 'background.paper'
+            }
+          }}
+        >
+          <ChevronUpIcon />
+        </IconButton>
+      </Box>
+      <Box
+        slot="container-end"
+        onClick={handleNext}
+        sx={{
+          position: 'absolute',
+          left: 0,
+          bottom: activeSlide < ActiveSlide.Drawer ? 0 : '-10%',
+          right: 0,
+          height: '10%',
+          zIndex: 2,
+          cursor: 'pointer',
+          display: {
+            xs: 'flex',
+            sm: 'none'
+          },
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: (theme) => theme.transitions.create('bottom')
+        }}
+      >
+        <IconButton
+          sx={{
+            backgroundColor: 'background.paper',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'divider',
+            '&:hover': {
+              backgroundColor: 'background.paper'
+            }
+          }}
+        >
+          <ChevronDownIcon />
+        </IconButton>
+      </Box>
       <StyledSwiperSlide
         sx={{
-          width: 'calc(100% - 408px)'
+          width: { xs: '100%', sm: 'calc(100% - 408px)' },
+          height: { xs: '90%', sm: '100%' }
         }}
       >
         <Box
@@ -66,62 +198,31 @@ export function Slider(): ReactElement {
       </StyledSwiperSlide>
       <StyledSwiperSlide
         sx={{
-          width: 'calc(100% - 120px)',
+          width: { xs: '100%', sm: 'calc(100% - 120px - 360px)' },
+          height: { xs: '80%', sm: '100%' },
           display: 'flex',
           justifyContent: 'space-between',
-          '& .navigation-prev': {
-            display: 'none'
-          },
-          '&.swiper-slide-active': {
-            '& .navigation-prev': {
-              display: 'block'
-            },
-            '& .card-root': {
-              flexGrow: 1
-            }
-          }
+          position: 'relative'
         }}
       >
-        <Box
-          className="navigation-prev"
-          onClick={handlePrev}
-          sx={{
-            position: 'absolute',
-            left: -120,
-            top: 0,
-            bottom: 0,
-            width: 120,
-            zIndex: 2,
-            cursor: 'pointer'
-          }}
-        />
-        <Box
-          className="card-root"
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexGrow: 0,
-            flexShrink: 0,
-            transition: (theme) =>
-              theme.transitions.create('flex-grow', { duration: 300 })
-          }}
-        >
-          {journeyEditContentComponent === 'canvas' ? (
-            <Canvas />
-          ) : journeyEditContentComponent === 'social' ? (
-            <SocialPreview />
-          ) : (
-            <></>
-          )}
-        </Box>
-        <Box
-          sx={{
-            width: DRAWER_WIDTH
-          }}
-        >
-          <Drawer />
-        </Box>
+        {journeyEditContentComponent === 'canvas' ? (
+          <Canvas />
+        ) : journeyEditContentComponent === 'social' ? (
+          <SocialPreview />
+        ) : (
+          <></>
+        )}
+      </StyledSwiperSlide>
+      <StyledSwiperSlide
+        sx={{
+          width: (theme) => ({
+            xs: '100%',
+            sm: DRAWER_WIDTH + parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
+          }),
+          height: { xs: '90%', sm: '100%' }
+        }}
+      >
+        <Attributes />
       </StyledSwiperSlide>
     </StyledSwiper>
   )
