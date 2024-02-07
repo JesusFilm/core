@@ -58,7 +58,7 @@ export function Button({
       title: t('Action'),
       children: <Action />
     })
-  }, [dispatch, id])
+  }, [dispatch, id, t])
 
   return (
     <>
