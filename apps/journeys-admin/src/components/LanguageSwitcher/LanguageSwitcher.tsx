@@ -2,6 +2,7 @@ import { TranslationStatus } from '@crowdin/crowdin-api-client'
 import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import { dir } from 'i18next'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -58,7 +59,7 @@ export function LanguageSwitcher({
   const currentLanguage = getCurrentLanguage()
 
   const handleLocaleSwitch = useCallback(
-    (localeId: string | undefined) => {
+    async (localeId: string | undefined) => {
       if (currentLanguage != null)
         setLanguageState({
           confirmLanguageChange: true,
@@ -69,14 +70,15 @@ export function LanguageSwitcher({
       )
       const locale = getLocaleLanguage('id', language?.id ?? '')?.locale
       const path = router.asPath
-      void router.push(path, path, { locale })
+      await router.push(path, path, { locale })
+      document.dir = dir(i18n?.language)
     },
-    [router, data, currentLanguage]
+    [router, data, currentLanguage, i18n?.language]
   )
 
   function handleCancelLanguageChange(): void {
     const { prevLanguageId } = languageState
-    handleLocaleSwitch(prevLanguageId)
+    void handleLocaleSwitch(prevLanguageId)
     handleClose()
   }
 
@@ -98,6 +100,7 @@ export function LanguageSwitcher({
       return (
         // always display English
         language.id === '529' ||
+        language.id === '22658' ||
         crowdinLanguages?.data.translationProgress === 100
       )
     })
@@ -136,7 +139,7 @@ export function LanguageSwitcher({
       >
         <Stack gap={2}>
           <LanguageAutocomplete
-            onChange={(value) => handleLocaleSwitch(value?.id)}
+            onChange={async (value) => await handleLocaleSwitch(value?.id)}
             value={
               currentLanguage != null ? currentLanguage : placeholderLanguage
             }
