@@ -8,26 +8,23 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import { ReactElement, useRef } from 'react'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import ThumbUpIcon from '@mui/icons-material/ThumbUp'
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble'
-import ShareIcon from '@mui/icons-material/Share'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
+import ThumbsUp2 from '@core/shared/ui/icons/ThumbsUp2'
+import MessageChat2 from '@core/shared/ui/icons/MessageChat2'
+import Share2 from '@core/shared/ui/icons/Share2'
 
 export function SocialPreviewPost(): ReactElement {
   const { journey } = useJourney()
-  const {
-    state: { activeSlide },
-    dispatch
-  } = useEditor()
+  const { dispatch } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
 
   function handleSelect(): void {
@@ -43,13 +40,7 @@ export function SocialPreviewPost(): ReactElement {
     })
   }
   return (
-    <Box
-      sx={{
-        m: activeSlide === ActiveSlide.Canvas ? 0 : 16,
-        transform: { xs: 'scale(1)', lg: 'scale(1.33)' }
-      }}
-      data-testid="SocialPreviewPost"
-    >
+    <Box data-testid="SocialPreviewPost">
       <Stack
         onClick={handleSelect}
         direction="column"
@@ -176,14 +167,17 @@ export function SocialPreviewPost(): ReactElement {
                 </Typography>
               )}
               <Stack
+                width="100%"
+                height="100%"
                 flexDirection="row"
+                alignItems="center"
                 justifyContent="space-around"
                 color="#EFEFEF"
-                my={3}
+                sx={{ my: 3 }}
               >
-                <ThumbUpIcon sx={{ fontSize: 15 }} />
-                <ChatBubbleIcon sx={{ fontSize: 15 }} />
-                <ShareIcon sx={{ fontSize: 15 }} />
+                <ThumbsUp2 />
+                <MessageChat2 />
+                <Share2 />
               </Stack>
             </CardContent>
             <CardActionArea />

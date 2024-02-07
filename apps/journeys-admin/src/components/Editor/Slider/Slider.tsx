@@ -15,7 +15,6 @@ import { SwiperOptions } from 'swiper/types'
 import { JourneyFlow } from '../../JourneyFlow'
 import { Canvas } from '../Canvas'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
-import { Drawer } from '../Drawer'
 import { SocialPreview } from '../SocialPreview'
 import { Attributes } from '../Drawer/Attributes'
 

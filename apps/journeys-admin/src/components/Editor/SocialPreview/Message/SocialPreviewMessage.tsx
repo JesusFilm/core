@@ -79,27 +79,21 @@ export function SocialPreviewMessage(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Box
-      width={256}
-      sx={{
-        transform: 'scale(1.5)'
-      }}
-      data-testid="SocialPreviewMessage"
-    >
+    <Box width={256} data-testid="SocialPreviewMessage">
       <Stack direction="column" justifyContent="start">
         <Typography variant="caption" pb={4} textAlign="center">
           {t('Messaging App View')}
         </Typography>
         <Stack alignItems="center">
-          <MessageBubble width={190} height={46} direction="left" />
+          <MessageBubble width={252} height={54} direction="left" />
           {journey != null && (
-            <MessageBubble width={236} direction="right">
-              <Stack direction="column">
+            <MessageBubble width={315} height={142} direction="right">
+              <Stack direction="column" sx={{ p: 1 }}>
                 <Stack direction="row" gap={2}>
                   {journey?.primaryImageBlock?.src == null ? (
                     <Box
-                      width={60}
-                      height={60}
+                      width={78}
+                      height={78}
                       data-testid="social-preview-message-empty"
                       bgcolor="rgba(0, 0, 0, 0.1)"
                       borderRadius="6px"
@@ -108,10 +102,10 @@ export function SocialPreviewMessage(): ReactElement {
                     <Image
                       src={journey.primaryImageBlock.src}
                       alt={journey.primaryImageBlock.alt ?? ''}
-                      width="60"
-                      height="60"
+                      width="78"
+                      height="78"
                       style={{
-                        borderRadius: '4px',
+                        borderRadius: '5px',
                         maxWidth: '100%',
                         objectFit: 'cover'
                       }}
@@ -120,11 +114,11 @@ export function SocialPreviewMessage(): ReactElement {
                   <Stack width={164} flexGrow={1} justifyContent="center">
                     {isEmpty(journey?.seoTitle) ? (
                       <Box
-                        width={156}
-                        height={12}
+                        width={205}
+                        height={15}
                         bgcolor="#EFEFEF"
-                        borderRadius="6px"
-                        mb={1}
+                        borderRadius="5px"
+                        mb={1.5}
                       />
                     ) : (
                       <Typography
@@ -138,29 +132,29 @@ export function SocialPreviewMessage(): ReactElement {
                     )}
                     {isEmpty(journey?.seoDescription) ? (
                       <Box
-                        width={110}
-                        height={12}
+                        width={144}
+                        height={15}
                         bgcolor="#EFEFEF"
-                        borderRadius="6px"
+                        borderRadius="5px"
                         mb={1}
                       />
                     ) : (
                       <Typography
                         variant="body2"
-                        fontSize={7}
-                        lineHeight="11px"
+                        fontSize={11}
+                        lineHeight="16px"
                       >
                         {journey.seoDescription}
                       </Typography>
                     )}
                   </Stack>
                 </Stack>
-                <Box maxWidth={224}>
+                <Box>
                   <Typography
                     variant="body1"
-                    fontSize={8}
-                    lineHeight="12px"
-                    mt={1}
+                    fontSize={10.5}
+                    lineHeight="16px"
+                    mt={2}
                     color="#C52D3A"
                     // eslint-disable-next-line i18next/no-literal-string
                   >
@@ -170,7 +164,7 @@ export function SocialPreviewMessage(): ReactElement {
               </Stack>
             </MessageBubble>
           )}
-          <MessageBubble width={190} height={46} direction="right" />
+          <MessageBubble width={252} height={54} direction="right" />
         </Stack>
       </Stack>
     </Box>

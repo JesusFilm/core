@@ -11,6 +11,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 export function SocialPreview(): ReactElement {
   const {
@@ -31,23 +32,24 @@ export function SocialPreview(): ReactElement {
           alignItems="center"
           justifyContent="space-evenly"
           data-testid="SocialPreview"
-          sx={{ width: '100%', height: '100%' }}
+          sx={{
+            width: '100%',
+            height: '100%'
+          }}
         >
           <SocialPreviewPost />
-          {activeSlide !== 0 && (
-            <>
-              <Divider
-                orientation="vertical"
-                sx={{
-                  height: '308px',
-                  bgcolor: '#DCDDE5',
-                  transform: 'scale(1.33)',
-                  transformOrigin: 'center'
-                }}
-              />
-              <SocialPreviewMessage />
-            </>
-          )}
+          <>
+            <Divider
+              orientation="vertical"
+              sx={{
+                height: '308px',
+                bgcolor: '#DCDDE5',
+                transform: 'scale(1.33)',
+                transformOrigin: 'center'
+              }}
+            />
+            <SocialPreviewMessage />
+          </>
         </Stack>
       ) : (
         <Box data-testid="SocialPreview">

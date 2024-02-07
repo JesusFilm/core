@@ -191,6 +191,9 @@ import X3 from './X3'
 import XCircleContained from './XCircleContained'
 import XSquareContained from './XSquareContained'
 import Youtube from './Youtube'
+import MessageChat2 from './MessageChat2'
+import ThumbsUp2 from './ThumbsUp2'
+import Share2 from './Share2'
 
 export type IconName =
   | 'AddSquare2'
@@ -317,6 +320,7 @@ export type IconName =
   | 'MediaStrip1'
   | 'Menu1'
   | 'MessageChat1'
+  | 'MessageChat2'
   | 'MessageCircle'
   | 'MessageText1'
   | 'MessageTyping'
@@ -341,6 +345,7 @@ export type IconName =
   | 'Send1'
   | 'Settings'
   | 'Share'
+  | 'Share2'
   | 'Skype'
   | 'SmileyNeutral'
   | 'Snapchat'
@@ -359,6 +364,7 @@ export type IconName =
   | 'Trash2'
   | 'ThumbsDown'
   | 'ThumbsUp'
+  | 'ThumbsUp2'
   | 'Tiktok'
   | 'Transform'
   | 'TwitterLogo'
@@ -512,6 +518,7 @@ const iconComponents: IconComponents = {
   Maximise2,
   Menu1,
   MessageChat1,
+  MessageChat2,
   MessageCircle,
   MessageText1,
   MessageTyping,
@@ -537,6 +544,7 @@ const iconComponents: IconComponents = {
   Send1,
   Settings,
   Share,
+  Share2,
   Skype,
   SmileyNeutral,
   Snapchat,
@@ -555,6 +563,7 @@ const iconComponents: IconComponents = {
   Trash2,
   ThumbsDown,
   ThumbsUp,
+  ThumbsUp2,
   Tiktok,
   Transform,
   TwitterLogo,
