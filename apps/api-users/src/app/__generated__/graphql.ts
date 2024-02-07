@@ -16,7 +16,7 @@ export class User {
     email: string;
     imageUrl?: Nullable<string>;
     superAdmin?: Nullable<boolean>;
-    emailVerified?: Nullable<boolean>;
+    emailVerified: boolean;
 }
 
 export abstract class IQuery {
@@ -38,6 +38,8 @@ export class Translation {
 
 export abstract class IMutation {
     abstract userImpersonate(email: string): Nullable<string> | Promise<Nullable<string>>;
+
+    abstract createVerificationRequest(): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
 export class Language {

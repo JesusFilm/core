@@ -11,6 +11,7 @@ import { GraphQLError } from 'graphql'
 
 import { User } from '.prisma/api-users-client'
 import { auth, impersonateUser } from '@core/nest/common/firebaseClient'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
@@ -153,6 +154,20 @@ export class UserResolver {
     const validateEmail = await this.userService.validateEmail(user, token)
     if (!validateEmail)
       throw new GraphQLError('Invalid token', { extensions: { code: '403' } })
+    return true
+  }
+
+  @Mutation()
+  async createVerificationRequest(@CurrentUser() user: User): Promise<boolean> {
+    if (user == null)
+      throw new GraphQLError('User not found', { extensions: { code: '404' } })
+
+    if (user.emailVerified)
+      throw new GraphQLError('Email already verified', {
+        extensions: { code: '403' }
+      })
+
+    await this.userService.verifyUser(user.userId, user.email)
     return true
   }
 }

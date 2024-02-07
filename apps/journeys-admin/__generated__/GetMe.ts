@@ -15,7 +15,7 @@ export interface GetMe_me {
   email: string;
   imageUrl: string | null;
   superAdmin: boolean | null;
-  emailVerified: boolean | null;
+  emailVerified: boolean;
 }
 
 export interface GetMe {
