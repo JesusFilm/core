@@ -9,6 +9,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { JourneyProvider, useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Conductor } from '../Conductor'
 
@@ -18,10 +20,16 @@ import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
+  themeMode: ThemeMode
+  rtl: boolean
+  locale: string
 }
 
 export function EmbeddedPreview({
-  blocks
+  blocks,
+  themeMode,
+  rtl,
+  locale
 }: EmbeddedPreviewProps): ReactElement {
   const { journey, variant } = useJourney()
 
@@ -76,12 +84,11 @@ export function EmbeddedPreview({
     <Box
       data-testid="clickable-card-embed"
       sx={{
-        p: 8,
         flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
         cursor: 'pointer',
-        zindex: 10,
+        zIndex: 10,
         height: '100%'
       }}
       onClick={requestFullscreen}
@@ -126,7 +133,15 @@ export function EmbeddedPreview({
             VideoWrapper
           }}
         />
-        <StepFooter />
+        <ThemeProvider
+          themeName={ThemeName.journeyUi}
+          themeMode={themeMode}
+          rtl={rtl}
+          locale={locale}
+          nested
+        >
+          <StepFooter />
+        </ThemeProvider>
       </Box>
     </Box>
   )
@@ -150,35 +165,28 @@ export function EmbeddedPreview({
           minHeight: '-webkit-fill-available'
         }}
       >
-        {!isFullWindow && <ClickableCard />}
-        <Box
-          id="embed-fullscreen-container"
-          sx={{
-            backgroundColor: 'background.default',
-            overflow: 'hidden'
-          }}
-        >
-          {isFullWindow && (
-            <>
-              <IconButton
-                data-testid="CloseIconButton"
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: variant === 'default' ? 'env(safe-area-inset-left)' : 0,
-                  zIndex: 1000,
-                  color: 'text.primary'
-                }}
-                onClick={exitFullscreen}
-              >
-                <Close />
-              </IconButton>
-              <JourneyProvider value={{ journey, variant: 'default' }}>
-                <Conductor blocks={blocks} />
-              </JourneyProvider>
-            </>
-          )}
-        </Box>
+        {!isFullWindow ? (
+          <ClickableCard />
+        ) : (
+          <>
+            <IconButton
+              data-testid="CloseIconButton"
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: variant === 'default' ? 'env(safe-area-inset-left)' : 0,
+                zIndex: 1000,
+                color: 'text.primary'
+              }}
+              onClick={exitFullscreen}
+            >
+              <Close />
+            </IconButton>
+            <JourneyProvider value={{ journey, variant: 'default' }}>
+              <Conductor blocks={blocks} />
+            </JourneyProvider>
+          </>
+        )}
       </Box>
     </>
   )
