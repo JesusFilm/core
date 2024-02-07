@@ -365,7 +365,6 @@ export function VideoControls({
           </Stack>
           {/* Progress Bar */}
           <Container
-            className="swiper-no-swiping"
             data-testid="vjs-jfp-custom-controls"
             maxWidth="xxl"
             sx={{
