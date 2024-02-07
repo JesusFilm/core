@@ -1,19 +1,24 @@
 import CircleIcon from '@mui/icons-material/Circle'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { StepFields } from '../../Step/__generated__/StepFields'
 
 export function PaginationBullets(): ReactElement {
-  const { treeBlocks, blockHistory } = useBlocks()
+  const { treeBlocks, blockHistory, previousActiveBlock } = useBlocks()
+  const gap = 16
+  // const [left, setLeft] = useState(32)
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
 
   const activeCardRef = useRef<SVGSVGElement>(null)
-
+  //apply left (usestate) on all bullets
+  // increment and decrement depending on nav left or right, need to consider the difference between active and prevActive
+  // compare previousBlock with activeBlock
+  // blockHistory.slice(-1)
   function isAdjacentBlock(block: TreeBlock): boolean {
     if (activeBlock.parentOrder == null || block.parentOrder == null)
       return false
@@ -38,13 +43,26 @@ export function PaginationBullets(): ReactElement {
     return false
   }
 
-  useEffect(() => {
-    activeCardRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-      inline: 'center'
-    })
-  }, [activeBlock])
+  function updateLeft() {
+    if (activeBlock.parentOrder !== null) {
+    }
+  }
+
+  // useEffect(() => {
+  //   activeCardRef.current?.scrollIntoView({
+  //     behavior: 'smooth',
+  //     block: 'center',
+  //     inline: 'center'
+  //   })
+  // }, [activeBlock])
+
+  console.log('blocks', treeBlocks)
+  console.log('blockHist', blockHistory)
+
+  const prevActiveBlock = blockHistory[blockHistory.length - 2]
+  console.log('prevActiveBlock', prevActiveBlock)
+  console.log('activeBlock', activeBlock)
+  // console.log('left:', left)
 
   return (
     <Box
@@ -53,32 +71,41 @@ export function PaginationBullets(): ReactElement {
         top: 15,
         width: '100%',
         zIndex: 1,
-        display: 'flex',
-        justifyContent: 'center'
+        display: 'flex'
       }}
     >
       <Stack
         direction="row"
-        gap={3}
         sx={{
-          width: '84px',
+          border: 'red solid 2px',
+          position: 'absolute',
+          transform: 'translateX(-50%)',
+          width: '80px',
           height: '16px',
-          overflow: 'hidden',
-          alignItems: 'center'
+          alignItems: 'center',
+          left: '50%',
+          overflow: 'hidden'
         }}
       >
-        <CircleIcon
-          sx={{ height: '3px', width: '3px', visibility: 'hidden' }}
-        />
-        <CircleIcon
-          sx={{ height: '6px', width: '6px', visibility: 'hidden' }}
-        />
         {treeBlocks.map((block) => {
           if (block.id === activeBlock.id) {
             return (
               <CircleIcon
                 key={block.id}
-                sx={{ height: '10px', width: '10px', color: 'primary.main' }}
+                sx={{
+                  fontSize: '10px',
+                  scale: '1',
+                  color: 'primary.main',
+                  left: `${
+                    32 +
+                    gap * (block.parentOrder !== null ? block.parentOrder : 1) -
+                    (activeBlock.parentOrder !== null
+                      ? activeBlock.parentOrder * gap
+                      : 0)
+                  }px`,
+                  position: 'absolute',
+                  transition: 'transform .2s, left .2s'
+                }}
                 ref={activeCardRef}
               />
             )
@@ -87,27 +114,27 @@ export function PaginationBullets(): ReactElement {
             <CircleIcon
               key={block.id}
               sx={{
+                fontSize: '10px',
                 color: 'primary.dark',
-                height: isAdjacentBlock(block)
-                  ? '7px'
+                scale: isAdjacentBlock(block)
+                  ? '.66'
                   : isSecondBlock(block)
-                  ? '4px'
-                  : '4px',
-                width: isAdjacentBlock(block)
-                  ? '7px'
-                  : isSecondBlock(block)
-                  ? '4px'
-                  : '4px'
+                  ? '.33'
+                  : '.33',
+                opacity: '60%',
+                left: `${
+                  32 +
+                  gap * (block.parentOrder !== null ? block.parentOrder : 1) -
+                  (activeBlock.parentOrder !== null
+                    ? activeBlock.parentOrder * gap
+                    : 0)
+                }px`,
+                position: 'absolute',
+                transition: 'transform .2s, left .2s'
               }}
             />
           )
         })}
-        <CircleIcon
-          sx={{ height: '6px', width: '6px', visibility: 'hidden' }}
-        />
-        <CircleIcon
-          sx={{ height: '3px', width: '3px', visibility: 'hidden' }}
-        />
       </Stack>
     </Box>
   )
