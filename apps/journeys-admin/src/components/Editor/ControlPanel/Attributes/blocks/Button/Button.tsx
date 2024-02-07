@@ -47,6 +47,12 @@ export function Button({
   ) as TreeBlock<IconFields>
 
   const selectedAction = actions.find((act) => act.value === action?.__typename)
+  const selectedLeadingIcon = icons.find(
+    ({ value }) => value === startIcon?.iconName
+  )
+  const selectedTrailingIcon = icons.find(
+    ({ value }) => value === endIcon?.iconName
+  )
 
   useEffect(() => {
     dispatch({
@@ -132,10 +138,7 @@ export function Button({
         id={`${id}-button-leading-icon`}
         icon={<AlertCircleIcon />}
         name={t('Leading Icon')}
-        value={t(
-          icons.find(({ value }) => value === startIcon?.iconName)?.label ??
-            'None'
-        )}
+        value={t(selectedLeadingIcon?.label ?? 'None')}
         description={t('Leading Icon')}
         onClick={() => {
           dispatch({
@@ -151,10 +154,7 @@ export function Button({
         id={`${id}-button-trailing-icon`}
         icon={<AlertCircleIcon />}
         name={t('Trailing Icon')}
-        value={t(
-          icons.find(({ value }) => value === endIcon?.iconName)?.label ??
-            'None'
-        )}
+        value={t(selectedTrailingIcon?.label ?? 'None')}
         description={t('Trailing Icon')}
         onClick={() => {
           dispatch({

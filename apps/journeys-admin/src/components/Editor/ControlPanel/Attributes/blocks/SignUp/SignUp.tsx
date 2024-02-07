@@ -24,6 +24,9 @@ export function SignUp({
   const submitIcon = children.find(
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
+  const submitLabel = icons.find(
+    ({ value }) => value === submitIcon?.iconName
+  )?.label
 
   useEffect(() => {
     dispatch({
@@ -59,10 +62,7 @@ export function SignUp({
         id={`${id}-signup-icon`}
         icon={<InformationCircleContained />}
         name={t('Button Icon')}
-        value={t(
-          icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
-            'None'
-        )}
+        value={t(submitLabel ?? 'None')}
         description={t('Button Icon')}
         onClick={() => {
           dispatch({

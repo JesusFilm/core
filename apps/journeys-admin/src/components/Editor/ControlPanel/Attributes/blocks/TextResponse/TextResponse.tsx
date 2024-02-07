@@ -29,6 +29,9 @@ export function TextResponse({
   const submitIcon = children.find(
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
+  const submitLabel = icons.find(
+    ({ value }) => value === submitIcon?.iconName
+  )?.label
 
   return (
     <>
@@ -70,10 +73,7 @@ export function TextResponse({
         id={`${id}-text-field-icon`}
         icon={<InformationCircleContainedIcon />}
         name={t('Button Icon')}
-        value={t(
-          icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
-            'None'
-        )}
+        value={t(submitLabel ?? 'None')}
         description={t('Button Icon')}
         onClick={() => {
           dispatch({
