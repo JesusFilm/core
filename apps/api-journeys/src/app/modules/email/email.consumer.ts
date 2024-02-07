@@ -19,9 +19,7 @@ import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessR
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
 import { TeamInviteAcceptedEmail } from '../../emails/templates/TeamInviteAccepted'
-
 import { TeamRemovedEmail } from '../../emails/templates/TeamRemoved'
-
 
 AWS.config.update({ region: 'us-east-2' })
 
@@ -77,7 +75,6 @@ export interface TeamInviteAccepted {
   url: string
 }
 
-
 export interface TeamRemoved {
   teamName: string
   userId: string
@@ -91,7 +88,6 @@ export type ApiJourneysJob =
   | JourneyAccessRequest
   | TeamInviteAccepted
   | TeamRemoved
-
 
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {

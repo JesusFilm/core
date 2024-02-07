@@ -13,7 +13,8 @@ import {
   JourneyEditInviteJob,
   JourneyRequestApproved,
   TeamInviteAccepted,
-  TeamInviteJob
+  TeamInviteJob,
+  TeamRemoved
 } from './email.consumer'
 
 const sendEmailMock = jest.fn().mockReturnValue({ promise: jest.fn() })
@@ -48,6 +49,19 @@ jest.mock('@apollo/client', () => {
     gql: originalModule.gql
   }
 })
+
+const teamRemoved: Job<TeamRemoved, unknown, string> = {
+  name: 'team-removed',
+  data: {
+    teamName: 'test-team',
+    userId: 'userId',
+    sender: {
+      firstName: 'Joe',
+      lastName: 'Ron-Imo',
+      imageUrl: undefined
+    }
+  }
+} as unknown as Job<TeamRemoved, unknown, string>
 
 const teamInviteJob: Job<TeamInviteJob, unknown, string> = {
   name: 'team-invite',
@@ -171,6 +185,14 @@ describe('EmailConsumer', () => {
   })
 
   describe('process', () => {
+    it('should handle team-removed', async () => {
+      emailConsumer.teamRemovedEmail = jest
+        .fn()
+        .mockImplementationOnce(async () => await Promise.resolve())
+      await emailConsumer.process(teamRemoved)
+      expect(emailConsumer.teamRemovedEmail).toHaveBeenCalledWith(teamRemoved)
+    })
+
     it('should handle team-invite', async () => {
       emailConsumer.teamInviteEmail = jest
         .fn()
@@ -220,6 +242,26 @@ describe('EmailConsumer', () => {
     })
   })
 
+  describe('teamRemovedEmail', () => {
+    it('should send an email', async () => {
+      let args = {}
+      emailConsumer.sendEmail = jest
+        .fn()
+        .mockImplementation(async (callArgs) => {
+          args = callArgs
+          await Promise.resolve()
+        })
+      await emailConsumer.teamRemovedEmail(teamRemoved)
+      expect(emailConsumer.sendEmail).toHaveBeenCalled()
+      expect(args).toEqual({
+        to: 'jsmith@exmaple.com',
+        subject: 'You have been removed from team: test-team',
+        html: expect.any(String),
+        text: expect.any(String)
+      })
+    })
+  })
+
   describe('teamInviteEmail', () => {
     it('should send an email', async () => {
       let args = {}
@@ -253,7 +295,7 @@ describe('EmailConsumer', () => {
       expect(emailConsumer.sendEmail).toHaveBeenCalledTimes(2)
       expect(args).toEqual({
         to: 'jsmith@exmaple.com',
-        subject: 'Invitation to join team: Team Title',
+        subject: 'Joe has been added to your team',
         html: expect.any(String),
         text: expect.any(String)
       })
