@@ -196,7 +196,7 @@ export function ActionsListView({
                         <span style={{ fontWeight: 'bold' }}>
                           {'{{ count }}'}
                         </span>{' '}
-                        {count > 1 ? 'cards' : 'card'}
+                        card
                       </Typography>
                     </Trans>
                   </Stack>
