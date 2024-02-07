@@ -9,6 +9,7 @@ import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
+import GitBranchIcon from '@core/shared/ui/icons/GitBranch'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
@@ -125,7 +126,7 @@ function getIconAndColorForBlockType(blockType: string): {
               color: 'white'
             }}
           >
-            {' '}
+            <GitBranchIcon />
           </Box>
         )
       }
@@ -179,7 +180,7 @@ function getIconAndColorForBlockType(blockType: string): {
 }
 
 function hasBlockOfType(step, blockType): boolean {
-  return step.children[0].children.some(
+  return step?.children[0].children.some(
     (child) => child.__typename === blockType
   )
 }
@@ -189,6 +190,7 @@ export function StepBlockNode({
 }: NodeProps<StepBlockNodeData>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const title = getStepHeading(step.id, step.children, steps, t)
+  const subtitle = getStepSubtitle(title)
   const card = step.children.find((card) => card.__typename === 'CardBlock') as
     | TreeBlock<CardBlock>
     | undefined
@@ -238,8 +240,10 @@ export function StepBlockNode({
     ? 'TypographyBlock'
     : 'DefaultBlock'
 
+  const videoStartToEnd = '0:00 - 99:99'
+  const language = 'arabic'
+
   const { icon } = getIconAndColorForBlockType(blockType)
-  console.log(steps)
   return (
     <BaseNode
       selected={selectedStep?.id === step.id}
@@ -254,7 +258,10 @@ export function StepBlockNode({
               width: 50,
               left: 0,
               margin: 0,
-              borderRadius: 0,
+              borderLeft: '1px solid white',
+              borderTop: '1px solid white',
+              borderBottom: '1px solid white',
+              borderRadius: '8px 0 0 8px ',
               bgcolor: card?.backgroundColor,
               backgroundImage: bgImage != null ? `url(${bgImage})` : undefined,
               backgroundSize: 'cover',
@@ -285,10 +292,32 @@ export function StepBlockNode({
             </Box>
           </Box>
         ) : (
-          '' // <FlexAlignBottom1Icon />
+          <Box
+            sx={{
+              height: '100%',
+              flexShrink: 0,
+              width: 50,
+              left: 0,
+              margin: 0,
+              borderRadius: 0,
+              backgroundColor: '#efefef',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start'
+            }}
+          />
         )
       }
       title={title}
+      language={language}
+      subtitle={subtitle}
+      blockType={blockType}
+      videoStartToEnd={videoStartToEnd}
     />
   )
+}
+function getStepSubtitle(title: string): string {
+  return title === '' ? '' : '"Go and lead people on their way..."'
 }

@@ -72,6 +72,6 @@ export function getStepHeading(
   if (heading != null && heading.__typename === 'TypographyBlock') {
     return heading.content
   } else {
-    return getStepNumber(stepId, steps, t)
+    return ''
   }
 }
