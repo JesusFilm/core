@@ -16,6 +16,7 @@ import { JourneyFlow } from '../../JourneyFlow'
 import { Canvas } from '../Canvas'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Attributes } from '../Drawer/Attributes'
+import { use100vh } from 'react-div-100vh'
 
 const StyledSwiper = styled(Swiper)(() => ({
   height: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px)`
@@ -26,6 +27,7 @@ const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
 }))
 
 export function Slider(): ReactElement {
+  const viewportHeight = use100vh()
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
@@ -114,9 +116,9 @@ export function Slider(): ReactElement {
         sx={{
           position: 'absolute',
           left: 0,
-          top: activeSlide > ActiveSlide.JourneyFlow ? 0 : '-10%',
+          top: activeSlide > ActiveSlide.JourneyFlow ? 0 : -75,
           right: 0,
-          height: '10%',
+          height: 75,
           zIndex: 2,
           cursor: 'pointer',
           display: {
@@ -148,9 +150,9 @@ export function Slider(): ReactElement {
         sx={{
           position: 'absolute',
           left: 0,
-          bottom: activeSlide < ActiveSlide.Drawer ? 0 : '-10%',
+          bottom: activeSlide < ActiveSlide.Drawer ? 0 : -75,
           right: 0,
-          height: '10%',
+          height: 75,
           zIndex: 2,
           cursor: 'pointer',
           display: {
@@ -179,7 +181,12 @@ export function Slider(): ReactElement {
       <StyledSwiperSlide
         sx={{
           width: { xs: '100%', sm: 'calc(100% - 408px)' },
-          height: { xs: '90%', sm: '100%' }
+          height: {
+            xs: `calc(${
+              viewportHeight ? `${viewportHeight}px` : '100vh'
+            } - 75px - ${EDIT_TOOLBAR_HEIGHT}px)`,
+            sm: '100%'
+          }
         }}
       >
         <Box
@@ -197,7 +204,12 @@ export function Slider(): ReactElement {
       <StyledSwiperSlide
         sx={{
           width: { xs: '100%', sm: 'calc(100% - 120px - 360px)' },
-          height: { xs: '80%', sm: '100%' },
+          height: {
+            xs: `calc(${
+              viewportHeight ? `${viewportHeight}px` : '100vh'
+            } - 150px - ${EDIT_TOOLBAR_HEIGHT}px)`,
+            sm: '100%'
+          },
           display: 'flex',
           justifyContent: 'space-between',
           position: 'relative'
@@ -211,7 +223,12 @@ export function Slider(): ReactElement {
             xs: '100%',
             sm: DRAWER_WIDTH + parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
           }),
-          height: { xs: '90%', sm: '100%' }
+          height: {
+            xs: `calc(${
+              viewportHeight ? `${viewportHeight}px` : '100vh'
+            } - 75px - ${EDIT_TOOLBAR_HEIGHT}px)`,
+            sm: '100%'
+          }
         }}
       >
         <Attributes />
