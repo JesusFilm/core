@@ -154,7 +154,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           overflow: 'hidden'
         }}
       >
-        <SwipeNavigation activeBlock={activeBlock} />
+        <SwipeNavigation activeBlock={activeBlock} rtl={rtl} />
         {showHeaderFooter && router.query.noi == null && (
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
