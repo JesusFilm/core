@@ -204,7 +204,7 @@ export class EmailConsumer extends WorkerHost {
       (userJourney) => userJourney.role === UserJourneyRole.owner
     )?.userId
 
-    // TODO: u se this users call to check if user is subscribed to this type of email notification
+    // TODO: use this users call to check if user is subscribed to this type of email notification
     const { data } = await apollo.query({
       query: gql`
         query User($userId: ID!) {
@@ -252,7 +252,7 @@ export class EmailConsumer extends WorkerHost {
   async journeyRequestApproved(
     job: Job<JourneyRequestApproved>
   ): Promise<void> {
-    // TODO: u se this users call to check if user is subscribed to this type of email notification
+    // TODO: use this users call to check if user is subscribed to this type of email notification
     const { data } = await apollo.query({
       query: gql`
         query User($userId: ID!) {
