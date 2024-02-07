@@ -8,11 +8,7 @@ import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  nextActiveBlock,
-  previousActiveBlock,
-  useBlocks
-} from '@core/journeys/ui/block'
+import { useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -26,8 +22,9 @@ import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
-import { CardRenderer } from './CardRenderer'
+import { JourneyRenderer } from './JourneyRenderer'
 import { NavigationButton } from './NavigationButton'
+import { SwipeNavigation } from './SwipeNavigation'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -66,37 +63,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
     JOURNEY_VISITOR_UPDATE
   )
-
-  const enableTouchMoveNext = !activeBlock?.locked ?? false
-
-  useEffect(() => {
-    let touchstartX = 0
-    let touchendX = 0
-    const swipeSensitivity = 50
-
-    function checkDirection(): void {
-      if (touchendX + swipeSensitivity < touchstartX && enableTouchMoveNext)
-        nextActiveBlock()
-      if (touchendX - swipeSensitivity > touchstartX) previousActiveBlock()
-    }
-
-    function touchStart(e): void {
-      touchstartX = e.changedTouches[0].screenX
-    }
-
-    function touchEnd(e): void {
-      touchendX = e.changedTouches[0].screenX
-      checkDirection()
-    }
-
-    document.addEventListener('touchstart', touchStart)
-    document.addEventListener('touchend', touchEnd)
-
-    return () => {
-      document.removeEventListener('touchstart', touchStart)
-      document.removeEventListener('touchend', touchEnd)
-    }
-  }, [activeBlock, enableTouchMoveNext])
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
@@ -172,22 +138,31 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const stepTheme = getStepTheme(activeBlock, journey)
 
   return (
-    <Stack
-      data-testid="Conductor"
-      sx={{
-        justifyContent: 'center',
-        height: viewportHeight ?? '100vh',
-        background: theme.palette.grey[900],
-        p: { lg: 6 },
-        overflow: 'hidden'
-      }}
+    <ThemeProvider
+      themeName={ThemeName.journeyUi}
+      themeMode={stepTheme.themeMode}
+      locale={locale}
+      rtl={rtl}
+      nested
     >
-      <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+      <Stack
+        data-testid="Conductor"
+        sx={{
+          justifyContent: 'center',
+          height: viewportHeight ?? '100vh',
+          background: theme.palette.grey[900],
+          p: { lg: 6 },
+          overflow: 'hidden'
+        }}
+      >
+        <SwipeNavigation activeBlock={activeBlock} />
         {showHeaderFooter && router.query.noi == null && (
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
         <Stack sx={{ height: '100%' }}>
-          <CardRenderer {...stepTheme} />
+          <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+            <JourneyRenderer />
+          </ThemeProvider>
 
           <NavigationButton
             variant={rtl ? 'next' : 'previous'}
@@ -204,7 +179,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             ...mobileNotchStyling
           }}
         />
-      </ThemeProvider>
-    </Stack>
+      </Stack>
+    </ThemeProvider>
   )
 }
