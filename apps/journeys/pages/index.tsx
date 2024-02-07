@@ -72,10 +72,9 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                           <StyledIframe
                             src={`/embed/${slug}`}
                             sx={{
-                              width: 'calc(100% + 64px)',
-                              height: 664,
-                              border: 'none',
-                              margin: '-32px'
+                              width: '100%',
+                              height: 600,
+                              border: 'none'
                             }}
                           />
                         </Fade>
