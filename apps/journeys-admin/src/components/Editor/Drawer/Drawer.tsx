@@ -58,7 +58,6 @@ export function Drawer({
   onClose
 }: DrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const { zIndex } = useTheme()
 
   return (
     <MuiDrawer
@@ -73,18 +72,20 @@ export function Drawer({
           open != null
             ? {
                 borderRadius: 4,
-                width: DRAWER_WIDTH,
+                width: smUp ? DRAWER_WIDTH : 'auto',
                 top: EDIT_TOOLBAR_HEIGHT + 20,
+                left: { xs: 20, sm: 'auto' },
                 right: 20,
                 bottom: 20,
                 height: 'auto'
               }
             : {
                 borderRadius: 4,
+                width: smUp ? DRAWER_WIDTH : 'auto',
+                left: { xs: 20, sm: 'auto' },
                 top: 20,
                 right: 20,
                 bottom: 20,
-                width: DRAWER_WIDTH,
                 height: 'auto'
               }
       }}
