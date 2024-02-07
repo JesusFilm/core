@@ -17,7 +17,13 @@ import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 import { SlugDialog } from './SlugDialog'
 
-export function JourneyLink(): ReactElement {
+interface JourneyLinkProps {
+  isMenu?: boolean
+}
+
+export function JourneyLink({
+  isMenu = false
+}: JourneyLinkProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const [showSlugDialog, setShowSlugDialog] = useState(false)
@@ -35,54 +41,56 @@ export function JourneyLink(): ReactElement {
 
   return (
     <>
-      {smUp && (
-        <Typography variant="subtitle2" gutterBottom>
-          {t('Journey URL')}
-        </Typography>
-      )}
-      <CopyTextField
-        value={
-          journey?.slug != null
-            ? `${
-                process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                'https://your.nextstep.is'
-              }/${journey.slug}`
-            : undefined
-        }
-        label={!smUp ? t('Journey URL') : undefined}
-        sx={
-          !smUp
-            ? {
-                '.MuiFilledInput-root': {
-                  backgroundColor: 'background.paper'
+      <Stack direction="column">
+        {smUp && (
+          <Typography variant="subtitle2" gutterBottom>
+            {isMenu ? t('Share This Journey') : t('Journey URL')}
+          </Typography>
+        )}
+        <CopyTextField
+          value={
+            journey?.slug != null
+              ? `${
+                  process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                  'https://your.nextstep.is'
+                }/${journey.slug}`
+              : undefined
+          }
+          label={!smUp ? t('Journey URL') : undefined}
+          sx={
+            !smUp
+              ? {
+                  '.MuiFilledInput-root': {
+                    backgroundColor: 'background.paper'
+                  }
                 }
-              }
-            : undefined
-        }
-      />
-      <Stack direction="row" spacing={6} sx={{ pt: 2 }}>
-        <Button
-          onClick={() => {
-            setShowSlugDialog(true)
-            setRoute('edit-url')
-          }}
-          size="small"
-          startIcon={<Edit2Icon />}
-          disabled={journey == null}
-        >
-          {t('Edit URL')}
-        </Button>
-        <Button
-          onClick={() => {
-            setShowEmbedDialog(true)
-            setRoute('embed-journey')
-          }}
-          size="small"
-          startIcon={<Code1Icon />}
-          disabled={journey == null}
-        >
-          {t('Embed Journey')}
-        </Button>
+              : undefined
+          }
+        />
+        <Stack direction="row" spacing={6} sx={{ pt: 2 }}>
+          <Button
+            onClick={() => {
+              setShowSlugDialog(true)
+              setRoute('edit-url')
+            }}
+            size="small"
+            startIcon={<Edit2Icon />}
+            disabled={journey == null}
+          >
+            {t('Edit URL')}
+          </Button>
+          <Button
+            onClick={() => {
+              setShowEmbedDialog(true)
+              setRoute('embed-journey')
+            }}
+            size="small"
+            startIcon={<Code1Icon />}
+            disabled={journey == null}
+          >
+            {t('Embed Journey')}
+          </Button>
+        </Stack>
       </Stack>
       <SlugDialog
         open={showSlugDialog}

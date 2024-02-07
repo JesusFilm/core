@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -153,7 +154,7 @@ export function Menu(): ReactElement {
         >
           <MenuItem
             label={t('Preview')}
-            icon={<EyeOpenIcon />}
+            icon={<PlayArrowOutlinedIcon />}
             openInNew
             onClick={handleCloseMenu}
           />

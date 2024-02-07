@@ -1,20 +1,26 @@
+import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined'
+import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import MuiMenu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
+import { JourneyLink } from '../Properties/JourneyLink'
 
 import { Analytics } from './Analytics'
 import { Menu } from './Menu'
@@ -23,6 +29,14 @@ export function EditToolbar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+
+  function handleShowMenu(event: React.MouseEvent<HTMLButtonElement>): void {
+    setAnchorEl(event.currentTarget)
+  }
+  function handleCloseMenu(): void {
+    setAnchorEl(null)
+  }
   return (
     <Stack
       direction="row"
@@ -98,13 +112,11 @@ export function EditToolbar(): ReactElement {
               {journey.description}
             </Typography>
           </Stack>
+          <Analytics journey={journey} variant="button" />
           <Button
-            variant="contained"
-            component="a"
-            href={`/api/preview?slug=${journey.slug}`}
-            target="_blank"
+            variant="outlined"
             color="secondary"
-            startIcon={<EyeOpenIcon />}
+            startIcon={<LightbulbOutlinedIcon />}
             sx={{
               display: {
                 xs: 'none',
@@ -112,8 +124,36 @@ export function EditToolbar(): ReactElement {
               }
             }}
           >
-            {t('Preview')}
+            {t('Strategy')}
           </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<LinkAngled />}
+            onClick={handleShowMenu}
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex'
+              }
+            }}
+          >
+            {t('Share')}
+          </Button>
+          <IconButton
+            component="a"
+            href={`/api/preview?slug=${journey.slug}`}
+            target="_blank"
+            color="secondary"
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex'
+              }
+            }}
+          >
+            <PlayArrowOutlinedIcon />
+          </IconButton>
           <IconButton
             aria-label="Preview"
             href={`/api/preview?slug=${journey.slug}`}
@@ -125,9 +165,18 @@ export function EditToolbar(): ReactElement {
               }
             }}
           >
-            <EyeOpenIcon />
+            <PlayArrowOutlinedIcon />
           </IconButton>
-          <Analytics journey={journey} variant="button" />
+          <MuiMenu
+            id="share-journey-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleCloseMenu}
+          >
+            <MenuItem>
+              <JourneyLink isMenu />
+            </MenuItem>
+          </MuiMenu>
         </>
       )}
       <Menu />
