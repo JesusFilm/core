@@ -82,8 +82,7 @@ export function SocialPreviewMessage(): ReactElement {
     <Box
       width={256}
       sx={{
-        transform: { md: 'scale(1)', lg: 'scale(1.33)' },
-        transformOrigin: 'top center'
+        transform: 'scale(1.5)'
       }}
       data-testid="SocialPreviewMessage"
     >
@@ -91,10 +90,10 @@ export function SocialPreviewMessage(): ReactElement {
         <Typography variant="caption" pb={4} textAlign="center">
           {t('Messaging App View')}
         </Typography>
-        <Box>
-          <MessageBubble width={200} height={40} direction="left" />
+        <Stack alignItems="center">
+          <MessageBubble width={190} height={46} direction="left" />
           {journey != null && (
-            <MessageBubble width={240} direction="right">
+            <MessageBubble width={236} direction="right">
               <Stack direction="column">
                 <Stack direction="row" gap={2}>
                   {journey?.primaryImageBlock?.src == null ? (
@@ -171,8 +170,8 @@ export function SocialPreviewMessage(): ReactElement {
               </Stack>
             </MessageBubble>
           )}
-          <MessageBubble width={200} height={40} direction="right" />
-        </Box>
+          <MessageBubble width={190} height={46} direction="right" />
+        </Stack>
       </Stack>
     </Box>
   )

@@ -283,7 +283,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
 
   nodes.push({
     type: 'SocialPreview',
-    id: 'fhiweofheoi',
+    id: 'SocialPreview',
     position: { x: -165, y: -195 },
     data: { __typename: 'SocialPreview' }
   })
@@ -307,7 +307,6 @@ export function JourneyFlow(): ReactElement {
     const { nodes, edges } = transformSteps(steps ?? [])
     setEdges(edges)
     setNodes(nodes)
-    console.log(nodes)
   }, [steps, setNodes, setEdges])
 
   const onConnectStart: OnConnectStart = (_, { nodeId }) => {

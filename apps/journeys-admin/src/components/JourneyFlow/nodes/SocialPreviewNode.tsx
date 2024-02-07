@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
@@ -15,11 +15,14 @@ import Image from 'next/image'
 
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 import Stack from '@mui/material/Stack'
-import CardActionArea from '@mui/material/CardActionArea'
 import CardMedia from '@mui/material/CardMedia'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble'
 import ShareIcon from '@mui/icons-material/Share'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 
 export interface SocialPreviewNodeData {
   __typename: 'SocialPreview'
@@ -27,130 +30,137 @@ export interface SocialPreviewNodeData {
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
+  const { dispatch } = useEditor()
+
+  function handleClick() {
+    dispatch({
+      type: 'SetJourneyEditContentAction',
+      component: ActiveJourneyEditContent.SocialPreview
+    })
+  }
 
   return (
     <BaseNode
+      onClick={() => handleClick()}
       title={journey?.title ?? 'Social Preview'}
       variant="social"
       icon={
-        <Stack direction="column" justifyContent="start" alignContent="center">
-          {journey != null && (
-            <Card
-              sx={{
-                height: 168,
-                width: 130.5,
-                borderRadius: '9px',
-                display: 'block',
-                px: 1.5
-              }}
+        journey != null && (
+          <Card
+            sx={{
+              height: 168,
+              width: 130.5,
+              borderRadius: '9px',
+              display: 'block',
+              px: 1.5
+            }}
+          >
+            <Stack
+              direction="row"
+              height="30px"
+              justifyContent="space-between"
+              alignItems="center"
             >
-              <Stack
-                direction="row"
-                height="30px"
-                justifyContent="space-between"
-                alignItems="center"
+              <Avatar
+                sx={{
+                  height: 15,
+                  width: 15,
+                  mr: 1,
+                  p: 0.75,
+                  bgcolor: (theme) => theme.palette.background.default,
+                  color: (theme) => theme.palette.background.paper
+                }}
               >
-                <Avatar
-                  sx={{
-                    height: 15,
-                    width: 15,
-                    mr: 1,
-                    p: 0.75,
-                    bgcolor: (theme) => theme.palette.background.default,
-                    color: (theme) => theme.palette.background.paper
-                  }}
-                >
-                  <UserProfile2Icon sx={{ height: '15px' }} />
-                </Avatar>
-                <Box flexGrow={1}>
-                  <Box
-                    width={45}
-                    height={9}
-                    bgcolor="#EFEFEF"
-                    borderRadius="4.5px"
-                  />
-                </Box>
+                <UserProfile2Icon sx={{ height: '15px' }} />
+              </Avatar>
+              <Box flexGrow={1}>
                 <Box
-                  width={9}
+                  width={45}
                   height={9}
                   bgcolor="#EFEFEF"
                   borderRadius="4.5px"
                 />
-              </Stack>
-              <CardMedia>
-                {journey?.primaryImageBlock?.src == null ? (
-                  <Box
-                    data-testid="social-preview-post-empty"
-                    display="block"
-                    width={118.5}
-                    height={90}
-                    bgcolor="rgba(0, 0, 0, 0.1)"
-                    borderRadius="4px"
-                  />
-                ) : (
-                  <Image
-                    src={journey.primaryImageBlock.src}
-                    alt={journey.primaryImageBlock.alt ?? ''}
-                    width={118.5}
-                    height={90}
-                    style={{
-                      borderRadius: '4px',
-                      maxWidth: '100%',
-                      objectFit: 'cover'
-                    }}
-                  />
-                )}
-              </CardMedia>
-              <CardContent sx={{ p: 0, mt: 1.5 }}>
-                {isEmpty(journey?.seoTitle) ? (
-                  <Box
-                    width={118.5}
-                    height={9}
-                    bgcolor="#EFEFEF"
-                    borderRadius="3px"
-                    mb={0.75}
-                  />
-                ) : (
-                  <Typography
-                    variant="subtitle1"
-                    fontSize={9}
-                    lineHeight="12px"
-                    color="#26262E"
-                  >
-                    {journey.seoTitle}
-                  </Typography>
-                )}
-                {isEmpty(journey?.seoDescription) ? (
-                  <Box
-                    width={118.5}
-                    height={9}
-                    bgcolor="#EFEFEF"
-                    borderRadius="3px"
-                  />
-                ) : (
-                  <Typography
-                    variant="body2"
-                    fontSize={8}
-                    lineHeight="12px"
-                    color="#6D6D7D"
-                  >
-                    {journey.seoDescription}
-                  </Typography>
-                )}
-                <Stack
-                  flexDirection="row"
-                  justifyContent="space-around"
-                  color="#EFEFEF"
-                  my={1.5}
+              </Box>
+              <Box
+                width={9}
+                height={9}
+                bgcolor="#EFEFEF"
+                borderRadius="4.5px"
+              />
+            </Stack>
+            <CardMedia>
+              {journey?.primaryImageBlock?.src == null ? (
+                <Box
+                  data-testid="social-preview-post-empty"
+                  display="block"
+                  width={118.5}
+                  height={90}
+                  bgcolor="rgba(0, 0, 0, 0.1)"
+                  borderRadius="4px"
+                />
+              ) : (
+                <Image
+                  src={journey.primaryImageBlock.src}
+                  alt={journey.primaryImageBlock.alt ?? ''}
+                  width={118.5}
+                  height={90}
+                  style={{
+                    borderRadius: '4px',
+                    maxWidth: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              )}
+            </CardMedia>
+            <CardContent sx={{ p: 0, mt: 1.5 }}>
+              {isEmpty(journey?.seoTitle) ? (
+                <Box
+                  width={118.5}
+                  height={9}
+                  bgcolor="#EFEFEF"
+                  borderRadius="3px"
+                  mb={0.75}
+                />
+              ) : (
+                <Typography
+                  variant="subtitle1"
+                  fontSize={9}
+                  lineHeight="12px"
+                  color="#26262E"
                 >
-                  <ThumbUpIcon sx={{ fontSize: 9 }} />
-                  <ChatBubbleIcon sx={{ fontSize: 9 }} />
-                  <ShareIcon sx={{ fontSize: 9 }} />
-                </Stack>
-              </CardContent>
-            </Card>
-          )}
-        </Stack>
+                  {journey.seoTitle}
+                </Typography>
+              )}
+              {isEmpty(journey?.seoDescription) ? (
+                <Box
+                  width={118.5}
+                  height={9}
+                  bgcolor="#EFEFEF"
+                  borderRadius="3px"
+                />
+              ) : (
+                <Typography
+                  variant="body2"
+                  fontSize={8}
+                  lineHeight="12px"
+                  color="#6D6D7D"
+                >
+                  {journey.seoDescription}
+                </Typography>
+              )}
+              <Stack
+                flexDirection="row"
+                justifyContent="space-around"
+                color="#EFEFEF"
+                my={1.5}
+              >
+                <ThumbUpIcon sx={{ fontSize: 9 }} />
+                <ChatBubbleIcon sx={{ fontSize: 9 }} />
+                <ShareIcon sx={{ fontSize: 9 }} />
+              </Stack>
+            </CardContent>
+          </Card>
+        )
       }
     />
   )

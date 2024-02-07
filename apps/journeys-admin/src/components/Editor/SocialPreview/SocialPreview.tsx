@@ -13,12 +13,16 @@ import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
 
 export function SocialPreview(): ReactElement {
-  const { dispatch } = useEditor()
+  const {
+    state: { activeSlide },
+    dispatch
+  } = useEditor()
   // uses usemediaquery to force component reload for sizing
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const handleSocialEditFabClick = (): void => {
     dispatch({ type: 'SetDrawerMobileOpenAction', mobileOpen: true })
   }
+
   return (
     <>
       {mdUp ? (
@@ -30,16 +34,20 @@ export function SocialPreview(): ReactElement {
           sx={{ width: '100%', height: '100%' }}
         >
           <SocialPreviewPost />
-          <Divider
-            orientation="vertical"
-            sx={{
-              height: '308px',
-              bgcolor: '#DCDDE5',
-              transform: 'scale(1.33)',
-              transformOrigin: 'top center'
-            }}
-          />
-          <SocialPreviewMessage />
+          {activeSlide !== 0 && (
+            <>
+              <Divider
+                orientation="vertical"
+                sx={{
+                  height: '308px',
+                  bgcolor: '#DCDDE5',
+                  transform: 'scale(1.33)',
+                  transformOrigin: 'center'
+                }}
+              />
+              <SocialPreviewMessage />
+            </>
+          )}
         </Stack>
       ) : (
         <Box data-testid="SocialPreview">

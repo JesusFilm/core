@@ -12,6 +12,7 @@ import { JourneyFlow } from '../../JourneyFlow'
 import { Canvas } from '../Canvas'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Drawer } from '../Drawer'
+import { SocialPreview } from '../SocialPreview'
 
 const StyledSwiper = styled(Swiper)(() => ({
   height: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px)`
@@ -24,7 +25,7 @@ const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
 export function Slider(): ReactElement {
   const swiperRef = useRef<SwiperRef>(null)
   const {
-    state: { activeSlide },
+    state: { activeSlide, journeyEditContentComponent },
     dispatch
   } = useEditor()
 
@@ -106,7 +107,13 @@ export function Slider(): ReactElement {
               theme.transitions.create('flex-grow', { duration: 300 })
           }}
         >
-          <Canvas />
+          {journeyEditContentComponent === 'canvas' ? (
+            <Canvas />
+          ) : journeyEditContentComponent === 'social' ? (
+            <SocialPreview />
+          ) : (
+            <></>
+          )}
         </Box>
         <Box
           sx={{

@@ -8,45 +8,71 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import { ReactElement } from 'react'
+import { ReactElement, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import MessageCircleIcon from '@core/shared/ui/icons/MessageCircle'
-import ShareIcon from '@core/shared/ui/icons/Share'
-import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
+import ThumbUpIcon from '@mui/icons-material/ThumbUp'
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble'
+import ShareIcon from '@mui/icons-material/Share'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
+import {
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
 
 export function SocialPreviewPost(): ReactElement {
   const { journey } = useJourney()
+  const {
+    state: { activeSlide },
+    dispatch
+  } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
+
+  function handleSelect(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Canvas
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: t('Social Share Preview'),
+      mobileOpen: false,
+      children: <SocialShareAppearance />
+    })
+  }
   return (
     <Box
-      width={256}
       sx={{
-        transform: { xs: 'scale(1)', lg: 'scale(1.33)' },
-        transformOrigin: 'top center'
+        m: activeSlide === ActiveSlide.Canvas ? 0 : 16,
+        transform: { xs: 'scale(1)', lg: 'scale(1.33)' }
       }}
       data-testid="SocialPreviewPost"
     >
-      <Stack direction="column" justifyContent="start" alignContent="center">
+      <Stack
+        onClick={handleSelect}
+        direction="column"
+        justifyContent="start"
+        alignContent="center"
+      >
         <Typography variant="caption" pb={4} textAlign="center">
           {t('Social App View')}
         </Typography>
         {journey != null && (
           <Card
             sx={{
-              width: { md: 240, xs: 224 },
+              width: 228,
+              height: 294,
               border: '0.5px solid #DEDFE0',
-              borderRadius: '12px',
-              px: 2,
-              display: 'block'
+              borderRadius: '16px',
+              display: 'block',
+              padding: 2.5
             }}
             elevation={0}
           >
             <Stack
               pb={2}
-              mt={2}
               mb={0}
               direction="row"
               width="100%"
@@ -55,8 +81,8 @@ export function SocialPreviewPost(): ReactElement {
             >
               <Avatar
                 sx={{
-                  width: 20,
-                  height: 20,
+                  width: 26,
+                  height: 26,
                   mr: 2,
                   bgcolor: (theme) => theme.palette.background.default,
                   color: (theme) => theme.palette.background.paper
@@ -66,17 +92,17 @@ export function SocialPreviewPost(): ReactElement {
               </Avatar>
               <Box flexGrow={1}>
                 <Box
-                  width={60}
-                  height={12}
+                  width={80}
+                  height={16}
                   bgcolor="#EFEFEF"
-                  borderRadius="6px"
+                  borderRadius="8px"
                 />
               </Box>
               <Box
-                width={12}
-                height={12}
+                width={16}
+                height={16}
                 bgcolor="#EFEFEF"
-                borderRadius="6px"
+                borderRadius="8px"
                 mr={0}
               />
             </Stack>
@@ -84,8 +110,8 @@ export function SocialPreviewPost(): ReactElement {
               sx={{
                 px: 0,
                 pt: 0,
-                width: 224,
-                height: 120,
+                width: 208,
+                height: 158,
                 display: 'flex',
                 flexDirection: 'column'
               }}
@@ -94,49 +120,39 @@ export function SocialPreviewPost(): ReactElement {
                 <Box
                   data-testid="social-preview-post-empty"
                   display="block"
-                  width={224}
-                  height={120}
+                  width={208}
+                  height={158}
                   bgcolor="rgba(0, 0, 0, 0.1)"
-                  borderRadius="4px"
+                  borderRadius="5px"
                 />
               ) : (
                 <Image
                   src={journey.primaryImageBlock.src}
                   alt={journey.primaryImageBlock.alt ?? ''}
-                  width={224}
-                  height={120}
+                  width={208}
+                  height={158}
                   style={{
-                    borderRadius: '4px',
+                    borderRadius: '5px',
                     maxWidth: '100%',
                     objectFit: 'cover'
                   }}
                 />
               )}
             </CardMedia>
-            <CardContent sx={{ p: 0, mb: 2 }}>
-              <Typography
-                variant="body2"
-                fontSize={7}
-                fontWeight={400}
-                lineHeight="10px"
-                color="#6D6D7D"
-                my={2}
-              >
-                YOUR.NEXTSTEP.IS
-              </Typography>
+            <CardContent sx={{ p: 0, my: 3 }}>
               {isEmpty(journey?.seoTitle) ? (
                 <Box
-                  width={224}
-                  height={12}
+                  width={208}
+                  height={15}
                   bgcolor="#EFEFEF"
-                  borderRadius="6px"
+                  borderRadius="8px"
                   mb={1}
                 />
               ) : (
                 <Typography
                   variant="subtitle1"
-                  fontSize={9}
-                  lineHeight="12px"
+                  fontSize={12}
+                  lineHeight="16px"
                   color="#26262E"
                 >
                   {journey.seoTitle}
@@ -144,16 +160,16 @@ export function SocialPreviewPost(): ReactElement {
               )}
               {isEmpty(journey?.seoDescription) ? (
                 <Box
-                  width={158}
-                  height={12}
+                  width={144}
+                  height={15}
                   bgcolor="#EFEFEF"
-                  borderRadius="6px"
+                  borderRadius="8px"
                 />
               ) : (
                 <Typography
                   variant="body2"
                   fontSize={8}
-                  lineHeight="12px"
+                  lineHeight="15px"
                   color="#6D6D7D"
                 >
                   {journey.seoDescription}
@@ -163,11 +179,11 @@ export function SocialPreviewPost(): ReactElement {
                 flexDirection="row"
                 justifyContent="space-around"
                 color="#EFEFEF"
-                my={2}
+                my={3}
               >
-                <ThumbsUpIcon sx={{ fontSize: 12 }} />
-                <MessageCircleIcon sx={{ fontSize: 12 }} />
-                <ShareIcon sx={{ fontSize: 12 }} />
+                <ThumbUpIcon sx={{ fontSize: 15 }} />
+                <ChatBubbleIcon sx={{ fontSize: 15 }} />
+                <ShareIcon sx={{ fontSize: 15 }} />
               </Stack>
             </CardContent>
             <CardActionArea />
