@@ -19,6 +19,7 @@ import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessR
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
 import { TeamInviteAcceptedEmail } from '../../emails/templates/TeamInviteAccepted'
+import { TeamRemovedEmail } from '../../emails/templates/TeamRemoved'
 
 AWS.config.update({ region: 'us-east-2' })
 
@@ -74,12 +75,19 @@ export interface TeamInviteAccepted {
   url: string
 }
 
+export interface TeamRemoved {
+  teamName: string
+  userId: string
+  sender: Omit<User, 'id' | 'email'>
+}
+
 export type ApiJourneysJob =
   | JourneyEditInviteJob
   | TeamInviteJob
   | JourneyRequestApproved
   | JourneyAccessRequest
   | TeamInviteAccepted
+  | TeamRemoved
 
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
@@ -91,6 +99,9 @@ export class EmailConsumer extends WorkerHost {
     switch (job.name) {
       case 'team-invite':
         await this.teamInviteEmail(job as Job<TeamInviteJob>)
+        break
+      case 'team-removed':
+        await this.teamRemovedEmail(job as Job<TeamRemoved>)
         break
       case 'team-invite-accepted':
         await this.teamInviteAcceptedEmail(job as Job<TeamInviteAccepted>)
@@ -105,6 +116,47 @@ export class EmailConsumer extends WorkerHost {
         await this.journeyAccessRequest(job as Job<JourneyAccessRequest>)
         break
     }
+  }
+
+  async teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
+    const { data } = await apollo.query({
+      query: gql`
+        query User($userId: ID!) {
+          user(id: $userId) {
+            id
+            email
+          }
+        }
+      `,
+      variables: { userId: job.data.userId }
+    })
+
+    const html = render(
+      TeamRemovedEmail({
+        teamName: job.data.teamName,
+        sender: job.data.sender
+      }),
+      {
+        pretty: true
+      }
+    )
+
+    const text = render(
+      TeamRemovedEmail({
+        teamName: job.data.teamName,
+        sender: job.data.sender
+      }),
+      {
+        plainText: true
+      }
+    )
+
+    await this.sendEmail({
+      to: data.user.email,
+      subject: `You have been removed from team: ${job.data.teamName}`,
+      text,
+      html
+    })
   }
 
   async teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
@@ -192,7 +244,9 @@ export class EmailConsumer extends WorkerHost {
 
       await this.sendEmail({
         to: recipient.user.email,
-        subject: `Invitation to join team: ${job.data.team.title}`,
+        subject: `${
+          job.data.sender.firstName ?? 'A new member'
+        } has been added to your team`,
         text,
         html
       })
