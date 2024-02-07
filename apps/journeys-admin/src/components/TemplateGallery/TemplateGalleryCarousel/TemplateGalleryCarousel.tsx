@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import kebabCase from 'lodash/kebabCase'
 import {
@@ -52,6 +52,7 @@ export function TemplateGalleryCarousel<T>({
 }: TemplateGalleryCarouselProps<T>): ReactElement {
   const [swiper, setSwiper] = useState<SwiperClass>()
   const [hovered, setHovered] = useState(false)
+  const theme = useTheme()
 
   const nextRef = useRef<HTMLButtonElement>(null)
   const prevRef = useRef<HTMLButtonElement>(null)
@@ -108,6 +109,8 @@ export function TemplateGalleryCarousel<T>({
           mousewheel={{ forceToAxis: true }}
           breakpoints={breakpoints}
           onSwiper={(swiper) => setSwiper(swiper)}
+          dir={theme.direction}
+          key={theme.direction}
           sx={{ ml: slidesOffsetBefore != null ? slidesOffsetBefore / 4 : 0 }}
         >
           {items.map((item, index) => {
