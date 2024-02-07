@@ -1,6 +1,7 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import { dir } from 'i18next'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
@@ -62,6 +63,7 @@ function JourneysAdminApp({
   })
 
   useEffect(() => {
+    document.dir = dir(i18n?.language)
     if (process.env.NEXT_PUBLIC_GTM_ID != null)
       TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
 
