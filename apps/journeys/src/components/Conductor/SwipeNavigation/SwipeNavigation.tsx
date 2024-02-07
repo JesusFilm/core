@@ -19,10 +19,12 @@ import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousE
 
 interface SwipeNavigationProps {
   activeBlock: TreeBlock<StepFields>
+  rtl: boolean
 }
 
 export function SwipeNavigation({
-  activeBlock
+  activeBlock,
+  rtl
 }: SwipeNavigationProps): ReactElement {
   const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
     STEP_NEXT_EVENT_CREATE
@@ -164,9 +166,14 @@ export function SwipeNavigation({
     const swipeSensitivity = 50
 
     function checkDirection(): void {
-      if (touchendX + swipeSensitivity < touchstartX && enableTouchMoveNext)
-        handleNav('next')
-      if (touchendX - swipeSensitivity > touchstartX) handleNav('previous')
+      if (touchendX + swipeSensitivity < touchstartX && enableTouchMoveNext) {
+        const direction = rtl ? 'previous' : 'next'
+        handleNav(direction)
+      }
+      if (touchendX - swipeSensitivity > touchstartX) {
+        const direction = rtl ? 'next' : 'previous'
+        handleNav(direction)
+      }
     }
 
     function touchStart(e): void {
@@ -185,7 +192,7 @@ export function SwipeNavigation({
       document.removeEventListener('touchstart', touchStart)
       document.removeEventListener('touchend', touchEnd)
     }
-  }, [activeBlock, enableTouchMoveNext, handleNav])
+  }, [activeBlock, enableTouchMoveNext, handleNav, rtl])
 
   return <></>
 }
