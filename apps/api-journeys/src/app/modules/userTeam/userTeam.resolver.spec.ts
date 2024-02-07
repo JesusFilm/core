@@ -2,12 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { UserTeam, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { User as firebaseUser } from '@core/nest/common/firebaseClient'
+import { User } from '@core/nest/common/firebaseClient'
 
-import {
-  UserTeamRole as GraphQlUserTeamRole,
-  User
-} from '../../__generated__/graphql'
+import { UserTeamRole as GraphQlUserTeamRole } from '../../__generated__/graphql'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -243,7 +240,7 @@ describe('UserTeamResolver', () => {
   })
 
   describe('userTeamDelete', () => {
-    const user: firebaseUser = {
+    const user: User = {
       id: 'userId',
       firstName: 'Joe',
       lastName: 'Ron-Imo',
