@@ -16,9 +16,9 @@ import Image from 'next/image'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 import Stack from '@mui/material/Stack'
 import CardMedia from '@mui/material/CardMedia'
-import ThumbUpIcon from '@mui/icons-material/ThumbUp'
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble'
-import ShareIcon from '@mui/icons-material/Share'
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+import MessageCircle from '@core/shared/ui/icons/MessageCircle'
+import Share from '@core/shared/ui/icons/Share'
 import {
   ActiveJourneyEditContent,
   useEditor
@@ -65,10 +65,9 @@ export function SocialPreviewNode(): ReactElement {
                 sx={{
                   height: 15,
                   width: 15,
-                  mr: 1,
-                  p: 0.75,
                   bgcolor: (theme) => theme.palette.background.default,
-                  color: (theme) => theme.palette.background.paper
+                  color: (theme) => theme.palette.background.paper,
+                  mr: 1.5
                 }}
               >
                 <UserProfile2Icon sx={{ height: '15px' }} />
@@ -112,54 +111,60 @@ export function SocialPreviewNode(): ReactElement {
                 />
               )}
             </CardMedia>
-            <CardContent sx={{ p: 0 }}>
-              {isEmpty(journey?.seoTitle) ? (
-                <Box
-                  width={118.5}
-                  height={9}
-                  bgcolor="#EFEFEF"
-                  borderRadius="3px"
-                  mb={0.75}
-                />
-              ) : (
-                <Typography
-                  variant="subtitle1"
-                  fontSize={7}
-                  lineHeight="9px"
-                  color="#26262E"
-                >
-                  {journey.seoTitle}
-                </Typography>
-              )}
-              {isEmpty(journey?.seoDescription) ? (
-                <Box
-                  width={118.5}
-                  height={9}
-                  bgcolor="#EFEFEF"
-                  borderRadius="3px"
-                  sx={{ mb: 1.5 }}
-                />
-              ) : (
-                <Typography
-                  variant="body2"
-                  fontSize={4.5}
-                  lineHeight="7px"
-                  color="#6D6D7D"
-                >
-                  {journey.seoDescription}
-                </Typography>
-              )}
+            <Stack
+              sx={{
+                justifyContent: 'space-between',
+                flexDirection: 'column',
+                display: 'flex',
+                height: 36
+              }}
+            >
+              <Stack gap={0.75} maxHeight={21}>
+                {isEmpty(journey?.seoTitle) ? (
+                  <Box
+                    width={118.5}
+                    height={9}
+                    bgcolor="#EFEFEF"
+                    borderRadius="3px"
+                  />
+                ) : (
+                  <Typography
+                    variant="subtitle1"
+                    fontSize={7}
+                    lineHeight="9px"
+                    color="#26262E"
+                  >
+                    {journey.seoTitle}
+                  </Typography>
+                )}
+                {isEmpty(journey?.seoDescription) ? (
+                  <Box
+                    width={118.5}
+                    height={9}
+                    bgcolor="#EFEFEF"
+                    borderRadius="3px"
+                  />
+                ) : (
+                  <Typography
+                    variant="body2"
+                    fontSize={4.5}
+                    lineHeight="7px"
+                    color="#6D6D7D"
+                  >
+                    {journey.seoDescription}
+                  </Typography>
+                )}
+              </Stack>
               <Stack
                 flexDirection="row"
                 justifyContent="space-around"
                 color="#EFEFEF"
-                my={1}
               >
-                <ThumbUpIcon sx={{ fontSize: 9 }} />
-                <ChatBubbleIcon sx={{ fontSize: 9 }} />
-                <ShareIcon sx={{ fontSize: 9 }} />
+                <ThumbsUp sx={{ fontSize: 9 }} />
+                <MessageCircle sx={{ fontSize: 9 }} />
+                <Share sx={{ fontSize: 9 }} />
               </Stack>
-            </CardContent>
+            </Stack>
           </Card>
         )
       }

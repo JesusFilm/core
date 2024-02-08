@@ -148,6 +148,7 @@ export function SocialPreviewMessage(): ReactElement {
                         variant="body2"
                         fontSize={8}
                         lineHeight="12px"
+                        sx={{ wordBreak: 'break-word' }}
                       >
                         {journey.seoDescription}
                       </Typography>

@@ -13,40 +13,17 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
-import {
-  ActiveSlide,
-  useEditor
-} from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
-import ThumbsUp2 from '@core/shared/ui/icons/ThumbsUp2'
-import MessageChat2 from '@core/shared/ui/icons/MessageChat2'
-import Share2 from '@core/shared/ui/icons/Share2'
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+import MessageCircle from '@core/shared/ui/icons/MessageCircle'
+import Share from '@core/shared/ui/icons/Share'
 
 export function SocialPreviewPost(): ReactElement {
   const { journey } = useJourney()
-  const { dispatch } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
 
-  function handleSelect(): void {
-    dispatch({
-      type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Canvas
-    })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: t('Social Share Preview'),
-      mobileOpen: false,
-      children: <SocialShareAppearance />
-    })
-  }
   return (
     <Box data-testid="SocialPreviewPost">
-      <Stack
-        onClick={handleSelect}
-        direction="column"
-        justifyContent="start"
-        alignContent="center"
-      >
+      <Stack direction="column" justifyContent="start" alignContent="center">
         <Typography
           variant="caption"
           pb={4}
@@ -180,9 +157,9 @@ export function SocialPreviewPost(): ReactElement {
                 color="#EFEFEF"
                 sx={{ my: 3 }}
               >
-                <ThumbsUp2 />
-                <MessageChat2 />
-                <Share2 />
+                <ThumbsUp sx={{ fontSize: 15 }} />
+                <MessageCircle sx={{ fontSize: 15 }} />
+                <Share sx={{ fontSize: 15 }} />
               </Stack>
             </CardContent>
             <CardActionArea />

@@ -24,32 +24,46 @@ export function SocialPreview(): ReactElement {
     dispatch({ type: 'SetDrawerMobileOpenAction', mobileOpen: true })
   }
 
+  function handleSelect(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Canvas
+    })
+  }
+
   return (
     <>
       {mdUp ? (
         <Stack
+          onClick={handleSelect}
           direction="row"
           alignItems="center"
-          justifyContent="space-evenly"
+          justifyContent={
+            activeSlide === ActiveSlide.Canvas ? 'space-around' : 'flex-start'
+          }
           data-testid="SocialPreview"
           sx={{
             width: '100%',
             height: '100%'
           }}
         >
-          <SocialPreviewPost />
-          <>
-            <Divider
-              orientation="vertical"
-              sx={{
-                height: '308px',
-                bgcolor: '#DCDDE5',
-                transform: 'scale(1.33)',
-                transformOrigin: 'center'
-              }}
-            />
-            <SocialPreviewMessage />
-          </>
+          <Box sx={{ ml: 17.5 }}>
+            <SocialPreviewPost />
+          </Box>
+          {activeSlide === ActiveSlide.Canvas && (
+            <>
+              <Divider
+                orientation="vertical"
+                sx={{
+                  height: '308px',
+                  bgcolor: '#DCDDE5',
+                  transform: 'scale(1.33)',
+                  transformOrigin: 'center'
+                }}
+              />
+              <SocialPreviewMessage />
+            </>
+          )}
         </Stack>
       ) : (
         <Box data-testid="SocialPreview">
