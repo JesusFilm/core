@@ -2,20 +2,28 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { UserTeam, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { User } from '@core/nest/common/firebaseClient'
 
 import { UserTeamRole as GraphQlUserTeamRole } from '../../__generated__/graphql'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserTeamResolver } from './userTeam.resolver'
+import { UserTeamService } from './userTeam.service'
 
 describe('UserTeamResolver', () => {
   let userTeamResolver: UserTeamResolver, prismaService: PrismaService
+  const userTeamService = {
+    provide: UserTeamService,
+    useFactory: () => ({
+      sendTeamRemovedEmail: jest.fn().mockResolvedValue(null)
+    })
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
-      providers: [UserTeamResolver, PrismaService]
+      providers: [UserTeamResolver, PrismaService, userTeamService]
     }).compile()
     userTeamResolver = module.get<UserTeamResolver>(UserTeamResolver)
     prismaService = module.get<PrismaService>(PrismaService)
@@ -232,6 +240,14 @@ describe('UserTeamResolver', () => {
   })
 
   describe('userTeamDelete', () => {
+    const user: User = {
+      id: 'userId',
+      firstName: 'Joe',
+      lastName: 'Ron-Imo',
+      email: 'jron@example.com',
+      imageUrl: undefined
+    }
+
     it('deletes userTeam', async () => {
       const userTeam = {
         id: 'userTeamId',
@@ -250,7 +266,7 @@ describe('UserTeamResolver', () => {
         id: 'userId'
       })
       await expect(
-        userTeamResolver.userTeamDelete(ability, 'userTeamId')
+        userTeamResolver.userTeamDelete(ability, 'userTeamId', user)
       ).resolves.toEqual(userTeam)
       expect(prismaService.userTeam.delete).toHaveBeenCalledWith({
         where: { id: 'userTeamId' }
@@ -274,7 +290,7 @@ describe('UserTeamResolver', () => {
         id: 'userId2'
       })
       await expect(
-        userTeamResolver.userTeamDelete(ability, 'userTeamId')
+        userTeamResolver.userTeamDelete(ability, 'userTeamId', user)
       ).rejects.toThrow('user is not allowed to delete userTeam')
     })
 
@@ -284,7 +300,7 @@ describe('UserTeamResolver', () => {
         id: 'userId'
       })
       await expect(
-        userTeamResolver.userTeamDelete(ability, 'userTeamId')
+        userTeamResolver.userTeamDelete(ability, 'userTeamId', user)
       ).rejects.toThrow('userTeam not found')
     })
   })

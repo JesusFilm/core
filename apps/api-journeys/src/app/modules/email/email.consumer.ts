@@ -7,15 +7,19 @@ import { render } from '@react-email/render'
 import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
+import { Prisma } from '.prisma/api-journeys-client'
 import { User } from '@core/nest/common/firebaseClient'
 
 import {
   Journey as JourneyWithUserJourney,
-  UserJourneyRole
+  UserJourneyRole,
+  UserTeamRole
 } from '../../__generated__/graphql'
 import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessRequest'
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
+import { TeamInviteAcceptedEmail } from '../../emails/templates/TeamInviteAccepted'
+import { TeamRemovedEmail } from '../../emails/templates/TeamRemoved'
 
 AWS.config.update({ region: 'us-east-2' })
 
@@ -60,11 +64,30 @@ export interface TeamInviteJob {
   sender: Omit<User, 'id' | 'email'>
 }
 
+export type TeamWithUserTeam = Prisma.TeamGetPayload<{
+  include: {
+    userTeams: true
+  }
+}>
+export interface TeamInviteAccepted {
+  team: TeamWithUserTeam
+  sender: Omit<User, 'id' | 'email'>
+  url: string
+}
+
+export interface TeamRemoved {
+  teamName: string
+  userId: string
+  sender: Omit<User, 'id' | 'email'>
+}
+
 export type ApiJourneysJob =
   | JourneyEditInviteJob
   | TeamInviteJob
   | JourneyRequestApproved
   | JourneyAccessRequest
+  | TeamInviteAccepted
+  | TeamRemoved
 
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
@@ -77,6 +100,12 @@ export class EmailConsumer extends WorkerHost {
       case 'team-invite':
         await this.teamInviteEmail(job as Job<TeamInviteJob>)
         break
+      case 'team-removed':
+        await this.teamRemovedEmail(job as Job<TeamRemoved>)
+        break
+      case 'team-invite-accepted':
+        await this.teamInviteAcceptedEmail(job as Job<TeamInviteAccepted>)
+        break
       case 'journey-edit-invite':
         await this.journeyEditInvite(job as Job<JourneyEditInviteJob>)
         break
@@ -87,6 +116,47 @@ export class EmailConsumer extends WorkerHost {
         await this.journeyAccessRequest(job as Job<JourneyAccessRequest>)
         break
     }
+  }
+
+  async teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
+    const { data } = await apollo.query({
+      query: gql`
+        query User($userId: ID!) {
+          user(id: $userId) {
+            id
+            email
+          }
+        }
+      `,
+      variables: { userId: job.data.userId }
+    })
+
+    const html = render(
+      TeamRemovedEmail({
+        teamName: job.data.teamName,
+        sender: job.data.sender
+      }),
+      {
+        pretty: true
+      }
+    )
+
+    const text = render(
+      TeamRemovedEmail({
+        teamName: job.data.teamName,
+        sender: job.data.sender
+      }),
+      {
+        plainText: true
+      }
+    )
+
+    await this.sendEmail({
+      to: data.user.email,
+      subject: `You have been removed from team: ${job.data.teamName}`,
+      text,
+      html
+    })
   }
 
   async teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
@@ -121,6 +191,66 @@ export class EmailConsumer extends WorkerHost {
       text,
       html
     })
+  }
+
+  async teamInviteAcceptedEmail(job: Job<TeamInviteAccepted>): Promise<void> {
+    const receipientUserTeams = job.data.team.userTeams.filter(
+      (userTeam) => userTeam.role === UserTeamRole.manager
+    )
+
+    const receipientEmails = await Promise.all(
+      receipientUserTeams.map(async (userTeam) => {
+        const { data } = await apollo.query({
+          query: gql`
+            query User($userId: ID!) {
+              user(id: $userId) {
+                id
+                email
+              }
+            }
+          `,
+          variables: { userId: userTeam.userId }
+        })
+        return data
+      })
+    )
+
+    if (receipientEmails == null || receipientEmails.length === 0) {
+      throw new Error('Team Managers not found')
+    }
+
+    for (const recipient of receipientEmails) {
+      const html = render(
+        TeamInviteAcceptedEmail({
+          teamName: job.data.team.title,
+          inviteLink: job.data.url,
+          sender: job.data.sender
+        }),
+        {
+          pretty: true
+        }
+      )
+
+      const text = render(
+        TeamInviteAcceptedEmail({
+          teamName: job.data.team.title,
+          inviteLink: job.data.url,
+          sender: job.data.sender
+        }),
+        {
+          plainText: true
+        }
+      )
+
+      await this.sendEmail({
+        to: recipient.user.email,
+        subject: `${
+          job.data.sender.firstName ?? 'A new member'
+        } has been added to your team`,
+        text,
+        html
+      })
+    }
   }
 
   async journeyAccessRequest(job: Job<JourneyAccessRequest>): Promise<void> {

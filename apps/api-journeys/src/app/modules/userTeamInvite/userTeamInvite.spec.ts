@@ -46,7 +46,8 @@ describe('UserTeamInviteResolver', () => {
   const userTeamInviteService = {
     provide: UserTeamInviteService,
     useFactory: () => ({
-      sendEmail: jest.fn().mockResolvedValue(null)
+      sendTeamInviteEmail: jest.fn().mockResolvedValue(null),
+      sendTeamInviteAcceptedEmail: jest.fn().mockResolvedValue(null)
     })
   }
 
@@ -210,6 +211,12 @@ describe('UserTeamInviteResolver', () => {
         updatedAt: new Date()
       }
 
+      const userTeamInviteWithTeam = {
+        ...userTeamInvite,
+        acceptedAt: expect.any(Date),
+        receipientId: user.id
+      }
+
       const redeemedUserTeamInvite = {
         ...userTeamInvite,
         acceptedAt: expect.any(Date),
@@ -221,7 +228,7 @@ describe('UserTeamInviteResolver', () => {
         async (promises) => promises
       )
       prismaService.userTeamInvite.update.mockResolvedValueOnce(
-        redeemedUserTeamInvite
+        userTeamInviteWithTeam
       )
       expect(await resolver.userTeamInviteAcceptAll(user)).toEqual([
         redeemedUserTeamInvite
