@@ -3,10 +3,12 @@ import IconButton from '@mui/material/IconButton'
 import { styled, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useRef } from 'react'
 import { use100vh } from 'react-div-100vh'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
 import {
+  ActiveJourneyEditContent,
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -72,7 +74,20 @@ export function Slider(): ReactElement {
     }
   }, [activeSlide])
 
-  console.log(journeyEditContentComponent)
+  let Content: () => ReactElement
+
+  switch (journeyEditContentComponent) {
+    case ActiveJourneyEditContent.SocialPreview:
+      Content = SocialPreview
+      break
+    case ActiveJourneyEditContent.Action:
+      Content = ActionsTable
+      break
+    default:
+      Content = Canvas
+      break
+  }
+
   return (
     <StyledSwiper
       ref={swiperRef}
@@ -182,13 +197,12 @@ export function Slider(): ReactElement {
           <ChevronDownIcon />
         </IconButton>
       </Box>
-
       <StyledSwiperSlide
         sx={{
           width: { xs: '100%', sm: 'calc(100% - 408px)' },
           height: {
             xs: `calc(${
-              viewportHeight ? `${viewportHeight}px` : '100vh'
+              viewportHeight != null ? `${viewportHeight}px` : '100vh'
             } - 75px - ${EDIT_TOOLBAR_HEIGHT}px)`,
             sm: '100%'
           }
@@ -211,7 +225,7 @@ export function Slider(): ReactElement {
           width: { xs: '100%', sm: 'calc(100% - 120px - 360px)' },
           height: {
             xs: `calc(${
-              viewportHeight ? `${viewportHeight}px` : '100vh'
+              viewportHeight != null ? `${viewportHeight}px` : '100vh'
             } - 150px - ${EDIT_TOOLBAR_HEIGHT}px)`,
             sm: '100%'
           },
@@ -220,17 +234,53 @@ export function Slider(): ReactElement {
           position: 'relative'
         }}
       >
-        {journeyEditContentComponent === 'canvas' ? (
-          <Canvas />
-        ) : journeyEditContentComponent === 'social' ? (
-          <SocialPreview />
-        ) : journeyEditContentComponent === 'action' ? (
-          <ActionsTable />
-        ) : (
-          <></>
-        )}
+        <TransitionGroup
+          component={Box}
+          sx={{
+            position: 'relative',
+            flexGrow: 1,
+            '& .journey-edit-content-component-enter': {
+              opacity: 0
+            },
+            '& .journey-edit-content-component-enter-active': {
+              opacity: 1
+            },
+            '& .journey-edit-content-component-enter-done': {
+              opacity: 1
+            },
+            '& .journey-edit-content-component-exit': {
+              opacity: 1
+            },
+            '& .journey-edit-content-component-exit-active': {
+              opacity: 0
+            }
+          }}
+        >
+          <CSSTransition
+            key={journeyEditContentComponent}
+            timeout={600}
+            classNames="journey-edit-content-component"
+          >
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+                display: 'flex',
+                justifyContent: 'space-between',
+                transition: (theme) =>
+                  `${theme.transitions.create('opacity', {
+                    duration: 300
+                  })}`
+              }}
+            >
+              <Content />
+            </Box>
+          </CSSTransition>
+        </TransitionGroup>
       </StyledSwiperSlide>
-
       <StyledSwiperSlide
         sx={{
           width: (theme) => ({
@@ -239,7 +289,7 @@ export function Slider(): ReactElement {
           }),
           height: {
             xs: `calc(${
-              viewportHeight ? `${viewportHeight}px` : '100vh'
+              viewportHeight != null ? `${viewportHeight}px` : '100vh'
             } - 75px - ${EDIT_TOOLBAR_HEIGHT}px)`,
             sm: '100%'
           }

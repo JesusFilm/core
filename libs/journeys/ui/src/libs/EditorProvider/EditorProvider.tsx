@@ -31,8 +31,7 @@ export enum ActiveFab {
 export enum ActiveJourneyEditContent {
   Canvas = 'canvas',
   SocialPreview = 'social',
-  Action = 'action',
-  JourneyFlow = 'journeyFlow'
+  Action = 'action'
 }
 
 export enum ActiveSlide {
@@ -199,6 +198,10 @@ export const reducer = (
     case 'SetActiveSlideAction':
       return {
         ...state,
+        journeyEditContentComponent:
+          action.activeSlide === ActiveSlide.JourneyFlow
+            ? ActiveJourneyEditContent.Canvas
+            : state.journeyEditContentComponent,
         activeSlide: action.activeSlide
       }
     case 'SetActiveTabAction':
