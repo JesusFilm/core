@@ -81,7 +81,12 @@ export function SocialPreviewMessage(): ReactElement {
   return (
     <Box width={256} data-testid="SocialPreviewMessage">
       <Stack direction="column" justifyContent="start">
-        <Typography variant="caption" pb={4} textAlign="center">
+        <Typography
+          variant="caption"
+          pb={4}
+          textAlign="center"
+          sx={{ fontSize: 16 }}
+        >
           {t('Messaging App View')}
         </Typography>
         <Stack alignItems="center">
@@ -124,8 +129,8 @@ export function SocialPreviewMessage(): ReactElement {
                       <Typography
                         variant="body1"
                         fontWeight={600}
-                        fontSize={9}
-                        lineHeight="12px"
+                        fontSize={12}
+                        lineHeight="16px"
                       >
                         {journey.seoTitle}
                       </Typography>
@@ -141,8 +146,8 @@ export function SocialPreviewMessage(): ReactElement {
                     ) : (
                       <Typography
                         variant="body2"
-                        fontSize={11}
-                        lineHeight="16px"
+                        fontSize={8}
+                        lineHeight="12px"
                       >
                         {journey.seoDescription}
                       </Typography>

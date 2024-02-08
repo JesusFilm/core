@@ -47,7 +47,12 @@ export function SocialPreviewPost(): ReactElement {
         justifyContent="start"
         alignContent="center"
       >
-        <Typography variant="caption" pb={4} textAlign="center">
+        <Typography
+          variant="caption"
+          pb={4}
+          textAlign="center"
+          sx={{ fontSize: 16 }}
+        >
           {t('Social App View')}
         </Typography>
         {journey != null && (
@@ -160,7 +165,7 @@ export function SocialPreviewPost(): ReactElement {
                 <Typography
                   variant="body2"
                   fontSize={8}
-                  lineHeight="15px"
+                  lineHeight="12px"
                   color="#6D6D7D"
                 >
                   {journey.seoDescription}

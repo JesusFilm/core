@@ -112,7 +112,7 @@ export function SocialPreviewNode(): ReactElement {
                 />
               )}
             </CardMedia>
-            <CardContent sx={{ p: 0, mt: 1.5 }}>
+            <CardContent sx={{ p: 0 }}>
               {isEmpty(journey?.seoTitle) ? (
                 <Box
                   width={118.5}
@@ -124,8 +124,8 @@ export function SocialPreviewNode(): ReactElement {
               ) : (
                 <Typography
                   variant="subtitle1"
-                  fontSize={9}
-                  lineHeight="12px"
+                  fontSize={7}
+                  lineHeight="9px"
                   color="#26262E"
                 >
                   {journey.seoTitle}
@@ -137,12 +137,13 @@ export function SocialPreviewNode(): ReactElement {
                   height={9}
                   bgcolor="#EFEFEF"
                   borderRadius="3px"
+                  sx={{ mb: 1.5 }}
                 />
               ) : (
                 <Typography
                   variant="body2"
-                  fontSize={8}
-                  lineHeight="12px"
+                  fontSize={4.5}
+                  lineHeight="7px"
                   color="#6D6D7D"
                 >
                   {journey.seoDescription}
@@ -152,7 +153,7 @@ export function SocialPreviewNode(): ReactElement {
                 flexDirection="row"
                 justifyContent="space-around"
                 color="#EFEFEF"
-                my={1.5}
+                my={1}
               >
                 <ThumbUpIcon sx={{ fontSize: 9 }} />
                 <ChatBubbleIcon sx={{ fontSize: 9 }} />

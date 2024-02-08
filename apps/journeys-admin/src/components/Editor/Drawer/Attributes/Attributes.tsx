@@ -12,6 +12,7 @@ import {
 import { CardTemplateDrawer } from '../../CardTemplateDrawer'
 import { useTranslation } from 'react-i18next'
 import { Drawer } from '../../Drawer'
+import { SocialShareAppearance } from '../SocialShareAppearance'
 
 const Footer = dynamic(
   async () =>
@@ -222,9 +223,12 @@ export function Attributes(): ReactElement {
 
   return (
     <Drawer title={blockTitle}>
-      {selected !== 'none' &&
-      selectedStep !== undefined &&
-      selectedStep.children[0]?.children.length > 0 ? (
+      {journeyEditContentComponent ===
+      ActiveJourneyEditContent.SocialPreview ? (
+        <SocialShareAppearance />
+      ) : selected !== 'none' &&
+        selectedStep !== undefined &&
+        selectedStep.children[0]?.children.length > 0 ? (
         <Stack sx={{ overflow: 'auto' }}>
           <AttributesContent selected={selected} step={selectedStep} />
         </Stack>
