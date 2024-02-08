@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -8,8 +8,13 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { StepFields } from '../../../../__generated__/StepFields'
 
 export function JourneyRenderer(): ReactElement {
-  const { blockHistory, treeBlocks, getNextBlock, setShowNavigation } =
-    useBlocks()
+  const {
+    blockHistory,
+    treeBlocks,
+    getNextBlock,
+    setShowNavigation,
+    setShowHeaderFooter
+  } = useBlocks()
 
   const getCurrentActiveBlock = (): TreeBlock<StepFields> =>
     blockHistory[blockHistory.length - 1] as TreeBlock<StepFields>
@@ -19,6 +24,10 @@ export function JourneyRenderer(): ReactElement {
   const currentBlock = getCurrentActiveBlock()
   const previousBlock = getPreviousBlock()
   const nextBlock = getNextBlock({ activeBlock: currentBlock })
+
+  useEffect(() => {
+    setShowHeaderFooter(true)
+  }, [currentBlock, setShowHeaderFooter])
 
   return (
     <>
