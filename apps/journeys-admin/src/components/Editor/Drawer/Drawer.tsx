@@ -1,13 +1,15 @@
 import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
 import MuiDrawer from '@mui/material/Drawer'
-import Paper from '@mui/material/Paper'
+import IconButton from '@mui/material/IconButton'
+import { Theme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { ReactElement, ReactNode } from 'react'
-import X2Icon from '@core/shared/ui/icons/X2'
-import IconButton from '@mui/material/IconButton'
-import { Theme, useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { ReactElement, ReactNode } from 'react'
+
+import X2Icon from '@core/shared/ui/icons/X2'
+
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 interface DrawerTitleProps {
@@ -19,7 +21,26 @@ function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
   return (
     <>
       <AppBar position="static" color="default">
-        <Toolbar>
+        <Box
+          sx={{
+            display: { xs: 'flex', sm: 'none' },
+            alignItems: 'center',
+            justifyContent: 'center',
+            py: 2
+          }}
+        >
+          <Box
+            sx={{
+              width: 56,
+              height: 6,
+              bgcolor: '#AAACBB',
+              borderRadius: '3px'
+            }}
+          />
+        </Box>
+        <Toolbar
+          sx={{ minHeight: { xs: 64, sm: 48 }, maxHeight: { xs: 64, sm: 48 } }}
+        >
           <Typography
             variant="subtitle1"
             noWrap
@@ -74,18 +95,18 @@ export function Drawer({
                 borderRadius: 4,
                 width: smUp ? DRAWER_WIDTH : 'auto',
                 top: EDIT_TOOLBAR_HEIGHT + 20,
-                left: { xs: 20, sm: 'auto' },
-                right: 20,
-                bottom: 20,
+                left: { xs: 0, sm: 'auto' },
+                right: { xs: 0, sm: 20 },
+                bottom: { xs: 0, sm: 20 },
                 height: 'auto'
               }
             : {
                 borderRadius: 4,
                 width: smUp ? DRAWER_WIDTH : 'auto',
-                left: { xs: 20, sm: 'auto' },
-                top: 20,
-                right: 20,
-                bottom: 20,
+                left: { xs: 0, sm: 'auto' },
+                top: { xs: 0, sm: 20 },
+                right: { xs: 0, sm: 20 },
+                bottom: { xs: 0, sm: 20 },
                 height: 'auto'
               }
       }}
