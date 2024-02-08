@@ -8,7 +8,8 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { StepFields } from '../../../../__generated__/StepFields'
 
 export function JourneyRenderer(): ReactElement {
-  const { blockHistory, treeBlocks, getNextBlock } = useBlocks()
+  const { blockHistory, treeBlocks, getNextBlock, setShowNavigation } =
+    useBlocks()
 
   const getCurrentActiveBlock = (): TreeBlock<StepFields> =>
     blockHistory[blockHistory.length - 1] as TreeBlock<StepFields>
@@ -49,6 +50,7 @@ export function JourneyRenderer(): ReactElement {
           >
             <Box
               className={isCurrent ? 'active-card' : ''}
+              onClick={() => setShowNavigation(true)}
               sx={{
                 height,
                 width,
