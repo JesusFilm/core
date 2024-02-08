@@ -42,12 +42,14 @@ interface HelpScoutBeaconProps {
 export function HelpScoutBeacon({
   userInfo
 }: HelpScoutBeaconProps): ReactElement {
-  const { breakpoints, zIndex } = useTheme()
+  const { breakpoints, zIndex, direction } = useTheme()
   const router = useRouter()
   const previousUrlRef = useRef(router.asPath)
   const mdUp = useMediaQuery(breakpoints.up('md'))
   const [hasLoaded, setHasLoaded] = useState(false)
   const [beaconOpen, setBeaconOpen] = useState(false)
+  const [position, setPosition] = useState<'right' | 'left'>('right')
+  console.log(position)
 
   const newUserPaths = [
     '/users/sign-in',
@@ -71,6 +73,7 @@ export function HelpScoutBeacon({
   }
 
   useEffect(() => {
+    setPosition(direction === 'rtl' ? 'left' : 'right')
     if (hasLoaded && window.Beacon != null) {
       window.Beacon('on', 'open', () => {
         window.Beacon?.('prefill', {
@@ -90,7 +93,7 @@ export function HelpScoutBeacon({
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange)
     }
-  }, [hasLoaded, router, userInfo])
+  }, [hasLoaded, router, userInfo, direction])
 
   return (
     <>
@@ -108,7 +111,7 @@ export function HelpScoutBeacon({
         window.Beacon('config', {
           display: {
             style: 'manual',
-            position: 'right',
+            position: ${position},
             zIndex: ${zIndex.modal + 2},
           },
         });
@@ -151,6 +154,13 @@ export function HelpScoutBeacon({
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
           top: 47px;
           right: 0px;
+          width: 327px;
+          max-height: none;
+          height: calc(100vh - 47px);
+        }
+        .hsds-beacon .BeaconContainer.is-configDisplayLeft {
+          top: 47px;
+          left: 0px;
           width: 327px;
           max-height: none;
           height: calc(100vh - 47px);
