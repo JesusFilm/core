@@ -2,7 +2,7 @@ import { Section, Tailwind } from '@react-email/components'
 import { ReactElement, ReactNode } from 'react'
 
 import { ActionCard } from '../ActionCard'
-import { HeaderText } from '../HeaderText'
+import { BodyText } from '../BodyText'
 import { UnsubscribeLink } from '../UnsubscribeLink'
 
 interface BodyWrapperProps {
@@ -20,7 +20,7 @@ export function BodyWrapper({ children }: BodyWrapperProps): ReactElement {
 BodyWrapper.PreviewProps = {
   children: (
     <>
-      <HeaderText headerText="Lorem ipsum dolor set" />
+      <BodyText bodyText="Lorem ipsum dolor set" />
       <ActionCard
         url="https://admin.nextstep.is/"
         headerText="[Lorem Ipsum]"

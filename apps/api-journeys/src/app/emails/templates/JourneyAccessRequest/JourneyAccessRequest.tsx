@@ -1,16 +1,10 @@
 import {
   Body,
-  Button,
-  Column,
   Container,
   Head,
-  Heading,
   Html,
-  Img,
   Link,
   Preview,
-  Row,
-  Section,
   Text
 } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
@@ -20,9 +14,9 @@ import { User } from '@core/nest/common/firebaseClient'
 
 import { ActionCard } from '../components/ActionCard'
 import { BodyText } from '../components/BodyText'
+import { BodyTitle } from '../components/BodyTitle'
 import { BodyWrapper } from '../components/BodyWrapper'
-import EmailLogo from '../components/EmailLogo/EmailLogo'
-import { HeaderText } from '../components/HeaderText'
+import { Header } from '../components/Header'
 import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
 interface JourneyAccessRequestEmailProps {
@@ -55,33 +49,10 @@ export const JourneyAccessRequestEmail = ({
   const emailBody: ReactNode = (
     <>
       <Container className="my-[40px] rounded border border-solid border-[#eaeaea] shadow-md">
-        <Container className="bg-[#FFFFFF] h-[72px] flex justify-center items-center">
-          <Row className="flex justify-center items-center">
-            <Column className="pr-[80px]">
-              <EmailLogo />
-            </Column>
-            <Column>
-              {sender?.imageUrl != null && (
-                <Img
-                  src={sender.imageUrl ?? ''}
-                  alt={sender?.firstName}
-                  width={32}
-                  height={32}
-                  className="rounded-full border-solid border-2 border-[#FFFFFF] shadow-md"
-                />
-              )}
-            </Column>
-            <Column className="pl-[10px]">
-              <Heading
-                as="h2"
-                className="text-black text-[16px] font-normal font-['Helvetica']"
-              >{`${sender.firstName} ${sender.lastName}`}</Heading>
-            </Column>
-          </Row>
-        </Container>
+        <Header sender={sender} />
         <BodyWrapper>
-          <HeaderText
-            headerText={`${sender.firstName} requested access to ${journeyTitle}! Login to NextSteps to give them access`}
+          <BodyTitle
+            bodyTitle={`${sender.firstName} requested access to ${journeyTitle}! Login to NextSteps to give them access`}
           />
           <ActionCard
             url={inviteLink}
@@ -93,7 +64,7 @@ export const JourneyAccessRequestEmail = ({
           />
           <UnsubscribeLink />
         </BodyWrapper>
-        <Container className="bg-[#E3E3E3] h-[72px] p-[20px] px-[80px] flex justify-center items-center">
+        <Container className="bg-[#E3E3E3] h-[72px] p-[20px] px-[80px]">
           <Text className="text-[#666666] text-[12px] leading-[24px]">
             {`This is an automated email. If you need assistance, please `}
             <Link>contact support here instead of replying to this email</Link>.
@@ -137,8 +108,8 @@ JourneyAccessRequestEmail.PreviewProps = {
   journeyTitle: 'Why Jesus?',
   inviteLink: 'https://admin.nextstep.is/journeys/journeyId',
   sender: {
-    firstName: 'Johnathan',
-    lastName: 'Joeronimo',
+    firstName: 'Joe',
+    lastName: 'Ron-Imo',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   }
