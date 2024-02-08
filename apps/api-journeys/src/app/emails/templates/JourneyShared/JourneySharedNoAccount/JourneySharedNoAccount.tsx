@@ -1,12 +1,4 @@
-import {
-  Body,
-  Container,
-  Head,
-  Html,
-  Link,
-  Preview,
-  Text
-} from '@react-email/components'
+import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
@@ -15,6 +7,8 @@ import { User } from '@core/nest/common/firebaseClient'
 import { ActionCard } from '../../components/ActionCard'
 import { BodyTitle } from '../../components/BodyTitle'
 import { BodyWrapper } from '../../components/BodyWrapper'
+import { EmailContainer } from '../../components/EmailContainer'
+import { Footer } from '../../components/Footer'
 import { Header } from '../../components/Header'
 import { UnsubscribeLink } from '../../components/UnsubscribeLink'
 
@@ -46,28 +40,21 @@ export const JourneySharedNoAccountEmail = ({
   }
 
   const emailBody: ReactNode = (
-    <>
-      <Container className="my-[40px] rounded border border-solid border-[#eaeaea] shadow-md">
-        <Header sender={sender} />
-        <BodyWrapper>
-          <BodyTitle
-            bodyTitle={`${journeyTitle} has been shared with you by ${sender.firstName}. You can see it under 'Shared With Me' in the team dropdown.`}
-          />
-          <ActionCard
-            url={inviteLink}
-            buttonText="View Journey"
-            headerText="To join them create an account with Next Steps"
-          />
-          <UnsubscribeLink />
-        </BodyWrapper>
-        <Container className="bg-[#E3E3E3] h-[72px] p-[20px] px-[60px] flex justify-center items-center">
-          <Text className="text-[#666666] text-[12px] leading-[24px]">
-            {`This is an automated email. If you need assistance, please `}
-            <Link>contact support here instead of replying to this email</Link>.
-          </Text>
-        </Container>
-      </Container>
-    </>
+    <EmailContainer>
+      <Header sender={sender} />
+      <BodyWrapper>
+        <BodyTitle
+          bodyTitle={`${journeyTitle} has been shared with you by ${sender.firstName}. You can see it under 'Shared With Me' in the team dropdown.`}
+        />
+        <ActionCard
+          url={inviteLink}
+          buttonText="View Journey"
+          headerText="To join them create an account with Next Steps"
+        />
+        <UnsubscribeLink />
+      </BodyWrapper>
+      <Footer />
+    </EmailContainer>
   )
 
   return (

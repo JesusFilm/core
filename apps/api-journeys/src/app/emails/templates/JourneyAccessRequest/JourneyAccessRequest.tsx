@@ -1,12 +1,4 @@
-import {
-  Body,
-  Container,
-  Head,
-  Html,
-  Link,
-  Preview,
-  Text
-} from '@react-email/components'
+import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
@@ -16,6 +8,8 @@ import { ActionCard } from '../components/ActionCard'
 import { BodyText } from '../components/BodyText'
 import { BodyTitle } from '../components/BodyTitle'
 import { BodyWrapper } from '../components/BodyWrapper'
+import { EmailContainer } from '../components/EmailContainer'
+import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
 import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
@@ -47,31 +41,24 @@ export const JourneyAccessRequestEmail = ({
   }
 
   const emailBody: ReactNode = (
-    <>
-      <Container className="my-[40px] rounded border border-solid border-[#eaeaea] shadow-md">
-        <Header sender={sender} />
-        <BodyWrapper>
-          <BodyTitle
-            bodyTitle={`${sender.firstName} requested access to ${journeyTitle}! Login to NextSteps to give them access`}
-          />
-          <ActionCard
-            url={inviteLink}
-            headerText={`🟠 ${journeyTitle}`}
-            buttonText="Grant Access"
-          />
-          <BodyText
-            bodyText={`If you do not know ${sender.firstName} or don’t want to give them access, no further action is required`}
-          />
-          <UnsubscribeLink />
-        </BodyWrapper>
-        <Container className="bg-[#E3E3E3] h-[72px] p-[20px] px-[80px]">
-          <Text className="text-[#666666] text-[12px] leading-[24px]">
-            {`This is an automated email. If you need assistance, please `}
-            <Link>contact support here instead of replying to this email</Link>.
-          </Text>
-        </Container>
-      </Container>
-    </>
+    <EmailContainer>
+      <Header sender={sender} />
+      <BodyWrapper>
+        <BodyTitle
+          bodyTitle={`${sender.firstName} requested access to ${journeyTitle}! Login to NextSteps to give them access`}
+        />
+        <ActionCard
+          url={inviteLink}
+          headerText={`🟠 ${journeyTitle}`}
+          buttonText="Grant Access"
+        />
+        <BodyText
+          bodyText={`If you do not know ${sender.firstName} or don’t want to give them access, no further action is required`}
+        />
+        <UnsubscribeLink />
+      </BodyWrapper>
+      <Footer />
+    </EmailContainer>
   )
 
   return (
