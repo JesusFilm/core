@@ -1,28 +1,26 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useRef } from 'react'
+import { use100vh } from 'react-div-100vh'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
+import { SwiperOptions } from 'swiper/types'
+
 import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
-import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
-import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
-import { useTheme } from '@mui/material/styles'
-import { SwiperOptions } from 'swiper/types'
+
 import { JourneyFlow } from '../../JourneyFlow'
 import { Canvas } from '../Canvas'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Attributes } from '../Drawer/Attributes'
-import { use100vh } from 'react-div-100vh'
 
 const StyledSwiper = styled(Swiper)(() => ({
   height: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px)`
 }))
 const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
-  padding: theme.spacing(4),
   boxSizing: 'border-box'
 }))
 
@@ -53,13 +51,6 @@ export function Slider(): ReactElement {
     })
   }
 
-  function handleNext(): void {
-    dispatch({
-      type: 'SetActiveSlideAction',
-      activeSlide: activeSlide + 1
-    })
-  }
-
   useEffect(() => {
     if (
       swiperRef.current != null &&
@@ -74,17 +65,24 @@ export function Slider(): ReactElement {
       ref={swiperRef}
       slidesPerView="auto"
       breakpoints={swiperBreakpoints}
-      allowTouchMove={false}
+      onActiveIndexChange={(swiper) => {
+        dispatch({
+          type: 'SetActiveSlideAction',
+          activeSlide: swiper.activeIndex
+        })
+      }}
     >
+      {/* back (desktop left) button */}
       <Box
         slot="container-start"
         onClick={handlePrev}
         sx={{
           position: 'absolute',
-          left: activeSlide > ActiveSlide.JourneyFlow ? 0 : -120,
-          top: 0,
-          bottom: 0,
-          width: 120,
+          top: '50%',
+          height: 42,
+          marginTop: '-21px',
+          left: activeSlide > ActiveSlide.JourneyFlow ? 33 : -42,
+          width: 42,
           zIndex: 2,
           cursor: 'pointer',
           display: {
@@ -110,83 +108,15 @@ export function Slider(): ReactElement {
           <ChevronLeftIcon />
         </IconButton>
       </Box>
-      <Box
-        slot="container-start"
-        onClick={handlePrev}
-        sx={{
-          position: 'absolute',
-          left: 0,
-          top: activeSlide > ActiveSlide.JourneyFlow ? 0 : -75,
-          right: 0,
-          height: 75,
-          zIndex: 2,
-          cursor: 'pointer',
-          display: {
-            xs: 'flex',
-            sm: 'none'
-          },
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: (theme) => theme.transitions.create('top')
-        }}
-      >
-        <IconButton
-          sx={{
-            backgroundColor: 'background.paper',
-            borderWidth: 1,
-            borderStyle: 'solid',
-            borderColor: 'divider',
-            '&:hover': {
-              backgroundColor: 'background.paper'
-            }
-          }}
-        >
-          <ChevronUpIcon />
-        </IconButton>
-      </Box>
-      <Box
-        slot="container-end"
-        onClick={handleNext}
-        sx={{
-          position: 'absolute',
-          left: 0,
-          bottom:
-            activeSlide < ActiveSlide.Drawer
-              ? 'env(safe-area-inset-bottom)'
-              : -75,
-          right: 0,
-          height: 75,
-          zIndex: 2,
-          cursor: 'pointer',
-          display: {
-            xs: 'flex',
-            sm: 'none'
-          },
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: (theme) => theme.transitions.create('bottom')
-        }}
-      >
-        <IconButton
-          sx={{
-            backgroundColor: 'background.paper',
-            borderWidth: 1,
-            borderStyle: 'solid',
-            borderColor: 'divider',
-            '&:hover': {
-              backgroundColor: 'background.paper'
-            }
-          }}
-        >
-          <ChevronDownIcon />
-        </IconButton>
-      </Box>
       <StyledSwiperSlide
+        className="swiper-no-swiping"
         sx={{
+          p: { xs: 0, sm: 4 },
+
           width: { xs: '100%', sm: 'calc(100% - 408px)' },
           height: {
             xs: `calc(${
-              viewportHeight ? `${viewportHeight}px` : '100vh'
+              viewportHeight != null ? `${viewportHeight}px` : '100vh'
             } - 75px - ${EDIT_TOOLBAR_HEIGHT}px)`,
             sm: '100%'
           }
@@ -195,7 +125,12 @@ export function Slider(): ReactElement {
         <Box
           sx={{
             borderRadius: 4,
-            border: (theme) => `1px solid ${theme.palette.divider}`,
+            borderTopLeftRadius: 0,
+            borderTopRightRadius: 0,
+            border: (theme) => ({ sm: `1px solid ${theme.palette.divider}` }),
+            borderBottom: (theme) => ({
+              xs: `1px solid ${theme.palette.divider}`
+            }),
             backgroundSize: '20px 20px',
             backgroundColor: '#eff2f5',
             height: '100%'
@@ -206,29 +141,49 @@ export function Slider(): ReactElement {
       </StyledSwiperSlide>
       <StyledSwiperSlide
         sx={{
+          p: { xs: 0, sm: 4 },
           width: { xs: '100%', sm: 'calc(100% - 120px - 360px)' },
           height: {
             xs: `calc(${
-              viewportHeight ? `${viewportHeight}px` : '100vh'
+              viewportHeight != null ? `${viewportHeight}px` : '100vh'
             } - 150px - ${EDIT_TOOLBAR_HEIGHT}px)`,
             sm: '100%'
           },
           display: 'flex',
-          justifyContent: 'space-between',
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: { sm: 'space-between' },
           position: 'relative'
         }}
       >
+        <Box
+          sx={{
+            display: { xs: 'flex', sm: 'none' },
+            alignItems: 'center',
+            justifyContent: 'center',
+            py: 2
+          }}
+        >
+          <Box
+            sx={{
+              width: 56,
+              height: 6,
+              bgcolor: '#AAACBB',
+              borderRadius: '3px'
+            }}
+          />
+        </Box>
         <Canvas />
       </StyledSwiperSlide>
       <StyledSwiperSlide
         sx={{
+          p: { xs: 0, sm: 4 },
           width: (theme) => ({
             xs: '100%',
             sm: DRAWER_WIDTH + parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
           }),
           height: {
             xs: `calc(${
-              viewportHeight ? `${viewportHeight}px` : '100vh'
+              viewportHeight != null ? `${viewportHeight}px` : '100vh'
             } - 75px - ${EDIT_TOOLBAR_HEIGHT}px)`,
             sm: '100%'
           }

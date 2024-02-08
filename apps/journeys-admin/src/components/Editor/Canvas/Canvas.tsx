@@ -6,12 +6,14 @@ import { ReactElement, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   ActiveFab,
   ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -20,20 +22,17 @@ import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../FramePortal'
 
+import { AddBlockToolbar } from './AddBlockToolbar'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { QuickControls } from './QuickControls'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { AddBlockToolbar } from './AddBlockToolbar'
-
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 const NextCard = dynamic(
   async () =>
