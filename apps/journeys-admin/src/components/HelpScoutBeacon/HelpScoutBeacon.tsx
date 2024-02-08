@@ -18,6 +18,11 @@ interface FormObject {
   name: string
   email: string
 }
+
+interface DisplayObject {
+  display: { style: string; position: 'left' | 'right'; zIndex: number }
+}
+
 declare global {
   interface Window {
     Beacon?: ((fn: 'init', id: string) => void) &
@@ -31,16 +36,20 @@ declare global {
       ((fn: 'toggle') => void) &
       ((fn: 'search', value: string) => void) &
       ((fn: 'on', eventType: string, callback: () => void) => void) &
-      ((fn: 'prefill', formObject: FormObject) => void)
+      ((fn: 'prefill', formObject: FormObject) => void) &
+      ((fn: 'destroy') => void) &
+      ((fn: 'config', displayObject: DisplayObject) => void)
   }
 }
 
 interface HelpScoutBeaconProps {
   userInfo: FormObject
+  position: 'left' | 'right'
 }
 
 export function HelpScoutBeacon({
-  userInfo
+  userInfo,
+  position
 }: HelpScoutBeaconProps): ReactElement {
   const { breakpoints, zIndex, direction } = useTheme()
   const router = useRouter()
@@ -48,8 +57,6 @@ export function HelpScoutBeacon({
   const mdUp = useMediaQuery(breakpoints.up('md'))
   const [hasLoaded, setHasLoaded] = useState(false)
   const [beaconOpen, setBeaconOpen] = useState(false)
-  const [position, setPosition] = useState<'right' | 'left'>('right')
-  console.log(position)
 
   const newUserPaths = [
     '/users/sign-in',
@@ -73,7 +80,6 @@ export function HelpScoutBeacon({
   }
 
   useEffect(() => {
-    setPosition(direction === 'rtl' ? 'left' : 'right')
     if (hasLoaded && window.Beacon != null) {
       window.Beacon('on', 'open', () => {
         window.Beacon?.('prefill', {
@@ -82,10 +88,23 @@ export function HelpScoutBeacon({
         })
       })
     }
+    const remountBeacon = (): void => {
+      if (hasLoaded && window.Beacon != null) {
+        window.Beacon('destroy')
+        window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')
+        window.Beacon('config', {
+          display: {
+            style: 'manual',
+            position,
+            zIndex: zIndex.modal + 2
+          }
+        })
+      }
+    }
     // close the beacon when the url changes if it's still open
     const handleRouteChange = (url): void => {
       if (url !== previousUrlRef.current) {
-        window.Beacon?.('close')
+        remountBeacon()
         previousUrlRef.current = url
       }
     }
@@ -93,7 +112,7 @@ export function HelpScoutBeacon({
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange)
     }
-  }, [hasLoaded, router, userInfo, direction])
+  }, [hasLoaded, router, userInfo, position, zIndex])
 
   return (
     <>
@@ -111,7 +130,7 @@ export function HelpScoutBeacon({
         window.Beacon('config', {
           display: {
             style: 'manual',
-            position: ${position},
+            position: '${position}',
             zIndex: ${zIndex.modal + 2},
           },
         });
