@@ -12,13 +12,13 @@ import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
-import { ActionDetails } from '../ActionDetails'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Analytics } from './Analytics'
@@ -34,12 +34,10 @@ export function EditToolbar(): ReactElement {
       type: 'SetJourneyEditContentAction',
       component: ActiveJourneyEditContent.Action
     })
-    // dispatch({
-    //   type: 'SetDrawerPropsAction',
-    //   mobileOpen: true,
-    //   title: t('Information'),
-    //   children: <ActionDetails />
-    // })
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Canvas
+    })
   }
 
   return (

@@ -1,22 +1,25 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useRef } from 'react'
+import { use100vh } from 'react-div-100vh'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
+import { SwiperOptions } from 'swiper/types'
+
 import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
-import { useTheme } from '@mui/material/styles'
-import { SwiperOptions } from 'swiper/types'
+
 import { JourneyFlow } from '../../JourneyFlow'
+import { ActionsTable } from '../ActionsTable'
 import { Canvas } from '../Canvas'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Attributes } from '../Drawer/Attributes'
-import { use100vh } from 'react-div-100vh'
+import { SocialPreview } from '../SocialPreview'
 
 const StyledSwiper = styled(Swiper)(() => ({
   height: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px)`
@@ -31,7 +34,7 @@ export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
-    state: { activeSlide },
+    state: { activeSlide, journeyEditContentComponent },
     dispatch
   } = useEditor()
 
@@ -69,6 +72,7 @@ export function Slider(): ReactElement {
     }
   }, [activeSlide])
 
+  console.log(journeyEditContentComponent)
   return (
     <StyledSwiper
       ref={swiperRef}
@@ -178,6 +182,7 @@ export function Slider(): ReactElement {
           <ChevronDownIcon />
         </IconButton>
       </Box>
+
       <StyledSwiperSlide
         sx={{
           width: { xs: '100%', sm: 'calc(100% - 408px)' },
@@ -215,8 +220,17 @@ export function Slider(): ReactElement {
           position: 'relative'
         }}
       >
-        <Canvas />
+        {journeyEditContentComponent === 'canvas' ? (
+          <Canvas />
+        ) : journeyEditContentComponent === 'social' ? (
+          <SocialPreview />
+        ) : journeyEditContentComponent === 'action' ? (
+          <ActionsTable />
+        ) : (
+          <></>
+        )}
       </StyledSwiperSlide>
+
       <StyledSwiperSlide
         sx={{
           width: (theme) => ({
