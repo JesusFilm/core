@@ -17,7 +17,6 @@ function findMostImportantTypographyBlock(
 ): TreeBlock<TypographyBlock> | null {
   if (current.__typename !== 'TypographyBlock') return previous
   if (previous === null) return current
-
   const previousIndex = orderedVariants.findIndex(
     (variant) => variant === previous.variant
   )
@@ -32,7 +31,6 @@ function findSecondMostImportantTypographyBlock(
   current: TreeBlock
 ): TreeBlock<TypographyBlock> | null {
   if (current.__typename !== 'TypographyBlock') return mostImportant
-
   const mostImportantIndex =
     mostImportant != null
       ? orderedVariants.findIndex(
@@ -43,7 +41,11 @@ function findSecondMostImportantTypographyBlock(
   const currentIndex = orderedVariants.findIndex(
     (variant) => variant === current.variant
   )
+  console.log('--------------START------')
+  console.log(currentIndex)
+  console.log(mostImportantIndex)
 
+  console.log('---------------END--------------')
   if (mostImportantIndex === -1 || currentIndex > mostImportantIndex) {
     return mostImportant
   } else {
@@ -66,7 +68,7 @@ const orderedVariants: TypographyVariant[] = [
   TypographyVariant.h1
 ]
 
-export function getSecondStepHeading(
+export function getStepSubtitle(
   stepId: string,
   children: TreeBlock[],
   steps: TreeBlock[],
