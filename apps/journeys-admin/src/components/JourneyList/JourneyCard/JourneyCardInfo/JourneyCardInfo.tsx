@@ -69,10 +69,10 @@ export function JourneyCardInfo({
                     minWidth: '56px'
                   }}
                 >
-                  {t('{{ usersRequestingAccess }}', { usersRequestingAccess })}
+                  {'{{ usersRequestingAccess }} '}
                 </Typography>
                 <Typography variant="body2" noWrap>
-                  {t(`requested editing rights for your journey`)}
+                  requested editing rights for your journey
                 </Typography>
               </Trans>
             </Stack>
