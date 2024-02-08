@@ -41,11 +41,6 @@ function findSecondMostImportantTypographyBlock(
   const currentIndex = orderedVariants.findIndex(
     (variant) => variant === current.variant
   )
-  console.log('--------------START------')
-  console.log(currentIndex)
-  console.log(mostImportantIndex)
-
-  console.log('---------------END--------------')
   if (mostImportantIndex === -1 || currentIndex > mostImportantIndex) {
     return mostImportant
   } else {

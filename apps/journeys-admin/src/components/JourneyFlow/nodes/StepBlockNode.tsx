@@ -197,7 +197,6 @@ export function StepBlockNode({
     | undefined
   const bgImage = getBackgroundImage(card)
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-  console.log(steps)
   const {
     state: { selectedStep },
     dispatch
