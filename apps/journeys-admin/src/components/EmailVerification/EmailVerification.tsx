@@ -21,7 +21,7 @@ export const CREATE_VERIFICATION_REQUEST = gql`
   }
 `
 
-export function EmailVerificationDialog({
+export function EmailVerification({
   apiUser
 }: EmailVerificationDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
