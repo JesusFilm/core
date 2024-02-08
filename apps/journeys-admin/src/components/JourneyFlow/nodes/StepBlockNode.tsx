@@ -123,7 +123,7 @@ function getIconAndColorForBlockType(blockType: string): {
               position: 'absolute',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'linear-gradient(to bottom, #73acf0, #1873de)',
+              background: 'linear-gradient(to bottom, #4c9bf8, #1873de)',
               color: 'white'
             }}
           >
@@ -143,7 +143,7 @@ function getIconAndColorForBlockType(blockType: string): {
               position: 'absolute',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'linear-gradient(to bottom, #24c5c5, #03a3a3)',
+              background: 'linear-gradient(to bottom, #00C3C3, #03a3a3)',
               color: 'white'
             }}
           >
@@ -241,7 +241,7 @@ export function StepBlockNode({
     : 'DefaultBlock'
 
   const videoStartToEnd = '0:00 - 99:99'
-  const language = 'arabic'
+  const language = 'Arabic'
 
   const { icon } = getIconAndColorForBlockType(blockType)
   return (
@@ -255,7 +255,7 @@ export function StepBlockNode({
             sx={{
               height: '100%',
               flexShrink: 0,
-              width: 50,
+              width: 56,
               left: 0,
               margin: 0,
               borderLeft: '1px solid white',
@@ -299,7 +299,10 @@ export function StepBlockNode({
               width: 50,
               left: 0,
               margin: 0,
-              borderRadius: 0,
+              borderLeft: '1px solid white',
+              borderTop: '1px solid white',
+              borderBottom: '1px solid white',
+              borderRadius: '8px 0 0 8px ',
               backgroundColor: '#efefef',
               backgroundSize: 'cover',
               backgroundPosition: 'center center',

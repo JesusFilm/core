@@ -153,7 +153,6 @@ export function BaseNode({
                         overflow: 'hidden',
                         padding: 0,
                         fontSize: 10,
-                        fontWeight: 'bold',
                         color: '#7f7e8c',
                         height: 10,
                         lineHeight: 1,
@@ -382,6 +381,7 @@ export function BaseNode({
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'left',
+                    justifyItems: 'center',
                     width: STEP_NODE_WIDTH,
                     height: STEP_NODE_HEIGHT,
                     gap: 2,
@@ -397,7 +397,8 @@ export function BaseNode({
                     sx={{
                       display: 'flex',
                       flexDirection: 'column',
-                      alignItems: 'left',
+                      alignItems: 'flex-start',
+                      justifyContent: 'center',
                       width: STEP_NODE_WIDTH,
                       height: STEP_NODE_HEIGHT,
                       margin: 0,
@@ -409,17 +410,18 @@ export function BaseNode({
                       sx={{
                         display: '-webkit-box',
                         '-webkit-box-orient': 'vertical',
-                        '-webkit-line-clamp': '1',
+                        '-webkit-line-clamp': '2',
                         overflow: 'hidden',
                         padding: 0,
                         fontSize: 11,
                         fontWeight: 'bold',
-                        height: 20,
+                        height: 'auto',
                         flexDirection: 'column',
-                        alignItems: 'flex-start',
+                        justifyContent: 'flex-end',
                         alignSelf: 'flex-start',
-                        marginBottom: 0,
-                        marginTop: 1.2
+                        marginBottom: 1,
+                        lineHeight: 1.3,
+                        alignItems: 'flex-end'
                       }}
                     >
                       {title !== '' ? (
@@ -435,12 +437,13 @@ export function BaseNode({
                             alignItems: 'left',
                             alignContent: 'left',
                             display: 'flex',
-                            justifyContent: 'flex-start',
+                            justifyContent: 'flex-end',
                             marginTop: 2
                           }}
                         />
                       )}
                     </Typography>
+
                     <Typography
                       sx={{
                         display: '-webkit-box',
@@ -450,7 +453,6 @@ export function BaseNode({
                         lineHeight: '1.2',
                         justifyContent: 'top',
                         color: '#7f7e8c',
-                        height: 25,
                         overflow: 'hidden'
                       }}
                     >
