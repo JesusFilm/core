@@ -84,7 +84,10 @@ const DynamicRadioOption = dynamic<TreeBlock<RadioOptionBlock>>(
 )
 
 const DynamicRadioQuestion = dynamic<
-  TreeBlock<RadioQuestionBlock> & { wrappers?: WrappersProps }
+  TreeBlock<RadioQuestionBlock> & {
+    wrappers?: WrappersProps
+    activeStep: boolean
+  }
 >(
   async () =>
     await import(
@@ -205,7 +208,11 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <RadioQuestionWrapper block={block}>
-            <DynamicRadioQuestion {...block} wrappers={wrappers} />
+            <DynamicRadioQuestion
+              {...block}
+              wrappers={wrappers}
+              activeStep={activeStep}
+            />
           </RadioQuestionWrapper>
         </Wrapper>
       )
