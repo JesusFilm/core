@@ -437,7 +437,7 @@ export function BaseNode({
                             alignContent: 'left',
                             display: 'flex',
                             justifyContent: 'flex-end',
-                            marginTop: 2
+                            marginTop: 0
                           }}
                         />
                       )}
@@ -469,7 +469,7 @@ export function BaseNode({
                             alignContent: 'left',
                             display: 'flex',
                             justifyContent: 'flex-start',
-                            marginTop: 2
+                            marginTop: 1
                           }}
                         />
                       )}

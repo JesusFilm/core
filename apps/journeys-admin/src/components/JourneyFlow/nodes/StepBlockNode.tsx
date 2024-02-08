@@ -72,8 +72,8 @@ function getIconAndColorForBlockType(blockType: string): {
           <Box
             sx={{
               borderRadius: 20,
-              height: 30,
-              width: 30,
+              height: 34,
+              width: 34,
               display: 'flex',
               position: 'absolute',
               alignItems: 'center',
@@ -93,8 +93,8 @@ function getIconAndColorForBlockType(blockType: string): {
           <Box
             sx={{
               borderRadius: 20,
-              height: 30,
-              width: 30,
+              height: 34,
+              width: 34,
               display: 'flex',
               position: 'absolute',
               alignItems: 'center',
@@ -117,8 +117,8 @@ function getIconAndColorForBlockType(blockType: string): {
           <Box
             sx={{
               borderRadius: 20,
-              height: 30,
-              width: 30,
+              height: 34,
+              width: 34,
               display: 'flex',
               position: 'absolute',
               alignItems: 'center',
@@ -137,8 +137,8 @@ function getIconAndColorForBlockType(blockType: string): {
           <Box
             sx={{
               borderRadius: 20,
-              height: 30,
-              width: 30,
+              height: 34,
+              width: 34,
               display: 'flex',
               position: 'absolute',
               alignItems: 'center',
@@ -158,8 +158,8 @@ function getIconAndColorForBlockType(blockType: string): {
           <Box
             sx={{
               borderRadius: 20,
-              height: 30,
-              width: 30,
+              height: 34,
+              width: 34,
               display: 'flex',
               position: 'absolute',
               alignItems: 'center',
