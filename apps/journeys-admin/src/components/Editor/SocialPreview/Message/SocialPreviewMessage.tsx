@@ -92,7 +92,7 @@ export function SocialPreviewMessage(): ReactElement {
         <Stack alignItems="center">
           <MessageBubble width={252} height={54} direction="left" />
           {journey != null && (
-            <MessageBubble width={315} height={122} direction="right">
+            <MessageBubble width={315} direction="right">
               <Stack direction="column" sx={{ p: 1 }}>
                 <Stack direction="row" gap={2}>
                   {journey?.primaryImageBlock?.src == null ? (
@@ -116,21 +116,25 @@ export function SocialPreviewMessage(): ReactElement {
                       }}
                     />
                   )}
-                  <Stack width={164} flexGrow={1} justifyContent="center">
+                  <Stack
+                    width={164}
+                    flexGrow={1}
+                    justifyContent="center"
+                    gap={1.5}
+                  >
                     {isEmpty(journey?.seoTitle?.trim()) ? (
                       <Box
                         width={205}
                         height={15}
                         bgcolor="#EFEFEF"
                         borderRadius="5px"
-                        mb={1.5}
                       />
                     ) : (
                       <Typography
                         variant="body1"
                         fontWeight={600}
                         fontSize={12}
-                        lineHeight="16px"
+                        lineHeight="15px"
                         noWrap
                       >
                         {journey.seoTitle}
@@ -142,13 +146,12 @@ export function SocialPreviewMessage(): ReactElement {
                         height={15}
                         bgcolor="#EFEFEF"
                         borderRadius="5px"
-                        mb={1}
                       />
                     ) : (
                       <Typography
                         variant="body2"
                         fontSize={8}
-                        lineHeight="12px"
+                        lineHeight="15px"
                         sx={{ wordBreak: 'break-word' }}
                       >
                         {journey.seoDescription}
