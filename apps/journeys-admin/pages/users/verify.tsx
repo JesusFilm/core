@@ -9,6 +9,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { number, object, string } from 'yup'
 
+import { SubmitButton } from '@core/shared/ui/FormiumForm/formComponents/SubmitButton'
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -49,7 +50,7 @@ function ValidateEmail({ email, token }: ValidateEmailProps): ReactElement {
     <>
       <h1>{t('Validate Email')}</h1>
       <Formik
-        initialValues={{ email }}
+        initialValues={{ email, token }}
         onSubmit={handleReValidateEmail}
         validationSchema={validationSchema}
       >
@@ -92,11 +93,46 @@ function ValidateEmail({ email, token }: ValidateEmailProps): ReactElement {
                 )
               }}
             />
-            <p>
-              : {email}
-              <br />
-              {t('Token')}: {token}
-            </p>
+            <TextField
+              label={t('Token')}
+              name="token"
+              fullWidth
+              variant="filled"
+              value={values.token}
+              autoComplete="off"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.token != null && touched.token != null}
+              helperText={
+                touched?.token != null && errors.token != null
+                  ? errors.token
+                  : t('No email notifications. New users get access instantly.')
+              }
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      type="submit"
+                      aria-label="add user"
+                      color="primary"
+                      disabled={values.token === ''}
+                    >
+                      <AddSquare4Icon
+                        sx={{
+                          color:
+                            values.token !== '' && errors.token == null
+                              ? 'primary.main'
+                              : 'secondary.light'
+                        }}
+                      />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+            <SubmitButton disabled={false}>
+              {t('Re-validate Email')}
+            </SubmitButton>
           </Form>
         )}
       </Formik>
