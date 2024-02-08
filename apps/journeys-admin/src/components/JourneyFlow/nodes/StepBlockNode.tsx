@@ -241,7 +241,7 @@ export function StepBlockNode({
     : 'DefaultBlock'
 
   const videoStartToEnd = '0:00 - 99:99'
-  const language = 'Arabic'
+  const language = 'Eastern European Old A a b ic that is really old'
 
   const { icon } = getIconAndColorForBlockType(blockType)
   return (

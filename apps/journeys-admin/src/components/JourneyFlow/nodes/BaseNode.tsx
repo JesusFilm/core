@@ -121,13 +121,13 @@ export function BaseNode({
                   sx={{
                     display: 'flex',
                     flexDirection: 'row',
-                    alignItems: 'left',
+                    alignItems: 'flex-start',
+                    justifyContent: 'center',
                     width: STEP_NODE_WIDTH,
                     height: STEP_NODE_HEIGHT,
                     gap: 2,
                     margin: 0,
-                    padding: 0,
-                    borderRadius: 1
+                    padding: 0
                   }}
                   onClick={onClick}
                 >
@@ -138,10 +138,12 @@ export function BaseNode({
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'left',
+                      justifyContent: 'center',
                       width: STEP_NODE_WIDTH,
                       height: STEP_NODE_HEIGHT,
                       margin: 0,
-                      padding: 2
+                      paddingLeft: 1,
+                      paddingRight: 3
                     }}
                     onClick={onClick}
                   >
@@ -149,18 +151,15 @@ export function BaseNode({
                       sx={{
                         display: '-webkit-box',
                         '-webkit-box-orient': 'vertical',
-                        '-webkit-line-clamp': '2',
+                        '-webkit-line-clamp': '1',
                         overflow: 'hidden',
                         padding: 0,
                         fontSize: 10,
                         color: '#7f7e8c',
                         height: 10,
                         lineHeight: 1,
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        alignSelf: 'flex-start',
                         marginBottom: 0,
-                        marginTop: 1.2
+                        alignContent: 'left'
                       }}
                     >
                       {language !== '' ? (
@@ -192,7 +191,8 @@ export function BaseNode({
                         overflow: 'hidden',
                         fontWeight: 'bold',
                         fontSize: 11,
-                        height: 28,
+
+                        height: 'auto',
                         padding: 0,
                         top: 0,
                         lineHeight: 1.2,
@@ -200,9 +200,9 @@ export function BaseNode({
                         flexDirection: 'column',
                         alignItems: 'flex-start',
                         alignSelf: 'flex-start',
-                        justifyContent: 'flex-start',
-                        marginBottom: 0,
-                        marginTop: 0
+                        justifyContent: 'center',
+                        marginBottom: 1,
+                        marginTop: 1
                       }}
                     >
                       {title !== '' ? (
@@ -218,8 +218,7 @@ export function BaseNode({
                             alignItems: 'left',
                             alignContent: 'left',
                             display: 'flex',
-                            justifyContent: 'flex-start',
-                            marginTop: 2
+                            justifyContent: 'flex-start'
                           }}
                         />
                       )}
@@ -232,7 +231,7 @@ export function BaseNode({
                         overflow: 'hidden',
                         padding: 0,
                         fontSize: 10,
-                        height: 10,
+                        height: 11,
                         lineHeight: 1.2,
                         flexDirection: 'column',
                         alignItems: 'flex-start',
