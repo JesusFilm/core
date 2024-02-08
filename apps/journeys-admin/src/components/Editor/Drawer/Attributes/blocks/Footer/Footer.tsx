@@ -1,5 +1,7 @@
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
 import dynamic from 'next/dynamic'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -31,6 +33,16 @@ export function Footer(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const hostName = journey?.host?.title
+  const [tabValue, setTabValue] = useState(0)
+
+  const handleTabChange = (
+    _event: SyntheticEvent<Element, Event>,
+    newValue: number
+  ): void => {
+    setTabValue(newValue)
+    const route = TabParams[newValue]
+    if (route != null) setRoute(route)
+  }
 
   const translatedPlatforms = [
     { value: ChatPlatform.facebook, label: t('Facebook') },
@@ -91,6 +103,15 @@ export function Footer(): ReactElement {
       >
         <Chat />
       </Attribute>
+      <Tabs
+        value={tabValue}
+        onChange={handleTabChange}
+        aria-label="image selection tabs"
+        variant="fullWidth"
+      >
+        {' '}
+        <Tab />
+      </Tabs>
     </>
   )
 }
