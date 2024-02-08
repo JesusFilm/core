@@ -86,8 +86,6 @@ export function SocialPreviewPost(): ReactElement {
             </Stack>
             <CardMedia
               sx={{
-                px: 0,
-                pt: 0,
                 width: 208,
                 height: 158,
                 display: 'flex',
@@ -145,7 +143,7 @@ export function SocialPreviewPost(): ReactElement {
                 )}
                 {isEmpty(journey?.seoDescription?.trim()) ? (
                   <Box
-                    width={144}
+                    width={208}
                     height={15}
                     bgcolor="#EFEFEF"
                     borderRadius="8px"

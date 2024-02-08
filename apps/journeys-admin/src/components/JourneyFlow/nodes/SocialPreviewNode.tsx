@@ -87,7 +87,14 @@ export function SocialPreviewNode(): ReactElement {
                 borderRadius="4.5px"
               />
             </Stack>
-            <CardMedia>
+            <CardMedia
+              sx={{
+                width: 118.5,
+                height: 90,
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
               {journey?.primaryImageBlock?.src == null ? (
                 <Box
                   data-testid="social-preview-post-empty"
@@ -112,20 +119,20 @@ export function SocialPreviewNode(): ReactElement {
               )}
             </CardMedia>
             <Stack
+              gap={2}
               sx={{
-                justifyContent: 'space-between',
                 flexDirection: 'column',
                 display: 'flex',
                 height: 36
               }}
             >
-              <Stack gap={0.75} maxHeight={21}>
+              <Stack gap={0.75} sx={{ mt: 1 }}>
                 {isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
                     width={118.5}
                     height={9}
                     bgcolor="#EFEFEF"
-                    borderRadius="3px"
+                    borderRadius="4px"
                   />
                 ) : (
                   <Typography
@@ -143,7 +150,7 @@ export function SocialPreviewNode(): ReactElement {
                     width={118.5}
                     height={9}
                     bgcolor="#EFEFEF"
-                    borderRadius="3px"
+                    borderRadius="4px"
                   />
                 ) : (
                   <Typography
