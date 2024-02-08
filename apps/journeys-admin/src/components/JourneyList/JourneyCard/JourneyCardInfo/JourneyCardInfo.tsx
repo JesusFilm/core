@@ -69,7 +69,7 @@ export function JourneyCardInfo({
                     minWidth: '56px'
                   }}
                 >
-                  {'{{ usersRequestingAccess }} '}
+                  {usersRequestingAccess}
                 </Typography>
                 <Typography variant="body2" noWrap>
                   requested editing rights for your journey
