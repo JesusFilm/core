@@ -449,7 +449,9 @@ export function BaseNode({
                         fontSize: 10,
                         lineHeight: '1.2',
                         justifyContent: 'top',
-                        color: '#7f7e8c'
+                        color: '#7f7e8c',
+                        height: 25,
+                        overflow: 'hidden'
                       }}
                     >
                       {title !== '' ? (
