@@ -89,10 +89,13 @@ export const TeamInviteAcceptedEmail = ({
               View Team
             </Button>
           </Section>
-          <Text className="text-black text-[14px] leading-[24px]">
-            or copy and paste this URL into your browser:{' '}
-            <Link href={inviteLink} className="text-blue-600 no-underline">
-              {inviteLink}
+          <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-['Open Sans']">
+            {`Don’t want to receive these emails, `}
+            <Link
+              href="https://admin.nextstep.is/"
+              className="text-[#9E2630] no-underline"
+            >
+              Unsubscribe
             </Link>
           </Text>
         </Container>
