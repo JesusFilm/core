@@ -8,9 +8,9 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
-import { Attribute } from '../../Attribute'
 
 const HostSidePanel = dynamic(
   async () =>
@@ -40,8 +40,6 @@ export function Footer(): ReactElement {
     newValue: number
   ): void => {
     setTabValue(newValue)
-    const route = TabParams[newValue]
-    if (route != null) setRoute(route)
   }
 
   const translatedPlatforms = [
@@ -83,26 +81,6 @@ export function Footer(): ReactElement {
 
   return (
     <>
-      <Attribute
-        id="hosted-by"
-        icon={<UserProfileCircleIcon />}
-        name={t('Hosted By')}
-        value={hostName ?? t('None')}
-        description={t("Host's name")}
-        drawerTitle={t('Hosted By')}
-      >
-        <HostSidePanel />
-      </Attribute>
-      <Attribute
-        id="chat-widget"
-        icon={<MessageChat1Icon />}
-        name={t('Chat Widget')}
-        value={platforms ?? t('None')}
-        description={t('Chat Platform')}
-        drawerTitle={t('Chat Widget')}
-      >
-        <Chat />
-      </Attribute>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
@@ -110,8 +88,33 @@ export function Footer(): ReactElement {
         variant="fullWidth"
       >
         {' '}
-        <Tab />
+        <Tab
+          icon={<UserProfileCircleIcon />}
+          label={t('Hosted By')}
+          {...tabA11yProps('hostedBy', 0)}
+        />
+        <Tab
+          icon={<MessageChat1Icon />}
+          label={t('Chat Widget')}
+          {...tabA11yProps('chat', 1)}
+        />
       </Tabs>
+      <TabPanel
+        name="hostedBy"
+        value={tabValue}
+        index={0}
+        sx={{ flexGrow: 1, overflow: 'auto' }}
+      >
+        {tabValue === 0 && <HostSidePanel />}
+      </TabPanel>
+      <TabPanel
+        name="chat"
+        value={tabValue}
+        index={1}
+        sx={{ flexGrow: 1, overflow: 'auto' }}
+      >
+        {tabValue === 1 && <Chat />}
+      </TabPanel>
     </>
   )
 }

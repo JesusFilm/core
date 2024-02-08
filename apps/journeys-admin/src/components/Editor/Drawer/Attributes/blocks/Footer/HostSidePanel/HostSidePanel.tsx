@@ -17,12 +17,10 @@ import { Hosts_hosts as Host } from '../../../../../../../../__generated__/Hosts
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { ContainedIconButton } from '../../../../../../ContainedIconButton'
-import { SidePanel } from '../../../../../../PageWrapper/SidePanel'
-import { SidePanelContainer } from '../../../../../../PageWrapper/SidePanelContainer'
+import { Drawer } from '../../../../Drawer'
 
 import { HostForm } from './HostForm'
 import { HostList } from './HostList'
-import { Drawer } from '../../../../Drawer'
 
 export const GET_ALL_TEAM_HOSTS = gql`
   query Hosts($teamId: ID!) {
@@ -96,12 +94,14 @@ export function HostSidePanel(): ReactElement {
       {/* DefaultHostPanel - no host */}
       {!openSelect && (selectedHost == null || !userInTeam) && (
         <>
-          <ContainedIconButton
-            label={t('Select a Host')}
-            disabled={!userInTeam}
-            thumbnailIcon={<UserProfiles2Icon />}
-            onClick={() => setOpenSelect(true)}
-          />
+          <Stack sx={{ p: 4 }}>
+            <ContainedIconButton
+              label={t('Select a Host')}
+              disabled={!userInTeam}
+              thumbnailIcon={<UserProfiles2Icon />}
+              onClick={() => setOpenSelect(true)}
+            />
+          </Stack>
           {!userInTeam && team != null && (
             <Stack direction="row" alignItems="center" gap={3}>
               <AlertCircleIcon />
