@@ -18,7 +18,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import { User } from '@core/nest/common/firebaseClient'
 
-import EmailLogo from '../EmailLogo/EmailLogo'
+import EmailLogo from '../components/EmailLogo/EmailLogo'
 
 interface TeamInviteEmailProps {
   email?: string

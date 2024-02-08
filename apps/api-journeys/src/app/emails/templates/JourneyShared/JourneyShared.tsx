@@ -1,6 +1,5 @@
 import {
   Body,
-  Button,
   Column,
   Container,
   Head,
@@ -10,7 +9,6 @@ import {
   Link,
   Preview,
   Row,
-  Section,
   Text
 } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
@@ -18,7 +16,11 @@ import { ReactElement, ReactNode } from 'react'
 
 import { User } from '@core/nest/common/firebaseClient'
 
-import EmailLogo from '../EmailLogo/EmailLogo'
+import { ActionCard } from '../components/ActionCard'
+import { BodyWrapper } from '../components/BodyWrapper'
+import EmailLogo from '../components/EmailLogo/EmailLogo'
+import { HeaderText } from '../components/HeaderText'
+import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
 interface JourneySharedEmailProps {
   journeyTitle: string
@@ -74,28 +76,17 @@ export const JourneySharedEmail = ({
             </Column>
           </Row>
         </Container>
-        <Container className="bg-[#EFEFEF] mx-auto px-[60px] py-[48px] max-w-[600px] flex justify-center items-center">
-          <Text className="text-[#444451] text-[18px] font-[600] text-center p-0 mb-[30px] mx-0">
-            {`${journeyTitle} has been shared with you by ${sender.firstName}. You can see it under 'Shared With Me' in the team dropdown.`}
-          </Text>
-          <Section className="text-center mt-[32px] mb-[32px]">
-            <Button
-              className="bg-[#C52D3A] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
-              href={inviteLink}
-            >
-              View Journey
-            </Button>
-          </Section>
-          <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-['Open Sans]">
-            {`Don’t want to receive these emails, `}
-            <Link
-              href="https://admin.nextstep.is/"
-              className="text-[#9E2630] no-underline"
-            >
-              Unsubscribe
-            </Link>
-          </Text>
-        </Container>
+        <BodyWrapper>
+          <HeaderText
+            headerText={`${journeyTitle} has been shared with you by ${sender.firstName}. You can see it under 'Shared With Me' in the team dropdown.`}
+          />
+          <ActionCard
+            url={inviteLink}
+            headerText={`🟠 ${journeyTitle}`}
+            buttonText="View Journey"
+          />
+          <UnsubscribeLink />
+        </BodyWrapper>
         <Container className="bg-[#E3E3E3] h-[72px] p-[20px] px-[80px] flex justify-center items-center">
           <Text className="text-[#666666] text-[12px] leading-[24px]">
             {`This is an automated email. If you need assistance, please `}
