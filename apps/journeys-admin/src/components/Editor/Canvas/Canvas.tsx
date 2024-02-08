@@ -6,34 +6,38 @@ import { ReactElement, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   ActiveFab,
   ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName } from '@core/shared/ui/themes'
 
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../FramePortal'
 
+import { AddBlockToolbar } from './AddBlockToolbar'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { QuickControls } from './QuickControls'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 const NextCard = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "NextCard" */ '../ControlPanel/Attributes/blocks/Step/NextCard'
+      /* webpackChunkName: "NextCard" */ '../Drawer/Attributes/blocks/Step/NextCard'
     ).then((mod) => mod.NextCard),
   { ssr: false }
 )
@@ -41,7 +45,7 @@ const NextCard = dynamic(
 const HostSidePanel = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "HostSidePanel" */ '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
+      /* webpackChunkName: "HostSidePanel" */ '../Drawer/Attributes/blocks/Footer/HostSidePanel'
     ).then((mod) => mod.HostSidePanel),
   { ssr: false }
 )
@@ -123,7 +127,7 @@ export function Canvas(): ReactElement {
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: 'hosted-by'
+      id: undefined
     })
 
     router.query.param = 'step-footer'
@@ -132,6 +136,13 @@ export function Canvas(): ReactElement {
       setBeaconPageViewed('Step Footer')
     })
   }
+
+  const cardBlock = selectedStep?.children.find(
+    (block) => block.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
+
+  const theme =
+    selectedStep != null ? getStepTheme(selectedStep, journey) : null
 
   return (
     <Stack
@@ -143,132 +154,177 @@ export function Canvas(): ReactElement {
       data-testid="EditorCanvas"
       direction="row"
       alignItems="flex-end"
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexGrow: { xs: 1, sm: activeSlide === ActiveSlide.Canvas ? 1 : 0 },
+        transition: (theme) =>
+          theme.transitions.create('flex-grow', { duration: 300 })
+      }}
     >
-      <Box
-        sx={{
-          width: activeSlide === ActiveSlide.Canvas ? 50 : 0,
-          mr: activeSlide === ActiveSlide.Canvas ? 4 : 0,
-          transition: (theme) =>
-            theme.transitions.create(['width', 'margin'], {
-              duration: 150
-            }),
-          overflow: 'hidden'
-        }}
-      >
-        <QuickControls />
-      </Box>
-      {selectedStep != null && (
-        <TransitionGroup
-          component={Box}
-          sx={{
-            width: 360,
-            height: 640,
-            position: 'relative',
-            '& .card-enter': {
-              opacity: 0
-            },
-            '& .card-enter-active': {
-              opacity: 1
-            },
-            '& .card-enter-done': {
-              opacity: 1
-            },
-            '& .card-exit': {
-              opacity: 1
-            },
-            '& .card-exit-active': {
-              opacity: 0
-            }
-          }}
+      {selectedStep != null && theme != null && (
+        <Stack
+          direction="row"
+          alignItems="flex-end"
+          sx={{ flexGrow: { xs: 1, sm: 0 } }}
         >
-          <CSSTransition key={selectedStep.id} timeout={300} classNames="card">
-            <Box
-              data-testid={`step-${selectedStep.id}`}
-              sx={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0,
-                display: 'flex',
-                borderRadius: 5,
-                transition: (theme) =>
-                  `${theme.transitions.create('opacity', {
-                    duration: 300
-                  })}, ${theme.transitions.create('outline', {
-                    duration: 200,
-                    delay: 100,
-                    easing: 'ease-out'
-                  })}`,
-                outline: (theme) =>
-                  selectedStep.id === selectedBlock?.id
-                    ? `2px solid ${theme.palette.primary.main}`
-                    : `2px solid ${theme.palette.background.default}`,
-                outlineOffset: 4
-              }}
+          <Box
+            sx={{
+              width: {
+                xs: 50,
+                sm: activeSlide === ActiveSlide.Canvas ? 50 : 0
+              },
+              mr: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 7 : 0 },
+              transition: (theme) =>
+                theme.transitions.create(['width', 'margin'], {
+                  duration: 150
+                }),
+              overflow: 'hidden'
+            }}
+          >
+            <QuickControls />
+          </Box>
+          <TransitionGroup
+            component={Box}
+            sx={{
+              maxWidth: 360,
+              maxHeight: 640,
+              aspectRatio: '9 / 16',
+              width: { sm: 360 },
+              height: { sm: 640 },
+              position: 'relative',
+              flexGrow: 1,
+              '& .card-enter': {
+                opacity: 0
+              },
+              '& .card-enter-active': {
+                opacity: 1
+              },
+              '& .card-enter-done': {
+                opacity: 1
+              },
+              '& .card-exit': {
+                opacity: 1
+              },
+              '& .card-exit-active': {
+                opacity: 0
+              }
+            }}
+          >
+            <CSSTransition
+              key={selectedStep.id}
+              timeout={300}
+              classNames="card"
             >
-              <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
-                <ThemeProvider
-                  {...getStepTheme(selectedStep, journey)}
-                  rtl={rtl}
-                  locale={locale}
+              <Box
+                data-testid={`step-${selectedStep.id}`}
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  display: 'flex',
+                  borderRadius: 5,
+                  transition: (theme) =>
+                    `${theme.transitions.create('opacity', {
+                      duration: 300
+                    })}, ${theme.transitions.create('outline', {
+                      duration: 200,
+                      delay: 100,
+                      easing: 'ease-out'
+                    })}`,
+                  outline: (theme) =>
+                    selectedStep.id === selectedBlock?.id
+                      ? `2px solid ${theme.palette.primary.main}`
+                      : `2px solid ${theme.palette.background.default}`,
+                  outlineOffset: 4
+                }}
+              >
+                <FramePortal
+                  width="100%"
+                  height="100%"
+                  dir={rtl ? 'rtl' : 'ltr'}
                 >
-                  <Stack
-                    justifyContent="center"
-                    sx={{
-                      width: '100%',
-                      height: '100%',
-                      borderRadius: 5
-                    }}
-                  >
-                    <StepHeader />
-                    <BlockRenderer
-                      block={selectedStep}
-                      wrappers={{
-                        Wrapper: SelectableWrapper,
-                        TypographyWrapper: InlineEditWrapper,
-                        ButtonWrapper: InlineEditWrapper,
-                        RadioQuestionWrapper: InlineEditWrapper,
-                        RadioOptionWrapper: InlineEditWrapper,
-                        TextResponseWrapper: InlineEditWrapper,
-                        SignUpWrapper: InlineEditWrapper,
-                        VideoWrapper,
-                        CardWrapper,
-                        FormWrapper
-                      }}
-                    />
-                    <StepFooter
+                  <ThemeProvider {...theme} rtl={rtl} locale={locale}>
+                    <Stack
+                      justifyContent="center"
                       sx={{
-                        outline:
-                          selectedComponent === 'Footer'
-                            ? '2px solid #C52D3A'
-                            : 'none',
-                        outlineOffset: -4,
-                        borderRadius: 5,
-                        cursor: 'pointer'
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: 5
                       }}
-                      onFooterClick={handleFooterClick}
-                    />
-                  </Stack>
-                </ThemeProvider>
-              </FramePortal>
-            </Box>
-          </CSSTransition>
-        </TransitionGroup>
+                    >
+                      <ThemeProvider
+                        themeName={ThemeName.journeyUi}
+                        themeMode={theme.themeMode}
+                        rtl={rtl}
+                        locale={locale}
+                        nested
+                      >
+                        <StepHeader />
+                      </ThemeProvider>
+                      <BlockRenderer
+                        block={selectedStep}
+                        wrappers={{
+                          Wrapper: SelectableWrapper,
+                          TypographyWrapper: InlineEditWrapper,
+                          ButtonWrapper: InlineEditWrapper,
+                          RadioQuestionWrapper: InlineEditWrapper,
+                          RadioOptionWrapper: InlineEditWrapper,
+                          TextResponseWrapper: InlineEditWrapper,
+                          SignUpWrapper: InlineEditWrapper,
+                          VideoWrapper,
+                          CardWrapper,
+                          FormWrapper
+                        }}
+                      />
+                      <ThemeProvider
+                        themeName={ThemeName.journeyUi}
+                        themeMode={theme.themeMode}
+                        rtl={rtl}
+                        locale={locale}
+                        nested
+                      >
+                        <StepFooter
+                          sx={{
+                            outline:
+                              selectedComponent === 'Footer'
+                                ? '2px solid #C52D3A'
+                                : 'none',
+                            outlineOffset: -4,
+                            borderRadius: 5,
+                            cursor: 'pointer'
+                          }}
+                          onFooterClick={handleFooterClick}
+                        />
+                      </ThemeProvider>
+                    </Stack>
+                  </ThemeProvider>
+                </FramePortal>
+              </Box>
+            </CSSTransition>
+          </TransitionGroup>
+          <Box
+            sx={{
+              width: {
+                xs: 50,
+                sm: activeSlide === ActiveSlide.Canvas ? 50 : 0
+              },
+              ml: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 7 : 0 },
+              transition: (theme) =>
+                theme.transitions.create(['width', 'margin'], {
+                  duration: 150
+                }),
+              overflow: 'hidden',
+              alignSelf: 'center'
+            }}
+          >
+            <AddBlockToolbar selectedCard={cardBlock} />
+          </Box>
+        </Stack>
       )}
-      <Box
-        sx={{
-          width: activeSlide === ActiveSlide.Canvas ? 50 : 0,
-          ml: activeSlide === ActiveSlide.Canvas ? 4 : 0,
-          transition: (theme) =>
-            theme.transitions.create(['width', 'margin'], {
-              duration: 150
-            }),
-          overflow: 'hidden'
-        }}
-      >
-        {/* ADD BLOCK COMPONENT GOES HERE */}
-      </Box>
     </Stack>
   )
 }

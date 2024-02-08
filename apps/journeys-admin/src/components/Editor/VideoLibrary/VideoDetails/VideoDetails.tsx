@@ -1,13 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
-import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +12,6 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
-import X2Icon from '@core/shared/ui/icons/X2'
 
 import { BlockDeleteForCoverImage } from '../../../../../__generated__/BlockDeleteForCoverImage'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
@@ -27,8 +22,7 @@ import {
 import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
-
-export const DRAWER_WIDTH = 328
+import { Drawer } from '../../Drawer'
 
 export interface VideoDetailsProps {
   open: boolean
@@ -115,87 +109,45 @@ export function VideoDetails({
   }
 
   return (
-    <>
-      <Drawer
-        SlideProps={{ appear: true }}
-        anchor={smUp ? 'right' : 'bottom'}
-        variant="temporary"
-        open={open}
-        elevation={smUp ? 1 : 0}
-        hideBackdrop
-        sx={{
-          zIndex: (theme) => theme.zIndex.modal,
-          left: {
-            xs: 0,
-            sm: 'unset'
-          },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: smUp ? DRAWER_WIDTH : '100%',
-            height: '100%'
-          }
-        }}
-        data-testid="VideoDetails"
-      >
-        <AppBar position="sticky" color="default">
-          <Toolbar variant="dense">
-            <Typography
-              variant="subtitle1"
-              noWrap
-              component="div"
-              sx={{ flexGrow: 1 }}
-            >
-              {t('Video Details')}
-            </Typography>
-            <IconButton
-              onClick={() => onClose(false)}
-              sx={{ display: 'inline-flex' }}
-              edge="end"
-              aria-label="Close"
-            >
-              <X2Icon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
-          {activeVideoBlock != null && (
-            <Stack
-              direction="row"
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                px: 6,
-                pt: 4
-              }}
-            >
-              <Button
-                startIcon={<Grid1Icon />}
-                size="small"
-                onClick={() => onClose(false)}
-              >
-                {t('Change Video')}
-              </Button>
-              <IconButton
-                onClick={handleClearVideo}
-                size="small"
-                aria-label="clear-video"
-              >
-                <Trash2Icon />
-              </IconButton>
-            </Stack>
-          )}
-          <Box
+    <Drawer title={t('Video Details')} open={open} onClose={onClose}>
+      <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
+        {activeVideoBlock != null && (
+          <Stack
+            direction="row"
             sx={{
-              flexGrow: 1,
-              overflow: 'auto',
-              mt: activeVideoBlock != null ? -6 : 0
+              display: 'flex',
+              justifyContent: 'space-between',
+              px: 6,
+              pt: 4
             }}
           >
-            <Details id={id} open={open} onSelect={handleSelect} />
-          </Box>
-        </Stack>
-      </Drawer>
-    </>
+            <Button
+              startIcon={<Grid1Icon />}
+              size="small"
+              onClick={() => onClose(false)}
+            >
+              {t('Change Video')}
+            </Button>
+            <IconButton
+              onClick={handleClearVideo}
+              size="small"
+              aria-label="clear-video"
+            >
+              <Trash2Icon />
+            </IconButton>
+          </Stack>
+        )}
+        <Box
+          sx={{
+            flexGrow: 1,
+            overflow: 'auto',
+            mt: activeVideoBlock != null ? -6 : 0
+          }}
+        >
+          <Details id={id} open={open} onSelect={handleSelect} />
+        </Box>
+      </Stack>
+    </Drawer>
   )
 }
 

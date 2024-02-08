@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -6,6 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -236,6 +237,52 @@ describe('DuplicateBlock', () => {
     )
     fireEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should call handleClick after clicking duplicate', async () => {
+    const mockBlockDuplicate: MockedResponse<BlockDuplicate> = {
+      request: {
+        query: BLOCK_DUPLICATE,
+        variables: {
+          id: step.id,
+          journeyId: 'journeyId',
+          parentOrder: null
+        }
+      },
+      result: {
+        data: {
+          blockDuplicate: [
+            {
+              __typename: 'TypographyBlock',
+              id: 'typography0.id'
+            }
+          ]
+        }
+      }
+    }
+
+    const handleClickMock = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider mocks={[mockBlockDuplicate]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock: step }}>
+              <DuplicateBlock
+                variant="list-item"
+                handleClick={handleClickMock}
+              />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
+    await waitFor(() => expect(handleClickMock).toHaveBeenCalled())
   })
 
   it('should be disabled if nothing is selected', () => {

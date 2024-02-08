@@ -1,12 +1,7 @@
-import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
 import { Theme, useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
@@ -16,7 +11,6 @@ import { useTranslation } from 'react-i18next'
 import { TreeBlock } from '@core/journeys/ui/block'
 import MediaStrip1Icon from '@core/shared/ui/icons/MediaStrip1'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
-import X2Icon from '@core/shared/ui/icons/X2'
 import YoutubeIcon from '@core/shared/ui/icons/Youtube'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
@@ -25,6 +19,7 @@ import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 
 import { VideoFromLocal } from './VideoFromLocal'
+import { Drawer } from '../Drawer'
 
 const VideoDetails = dynamic(
   async () =>
@@ -49,7 +44,6 @@ const VideoFromYouTube = dynamic(
   { ssr: false }
 )
 
-export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
   open: boolean
   onClose?: () => void
@@ -113,46 +107,7 @@ export function VideoLibrary({
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <Drawer
-        SlideProps={{ appear: true }}
-        anchor={smUp ? 'right' : 'bottom'}
-        variant="temporary"
-        open={open}
-        elevation={smUp ? 1 : 0}
-        hideBackdrop
-        sx={{
-          zIndex: zIndex.modal,
-          left: {
-            xs: 0,
-            sm: 'unset'
-          },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: smUp ? DRAWER_WIDTH : '100%',
-            height: '100%',
-            display: 'flex'
-          }
-        }}
-      >
-        <AppBar position="static" color="default">
-          <Toolbar>
-            <Typography
-              variant="subtitle1"
-              noWrap
-              component="div"
-              sx={{ flexGrow: 1 }}
-            >
-              {t('Video Library')}
-            </Typography>
-            <IconButton
-              onClick={onClose}
-              sx={{ display: 'inline-flex' }}
-              edge="end"
-            >
-              <X2Icon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
+      <Drawer title={t('Video Library')} open={open} onClose={onClose}>
         <Box
           sx={{
             borderBottom: 1,
@@ -190,7 +145,7 @@ export function VideoLibrary({
           name="video-from-local"
           value={activeTab}
           index={0}
-          sx={{ flexGrow: 1, overflow: 'scroll' }}
+          sx={{ flexGrow: 1, overflow: 'auto' }}
         >
           <VideoFromLocal onSelect={onSelect} />
         </TabPanel>
@@ -198,7 +153,7 @@ export function VideoLibrary({
           name="video-from-youtube"
           value={activeTab}
           index={1}
-          sx={{ flexGrow: 1, overflow: 'scroll' }}
+          sx={{ flexGrow: 1, overflow: 'auto' }}
           unmountUntilVisible
         >
           <VideoFromYouTube onSelect={onSelect} />
@@ -207,7 +162,7 @@ export function VideoLibrary({
           name="video-from-cloudflare"
           value={activeTab}
           index={2}
-          sx={{ flexGrow: 1, overflow: 'scroll' }}
+          sx={{ flexGrow: 1, overflow: 'auto' }}
           unmountUntilVisible
         >
           <VideoFromCloudflare onSelect={onSelect} />
