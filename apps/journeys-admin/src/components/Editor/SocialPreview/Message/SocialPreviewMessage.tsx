@@ -131,6 +131,7 @@ export function SocialPreviewMessage(): ReactElement {
                         fontWeight={600}
                         fontSize={12}
                         lineHeight="16px"
+                        noWrap
                       >
                         {journey.seoTitle}
                       </Typography>

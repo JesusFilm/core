@@ -23,7 +23,11 @@ export function SocialPreviewPost(): ReactElement {
 
   return (
     <Box data-testid="SocialPreviewPost">
-      <Stack direction="column" justifyContent="start" alignContent="center">
+      <Stack
+        direction="column"
+        justifyContent="flex-start"
+        alignContent="center"
+      >
         <Typography
           variant="caption"
           pb={4}
@@ -112,57 +116,61 @@ export function SocialPreviewPost(): ReactElement {
                 />
               )}
             </CardMedia>
-            <CardContent sx={{ p: 0, my: 3 }}>
-              {isEmpty(journey?.seoTitle) ? (
-                <Box
-                  width={208}
-                  height={15}
-                  bgcolor="#EFEFEF"
-                  borderRadius="8px"
-                  mb={1}
-                />
-              ) : (
-                <Typography
-                  variant="subtitle1"
-                  fontSize={12}
-                  lineHeight="16px"
-                  color="#26262E"
-                >
-                  {journey.seoTitle}
-                </Typography>
-              )}
-              {isEmpty(journey?.seoDescription) ? (
-                <Box
-                  width={144}
-                  height={15}
-                  bgcolor="#EFEFEF"
-                  borderRadius="8px"
-                />
-              ) : (
-                <Typography
-                  variant="body2"
-                  fontSize={8}
-                  lineHeight="12px"
-                  color="#6D6D7D"
-                >
-                  {journey.seoDescription}
-                </Typography>
-              )}
+            <Stack
+              gap={5}
+              sx={{
+                flexDirection: 'column',
+                height: 36
+              }}
+            >
+              <Stack gap={1.5} sx={{ mt: 2 }}>
+                {isEmpty(journey?.seoTitle) ? (
+                  <Box
+                    width={208}
+                    height={15}
+                    bgcolor="#EFEFEF"
+                    borderRadius="8px"
+                  />
+                ) : (
+                  <Typography
+                    variant="subtitle1"
+                    fontSize={12}
+                    lineHeight="15px"
+                    color="#26262E"
+                    noWrap
+                  >
+                    {journey.seoTitle}
+                  </Typography>
+                )}
+                {isEmpty(journey?.seoDescription) ? (
+                  <Box
+                    width={144}
+                    height={15}
+                    bgcolor="#EFEFEF"
+                    borderRadius="8px"
+                  />
+                ) : (
+                  <Typography
+                    variant="body2"
+                    fontSize={8}
+                    lineHeight="15px"
+                    color="#6D6D7D"
+                    noWrap
+                  >
+                    {journey.seoDescription}
+                  </Typography>
+                )}
+              </Stack>
               <Stack
-                width="100%"
-                height="100%"
                 flexDirection="row"
-                alignItems="center"
                 justifyContent="space-around"
                 color="#EFEFEF"
-                sx={{ my: 3 }}
               >
                 <ThumbsUp sx={{ fontSize: 15 }} />
                 <MessageCircle sx={{ fontSize: 15 }} />
                 <Share sx={{ fontSize: 15 }} />
               </Stack>
-            </CardContent>
-            <CardActionArea />
+            </Stack>
           </Card>
         )}
       </Stack>

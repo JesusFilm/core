@@ -133,6 +133,7 @@ export function SocialPreviewNode(): ReactElement {
                     fontSize={7}
                     lineHeight="9px"
                     color="#26262E"
+                    noWrap
                   >
                     {journey.seoTitle}
                   </Typography>
@@ -148,8 +149,9 @@ export function SocialPreviewNode(): ReactElement {
                   <Typography
                     variant="body2"
                     fontSize={4.5}
-                    lineHeight="7px"
+                    lineHeight="9px"
                     color="#6D6D7D"
+                    noWrap
                   >
                     {journey.seoDescription}
                   </Typography>
