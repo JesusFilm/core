@@ -120,7 +120,7 @@ export function SocialPreviewNode(): ReactElement {
               }}
             >
               <Stack gap={0.75} maxHeight={21}>
-                {isEmpty(journey?.seoTitle) ? (
+                {isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
                     width={118.5}
                     height={9}
@@ -138,7 +138,7 @@ export function SocialPreviewNode(): ReactElement {
                     {journey.seoTitle}
                   </Typography>
                 )}
-                {isEmpty(journey?.seoDescription) ? (
+                {isEmpty(journey?.seoDescription?.trim()) ? (
                   <Box
                     width={118.5}
                     height={9}

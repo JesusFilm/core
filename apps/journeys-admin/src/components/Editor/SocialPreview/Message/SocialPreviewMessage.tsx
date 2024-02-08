@@ -79,7 +79,7 @@ export function SocialPreviewMessage(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Box width={256} data-testid="SocialPreviewMessage">
+    <Box maxWidth={256} data-testid="SocialPreviewMessage">
       <Stack direction="column" justifyContent="start">
         <Typography
           variant="caption"
@@ -92,7 +92,7 @@ export function SocialPreviewMessage(): ReactElement {
         <Stack alignItems="center">
           <MessageBubble width={252} height={54} direction="left" />
           {journey != null && (
-            <MessageBubble width={315} height={142} direction="right">
+            <MessageBubble width={315} height={122} direction="right">
               <Stack direction="column" sx={{ p: 1 }}>
                 <Stack direction="row" gap={2}>
                   {journey?.primaryImageBlock?.src == null ? (
@@ -117,7 +117,7 @@ export function SocialPreviewMessage(): ReactElement {
                     />
                   )}
                   <Stack width={164} flexGrow={1} justifyContent="center">
-                    {isEmpty(journey?.seoTitle) ? (
+                    {isEmpty(journey?.seoTitle?.trim()) ? (
                       <Box
                         width={205}
                         height={15}
@@ -136,7 +136,7 @@ export function SocialPreviewMessage(): ReactElement {
                         {journey.seoTitle}
                       </Typography>
                     )}
-                    {isEmpty(journey?.seoDescription) ? (
+                    {isEmpty(journey?.seoDescription?.trim()) ? (
                       <Box
                         width={144}
                         height={15}

@@ -27,6 +27,7 @@ export function SocialPreviewPost(): ReactElement {
         direction="column"
         justifyContent="flex-start"
         alignContent="center"
+        alignItems="center"
       >
         <Typography
           variant="caption"
@@ -39,8 +40,8 @@ export function SocialPreviewPost(): ReactElement {
         {journey != null && (
           <Card
             sx={{
-              width: 228,
-              height: 294,
+              maxWidth: { xs: 208, md: 228 },
+              height: { xs: 274, md: 294 },
               border: '0.5px solid #DEDFE0',
               borderRadius: '16px',
               display: 'block',
@@ -124,7 +125,7 @@ export function SocialPreviewPost(): ReactElement {
               }}
             >
               <Stack gap={1.5} sx={{ mt: 2 }}>
-                {isEmpty(journey?.seoTitle) ? (
+                {isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
                     width={208}
                     height={15}
@@ -142,7 +143,7 @@ export function SocialPreviewPost(): ReactElement {
                     {journey.seoTitle}
                   </Typography>
                 )}
-                {isEmpty(journey?.seoDescription) ? (
+                {isEmpty(journey?.seoDescription?.trim()) ? (
                   <Box
                     width={144}
                     height={15}

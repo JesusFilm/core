@@ -20,9 +20,6 @@ export function SocialPreview(): ReactElement {
   } = useEditor()
   // uses usemediaquery to force component reload for sizing
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
-  const handleSocialEditFabClick = (): void => {
-    dispatch({ type: 'SetDrawerMobileOpenAction', mobileOpen: true })
-  }
 
   function handleSelect(): void {
     dispatch({
@@ -39,7 +36,7 @@ export function SocialPreview(): ReactElement {
           direction="row"
           alignItems="center"
           justifyContent={
-            activeSlide === ActiveSlide.Canvas ? 'space-around' : 'flex-start'
+            activeSlide === ActiveSlide.Canvas ? 'space-evenly' : 'flex-start'
           }
           data-testid="SocialPreview"
           sx={{
@@ -66,7 +63,13 @@ export function SocialPreview(): ReactElement {
           )}
         </Stack>
       ) : (
-        <Box data-testid="SocialPreview">
+        <Box
+          data-testid="SocialPreview"
+          width="100%"
+          height="100%"
+          alignItems="center"
+          display="flex"
+        >
           <Swiper
             modules={[Pagination]}
             id="social-swiper"
@@ -74,19 +77,25 @@ export function SocialPreview(): ReactElement {
             centeredSlides
             slideToClickedSlide
             pagination={{ clickable: true }}
-            style={{ height: '330px' }}
+            spaceBetween={80}
           >
             <SwiperSlide
               key={0}
-              onClick={handleSocialEditFabClick}
-              style={{ cursor: 'pointer' }}
+              style={{
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'center'
+              }}
             >
               <SocialPreviewPost />
             </SwiperSlide>
             <SwiperSlide
               key={1}
-              onClick={handleSocialEditFabClick}
-              style={{ cursor: 'pointer' }}
+              style={{
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'center'
+              }}
             >
               <SocialPreviewMessage />
             </SwiperSlide>
