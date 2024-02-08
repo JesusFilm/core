@@ -1,7 +1,6 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import { dir } from 'i18next'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
@@ -48,7 +47,10 @@ function JourneysAdminApp({
     rtl: i18n !== null ? getLocaleRTL(i18n.language) : false
   })
 }: JourneysAdminAppProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const {
+    t,
+    i18n: { dir }
+  } = useTranslation('apps-journeys-admin')
 
   const rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
 
@@ -74,7 +76,7 @@ function JourneysAdminApp({
     }
 
     TagManager.dataLayer({ dataLayer: { userId: user?.id } })
-  }, [user])
+  }, [user, dir])
 
   return (
     <FlagsProvider flags={pageProps.flags}>
