@@ -36,10 +36,9 @@ const i18nConfig = {
       'vi-VN', // Vietnamese
       'zh-CN', // Chinese, Simplified
       'zh-TW' // Chinese, Traditional
-    ]
-  },
-  fallbackLng: {
-    default: ['en']
+    ],
+    // add list of fallbacks
+    localeDetection: false
   },
   localePath
 }

@@ -68,6 +68,9 @@ export function LanguageSwitcher({
         (language) => language.id === localeId
       )
       const locale = getLocaleLanguage('id', language?.id ?? '')?.locale
+
+      document.cookie = `NEXT_LOCALE=${locale}; path=/`
+
       const path = router.asPath
       void router.push(path, path, { locale })
     },
@@ -141,7 +144,7 @@ export function LanguageSwitcher({
               currentLanguage != null ? currentLanguage : placeholderLanguage
             }
             languages={languages}
-            loading={loading}
+            loading={loading || languages.length === 0}
           />
           {languageState.confirmLanguageChange && (
             <Alert
