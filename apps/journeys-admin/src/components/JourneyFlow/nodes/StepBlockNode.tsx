@@ -127,7 +127,7 @@ function getIconAndColorForBlockType(blockType: string): {
               color: 'white'
             }}
           >
-            <GitBranchIcon />
+            <GitBranchIcon fontSize="small" />
           </Box>
         )
       }
