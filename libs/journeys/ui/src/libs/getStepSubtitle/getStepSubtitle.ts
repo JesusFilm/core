@@ -27,6 +27,30 @@ function findMostImportantTypographyBlock(
   return currentIndex > previousIndex ? current : previous
 }
 
+function findSecondMostImportantTypographyBlock(
+  mostImportant: TreeBlock<TypographyBlock> | null,
+  current: TreeBlock
+): TreeBlock<TypographyBlock> | null {
+  if (current.__typename !== 'TypographyBlock') return mostImportant
+
+  const mostImportantIndex =
+    mostImportant != null
+      ? orderedVariants.findIndex(
+          (variant) => variant === mostImportant.variant
+        )
+      : -1
+
+  const currentIndex = orderedVariants.findIndex(
+    (variant) => variant === current.variant
+  )
+
+  if (mostImportantIndex === -1 || currentIndex > mostImportantIndex) {
+    return mostImportant
+  } else {
+    return current
+  }
+}
+
 const orderedVariants: TypographyVariant[] = [
   TypographyVariant.overline,
   TypographyVariant.caption,
@@ -42,7 +66,7 @@ const orderedVariants: TypographyVariant[] = [
   TypographyVariant.h1
 ]
 
-export function getStepHeading(
+export function getSecondStepHeading(
   stepId: string,
   children: TreeBlock[],
   steps: TreeBlock[],
@@ -50,13 +74,27 @@ export function getStepHeading(
 ): string {
   const descendants = flatten(children)
 
-  const heading =
+  const mostImportant =
     descendants.length > 0
-      ? descendants.reduce(findMostImportantTypographyBlock, null)
-      : undefined
+      ? descendants.reduce<TreeBlock<TypographyBlock> | null>(
+          findMostImportantTypographyBlock,
+          null
+        )
+      : null
 
-  if (heading != null && heading.__typename === 'TypographyBlock') {
-    return heading.content
+  const secondMostImportant =
+    descendants.length > 0
+      ? descendants.reduce(
+          findSecondMostImportantTypographyBlock,
+          mostImportant
+        )
+      : null
+
+  if (
+    secondMostImportant !== null &&
+    secondMostImportant.__typename === 'TypographyBlock'
+  ) {
+    return secondMostImportant.content
   } else {
     return ''
   }

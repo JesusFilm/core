@@ -6,6 +6,7 @@ import { NodeProps } from 'reactflow'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import { getStepSubtitle } from '@core/journeys/ui/getStepSubtitle'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -190,7 +191,7 @@ export function StepBlockNode({
 }: NodeProps<StepBlockNodeData>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const title = getStepHeading(step.id, step.children, steps, t)
-  const subtitle = getStepSubtitle(title)
+  const subtitle = getStepSubtitle(step.id, step.children, steps, t)
   const card = step.children.find((card) => card.__typename === 'CardBlock') as
     | TreeBlock<CardBlock>
     | undefined
@@ -317,7 +318,4 @@ export function StepBlockNode({
       videoStartToEnd={videoStartToEnd}
     />
   )
-}
-function getStepSubtitle(title: string): string {
-  return title === '' ? '' : '"Go and lead people on their way..."'
 }
