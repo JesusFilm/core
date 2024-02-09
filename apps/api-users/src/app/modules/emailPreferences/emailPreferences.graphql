@@ -20,4 +20,6 @@ input EmailPreferencesUpdateInput {
 
 type Mutation {
   updateEmailPreferences(input: EmailPreferencesUpdateInput!): EmailPreferences
+  createEmailPreferencesForAllUsers: Boolean
+  find
 }

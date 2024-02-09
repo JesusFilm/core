@@ -39,6 +39,8 @@ export abstract class IMutation {
 
     abstract updateEmailPreferences(input: EmailPreferencesUpdateInput): Nullable<EmailPreferences> | Promise<Nullable<EmailPreferences>>;
 
+    abstract createEmailPreferencesForAllUsers(): Nullable<boolean> | Promise<Nullable<boolean>>;
+
     abstract userImpersonate(email: string): Nullable<string> | Promise<Nullable<string>>;
 }
 
