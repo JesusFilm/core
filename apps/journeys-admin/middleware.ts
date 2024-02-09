@@ -1,5 +1,103 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const supportedLocales = [
+  // Amharic
+  'am',
+  'am-ET',
+
+  // Arabic
+  'ar',
+  'ar-BH', // Bahrain
+  'ar-EG', // Egypt
+  'ar-SA', // Saudi Arabia
+  'ar-YE', // Yemen
+
+  // Bengali
+  'bn',
+  'bn-BD', // Bangla
+  'bn-IN', // Indian
+
+  // English
+  'en',
+  'en-AU', // Australia
+  'en-CA', // Canada
+  'en-GB', // United Kingdom
+  'en-NZ', // New Zealand
+  'en-US', // United States
+
+  // Spanish
+  'es',
+  'es-ES',
+  'es-AR', // Argentina
+  'es-CO', // Columbia
+  'es-MX', // Mexico
+  'es-PE', // Peru
+  'es-US', // USA
+  'es-VE', // Venezuela
+  'es-419', // Latin, America
+
+  // French
+  'fr',
+  'fr-FR',
+  'fr-BE', // Belgium
+  'fr-CA', // Canada
+  'fr-LU', // Luxembourg
+  'fr-QC', // Quebec
+  'fr-CH', // Switzerland
+
+  // Hindi
+  'hi',
+  'hi-IN',
+
+  // Indonesia
+  'id',
+  'id-ID',
+
+  // Japanese
+  'ja',
+  'ja-JP',
+
+  // Burmese
+  'my',
+  'my-MM',
+
+  // Russian
+  'ru',
+  'ru-RU',
+  'ru-BY', // Belarus
+  'ru-MD', // Moldova
+  'ru-UA', // Ukraine
+
+  // Thai
+  'th',
+  'th-TH',
+
+  // Tagalog
+  'tl',
+  'tl-PH',
+
+  // Turkish
+  'tr',
+  'tr-TR',
+  'tr-CY', // Cyprus
+
+  // Urdu (Pakistan)
+  'ur-PK',
+
+  // Vietnamese
+  'vi',
+  'vi-VN',
+
+  // Chinese, Simplified
+  'zh-CN',
+  'zh-SG', // Singapore
+
+  // Chinese, Traditional
+  'zh-TW',
+  'zh-HK', // Hongkong
+  'zh-MO' // Macao
+]
+
 const PUBLIC_FILE_REGEX = /\.(.*)$/
 
 const getBrowserLanguage = (req): string | undefined => {
@@ -18,10 +116,15 @@ const getBrowserLanguage = (req): string | undefined => {
   )
 
   if (sortedLanguages != null && sortedLanguages.length > 0) {
-    return sortedLanguages[0].code
+    const browserCode = sortedLanguages[0].code
+    console.log(browserCode)
+
+    if (supportedLocales.includes(browserCode)) {
+      return browserCode
+    }
   }
 
-  return undefined
+  return 'en'
 }
 
 export function middleware(req: NextRequest): NextResponse | undefined {
