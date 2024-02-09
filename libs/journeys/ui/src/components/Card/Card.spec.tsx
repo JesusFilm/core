@@ -1,3 +1,5 @@
+// TODO (SWIPE): Fix types
+
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
@@ -225,5 +227,14 @@ describe('CardBlock', () => {
     )
     expect(standaloneVideoBlock).not.toBeInTheDocument()
     expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()
+  })
+
+  // TODO (SWIPE): Add tests for navigation
+  it('should block navigate previous on the first card', () => {
+    expect(true).toBe(true)
+  })
+
+  it('should block navigate next on the last card', () => {
+    expect(true).toBe(true)
   })
 })

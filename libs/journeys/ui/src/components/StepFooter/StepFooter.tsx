@@ -37,7 +37,6 @@ export function StepFooter({
   return (
     <Box
       data-testid="JourneysStepFooter"
-      className="swiper-no-swiping"
       sx={{
         position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,

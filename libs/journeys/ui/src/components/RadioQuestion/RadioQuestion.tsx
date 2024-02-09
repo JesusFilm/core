@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { styled } from '@mui/material/styles'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
@@ -32,6 +32,7 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
   wrappers?: WrappersProps
   addOption?: ReactElement
+  activeStep: boolean
 }
 
 const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
@@ -43,7 +44,8 @@ export function RadioQuestion({
   children,
   uuid = uuidv4,
   wrappers,
-  addOption
+  addOption,
+  activeStep
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionSubmissionEventCreate] =
     useMutation<RadioQuestionSubmissionEventCreate>(
@@ -54,6 +56,10 @@ export function RadioQuestion({
   const { blockHistory, treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
   const activeBlock = blockHistory[blockHistory.length - 1]
+
+  useEffect(() => {
+    if (!activeStep) setSelectedId(null)
+  }, [activeStep])
 
   const heading =
     activeBlock != null

@@ -49,7 +49,7 @@ export function NavigationButton({
   const [stepPreviousEventCreate] = useMutation<StepPreviousEventCreate>(
     STEP_PREVIOUS_EVENT_CREATE
   )
-  const { t } = useTranslation('journeys')
+  const { t } = useTranslation('apps-journeys')
   const { variant: journeyVariant } = useJourney()
   const {
     setShowNavigation,
@@ -94,6 +94,7 @@ export function NavigationButton({
   // places used:
   // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   function handleNextNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
@@ -130,12 +131,12 @@ export function NavigationButton({
       }
     })
   }
-
   // should always be called with previousActiveBlock()
   // should match with other handlePreviousNavigationEventCreate functions
   // places used:
   // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   function handlePreviousNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
@@ -174,12 +175,12 @@ export function NavigationButton({
       }
     })
   }
-
   function handleNav(direction: 'next' | 'previous'): void {
-    if (direction === 'next') {
+    if (journeyVariant === 'admin') return
+    if (direction === 'next' && !onLastStep && !activeBlock.locked) {
       handleNextNavigationEventCreate()
       nextActiveBlock()
-    } else {
+    } else if (direction === 'previous' && !onFirstStep) {
       handlePreviousNavigationEventCreate()
       previousActiveBlock()
     }

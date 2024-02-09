@@ -49,7 +49,7 @@ const DynamicButton = dynamic<TreeBlock<ButtonBlock>>(
 )
 
 const DynamicCard = dynamic<
-  TreeBlock<CardBlock> & { wrappers?: WrappersProps }
+  TreeBlock<CardBlock> & { wrappers?: WrappersProps; activeStep: boolean }
 >(
   async () =>
     // eslint-disable-next-line import/no-cycle
@@ -84,7 +84,10 @@ const DynamicRadioOption = dynamic<TreeBlock<RadioOptionBlock>>(
 )
 
 const DynamicRadioQuestion = dynamic<
-  TreeBlock<RadioQuestionBlock> & { wrappers?: WrappersProps }
+  TreeBlock<RadioQuestionBlock> & {
+    wrappers?: WrappersProps
+    activeStep: boolean
+  }
 >(
   async () =>
     await import(
@@ -129,13 +132,15 @@ const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
 interface BlockRenderProps {
   block?: TreeBlock
   wrappers?: WrappersProps
+  activeStep?: boolean
 }
 
 const DefaultWrapper: WrapperFn = ({ children }) => children
 
 export function BlockRenderer({
   block,
-  wrappers
+  wrappers,
+  activeStep = false
 }: BlockRenderProps): ReactElement {
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
@@ -167,7 +172,11 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <CardWrapper block={block}>
-            <DynamicCard {...block} wrappers={wrappers} />
+            <DynamicCard
+              {...block}
+              wrappers={wrappers}
+              activeStep={activeStep}
+            />
           </CardWrapper>
         </Wrapper>
       )
@@ -199,7 +208,11 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <RadioQuestionWrapper block={block}>
-            <DynamicRadioQuestion {...block} wrappers={wrappers} />
+            <DynamicRadioQuestion
+              {...block}
+              wrappers={wrappers}
+              activeStep={activeStep}
+            />
           </RadioQuestionWrapper>
         </Wrapper>
       )
@@ -239,7 +252,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <VideoWrapper block={block}>
-            <Video {...block} />
+            <Video {...block} activeStep={activeStep} />
           </VideoWrapper>
         </Wrapper>
       )

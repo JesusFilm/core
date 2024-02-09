@@ -475,7 +475,7 @@ export function VideoEvents({
   useEffect(() => {
     function completeListener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime() ?? 0
+      const currentPosition = (player.currentTime() ?? 0) + 2
       if (!calledComplete && currentPosition >= end) {
         void videoCompleteEventCreate({
           variables: {

@@ -1,3 +1,5 @@
+// TODO (SWIPE): Fix play button not showing up in stories
+
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import PauseRounded from '@mui/icons-material/PauseRounded'
@@ -43,7 +45,6 @@ export function VideoControls({
   endAt,
   isYoutube = false,
   loading = false,
-  autoplay = false,
   muted: mute = false
 }: VideoControlProps): ReactElement {
   const [playing, setPlaying] = useState(false)
@@ -225,7 +226,7 @@ export function VideoControls({
     } else {
       if (fscreen.fullscreenEnabled) {
         const activeCard = document.querySelectorAll(
-          '.swiper-slide-active .MuiPaper-root'
+          '.active-card .MuiBox-root'
         )[0]
         if (activeCard != null) {
           void fscreen.requestFullscreen(activeCard)
@@ -366,7 +367,6 @@ export function VideoControls({
           </Stack>
           {/* Progress Bar */}
           <Container
-            className="swiper-no-swiping"
             data-testid="vjs-jfp-custom-controls"
             maxWidth="xxl"
             sx={{
@@ -379,6 +379,7 @@ export function VideoControls({
               }
             }}
             onClick={(event) => event.stopPropagation()}
+            onTouchEnd={(event) => event.stopPropagation()}
           >
             <Stack
               direction="row"

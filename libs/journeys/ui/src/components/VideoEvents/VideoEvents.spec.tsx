@@ -561,6 +561,8 @@ describe('VideoEvents', () => {
     )
   })
 
+  // TODO (SWIPE): fix progress/ complete event
+
   it('should create progress event and complete event', async () => {
     blockHistoryVar([activeBlock])
     const resultStart = jest.fn(() => ({

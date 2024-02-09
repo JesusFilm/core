@@ -1,3 +1,5 @@
+// TODO (SWIPE): Fix types
+
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
