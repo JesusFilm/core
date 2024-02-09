@@ -6,7 +6,7 @@ type EmailPreferences {
   thirdCategory: Boolean!
 }
 
-type Query {
+extend type Query {
   emailPreferences: [EmailPreferences]
   emailPreference(id: ID!, idType: String!): EmailPreferences
 }
@@ -18,7 +18,7 @@ input EmailPreferencesUpdateInput {
   thirdCategory: Boolean!
 }
 
-type Mutation {
+extend type Mutation {
   updateEmailPreferences(input: EmailPreferencesUpdateInput!): EmailPreferences
   createEmailPreferencesForAllUsers: Boolean
 }
