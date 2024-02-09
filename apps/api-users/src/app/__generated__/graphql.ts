@@ -32,6 +32,10 @@ export abstract class IQuery {
     abstract emailPreference(id: string, idType: string): Nullable<EmailPreferences> | Promise<Nullable<EmailPreferences>>;
 
     abstract me(): Nullable<User> | Promise<Nullable<User>>;
+
+    abstract user(id: string): Nullable<User> | Promise<Nullable<User>>;
+
+    abstract userByEmail(email: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export abstract class IMutation {
@@ -53,16 +57,6 @@ export class User {
     imageUrl?: Nullable<string>;
     superAdmin?: Nullable<boolean>;
     emailPreferences?: Nullable<EmailPreferences>;
-}
-
-export abstract class IQuery {
-    __typename?: 'IQuery';
-
-    abstract me(): Nullable<User> | Promise<Nullable<User>>;
-
-    abstract user(id: string): Nullable<User> | Promise<Nullable<User>>;
-
-    abstract userByEmail(email: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export class Translation {

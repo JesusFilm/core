@@ -22,6 +22,8 @@ type Query {
   emailPreferences: [EmailPreferences]
   emailPreference(id: ID!, idType: String!): EmailPreferences
   me: User
+  user(id: ID!): User
+  userByEmail(email: String!): User
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
 }
@@ -49,21 +51,6 @@ type User
   imageUrl: String
   superAdmin: Boolean
   emailPreferences: EmailPreferences
-}
-
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  me: User
-  user(id: ID!): User
-  userByEmail(email: String!): User
-}
-
-extend type Mutation {
-  userImpersonate(email: String!): String
 }
 
 extend type Language
