@@ -38,16 +38,6 @@ export abstract class IQuery {
     abstract userByEmail(email: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
-export abstract class IMutation {
-    __typename?: 'IMutation';
-
-    abstract updateEmailPreferences(input: EmailPreferencesUpdateInput): Nullable<EmailPreferences> | Promise<Nullable<EmailPreferences>>;
-
-    abstract createEmailPreferencesForAllUsers(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract userImpersonate(email: string): Nullable<string> | Promise<Nullable<string>>;
-}
-
 export class User {
     __typename?: 'User';
     id: string;
@@ -64,6 +54,14 @@ export class Translation {
     value: string;
     language: Language;
     primary: boolean;
+}
+
+export abstract class IMutation {
+    abstract updateEmailPreferences(input: EmailPreferencesUpdateInput): Nullable<EmailPreferences> | Promise<Nullable<EmailPreferences>>;
+
+    abstract createEmailPreferencesForAllUsers(): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract userImpersonate(email: string): Nullable<string> | Promise<Nullable<string>>;
 }
 
 export class Language {

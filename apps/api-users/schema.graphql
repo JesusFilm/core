@@ -19,13 +19,16 @@ type EmailPreferences {
 }
 
 type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
   emailPreferences: [EmailPreferences]
   emailPreference(id: ID!, idType: String!): EmailPreferences
   me: User
   user(id: ID!): User
   userByEmail(email: String!): User
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
 }
 
 input EmailPreferencesUpdateInput {
@@ -35,7 +38,7 @@ input EmailPreferencesUpdateInput {
   thirdCategory: Boolean!
 }
 
-type Mutation {
+extend type Mutation {
   updateEmailPreferences(input: EmailPreferencesUpdateInput!): EmailPreferences
   createEmailPreferencesForAllUsers: Boolean
   userImpersonate(email: String!): String
