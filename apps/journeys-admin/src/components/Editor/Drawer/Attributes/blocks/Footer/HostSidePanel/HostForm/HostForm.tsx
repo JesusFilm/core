@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { Divider } from '@mui/material'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -12,12 +13,12 @@ import { DeleteHost } from '../../../../../../../../../__generated__/DeleteHost'
 import { UpdateJourneyHost } from '../../../../../../../../../__generated__/UpdateJourneyHost'
 import { SidePanel } from '../../../../../../../PageWrapper/SidePanel'
 import { SidePanelContainer } from '../../../../../../../PageWrapper/SidePanelContainer'
+import { Drawer } from '../../../../../Drawer'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
 import { HostLocationFieldForm } from './HostLocationFieldForm'
 import { HostTitleFieldForm } from './HostTitleFieldForm'
 import { UPDATE_JOURNEY_HOST } from './HostTitleFieldForm/HostTitleFieldForm'
-import { Drawer } from '../../../../../Drawer'
 
 export const DELETE_HOST = gql`
   mutation DeleteHost($id: ID!, $teamId: ID!) {
@@ -45,17 +46,17 @@ export function HostForm({
   const { t } = useTranslation('apps-journeys-admin')
 
   const handleClear = async (): Promise<void> => {
-    if (journey?.host != null && journey?.team != null) {
-      try {
-        await hostDelete({
-          variables: { id: journey.host.id, teamId: journey.team.id }
-        })
-      } catch (e) {}
-    }
+    // if (journey?.host != null && journey?.team != null) {
+    //   try {
+    //     await hostDelete({
+    //       variables: { id: journey.host.id, teamId: journey.team.id }
+    //     })
+    //   } catch (e) {}
+    // }
 
-    await journeyHostUpdate({
-      variables: { id: journey?.id, input: { hostId: null } }
-    })
+    // await journeyHostUpdate({
+    //   variables: { id: journey?.id, input: { hostId: null } }
+    // })
 
     onClear()
   }
@@ -66,24 +67,28 @@ export function HostForm({
       open={open}
       onClose={onClose}
     >
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: 4 }}
-      >
-        {journey?.host != null && (
+      {journey?.host != null && (
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ p: 4 }}
+        >
+          {/* <Typography variant="subtitle2">
+          {journey?.host != null ? t('Edit Author') : t('Create Author')}
+        </Typography> */}
           <Button variant="outlined" size="small" onClick={handleClear}>
-            {t('Clear')}
+            {t('Remove selection')}
           </Button>
-        )}
-      </Stack>
-      <Stack gap={6}>
+        </Stack>
+      )}
+      <Stack sx={{ p: 4 }} gap={6}>
         <HostTitleFieldForm />
         <HostLocationFieldForm />
         <HostAvatarsButton />
       </Stack>
-      <Stack direction="row" alignItems="center" gap={3}>
+      <Divider />
+      <Stack sx={{ p: 4 }} direction="row" alignItems="center" gap={3}>
         <AlertCircleIcon />
         <Typography variant="subtitle2">
           {t(
@@ -91,6 +96,7 @@ export function HostForm({
           )}
         </Typography>
       </Stack>
+      <Divider />
     </Drawer>
   )
 }

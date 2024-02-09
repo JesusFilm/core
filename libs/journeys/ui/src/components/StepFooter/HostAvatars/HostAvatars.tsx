@@ -22,8 +22,8 @@ export function HostAvatars({
 }: HostAvatarsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const src1 = avatarSrc1 ?? journey?.host?.src1
-  const src2 = avatarSrc2 ?? journey?.host?.src2
+  const src1 = avatarSrc1
+  const src2 = avatarSrc2
 
   return (
     <AvatarGroup

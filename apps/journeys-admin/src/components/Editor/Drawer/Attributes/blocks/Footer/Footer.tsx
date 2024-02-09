@@ -1,3 +1,4 @@
+import { Divider } from '@mui/material'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import dynamic from 'next/dynamic'
@@ -87,7 +88,6 @@ export function Footer(): ReactElement {
         aria-label="image selection tabs"
         variant="fullWidth"
       >
-        {' '}
         <Tab
           icon={<UserProfileCircleIcon />}
           label={t('Hosted By')}
@@ -99,6 +99,7 @@ export function Footer(): ReactElement {
           {...tabA11yProps('chat', 1)}
         />
       </Tabs>
+      <Divider />
       <TabPanel
         name="hostedBy"
         value={tabValue}
