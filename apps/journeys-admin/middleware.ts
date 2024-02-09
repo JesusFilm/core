@@ -2,27 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const PUBLIC_FILE_REGEX = /\.(.*)$/
 
-const LOCALES = [
-  'am-ET', // Amharic
-  'ar-SA', // Arabic
-  'bn-BD', // Bangla
-  'en', // English
-  'es-ES', // Spanish
-  'fr-FR', // French
-  'hi-IN', // Hindi
-  'id-ID', // Indonesian
-  'ja-JP', // Japanese
-  'my-MM', // Burmese
-  'ru-RU', // Russian
-  'th-TH', // Thai
-  'tl-PH', // Tagalog
-  'tr-TR', // Turkish
-  'ur-PK', // Urdu (Pakistan)
-  'vi-VN', // Vietnamese
-  'zh-CN', // Chinese, Simplified
-  'zh-TW' // Chinese, Traditional
-]
-
 const getBrowserLanguage = (req): string | undefined => {
   const acceptedLanguages = req.headers
     .get('accept-language')
@@ -34,9 +13,9 @@ const getBrowserLanguage = (req): string | undefined => {
       return { code, priority: isNaN(langPriority) ? 1 : langPriority }
     })
 
-  const sortedLanguages = acceptedLanguages
-    ?.filter((lang) => LOCALES.includes(lang.code))
-    ?.sort((a, b) => b.priority - a.priority)
+  const sortedLanguages = acceptedLanguages?.sort(
+    (a, b) => b.priority - a.priority
+  )
 
   if (sortedLanguages != null && sortedLanguages.length > 0) {
     return sortedLanguages[0].code
