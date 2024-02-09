@@ -162,6 +162,7 @@ export class UserResolver {
     if (user == null)
       throw new GraphQLError('User not found', { extensions: { code: '404' } })
 
+    console.log(user)
     if (user.emailVerified)
       throw new GraphQLError('Email already verified', {
         extensions: { code: '403' }

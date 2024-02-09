@@ -1,4 +1,4 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { ApolloError, gql, useApolloClient, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
@@ -23,6 +23,7 @@ import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerificat
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useTeam } from '../../src/components/Team/TeamProvider'
 
 interface ValidateEmailProps {
   email?: string
@@ -48,6 +49,8 @@ function ValidateEmail({
 }: ValidateEmailProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+  const client = useApolloClient()
+  const { setActiveTeam } = useTeam()
   const [error, setError] = useState<GraphQLError | ApolloError | null>(
     initialError
   )
@@ -92,6 +95,13 @@ function ValidateEmail({
     setTimeout(() => {
       setDisableResendButton(false)
     }, 30000)
+  }
+
+  const handleLogout = async (): Promise<void> => {
+    await client.resetStore()
+    await user.signOut()
+    setActiveTeam(null)
+    router.push('/users/sign-in')
   }
 
   return (
@@ -161,6 +171,9 @@ function ValidateEmail({
         >
           {t('Resend Validation Email')}
         </Button>
+        <Button onClick={handleLogout} variant="contained" fullWidth>
+          {t('Logout')}
+        </Button>
       </List>
     </OnboardingPageWrapper>
   )
@@ -197,6 +210,7 @@ export const getServerSideProps = withUserTokenSSR({
     if (data.error != null) {
       return {
         props: {
+          user,
           email,
           token,
           initialError: data.error,
@@ -215,6 +229,7 @@ export const getServerSideProps = withUserTokenSSR({
   }
   return {
     props: {
+      user,
       email,
       token,
       ...translations,
