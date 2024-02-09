@@ -3,11 +3,22 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { TypographyBlockCreateInput, VideoBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardVideoCreate
 // ====================================================
+
+export interface CardVideoCreate_title {
+  __typename: "TypographyBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  align: TypographyAlign | null;
+  color: TypographyColor | null;
+  content: string;
+  variant: TypographyVariant | null;
+}
 
 export interface CardVideoCreate_video_video_title {
   __typename: "Translation";
@@ -156,9 +167,11 @@ export interface CardVideoCreate_video {
 }
 
 export interface CardVideoCreate {
+  title: CardVideoCreate_title;
   video: CardVideoCreate_video;
 }
 
 export interface CardVideoCreateVariables {
+  titleInput: TypographyBlockCreateInput;
   videoInput: VideoBlockCreateInput;
 }

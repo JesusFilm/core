@@ -29,7 +29,9 @@ export interface StepBlockNodeData extends TreeBlock<StepBlock> {
 }
 
 function getBackgroundImage(card?: TreeBlock<CardBlock>): string | undefined {
+  console.log('getting bgimage')
   if (card == null) return
+  console.log('card wasnt  null: ', card)
 
   let bgImage: string | undefined
 
@@ -192,6 +194,9 @@ export function StepBlockNode({
   const { t } = useTranslation('apps-journeys-admin')
   const title = getStepHeading(step.id, step.children, steps, t)
   const subtitle = getStepSubtitle(step.id, step.children, steps, t)
+  const videoStartToEnd = '0:00 - 99:99'
+  const language = 'Eastern European Arabic language'
+
   const card = step.children.find((card) => card.__typename === 'CardBlock') as
     | TreeBlock<CardBlock>
     | undefined
@@ -239,9 +244,6 @@ export function StepBlockNode({
     : hasBlockOfType(step, 'TypographyBlock')
     ? 'TypographyBlock'
     : 'DefaultBlock'
-
-  const videoStartToEnd = '0:00 - 99:99'
-  const language = 'Eastern European Old A a b ic that is really old'
 
   const { icon } = getIconAndColorForBlockType(blockType)
   return (
