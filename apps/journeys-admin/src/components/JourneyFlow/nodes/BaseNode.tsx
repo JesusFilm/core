@@ -60,7 +60,7 @@ export function BaseNode({
   const [isHovered, setIsHovered] = useState(false)
 
   const handleMouseEnter = (): void => {
-    // setIsHovered(true)  //DISABLED untill design is given
+    setIsHovered(true)
   }
 
   const handleMouseLeave = (): void => {
@@ -257,7 +257,8 @@ export function BaseNode({
                         : '2px solid #aaacbb',
                     outline: '1px solid white',
                     outlineColor: 'white',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    top: selected !== false ? -9.5 : -4
                   }}
                 />
                 <Handle
@@ -288,7 +289,8 @@ export function BaseNode({
                         : '2px solid #aaacbb',
                     outline: '1px solid',
                     outlineColor: 'white',
-                    visibility: isHovered ? 'hidden' : 'visible'
+                    visibility: isHovered ? 'hidden' : 'visible',
+                    bottom: selected !== false ? -9.5 : -4
                   }}
                 />
 
@@ -309,38 +311,13 @@ export function BaseNode({
                   }}
                 />
                 {isHovered && (
-                  <Box
-                    className="dragToCreateHitbox"
-                    style={{
-                      position: 'absolute',
-                      background: 'transparent',
-                      borderColor: 'transparent',
-                      cursor: 'pointer',
-                      marginTop: selected === true ? 5 : 0,
-                      padding: 0,
-                      width: STEP_NODE_WIDTH,
-                      height: 28,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <Handle
-                      type="source"
-                      position={Position.Bottom}
-                      onConnect={onSourceConnect}
-                      onClick={handleClick}
-                      style={{
-                        width: STEP_NODE_WIDTH / 2,
-                        height: 50,
-                        background: 'transparent',
-                        borderColor: 'transparent',
-                        borderRadius: 0,
-                        overflow: 'visible'
-                      }}
-                    />
+                  <>
                     <ArrowDownwardRoundedIcon
                       style={{
+                        display: 'flex',
+                        top: STEP_NODE_HEIGHT - 9,
+                        left: STEP_NODE_WIDTH / 2 - 9,
+                        position: 'absolute',
                         borderRadius: '50%',
                         color: 'white',
                         fontSize: 'large',
@@ -349,7 +326,7 @@ export function BaseNode({
                         backgroundColor: '#c52d3aff'
                       }}
                     />
-                  </Box>
+                  </>
                 )}
               </Card>
             </Box>
@@ -379,7 +356,7 @@ export function BaseNode({
                   sx={{
                     display: 'flex',
                     flexDirection: 'row',
-                    alignItems: 'left',
+                    alignItems: 'center',
                     justifyItems: 'center',
                     width: STEP_NODE_WIDTH,
                     height: STEP_NODE_HEIGHT,
@@ -475,6 +452,25 @@ export function BaseNode({
                       )}
                     </Typography>
                   </Box>
+
+                  {isHovered && (
+                    <>
+                      <ArrowDownwardRoundedIcon
+                        style={{
+                          display: 'flex',
+                          top: STEP_NODE_HEIGHT - 9,
+                          left: STEP_NODE_WIDTH / 2 - 9,
+                          position: 'absolute',
+                          borderRadius: '50%',
+                          color: 'white',
+                          fontSize: 'large',
+                          padding: 0,
+                          marginTop: 5,
+                          backgroundColor: '#c52d3aff'
+                        }}
+                      />
+                    </>
+                  )}
                 </CardContent>
                 <Handle
                   type="target"
@@ -489,7 +485,8 @@ export function BaseNode({
                         : '2px solid #aaacbb',
                     outline: '1px solid white',
                     outlineColor: 'white',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    top: selected !== false ? -9.5 : -4
                   }}
                 />
                 <Handle
@@ -520,7 +517,9 @@ export function BaseNode({
                         : '2px solid #aaacbb',
                     outline: '1px solid',
                     outlineColor: 'white',
-                    visibility: isHovered ? 'hidden' : 'visible'
+                    visibility: isHovered ? 'hidden' : 'visible',
+
+                    bottom: selected !== false ? -9.5 : -4
                   }}
                 />
 
@@ -540,49 +539,6 @@ export function BaseNode({
                     overflow: 'visible'
                   }}
                 />
-                {isHovered && (
-                  <Box
-                    className="dragToCreateHitbox"
-                    style={{
-                      position: 'absolute',
-                      background: 'transparent',
-                      borderColor: 'transparent',
-                      cursor: 'pointer',
-                      marginTop: selected === true ? 5 : 0,
-                      padding: 0,
-                      width: STEP_NODE_WIDTH,
-                      height: 28,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <Handle
-                      type="source"
-                      position={Position.Bottom}
-                      onConnect={onSourceConnect}
-                      onClick={handleClick}
-                      style={{
-                        width: STEP_NODE_WIDTH / 2,
-                        height: 50,
-                        background: 'transparent',
-                        borderColor: 'transparent',
-                        borderRadius: 0,
-                        overflow: 'visible'
-                      }}
-                    />
-                    <ArrowDownwardRoundedIcon
-                      style={{
-                        borderRadius: '50%',
-                        color: 'white',
-                        fontSize: 'large',
-                        padding: 0,
-                        marginTop: 5,
-                        backgroundColor: '#c52d3aff'
-                      }}
-                    />
-                  </Box>
-                )}
               </Card>
             </Box>
           )
