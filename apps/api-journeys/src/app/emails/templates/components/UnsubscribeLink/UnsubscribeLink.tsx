@@ -3,19 +3,17 @@ import { ReactElement } from 'react'
 
 export function UnsubscribeLink(): ReactElement {
   return (
-    <Tailwind>
-      <Container className="bg-[#EFEFEF] mx-auto px-[60px] pb-[40px] max-w-[600px]">
-        <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-sans">
-          {`Don’t want to receive these emails, `}
-          <Link
-            href="https://admin.nextstep.is/"
-            className="text-[#9E2630] no-underline"
-          >
-            Unsubscribe
-          </Link>
-        </Text>
-      </Container>
-    </Tailwind>
+    <Container className="bg-[#EFEFEF] mx-auto px-[60px] pb-[40px] max-w-[600px]">
+      <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-sans">
+        {`Don’t want to receive these emails, `}
+        <Link
+          href="https://admin.nextstep.is/"
+          className="text-[#9E2630] no-underline"
+        >
+          Unsubscribe
+        </Link>
+      </Text>
+    </Container>
   )
 }
 

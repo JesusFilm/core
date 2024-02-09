@@ -7,13 +7,11 @@ interface BodyTextProps {
 
 export function BodyText({ bodyText }: BodyTextProps): ReactElement {
   return (
-    <Tailwind>
-      <Container className="bg-[#EFEFEF] mx-auto px-[60px] max-w-[600px]">
-        <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-sans">
-          {bodyText}
-        </Text>
-      </Container>
-    </Tailwind>
+    <Container className="bg-[#EFEFEF] mx-auto px-[60px] max-w-[600px]">
+      <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-sans">
+        {bodyText}
+      </Text>
+    </Container>
   )
 }
 

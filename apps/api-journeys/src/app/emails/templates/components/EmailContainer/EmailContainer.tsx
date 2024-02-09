@@ -13,11 +13,9 @@ export function EmailContainer({
   children
 }: EmailContainerProps): ReactElement {
   return (
-    <Tailwind>
-      <Container className="my-[40px] rounded border border-solid border-[#eaeaea] shadow-md">
-        {children}
-      </Container>
-    </Tailwind>
+    <Container className="my-[40px] rounded border border-solid border-[#eaeaea] shadow-md">
+      {children}
+    </Container>
   )
 }
 

@@ -10,6 +10,7 @@ import { BodyTitle } from '../components/BodyTitle'
 import { BodyWrapper } from '../components/BodyWrapper'
 import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
+import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
 interface TeamInviteEmailProps {
   email: string
@@ -46,15 +47,17 @@ export const TeamInviteEmail = ({
         <Header sender={sender} />
         <BodyWrapper>
           <BodyTitle
-            bodyTitle={`${sender.firstName} wants to team up with you to create interactive journeys using NextSteps!`}
+            bodyTitle={`${sender.firstName} invites you to the workspace: ${teamName}`}
           />
           <ActionCard
             url={inviteLink}
-            headerText="To join them create an account with Next Steps"
-            buttonText="Create Account"
+            headerText={`Login to NextSteps to join ${sender.firstName}`}
+            buttonText={`Join ${sender.firstName}`}
           />
-          <BodyText bodyText="NextSteps is a platform to create interactive web experiences to help deliver the good news of Jesus to anyone in the world! These journeys are custom build by you to tell the story in your context. Still unsure, check out one for yourself!" />
-          <BodyText bodyText="If you did not want a NextSteps account, no further action is required." />
+          <BodyText
+            bodyText={`If you do not want to be on this team, ask ${sender.firstName} to remove you.`}
+          />
+          <UnsubscribeLink />
         </BodyWrapper>
         <Footer />
       </Container>

@@ -1,12 +1,4 @@
-import {
-  Body,
-  Container,
-  Head,
-  Html,
-  Link,
-  Preview,
-  Text
-} from '@react-email/components'
+import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
@@ -16,6 +8,7 @@ import { ActionCard } from '../components/ActionCard'
 import { BodyTitle } from '../components/BodyTitle'
 import { BodyWrapper } from '../components/BodyWrapper'
 import { EmailContainer } from '../components/EmailContainer'
+import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
 import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
@@ -60,12 +53,7 @@ export const JourneySharedEmail = ({
         />
         <UnsubscribeLink />
       </BodyWrapper>
-      <Container className="bg-[#E3E3E3] h-[72px] p-[20px] px-[80px] flex justify-center items-center">
-        <Text className="text-[#666666] text-[12px] leading-[24px]">
-          {`This is an automated email. If you need assistance, please `}
-          <Link>contact support here instead of replying to this email</Link>.
-        </Text>
-      </Container>
+      <Footer />
     </EmailContainer>
   )
 

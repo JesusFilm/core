@@ -22,33 +22,31 @@ export function ActionCard({
   buttonText
 }: ActionCardProps): ReactElement {
   return (
-    <Tailwind>
-      <Section className="mt-[10px] mb-[15px]">
-        <Font fontFamily="Helvetica" fallbackFontFamily="Helvetica" />
-        <Container className="bg-[#EFEFEF] rounded-lg w-full max-w-[512px] h-max">
-          <Container>
-            <div className="width-full bg-[#FFFFFF] px-[30px] py-[20px] rounded-t-lg">
-              <Heading className="font-bold text-[20px] mb-[20px] mt-[5px]">
-                {headerText}
-              </Heading>
-              <Button
-                className="bg-[#26262D] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
-                href={url}
-              >
-                {buttonText}
-              </Button>
-            </div>
-          </Container>
-          <Container>
-            <div className="width-full h-max bg-[#FFFFFF66] rounded-b-lg px-[30px] py-[15px]">
-              <Link>
-                <Text className="m-[0]">{url}</Text>
-              </Link>
-            </div>
-          </Container>
+    <Section className="mt-[10px] mb-[15px]">
+      <Font fontFamily="Helvetica" fallbackFontFamily="Helvetica" />
+      <Container className="bg-[#EFEFEF] rounded-lg w-full max-w-[512px] h-max">
+        <Container>
+          <div className="width-full bg-[#FFFFFF] px-[30px] py-[20px] rounded-t-lg">
+            <Heading className="font-bold text-[20px] mb-[20px] mt-[5px]">
+              {headerText}
+            </Heading>
+            <Button
+              className="bg-[#26262D] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
+              href={url}
+            >
+              {buttonText}
+            </Button>
+          </div>
         </Container>
-      </Section>
-    </Tailwind>
+        <Container>
+          <div className="width-full h-max bg-[#FFFFFF66] rounded-b-lg px-[30px] py-[15px]">
+            <Link>
+              <Text className="m-[0]">{url}</Text>
+            </Link>
+          </div>
+        </Container>
+      </Container>
+    </Section>
   )
 }
 

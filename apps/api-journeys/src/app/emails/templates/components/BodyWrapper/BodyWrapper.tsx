@@ -10,11 +10,7 @@ interface BodyWrapperProps {
 }
 
 export function BodyWrapper({ children }: BodyWrapperProps): ReactElement {
-  return (
-    <Tailwind>
-      <Section className="bg-[#EFEFEF]">{children}</Section>
-    </Tailwind>
-  )
+  return <Section className="bg-[#EFEFEF]">{children}</Section>
 }
 
 BodyWrapper.PreviewProps = {
