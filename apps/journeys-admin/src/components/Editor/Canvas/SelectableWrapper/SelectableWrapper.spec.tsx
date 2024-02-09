@@ -1,3 +1,5 @@
+// TODO (SWIPE): Fix types
+
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
