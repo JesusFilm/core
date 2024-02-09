@@ -1,10 +1,8 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import { render } from '@react-email/render'
 
 import { Journey } from '.prisma/api-journeys-client'
 
-import JourneyInviteEmail from '../../emails/JourneyInvite'
 import { UserInviteModule } from '../userInvite/userInvite.module'
 
 import { UserInviteService } from './userInvite.service'
@@ -37,38 +35,23 @@ describe('UserTeamService', () => {
       const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${
         journey.id
       }`
-      const email = 'tav@example.com'
-      const expectedSubject = `Invitation to edit journey: ${journey.title}`
-      const expectedBody = render(
-        JourneyInviteEmail({
-          email,
-          journeyTitle: journey.title,
-          inviteLink: url
-        }),
-        {
-          pretty: true
-        }
-      )
-      const expectedText = render(
-        JourneyInviteEmail({
-          email,
-          journeyTitle: journey.title,
-          inviteLink: url
-        }),
-        {
-          plainText: true
-        }
-      )
 
-      await service.sendEmail(journey, email)
+      const user = {
+        firstName: 'Joe',
+        lastName: 'Smith'
+      }
+
+      const email = 'tav@example.com'
+
+      await service.sendEmail(journey, email, user)
 
       expect(emailQueue.add).toHaveBeenCalledWith(
-        'email',
+        'journey-edit-invite',
         {
           email,
-          subject: expectedSubject,
-          body: expectedBody,
-          text: expectedText
+          url,
+          journeyTitle: 'Journey Title',
+          sender: user
         },
         {
           removeOnComplete: true,

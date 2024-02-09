@@ -1,43 +1,56 @@
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
-import { render } from '@react-email/render'
 import { Queue } from 'bullmq'
 
-import { Team } from '.prisma/api-journeys-client'
+import { User } from '@core/nest/common/firebaseClient'
 
-import TeamInviteEmail from '../../emails/TeamInvite'
-import { EmailJob } from '../email/email.consumer'
+import { Team } from '../../__generated__/graphql'
+import {
+  TeamInviteAccepted,
+  TeamInviteJob,
+  TeamWithUserTeam
+} from '../email/email.consumer'
 
 @Injectable()
 export class UserTeamInviteService {
   constructor(
     @InjectQueue('api-journeys-email')
-    private readonly emailQueue: Queue<EmailJob>
+    private readonly emailQueue: Queue<TeamInviteJob | TeamInviteAccepted>
   ) {}
 
-  async sendEmail(team: Team, email: string): Promise<void> {
-    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
-    const html = render(
-      TeamInviteEmail({ teamName: team.title, email, inviteLink: url }),
+  async sendTeamInviteEmail(
+    team: Team,
+    email: string,
+    sender: Omit<User, 'id' | 'email'>
+  ): Promise<void> {
+    await this.emailQueue.add(
+      'team-invite',
       {
-        pretty: true
+        teamName: team.title,
+        email,
+        sender
+      },
+      {
+        removeOnComplete: true,
+        removeOnFail: {
+          age: 24 * 3600 // keep up to 24 hours
+        }
       }
     )
+  }
 
-    const text = render(
-      TeamInviteEmail({ teamName: team.title, email, inviteLink: url }),
-      {
-        plainText: true
-      }
-    )
+  async sendTeamInviteAcceptedEmail(
+    team: TeamWithUserTeam,
+    sender: Omit<User, 'id' | 'email'>
+  ): Promise<void> {
+    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
 
     await this.emailQueue.add(
-      'email',
+      'team-invite-accepted',
       {
-        email,
-        subject: `Invitation to join team: ${team.title}`,
-        body: html,
-        text
+        team,
+        sender,
+        url
       },
       {
         removeOnComplete: true,

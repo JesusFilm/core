@@ -2,14 +2,15 @@ import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 
 import { Prisma, UserTeamInvite } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import {
+  Team,
   UserTeamInviteCreateInput,
   UserTeamRole
 } from '../../__generated__/graphql'
@@ -44,7 +45,7 @@ export class UserTeamInviteResolver {
   @UseGuards(AppCaslGuard)
   async userTeamInviteCreate(
     @CaslAbility() ability: AppAbility,
-    @CurrentUserId() senderId: string,
+    @CurrentUser() sender: User,
     @Args('teamId') teamId: string,
     @Args('input') input: UserTeamInviteCreateInput
   ): Promise<UserTeamInvite> {
@@ -58,11 +59,11 @@ export class UserTeamInviteResolver {
         },
         create: {
           email: input.email,
-          senderId,
+          senderId: sender.id,
           team: { connect: { id: teamId } }
         },
         update: {
-          senderId,
+          senderId: sender.id,
           acceptedAt: null,
           receipientId: null,
           removedAt: null
@@ -79,9 +80,10 @@ export class UserTeamInviteResolver {
         throw new GraphQLError('user is not allowed to create userTeamInvite', {
           extensions: { code: 'FORBIDDEN' }
         })
-      await this.userTeamInviteService.sendEmail(
-        userTeamInvite.team,
-        input.email
+      await this.userTeamInviteService.sendTeamInviteEmail(
+        userTeamInvite.team as unknown as Team,
+        input.email,
+        omit(sender, ['id', 'email'])
       )
       return userTeamInvite
     })
@@ -132,27 +134,28 @@ export class UserTeamInviteResolver {
     const redeemedUserTeamInvites = await Promise.all(
       userTeamInvites.map(
         async (userTeamInvite) =>
-          await this.redeemUserTeamInvite(userTeamInvite, user.id)
+          await this.redeemUserTeamInvite(userTeamInvite, user)
       )
     )
+
     return redeemedUserTeamInvites
   }
 
   private async redeemUserTeamInvite(
     userTeamInvite: UserTeamInvite,
-    userId: string
+    user: User
   ): Promise<UserTeamInvite> {
     const [, redeemedUserTeamInvite] = await this.prismaService.$transaction([
       this.prismaService.userTeam.upsert({
         where: {
           teamId_userId: {
             teamId: userTeamInvite.teamId,
-            userId
+            userId: user.id
           }
         },
         create: {
           team: { connect: { id: userTeamInvite.teamId } },
-          userId,
+          userId: user.id,
           role: UserTeamRole.member
         },
         update: {
@@ -165,10 +168,20 @@ export class UserTeamInviteResolver {
         },
         data: {
           acceptedAt: new Date(),
-          receipientId: userId
+          receipientId: user.id
+        },
+        include: {
+          team: {
+            include: { userTeams: true }
+          }
         }
       })
     ])
+
+    await this.userTeamInviteService.sendTeamInviteAcceptedEmail(
+      redeemedUserTeamInvite.team,
+      omit(user, ['id', 'email'])
+    )
     return redeemedUserTeamInvite
   }
 }

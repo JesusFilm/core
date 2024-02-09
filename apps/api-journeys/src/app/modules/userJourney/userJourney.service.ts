@@ -3,31 +3,59 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
 import { Journey } from '.prisma/api-journeys-client'
+import { User } from '@core/nest/common/firebaseClient'
 
-export interface ApiUserEmailJob {
-  userId: string
-  subject: string
-  text: string
-  body: string
-}
+import { Journey as JourneyWithUserJourney } from '../../__generated__/graphql'
+import {
+  JourneyAccessRequest,
+  JourneyRequestApproved
+} from '../email/email.consumer'
 
 @Injectable()
 export class UserJourneyService {
   constructor(
-    @InjectQueue('api-users-email')
-    private readonly emailQueue: Queue<ApiUserEmailJob>
+    @InjectQueue('api-journeys-email')
+    private readonly emailQueue: Queue<
+      JourneyRequestApproved | JourneyAccessRequest
+    >
   ) {}
 
-  async sendEmail(journey: Journey, userId: string): Promise<void> {
+  async sendJourneyAccessRequest(
+    journey: JourneyWithUserJourney,
+    user: Omit<User, 'id' | 'email'>
+  ): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
 
     await this.emailQueue.add(
-      'email',
+      'journey-access-request',
+      {
+        journey,
+        url,
+        sender: user
+      },
+      {
+        removeOnComplete: true,
+        removeOnFail: {
+          age: 24 * 3600 // keep up to 24 hours
+        }
+      }
+    )
+  }
+
+  async sendJourneyApproveEmail(
+    journey: Journey,
+    userId: string,
+    user: Omit<User, 'id' | 'email'>
+  ): Promise<void> {
+    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
+
+    await this.emailQueue.add(
+      'journey-request-approved',
       {
         userId,
-        subject: `Access to edit journey: ${journey.title}`,
-        text: `You have been granted access to edit the journey: ${journey.title}. You can find the journey at: ${url}`,
-        body: `<html><body>You have been granted access to edit the journey: ${journey.title}. You can find the journey at: <a href="${url}">${url}</a>.</body></html>`
+        url,
+        journeyTitle: journey.title,
+        sender: user
       },
       {
         removeOnComplete: true,
