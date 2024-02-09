@@ -3,6 +3,8 @@ import { MailerService } from '@nestjs-modules/mailer'
 import { Job } from 'bullmq'
 import { mockDeep } from 'jest-mock-extended'
 
+import { EmailService } from '@core/nest/common/emailService'
+
 import {
   EmailConsumer,
   JourneyEditInviteJob,
@@ -87,6 +89,7 @@ const journeyEditJob: Job<JourneyEditInviteJob, unknown, string> = {
 describe('EmailConsumer', () => {
   let emailConsumer: EmailConsumer
   let mailerService: MailerService
+  let emailService: EmailService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -95,11 +98,16 @@ describe('EmailConsumer', () => {
         {
           provide: MailerService,
           useValue: mockDeep<MailerService>()
+        },
+        {
+          provide: EmailService,
+          useValue: mockDeep<EmailService>()
         }
       ]
     }).compile()
     mailerService = module.get<MailerService>(MailerService)
     emailConsumer = module.get<EmailConsumer>(EmailConsumer)
+    emailService = module.get<EmailService>(EmailService)
     mailerService.sendMail = jest
       .fn()
       .mockImplementation(async () => await Promise.resolve())
@@ -142,14 +150,14 @@ describe('EmailConsumer', () => {
   describe('teamInviteEmail', () => {
     it('should send an email', async () => {
       let args = {}
-      emailConsumer.sendEmail = jest
+      emailService.sendEmail = jest
         .fn()
         .mockImplementation(async (callArgs) => {
           args = callArgs
           await Promise.resolve()
         })
       await emailConsumer.teamInviteEmail(teamInviteJob)
-      expect(emailConsumer.sendEmail).toHaveBeenCalled()
+      expect(emailService.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: teamInviteJob.data.email,
         subject: 'Invitation to join team: test-team',
@@ -162,14 +170,14 @@ describe('EmailConsumer', () => {
   describe('journeyRequestApproved', () => {
     it('should send an email', async () => {
       let args = {}
-      emailConsumer.sendEmail = jest
+      emailService.sendEmail = jest
         .fn()
         .mockImplementation(async (callArgs) => {
           args = callArgs
           await Promise.resolve()
         })
       await emailConsumer.journeyRequestApproved(journeyRequestApproved)
-      expect(emailConsumer.sendEmail).toHaveBeenCalled()
+      expect(emailService.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: 'jsmith@exmaple.com',
         subject: 'Why Jesus? has been shared with you',
@@ -182,14 +190,14 @@ describe('EmailConsumer', () => {
   describe('journeyEditInvite', () => {
     it('should send an email', async () => {
       let args = {}
-      emailConsumer.sendEmail = jest
+      emailService.sendEmail = jest
         .fn()
         .mockImplementation(async (callArgs) => {
           args = callArgs
           await Promise.resolve()
         })
       await emailConsumer.journeyEditInvite(journeyEditJob)
-      expect(emailConsumer.sendEmail).toHaveBeenCalled()
+      expect(emailService.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: teamInviteJob.data.email,
         subject: 'test-journey has been shared with you',
@@ -211,7 +219,7 @@ describe('EmailConsumer', () => {
       process.env.SMTP_URL = 'smtp://example.com' // from now on the env var is test
 
       const sendMailSpy = jest.spyOn(mailerService, 'sendMail')
-      await emailConsumer.sendEmail(email)
+      await emailService.sendEmail(email)
 
       expect(sendMailSpy).toHaveBeenCalledWith({
         to: email.to,
@@ -228,7 +236,7 @@ describe('EmailConsumer', () => {
         SMTP_URL: undefined
       }
 
-      await emailConsumer.sendEmail(email)
+      await emailService.sendEmail(email)
 
       expect(sendEmailMock).toHaveBeenCalledWith({
         Source: 'support@nextstep.is',

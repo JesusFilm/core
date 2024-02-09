@@ -35,6 +35,8 @@ export class CaslGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = GqlExecutionContext.create(context).getContext().req
 
+    console.log(req)
+
     if (req.userId == null) {
       req.userId = await contextToUserId(context)
       if (req.userId == null) return false
