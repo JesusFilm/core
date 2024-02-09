@@ -1,8 +1,10 @@
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
+import { getAuth } from 'firebase-admin/auth'
 
 import { User } from '.prisma/api-users-client'
+import { firebaseClient } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { VerifyUserJob } from '../email/email.consumer'
@@ -42,6 +44,9 @@ export class UserService {
       await this.prismaService.user.update({
         where: { userId: user.userId },
         data: { emailVerified: true }
+      })
+      await getAuth(firebaseClient).updateUser(user.userId, {
+        emailVerified: true
       })
       return true
     }

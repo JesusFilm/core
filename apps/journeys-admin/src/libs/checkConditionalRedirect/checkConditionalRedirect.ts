@@ -15,6 +15,9 @@ export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
     teams {
       id
     }
+    me {
+      emailVerified
+    }
   }
 `
 
@@ -44,6 +47,13 @@ export async function checkConditionalRedirect({
       redirect = `?redirect=${encodeURIComponent(resolvedUrl)}`
   }
 
+  if (data.me?.emailVerified === false) {
+    if (resolvedUrl.startsWith('/users/verify')) return
+    return {
+      destination: `/users/verify${redirect}`,
+      permanent: false
+    }
+  }
   if (data.getJourneyProfile?.acceptedTermsAt == null) {
     if (resolvedUrl.startsWith('/users/terms-and-conditions')) return
     return {

@@ -6,6 +6,7 @@ import { contextToUserId } from '../firebaseClient'
 
 import { CaslFactory } from './caslFactory'
 import { CASL_POLICY_KEY, CaslPolicyHandler } from './decorators/caslPolicy'
+import { contextToUser } from '../firebaseClient/firebaseClient'
 
 /**
  * Guard that is used in conjunction with `CaslAbility`, `CaslAccessible` and `CaslPolicy` decorators.
@@ -35,10 +36,12 @@ export class CaslGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = GqlExecutionContext.create(context).getContext().req
 
-    console.log(req)
+    const user = await contextToUser(context)
+    if (user == null) return false
+    if (!user.emailVerified) return false
 
     if (req.userId == null) {
-      req.userId = await contextToUserId(context)
+      req.userId = user.id
       if (req.userId == null) return false
     }
 

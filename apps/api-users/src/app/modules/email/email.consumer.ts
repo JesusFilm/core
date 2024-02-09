@@ -29,7 +29,7 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async verifyUser(job: Job<VerifyUserJob>): Promise<void> {
-    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/validateEmail?token=${
+    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
       job.data.token
     }&email=${job.data.email}`
 

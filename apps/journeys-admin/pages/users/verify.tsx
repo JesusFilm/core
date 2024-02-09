@@ -17,9 +17,11 @@ import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { number, object, string } from 'yup'
 
+import { CreateVerificationRequest } from '../../__generated__/CreateVerificationRequest'
 import { GetMe } from '../../__generated__/GetMe'
-import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
+import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
+import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 interface ValidateEmailProps {
@@ -32,8 +34,8 @@ interface ValidateEmailProps {
 const VALIDATE_EMAIL = gql`
   mutation ValidateEmail($email: String!, $token: String!) {
     validateEmail(email: $email, token: $token) {
-      email
-      token
+      id
+      emailVerified
     }
   }
 `
@@ -50,12 +52,17 @@ function ValidateEmail({
     initialError
   )
   const [disableValidationButton, setDisableValidationButton] = useState(false)
+  const [disableResendButton, setDisableResendButton] = useState(false)
   const [validateEmail] = useMutation(VALIDATE_EMAIL, {
     variables: { email, token },
     onError(error) {
       setError(error)
     }
   })
+
+  const [resendValidationEmail] = useMutation<CreateVerificationRequest>(
+    CREATE_VERIFICATION_REQUEST
+  )
 
   const validationSchema = object().shape({
     email: string()
@@ -78,7 +85,15 @@ function ValidateEmail({
       setDisableValidationButton(false)
     }, 30000)
   }
-  const handleResendValidationEmail = async (): Promise<void> => {}
+
+  const handleResendValidationEmail = async (): Promise<void> => {
+    await resendValidationEmail()
+    setDisableResendButton(true)
+    setTimeout(() => {
+      setDisableResendButton(false)
+    }, 30000)
+  }
+
   return (
     <OnboardingPageWrapper emailSubject={t('Validate NextStep Email')}>
       <List>
@@ -141,6 +156,7 @@ function ValidateEmail({
         <Button
           onClick={handleResendValidationEmail}
           variant="contained"
+          disabled={disableResendButton}
           fullWidth
         >
           {t('Resend Validation Email')}
@@ -160,15 +176,15 @@ export const getServerSideProps = withUserTokenSSR({
   })
 
   // skip if already verified
-  // const apiUser = await apolloClient.query<GetMe>({ query: GET_ME })
-  // if (apiUser.data?.me?.emailVerified ?? false) {
-  //   return {
-  //     redirect: {
-  //       permanent: false,
-  //       destination: '/'
-  //     }
-  //   }
-  // }
+  const apiUser = await apolloClient.query<GetMe>({ query: GET_ME })
+  if (apiUser.data?.me?.emailVerified ?? false) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/'
+      }
+    }
+  }
 
   const email = query?.email ?? null
   const token = query?.token ?? null
