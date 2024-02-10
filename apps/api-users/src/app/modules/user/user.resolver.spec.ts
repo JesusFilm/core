@@ -6,6 +6,7 @@ import { User } from '.prisma/api-users-client'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserResolver } from './user.resolver'
+import { UserService } from './user.service'
 
 jest.mock('@core/nest/common/firebaseClient', () => ({
   auth: {
@@ -19,7 +20,9 @@ jest.mock('@core/nest/common/firebaseClient', () => ({
 }))
 
 describe('UserResolver', () => {
-  let resolver: UserResolver, prismaService: DeepMockProxy<PrismaService>
+  let resolver: UserResolver,
+    prismaService: DeepMockProxy<PrismaService>,
+    userService: DeepMockProxy<UserService>
 
   const user = {
     id: 'userId',
@@ -36,10 +39,17 @@ describe('UserResolver', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: UserService,
+          useValue: mockDeep<UserService>()
         }
       ]
     }).compile()
     resolver = module.get<UserResolver>(UserResolver)
+    userService = module.get<UserService>(
+      UserService
+    ) as DeepMockProxy<UserService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
