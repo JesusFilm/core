@@ -21,4 +21,5 @@ input EmailPreferencesUpdateInput {
 extend type Mutation {
   updateEmailPreferences(input: EmailPreferencesUpdateInput!): EmailPreferences
   createEmailPreferencesForAllUsers: Boolean
+  findOrCreateEmailPreference(email: String!): EmailPreferences
 }

@@ -1309,6 +1309,7 @@ type Mutation
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
   updateEmailPreferences(input: EmailPreferencesUpdateInput!): EmailPreferences @join__field(graph: USERS)
   createEmailPreferencesForAllUsers: Boolean @join__field(graph: USERS)
+  findOrCreateEmailPreference(email: String!): EmailPreferences @join__field(graph: USERS)
   userImpersonate(email: String!): String @join__field(graph: USERS)
 }
 

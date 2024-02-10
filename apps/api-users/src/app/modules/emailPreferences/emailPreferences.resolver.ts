@@ -43,20 +43,44 @@ export class EmailPreferencesResolver {
   }
 
   @Mutation()
+  async findOrCreateEmailPreference(@Args('email') email: string): Promise<EmailPreferences> {
+    let emailPreference = await this.prismaService.emailPreferences.findFirst({
+      where: {
+        userEmail: email,
+      },
+    });
+
+    console.log('emailPreference', emailPreference);
+
+    if (emailPreference == null) {
+      emailPreference = await this.prismaService.emailPreferences.create({
+        data: {
+          userEmail: email,
+        },
+      });
+      const user = await this.prismaService.user.findFirst({
+        where: {
+          email,
+        },
+      });
+
+      if (user != null) {
+        await this.prismaService.user.update({
+          where: { id: user.id },
+          data: { emailPreferencesId: emailPreference.id },
+        });
+      }
+    }
+
+    return emailPreference;
+  }
+
+  @Mutation()
   async createEmailPreferencesForAllUsers(): Promise<boolean> {
     const users = await this.prismaService.user.findMany({ where: { emailPreferencesId: null } });
   
     for (const user of users) {
-      const emailPreference = await this.prismaService.emailPreferences.create({
-        data: {
-          userEmail: user.email,
-        },
-      });
-  
-      await this.prismaService.user.update({
-        where: { id: user.id },
-        data: { emailPreferencesId: emailPreference.id },
-      });
+      await this.findOrCreateEmailPreference(user.email);
     }
   
     return true;
