@@ -16,7 +16,9 @@ import {
 } from '../../__generated__/graphql'
 import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessRequest'
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
+import { JourneySharedNoAccountEmail } from '../../emails/templates/JourneyShared/JourneySharedNoAccount'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
+import { TeamInviteNoAccountEmail } from '../../emails/templates/TeamInvite/TeamInviteNoAccount'
 import { TeamInviteAcceptedEmail } from '../../emails/templates/TeamInviteAccepted'
 import { TeamRemovedEmail } from '../../emails/templates/TeamRemoved'
 
@@ -151,37 +153,78 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
-    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
-    const html = render(
-      TeamInviteEmail({
-        teamName: job.data.teamName,
-        email: job.data.email,
-        inviteLink: url,
-        sender: job.data.sender
-      }),
-      {
-        pretty: true
-      }
-    )
-
-    const text = render(
-      TeamInviteEmail({
-        teamName: job.data.teamName,
-        email: job.data.email,
-        inviteLink: url,
-        sender: job.data.sender
-      }),
-      {
-        plainText: true
-      }
-    )
-
-    await this.emailService.sendEmail({
-      to: job.data.email,
-      subject: `Invitation to join team: ${job.data.teamName}`,
-      text,
-      html
+    const { data } = await apollo.query({
+      query: gql`
+        query UserByEmail($email: String!) {
+          userByEmail(email: $email) {
+            id
+          }
+        }
+      `,
+      variables: { email: job.data.email }
     })
+
+    if (data.userByEmail == null) {
+      const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
+      const html = render(
+        TeamInviteNoAccountEmail({
+          teamName: job.data.teamName,
+          inviteLink: url,
+          sender: job.data.sender
+        }),
+        {
+          pretty: true
+        }
+      )
+      const text = render(
+        TeamInviteNoAccountEmail({
+          teamName: job.data.teamName,
+          inviteLink: url,
+          sender: job.data.sender
+        }),
+        {
+          plainText: true
+        }
+      )
+      await this.emailService.sendEmail({
+        to: job.data.email,
+        subject: `Invitation to join team: ${job.data.teamName}`,
+        text,
+        html
+      })
+    } else {
+      const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
+      const html = render(
+        TeamInviteEmail({
+          teamName: job.data.teamName,
+          email: job.data.email,
+          inviteLink: url,
+          sender: job.data.sender
+        }),
+        {
+          pretty: true
+        }
+      )
+
+      const text = render(
+        TeamInviteEmail({
+          teamName: job.data.teamName,
+          email: job.data.email,
+          inviteLink: url,
+          sender: job.data.sender
+        }),
+        {
+          plainText: true
+        }
+      )
+
+      await this.emailService.sendEmail({
+        to: job.data.email,
+        subject: `Invitation to join team: ${job.data.teamName}`,
+        text,
+        html
+      })
+    }
   }
 
   async teamInviteAcceptedEmail(job: Job<TeamInviteAccepted>): Promise<void> {
@@ -345,48 +388,72 @@ export class EmailConsumer extends WorkerHost {
 
   async journeyEditInvite(job: Job<JourneyEditInviteJob>): Promise<void> {
     // TODO: use this to check if user is subscribed to this type of email notification
-
-    // const { data } = await apollo.query({
-    //   query: gql`
-    //     query UserByEmail($email: String!) {
-    //       userByEmail(email: $email) {
-    //         id
-    //       }
-    //     }
-    //   `,
-    //   variables: { email: job.data.email }
-    // })
-
-    // if (data.user == null) {
-    //   throw new Error('User not found')
-    // }
-
-    const html = render(
-      JourneySharedEmail({
-        sender: job.data.sender,
-        journeyTitle: job.data.journeyTitle,
-        inviteLink: job.data.url
-      }),
-      {
-        pretty: true
-      }
-    )
-
-    const text = render(
-      JourneySharedEmail({
-        journeyTitle: job.data.journeyTitle,
-        inviteLink: job.data.url,
-        sender: job.data.sender
-      }),
-      {
-        plainText: true
-      }
-    )
-    await this.emailService.sendEmail({
-      to: job.data.email,
-      subject: `${job.data.journeyTitle} has been shared with you`,
-      html,
-      text
+    const { data } = await apollo.query({
+      query: gql`
+        query UserByEmail($email: String!) {
+          userByEmail(email: $email) {
+            id
+          }
+        }
+      `,
+      variables: { email: job.data.email }
     })
+
+    if (data.userByEmail == null) {
+      const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
+      const html = render(
+        JourneySharedNoAccountEmail({
+          sender: job.data.sender,
+          journeyTitle: job.data.journeyTitle,
+          inviteLink: url
+        }),
+        {
+          pretty: true
+        }
+      )
+      const text = render(
+        JourneySharedNoAccountEmail({
+          journeyTitle: job.data.journeyTitle,
+          inviteLink: url,
+          sender: job.data.sender
+        }),
+        {
+          plainText: true
+        }
+      )
+      await this.emailService.sendEmail({
+        to: job.data.email,
+        subject: `${job.data.journeyTitle} has been shared with you`,
+        html,
+        text
+      })
+    } else {
+      const html = render(
+        JourneySharedEmail({
+          sender: job.data.sender,
+          journeyTitle: job.data.journeyTitle,
+          inviteLink: job.data.url
+        }),
+        {
+          pretty: true
+        }
+      )
+      const text = render(
+        JourneySharedEmail({
+          journeyTitle: job.data.journeyTitle,
+          inviteLink: job.data.url,
+          sender: job.data.sender
+        }),
+        {
+          plainText: true
+        }
+      )
+      await this.emailService.sendEmail({
+        to: job.data.email,
+        subject: `${job.data.journeyTitle} has been shared with you`,
+        html,
+        text
+      })
+    }
   }
 }

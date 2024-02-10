@@ -4,19 +4,18 @@ import { ReactElement, ReactNode } from 'react'
 
 import { User } from '@core/nest/common/firebaseClient'
 
-import { ActionCard } from '../components/ActionCard'
-import { BodyText } from '../components/BodyText'
-import { BodyTitle } from '../components/BodyTitle'
-import { BodyWrapper } from '../components/BodyWrapper'
-import { EmailContainer } from '../components/EmailContainer'
-import { Footer } from '../components/Footer'
-import { Header } from '../components/Header'
-import { UnsubscribeLink } from '../components/UnsubscribeLink'
+import { ActionCard } from '../../components/ActionCard'
+import { BodyTitle } from '../../components/BodyTitle'
+import { BodyWrapper } from '../../components/BodyWrapper'
+import { EmailContainer } from '../../components/EmailContainer'
+import { Footer } from '../../components/Footer'
+import { Header } from '../../components/Header'
+import { UnsubscribeLink } from '../../components/UnsubscribeLink'
 
-interface JourneyAccessRequestEmailProps {
+interface JourneySharedNoAccountEmailProps {
   journeyTitle: string
   inviteLink: string
-  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
+  sender: Omit<User, 'id' | 'email'>
   story?: boolean
 }
 
@@ -24,12 +23,12 @@ interface WrapperProps {
   children: ReactElement
 }
 
-export const JourneyAccessRequestEmail = ({
+export const JourneySharedNoAccountEmail = ({
   journeyTitle,
   inviteLink,
   sender,
   story = false
-}: JourneyAccessRequestEmailProps): ReactElement => {
+}: JourneySharedNoAccountEmailProps): ReactElement => {
   const previewText = `${journeyTitle} has been shared with you on NextSteps`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
@@ -45,15 +44,12 @@ export const JourneyAccessRequestEmail = ({
       <Header sender={sender} />
       <BodyWrapper>
         <BodyTitle
-          bodyTitle={`${sender.firstName} requested access to ${journeyTitle}! Login to NextSteps to give them access`}
+          bodyTitle={`${sender.firstName} wants to collaborate with you to create interactive journeys with NextSteps!`}
         />
         <ActionCard
           url={inviteLink}
-          headerText={`🟠 ${journeyTitle}`}
-          buttonText="Grant Access"
-        />
-        <BodyText
-          bodyText={`If you do not know ${sender.firstName} or don’t want to give them access, no further action is required`}
+          buttonText="View Journey"
+          headerText="To join them create an account with Next Steps"
         />
         <UnsubscribeLink />
       </BodyWrapper>
@@ -91,15 +87,16 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
   )
 }
 
-JourneyAccessRequestEmail.PreviewProps = {
+JourneySharedNoAccountEmail.PreviewProps = {
   journeyTitle: 'Why Jesus?',
-  inviteLink: 'https://admin.nextstep.is/journeys/journeyId',
+  inviteLink:
+    'https://admin.nextstep.is/journeys/dd2520c8-2f59-4ce2-89e5-92124647b4ff',
   sender: {
     firstName: 'Joe',
     lastName: 'Ron-Imo',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   }
-} satisfies JourneyAccessRequestEmailProps
+} satisfies JourneySharedNoAccountEmailProps
 
-export default JourneyAccessRequestEmail
+export default JourneySharedNoAccountEmail
