@@ -17,7 +17,7 @@ export class UserTeamService {
   async sendTeamRemovedEmail(
     teamName: string,
     userId: string,
-    sender: Omit<User, 'id' | 'email'>
+    sender: Omit<User, 'id' | 'email' | 'emailVerified'>
   ): Promise<void> {
     await this.emailQueue.add(
       'team-removed',

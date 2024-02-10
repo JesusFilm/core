@@ -88,7 +88,8 @@ describe('UserJourneyResolver', () => {
     const user = {
       id: 'userId',
       firstName: 'John',
-      email: 'jsmith@example.com'
+      email: 'jsmith@example.com',
+      emailVerified: true
     }
 
     beforeEach(() => {
@@ -118,7 +119,8 @@ describe('UserJourneyResolver', () => {
     const user = {
       id: 'userId',
       firstName: 'John',
-      email: 'jsmith@example.com'
+      email: 'jsmith@example.com',
+      emailVerified: true
     }
 
     it('updates a UserJourney to editor status', async () => {

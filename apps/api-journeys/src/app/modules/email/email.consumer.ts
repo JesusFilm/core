@@ -28,30 +28,31 @@ const apollo = new ApolloClient({
   }
 })
 
+type OmittedUser = Omit<User, 'id' | 'email' | 'emailVerified'>
 export interface JourneyEditInviteJob {
   email: string
   journeyTitle: string
   url: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
 }
 
 export interface JourneyRequestApproved {
   userId: string
   journeyTitle: string
   url: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
 }
 
 export interface JourneyAccessRequest {
   journey: JourneyWithUserJourney
   url: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
 }
 
 export interface TeamInviteJob {
   teamName: string
   email: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
 }
 
 export type TeamWithUserTeam = Prisma.TeamGetPayload<{
@@ -61,14 +62,14 @@ export type TeamWithUserTeam = Prisma.TeamGetPayload<{
 }>
 export interface TeamInviteAccepted {
   team: TeamWithUserTeam
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
   url: string
 }
 
 export interface TeamRemoved {
   teamName: string
   userId: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
 }
 
 export type ApiJourneysJob =

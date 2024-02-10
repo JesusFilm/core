@@ -38,7 +38,8 @@ describe('UserJourneyService', () => {
       const user = {
         userId: 'senderUserId',
         firstName: 'John',
-        lastName: 'Smith'
+        lastName: 'Smith',
+        emailVerified: true
       }
       // Act
       await service.sendJourneyApproveEmail(journey, userId, user)
@@ -73,7 +74,8 @@ describe('UserJourneyService', () => {
       const user = {
         userId: 'senderUserId',
         firstName: 'John',
-        lastName: 'Smith'
+        lastName: 'Smith',
+        emailVerified: true
       }
       // Act
       await service.sendJourneyAccessRequest(journey, user)

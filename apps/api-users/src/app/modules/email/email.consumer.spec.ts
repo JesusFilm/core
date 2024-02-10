@@ -3,7 +3,6 @@ import { MailerService } from '@nestjs-modules/mailer'
 import { Job } from 'bullmq'
 import { mockDeep } from 'jest-mock-extended'
 
-import { User } from '.prisma/api-users-client'
 import { EmailService } from '@core/nest/common/emailService'
 
 import { PrismaService } from '../../lib/prisma.service'
@@ -21,7 +20,6 @@ const job = {
 
 describe('EmailConsumer', () => {
   let emailConsumer: EmailConsumer
-  let prismaService: PrismaService
   let emailService: EmailService
 
   beforeEach(async () => {
@@ -49,7 +47,6 @@ describe('EmailConsumer', () => {
 
     emailService = module.get<EmailService>(EmailService)
     emailConsumer = module.get<EmailConsumer>(EmailConsumer)
-    prismaService = module.get<PrismaService>(PrismaService)
     emailService.sendEmail = jest.fn()
   })
 
