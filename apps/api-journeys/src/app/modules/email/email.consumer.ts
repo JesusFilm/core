@@ -36,6 +36,7 @@ export interface SendEmailParams {
   subject: string
   html: string
   text: string
+  type?: string
 }
 
 export interface JourneyEditInviteJob {
@@ -155,7 +156,8 @@ export class EmailConsumer extends WorkerHost {
       to: data.user.email,
       subject: `You have been removed from team: ${job.data.teamName}`,
       text,
-      html
+      html,
+      type: 'teamInvites'
     })
   }
 
@@ -189,7 +191,8 @@ export class EmailConsumer extends WorkerHost {
       to: job.data.email,
       subject: `Invitation to join team: ${job.data.teamName}`,
       text,
-      html
+      html,
+      type: 'teamInvites'
     })
   }
 
@@ -248,7 +251,8 @@ export class EmailConsumer extends WorkerHost {
           job.data.sender.firstName ?? 'A new member'
         } has been added to your team`,
         text,
-        html
+        html,
+        type: 'teamInvites'
       })
     }
   }
@@ -299,7 +303,8 @@ export class EmailConsumer extends WorkerHost {
       to: data.user.email,
       subject: `${job.data.sender.firstName} requests access to a journey`,
       html,
-      text
+      text,
+      type: 'journeyNotifications'
     })
   }
 
@@ -348,7 +353,8 @@ export class EmailConsumer extends WorkerHost {
       to: data.user.email,
       subject: `${job.data.journeyTitle} has been shared with you`,
       html,
-      text
+      text,
+      type: 'journeyNotifications'
     })
   }
 
@@ -395,46 +401,68 @@ export class EmailConsumer extends WorkerHost {
       to: job.data.email,
       subject: `${job.data.journeyTitle} has been shared with you`,
       html,
-      text
+      text,
+      type: 'journeyNotifications'
     })
   }
 
-  async sendEmail({ to, subject, text, html }: SendEmailParams): Promise<void> {
-    const SMTP_URL = process.env.SMTP_URL ?? null
-    if (SMTP_URL != null) {
-      try {
-        await this.mailerService.sendMail({
-          to,
-          subject,
-          text,
-          html
-        })
-      } catch (e) {
-        console.log(e)
-      }
-    } else {
-      await new SES({ region: 'us-east-2' })
-        .sendEmail({
-          Source: 'support@nextstep.is',
-          Destination: { ToAddresses: [to] },
-          Message: {
-            Subject: {
-              Charset: 'UTF-8',
-              Data: subject
-            },
-            Body: {
-              Html: {
-                Charset: 'UTF-8',
-                Data: html
-              },
-              Text: {
-                Charset: 'UTF-8',
-                Data: text
-              }
+  async sendEmail({ to, subject, text, html, type }: SendEmailParams): Promise<void> {
+    const { data } = await apollo.mutate({
+        mutation: gql`
+          mutation FindOrCreateEmailPreference($email: String!) {
+            findOrCreateEmailPreference(email: $email) {
+              id
+              userEmail
+              teamInvites
+              journeyNotifications
+              thirdCategory
             }
           }
-        })
-        .promise()
-    }
+        `,
+        variables: { email: to }
+      })
+
+      if (type !== undefined && data.emailPreference[type] === false) {
+        console.log('Email Preference in type if:', data.emailPreference)
+        return
+      }
+
+      
+      const SMTP_URL = process.env.SMTP_URL ?? null
+      if (SMTP_URL != null) {
+        try {
+          await this.mailerService.sendMail({
+            to,
+            subject,
+            text,
+            html
+          })
+        } catch (e) {
+          console.log(e)
+        }
+      } else {
+        await new SES({ region: 'us-east-2' })
+          .sendEmail({
+            Source: 'support@nextstep.is',
+            Destination: { ToAddresses: [to] },
+            Message: {
+              Subject: {
+                Charset: 'UTF-8',
+                Data: subject
+              },
+              Body: {
+                Html: {
+                  Charset: 'UTF-8',
+                  Data: html
+                },
+                Text: {
+                  Charset: 'UTF-8',
+                  Data: text
+                }
+              }
+            }
+          })
+          .promise()
+      }
   }
 }
