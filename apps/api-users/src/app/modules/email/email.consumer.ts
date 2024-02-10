@@ -2,7 +2,7 @@ import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
-import { EmailService } from '@core/nest/common/emailService'
+import { EmailService } from '@core/nest/common/email/emailService'
 
 import { EmailVerifyEmail } from '../../emails/templates/EmailVerify/EmailVerify'
 

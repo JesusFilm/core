@@ -2,7 +2,7 @@ import { BullModule } from '@nestjs/bullmq'
 import { Global, Module } from '@nestjs/common'
 import { MailerModule } from '@nestjs-modules/mailer'
 
-import { EmailService } from '@core/nest/common/emailService'
+import { EmailService } from '@core/nest/common/email/emailService'
 
 import { PrismaService } from '../../lib/prisma.service'
 

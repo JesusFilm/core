@@ -4,7 +4,7 @@ import { Job } from 'bullmq'
 import { mockDeep } from 'jest-mock-extended'
 
 import { UserJourney } from '.prisma/api-journeys-client'
-import { EmailService } from '@core/nest/common/emailService'
+import { EmailService } from '@core/nest/common/email/emailService'
 
 import { UserJourneyRole, UserTeamRole } from '../../__generated__/graphql'
 

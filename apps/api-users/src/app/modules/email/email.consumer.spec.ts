@@ -3,7 +3,7 @@ import { MailerService } from '@nestjs-modules/mailer'
 import { Job } from 'bullmq'
 import { mockDeep } from 'jest-mock-extended'
 
-import { EmailService } from '@core/nest/common/emailService'
+import { EmailService } from '@core/nest/common/email/emailService'
 
 import { PrismaService } from '../../lib/prisma.service'
 

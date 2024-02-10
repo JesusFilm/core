@@ -122,20 +122,32 @@ export class UserResolver {
       emailVerified
     }
 
-    if (!emailVerified && email != null) {
-      await this.userService.verifyUser(userId, email)
-    }
+    let user: User | null = null
+    let retry = 0
 
     // this function can run in parallel as such it is possible for multiple
     // calls to reach this point and try to create the same user
     // due to the earlier firebase async call.
-    return await this.prismaService.user.upsert({
-      where: {
-        userId
-      },
-      create: data,
-      update: data
-    })
+    try {
+      user = await this.prismaService.user.create({
+        data
+      })
+      // after user create so it is ony sent once
+      if (!emailVerified && email != null) {
+        await this.userService.verifyUser(userId, email)
+      }
+    } catch (e) {
+      do {
+        user = await this.prismaService.user.update({
+          where: {
+            id: userId
+          },
+          data
+        })
+        retry++
+      } while (user == null && retry < 3)
+    }
+    return user
   }
 
   @Mutation()
