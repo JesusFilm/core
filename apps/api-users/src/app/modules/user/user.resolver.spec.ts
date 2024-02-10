@@ -164,6 +164,7 @@ describe('UserResolver', () => {
         where: { userId: 'userId' }
       })
     })
+
     it('sends an email', async () => {
       jest
         .spyOn(userService, 'verifyUser')

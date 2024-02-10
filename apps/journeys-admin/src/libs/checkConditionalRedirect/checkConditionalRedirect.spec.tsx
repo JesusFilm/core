@@ -46,6 +46,7 @@ describe('checkConditionalRedirect', () => {
       })
     ).toBeUndefined()
   })
+
   it('redirect to user verify if email not verified', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: null,
