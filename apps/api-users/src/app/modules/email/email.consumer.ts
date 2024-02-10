@@ -5,6 +5,7 @@ import { Job } from 'bullmq'
 import { EmailService } from '@core/nest/common/email/emailService'
 
 import { EmailVerifyEmail } from '../../emails/templates/EmailVerify/EmailVerify'
+import { PrismaService } from '../../lib/prisma.service'
 
 export interface VerifyUserJob {
   userId: string
@@ -16,7 +17,10 @@ export type ApiUsersJob = VerifyUserJob
 
 @Processor('api-users-email')
 export class EmailConsumer extends WorkerHost {
-  constructor(private readonly emailService: EmailService) {
+  constructor(
+    private readonly emailService: EmailService,
+    private readonly prismaService: PrismaService
+  ) {
     super()
   }
 
@@ -33,9 +37,21 @@ export class EmailConsumer extends WorkerHost {
       job.data.token
     }&email=${job.data.email}`
 
+    const user = await this.prismaService.user.findUnique({
+      where: { id: job.data.userId }
+    })
+
+    if (user == null) return
+
+    const sender = {
+      firstName: user.firstName ?? '',
+      lastName: user.lastName ?? '',
+      imageUrl: user.imageUrl ?? ''
+    }
     const html = render(
       EmailVerifyEmail({
-        email: job.data.email,
+        token: job.data.token,
+        sender,
         inviteLink: url
       }),
       {
@@ -45,7 +61,8 @@ export class EmailConsumer extends WorkerHost {
 
     const text = render(
       EmailVerifyEmail({
-        email: job.data.email,
+        token: job.data.token,
+        sender,
         inviteLink: url
       }),
       {

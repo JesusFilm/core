@@ -2,15 +2,16 @@ import { Body, Container, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
+import {
+  ActionCard,
+  BodyText,
+  BodyTitle,
+  BodyWrapper,
+  Footer,
+  Header,
+  UnsubscribeLink
+} from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
-
-import { ActionCard } from '../components/ActionCard'
-import { BodyText } from '../components/BodyText'
-import { BodyTitle } from '../components/BodyTitle'
-import { BodyWrapper } from '../components/BodyWrapper'
-import { Footer } from '../components/Footer'
-import { Header } from '../components/Header'
-import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
 interface TeamInviteAcceptedEmailProps {
   teamName: string
@@ -46,9 +47,10 @@ export const TeamInviteAcceptedEmail = ({
         <BodyTitle
           bodyTitle={`${sender.firstName} was added to your team ${teamName}`}
         />
-        <BodyText
-          bodyText={`If this is in error, please go to ${teamName} team manage dashboard to remove them`}
-        />
+        <BodyText>
+          If this is in error, please go to ${teamName} team manage dashboard to
+          remove them
+        </BodyText>
         <ActionCard
           url={inviteLink}
           headerText={teamName}

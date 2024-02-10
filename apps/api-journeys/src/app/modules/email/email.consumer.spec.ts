@@ -277,14 +277,14 @@ describe('EmailConsumer', () => {
           } as unknown as ApolloQueryResult<unknown>)
       )
       let args = {}
-      emailConsumer.sendEmail = jest
+      emailService.sendEmail = jest
         .fn()
         .mockImplementation(async (callArgs) => {
           args = callArgs
           await Promise.resolve()
         })
       await emailConsumer.teamInviteEmail(teamInviteJob)
-      expect(emailConsumer.sendEmail).toHaveBeenCalled()
+      expect(emailService.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: teamInviteJob.data.email,
         subject: 'Invitation to join team: test-team',
@@ -427,14 +427,14 @@ describe('EmailConsumer', () => {
           } as unknown as ApolloQueryResult<unknown>)
       )
       let args = {}
-      emailConsumer.sendEmail = jest
+      emailService.sendEmail = jest
         .fn()
         .mockImplementation(async (callArgs) => {
           args = callArgs
           await Promise.resolve()
         })
       await emailConsumer.journeyEditInvite(journeyEditJob)
-      expect(emailConsumer.sendEmail).toHaveBeenCalled()
+      expect(emailService.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: journeyEditJob.data.email,
         subject: 'test-journey has been shared with you',

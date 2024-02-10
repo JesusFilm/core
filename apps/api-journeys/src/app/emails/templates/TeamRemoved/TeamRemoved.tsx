@@ -2,15 +2,16 @@ import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
+import {
+  BodyText,
+  BodyTitle,
+  BodyWrapper,
+  EmailContainer,
+  Footer,
+  Header,
+  UnsubscribeLink
+} from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
-
-import { BodyText } from '../components/BodyText'
-import { BodyTitle } from '../components/BodyTitle'
-import { BodyWrapper } from '../components/BodyWrapper'
-import { EmailContainer } from '../components/EmailContainer'
-import { Footer } from '../components/Footer'
-import { Header } from '../components/Header'
-import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
 interface TeamRemovedEmailProps {
   teamName?: string
@@ -44,9 +45,9 @@ export const TeamRemovedEmail = ({
         <BodyTitle
           bodyTitle={`You were removed from ${teamName} by ${sender.firstName}.`}
         />
-        <BodyText
-          bodyText={`If this is in error, please contact a Team Manager in ${teamName}`}
-        />
+        <BodyText>
+          If this is in error, please contact a Team Manager in ${teamName}
+        </BodyText>
         <UnsubscribeLink />
       </BodyWrapper>
       <Footer />

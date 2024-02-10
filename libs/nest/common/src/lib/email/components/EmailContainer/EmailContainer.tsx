@@ -22,7 +22,7 @@ export function EmailContainer({
 EmailContainer.PreviewProps = {
   children: (
     <>
-      <BodyText bodyText="Lorem ipsum dolor set" />
+      <BodyText>Lorem ipsum dolor set</BodyText>
       <ActionCard
         url="https://admin.nextstep.is/"
         headerText="[Lorem Ipsum]"

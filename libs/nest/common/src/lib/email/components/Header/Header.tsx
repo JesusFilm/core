@@ -13,7 +13,7 @@ import { User } from '@core/nest/common/firebaseClient'
 import { EmailLogo } from '../EmailLogo'
 
 interface HeaderProps {
-  sender: Omit<User, 'id' | 'email'>
+  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
 }
 
 export function Header({ sender }: HeaderProps): ReactElement {

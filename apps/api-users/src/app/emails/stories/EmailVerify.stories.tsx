@@ -12,7 +12,8 @@ const EmailVerifyEmailDemo: Meta<typeof EmailVerifyEmail> = {
 const Template: StoryObj<typeof EmailVerifyEmail> = {
   render: ({ ...args }) => (
     <EmailVerifyEmail
-      email={args.email}
+      sender={args.sender}
+      token={args.token}
       inviteLink="https://admin.nextstep.is/"
       story
     />
@@ -22,7 +23,14 @@ const Template: StoryObj<typeof EmailVerifyEmail> = {
 export const Default = {
   ...Template,
   args: {
-    email: 'joeronimo@example.com'
+    email: 'joeronimo@example.com',
+    token: '123456',
+    sender: {
+      firstName: 'Joe',
+      lastName: 'Ron-Imo',
+      imageUrl:
+        'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+    }
   }
 }
 

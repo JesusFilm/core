@@ -1,23 +1,26 @@
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Link,
-  Preview,
-  Section,
-  Text
-} from '@react-email/components'
+import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
+import {
+  ActionCard,
+  BodyText,
+  BodyWrapper,
+  EmailContainer,
+  Footer,
+  Header,
+  UnsubscribeLink
+} from '@core/nest/common/email/components'
+
 interface VerifyEmailProps {
-  email: string
   inviteLink: string
+  token: string
   story?: boolean
+  sender: {
+    firstName: string
+    lastName: string
+    imageUrl: string
+  }
 }
 
 interface WrapperProps {
@@ -25,8 +28,9 @@ interface WrapperProps {
 }
 
 export const EmailVerifyEmail = ({
-  email,
   inviteLink,
+  sender,
+  token,
   story = false
 }: VerifyEmailProps): ReactElement => {
   const previewText = `Verify your email address on Next Steps`
@@ -39,38 +43,19 @@ export const EmailVerifyEmail = ({
     )
   }
   const emailBody: ReactNode = (
-    <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
-      <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
-        Verify your email on <strong>Next Steps</strong>
-      </Heading>
-      <Text className="text-black text-[14px] leading-[24px]">
-        Hello {email},
-      </Text>
-      <Text className="text-black text-[14px] leading-[24px]">
-        {'Please verify your email '}
-        on <strong>Next Steps</strong>.
-      </Text>
-      <Section className="text-center mt-[32px] mb-[32px]">
-        <Button
-          className="bg-[#C52D3A] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
-          href={inviteLink}
-        >
-          Verify your email address
-        </Button>
-      </Section>
-      <Text className="text-black text-[14px] leading-[24px]">
-        or copy and paste this URL into your browser:{' '}
-        <Link href={inviteLink} className="text-blue-600 no-underline">
-          {inviteLink}
-        </Link>
-      </Text>
-      <Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
-      <Text className="text-[#666666] text-[12px] leading-[24px]">
-        This invitation was intended for{' '}
-        <span className="text-black">{email}</span>. If you were not expecting
-        this verifcation email, you can ignore this email.
-      </Text>
-    </Container>
+    <EmailContainer>
+      <Header sender={sender} />
+      <BodyWrapper>
+        <ActionCard
+          url={inviteLink}
+          headerText="Verify your email address to start making interactive Journeys!"
+          buttonText="Verify Email Address"
+        />
+        <BodyText>Verification Token: {token}</BodyText>
+        <UnsubscribeLink />
+      </BodyWrapper>
+      <Footer />
+    </EmailContainer>
   )
   return (
     <>
@@ -103,8 +88,14 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
 }
 
 EmailVerifyEmail.PreviewProps = {
-  email: 'james@example.com',
-  inviteLink: 'https://admin.nextstep.is/'
+  token: '123456',
+  sender: {
+    firstName: 'Joe',
+    lastName: 'Ron-Imo',
+    imageUrl:
+      'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+  },
+  inviteLink: 'https://admin.nextstep.is/users/verify'
 } satisfies VerifyEmailProps
 
 export default EmailVerifyEmail
