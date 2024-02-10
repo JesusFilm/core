@@ -1,4 +1,4 @@
-import { Container, Tailwind } from '@react-email/components'
+import { Container } from '@react-email/components'
 import { ReactElement, ReactNode } from 'react'
 
 import { ActionCard } from '../ActionCard'

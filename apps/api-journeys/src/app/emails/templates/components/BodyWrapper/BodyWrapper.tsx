@@ -1,4 +1,4 @@
-import { Section, Tailwind } from '@react-email/components'
+import { Section } from '@react-email/components'
 import { ReactElement, ReactNode } from 'react'
 
 import { ActionCard } from '../ActionCard'

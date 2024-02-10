@@ -5,7 +5,6 @@ import {
   Heading,
   Link,
   Section,
-  Tailwind,
   Text
 } from '@react-email/components'
 import { ReactElement } from 'react'

@@ -1,4 +1,4 @@
-import { Container, Link, Tailwind, Text } from '@react-email/components'
+import { Container, Link, Text } from '@react-email/components'
 import { ReactElement } from 'react'
 
 export function UnsubscribeLink(): ReactElement {

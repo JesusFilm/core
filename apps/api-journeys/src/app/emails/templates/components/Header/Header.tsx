@@ -4,7 +4,6 @@ import {
   Heading,
   Img,
   Row,
-  Tailwind,
   Text
 } from '@react-email/components'
 import { ReactElement } from 'react'

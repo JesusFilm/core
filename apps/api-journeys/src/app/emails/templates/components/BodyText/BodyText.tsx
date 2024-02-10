@@ -1,4 +1,4 @@
-import { Container, Tailwind, Text } from '@react-email/components'
+import { Container, Text } from '@react-email/components'
 import { ReactElement } from 'react'
 
 interface BodyTextProps {
