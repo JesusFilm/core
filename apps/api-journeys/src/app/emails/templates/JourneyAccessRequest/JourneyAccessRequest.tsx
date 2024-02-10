@@ -20,11 +20,10 @@ import { User } from '@core/nest/common/firebaseClient'
 
 import EmailLogo from '../EmailLogo/EmailLogo'
 
-interface TeamInviteEmailProps {
-  email?: string
-  teamName?: string
-  inviteLink?: string
-  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
+interface JourneyAccessRequestEmailProps {
+  journeyTitle: string
+  inviteLink: string
+  sender: Omit<User, 'id' | 'email'>
   story?: boolean
 }
 
@@ -32,14 +31,13 @@ interface WrapperProps {
   children: ReactElement
 }
 
-export const TeamInviteEmail = ({
-  email,
-  teamName,
+export const JourneyAccessRequestEmail = ({
+  journeyTitle,
   inviteLink,
   sender,
   story = false
-}: TeamInviteEmailProps): ReactElement => {
-  const previewText = `Join ${teamName} on Next Steps`
+}: JourneyAccessRequestEmailProps): ReactElement => {
+  const previewText = `${journeyTitle} has been shared with you on NextSteps`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
       <>
@@ -51,20 +49,20 @@ export const TeamInviteEmail = ({
 
   const emailBody: ReactNode = (
     <>
-      <Container className="my-[40px] rounded border border-solid border-[#eaeaea]">
+      <Container className="my-[40px] rounded border border-solid border-[#eaeaea] shadow-md">
         <Container className="bg-[#FFFFFF] h-[72px] flex justify-center items-center">
           <Row className="flex justify-center items-center">
             <Column className="pr-[80px]">
               <EmailLogo />
             </Column>
             <Column>
-              {sender.imageUrl != null && (
+              {sender?.imageUrl != null && (
                 <Img
                   src={sender.imageUrl ?? ''}
-                  alt={sender.firstName}
+                  alt={sender?.firstName}
                   width={32}
                   height={32}
-                  className="rounded-full border-solid border-2 border-[#FFFFFF]"
+                  className="rounded-full border-solid border-2 border-[#FFFFFF] shadow-md"
                 />
               )}
             </Column>
@@ -77,24 +75,20 @@ export const TeamInviteEmail = ({
           </Row>
         </Container>
         <Container className="bg-[#EFEFEF] mx-auto px-[60px] py-[48px] max-w-[600px] flex justify-center items-center">
-          <Heading className="text-black text-[24px] font-normal p-0 my-[30px] mx-0">
-            Join <strong>{teamName}</strong> on <strong>Next Steps</strong>
-          </Heading>
-          <Text className="text-black text-[14px] leading-[24px]">
-            Hello {email},
-          </Text>
-          <Text className="text-black text-[14px] leading-[24px]">
-            {'You have been invited to join: '}
-            <strong>{teamName}</strong> on <strong>Next Steps</strong>.
+          <Text className="text-[#444451] text-[18px] font-[600] text-center p-0 mb-[30px] mx-0">
+            {`${sender.firstName} requested access to ${journeyTitle}! Login to NextSteps to give them access`}
           </Text>
           <Section className="text-center mt-[32px] mb-[32px]">
             <Button
               className="bg-[#C52D3A] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
               href={inviteLink}
             >
-              Join the team
+              Grant Access
             </Button>
           </Section>
+          <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-['Open Sans'] mb-[35px]">
+            {`If you do not know ${sender.firstName} or don’t want to give them access, no further action is required`}
+          </Text>
           <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-['Open Sans']">
             {`Don’t want to receive these emails, `}
             <Link
@@ -145,16 +139,15 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
   )
 }
 
-TeamInviteEmail.PreviewProps = {
-  email: 'james@example.com',
-  teamName: 'JFP Sol Team',
-  inviteLink: 'https://admin.nextstep.is/',
+JourneyAccessRequestEmail.PreviewProps = {
+  journeyTitle: 'Why Jesus?',
+  inviteLink: 'https://admin.nextstep.is/journeys/journeyId',
   sender: {
     firstName: 'Johnathan',
     lastName: 'Joeronimo',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   }
-} satisfies TeamInviteEmailProps
+} satisfies JourneyAccessRequestEmailProps
 
-export default TeamInviteEmail
+export default JourneyAccessRequestEmail

@@ -1,17 +1,17 @@
 import { Meta, StoryObj } from '@storybook/react'
 
 import { apiJourneysConfig } from '../../lib/apiJourneysConfig/apiJourneysConfig'
-import { JourneySharedEmail } from '../templates/JourneyShared'
+import { JourneyAccessRequestEmail } from '../templates/JourneyAccessRequest'
 
-const JourneySharedEmailDemo: Meta<typeof JourneySharedEmail> = {
+const JourneyAccessRequestEmailDemo: Meta<typeof JourneyAccessRequestEmail> = {
   ...apiJourneysConfig,
-  component: JourneySharedEmail,
-  title: 'Api-Journeys/Emails/JourneySharedEmail'
+  component: JourneyAccessRequestEmail,
+  title: 'Api-Journeys/Emails/JourneyAccessRequestEmail'
 }
 
-const Template: StoryObj<typeof JourneySharedEmail> = {
+const Template: StoryObj<typeof JourneyAccessRequestEmail> = {
   render: ({ ...args }) => (
-    <JourneySharedEmail
+    <JourneyAccessRequestEmail
       journeyTitle={args.journeyTitle}
       inviteLink="https://admin.nextstep.is/journeys/journeyId"
       sender={args.sender}
@@ -32,4 +32,4 @@ export const Default = {
   }
 }
 
-export default JourneySharedEmailDemo
+export default JourneyAccessRequestEmailDemo

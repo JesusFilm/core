@@ -1,8 +1,8 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { Team } from '.prisma/api-journeys-client'
-
+import { Team, UserTeamRole } from '../../__generated__/graphql'
+import { TeamWithUserTeam } from '../email/email.consumer'
 import { UserTeamInviteModule } from '../userTeamInvite/userTeamInvite.module'
 
 import { UserTeamInviteService } from './userTeamInvite.service'
@@ -26,7 +26,7 @@ describe('UserTeamService', () => {
     service = module.get<UserTeamInviteService>(UserTeamInviteService)
   })
 
-  describe('sendEmail', () => {
+  describe('sendTeamInviteEmail', () => {
     it('should send an email with the correct subject and body', async () => {
       const team = {
         id: 'teamId',
@@ -34,13 +34,13 @@ describe('UserTeamService', () => {
       } as unknown as Team
       const email = 'tav@example.com'
       const sender = {
-        firstName: 'Johnathan',
-        lastName: 'Joeronimo',
+        firstName: 'Joe',
+        lastName: 'Ro-Nimo',
         imageUrl:
           'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
       }
 
-      await service.sendEmail(team, email, sender)
+      await service.sendTeamInviteEmail(team, email, sender)
 
       expect(emailQueue.add).toHaveBeenCalledWith(
         'team-invite',
@@ -48,6 +48,49 @@ describe('UserTeamService', () => {
           email,
           teamName: team.title,
           sender
+        },
+        {
+          removeOnComplete: true,
+          removeOnFail: {
+            age: 24 * 3600
+          }
+        }
+      )
+    })
+  })
+
+  describe('sendTeamInviteAcceptedEmail', () => {
+    it('should send an email with the correct subject and body', async () => {
+      const team = {
+        id: 'teamId',
+        title: 'Team Title',
+        userTeams: [
+          {
+            id: 'userTeamId',
+            teamId: 'teamId',
+            userId: 'userId',
+            role: UserTeamRole.manager
+          }
+        ]
+      } as unknown as TeamWithUserTeam
+      const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
+      const sender = {
+        id: 'userId',
+        email: 'joRoNimo@example.com',
+        firstName: 'Joe',
+        lastName: 'Ro-Nimo',
+        imageUrl:
+          'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+      }
+
+      await service.sendTeamInviteAcceptedEmail(team, sender)
+
+      expect(emailQueue.add).toHaveBeenCalledWith(
+        'team-invite-accepted',
+        {
+          team,
+          sender,
+          url
         },
         {
           removeOnComplete: true,
