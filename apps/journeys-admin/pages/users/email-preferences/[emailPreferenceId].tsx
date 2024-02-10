@@ -8,7 +8,6 @@ import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-
 const GET_EMAIL_PREFERENCES = gql`
   query GetEmailPreference($emailPreferenceId: ID!, $idType: String!) {
     emailPreference(id: $emailPreferenceId, idType: $idType) {
@@ -42,7 +41,6 @@ function EmailPreferencesPage(): ReactElement {
   const { emailPreferenceId } = router.query
   const { t } = useTranslation('apps-journeys-admin')
 
-
   const { data } = useQuery(GET_EMAIL_PREFERENCES, {
     variables: { emailPreferenceId, idType: 'id' }
   })
@@ -54,8 +52,10 @@ function EmailPreferencesPage(): ReactElement {
 
   useEffect(() => {
     if (data != null && data?.emailPreference != null) {
-      console.log(data.emailPreference) 
-      setEmailPreferences((data as { emailPreference: EmailPreferences }).emailPreference)
+      console.log(data.emailPreference)
+      setEmailPreferences(
+        (data as { emailPreference: EmailPreferences }).emailPreference
+      )
     }
   }, [data])
 
@@ -73,7 +73,8 @@ function EmailPreferencesPage(): ReactElement {
 
   const handleSubmit = async (): Promise<void> => {
     if (emailPreferences !== null) {
-      const { journeyNotifications, teamInvites, thirdCategory } = emailPreferences;
+      const { journeyNotifications, teamInvites, thirdCategory } =
+        emailPreferences
       setLoading(true) // Set loading state to true
       await updateEmailPreferences({
         variables: {
@@ -128,7 +129,9 @@ function EmailPreferencesPage(): ReactElement {
           <Grid item xs={2} md={2}>
             <Switch
               checked={emailPreferences.journeyNotifications}
-              onChange={async () => await handlePreferenceChange('journeyNotifications')}
+              onChange={async () =>
+                await handlePreferenceChange('journeyNotifications')
+              }
               name="journeyNotifications"
               inputProps={{ 'aria-label': 'Journey Notifications' }}
             />
@@ -158,7 +161,9 @@ function EmailPreferencesPage(): ReactElement {
           <Grid item xs={2} md={2}>
             <Switch
               checked={emailPreferences.thirdCategory}
-              onChange={async () => await handlePreferenceChange('thirdCategory')}
+              onChange={async () =>
+                await handlePreferenceChange('thirdCategory')
+              }
               name="thirdCategory"
               inputProps={{ 'aria-label': 'Third Category' }}
             />
@@ -184,7 +189,8 @@ function EmailPreferencesPage(): ReactElement {
                 margin: 'auto'
               }}
             >
-              {loading ? 'Loading...' : 'Submit'} {/* Show loading text when loading is true */}
+              {loading ? 'Loading...' : 'Submit'}{' '}
+              {/* Show loading text when loading is true */}
             </Button>
           </Grid>
         </Grid>

@@ -8,5 +8,4 @@ import { EmailPreferencesResolver } from './emailPreferences.resolver'
   providers: [EmailPreferencesResolver, PrismaService],
   exports: []
 })
-
 export class EmailPreferencesModule {}

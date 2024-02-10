@@ -406,63 +406,68 @@ export class EmailConsumer extends WorkerHost {
     })
   }
 
-  async sendEmail({ to, subject, text, html, type }: SendEmailParams): Promise<void> {
+  async sendEmail({
+    to,
+    subject,
+    text,
+    html,
+    type
+  }: SendEmailParams): Promise<void> {
     const { data } = await apollo.mutate({
-        mutation: gql`
-          mutation FindOrCreateEmailPreference($email: String!) {
-            findOrCreateEmailPreference(email: $email) {
-              id
-              userEmail
-              teamInvites
-              journeyNotifications
-              thirdCategory
-            }
+      mutation: gql`
+        mutation FindOrCreateEmailPreference($email: String!) {
+          findOrCreateEmailPreference(email: $email) {
+            id
+            userEmail
+            teamInvites
+            journeyNotifications
+            thirdCategory
           }
-        `,
-        variables: { email: to }
-      })
-
-      if (type !== undefined && data.emailPreference[type] === false) {
-        console.log('Email Preference in type if:', data.emailPreference)
-        return
-      }
-
-      
-      const SMTP_URL = process.env.SMTP_URL ?? null
-      if (SMTP_URL != null) {
-        try {
-          await this.mailerService.sendMail({
-            to,
-            subject,
-            text,
-            html
-          })
-        } catch (e) {
-          console.log(e)
         }
-      } else {
-        await new SES({ region: 'us-east-2' })
-          .sendEmail({
-            Source: 'support@nextstep.is',
-            Destination: { ToAddresses: [to] },
-            Message: {
-              Subject: {
+      `,
+      variables: { email: to }
+    })
+
+    if (type !== undefined && data.emailPreference[type] === false) {
+      console.log('Email Preference in type if:', data.emailPreference)
+      return
+    }
+
+    const SMTP_URL = process.env.SMTP_URL ?? null
+    if (SMTP_URL != null) {
+      try {
+        await this.mailerService.sendMail({
+          to,
+          subject,
+          text,
+          html
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    } else {
+      await new SES({ region: 'us-east-2' })
+        .sendEmail({
+          Source: 'support@nextstep.is',
+          Destination: { ToAddresses: [to] },
+          Message: {
+            Subject: {
+              Charset: 'UTF-8',
+              Data: subject
+            },
+            Body: {
+              Html: {
                 Charset: 'UTF-8',
-                Data: subject
+                Data: html
               },
-              Body: {
-                Html: {
-                  Charset: 'UTF-8',
-                  Data: html
-                },
-                Text: {
-                  Charset: 'UTF-8',
-                  Data: text
-                }
+              Text: {
+                Charset: 'UTF-8',
+                Data: text
               }
             }
-          })
-          .promise()
-      }
+          }
+        })
+        .promise()
+    }
   }
 }
