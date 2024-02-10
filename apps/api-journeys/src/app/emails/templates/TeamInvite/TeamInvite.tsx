@@ -1,29 +1,21 @@
-import {
-  Body,
-  Button,
-  Column,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Row,
-  Section,
-  Text
-} from '@react-email/components'
+import { Body, Container, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import { User } from '@core/nest/common/firebaseClient'
 
-import EmailLogo from '../EmailLogo/EmailLogo'
+import { ActionCard } from '../components/ActionCard'
+import { BodyText } from '../components/BodyText'
+import { BodyTitle } from '../components/BodyTitle'
+import { BodyWrapper } from '../components/BodyWrapper'
+import { Footer } from '../components/Footer'
+import { Header } from '../components/Header'
+import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
 interface TeamInviteEmailProps {
-  email?: string
-  teamName?: string
-  inviteLink?: string
+  email: string
+  teamName: string
+  inviteLink: string
   sender: Omit<User, 'id' | 'email'>
   story?: boolean
 }
@@ -52,65 +44,22 @@ export const TeamInviteEmail = ({
   const emailBody: ReactNode = (
     <>
       <Container className="my-[40px] rounded border border-solid border-[#eaeaea]">
-        <Container className="bg-[#FFFFFF] h-[72px] flex justify-center items-center">
-          <Row className="flex justify-center items-center">
-            <Column className="pr-[80px]">
-              <EmailLogo />
-            </Column>
-            <Column>
-              {sender.imageUrl != null && (
-                <Img
-                  src={sender.imageUrl ?? ''}
-                  alt={sender.firstName}
-                  width={32}
-                  height={32}
-                  className="rounded-full border-solid border-2 border-[#FFFFFF]"
-                />
-              )}
-            </Column>
-            <Column className="pl-[10px]">
-              <Heading
-                as="h2"
-                className="text-black text-[16px] font-normal font-['Helvetica']"
-              >{`${sender.firstName} ${sender.lastName}`}</Heading>
-            </Column>
-          </Row>
-        </Container>
-        <Container className="bg-[#EFEFEF] mx-auto px-[60px] py-[48px] max-w-[600px] flex justify-center items-center">
-          <Heading className="text-black text-[24px] font-normal p-0 my-[30px] mx-0">
-            Join <strong>{teamName}</strong> on <strong>Next Steps</strong>
-          </Heading>
-          <Text className="text-black text-[14px] leading-[24px]">
-            Hello {email},
-          </Text>
-          <Text className="text-black text-[14px] leading-[24px]">
-            {'You have been invited to join: '}
-            <strong>{teamName}</strong> on <strong>Next Steps</strong>.
-          </Text>
-          <Section className="text-center mt-[32px] mb-[32px]">
-            <Button
-              className="bg-[#C52D3A] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
-              href={inviteLink}
-            >
-              Join the team
-            </Button>
-          </Section>
-          <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-['Open Sans']">
-            {`Don’t want to receive these emails, `}
-            <Link
-              href="https://admin.nextstep.is/"
-              className="text-[#9E2630] no-underline"
-            >
-              Unsubscribe
-            </Link>
-          </Text>
-        </Container>
-        <Container className="bg-[#E3E3E3] h-[72px] p-[20px] px-[80px] flex justify-center items-center">
-          <Text className="text-[#666666] text-[12px] leading-[24px]">
-            {`This is an automated email. If you need assistance, please `}
-            <Link>contact support here instead of replying to this email</Link>.
-          </Text>
-        </Container>
+        <Header sender={sender} />
+        <BodyWrapper>
+          <BodyTitle
+            bodyTitle={`${sender.firstName} invites you to the workspace: ${teamName}`}
+          />
+          <ActionCard
+            url={inviteLink}
+            headerText={`Login to NextSteps to join ${sender.firstName}`}
+            buttonText={`Join ${sender.firstName}`}
+          />
+          <BodyText
+            bodyText={`If you do not want to be on this team, ask ${sender.firstName} to remove you.`}
+          />
+          <UnsubscribeLink />
+        </BodyWrapper>
+        <Footer />
       </Container>
     </>
   )
@@ -150,8 +99,8 @@ TeamInviteEmail.PreviewProps = {
   teamName: 'JFP Sol Team',
   inviteLink: 'https://admin.nextstep.is/',
   sender: {
-    firstName: 'Johnathan',
-    lastName: 'Joeronimo',
+    firstName: 'Joe',
+    lastName: 'Ron-Imo',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   }

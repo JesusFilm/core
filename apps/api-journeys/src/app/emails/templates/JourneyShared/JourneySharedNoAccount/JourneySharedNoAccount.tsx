@@ -1,19 +1,19 @@
-import { Body, Container, Head, Html, Preview } from '@react-email/components'
+import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import { User } from '@core/nest/common/firebaseClient'
 
-import { ActionCard } from '../components/ActionCard'
-import { BodyText } from '../components/BodyText'
-import { BodyTitle } from '../components/BodyTitle'
-import { BodyWrapper } from '../components/BodyWrapper'
-import { Footer } from '../components/Footer'
-import { Header } from '../components/Header'
-import { UnsubscribeLink } from '../components/UnsubscribeLink'
+import { ActionCard } from '../../components/ActionCard'
+import { BodyTitle } from '../../components/BodyTitle'
+import { BodyWrapper } from '../../components/BodyWrapper'
+import { EmailContainer } from '../../components/EmailContainer'
+import { Footer } from '../../components/Footer'
+import { Header } from '../../components/Header'
+import { UnsubscribeLink } from '../../components/UnsubscribeLink'
 
-interface TeamInviteAcceptedEmailProps {
-  teamName: string
+interface JourneySharedNoAccountEmailProps {
+  journeyTitle: string
   inviteLink: string
   sender: Omit<User, 'id' | 'email'>
   story?: boolean
@@ -23,13 +23,13 @@ interface WrapperProps {
   children: ReactElement
 }
 
-export const TeamInviteAcceptedEmail = ({
-  teamName,
+export const JourneySharedNoAccountEmail = ({
+  journeyTitle,
   inviteLink,
   sender,
   story = false
-}: TeamInviteAcceptedEmailProps): ReactElement => {
-  const previewText = `${sender.firstName} has been added to your team`
+}: JourneySharedNoAccountEmailProps): ReactElement => {
+  const previewText = `${journeyTitle} has been shared with you on NextSteps`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
       <>
@@ -40,24 +40,21 @@ export const TeamInviteAcceptedEmail = ({
   }
 
   const emailBody: ReactNode = (
-    <Container className="my-[40px] rounded border border-solid border-[#eaeaea]">
+    <EmailContainer>
       <Header sender={sender} />
       <BodyWrapper>
         <BodyTitle
-          bodyTitle={`${sender.firstName} was added to your team ${teamName}`}
-        />
-        <BodyText
-          bodyText={`If this is in error, please go to ${teamName} team manage dashboard to remove them`}
+          bodyTitle={`${sender.firstName} wants to collaborate with you to create interactive journeys with NextSteps!`}
         />
         <ActionCard
           url={inviteLink}
-          headerText={teamName}
-          buttonText=" View Team"
+          buttonText="View Journey"
+          headerText="To join them create an account with Next Steps"
         />
         <UnsubscribeLink />
       </BodyWrapper>
       <Footer />
-    </Container>
+    </EmailContainer>
   )
 
   return (
@@ -90,15 +87,16 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
   )
 }
 
-TeamInviteAcceptedEmail.PreviewProps = {
-  teamName: 'JFP Sol Team',
-  inviteLink: 'https://admin.nextstep.is/',
+JourneySharedNoAccountEmail.PreviewProps = {
+  journeyTitle: 'Why Jesus?',
+  inviteLink:
+    'https://admin.nextstep.is/journeys/dd2520c8-2f59-4ce2-89e5-92124647b4ff',
   sender: {
     firstName: 'Joe',
-    lastName: 'Ro-Nimo',
+    lastName: 'Ron-Imo',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   }
-} satisfies TeamInviteAcceptedEmailProps
+} satisfies JourneySharedNoAccountEmailProps
 
-export default TeamInviteAcceptedEmail
+export default JourneySharedNoAccountEmail
