@@ -2,6 +2,7 @@ import { ApolloError, gql, useApolloClient, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
@@ -9,27 +10,28 @@ import { GraphQLError } from 'graphql'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
-  User,
+  useUser,
   withUser,
   withUserTokenSSR
 } from 'next-firebase-auth'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { number, object, string } from 'yup'
+import { number, object } from 'yup'
 
 import { CreateVerificationRequest } from '../../__generated__/CreateVerificationRequest'
 import { GetMe } from '../../__generated__/GetMe'
+import i18nConfig from '../../next-i18next.config'
 import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
-import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
-import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { useTeam } from '../../src/components/Team/TeamProvider'
+import { createApolloClient } from '../../src/libs/apolloClient'
 
 interface ValidateEmailProps {
   email?: string
   token?: string
   initialError?: GraphQLError | null
-  user: User
 }
 
 const VALIDATE_EMAIL = gql`
@@ -42,14 +44,14 @@ const VALIDATE_EMAIL = gql`
 `
 
 function ValidateEmail({
-  email,
   token,
-  initialError = null,
-  user
+  initialError = null
 }: ValidateEmailProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const client = useApolloClient()
+  const user = useUser()
+  const email = user.email ?? ''
   const { setActiveTeam } = useTeam()
   const [error, setError] = useState<GraphQLError | ApolloError | null>(
     initialError
@@ -68,11 +70,6 @@ function ValidateEmail({
   )
 
   const validationSchema = object().shape({
-    email: string()
-      .trim()
-      .lowercase()
-      .email(t('Please enter a valid email address'))
-      .required(t('Required')),
     token: number().min(100000).max(999999).required(t('Required'))
   })
 
@@ -101,92 +98,122 @@ function ValidateEmail({
     await client.resetStore()
     await user.signOut()
     setActiveTeam(null)
-    router.push('/users/sign-in')
+    await router.push('/users/sign-in')
   }
 
   return (
     <OnboardingPageWrapper emailSubject={t('Validate NextStep Email')}>
-      <List>
-        <Typography variant="h4">{t('Validate NextStep Email')}</Typography>
-        <Divider />
-        <Formik
-          initialValues={{ email, token }}
-          onSubmit={handleReValidateEmail}
-          validationSchema={validationSchema}
-        >
-          {({ values, handleChange, handleBlur, errors, touched }) => (
-            <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
-              <TextField
-                label={t('Email')}
-                name="email"
-                fullWidth
-                variant="filled"
-                value={values.email}
-                autoComplete="off"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={errors.email != null && touched.email != null}
-                helperText={
-                  touched?.email != null && errors.email != null
-                    ? errors.email
-                    : ' '
-                }
-              />
-              <TextField
-                label={t('Token')}
-                name="token"
-                fullWidth
-                variant="filled"
-                value={values.token}
-                autoComplete="off"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={errors.token != null && touched.token != null}
-                helperText={
-                  touched?.token != null && errors.token != null
-                    ? errors.token
-                    : ' '
-                }
-              />
-              <Button
-                disabled={disableValidationButton}
-                type="submit"
-                variant="contained"
-                fullWidth
-              >
-                {t('Validate Email')}
-              </Button>
-            </Form>
-          )}
-        </Formik>
-        <Typography variant="body2" color="error">
-          {error?.message}
-        </Typography>
-        <Divider />
-        <Button
-          onClick={handleResendValidationEmail}
-          variant="contained"
-          disabled={disableResendButton}
-          fullWidth
-        >
-          {t('Resend Validation Email')}
-        </Button>
-        <Button onClick={handleLogout} variant="contained" fullWidth>
-          {t('Logout')}
-        </Button>
-      </List>
+      <Formik
+        initialValues={{ email, token }}
+        onSubmit={handleReValidateEmail}
+        validationSchema={validationSchema}
+      >
+        {({ values, handleChange, handleBlur, errors, touched }) => (
+          <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
+            <List>
+              <ListItem>
+                <Typography variant="h4">
+                  {t('Validate NextStep Email')}
+                </Typography>
+              </ListItem>
+              <ListItem>
+                <Typography variant="body2">
+                  {t(
+                    'Please check your email for the six-digit token that was sent to your email address.'
+                  )}
+                </Typography>
+              </ListItem>
+              <ListItem>
+                <Divider />
+              </ListItem>
+              <ListItem>
+                <TextField
+                  label={t('Email')}
+                  name="email"
+                  fullWidth
+                  variant="filled"
+                  value={values.email}
+                  autoComplete="off"
+                  disabled
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.email != null && touched.email != null}
+                  helperText=<>
+                    {touched?.email != null && errors.email != null
+                      ? errors.email
+                      : ' '}
+                  </>
+                />
+              </ListItem>
+              <ListItem>
+                <TextField
+                  label={t('Token')}
+                  name="token"
+                  fullWidth
+                  variant="filled"
+                  value={values.token}
+                  autoComplete="off"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.token != null && touched.token != null}
+                  helperText=<>
+                    {touched?.token != null && errors.token != null
+                      ? errors.token
+                      : ' '}
+                  </>
+                />
+              </ListItem>
+              <ListItem>
+                <Button
+                  disabled={disableValidationButton}
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                >
+                  {t('Validate Email')}
+                </Button>
+              </ListItem>
+              <ListItem>
+                <Typography variant="body2" color="error">
+                  {error?.message ?? ' '}
+                </Typography>
+              </ListItem>
+              <ListItem>
+                <Divider />
+              </ListItem>
+              <ListItem>
+                <Button
+                  onClick={handleResendValidationEmail}
+                  variant="contained"
+                  disabled={disableResendButton}
+                  fullWidth
+                >
+                  {t('Resend Validation Email')}
+                </Button>
+              </ListItem>
+              <ListItem>
+                <Button onClick={handleLogout} variant="contained" fullWidth>
+                  {t('Logout')}
+                </Button>
+              </ListItem>
+            </List>
+          </Form>
+        )}
+      </Formik>
     </OnboardingPageWrapper>
   )
 }
 
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, query, locale, resolvedUrl }) => {
-  const { apolloClient, flags, translations } = await initAndAuthApp({
-    user,
-    locale,
-    resolvedUrl
-  })
+})(async ({ user, query, locale }) => {
+  const apolloToken = user?.id != null ? await user.getIdToken() : null
+  const apolloClient = createApolloClient(apolloToken ?? undefined)
+  const translations = await serverSideTranslations(
+    locale ?? 'en',
+    ['apps-journeys-admin', 'libs-journeys-ui'],
+    i18nConfig
+  )
 
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({ query: GET_ME })
@@ -210,12 +237,10 @@ export const getServerSideProps = withUserTokenSSR({
     if (data.error != null) {
       return {
         props: {
-          user,
           email,
           token,
           initialError: data.error,
           ...translations,
-          flags,
           initialApolloState: apolloClient.cache.extract()
         }
       }
@@ -229,11 +254,9 @@ export const getServerSideProps = withUserTokenSSR({
   }
   return {
     props: {
-      user,
       email,
       token,
       ...translations,
-      flags,
       initialApolloState: apolloClient.cache.extract()
     }
   }

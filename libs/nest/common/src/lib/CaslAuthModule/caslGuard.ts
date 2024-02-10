@@ -2,11 +2,10 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { GqlExecutionContext } from '@nestjs/graphql'
 
-import { contextToUserId } from '../firebaseClient'
+import { contextToUser } from '../firebaseClient'
 
 import { CaslFactory } from './caslFactory'
 import { CASL_POLICY_KEY, CaslPolicyHandler } from './decorators/caslPolicy'
-import { contextToUser } from '../firebaseClient/firebaseClient'
 
 /**
  * Guard that is used in conjunction with `CaslAbility`, `CaslAccessible` and `CaslPolicy` decorators.

@@ -3,6 +3,8 @@ import { isAfter, parseISO } from 'date-fns'
 import { Redirect } from 'next'
 
 import { GetJourneyProfileAndTeams } from '../../../__generated__/GetJourneyProfileAndTeams'
+import { GetMe } from '../../../__generated__/GetMe'
+import { GET_ME } from '../../components/PageWrapper/NavigationDrawer/UserNavigation'
 
 export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
   query GetJourneyProfileAndTeams {
@@ -14,9 +16,6 @@ export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
     }
     teams {
       id
-    }
-    me {
-      emailVerified
     }
   }
 `
@@ -30,10 +29,6 @@ export async function checkConditionalRedirect({
   apolloClient,
   resolvedUrl
 }: CheckConditionalRedirectProps): Promise<Redirect | undefined> {
-  const { data } = await apolloClient.query<GetJourneyProfileAndTeams>({
-    query: GET_JOURNEY_PROFILE_AND_TEAMS
-  })
-
   const currentRedirect = new URL(
     resolvedUrl,
     'https://admin.nextstep.is'
@@ -47,13 +42,25 @@ export async function checkConditionalRedirect({
       redirect = `?redirect=${encodeURIComponent(resolvedUrl)}`
   }
 
-  if (data.me?.emailVerified === false) {
+  const { data: me } = await apolloClient.query<GetMe>({
+    query: GET_ME
+  })
+
+  if (!(me.me?.emailVerified ?? false)) {
     if (resolvedUrl.startsWith('/users/verify')) return
     return {
-      destination: `/users/verify${redirect}`,
+      destination: `/users/verify`,
       permanent: false
     }
   }
+
+  // don't redirect on /users/verify
+  if (resolvedUrl.startsWith('/users/verify')) return
+
+  const { data } = await apolloClient.query<GetJourneyProfileAndTeams>({
+    query: GET_JOURNEY_PROFILE_AND_TEAMS
+  })
+
   if (data.getJourneyProfile?.acceptedTermsAt == null) {
     if (resolvedUrl.startsWith('/users/terms-and-conditions')) return
     return {
