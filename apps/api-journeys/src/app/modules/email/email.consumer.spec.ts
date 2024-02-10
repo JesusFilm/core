@@ -1,6 +1,6 @@
+import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Test, TestingModule } from '@nestjs/testing'
 import { MailerService } from '@nestjs-modules/mailer'
-import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Job } from 'bullmq'
 import { mockDeep } from 'jest-mock-extended'
 
@@ -227,15 +227,16 @@ describe('EmailConsumer', () => {
 
   describe('teamRemovedEmail', () => {
     it('should send an email', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(() =>
-        Promise.resolve({
-          data: {
-            user: {
-              id: 'userid',
-              email: 'jsmith@exmaple.com'
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
             }
-          }
-        } as ApolloQueryResult<unknown>)
+          } as unknown as ApolloQueryResult<unknown>)
       )
       let args = {}
       emailConsumer.sendEmail = jest
@@ -257,15 +258,16 @@ describe('EmailConsumer', () => {
 
   describe('teamInviteEmail', () => {
     it('should send an email if user exists', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(() =>
-        Promise.resolve({
-          data: {
-            user: {
-              id: 'userid',
-              email: 'jsmith@exmaple.com'
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
             }
-          }
-        } as ApolloQueryResult<unknown>)
+          } as unknown as ApolloQueryResult<unknown>)
       )
       let args = {}
       emailConsumer.sendEmail = jest
@@ -285,12 +287,13 @@ describe('EmailConsumer', () => {
     })
 
     it('should send an email if user does not exist', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(() =>
-        Promise.resolve({
-          data: {
-            user: undefined
-          }
-        } as ApolloQueryResult<unknown>)
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: undefined
+            }
+          } as unknown as ApolloQueryResult<unknown>)
       )
       let args = {}
       emailConsumer.sendEmail = jest
@@ -312,15 +315,16 @@ describe('EmailConsumer', () => {
 
   describe('teamInviteAcceptedEmail', () => {
     it('should send an email', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(() =>
-        Promise.resolve({
-          data: {
-            user: {
-              id: 'userid',
-              email: 'jsmith@exmaple.com'
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
             }
-          }
-        } as ApolloQueryResult<unknown>)
+          } as unknown as ApolloQueryResult<unknown>)
       )
       let args = {}
       emailConsumer.sendEmail = jest
@@ -342,15 +346,16 @@ describe('EmailConsumer', () => {
 
   describe('journeyAccessRequest', () => {
     it('should send an email', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(() =>
-        Promise.resolve({
-          data: {
-            user: {
-              id: 'userid',
-              email: 'jsmith@exmaple.com'
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
             }
-          }
-        } as ApolloQueryResult<unknown>)
+          } as unknown as ApolloQueryResult<unknown>)
       )
       let args = {}
       emailConsumer.sendEmail = jest
@@ -372,15 +377,16 @@ describe('EmailConsumer', () => {
 
   describe('journeyRequestApproved', () => {
     it('should send an email', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(() =>
-        Promise.resolve({
-          data: {
-            user: {
-              id: 'userid',
-              email: 'jsmith@exmaple.com'
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
             }
-          }
-        } as ApolloQueryResult<unknown>)
+          } as unknown as ApolloQueryResult<unknown>)
       )
       let args = {}
       emailConsumer.sendEmail = jest
@@ -402,15 +408,16 @@ describe('EmailConsumer', () => {
 
   describe('journeyEditInvite', () => {
     it('should send an email if user exists', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(() =>
-        Promise.resolve({
-          data: {
-            user: {
-              id: 'userid',
-              email: 'jsmith@exmaple.com'
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
             }
-          }
-        } as ApolloQueryResult<unknown>)
+          } as unknown as ApolloQueryResult<unknown>)
       )
       let args = {}
       emailConsumer.sendEmail = jest
@@ -430,12 +437,13 @@ describe('EmailConsumer', () => {
     })
 
     it('should send an email if user does not exist', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(() =>
-        Promise.resolve({
-          data: {
-            user: undefined
-          }
-        } as ApolloQueryResult<unknown>)
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: undefined
+            }
+          } as unknown as ApolloQueryResult<unknown>)
       )
       let args = {}
       emailConsumer.sendEmail = jest

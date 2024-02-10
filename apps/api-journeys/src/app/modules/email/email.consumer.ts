@@ -19,9 +19,9 @@ import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessR
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 import { JourneySharedNoAccountEmail } from '../../emails/templates/JourneyShared/JourneySharedNoAccount'
 import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
+import { TeamInviteNoAccountEmail } from '../../emails/templates/TeamInvite/TeamInviteNoAccount'
 import { TeamInviteAcceptedEmail } from '../../emails/templates/TeamInviteAccepted'
 import { TeamRemovedEmail } from '../../emails/templates/TeamRemoved'
-import { TeamInviteNoAccountEmail } from '../../emails/templates/TeamInvite/TeamInviteNoAccount'
 
 AWS.config.update({ region: 'us-east-2' })
 
