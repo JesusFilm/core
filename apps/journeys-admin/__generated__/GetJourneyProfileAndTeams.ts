@@ -20,13 +20,7 @@ export interface GetJourneyProfileAndTeams_teams {
   id: string;
 }
 
-export interface GetJourneyProfileAndTeams_me {
-  __typename: "User";
-  emailVerified: boolean;
-}
-
 export interface GetJourneyProfileAndTeams {
   getJourneyProfile: GetJourneyProfileAndTeams_getJourneyProfile | null;
   teams: GetJourneyProfileAndTeams_teams[];
-  me: GetJourneyProfileAndTeams_me | null;
 }
