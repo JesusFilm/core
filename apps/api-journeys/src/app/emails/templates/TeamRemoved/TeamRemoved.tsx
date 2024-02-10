@@ -20,7 +20,7 @@ import EmailLogo from '../EmailLogo/EmailLogo'
 
 interface TeamRemovedEmailProps {
   teamName?: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
   story?: boolean
 }
 

@@ -23,7 +23,7 @@ import EmailLogo from '../EmailLogo/EmailLogo'
 interface JourneyAccessRequestEmailProps {
   journeyTitle: string
   inviteLink: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
   story?: boolean
 }
 
