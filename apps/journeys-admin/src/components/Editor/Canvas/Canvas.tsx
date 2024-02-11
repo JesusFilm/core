@@ -145,7 +145,8 @@ export function Canvas(): ReactElement {
       )
     }
     return 1
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerRef.current?.clientWidth, containerRef.current?.clientHeight])
 
   return (
     <Stack
