@@ -113,7 +113,8 @@ describe('UserTeamInviteResolver', () => {
       id: 'userId',
       firstName: 'Robert',
       lastName: 'Smith',
-      email: 'robert.smith@example.com'
+      email: 'robert.smith@example.com',
+      emailVerified: true
     }
 
     it('creates a user team invite', async () => {
@@ -197,7 +198,8 @@ describe('UserTeamInviteResolver', () => {
       const user = {
         id: 'userId',
         firstName: 'Robert',
-        email: 'robert.smith@example.com'
+        email: 'robert.smith@example.com',
+        emailVerified: true
       }
       const userTeamInvite: UserTeamInvite = {
         id: 'inviteId1',

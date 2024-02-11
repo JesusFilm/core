@@ -6,7 +6,8 @@ locals {
     "REDIS_URL",
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
-    "INTEROP_TOKEN"
+    "INTEROP_TOKEN",
+    "JOURNEYS_ADMIN_URL"
   ]
   service_config = {
     name           = "api-users"

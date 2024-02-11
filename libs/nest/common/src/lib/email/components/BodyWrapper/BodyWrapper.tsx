@@ -16,7 +16,7 @@ export function BodyWrapper({ children }: BodyWrapperProps): ReactElement {
 BodyWrapper.PreviewProps = {
   children: (
     <>
-      <BodyText bodyText="Lorem ipsum dolor set" />
+      <BodyText>Lorem ipsum dolor set</BodyText>
       <ActionCard
         url="https://admin.nextstep.is/"
         headerText="[Lorem Ipsum]"

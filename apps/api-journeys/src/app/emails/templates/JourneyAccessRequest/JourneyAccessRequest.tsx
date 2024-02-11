@@ -2,21 +2,22 @@ import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
+import {
+  ActionCard,
+  BodyText,
+  BodyTitle,
+  BodyWrapper,
+  EmailContainer,
+  Footer,
+  Header,
+  UnsubscribeLink
+} from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
-
-import { ActionCard } from '../components/ActionCard'
-import { BodyText } from '../components/BodyText'
-import { BodyTitle } from '../components/BodyTitle'
-import { BodyWrapper } from '../components/BodyWrapper'
-import { EmailContainer } from '../components/EmailContainer'
-import { Footer } from '../components/Footer'
-import { Header } from '../components/Header'
-import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
 interface JourneyAccessRequestEmailProps {
   journeyTitle: string
   inviteLink: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
   story?: boolean
 }
 
@@ -52,9 +53,10 @@ export const JourneyAccessRequestEmail = ({
           headerText={`🟠 ${journeyTitle}`}
           buttonText="Grant Access"
         />
-        <BodyText
-          bodyText={`If you do not know ${sender.firstName} or don’t want to give them access, no further action is required`}
-        />
+        <BodyText>
+          If you do not know ${sender.firstName} or don’t want to give them
+          access, no further action is required
+        </BodyText>
         <UnsubscribeLink />
       </BodyWrapper>
       <Footer />

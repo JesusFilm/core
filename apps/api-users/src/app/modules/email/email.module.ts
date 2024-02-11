@@ -2,6 +2,8 @@ import { BullModule } from '@nestjs/bullmq'
 import { Global, Module } from '@nestjs/common'
 import { MailerModule } from '@nestjs-modules/mailer'
 
+import { EmailService } from '@core/nest/common/email/emailService'
+
 import { PrismaService } from '../../lib/prisma.service'
 
 import { EmailConsumer } from './email.consumer'
@@ -17,7 +19,7 @@ import { EmailConsumer } from './email.consumer'
       }
     })
   ],
-  providers: [EmailConsumer, PrismaService],
+  providers: [EmailConsumer, PrismaService, EmailService],
   exports: []
 })
 export class EmailModule {}

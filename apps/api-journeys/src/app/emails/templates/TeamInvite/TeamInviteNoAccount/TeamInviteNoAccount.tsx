@@ -2,20 +2,21 @@ import { Body, Container, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
+import {
+  ActionCard,
+  BodyText,
+  BodyTitle,
+  BodyWrapper,
+  Footer,
+  Header,
+  UnsubscribeLink
+} from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
-
-import { ActionCard } from '../../components/ActionCard'
-import { BodyText } from '../../components/BodyText'
-import { BodyTitle } from '../../components/BodyTitle'
-import { BodyWrapper } from '../../components/BodyWrapper'
-import { Footer } from '../../components/Footer'
-import { Header } from '../../components/Header'
-import { UnsubscribeLink } from '../../components/UnsubscribeLink'
 
 interface TeamInviteNoAccountProps {
   teamName: string
   inviteLink: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
   story?: boolean
 }
 
@@ -50,7 +51,10 @@ export const TeamInviteNoAccountEmail = ({
             buttonText={`Join ${sender.firstName}`}
           />
           <BodyTitle bodyTitle="What is NextSteps?" />
-          <BodyText bodyText="NextSteps is a New Platform For Creating Smart Gospel stories that adapt to your audience." />
+          <BodyText>
+            NextSteps is a New Platform For Creating Smart Gospel stories that
+            adapt to your audience.
+          </BodyText>
           <UnsubscribeLink />
         </BodyWrapper>
         <Footer />

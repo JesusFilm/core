@@ -2,20 +2,21 @@ import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
+import {
+  ActionCard,
+  BodyTitle,
+  BodyWrapper,
+  EmailContainer,
+  Footer,
+  Header,
+  UnsubscribeLink
+} from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
-
-import { ActionCard } from '../components/ActionCard'
-import { BodyTitle } from '../components/BodyTitle'
-import { BodyWrapper } from '../components/BodyWrapper'
-import { EmailContainer } from '../components/EmailContainer'
-import { Footer } from '../components/Footer'
-import { Header } from '../components/Header'
-import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
 interface JourneySharedEmailProps {
   journeyTitle: string
   inviteLink: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
   story?: boolean
 }
 

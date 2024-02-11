@@ -245,7 +245,8 @@ describe('UserTeamResolver', () => {
       firstName: 'Joe',
       lastName: 'Ron-Imo',
       email: 'jron@example.com',
-      imageUrl: undefined
+      imageUrl: undefined,
+      emailVerified: true
     }
 
     it('deletes userTeam', async () => {
