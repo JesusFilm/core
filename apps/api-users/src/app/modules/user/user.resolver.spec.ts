@@ -68,24 +68,17 @@ describe('UserResolver', () => {
 
     it('fetches user from firebase', async () => {
       prismaService.user.findUnique.mockResolvedValueOnce(null)
-      prismaService.user.upsert.mockResolvedValueOnce(user)
+      prismaService.user.create.mockResolvedValueOnce(user)
       expect(await resolver.me('userId')).toEqual(user)
-      expect(prismaService.user.upsert).toHaveBeenCalledWith({
-        create: {
+      expect(prismaService.user.create).toHaveBeenCalledWith({
+        data: {
           email: 'tho@no.co',
           firstName: 'fo',
           imageUrl: 'p',
           lastName: 'sho',
-          userId: 'userId'
-        },
-        update: {
-          email: 'tho@no.co',
-          firstName: 'fo',
-          imageUrl: 'p',
-          lastName: 'sho',
-          userId: 'userId'
-        },
-        where: { userId: 'userId' }
+          userId: 'userId',
+          emailVerified: true
+        }
       })
     })
   })
@@ -142,26 +135,19 @@ describe('UserResolver', () => {
 
     it('fetches user from firebase', async () => {
       prismaService.user.findUnique.mockResolvedValueOnce(null)
-      prismaService.user.upsert.mockResolvedValueOnce(user)
+      prismaService.user.create.mockResolvedValueOnce(user)
       expect(
         await resolver.resolveReference({ __typename: 'User', id: 'userId' })
       ).toEqual(user)
-      expect(prismaService.user.upsert).toHaveBeenCalledWith({
-        create: {
+      expect(prismaService.user.create).toHaveBeenCalledWith({
+        data: {
           email: 'tho@no.co',
           firstName: 'fo',
           imageUrl: 'p',
           lastName: 'sho',
-          userId: 'userId'
-        },
-        update: {
-          email: 'tho@no.co',
-          firstName: 'fo',
-          imageUrl: 'p',
-          lastName: 'sho',
-          userId: 'userId'
-        },
-        where: { userId: 'userId' }
+          userId: 'userId',
+          emailVerified: true
+        }
       })
     })
 

@@ -34,7 +34,12 @@ describe('EmailConsumer', () => {
           provide: PrismaService,
           useValue: {
             user: {
-              findUnique: jest.fn()
+              findUnique: jest.fn().mockResolvedValue({
+                userId: 'user-id',
+                firstName: 'John',
+                lastName: 'Doe',
+                imageUrl: 'http://example.com/image.jpg'
+              })
             }
           }
         },
