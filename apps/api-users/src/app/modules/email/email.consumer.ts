@@ -46,7 +46,7 @@ export class EmailConsumer extends WorkerHost {
     const sender = {
       firstName: user.firstName ?? '',
       lastName: user.lastName ?? '',
-      imageUrl: user.imageUrl ?? ''
+      imageUrl: user.imageUrl ?? undefined
     }
     const html = render(
       EmailVerifyEmail({

@@ -1,7 +1,8 @@
-import { MailerService } from '@nestjs-modules/mailer'
-import { EmailService } from './email.service'
 import { Test, TestingModule } from '@nestjs/testing'
+import { MailerService } from '@nestjs-modules/mailer'
 import { mockDeep } from 'jest-mock-extended'
+
+import { EmailService } from './email.service'
 
 const sendEmailMock = jest.fn().mockReturnValue({ promise: jest.fn() })
 // Mock the SES sendEmail method
@@ -43,6 +44,7 @@ describe('EmailService', () => {
   afterEach(() => {
     jest.clearAllMocks()
   })
+
   const email = {
     to: 'text@example.com',
     subject: 'Test Subject',

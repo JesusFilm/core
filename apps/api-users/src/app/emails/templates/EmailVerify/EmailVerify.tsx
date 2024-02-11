@@ -19,7 +19,7 @@ interface VerifyEmailProps {
   sender: {
     firstName: string
     lastName: string
-    imageUrl: string
+    imageUrl?: string
   }
 }
 

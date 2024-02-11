@@ -8,8 +8,7 @@ import {
 } from '@react-email/components'
 import { ReactElement } from 'react'
 
-import { User } from '@core/nest/common/firebaseClient'
-
+import { User } from '../../../firebaseClient'
 import { EmailLogo } from '../EmailLogo'
 
 interface HeaderProps {
