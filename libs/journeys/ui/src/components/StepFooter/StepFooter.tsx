@@ -86,7 +86,13 @@ export function StepFooter({
             }}
             gap={2}
           >
-            {hasAvatar && <HostAvatars hasPlaceholder={variant === 'admin'} />}
+            {hasAvatar && (
+              <HostAvatars
+                hasPlaceholder={variant === 'admin'}
+                avatarSrc1={journey?.host?.src1}
+                avatarSrc2={journey?.host?.src2}
+              />
+            )}
             <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
               <Typography
                 variant="subtitle1"

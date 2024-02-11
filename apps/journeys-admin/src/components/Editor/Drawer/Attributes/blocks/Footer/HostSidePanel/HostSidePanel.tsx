@@ -128,17 +128,19 @@ export function HostSidePanel(): ReactElement {
                 label={t('Hosted by:')}
                 description={selectedHost?.title || ''}
                 disabled={!userInTeam}
-                imageSrc={selectedHost?.src1 || undefined}
+                // imageSrc={selectedHost?.src1 || undefined}
                 // imageAlt={selectedHost?.src2 || undefined}
                 // imageAlt={selectedHost?.src2 || undefined}
-                thumbnailIcon={
-                  <HostAvatars
-                    size="large"
-                    avatarSrc1={selectedHost?.src1}
-                    avatarSrc2={selectedHost?.src2}
-                    hasPlaceholder
-                  />
-                }
+                slots={{
+                  ImageThumbnail: (
+                    <HostAvatars
+                      size="large"
+                      avatarSrc1={selectedHost?.src1}
+                      avatarSrc2={selectedHost?.src2}
+                      hasPlaceholder
+                    />
+                  )
+                }}
                 onClick={() => setOpenCreateHost(true)}
                 actionIcon={<Edit2Icon />}
               />
