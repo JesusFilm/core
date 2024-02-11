@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { MailerService } from '@nestjs-modules/mailer'
+import { MailerModule, MailerService } from '@nestjs-modules/mailer'
 import { mockDeep } from 'jest-mock-extended'
 
 import { EmailService } from './email.service'
@@ -24,21 +24,15 @@ describe('EmailService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        EmailService,
         {
           provide: MailerService,
           useValue: mockDeep<MailerService>()
-        },
-        {
-          provide: EmailService,
-          useValue: mockDeep<EmailService>()
         }
       ]
     }).compile()
     mailerService = module.get<MailerService>(MailerService)
     emailService = module.get<EmailService>(EmailService)
-    mailerService.sendMail = jest
-      .fn()
-      .mockImplementation(async () => await Promise.resolve())
   })
 
   afterEach(() => {
@@ -55,10 +49,13 @@ describe('EmailService', () => {
   it('should send email using mailerService when SMTP_URL is defined', async () => {
     process.env.SMTP_URL = 'smtp://example.com' // from now on the env var is test
 
-    const sendMailSpy = jest.spyOn(mailerService, 'sendMail')
+    const mailerSpy = jest
+      .spyOn(mailerService, 'sendMail')
+      .mockResolvedValue(undefined)
+
     await emailService.sendEmail(email)
 
-    expect(sendMailSpy).toHaveBeenCalledWith({
+    expect(mailerSpy).toHaveBeenCalledWith({
       to: email.to,
       subject: email.subject,
       text: email.text,

@@ -17,6 +17,7 @@ export class EmailService {
 
   async sendEmail({ to, subject, text, html }: SendEmailParams): Promise<void> {
     const SMTP_URL = process.env.SMTP_URL ?? null
+
     if (SMTP_URL != null) {
       try {
         await this.mailerService.sendMail({
