@@ -13,7 +13,7 @@ import { EmailConsumer } from './email.consumer'
   imports: [
     BullModule.registerQueue({ name: 'api-users-email' }),
     MailerModule.forRoot({
-      transport: process.env.SMTP_URL,
+      transport: process.env.SMTP_URL ?? 'smtp://maildev:1025',
       defaults: {
         from: '"Next Steps Support" <support@nextstep.is>'
       }
