@@ -37,25 +37,10 @@ export function HostForm({
   open,
   onClose
 }: HostFormProps): ReactElement {
-  const [hostDelete] = useMutation<DeleteHost>(DELETE_HOST)
-  const [journeyHostUpdate] =
-    useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
 
   const handleClear = async (): Promise<void> => {
-    // if (journey?.host != null && journey?.team != null) {
-    //   try {
-    //     await hostDelete({
-    //       variables: { id: journey.host.id, teamId: journey.team.id }
-    //     })
-    //   } catch (e) {}
-    // }
-
-    // await journeyHostUpdate({
-    //   variables: { id: journey?.id, input: { hostId: null } }
-    // })
-
     onClear()
   }
 
@@ -72,9 +57,6 @@ export function HostForm({
           alignItems="center"
           sx={{ p: 4 }}
         >
-          {/* <Typography variant="subtitle2">
-          {journey?.host != null ? t('Edit Author') : t('Create Author')}
-        </Typography> */}
           <Button variant="outlined" size="small" onClick={handleClear}>
             {t('Remove selection')}
           </Button>

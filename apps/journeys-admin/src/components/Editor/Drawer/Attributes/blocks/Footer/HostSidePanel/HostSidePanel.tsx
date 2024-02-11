@@ -99,42 +99,26 @@ export function HostSidePanel(): ReactElement {
     useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
 
   const handleOpenCreateHost = async (): Promise<void> => {
-    // const handleOpenCreateHost = (): void => {
-    // if (journey?.host != null && journey?.team != null) {
-    //   try {
-    //     await hostDelete({
-    //       variables: { id: journey.host.id, teamId: journey.team.id }
-    //     })
-    //   } catch (e) {}
-    // }
-
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })
-    //  setSelectedHost(undefined)
-    console.log('clickign create new')
     setOpenCreateHost(true)
   }
   console.log(selectedHost)
   return (
     <>
-      {/* DefaultHostPanel - no host */}
-      {/* {!openSelect && (selectedHost == null || !userInTeam) && ( */}
       {!openSelect && (
         <>
           {selectedHost != null ? (
             <Stack sx={{ p: 4 }}>
               <ContainedIconButton
-                label={t('Hosted by:')}
+                label={(journey?.seoTitle || journey?.title) ?? ''}
                 description={selectedHost?.title || ''}
                 disabled={!userInTeam}
-                // imageSrc={selectedHost?.src1 || undefined}
-                // imageAlt={selectedHost?.src2 || undefined}
-                // imageAlt={selectedHost?.src2 || undefined}
                 slots={{
                   ImageThumbnail: (
                     <HostAvatars
-                      size="large"
+                      size="small"
                       avatarSrc1={selectedHost?.src1}
                       avatarSrc2={selectedHost?.src2}
                       hasPlaceholder
@@ -187,7 +171,6 @@ export function HostSidePanel(): ReactElement {
             <Button
               variant="outlined"
               size="small"
-              // onClick={() => setOpenCreateHost(true)}
               onClick={handleOpenCreateHost}
             >
               {t('Create New')}
