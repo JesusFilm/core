@@ -1,17 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { MailerModule, MailerService } from '@nestjs-modules/mailer'
+import { MailerService } from '@nestjs-modules/mailer'
 import { mockDeep } from 'jest-mock-extended'
 
 import { EmailService } from './email.service'
 
-const sendEmailMock = jest.fn().mockReturnValue({ promise: jest.fn() })
+const sendEmailMock = jest.fn().mockReturnValue({})
 // Mock the SES sendEmail method
-jest.mock('aws-sdk', () => ({
-  config: {
-    update() {
-      return {}
-    }
-  },
+jest.mock('@aws-sdk/client-ses', () => ({
   SES: jest.fn().mockImplementation(() => ({
     sendEmail: sendEmailMock
   }))
