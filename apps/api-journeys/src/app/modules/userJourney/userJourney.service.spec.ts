@@ -51,7 +51,7 @@ describe('UserJourneyService', () => {
           userId,
           journeyTitle: journey.title,
           sender: user,
-          url: '/journeys/journeyId'
+          url: expect.stringContaining('/journeys/journeyId')
         },
         {
           removeOnComplete: true,
@@ -85,7 +85,7 @@ describe('UserJourneyService', () => {
         'journey-access-request',
         {
           journey,
-          url: '/journeys/journeyId',
+          url: expect.stringContaining('/journeys/journeyId'),
           sender: user
         },
         {

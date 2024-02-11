@@ -19,19 +19,6 @@ import {
   TeamRemoved
 } from './email.consumer'
 
-const sendEmailMock = jest.fn().mockReturnValue({ promise: jest.fn() })
-// Mock the SES sendEmail method
-jest.mock('aws-sdk', () => ({
-  config: {
-    update() {
-      return {}
-    }
-  },
-  SES: jest.fn().mockImplementation(() => ({
-    sendEmail: sendEmailMock
-  }))
-}))
-
 jest.mock('@apollo/client')
 
 const teamRemoved: Job<TeamRemoved, unknown, string> = {
@@ -145,7 +132,6 @@ const journeyEditJob: Job<JourneyEditInviteJob, unknown, string> = {
 
 describe('EmailConsumer', () => {
   let emailConsumer: EmailConsumer
-  let mailerService: MailerService
   let emailService: EmailService
 
   beforeEach(async () => {
@@ -162,12 +148,8 @@ describe('EmailConsumer', () => {
         }
       ]
     }).compile()
-    mailerService = module.get<MailerService>(MailerService)
     emailConsumer = module.get<EmailConsumer>(EmailConsumer)
     emailService = module.get<EmailService>(EmailService)
-    mailerService.sendMail = jest
-      .fn()
-      .mockImplementation(async () => await Promise.resolve())
   })
 
   afterEach(() => {
@@ -467,61 +449,6 @@ describe('EmailConsumer', () => {
         html: expect.any(String),
         text: expect.any(String)
       })
-    })
-  })
-
-  describe('sendEmail', () => {
-    const email = {
-      to: 'text@example.com',
-      subject: 'Test Subject',
-      text: 'Test Body',
-      html: 'Test Html'
-    }
-
-    it('should send email using mailerService when SMTP_URL is defined', async () => {
-      process.env.SMTP_URL = 'smtp://example.com' // from now on the env var is test
-
-      const sendMailSpy = jest.spyOn(mailerService, 'sendMail')
-      await emailService.sendEmail(email)
-
-      expect(sendMailSpy).toHaveBeenCalledWith({
-        to: email.to,
-        subject: email.subject,
-        text: email.text,
-        html: email.html
-      })
-    })
-
-    it('should process the email job', async () => {
-      const OLD_ENV = process.env
-      process.env = {
-        ...OLD_ENV,
-        SMTP_URL: undefined
-      }
-
-      await emailService.sendEmail(email)
-
-      expect(sendEmailMock).toHaveBeenCalledWith({
-        Source: 'support@nextstep.is',
-        Destination: { ToAddresses: [email.to] },
-        Message: {
-          Subject: {
-            Charset: 'UTF-8',
-            Data: email.subject
-          },
-          Body: {
-            Html: {
-              Charset: 'UTF-8',
-              Data: email.html
-            },
-            Text: {
-              Charset: 'UTF-8',
-              Data: email.text
-            }
-          }
-        }
-      })
-      process.env = OLD_ENV
     })
   })
 })

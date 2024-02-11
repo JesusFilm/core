@@ -38,7 +38,7 @@ export class EmailConsumer extends WorkerHost {
     }&email=${job.data.email}`
 
     const user = await this.prismaService.user.findUnique({
-      where: { id: job.data.userId }
+      where: { userId: job.data.userId }
     })
 
     if (user == null) return
