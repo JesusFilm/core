@@ -116,12 +116,6 @@
         ]
       }
     },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["npm run ts-node apps/api-users/db/seed.ts"]
-      }
-    },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
