@@ -26,7 +26,7 @@ function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
             display: { xs: 'flex', sm: 'none' },
             alignItems: 'center',
             justifyContent: 'center',
-            py: 2
+            pt: 2
           }}
         >
           <Box
@@ -92,7 +92,10 @@ export function Drawer({
         '& .MuiDrawer-paper':
           open != null
             ? {
+                // temporary drawer
                 borderRadius: 4,
+                borderBottomLeftRadius: { xs: 0, sm: 4 },
+                borderBottomRightRadius: { xs: 0, sm: 4 },
                 width: smUp ? DRAWER_WIDTH : 'auto',
                 top: EDIT_TOOLBAR_HEIGHT + 20,
                 left: { xs: 0, sm: 'auto' },
@@ -101,7 +104,10 @@ export function Drawer({
                 height: 'auto'
               }
             : {
+                // permanent drawer
                 borderRadius: 4,
+                borderBottomLeftRadius: { xs: 0, sm: 4 },
+                borderBottomRightRadius: { xs: 0, sm: 4 },
                 width: smUp ? DRAWER_WIDTH : 'auto',
                 left: { xs: 0, sm: 'auto' },
                 top: { xs: 0, sm: 20 },
