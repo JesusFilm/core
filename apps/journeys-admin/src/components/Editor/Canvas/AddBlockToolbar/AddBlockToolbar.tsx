@@ -1,7 +1,11 @@
+import AddIcon from '@mui/icons-material/Add'
 import Card from '@mui/material/Card'
 import { ReactElement } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
 
 import { NewButtonButton } from './NewButtonButton'
 import { NewFormButton } from './NewFormButton'
@@ -11,9 +15,7 @@ import { NewSignUpButton } from './NewSignUpButton'
 import { NewTextResponseButton } from './NewTextResponseButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
-import AddIcon from '@mui/icons-material/Add'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
+
 
 interface AddBlockToolbarProps {
   selectedCard: TreeBlock<CardBlock>

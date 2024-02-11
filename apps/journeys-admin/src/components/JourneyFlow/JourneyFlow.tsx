@@ -1,14 +1,12 @@
-import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { SmartBezierEdge } from '@tisoap/react-flow-smart-edge'
+import { SmartBezierEdge } from '@tisoap/react-flow-smart-edge'
 import findIndex from 'lodash/findIndex'
-import flatMapDeep from 'lodash/flatMapDeep'
 import { ReactElement, useEffect, useState } from 'react'
 import {
   Background,
   Controls,
   Edge,
-  MarkerType,
   Node,
   OnConnectEnd,
   OnConnectStart,
@@ -25,7 +23,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields } from '../../../__generated__/BlockFields'
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
-  GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_FormBlock as FormBlock,
   GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock,
   GetJourney_journey_blocks_SignUpBlock as SignUpBlock,
@@ -96,6 +93,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   const edges: Edge[] = []
 
   const blocks: Array<Array<TreeBlock<StepBlock>>> = []
+  const blocks: Array<Array<TreeBlock<StepBlock>>> = []
   const visitedStepIds: string[] = []
 
   function getStepFromId(id): TreeBlock<StepBlock> | undefined {
@@ -156,6 +154,8 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     step: TreeBlock<StepBlock>
   ): Array<TreeBlock<StepBlock>> {
     const descendants: Array<TreeBlock<StepBlock>> = []
+  ): Array<TreeBlock<StepBlock>> {
+    const descendants: Array<TreeBlock<StepBlock>> = []
     const nextStep = getNextStep(step)
     if (nextStep != null) descendants.push(nextStep)
     const children = step.children[0].children.filter(isActionBlock)
@@ -168,6 +168,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     return descendants
   }
 
+  function processSteps(steps: Array<TreeBlock<StepBlock>>): void {
   function processSteps(steps: Array<TreeBlock<StepBlock>>): void {
     blocks.push(steps)
     const descendants = steps.flatMap((step) => {
@@ -318,7 +319,9 @@ export function JourneyFlow(): ReactElement {
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
 
-  async function createNewStepAndConnectBlock(block?: TreeBlock) {
+  async function createNewStepAndConnectBlock(
+    block?: TreeBlock
+  ): Promise<void> {
     if (journey == null || block == null) return
     const newStepId = uuidv4()
     const newCardId = uuidv4()

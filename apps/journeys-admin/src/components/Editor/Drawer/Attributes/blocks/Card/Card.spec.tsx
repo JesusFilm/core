@@ -6,6 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { Drawer } from "../../.."
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey as Journey
@@ -17,7 +18,6 @@ import {
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../ThemeProvider'
-import { Drawer } from '../../../../Drawer'
 
 import { Card } from '.'
 

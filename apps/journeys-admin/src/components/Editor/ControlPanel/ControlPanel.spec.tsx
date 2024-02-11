@@ -24,7 +24,7 @@ import {
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../libs/TestEditorState'
-
+import { STEP_AND_CARD_BLOCK_CREATE } from '../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 import { BUTTON_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewButtonButton/NewButtonButton'
 import { IMAGE_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewImageButton/NewImageButton'
 import { RADIO_QUESTION_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewRadioQuestionButton/NewRadioQuestionButton'
@@ -33,7 +33,7 @@ import { TYPOGRAPHY_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewTypography
 import { VIDEO_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewVideoButton/NewVideoButton'
 
 import { ControlPanel } from '.'
-import { STEP_AND_CARD_BLOCK_CREATE } from '../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
+
 
 jest.mock('uuid', () => ({
   __esModule: true,
