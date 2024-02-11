@@ -9,8 +9,8 @@ import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import Type2Icon from '@core/shared/ui/icons/Type2'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
-import { ColorDisplayIcon } from '../../ColorDisplayIcon'
 import { Attribute } from '../../Attribute'
+import { ColorDisplayIcon } from '../../ColorDisplayIcon'
 
 import { Align } from './Align'
 import { Color } from './Color'

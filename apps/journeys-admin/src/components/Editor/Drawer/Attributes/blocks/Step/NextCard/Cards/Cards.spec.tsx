@@ -13,9 +13,9 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
+import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../../../../../../../libs/useStepBlockNextBlockUpdateMutation/useStepBlockNextBlockUpdateMutation'
 
 import { Cards } from './Cards'
-import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../../../../../../../libs/useStepBlockNextBlockUpdateMutation/useStepBlockNextBlockUpdateMutation'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

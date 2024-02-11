@@ -6,8 +6,8 @@ import noop from 'lodash/noop'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
+import { Drawer } from "../.."
 import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { Drawer } from '../../../Drawer'
 
 import { ToggleOptionProps } from './ToggleOption'
 

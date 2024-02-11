@@ -3,8 +3,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -19,10 +17,10 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
+import { Drawer } from '../../Drawer'
 import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
-import { Drawer } from '../../Drawer'
 
 export interface VideoDetailsProps {
   open: boolean
@@ -57,7 +55,6 @@ export function VideoDetails({
   source,
   activeVideoBlock
 }: VideoDetailsProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [blockDeleteForCoverImage] = useMutation<BlockDeleteForCoverImage>(
     BLOCK_DELETE_FOR_COVER_IMAGE
   )

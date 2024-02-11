@@ -16,9 +16,9 @@ import {
   ButtonVariant
 } from '../../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
-import { ColorDisplayIcon } from '../../ColorDisplayIcon'
 import { Action, actions } from '../../Action/Action'
 import { Attribute } from '../../Attribute'
+import { ColorDisplayIcon } from '../../ColorDisplayIcon'
 import { Icon, icons } from '../../Icon'
 
 import { Color } from './Color'

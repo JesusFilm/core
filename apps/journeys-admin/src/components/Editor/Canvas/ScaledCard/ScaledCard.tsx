@@ -10,7 +10,6 @@ import {
   ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
