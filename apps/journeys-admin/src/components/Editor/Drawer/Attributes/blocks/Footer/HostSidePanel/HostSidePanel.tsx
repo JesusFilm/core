@@ -83,6 +83,9 @@ export function HostSidePanel(): ReactElement {
 
   const handleClear = async (): Promise<void> => {
     if (team != null) await refetch({ teamId: team.id })
+    await journeyHostUpdate({
+      variables: { id: journey?.id, input: { hostId: null } }
+    })
     setSelectedHost(undefined)
     setOpenSelect(false)
     setOpenCreateHost(false)
