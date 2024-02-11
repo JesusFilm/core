@@ -3,7 +3,7 @@ import { Divider } from '@mui/material'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -11,8 +11,6 @@ import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
 import { DeleteHost } from '../../../../../../../../../__generated__/DeleteHost'
 import { UpdateJourneyHost } from '../../../../../../../../../__generated__/UpdateJourneyHost'
-import { SidePanel } from '../../../../../../../PageWrapper/SidePanel'
-import { SidePanelContainer } from '../../../../../../../PageWrapper/SidePanelContainer'
 import { Drawer } from '../../../../../Drawer'
 
 import { HostAvatarsButton } from './HostAvatarsButton'

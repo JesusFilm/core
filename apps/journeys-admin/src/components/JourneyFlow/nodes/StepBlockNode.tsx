@@ -1,4 +1,3 @@
-import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,9 +15,9 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import { useStepBlockNextBlockUpdateMutation } from '../../../libs/useStepBlockNextBlockUpdateMutation'
 
 import { BaseNode } from './BaseNode'
-import { useStepBlockNextBlockUpdateMutation } from '../../../libs/useStepBlockNextBlockUpdateMutation'
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
@@ -96,7 +95,7 @@ export function StepBlockNode({
     })
   }
 
-  function handleClick() {
+  function handleClick(): void {
     dispatch({ type: 'SetSelectedStepAction', step })
   }
 

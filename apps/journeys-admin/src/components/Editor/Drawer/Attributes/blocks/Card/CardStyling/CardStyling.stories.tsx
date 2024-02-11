@@ -5,6 +5,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { Drawer } from "../../../.."
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey as Journey
@@ -15,7 +16,6 @@ import {
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
-import { Drawer } from '../../../../../Drawer'
 
 import { CardStyling } from '.'
 
