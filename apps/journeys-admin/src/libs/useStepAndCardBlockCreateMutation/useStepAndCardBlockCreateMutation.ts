@@ -14,7 +14,6 @@ import {
   StepAndCardBlockCreateVariables
 } from '../../../__generated__/StepAndCardBlockCreate'
 
-
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
   ${STEP_FIELDS}
   ${CARD_FIELDS}
