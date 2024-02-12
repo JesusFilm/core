@@ -162,7 +162,7 @@ export function Canvas(): ReactElement {
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        flexGrow: { xs: 1, sm: activeSlide === ActiveSlide.Canvas ? 1 : 0 },
+        flexGrow: { xs: 1, sm: activeSlide === ActiveSlide.Content ? 1 : 0 },
         transition: (theme) =>
           theme.transitions.create('flex-grow', { duration: 300 })
       }}
@@ -178,22 +178,6 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
-          {/* <Box
-            sx={{
-              width: {
-                xs: 50,
-                sm: activeSlide === ActiveSlide.Canvas ? 50 : 0
-              },
-              mr: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 3 : 0 },
-              transition: (theme) =>
-                theme.transitions.create(['width', 'margin'], {
-                  duration: 150
-                }),
-              overflow: 'hidden'
-            }}
-          >
-            <QuickControls />
-          </Box> */}
           <TransitionGroup
             component={Box}
             data-testid={`step-${selectedStep.id}`}

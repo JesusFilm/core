@@ -218,9 +218,6 @@ export function Attributes(): ReactElement {
     case ActiveJourneyEditContent.Action:
       blockTitle = t('Information')
       break
-    case ActiveJourneyEditContent.JourneyFlow:
-      blockTitle = t('Properties')
-      break
   }
 
   return (
