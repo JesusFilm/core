@@ -4,7 +4,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { Drawer } from "../.."
+import { Drawer } from '../..'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
 import {
   IconColor,
