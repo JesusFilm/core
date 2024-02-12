@@ -24,18 +24,14 @@ export class ChannelResolver {
   ) {}
 
   @Query()
-  async channels(
-    @CurrentUserId() userId: string,
-    @Args('where') where?: ChannelFilter,
-  ): Promise<Channel[]> {
+  async channels(@Args('where') where?: ChannelFilter): Promise<Channel[]> {
     const filter: Prisma.ChannelWhereInput = {};
-    if (where?.ids != null) filter.id = { in: where?.ids };
     filter.status = where?.status ?? 'published';
     filter.nexusId = where?.nexusId ?? undefined;
 
     const channels = await this.prismaService.channel.findMany({
       where: {
-        AND: [filter, { nexus: { userNexuses: { every: { userId } } } }],
+        AND: [filter, { nexus: { userNexuses: {} } }],
       },
       take: where?.limit ?? undefined,
       include: {
@@ -138,14 +134,17 @@ export class ChannelResolver {
       grant_type: 'authorization_code',
       redirect_uri: input.redirectUri,
     });
+
     const youtubeChannels = await this.googleYoutube.getChannels({
       accessToken: authResponse.access_token,
     });
 
+    console.log('youtubeChannels', youtubeChannels);
+
     const channel = await this.prismaService.channel.findUnique({
       where: {
         id: input.channelId,
-        // nexus: { userNexuses: { every: { userId } } },
+        nexus: { userNexuses: { every: { userId } } },
       },
     });
     if (channel == null) {

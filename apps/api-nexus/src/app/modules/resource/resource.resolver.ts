@@ -1,7 +1,6 @@
 import { unlink } from 'fs';
 
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-// import { google } from 'googleapis';
 import { GraphQLError } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -20,13 +19,13 @@ import {
   ResourceFromGoogleDriveInput,
   ResourceUpdateInput,
 } from '../../__generated__/graphql';
-import { BatchService } from '../../lib/batch/batchService';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
-import { GoogleDriveService } from '../../lib/googleAPI/googleDriveService';
 import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
 import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
+import { BullMQService } from '../bullMQ/bullMQ.service';
+import { GoogleDriveService } from '../google-drive/googleDriveService';
 
 @Resolver('Resource')
 export class ResourceResolver {
@@ -36,8 +35,8 @@ export class ResourceResolver {
     private readonly googleDriveService: GoogleDriveService,
     private readonly cloudFlareService: CloudFlareService,
     private readonly youtubeService: YoutubeService,
+    private readonly bullMQService: BullMQService,
     private readonly googleSheetsService: GoogleSheetsService,
-    private readonly batchService: BatchService,
   ) {}
 
   @Query()
@@ -47,7 +46,6 @@ export class ResourceResolver {
   ): Promise<Resource[]> {
     const filter: Prisma.ResourceWhereInput = {};
     if (where?.ids != null) filter.id = { in: where?.ids };
-    filter.status = where?.status ?? 'published';
     filter.nexusId = where?.nexusId ?? undefined;
 
     const resources = await this.prismaService.resource.findMany({
@@ -61,8 +59,12 @@ export class ResourceResolver {
               },
             },
           },
+          {
+            NOT: { status: 'deleted' },
+          },
         ],
       },
+      orderBy: { createdAt: 'desc' },
       include: { localizations: true },
       take: where?.limit ?? undefined,
     });
@@ -211,12 +213,12 @@ export class ResourceResolver {
   @Mutation()
   async resourceFromTemplate(
     @CurrentUserId() userId: string,
-    @CurrentUser() user: User,
     @Args('nexusId') nexusId: string,
     @Args('tokenId') tokenId: string,
     @Args('spreadsheetId') spreadsheetId: string,
     @Args('drivefolderId') drivefolderId: string,
   ): Promise<Resource[]> {
+    console.log('Resource From Template . . .');
     const nexus = await this.prismaService.nexus.findUnique({
       where: {
         id: nexusId,
@@ -236,47 +238,23 @@ export class ResourceResolver {
     if (googleAccessToken === null) {
       throw new Error('Invalid tokenId');
     }
-
-    // const accessToken = await this.getNewAccessToken(
-    //   googleAccessToken.refreshToken,
-    // );
-
-    const accessToken = await this.googleOAuthService.getNewAccessToken(
-      googleAccessToken.refreshToken,
-    );
-
+    console.log('Downloading Template . . .');
     const rows = await this.googleDriveService.handleGoogleDriveOperations(
       tokenId,
       spreadsheetId,
       drivefolderId,
     );
+    console.log('Total Data', rows.length);
 
-    const batchResource: Array<{ resource: Resource; channel?: Channel }> = [];
+    const batchResources: Array<{ resource: Resource; channel?: Channel }> = [];
 
     for (const row of rows) {
-      // const { fileId, filename, title, description, keywords, category } = row;
-
-      // const fileUrl = this.googleDriveService.getFileUrl(row.fileId);
-      // await this.googleDriveService.setFilePermission({
-      //   fileId: row.fileId,
-      //   accessToken,
-      // });
-
-      // const res = await this.cloudFlareService.uploadToCloudflareByUrl(
-      //   fileUrl,
-      //   filename: row.filename,
-      //   'ben',
-      // );
-      // console.log('CLOUD FLARE', res?.result?.uid ?? '');
-
-      // await this.cloudFlareService.makeVideoPublic(res?.result?.uid ?? '');
-
       const resource = await this.prismaService.resource.create({
         data: {
           id: uuidv4(),
           name: row.filename ?? '',
           nexusId: nexus.id,
-          status: 'processing',
+          status: row.channelData?.id !== null ? 'processing' : 'published',
           sourceType: 'template',
           createdAt: new Date(),
           category: row.category,
@@ -298,30 +276,39 @@ export class ResourceResolver {
           },
         },
       });
-
-      batchResource.push({
-        resource,
-        channel: (row.channel as Channel) ?? undefined,
-      });
+      if (row.channelData?.id !== undefined) {
+        batchResources.push({ resource, channel: row.channelData });
+      }
     }
 
-    // TODO: Create batch job here
-    // if (batchResource.channel instanceof Channel) {
-    //   await this.batchService.createBatch(filename, nexusId, row.channel);
-    // }
-    // batchResource.filter()
+    const channels = batchResources
+      .filter((item, index, self) => {
+        return (
+          index === self.findIndex((t) => t.channel?.id === item.channel?.id) &&
+          item.channel !== undefined
+        );
+      })
+      .map((item) => item.channel);
 
-    return await this.prismaService.resource.findMany({
-      where: {
+    console.log('Batches', channels.length);
+
+    for (const channel of channels) {
+      if (channel === undefined) continue;
+      const resources = batchResources
+        .filter((item) => {
+          return item.channel?.id === channel.id;
+        })
+        .map((item) => item.resource);
+      console.log('Batche Count: ', resources.length);
+      await this.bullMQService.createBatch(
+        uuidv4(),
         nexusId,
-        nexus: {
-          userNexuses: {
-            every: { userId },
-          },
-        },
-      },
-      include: { localizations: true },
-    });
+        channel,
+        resources,
+      );
+    }
+
+    return batchResources.map((item) => item.resource);
   }
 
   @Mutation()
@@ -330,19 +317,11 @@ export class ResourceResolver {
     @CurrentUser() user: User,
     @Args('input') input: GoogleAuthInput,
   ): Promise<GoogleAuthResponse> {
-    // const { accessToken, refreshToken } = await this.exchangeAuthCodeForTokens(
-    //   input.authCode,
-    //   input.url,
-    //   process.env.GOOGLE_CLIENT_ID ?? '',
-    //   process.env.GOOGLE_CLIENT_SECRET ?? '',
-    // );
-
     const { accessToken, refreshToken } =
       await this.googleOAuthService.exchangeAuthCodeForTokens(
         input.authCode,
         input.url,
       );
-
     const tokenRecord = await this.prismaService.googleAccessToken.create({
       data: {
         refreshToken,
@@ -354,214 +333,4 @@ export class ResourceResolver {
       accessToken,
     };
   }
-
-  // @Mutation()
-  // async uploadToYoutube(
-  //   @CurrentUserId() userId: string,
-  //   @CurrentUser() user: User,
-  //   @Args('channelId') channelId: string,
-  //   @Args('resourceId') resourceId: string,
-  // ): Promise<boolean> {
-  //   const resource = await this.prismaService.resource.findUnique({
-  //     where: { id: resourceId },
-  //     include: { localizations: true },
-  //   });
-
-  //   const filePath = await this.cloudFlareService.downloadFile(
-  //     resource?.cloudflareId ?? '',
-  //     resource?.id ?? '',
-  //   );
-  //   console.log('filePath', filePath);
-
-  //   const channel = await this.prismaService.channel.findUnique({
-  //     where: { id: channelId },
-  //     include: { youtube: true },
-  //   });
-
-  //   const accessToken = await this.googleOAuthService.getNewAccessToken(
-  //     channel?.youtube?.refreshToken ?? '',
-  //   );
-
-  //   await this.youtubeService.uploadVideo(
-  //     accessToken,
-  //     filePath,
-  //     channel?.youtube?.youtubeId ?? '',
-  //     resource?.localizations?.[0]?.title ?? 'Nexus Video Title',
-  //     resource?.localizations?.[0]?.description ?? 'Nexus Video Description',
-  //   );
-
-  //   unlink(filePath, (err) => {
-  //     if (err !== null) {
-  //       console.error('Error deleting file:', err);
-  //       return;
-  //     }
-  //     console.log('File deleted successfully');
-  //   });
-
-  //   return true;
-  // }
-
-  // private async handleGoogleDriveOperations(
-  //   tokenId: string,
-  //   spreadsheetId: string,
-  //   drivefolderId: string,
-  // ): Promise<SpreadsheetRow[]> {
-  //   const googleAccessToken =
-  //     await this.prismaService.googleAccessToken.findUnique({
-  //       where: { id: tokenId },
-  //     });
-
-  //   if (googleAccessToken === null) {
-  //     throw new Error('Invalid tokenId');
-  //   }
-
-  //   const accessToken = await this.getNewAccessToken(
-  //     googleAccessToken.refreshToken,
-  //   );
-
-  //   // const firstSheetName = await this.getFirstSheetName(spreadsheetId, accessToken);
-
-  //   // const spreadsheetData = await this.downloadSpreadsheet(
-  //   //   spreadsheetId,
-  //   //   firstSheetName
-  //   //   accessToken,
-  //   // );
-
-  //   const firstSheetName = await this.googleSheetsService.getFirstSheetName(spreadsheetId, accessToken);
-  //   const spreadsheetData = await this.googleSheetsService.downloadSpreadsheet(spreadsheetId, firstSheetName, accessToken);
-
-  //   const spreadsheetRows: SpreadsheetRow[] = [];
-
-  //   for (const [
-  //     filename,
-  //     title,
-  //     description,
-  //     keywords,
-  //     category,
-  //     privacy,
-  //   ] of spreadsheetData) {
-  //     const fileId = await this.googleDriveService.findFile(
-  //       this.youtubeService.authorize(accessToken),
-  //       drivefolderId,
-  //       filename,
-  //     );
-  //     if (fileId !== null) {
-  //       console.log('driveFile', fileId);
-  //       const row: SpreadsheetRow = {
-  //         fileId,
-  //         filename,
-  //         title,
-  //         description,
-  //         keywords,
-  //         category,
-  //         privacy,
-  //       };
-  //       spreadsheetRows.push(row);
-  //     }
-  //   }
-
-  //   return spreadsheetRows;
-  // }
-
-  // private async getNewAccessToken(refreshToken: string): Promise<string> {
-  //   const refreshTokenUrl = 'https://oauth2.googleapis.com/token';
-
-  //   const response = await fetch(refreshTokenUrl, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded',
-  //     },
-  //     body: new URLSearchParams({
-  //       client_id: process.env.GOOGLE_CLIENT_ID ?? '',
-  //       client_secret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-  //       refresh_token: refreshToken,
-  //       grant_type: 'refresh_token',
-  //     }),
-  //   });
-
-  //   const data = await response.json();
-  //   return data.access_token;
-  // }
-
-  // private async getFirstSheetName(
-  //   spreadsheetId: string,
-  //   accessToken: string,
-  // ) {
-  //   const metadataUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}`;
-  //   const response = await fetch(metadataUrl, {
-  //     method: 'GET',
-  //     headers: {
-  //       Authorization: `Bearer ${accessToken}`,
-  //     },
-  //   });
-  //   const metadata = await response.json();
-  //   const firstSheetName = metadata.sheets[0].properties.title;
-  //   return firstSheetName;
-  // }
-
-  // private async downloadSpreadsheet(
-  //   spreadsheetId: string,
-  //   sheetName: string,
-  //   accessToken: string,
-  // ): Promise<any> {
-  //   // const sheetsApiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1`;
-  //   const sheetsApiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(sheetName)}`;
-  //   const response = await fetch(sheetsApiUrl, {
-  //     method: 'GET',
-  //     headers: {
-  //       Authorization: `Bearer ${accessToken}`,
-  //     },
-  //   });
-  //   const data = await response.json();
-  //   return data.values;
-  // }
-
-  // private async exchangeAuthCodeForTokens(
-  //   authCode: string,
-  //   redirectUri: string,
-  //   clientId: string,
-  //   clientSecret: string,
-  // ): Promise<{ accessToken: string; refreshToken: string }> {
-  //   const tokenExchangeUrl = 'https://oauth2.googleapis.com/token';
-  //   const response = await fetch(tokenExchangeUrl, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded',
-  //     },
-  //     body: new URLSearchParams({
-  //       code: authCode,
-  //       client_id: clientId,
-  //       client_secret: clientSecret,
-  //       redirect_uri: redirectUri,
-  //       grant_type: 'authorization_code',
-  //     }),
-  //   });
-
-  //   const data = await response.json();
-  //   return {
-  //     accessToken: data.access_token,
-  //     refreshToken: data.refresh_token,
-  //   };
-  // }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  // async findFile(auth, folderId, fileName) {
-  //   const drive = google.drive({ version: 'v3', auth });
-  //   const driveResponse = await drive.files.list({
-  //     q: `'${folderId}' in parents and name='${fileName}' and trashed=false`,
-  //     fields: 'files(id, name)',
-  //   });
-
-  //   return driveResponse?.data?.files?.[0]?.id ?? null;
-  // }
 }
-
-// interface SpreadsheetRow {
-//   fileId: string;
-//   filename: string;
-//   title: string;
-//   description: string;
-//   keywords: string;
-//   category: string;
-//   privacy: string;
-// }

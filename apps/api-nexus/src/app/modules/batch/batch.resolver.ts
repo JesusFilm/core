@@ -1,5 +1,4 @@
-import { Args, Query, Resolver, Subscription } from '@nestjs/graphql';
-import { PubSub } from 'graphql-subscriptions';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 
 import { Batch, Prisma } from '.prisma/api-nexus-client';
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId';
@@ -7,8 +6,9 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId';
 import { BatchFilter } from '../../__generated__/graphql';
 import { PrismaService } from '../../lib/prisma.service';
 
-const BATCH_STATUS_UPDATED = 'batchStatusUpdated';
-const pubSub = new PubSub();
+interface BatchWithAverage extends Batch {
+  averagePercent: number;
+}
 
 @Resolver('Batch')
 export class BatchResolver {
@@ -36,52 +36,68 @@ export class BatchResolver {
           },
         ],
       },
-      take: where?.limit ?? undefined,
+      include: {
+        channel: {
+          include: {
+            youtube: true,
+          },
+        },
+        resources: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: where?.limit ?? 100,
     });
 
-    return batches;
+    const batchesWithAverage = batches.map((batch) => {
+      const totalPercent = batch.resources.reduce(
+        (acc, curr) => acc + curr.percent,
+        0,
+      );
+      const averagePercent =
+        batch.resources.length > 0 ? totalPercent / batch.resources.length : 0;
+
+      return {
+        ...batch,
+        averagePercent,
+      };
+    });
+    return batchesWithAverage;
   }
 
   @Query()
   async batch(
     @CurrentUserId() userId: string,
     @Args('id') id: string,
-  ): Promise<Batch | null> {
-    const filter: Prisma.BatchWhereUniqueInput = { id };
+  ): Promise<BatchWithAverage | null> {
     const batch = await this.prismaService.batch.findUnique({
       where: {
         id,
-        AND: [filter, { nexus: { userNexuses: { every: { userId } } } }],
+        AND: [{ nexus: { userNexuses: { some: { userId } } } }],
+      },
+      include: {
+        channel: { include: { youtube: true } },
+        resources: {
+          include: {
+            resource: true,
+          },
+        },
       },
     });
-    return batch;
-  }
 
-  // @Subscription(() => Batch, {
-  //   filter: (payload, variables) => payload.batchStatusChanged.id === variables.id,
-  // })
-  // batchStatusChanged(@Args('id') id: string) {
-  //   return pubSub.asyncIterator(BATCH_STATUS_CHANGED);
-  // }
+    if (batch == null) {
+      return null;
+    }
 
-  @Subscription(() => 'Batch', {
-    filter: (payload, variables) =>
-      payload.batchStatusUpdated.id === variables.id,
-  })
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  batchStatusUpdated(@Args('id') id: string) {
-    return pubSub.asyncIterator(BATCH_STATUS_UPDATED);
+    const totalPercent = batch.resources.reduce(
+      (acc, curr) => acc + curr.percent,
+      0,
+    );
+    const averagePercent =
+      batch.resources.length > 0 ? totalPercent / batch.resources.length : 0;
+
+    return {
+      ...batch,
+      averagePercent,
+    };
   }
 }
-
-// // Example method where batch status is updated
-// async updateBatchStatus(batchId: string, newStatus: BatchStatus) {
-//   // Update the batch status in the database
-//   const updatedBatch = await this.prismaService.batch.update({
-//     where: { id: batchId },
-//     data: { status: newStatus },
-//   });
-
-//   // Publish the event
-//   pubSub.publish(BATCH_STATUS_CHANGED, { batchStatusChanged: updatedBatch });
-// }

@@ -73,7 +73,7 @@ model Resource {
     sourceType    SourceType
     localizations ResourceLocalization[]
     googleDrive   GoogleDriveResource?
-    batches       Batch[]                @relation("BatchResources")
+    batches       BatchResource[]
 }
 
 model GoogleDriveResource {
@@ -122,14 +122,15 @@ model GoogleAccessToken {
 }
 
 model Batch {
-    id        String      @id @default(uuid())
+    id        String          @id @default(uuid())
     nexusId   String
     channelId String
     name      String
-    status    BatchStatus @default(pending)
-    nexus     Nexus       @relation(fields: [nexusId], references: [id])
-    channel   Channel     @relation(fields: [channelId], references: [id])
-    resources Resource[]  @relation("BatchResources")
+    status    BatchStatus     @default(pending)
+    nexus     Nexus           @relation(fields: [nexusId], references: [id])
+    channel   Channel         @relation(fields: [channelId], references: [id])
+    resources BatchResource[]
+    createdAt DateTime        @default(now())
 }
 
 enum BatchStatus {
@@ -142,4 +143,17 @@ enum BatchStatus {
     error
     warning
     scheduled
+}
+
+model BatchResource {
+    id          String   @id @default(uuid())
+    batchId     String
+    resourceId  String
+    isCompleted Boolean  @default(false)
+    error       String?
+    percent     Float    @default(0.0)
+    batch       Batch    @relation(fields: [batchId], references: [id])
+    resource    Resource @relation(fields: [resourceId], references: [id])
+
+    @@unique([batchId, resourceId])
 }
