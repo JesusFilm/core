@@ -62,11 +62,6 @@ export function MoveBlock(): ReactElement {
         disabled={selectedBlock?.parentOrder === 0}
         onClick={handleMove('up')}
         onMouseDown={(e) => e.preventDefault()}
-        sx={{
-          borderRadius: '100%',
-          border: '1px solid #E6E6E6',
-          p: 3
-        }}
       >
         <ChevronUpIcon />
       </IconButton>
@@ -75,11 +70,6 @@ export function MoveBlock(): ReactElement {
         disabled={selectedBlock?.parentOrder === lastBlockIndex}
         onClick={handleMove('down')}
         onMouseDown={(e) => e.preventDefault()}
-        sx={{
-          borderRadius: '100%',
-          border: '1px solid #E6E6E6',
-          p: 3
-        }}
       >
         <ChevronDownIcon />
       </IconButton>

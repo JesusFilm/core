@@ -1,8 +1,6 @@
 import Box from '@mui/material/Box'
-import { Theme, useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
@@ -17,9 +15,9 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
+import { Drawer } from '../Drawer'
 
 import { VideoFromLocal } from './VideoFromLocal'
-import { Drawer } from '../Drawer'
 
 const VideoDetails = dynamic(
   async () =>
@@ -57,11 +55,9 @@ export function VideoLibrary({
   selectedBlock,
   onSelect: handleSelect
 }: VideoLibraryProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const router = useRouter()
-  const { zIndex } = useTheme()
 
   useEffect(() => {
     // opens video details if videoId is not null
