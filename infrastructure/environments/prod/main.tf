@@ -167,6 +167,9 @@ module "redis" {
   cluster_id        = "redis-prod"
   subnet_ids        = module.prod.vpc.internal_subnets
   security_group_id = module.prod.ecs.internal_ecs_security_group_id
+  cidr              = module.prod.cidr
+  vpc_id            = module.prod.vpc.id
+
 }
 
 module "journeys-admin" {

@@ -18,3 +18,13 @@ variable "security_group_id" {
   description = "The security group ID to use for the ElastiCache cluster"
   type        = string
 }
+
+variable "cidr" {
+  description = "CIDR block"
+  type        = string
+}
+
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+}
