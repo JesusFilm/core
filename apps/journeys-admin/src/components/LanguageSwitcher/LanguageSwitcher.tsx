@@ -70,9 +70,7 @@ export function LanguageSwitcher({
       const locale = getLocaleLanguage('id', language?.id ?? '')?.locale
 
       document.cookie = `NEXT_LOCALE=${locale}; path=/`
-
-      const path = router.asPath
-      void router.push(path, path, { locale })
+      void router.reload()
     },
     [router, data, currentLanguage]
   )

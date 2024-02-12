@@ -20,33 +20,34 @@ const supportedLocales = [
   'ur', // Urdu (Pakistan)
   'vi', // Vietnamese
   'zh-CN', // Chinese, Simplified
-  'zh-TW', // Chinese, Traditional
-  'zh-HK' // Chinese, Traditional (Hongkong)
+  'zh-TW' // Chinese, Traditional
 ]
 
-const getBrowserLanguage = (req): string | undefined => {
+function getBrowserLanguage(req): string | undefined {
   const acceptedLanguages = req.headers
     .get('accept-language')
     ?.split(',')
     .map((item) => {
       const [code, priority] = item.trim().split(';')
-      const trimmedCode = code.includes('zh') === true ? code : code.slice(0, 2)
       const langPriority =
         priority != null ? parseFloat(priority.split('=')[1]) : 1
-      return { trimmedCode, priority: isNaN(langPriority) ? 1 : langPriority }
+      return { code, priority: isNaN(langPriority) ? 1 : langPriority }
     })
 
   const sortedLanguages = acceptedLanguages?.sort(
     (a, b) => b.priority - a.priority
   )
 
-  if (sortedLanguages != null && sortedLanguages.length > 0) {
-    const browserCode = sortedLanguages[0].trimmedCode
-    if (supportedLocales.includes(browserCode)) {
-      return browserCode
-    }
-  }
-  return 'en'
+  const preferredLanguage = sortedLanguages.find(
+    (language) =>
+      supportedLocales.includes(language.code) ||
+      supportedLocales.includes(language.code.split('-')[0])
+  )
+
+  if (preferredLanguage?.code.includes('zh') === true)
+    return preferredLanguage.code
+
+  return preferredLanguage != null ? preferredLanguage.code.split('-')[0] : 'en'
 }
 
 export function middleware(req: NextRequest): NextResponse | undefined {
@@ -54,9 +55,8 @@ export function middleware(req: NextRequest): NextResponse | undefined {
     req.nextUrl.pathname.startsWith('/_next') ||
     req.nextUrl.pathname.includes('/api/') ||
     PUBLIC_FILE_REGEX.test(req.nextUrl.pathname)
-  ) {
+  )
     return
-  }
 
   const nextLocale = req.nextUrl.locale
   const browserLanguage = getBrowserLanguage(req)
@@ -70,9 +70,21 @@ export function middleware(req: NextRequest): NextResponse | undefined {
     return NextResponse.redirect(redirectUrl)
   }
 
+  const trimmedLocale = nextLocaleCookie?.split('-')[0]
+
+  const matched =
+    nextLocaleCookie?.includes('zh') === true
+      ? nextLocaleCookie === nextLocale
+      : trimmedLocale === nextLocale
+
   // Redirect if the NEXT_LOCALE cookie is set and does not match the current locale
-  if (nextLocaleCookie != null && nextLocaleCookie !== nextLocale) {
-    return handleRedirect(nextLocaleCookie)
+  if (nextLocaleCookie != null && !matched) {
+    if (supportedLocales.includes(nextLocaleCookie)) {
+      return handleRedirect(nextLocaleCookie)
+    }
+    if (trimmedLocale != null && supportedLocales.includes(trimmedLocale)) {
+      return handleRedirect(trimmedLocale)
+    }
   }
 
   // Redirect if NEXT_LOCALE cookie is not set and browser language is different from current locale
