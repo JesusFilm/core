@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client'
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
@@ -11,10 +10,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
-import {
-  StepAndCardBlockCreate,
-  StepAndCardBlockCreateVariables
-} from '../../../../__generated__/StepAndCardBlockCreate'
 import { useStepAndCardBlockCreateMutation } from '../../../libs/useStepAndCardBlockCreateMutation'
 
 export const ACTION_NODE_WIDTH = 125

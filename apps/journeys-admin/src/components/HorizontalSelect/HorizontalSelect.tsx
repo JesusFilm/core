@@ -41,7 +41,7 @@ export function HorizontalSelect({
         inline: 'center'
       })
     }
-  }, [id])
+  }, [id, scrollIntoView])
 
   return (
     <Stack

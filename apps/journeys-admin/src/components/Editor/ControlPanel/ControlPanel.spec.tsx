@@ -31,9 +31,9 @@ import { RADIO_QUESTION_BLOCK_CREATE } from '../Canvas/AddBlockButton/NewRadioQu
 import { SIGN_UP_BLOCK_CREATE } from '../Canvas/AddBlockButton/NewSignUpButton/NewSignUpButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from '../Canvas/AddBlockButton/NewTypographyButton/NewTypographyButton'
 import { VIDEO_BLOCK_CREATE } from '../Canvas/AddBlockButton/NewVideoButton/NewVideoButton'
+import { STEP_AND_CARD_BLOCK_CREATE } from '../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 import { ControlPanel } from '.'
-import { STEP_AND_CARD_BLOCK_CREATE } from '../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 jest.mock('uuid', () => ({
   __esModule: true,
