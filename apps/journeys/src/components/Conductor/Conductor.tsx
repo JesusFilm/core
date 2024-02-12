@@ -160,11 +160,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
         <Stack sx={{ height: '100%' }}>
-          <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
-            <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+          <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+            <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
               <JourneyRenderer />
-            </ThemeProvider>
-          </SwipeNavigation>
+            </SwipeNavigation>
+          </ThemeProvider>
 
           <NavigationButton
             variant={rtl ? 'next' : 'previous'}

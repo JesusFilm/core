@@ -45,24 +45,6 @@ export function SwipeNavigation({
     previousActiveBlock
   } = useBlocks()
   const { t } = useTranslation('apps-journeys')
-  const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => {
-      if (rtl) {
-        handleNav('previous')
-      } else {
-        handleNav('next')
-      }
-    },
-    onSwipedRight: () => {
-      if (rtl) {
-        handleNav('next')
-      } else {
-        handleNav('previous')
-      }
-    },
-    preventScrollOnSwipe: true
-  })
-
   const onFirstStep = activeBlock === treeBlocks[0]
   const onLastStep = activeBlock === last(treeBlocks)
 
@@ -180,6 +162,28 @@ export function SwipeNavigation({
       getNextBlock
     ]
   )
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: (eventData) => {
+      const targetElement = eventData.event.target as HTMLElement
+      if (targetElement.classList.contains('MuiSlider-thumb')) return
+      if (rtl) {
+        handleNav('previous')
+      } else {
+        handleNav('next')
+      }
+    },
+    onSwipedRight: (eventData) => {
+      const targetElement = eventData.event.target as HTMLElement
+      if (targetElement.classList.contains('MuiSlider-thumb')) return
+      if (rtl) {
+        handleNav('next')
+      } else {
+        handleNav('previous')
+      }
+    },
+    preventScrollOnSwipe: true
+  })
 
   return (
     <Box {...swipeHandlers} sx={{ height: 'inherit', width: 'inherit' }}>
