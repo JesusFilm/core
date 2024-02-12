@@ -36,6 +36,8 @@ export function PaginationBullets(): ReactElement {
     return false
   }
 
+  console.log('treeBlocks', treeBlocks)
+  console.log('blockHist', blockHistory)
   return (
     <Box
       sx={{
