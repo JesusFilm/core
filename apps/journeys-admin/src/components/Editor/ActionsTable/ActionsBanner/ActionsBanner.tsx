@@ -78,7 +78,7 @@ export function ActionsBanner(): ReactElement {
           height: 'auto'
         }}
       />
-      <Stack gap={3}>
+      <Stack gap={3} justifyContent="center">
         <Stack
           direction="row"
           alignItems="center"

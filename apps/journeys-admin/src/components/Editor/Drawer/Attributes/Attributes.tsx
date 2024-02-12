@@ -218,9 +218,6 @@ export function Attributes(): ReactElement {
     case ActiveJourneyEditContent.Action:
       blockTitle = t('Information')
       break
-    case ActiveJourneyEditContent.JourneyFlow:
-      blockTitle = t('Properties')
-      break
   }
 
   return (
@@ -228,7 +225,7 @@ export function Attributes(): ReactElement {
       {selected !== 'none' &&
       selectedStep !== undefined &&
       selectedStep.children[0]?.children.length > 0 ? (
-        <Stack sx={{ overflow: 'auto' }}>
+        <Stack>
           <AttributesContent selected={selected} step={selectedStep} />
         </Stack>
       ) : (

@@ -118,7 +118,9 @@ export function Drawer({
       }}
     >
       <DrawerTitle title={title} onClose={onClose} />
-      {children}
+      <Box className="swiper-no-swiping" sx={{ flexGrow: 1, overflow: 'auto' }}>
+        {children}
+      </Box>
     </MuiDrawer>
   )
 }
