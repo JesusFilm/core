@@ -5,6 +5,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
+import { Drawer } from "../../../.."
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
@@ -14,7 +15,6 @@ import {
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
-import { Drawer } from '../../../../../Drawer'
 
 import { BackgroundColor } from '.'
 

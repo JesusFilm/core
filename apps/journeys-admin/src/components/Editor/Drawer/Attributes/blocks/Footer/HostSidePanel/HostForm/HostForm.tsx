@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -10,14 +10,12 @@ import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
 import { DeleteHost } from '../../../../../../../../../__generated__/DeleteHost'
 import { UpdateJourneyHost } from '../../../../../../../../../__generated__/UpdateJourneyHost'
-import { SidePanel } from '../../../../../../../PageWrapper/SidePanel'
-import { SidePanelContainer } from '../../../../../../../PageWrapper/SidePanelContainer'
+import { Drawer } from '../../../../../Drawer'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
 import { HostLocationFieldForm } from './HostLocationFieldForm'
 import { HostTitleFieldForm } from './HostTitleFieldForm'
 import { UPDATE_JOURNEY_HOST } from './HostTitleFieldForm/HostTitleFieldForm'
-import { Drawer } from '../../../../../Drawer'
 
 export const DELETE_HOST = gql`
   mutation DeleteHost($id: ID!, $teamId: ID!) {

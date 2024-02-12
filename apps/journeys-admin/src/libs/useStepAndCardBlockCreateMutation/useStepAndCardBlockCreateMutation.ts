@@ -4,13 +4,16 @@ import {
   gql,
   useMutation
 } from '@apollo/client'
-import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
+
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
+
 import {
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
 } from '../../../__generated__/StepAndCardBlockCreate'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
   ${STEP_FIELDS}

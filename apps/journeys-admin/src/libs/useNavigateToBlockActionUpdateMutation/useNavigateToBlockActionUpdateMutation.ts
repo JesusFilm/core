@@ -3,17 +3,18 @@ import {
   MutationFunctionOptions,
   MutationHookOptions,
   MutationResult,
-  MutationTuple,
   gql,
   useMutation
 } from '@apollo/client'
+
+import { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { BlockFields } from '../../../__generated__/BlockFields'
 import {
   NavigateToBlockActionUpdate,
   NavigateToBlockActionUpdateVariables
 } from '../../../__generated__/NavigateToBlockActionUpdate'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { BlockFields } from '../../../__generated__/BlockFields'
 
 export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
   mutation NavigateToBlockActionUpdate(

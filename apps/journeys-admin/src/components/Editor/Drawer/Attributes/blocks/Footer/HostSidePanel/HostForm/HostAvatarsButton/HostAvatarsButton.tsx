@@ -2,7 +2,7 @@ import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -49,7 +49,7 @@ export function HostAvatarsButton(): ReactElement {
 
   async function handleDelete(): Promise<void> {
     if (journey?.host != null) {
-      const { id, teamId, src2 } = journey?.host
+      const { id, teamId, src2 } = journey.host
       const input =
         avatarNumber === 1 ? { src1: src2, src2: null } : { src2: null }
 

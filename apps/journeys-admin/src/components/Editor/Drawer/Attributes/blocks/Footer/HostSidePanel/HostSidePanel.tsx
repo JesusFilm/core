@@ -17,12 +17,10 @@ import { Hosts_hosts as Host } from '../../../../../../../../__generated__/Hosts
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { ContainedIconButton } from '../../../../../../ContainedIconButton'
-import { SidePanel } from '../../../../../../PageWrapper/SidePanel'
-import { SidePanelContainer } from '../../../../../../PageWrapper/SidePanelContainer'
+import { Drawer } from '../../../../Drawer'
 
 import { HostForm } from './HostForm'
 import { HostList } from './HostList'
-import { Drawer } from '../../../../Drawer'
 
 export const GET_ALL_TEAM_HOSTS = gql`
   query Hosts($teamId: ID!) {

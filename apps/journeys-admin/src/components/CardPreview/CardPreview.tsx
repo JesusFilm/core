@@ -14,10 +14,10 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
+import { useStepAndCardBlockCreateMutation } from '../../libs/useStepAndCardBlockCreateMutation'
 
 import { CardList } from './CardList'
 import { OnSelectProps } from './OnSelectProps'
-import { useStepAndCardBlockCreateMutation } from '../../libs/useStepAndCardBlockCreateMutation'
 
 const DragDropContext = dynamic(
   async () =>

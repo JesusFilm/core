@@ -1,17 +1,17 @@
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import MuiTypography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+
+import { Drawer } from '..'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { CardTemplateDrawer } from '../../CardTemplateDrawer'
 import { useTranslation } from 'react-i18next'
-import { Drawer } from '../../Drawer'
 import { SocialShareAppearance } from '../SocialShareAppearance'
 
 const Footer = dynamic(
@@ -101,6 +101,11 @@ const Form = dynamic(
   { ssr: false }
 )
 
+interface AttributesProps {
+  selected: string | TreeBlock
+  step: TreeBlock<StepBlock>
+}
+
 function AttributesContent({ selected, step }: AttributesProps): ReactElement {
   if (typeof selected === 'string') {
     switch (selected) {
@@ -155,13 +160,11 @@ export function Attributes(): ReactElement {
   const {
     state: {
       drawerTitle: title,
-      drawerChildren: children,
       selectedComponent,
       selectedBlock,
       selectedStep,
       journeyEditContentComponent
-    },
-    dispatch
+    }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const selected = selectedComponent ?? selectedBlock ?? 'none'
@@ -229,7 +232,7 @@ export function Attributes(): ReactElement {
       ) : selected !== 'none' &&
         selectedStep !== undefined &&
         selectedStep.children[0]?.children.length > 0 ? (
-        <Stack sx={{ overflow: 'auto' }}>
+        <Stack>
           <AttributesContent selected={selected} step={selectedStep} />
         </Stack>
       ) : (

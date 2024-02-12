@@ -1,20 +1,13 @@
-import AppBar from '@mui/material/AppBar'
-import MuiDrawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
-import { Theme, useTheme } from '@mui/material/styles'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
+import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog as SharedUiDialog } from '@core/shared/ui/Dialog'
-import X2Icon from '@core/shared/ui/icons/X2'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
-import { ImageBlockEditor } from '../ImageBlockEditor'
 import { Drawer } from '../Drawer'
+import { ImageBlockEditor } from '../ImageBlockEditor'
 
 interface DialogProps {
   children: ReactNode
