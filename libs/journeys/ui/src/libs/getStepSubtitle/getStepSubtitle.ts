@@ -57,10 +57,6 @@ export function getStepSubtitle(
         )
       : null
 
-  const typs = descendants.filter((a) => a.__typename === 'TypographyBlock')
-  console.log('Most important: ', mostImportant?.content)
-  console.log('descendannts: ', typs)
-
   const secondMostImportant =
     mostImportant !== null && descendants.length > 1
       ? descendants
