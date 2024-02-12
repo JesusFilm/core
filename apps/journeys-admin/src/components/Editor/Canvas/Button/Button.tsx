@@ -1,10 +1,10 @@
+import Plus2 from '@core/shared/ui/icons/Plus2'
 import { Stack } from '@mui/material'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
-import { styled } from '@mui/material/styles'
-import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,15 +16,6 @@ interface ButtonProps {
   testId?: string
   disabled?: boolean
 }
-
-const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.common.white,
-    border: '1px solid rgba(0, 0, 0, 0.1)'
-  }
-}))
 
 export function Button({
   icon,
@@ -44,30 +35,67 @@ export function Button({
       onMouseDown={(e) => e.preventDefault()}
       data-testid={`JourneysAdminButton${testId ?? ''}`}
     >
-      <Card
-        variant="outlined"
-        sx={{
-          height: 80,
-          borderRadius: 2
+      <Tooltip
+        title={
+          <Typography variant="caption" lineHeight="12px">
+            {t('Click to add')}
+          </Typography>
+        }
+        placement="top"
+        arrow
+        slotProps={{
+          popper: {
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, -28]
+                }
+              }
+            ]
+          }
         }}
       >
-        <CardActionArea onClick={handleClick} disabled={disabled}>
-          <CardContent
-            sx={{
-              height: 80,
-              pl: 6,
-              color: disabled ? 'secondary.light' : 'auto',
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <Stack direction="row" gap={4}>
-              {icon}
-              <Typography>{t(value)}</Typography>
-            </Stack>
-          </CardContent>
-        </CardActionArea>
-      </Card>
+        <Card
+          variant="outlined"
+          sx={{
+            height: 80,
+            borderRadius: 2,
+            '&:hover': {
+              borderColor: { xs: 'editor.divider', sm: 'primary.main' },
+              borderWidth: { xs: '1px', sm: '2px' },
+              '.plus2-icon': {
+                color: { xs: 'editor.divider', sm: 'primary.main' }
+              }
+            }
+          }}
+        >
+          <CardActionArea onClick={handleClick} disabled={disabled}>
+            <CardContent
+              sx={{
+                height: 80,
+                pl: 6,
+                color: disabled ? 'secondary.light' : 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Stack direction="row" gap={4}>
+                {icon}
+                <Typography>{t(value)}</Typography>
+              </Stack>
+              <Plus2
+                color="secondary"
+                className="plus2-icon"
+                sx={{
+                  mr: 3.5
+                }}
+              />
+            </CardContent>
+          </CardActionArea>
+        </Card>
+      </Tooltip>
     </Box>
   )
 }

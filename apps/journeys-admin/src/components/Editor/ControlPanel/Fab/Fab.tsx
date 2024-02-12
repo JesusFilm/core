@@ -29,7 +29,9 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
   const [open, setOpen] = useState(false)
 
   function toggleOpen(): void {
-    setOpen(!open)
+    if (smUp) {
+      setOpen(!open)
+    }
   }
   function handleEditFab(): void {
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
@@ -41,7 +43,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
   const fabStyles = {
     position: 'absolute',
     bottom: { xs: 16, sm: 48 },
-    right: { xs: 16, sm: activeSlide === ActiveSlide.Canvas ? 424 : 24 }
+    right: { xs: 16, sm: activeSlide === ActiveSlide.Content ? 424 : 24 }
   }
 
   return (
