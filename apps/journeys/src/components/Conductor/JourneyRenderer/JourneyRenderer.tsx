@@ -18,10 +18,10 @@ export function JourneyRenderer(): ReactElement {
     setShowHeaderFooter
   } = useBlocks()
 
-  const getCurrentActiveBlock = (): TreeBlock<StepFields> =>
-    blockHistory[blockHistory.length - 1] as TreeBlock<StepFields>
-  const getPreviousBlock = (): TreeBlock<StepFields> =>
-    blockHistory[blockHistory.length - 2] as TreeBlock<StepFields>
+  const getCurrentActiveBlock = (): TreeBlock<StepFields> | undefined =>
+    blockHistory[blockHistory.length - 1] as TreeBlock<StepFields> | undefined
+  const getPreviousBlock = (): TreeBlock<StepFields> | undefined =>
+    blockHistory[blockHistory.length - 2] as TreeBlock<StepFields> | undefined
 
   const currentBlock = getCurrentActiveBlock()
   const previousBlock = getPreviousBlock()
@@ -35,7 +35,7 @@ export function JourneyRenderer(): ReactElement {
     <>
       {treeBlocks.map((block) => {
         let height, width, position
-        const isCurrent = block.id === currentBlock.id
+        const isCurrent = block.id === currentBlock?.id
         const isPreRender =
           block.id === nextBlock?.id || block.id === previousBlock?.id
 
