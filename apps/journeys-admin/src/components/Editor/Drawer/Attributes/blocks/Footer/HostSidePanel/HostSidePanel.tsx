@@ -12,7 +12,6 @@ import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
-import UserProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { Hosts_hosts as Host } from '../../../../../../../../__generated__/Hosts'
@@ -134,7 +133,9 @@ export function HostSidePanel(): ReactElement {
               <ContainedIconButton
                 label={t('Select a Host')}
                 disabled={!userInTeam}
-                thumbnailIcon={<UserProfiles2Icon />}
+                slots={{
+                  ImageThumbnail: <HostAvatars size="large" hasPlaceholder />
+                }}
                 onClick={() => setOpenSelect(true)}
               />
             </Stack>
@@ -156,31 +157,31 @@ export function HostSidePanel(): ReactElement {
         open={openSelect}
         onClose={() => setOpenSelect(false)}
       >
-        <Stack sx={{ p: 4 }}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Stack direction="row" alignItems="center">
-              <Typography variant="subtitle2">{t('Hosts')}</Typography>
-              <IconButton data-testid="info" onClick={() => setOpenInfo(true)}>
-                <InformationCircleContainedIcon />
-              </IconButton>
-            </Stack>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={handleOpenCreateHost}
-            >
-              {t('Create New')}
-            </Button>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ p: 4, pb: 0 }}
+        >
+          <Stack direction="row" alignItems="center">
+            <Typography variant="subtitle2">{t('Hosts')}</Typography>
+            <IconButton data-testid="info" onClick={() => setOpenInfo(true)}>
+              <InformationCircleContainedIcon />
+            </IconButton>
           </Stack>
-          <HostList
-            hosts={teamHosts?.hosts ?? []}
-            onItemClick={handleSelectHost}
-          />
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={handleOpenCreateHost}
+          >
+            {t('Create New')}
+          </Button>
         </Stack>
+
+        <HostList
+          hosts={teamHosts?.hosts ?? []}
+          onItemClick={handleSelectHost}
+        />
       </Drawer>
       <Drawer
         title={t('Information')}

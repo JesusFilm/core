@@ -25,7 +25,7 @@ export function HostListItem({
 
   return (
     <ListItemButton
-      sx={{ px: 6, py: 5 }}
+      sx={{ p: 4 }}
       divider
       selected={journey?.host?.id === hostId}
       onClick={() => onClick(hostId)}
