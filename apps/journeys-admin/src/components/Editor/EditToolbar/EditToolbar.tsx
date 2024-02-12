@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
+import Bulb from '@core/shared/ui/icons/Bulb'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import Play3 from '@core/shared/ui/icons/Play3'
 import Share from '@core/shared/ui/icons/Share'
@@ -114,7 +115,7 @@ export function EditToolbar(): ReactElement {
           <Button
             variant="outlined"
             color="secondary"
-            startIcon={<LightbulbOutlinedIcon />}
+            startIcon={<Bulb />}
             sx={{
               display: {
                 xs: 'none',
