@@ -17,7 +17,7 @@ export class UserInviteService {
   async sendEmail(
     journey: Journey,
     email: string,
-    sender: Omit<User, 'id' | 'email'>
+    sender: Omit<User, 'id' | 'email' | 'emailVerified'>
   ): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
 

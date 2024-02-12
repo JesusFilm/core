@@ -47,7 +47,9 @@ export class User {
     imageUrl?: Nullable<string>;
     superAdmin?: Nullable<boolean>;
     emailPreferences?: Nullable<EmailPreferences>;
+    emailVerified: boolean;
 }
+
 
 export class Translation {
     __typename?: 'Translation';
@@ -64,6 +66,10 @@ export abstract class IMutation {
     abstract findOrCreateEmailPreference(email: string): Nullable<EmailPreferences> | Promise<Nullable<EmailPreferences>>;
 
     abstract userImpersonate(email: string): Nullable<string> | Promise<Nullable<string>>;
+
+    abstract createVerificationRequest(): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract validateEmail(email: string, token: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export class Language {

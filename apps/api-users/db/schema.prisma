@@ -20,6 +20,7 @@ model User {
   imageUrl           String?
   createdAt          DateTime          @default(now())
   superAdmin         Boolean           @default(false)
+  emailVerified      Boolean           @default(true)
   EmailPreferences   EmailPreferences? @relation(fields: [emailPreferencesId], references: [id])
   emailPreferencesId String?
 }

@@ -6,6 +6,7 @@ type User @key(fields: "id") {
   imageUrl: String
   superAdmin: Boolean
   emailPreferences: EmailPreferences
+  emailVerified: Boolean!
 }
 
 extend type Query {
@@ -16,4 +17,6 @@ extend type Query {
 
 extend type Mutation {
   userImpersonate(email: String!): String
+  createVerificationRequest: Boolean
+  validateEmail(email: String!, token: String!): User
 }

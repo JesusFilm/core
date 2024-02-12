@@ -2,12 +2,11 @@
 
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
-import { MailerService } from '@nestjs-modules/mailer'
 import { render } from '@react-email/render'
-import AWS, { SES } from 'aws-sdk'
 import { Job } from 'bullmq'
 
 import { Prisma } from '.prisma/api-journeys-client'
+import { EmailService } from '@core/nest/common/email/emailService'
 import { User } from '@core/nest/common/firebaseClient'
 
 import {
@@ -23,8 +22,6 @@ import { TeamInviteNoAccountEmail } from '../../emails/templates/TeamInvite/Team
 import { TeamInviteAcceptedEmail } from '../../emails/templates/TeamInviteAccepted'
 import { TeamRemovedEmail } from '../../emails/templates/TeamRemoved'
 
-AWS.config.update({ region: 'us-east-2' })
-
 const apollo = new ApolloClient({
   uri: process.env.GATEWAY_URL,
   cache: new InMemoryCache(),
@@ -33,6 +30,7 @@ const apollo = new ApolloClient({
   }
 })
 
+<<<<<<< HEAD
 export interface SendEmailParams {
   to: string
   subject: string
@@ -41,30 +39,33 @@ export interface SendEmailParams {
   type?: string
 }
 
+=======
+type OmittedUser = Omit<User, 'id' | 'email' | 'emailVerified'>
+>>>>>>> origin/feature/24-01-MA-transactional-emails
 export interface JourneyEditInviteJob {
   email: string
   journeyTitle: string
   url: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
 }
 
 export interface JourneyRequestApproved {
   userId: string
   journeyTitle: string
   url: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
 }
 
 export interface JourneyAccessRequest {
   journey: JourneyWithUserJourney
   url: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
 }
 
 export interface TeamInviteJob {
   teamName: string
   email: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
 }
 
 export type TeamWithUserTeam = Prisma.TeamGetPayload<{
@@ -74,14 +75,14 @@ export type TeamWithUserTeam = Prisma.TeamGetPayload<{
 }>
 export interface TeamInviteAccepted {
   team: TeamWithUserTeam
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
   url: string
 }
 
 export interface TeamRemoved {
   teamName: string
   userId: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: OmittedUser
 }
 
 export type ApiJourneysJob =
@@ -94,7 +95,7 @@ export type ApiJourneysJob =
 
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
-  constructor(private readonly mailerService: MailerService) {
+  constructor(private readonly emailService: EmailService) {
     super()
   }
 
@@ -154,7 +155,7 @@ export class EmailConsumer extends WorkerHost {
       }
     )
 
-    await this.sendEmail({
+    await this.emailService.sendEmail({
       to: data.user.email,
       subject: `You have been removed from team: ${job.data.teamName}`,
       text,
@@ -197,7 +198,7 @@ export class EmailConsumer extends WorkerHost {
           plainText: true
         }
       )
-      await this.sendEmail({
+      await this.emailService.sendEmail({
         to: job.data.email,
         subject: `Invitation to join team: ${job.data.teamName}`,
         text,
@@ -230,7 +231,7 @@ export class EmailConsumer extends WorkerHost {
         }
       )
 
-      await this.sendEmail({
+      await this.emailService.sendEmail({
         to: job.data.email,
         subject: `Invitation to join team: ${job.data.teamName}`,
         text,
@@ -289,7 +290,7 @@ export class EmailConsumer extends WorkerHost {
         }
       )
 
-      await this.sendEmail({
+      await this.emailService.sendEmail({
         to: recipient.user.email,
         subject: `${
           job.data.sender.firstName ?? 'A new member'
@@ -343,7 +344,7 @@ export class EmailConsumer extends WorkerHost {
       }
     )
 
-    await this.sendEmail({
+    await this.emailService.sendEmail({
       to: data.user.email,
       subject: `${job.data.sender.firstName} requests access to a journey`,
       html,
@@ -393,7 +394,7 @@ export class EmailConsumer extends WorkerHost {
         plainText: true
       }
     )
-    await this.sendEmail({
+    await this.emailService.sendEmail({
       to: data.user.email,
       subject: `${job.data.journeyTitle} has been shared with you`,
       html,
@@ -437,7 +438,7 @@ export class EmailConsumer extends WorkerHost {
           plainText: true
         }
       )
-      await this.sendEmail({
+      await this.emailService.sendEmail({
         to: job.data.email,
         subject: `${job.data.journeyTitle} has been shared with you`,
         html,
@@ -464,77 +465,12 @@ export class EmailConsumer extends WorkerHost {
           plainText: true
         }
       )
-      await this.sendEmail({
+      await this.emailService.sendEmail({
         to: job.data.email,
         subject: `${job.data.journeyTitle} has been shared with you`,
         html,
         text
       })
-    }
-  }
-
-  async sendEmail({
-    to,
-    subject,
-    text,
-    html,
-    type
-  }: SendEmailParams): Promise<void> {
-    const { data } = await apollo.mutate({
-      mutation: gql`
-        mutation FindOrCreateEmailPreference($email: String!) {
-          findOrCreateEmailPreference(email: $email) {
-            id
-            userEmail
-            teamInvites
-            journeyNotifications
-            thirdCategory
-          }
-        }
-      `,
-      variables: { email: to }
-    })
-
-    if (type !== undefined && data.emailPreference[type] === false) {
-      console.log('Email Preference in type if:', data.emailPreference)
-      return
-    }
-
-    const SMTP_URL = process.env.SMTP_URL ?? null
-    if (SMTP_URL != null) {
-      try {
-        await this.mailerService.sendMail({
-          to,
-          subject,
-          text,
-          html
-        })
-      } catch (e) {
-        console.log(e)
-      }
-    } else {
-      await new SES({ region: 'us-east-2' })
-        .sendEmail({
-          Source: 'support@nextstep.is',
-          Destination: { ToAddresses: [to] },
-          Message: {
-            Subject: {
-              Charset: 'UTF-8',
-              Data: subject
-            },
-            Body: {
-              Html: {
-                Charset: 'UTF-8',
-                Data: html
-              },
-              Text: {
-                Charset: 'UTF-8',
-                Data: text
-              }
-            }
-          }
-        })
-        .promise()
     }
   }
 }

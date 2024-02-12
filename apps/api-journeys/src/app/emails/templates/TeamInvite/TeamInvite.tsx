@@ -2,21 +2,22 @@ import { Body, Container, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
+import {
+  ActionCard,
+  BodyText,
+  BodyTitle,
+  BodyWrapper,
+  Footer,
+  Header,
+  UnsubscribeLink
+} from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
-
-import { ActionCard } from '../components/ActionCard'
-import { BodyText } from '../components/BodyText'
-import { BodyTitle } from '../components/BodyTitle'
-import { BodyWrapper } from '../components/BodyWrapper'
-import { Footer } from '../components/Footer'
-import { Header } from '../components/Header'
-import { UnsubscribeLink } from '../components/UnsubscribeLink'
 
 interface TeamInviteEmailProps {
   email: string
   teamName: string
   inviteLink: string
-  sender: Omit<User, 'id' | 'email'>
+  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
   story?: boolean
 }
 
@@ -54,9 +55,10 @@ export const TeamInviteEmail = ({
             headerText={`Login to NextSteps to join ${sender.firstName}`}
             buttonText={`Join ${sender.firstName}`}
           />
-          <BodyText
-            bodyText={`If you do not want to be on this team, ask ${sender.firstName} to remove you.`}
-          />
+          <BodyText>
+            If you do not want to be on this team, ask ${sender.firstName} to
+            remove you.
+          </BodyText>
           <UnsubscribeLink />
         </BodyWrapper>
         <Footer />

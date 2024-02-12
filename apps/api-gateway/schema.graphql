@@ -1311,6 +1311,8 @@ type Mutation
   createEmailPreferencesForAllUsers: Boolean @join__field(graph: USERS)
   findOrCreateEmailPreference(email: String!): EmailPreferences @join__field(graph: USERS)
   userImpersonate(email: String!): String @join__field(graph: USERS)
+  createVerificationRequest: Boolean @join__field(graph: USERS)
+  validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
 }
 
 """
@@ -2175,6 +2177,7 @@ type User
   imageUrl: String @join__field(graph: USERS)
   superAdmin: Boolean @join__field(graph: USERS)
   emailPreferences: EmailPreferences @join__field(graph: USERS)
+  emailVerified: Boolean! @join__field(graph: USERS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""

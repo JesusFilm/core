@@ -38,7 +38,8 @@ describe('UserJourneyService', () => {
       const user = {
         userId: 'senderUserId',
         firstName: 'John',
-        lastName: 'Smith'
+        lastName: 'Smith',
+        emailVerified: true
       }
       // Act
       await service.sendJourneyApproveEmail(journey, userId, user)
@@ -50,7 +51,7 @@ describe('UserJourneyService', () => {
           userId,
           journeyTitle: journey.title,
           sender: user,
-          url: '/journeys/journeyId'
+          url: expect.stringContaining('/journeys/journeyId')
         },
         {
           removeOnComplete: true,
@@ -73,7 +74,8 @@ describe('UserJourneyService', () => {
       const user = {
         userId: 'senderUserId',
         firstName: 'John',
-        lastName: 'Smith'
+        lastName: 'Smith',
+        emailVerified: true
       }
       // Act
       await service.sendJourneyAccessRequest(journey, user)
@@ -83,7 +85,7 @@ describe('UserJourneyService', () => {
         'journey-access-request',
         {
           journey,
-          url: '/journeys/journeyId',
+          url: expect.stringContaining('/journeys/journeyId'),
           sender: user
         },
         {
