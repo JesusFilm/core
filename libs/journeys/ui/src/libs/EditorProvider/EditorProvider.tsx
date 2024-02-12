@@ -31,13 +31,12 @@ export enum ActiveFab {
 export enum ActiveJourneyEditContent {
   Canvas = 'canvas',
   SocialPreview = 'social',
-  Action = 'action',
-  JourneyFlow = 'journeyFlow'
+  Action = 'action'
 }
 
 export enum ActiveSlide {
   JourneyFlow = 0,
-  Canvas = 1,
+  Content = 1,
   Drawer = 2
 }
 
@@ -157,7 +156,7 @@ export const reducer = (
         selectedComponent: action.component,
         selectedBlock: undefined,
         journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
-        activeSlide: ActiveSlide.Canvas
+        activeSlide: ActiveSlide.Content
       }
     case 'SetSelectedBlockAction':
       return {
@@ -165,7 +164,7 @@ export const reducer = (
         selectedBlock: action.block,
         selectedComponent: undefined,
         journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
-        activeSlide: ActiveSlide.Canvas
+        activeSlide: ActiveSlide.Content
       }
     case 'SetSelectedBlockByIdAction':
       return {
@@ -199,6 +198,10 @@ export const reducer = (
     case 'SetActiveSlideAction':
       return {
         ...state,
+        journeyEditContentComponent:
+          action.activeSlide === ActiveSlide.JourneyFlow
+            ? ActiveJourneyEditContent.Canvas
+            : state.journeyEditContentComponent,
         activeSlide: action.activeSlide
       }
     case 'SetActiveTabAction':
