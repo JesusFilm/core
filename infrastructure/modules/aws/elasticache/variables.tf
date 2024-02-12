@@ -13,3 +13,8 @@ variable "env" {
   type        = string
   default     = "prod"
 }
+
+variable "security_group_id" {
+  description = "The security group ID to use for the ElastiCache cluster"
+  type        = string
+}

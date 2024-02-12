@@ -198,10 +198,11 @@ module "datadog_aurora" {
 }
 
 module "redis" {
-  source     = "../../modules/aws/elasticache"
-  cluster_id = "redis-stage"
-  subnet_ids = module.stage.vpc.internal_subnets
-  env        = "stage"
+  source            = "../../modules/aws/elasticache"
+  cluster_id        = "redis-stage"
+  subnet_ids        = module.stage.vpc.internal_subnets
+  env               = "stage"
+  security_group_id = module.stage.ecs.internal_ecs_security_group_id
 }
 
 module "journeys-admin" {

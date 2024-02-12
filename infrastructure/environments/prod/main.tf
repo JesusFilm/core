@@ -163,9 +163,10 @@ module "datadog_aurora" {
 }
 
 module "redis" {
-  source     = "../../modules/aws/elasticache"
-  cluster_id = "redis-prod"
-  subnet_ids = module.prod.vpc.internal_subnets
+  source            = "../../modules/aws/elasticache"
+  cluster_id        = "redis-prod"
+  subnet_ids        = module.prod.vpc.internal_subnets
+  security_group_id = module.prod.ecs.internal_ecs_security_group_id
 }
 
 module "journeys-admin" {
