@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
+
 import { EmailPreferencesResolver } from './emailPreferences.resolver'
 
 @Module({
