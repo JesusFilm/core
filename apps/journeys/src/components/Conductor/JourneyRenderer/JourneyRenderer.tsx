@@ -2,6 +2,7 @@
 
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
+import { SxProps } from '@mui/material/styles'
 import { ReactElement, useEffect } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
@@ -34,23 +35,25 @@ export function JourneyRenderer(): ReactElement {
   return (
     <>
       {treeBlocks.map((block) => {
-        let height, width, position
+        const cardSx: SxProps = {
+          height: 0,
+          width: 0,
+          position: 'absolute',
+          display: 'none'
+        }
+
         const isCurrent = block.id === currentBlock?.id
         const isPreRender =
           block.id === nextBlock?.id || block.id === previousBlock?.id
 
         if (isCurrent) {
-          height = 'inherit'
-          width = 'inherit'
-          position = 'relative'
+          cardSx.height = 'inherit'
+          cardSx.width = 'inherit'
+          cardSx.position = 'relative'
+          cardSx.display = 'block'
         } else if (isPreRender) {
-          height = '-webkit-fill-available;'
-          width = '-webkit-fill-available;'
-          position = 'absolute'
-        } else {
-          height = 0
-          width = 0
-          position = 'none'
+          cardSx.height = '-webkit-fill-available;'
+          cardSx.width = '-webkit-fill-available;'
         }
 
         return (
@@ -62,11 +65,7 @@ export function JourneyRenderer(): ReactElement {
             <Box
               className={isCurrent ? 'active-card' : ''}
               onClick={() => setShowNavigation(true)}
-              sx={{
-                height,
-                width,
-                position
-              }}
+              sx={{ ...cardSx }}
             >
               <BlockRenderer block={block} />
             </Box>
