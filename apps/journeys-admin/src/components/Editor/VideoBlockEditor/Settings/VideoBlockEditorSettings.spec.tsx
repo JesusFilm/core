@@ -138,7 +138,7 @@ describe('VideoBlockEditorSettings', () => {
 
     expect(
       queryByText(/Some mobile browsers may override this choice/i)
-    ).toBeNull()
+    ).not.toBeInTheDocument()
 
     fireEvent.click(getByRole('checkbox', { name: 'Muted' }))
     await waitFor(() => {
