@@ -43,6 +43,8 @@ extend type Mutation {
   createEmailPreferencesForAllUsers: Boolean
   findOrCreateEmailPreference(email: String!): EmailPreferences
   userImpersonate(email: String!): String
+  createVerificationRequest: Boolean
+  validateEmail(email: String!, token: String!): User
 }
 
 type User
@@ -56,23 +58,6 @@ type User
   superAdmin: Boolean
   emailPreferences: EmailPreferences
   emailVerified: Boolean!
-}
-
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  me: User
-  user(id: ID!): User
-  userByEmail(email: String!): User
-}
-
-extend type Mutation {
-  userImpersonate(email: String!): String
-  createVerificationRequest: Boolean
-  validateEmail(email: String!, token: String!): User
 }
 
 extend type Language

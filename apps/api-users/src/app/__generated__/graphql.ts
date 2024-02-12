@@ -50,7 +50,6 @@ export class User {
     emailVerified: boolean;
 }
 
-
 export class Translation {
     __typename?: 'Translation';
     value: string;

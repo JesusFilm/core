@@ -30,18 +30,7 @@ const apollo = new ApolloClient({
   }
 })
 
-<<<<<<< HEAD
-export interface SendEmailParams {
-  to: string
-  subject: string
-  html: string
-  text: string
-  type?: string
-}
-
-=======
 type OmittedUser = Omit<User, 'id' | 'email' | 'emailVerified'>
->>>>>>> origin/feature/24-01-MA-transactional-emails
 export interface JourneyEditInviteJob {
   email: string
   journeyTitle: string
