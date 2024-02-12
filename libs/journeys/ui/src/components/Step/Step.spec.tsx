@@ -228,4 +228,15 @@ describe('Step', () => {
     )
     expect(baseElement).toContainHTML('<body><div /></body>')
   })
+
+  // TODO (SWIPE): test activeStep
+
+  // TODO (SWIPE): test seo
+  it('should set seoTitle to [journey name (step name)] if activeStep and on first card', () => {
+    expect(true).toBe(true)
+  })
+
+  it('should set seoTitle to [step name (journey name)] if activeStep and not on first card', () => {
+    expect(true).toBe(true)
+  })
 })

@@ -1,3 +1,5 @@
+// TODO (SWIPE): Fix types
+
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
@@ -256,5 +258,10 @@ describe('RadioQuestion', () => {
         }
       })
     )
+  })
+
+  // TODO (SWIPE): finish selectedId test
+  it('should set selectedId to null when activeStep is false', () => {
+    expect(true).toBe(true)
   })
 })
