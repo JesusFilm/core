@@ -201,7 +201,8 @@ export class EmailConsumer extends WorkerHost {
         to: job.data.email,
         subject: `Invitation to join team: ${job.data.teamName}`,
         text,
-        html
+        html,
+        type: 'teamInvites'
       })
     } else {
       const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
@@ -233,7 +234,8 @@ export class EmailConsumer extends WorkerHost {
         to: job.data.email,
         subject: `Invitation to join team: ${job.data.teamName}`,
         text,
-        html
+        html,
+        type: 'teamInvites'
       })
     }
   }
