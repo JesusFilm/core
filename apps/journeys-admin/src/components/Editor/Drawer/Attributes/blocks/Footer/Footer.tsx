@@ -106,7 +106,7 @@ export function Footer(): ReactElement {
         index={0}
         sx={{ flexGrow: 1, overflow: 'auto' }}
       >
-        {tabValue === 0 && <HostSidePanel />}
+        <HostSidePanel />
       </TabPanel>
       <TabPanel
         name="chat"
@@ -114,7 +114,7 @@ export function Footer(): ReactElement {
         index={1}
         sx={{ flexGrow: 1, overflow: 'auto' }}
       >
-        {tabValue === 1 && <Chat />}
+        <Chat />
       </TabPanel>
     </>
   )
