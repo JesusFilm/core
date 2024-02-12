@@ -5,7 +5,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
-import { UPDATE_JOURNEY_HOST } from '../HostForm/HostTitleFieldForm/HostTitleFieldForm'
+import { UPDATE_JOURNEY_HOST } from '../HostFormDrawer/HostTitleFieldForm/HostTitleFieldForm'
 
 import { HostList } from './HostList'
 

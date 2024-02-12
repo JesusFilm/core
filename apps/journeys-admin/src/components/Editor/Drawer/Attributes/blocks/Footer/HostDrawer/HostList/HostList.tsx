@@ -6,7 +6,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields_host as Host } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { UpdateJourneyHost } from '../../../../../../../../../__generated__/UpdateJourneyHost'
-import { UPDATE_JOURNEY_HOST } from '../HostForm/HostTitleFieldForm/HostTitleFieldForm'
+import { UPDATE_JOURNEY_HOST } from '../HostFormDrawer/HostTitleFieldForm/HostTitleFieldForm'
 import { HostListItem } from '../HostListItem'
 
 interface HostListProps {

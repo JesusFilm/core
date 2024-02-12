@@ -43,11 +43,9 @@ export function HostTitleFieldForm(): ReactElement {
 
   async function handleSubmit(value: string): Promise<void> {
     if (journey?.host != null) {
-      console.log('updating host')
       const { id, teamId } = journey.host
       await updateHost({ id, teamId, input: { title: value } })
     } else if (journey?.team != null) {
-      console.log('adding host to team')
       const { data } = await hostCreate({
         variables: { teamId: journey.team.id, input: { title: value } },
         update(cache, { data }) {

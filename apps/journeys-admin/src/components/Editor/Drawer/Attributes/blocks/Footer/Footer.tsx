@@ -10,11 +10,11 @@ import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
-const HostSidePanel = dynamic(
+const HostDrawer = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/HostSidePanel/HostSidePanel" */ './HostSidePanel'
-    ).then((mod) => mod.HostSidePanel),
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/HostDrawer/HostDrawer" */ './HostDrawer'
+    ).then((mod) => mod.HostDrawer),
   { ssr: false }
 )
 
@@ -31,10 +31,10 @@ export function Footer(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [tabValue, setTabValue] = useState(0)
 
-  const handleTabChange = (
+  function handleTabChange(
     _event: SyntheticEvent<Element, Event>,
     newValue: number
-  ): void => {
+  ): void {
     setTabValue(newValue)
   }
 
@@ -47,7 +47,7 @@ export function Footer(): ReactElement {
       type: 'SetDrawerPropsAction',
       title: t('Hosted By'),
       mobileOpen: true,
-      children: <HostSidePanel />
+      children: <HostDrawer />
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
@@ -78,7 +78,7 @@ export function Footer(): ReactElement {
         index={0}
         sx={{ flexGrow: 1, overflow: 'auto' }}
       >
-        <HostSidePanel />
+        <HostDrawer />
       </TabPanel>
       <TabPanel
         name="chat"

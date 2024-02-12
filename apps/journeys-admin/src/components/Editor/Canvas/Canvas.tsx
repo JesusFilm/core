@@ -41,7 +41,7 @@ const NextCard = dynamic(
 const HostSidePanel = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "HostSidePanel" */ '../Drawer/Attributes/blocks/Footer/HostSidePanel'
+      /* webpackChunkName: "HostSidePanel" */ '../Drawer/Attributes/blocks/Footer/HostDrawer'
     ).then((mod) => mod.HostSidePanel),
   { ssr: false }
 )

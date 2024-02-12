@@ -28,7 +28,7 @@ import { VideoWrapper } from '../VideoWrapper'
 const HostSidePanel = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "HostSidePanel" */ '../../Drawer/Attributes/blocks/Footer/HostSidePanel'
+      /* webpackChunkName: "HostSidePanel" */ '../../Drawer/Attributes/blocks/Footer/HostDrawer'
     ).then((mod) => mod.HostSidePanel),
   { ssr: false }
 )
