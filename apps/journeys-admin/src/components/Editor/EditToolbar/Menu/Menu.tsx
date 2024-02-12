@@ -176,6 +176,7 @@ export function Menu(): ReactElement {
         <DuplicateBlock
           variant="list-item"
           disabled={selectedBlock?.__typename === 'VideoBlock'}
+          handleClick={handleCloseMenu}
         />
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         <MenuItem

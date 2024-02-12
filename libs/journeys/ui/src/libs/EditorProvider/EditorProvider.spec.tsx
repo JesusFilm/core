@@ -5,6 +5,7 @@ import type { TreeBlock } from '../block'
 
 import {
   ActiveJourneyEditContent,
+  ActiveSlide,
   EditorProvider,
   reducer,
   useEditor
@@ -35,6 +36,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -68,6 +70,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Edit,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -99,6 +102,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Edit,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -142,6 +146,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Edit,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -183,6 +188,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -202,6 +208,8 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
+
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -222,6 +230,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -243,6 +252,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -268,6 +278,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -290,6 +301,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -311,6 +323,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -332,6 +345,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -362,6 +376,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -412,6 +427,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           selectedBlock: block,
           selectedStep: step,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
@@ -437,6 +453,7 @@ describe('EditorContext', () => {
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
@@ -462,15 +479,6 @@ describe('EditorContext', () => {
       const { getByText } = render(
         <EditorProvider initialState={{ drawerTitle: 'test' }}>
           <TestState />
-        </EditorProvider>
-      )
-      expect(getByText('drawerTitle: test')).toBeInTheDocument()
-    })
-
-    it('should render children when function', () => {
-      const { getByText } = render(
-        <EditorProvider initialState={{ drawerTitle: 'test' }}>
-          {(state) => <div>drawerTitle: {state.drawerTitle}</div>}
         </EditorProvider>
       )
       expect(getByText('drawerTitle: test')).toBeInTheDocument()

@@ -1,13 +1,12 @@
-import { useMutation } from '@apollo/client'
 import { ComponentProps, ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields } from '../../../../__generated__/BlockFields'
+import { useNavigateToBlockActionUpdateMutation } from '../../../libs/useNavigateToBlockActionUpdateMutation'
 
 import { BaseNode } from './BaseNode'
-import { useNavigateToBlockActionUpdateMutation } from '../../../libs/useNavigateToBlockActionUpdateMutation'
 
 export interface ActionNodeProps
   extends Omit<ComponentProps<typeof BaseNode>, 'isTargetConnectable'> {
