@@ -39,15 +39,15 @@ describe('LanguageSwitcher', () => {
       data: {
         languages: [
           {
-            id: '22658',
+            id: '21754',
             name: [
               {
                 primary: true,
-                value: 'اللغة العربية'
+                value: '普通話'
               },
               {
                 primary: false,
-                value: 'Arabic, Modern Standard'
+                value: 'Chinese, Mandarin'
               }
             ]
           },
@@ -89,7 +89,7 @@ describe('LanguageSwitcher', () => {
     }
   }
 
-  const arabicTranslations: ResponseObject<TranslationStatusModel.LanguageProgress> =
+  const chineseTranslations: ResponseObject<TranslationStatusModel.LanguageProgress> =
     {
       data: {
         approvalProgress: 100,
@@ -106,7 +106,7 @@ describe('LanguageSwitcher', () => {
           translated: 1
         },
         translationProgress: 100,
-        languageId: 'ar',
+        languageId: 'zh',
         eTag: '',
         language: {
           twoLettersCode: '',
@@ -114,14 +114,14 @@ describe('LanguageSwitcher', () => {
           dialectOf: '',
           editorCode: '',
           id: '',
-          locale: 'ar-SA',
-          name: 'Arabic',
+          locale: 'zh-CN',
+          name: 'Chinese',
           osxCode: '',
-          osxLocale: 'ar',
+          osxLocale: 'zh',
           pluralCategoryNames: [],
           pluralExamples: [],
           pluralRules: '',
-          textDirection: 'rtl',
+          textDirection: 'ltr',
           threeLettersCode: ''
         }
       }
@@ -174,7 +174,7 @@ describe('LanguageSwitcher', () => {
             offset: 0,
             limit: 25
           },
-          data: [arabicTranslations, frenchTranslations]
+          data: [chineseTranslations, frenchTranslations]
         })
       })
 
@@ -188,7 +188,7 @@ describe('LanguageSwitcher', () => {
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     await waitFor(() =>
-      expect(getByText('Arabic, Modern Standard')).toBeInTheDocument()
+      expect(getByText('Chinese, Mandarin')).toBeInTheDocument()
     )
     expect(getByText('English')).toBeInTheDocument()
     expect(queryByText('Français')).not.toBeInTheDocument()
@@ -208,7 +208,7 @@ describe('LanguageSwitcher', () => {
             offset: 0,
             limit: 25
           },
-          data: [arabicTranslations]
+          data: [chineseTranslations]
         })
       })
 
@@ -220,8 +220,8 @@ describe('LanguageSwitcher', () => {
 
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    await waitFor(() => fireEvent.click(getByText('Arabic, Modern Standard')))
-    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'ar-SA' })
+    await waitFor(() => fireEvent.click(getByText('Chinese, Mandarin')))
+    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh-CN' })
   })
 
   it('should revert back to previous language', async () => {
@@ -238,7 +238,7 @@ describe('LanguageSwitcher', () => {
             offset: 0,
             limit: 25
           },
-          data: [arabicTranslations]
+          data: [chineseTranslations]
         })
       })
 
@@ -250,8 +250,8 @@ describe('LanguageSwitcher', () => {
 
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    await waitFor(() => fireEvent.click(getByText('Arabic, Modern Standard')))
-    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'ar-SA' })
+    await waitFor(() => fireEvent.click(getByText('Chinese, Mandarin')))
+    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh-CN' })
     expect(
       getByText('Are you sure you want to change language?')
     ).toBeInTheDocument()
