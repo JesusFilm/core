@@ -1,5 +1,4 @@
 import { gql, useQuery } from '@apollo/client'
-import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -12,9 +11,9 @@ import { useTranslation } from 'react-i18next'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import File5Icon from '@core/shared/ui/icons/File5'
 import MoreIcon from '@core/shared/ui/icons/More'
+import Play3 from '@core/shared/ui/icons/Play3'
 import SettingsIcon from '@core/shared/ui/icons/Settings'
 import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
 
@@ -169,7 +168,7 @@ export function Menu(): ReactElement {
         >
           <MenuItem
             label={t('Preview')}
-            icon={<PlayArrowOutlinedIcon />}
+            icon={<Play3 />}
             openInNew
             onClick={handleCloseMenu}
           />

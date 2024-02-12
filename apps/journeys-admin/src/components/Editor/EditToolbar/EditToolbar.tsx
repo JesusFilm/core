@@ -1,5 +1,4 @@
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined'
-import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
@@ -13,7 +12,8 @@ import { useTranslation } from 'react-i18next'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
-import LinkAngled from '@core/shared/ui/icons/LinkAngled'
+import Play3 from '@core/shared/ui/icons/Play3'
+import Share from '@core/shared/ui/icons/Share'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
@@ -127,7 +127,7 @@ export function EditToolbar(): ReactElement {
           <Button
             variant="contained"
             color="secondary"
-            startIcon={<LinkAngled />}
+            startIcon={<Share />}
             onClick={handleShowMenu}
             sx={{
               display: {
@@ -150,7 +150,7 @@ export function EditToolbar(): ReactElement {
               }
             }}
           >
-            <PlayArrowOutlinedIcon />
+            <Play3 />
           </IconButton>
           <IconButton
             aria-label="Preview"
@@ -163,7 +163,7 @@ export function EditToolbar(): ReactElement {
               }
             }}
           >
-            <PlayArrowOutlinedIcon />
+            <Play3 />
           </IconButton>
           <Dialog open={Boolean(anchorEl)} onClose={handleCloseMenu}>
             <JourneyLink isMenu />
