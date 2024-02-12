@@ -8,6 +8,7 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { Actions } from '../ActionsTable'
 
@@ -51,6 +52,7 @@ describe('ActionsList', () => {
     drawerMobileOpen: false,
     activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
     journeyEditContentComponent: ActiveJourneyEditContent.Action
   }
 

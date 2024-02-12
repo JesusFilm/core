@@ -6,24 +6,12 @@ import { Button } from '.'
 
 describe('Button', () => {
   it('should render button', () => {
-    const { getByText } = render(
-      <Button
-        icon={<>test</>}
-        name="name"
-        value="value"
-        description="description"
-      />
-    )
+    const { getByText } = render(<Button icon={<>test</>} value="value" />)
     expect(getByText('test')).toBeInTheDocument()
-    expect(getByText('name')).toBeInTheDocument()
-    expect(getByText('value')).toBeInTheDocument()
-    expect(getByText('description')).toBeInTheDocument()
   })
 
   it('should render empty value button', () => {
-    const { getByText } = render(
-      <Button icon={<>test</>} name="name" value="" description="description" />
-    )
+    const { getByText } = render(<Button icon={<>test</>} value="" />)
     expect(getByText('None')).toBeInTheDocument()
   })
 
@@ -31,13 +19,7 @@ describe('Button', () => {
     const handleClick = jest.fn()
     const { getByRole, baseElement, rerender } = render(
       <ThemeProvider>
-        <Button
-          icon={<>test</>}
-          name="name"
-          value="value"
-          description="description"
-          onClick={handleClick}
-        />
+        <Button icon={<>test</>} value="value" onClick={handleClick} />
       </ThemeProvider>
     )
     expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(
@@ -47,14 +29,7 @@ describe('Button', () => {
     expect(handleClick).toHaveBeenCalled()
     rerender(
       <ThemeProvider>
-        <Button
-          icon={<>test</>}
-          name="name"
-          value="value"
-          description="description"
-          onClick={handleClick}
-          selected
-        />
+        <Button icon={<>test</>} value="value" onClick={handleClick} />
       </ThemeProvider>
     )
     expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(

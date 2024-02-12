@@ -113,7 +113,7 @@ describe('HostAvatarsButton', () => {
         <ThemeProvider>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
-              <HostAvatarsButton disabled />
+              <HostAvatarsButton />
             </JourneyProvider>
           </SnackbarProvider>
         </ThemeProvider>

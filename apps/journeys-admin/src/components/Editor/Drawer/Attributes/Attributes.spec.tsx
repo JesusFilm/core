@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -50,7 +51,11 @@ describe('Attributes', () => {
 
   it('should render card properties', async () => {
     const { getByText, queryByText } = render(
-      <Attributes selected={card} step={card} />
+      <EditorProvider
+        initialState={{ selectedStep: step, selectedBlock: card }}
+      >
+        <Attributes />
+      </EditorProvider>
     )
 
     expect(queryByText('Unlocked Card')).not.toBeInTheDocument()
@@ -63,7 +68,11 @@ describe('Attributes', () => {
   it('should only render step properties only if no children', async () => {
     const stepOnly = { ...step, children: [] }
     const { getByText, getAllByRole } = render(
-      <Attributes selected={stepOnly} step={stepOnly} />
+      <EditorProvider
+        initialState={{ selectedStep: stepOnly, selectedBlock: stepOnly }}
+      >
+        <Attributes />
+      </EditorProvider>
     )
     await waitFor(() => expect(getByText('Unlocked Card')).toBeInTheDocument())
 
@@ -71,7 +80,13 @@ describe('Attributes', () => {
   })
 
   it('should render step properties with card properties', () => {
-    const { getByText } = render(<Attributes selected={step} step={step} />)
+    const { getByText } = render(
+      <EditorProvider
+        initialState={{ selectedStep: step, selectedBlock: step }}
+      >
+        <Attributes />
+      </EditorProvider>
+    )
 
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     expect(getByText('Background Color')).toBeInTheDocument()
@@ -124,7 +139,14 @@ describe('Attributes', () => {
     }
     const { getByText, queryByTestId } = render(
       <MockedProvider>
-        <Attributes selected={stepWithVideoOnly} step={stepWithVideoOnly} />
+        <EditorProvider
+          initialState={{
+            selectedStep: stepWithVideoOnly,
+            selectedBlock: stepWithVideoOnly
+          }}
+        >
+          <Attributes />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -140,7 +162,14 @@ describe('Attributes', () => {
     }
     const { getByText, getByTestId, queryByText } = render(
       <MockedProvider>
-        <Attributes selected={video} step={stepWithVideo} />
+        <EditorProvider
+          initialState={{
+            selectedStep: stepWithVideo,
+            selectedBlock: video
+          }}
+        >
+          <Attributes />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -163,7 +192,17 @@ describe('Attributes', () => {
     }
     const { getByTestId, getByRole } = render(
       <MockedProvider>
-        <Attributes selected={block} step={{ ...card, children: [block] }} />
+        <EditorProvider
+          initialState={{
+            selectedStep: {
+              ...step,
+              children: [{ ...card, children: [block] }]
+            },
+            selectedBlock: block
+          }}
+        >
+          <Attributes />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -193,7 +232,17 @@ describe('Attributes', () => {
 
     const { getByTestId, getByRole } = render(
       <MockedProvider>
-        <Attributes selected={block} step={{ ...card, children: [block] }} />
+        <EditorProvider
+          initialState={{
+            selectedStep: {
+              ...step,
+              children: [{ ...card, children: [block] }]
+            },
+            selectedBlock: block
+          }}
+        >
+          <Attributes />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -215,7 +264,17 @@ describe('Attributes', () => {
     }
     const { getByRole, getAllByRole } = render(
       <MockedProvider>
-        <Attributes selected={block} step={{ ...card, children: [block] }} />
+        <EditorProvider
+          initialState={{
+            selectedStep: {
+              ...step,
+              children: [{ ...card, children: [block] }]
+            },
+            selectedBlock: block
+          }}
+        >
+          <Attributes />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -236,7 +295,17 @@ describe('Attributes', () => {
     }
     const { getByTestId, getByRole } = render(
       <MockedProvider>
-        <Attributes selected={block} step={{ ...card, children: [block] }} />
+        <EditorProvider
+          initialState={{
+            selectedStep: {
+              ...step,
+              children: [{ ...card, children: [block] }]
+            },
+            selectedBlock: block
+          }}
+        >
+          <Attributes />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -259,7 +328,17 @@ describe('Attributes', () => {
     }
     const { getByTestId, getByRole } = render(
       <MockedProvider>
-        <Attributes selected={block} step={{ ...card, children: [block] }} />
+        <EditorProvider
+          initialState={{
+            selectedStep: {
+              ...step,
+              children: [{ ...card, children: [block] }]
+            },
+            selectedBlock: block
+          }}
+        >
+          <Attributes />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -272,7 +351,14 @@ describe('Attributes', () => {
   it('should render Footer properties', async () => {
     const { queryByTestId, getByRole } = render(
       <MockedProvider>
-        <Attributes selected="Footer" step={card} />
+        <EditorProvider
+          initialState={{
+            selectedStep: step,
+            selectedComponent: 'Footer'
+          }}
+        >
+          <Attributes />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -297,7 +383,17 @@ describe('Attributes', () => {
 
     const { getByTestId, getByRole } = render(
       <MockedProvider>
-        <Attributes selected={block} step={{ ...card, children: [block] }} />
+        <EditorProvider
+          initialState={{
+            selectedStep: {
+              ...step,
+              children: [{ ...card, children: [block] }]
+            },
+            selectedBlock: block
+          }}
+        >
+          <Attributes />
+        </EditorProvider>
       </MockedProvider>
     )
 
