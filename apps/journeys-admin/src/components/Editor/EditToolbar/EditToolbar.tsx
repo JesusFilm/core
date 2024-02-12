@@ -128,7 +128,6 @@ export function EditToolbar(): ReactElement {
             </Typography>
           </Stack>
           <Analytics journey={journey} variant="button" />
-          <Button onClick={handleGoalsClick}>{t('Goals')}</Button>
           <Button
             variant="outlined"
             color="secondary"
@@ -139,6 +138,7 @@ export function EditToolbar(): ReactElement {
                 md: 'flex'
               }
             }}
+            onClick={handleGoalsClick}
           >
             {t('Strategy')}
           </Button>
