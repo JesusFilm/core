@@ -1,8 +1,10 @@
 import { useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
 import last from 'lodash/last'
-import { ReactElement, useCallback, useEffect } from 'react'
+import { ReactElement, ReactNode, useCallback } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
+import { useSwipeable } from 'react-swipeable'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
@@ -20,11 +22,13 @@ import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousE
 interface SwipeNavigationProps {
   activeBlock: TreeBlock<StepFields>
   rtl: boolean
+  children: ReactNode
 }
 
 export function SwipeNavigation({
   activeBlock,
-  rtl
+  rtl,
+  children
 }: SwipeNavigationProps): ReactElement {
   const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
     STEP_NEXT_EVENT_CREATE
@@ -41,7 +45,24 @@ export function SwipeNavigation({
     previousActiveBlock
   } = useBlocks()
   const { t } = useTranslation('apps-journeys')
-  const enableTouchMoveNext = !activeBlock?.locked ?? false
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (rtl) {
+        handleNav('previous')
+      } else {
+        handleNav('next')
+      }
+    },
+    onSwipedRight: () => {
+      if (rtl) {
+        handleNav('next')
+      } else {
+        handleNav('previous')
+      }
+    },
+    preventScrollOnSwipe: true
+  })
+
   const onFirstStep = activeBlock === treeBlocks[0]
   const onLastStep = activeBlock === last(treeBlocks)
 
@@ -160,39 +181,9 @@ export function SwipeNavigation({
     ]
   )
 
-  useEffect(() => {
-    let touchstartX = 0
-    let touchendX = 0
-    const swipeSensitivity = 50
-
-    function checkDirection(): void {
-      if (touchendX + swipeSensitivity < touchstartX && enableTouchMoveNext) {
-        const direction = rtl ? 'previous' : 'next'
-        handleNav(direction)
-      }
-      if (touchendX - swipeSensitivity > touchstartX) {
-        const direction = rtl ? 'next' : 'previous'
-        handleNav(direction)
-      }
-    }
-
-    function touchStart(e): void {
-      touchstartX = e.changedTouches[0].screenX
-    }
-
-    function touchEnd(e): void {
-      touchendX = e.changedTouches[0].screenX
-      checkDirection()
-    }
-
-    document.addEventListener('touchstart', touchStart)
-    document.addEventListener('touchend', touchEnd)
-
-    return () => {
-      document.removeEventListener('touchstart', touchStart)
-      document.removeEventListener('touchend', touchEnd)
-    }
-  }, [activeBlock, enableTouchMoveNext, handleNav, rtl])
-
-  return <></>
+  return (
+    <Box {...swipeHandlers} sx={{ height: 'inherit', width: 'inherit' }}>
+      {children}
+    </Box>
+  )
 }

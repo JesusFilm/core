@@ -111,6 +111,7 @@
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.15.0",
     "react-simple-timefield": "^3.3.1",
+    "react-swipeable": "^7.0.1",
     "react-use-downloader": "^1.2.4",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "^0.14.0",

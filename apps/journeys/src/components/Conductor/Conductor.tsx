@@ -156,14 +156,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           overflow: 'hidden'
         }}
       >
-        <SwipeNavigation activeBlock={activeBlock} rtl={rtl} />
         {showHeaderFooter && router.query.noi == null && (
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
         <Stack sx={{ height: '100%' }}>
-          <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
-            <JourneyRenderer />
-          </ThemeProvider>
+          <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
+            <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+              <JourneyRenderer />
+            </ThemeProvider>
+          </SwipeNavigation>
 
           <NavigationButton
             variant={rtl ? 'next' : 'previous'}
