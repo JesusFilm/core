@@ -38,88 +38,78 @@ export const GET_ALL_TEAM_HOSTS = gql`
 `
 
 export function HostSidePanel(): ReactElement {
+  const [openSelect, setOpenSelect] = useState(false)
+  const [openCreateHost, setOpenCreateHost] = useState(false)
+  const [openInfo, setOpenInfo] = useState(false)
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-
   // Get all team members of journey team, check if user in team
   // TODO: Replace with CASL authorisation check
   const { loadUser, data: user } = useCurrentUserLazyQuery()
-  useEffect(() => {
-    void loadUser()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  const team = journey?.team ?? undefined
   const { data } = useUserTeamsAndInvitesQuery(
-    team != null
+    journey?.team != null
       ? {
-          teamId: team.id,
+          teamId: journey?.team.id,
           where: { role: [UserTeamRole.manager, UserTeamRole.member] }
         }
       : undefined
   )
   const userInTeam =
-    data == null || data.userTeams.length === 0 || team == null
+    data == null || data.userTeams.length === 0 || journey?.team == null
       ? false
       : data.userTeams.find((userTeam) => userTeam.user.email === user.email) !=
         null
-
   // Fetch all hosts made for a team
   const { data: teamHosts, refetch } = useQuery(GET_ALL_TEAM_HOSTS, {
-    variables: { teamId: team?.id },
-    skip: team == null
+    variables: { teamId: journey?.team?.id },
+    skip: journey?.team == null
   })
-
-  const [selectedHost, setSelectedHost] = useState<Host | undefined>(
-    journey?.host ?? undefined
-  )
-  const [openSelect, setOpenSelect] = useState(false)
-  const [openCreateHost, setOpenCreateHost] = useState(false)
-  const [openInfo, setOpenInfo] = useState(false)
-
-  useEffect(() => {
-    if (team != null) void refetch({ teamId: team.id })
-  }, [team, refetch])
-
-  const handleClear = async (): Promise<void> => {
-    if (team != null) await refetch({ teamId: team.id })
-    await journeyHostUpdate({
-      variables: { id: journey?.id, input: { hostId: null } }
-    })
-    setSelectedHost(undefined)
-    setOpenSelect(false)
-    setOpenCreateHost(false)
-  }
-
-  const handleSelectHost = async (hostId: string): Promise<void> => {
-    setSelectedHost(teamHosts.hosts.find((host) => host.id === hostId))
-    setOpenSelect(false)
-  }
   const [journeyHostUpdate] =
     useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
 
-  const handleOpenCreateHost = async (): Promise<void> => {
+  useEffect(() => {
+    void loadUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (journey?.team != null) void refetch({ teamId: journey.team.id })
+  }, [journey?.team, refetch])
+
+  async function handleClear(): Promise<void> {
+    if (journey?.team != null) await refetch({ teamId: journey.team.id })
+    await journeyHostUpdate({
+      variables: { id: journey?.id, input: { hostId: null } }
+    })
+    setOpenSelect(false)
+    setOpenCreateHost(false)
+  }
+  async function handleSelectHost(hostId: string): Promise<void> {
+    setOpenSelect(false)
+  }
+  async function handleOpenCreateHost(): Promise<void> {
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })
     setOpenCreateHost(true)
   }
-  console.log(selectedHost)
+
   return (
     <>
       {!openSelect && (
         <>
-          {selectedHost != null ? (
+          {journey?.host != null ? (
             <Stack sx={{ p: 4 }}>
               <ContainedIconButton
-                label={(journey?.seoTitle || journey?.title) ?? ''}
-                description={selectedHost?.title || ''}
+                label={journey.host.title}
+                description={journey.host.location ?? ''}
                 disabled={!userInTeam}
                 slots={{
                   ImageThumbnail: (
                     <HostAvatars
                       size="small"
-                      avatarSrc1={selectedHost?.src1}
-                      avatarSrc2={selectedHost?.src2}
+                      avatarSrc1={journey.host.src1}
+                      avatarSrc2={journey.host.src2}
                       hasPlaceholder
                     />
                   )
@@ -140,13 +130,15 @@ export function HostSidePanel(): ReactElement {
               />
             </Stack>
           )}
-          {!userInTeam && team != null && (
+          {!userInTeam && journey?.team != null && (
             <Stack direction="row" alignItems="center" gap={3}>
               <AlertCircleIcon />
               <Typography variant="subtitle2">
                 {data?.userTeams.length === 0
                   ? t('Cannot edit hosts for this old journey')
-                  : `${t('Only')} ${team.title} ${t('members can edit this')}`}
+                  : t('Only {{teamName} members can edit this', {
+                      teamName: journey.team.title
+                    })}
               </Typography>
             </Stack>
           )}
