@@ -14,6 +14,7 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 import { EditToolbar } from './EditToolbar'
 import { Properties } from './Properties'
 import { Slider } from './Slider'
+import { Fab } from './ControlPanel/Fab'
 
 interface EditorProps {
   journey?: Journey
@@ -49,6 +50,7 @@ export function Editor({
         <>
           <EditToolbar />
           <Slider />
+          <Fab onAddClick={() => console.log('This is clicked')} visible />
         </>
       </EditorProvider>
     </JourneyProvider>

@@ -25,12 +25,12 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../libs/TestEditorState'
 
-import { BUTTON_BLOCK_CREATE } from '../Canvas/AddBlockButton/NewButtonButton/NewButtonButton'
-import { IMAGE_BLOCK_CREATE } from '../Canvas/AddBlockButton/NewImageButton/NewImageButton'
-import { RADIO_QUESTION_BLOCK_CREATE } from '../Canvas/AddBlockButton/NewRadioQuestionButton/NewRadioQuestionButton'
-import { SIGN_UP_BLOCK_CREATE } from '../Canvas/AddBlockButton/NewSignUpButton/NewSignUpButton'
-import { TYPOGRAPHY_BLOCK_CREATE } from '../Canvas/AddBlockButton/NewTypographyButton/NewTypographyButton'
-import { VIDEO_BLOCK_CREATE } from '../Canvas/AddBlockButton/NewVideoButton/NewVideoButton'
+import { BUTTON_BLOCK_CREATE } from '../Canvas/Button/NewButtonButton/NewButtonButton'
+import { IMAGE_BLOCK_CREATE } from '../Canvas/Button/NewImageButton/NewImageButton'
+import { RADIO_QUESTION_BLOCK_CREATE } from '../Canvas/Button/NewRadioQuestionButton/NewRadioQuestionButton'
+import { SIGN_UP_BLOCK_CREATE } from '../Canvas/Button/NewSignUpButton/NewSignUpButton'
+import { TYPOGRAPHY_BLOCK_CREATE } from '../Canvas/Button/NewTypographyButton/NewTypographyButton'
+import { VIDEO_BLOCK_CREATE } from '../Canvas/Button/NewVideoButton/NewVideoButton'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 import { ControlPanel } from '.'
