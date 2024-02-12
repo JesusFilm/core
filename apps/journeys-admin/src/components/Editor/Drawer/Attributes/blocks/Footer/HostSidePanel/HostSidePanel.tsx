@@ -14,7 +14,6 @@ import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCir
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
-import { Hosts_hosts as Host } from '../../../../../../../../__generated__/Hosts'
 import { UpdateJourneyHost } from '../../../../../../../../__generated__/UpdateJourneyHost'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
